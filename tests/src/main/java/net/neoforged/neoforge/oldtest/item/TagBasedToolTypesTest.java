@@ -49,106 +49,107 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+// TODO 1.20.5 port: restore
 @Mod(TagBasedToolTypesTest.MODID)
 public class TagBasedToolTypesTest {
     static final String MODID = "tag_based_tool_types";
 
-    private static final TagKey<Block> MINEABLE_TAG = BlockTags.create(new ResourceLocation(MODID, "minable/my_tool"));
-    private static final TagKey<Block> REQUIRES_TAG = BlockTags.create(new ResourceLocation(MODID, "needs_my_tier_tool"));
-
-    private static final Tier MY_TIER = TierSortingRegistry.registerTier(
-            new SimpleTier(5, 5000, 10, 100, 0, REQUIRES_TAG, () -> Ingredient.of(Items.BEDROCK)),
-            new ResourceLocation(MODID, "my_tier"),
-            List.of(Tiers.DIAMOND), List.of());
-
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredBlock<Block> STONE = BLOCKS.registerSimpleBlock("test_stone", BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F));
-
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    @SuppressWarnings("unused")
-    private static final DeferredItem<BlockItem> ORE_ITEM = ITEMS.registerSimpleBlockItem(STONE);
-    private static final DeferredItem<Item> TOOL = ITEMS.register("test_tool", () -> {
-        return new DiggerItem(MY_TIER, MINEABLE_TAG, new Item.Properties().attributes(DiggerItem.createAttributes(MY_TIER, 1, 1))) {
-            @Override
-            public float getDestroySpeed(ItemStack stack, BlockState state) {
-                if (state.is(BlockTags.MINEABLE_WITH_AXE)) return speed;
-                if (state.is(BlockTags.MINEABLE_WITH_PICKAXE)) return speed;
-                return super.getDestroySpeed(stack, state);
-            }
-
-            @Override
-            public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-                if (state.is(BlockTags.MINEABLE_WITH_PICKAXE))
-                    return TierSortingRegistry.isCorrectTierForDrops(Tiers.WOOD, state);
-                if (state.is(BlockTags.MINEABLE_WITH_AXE))
-                    return TierSortingRegistry.isCorrectTierForDrops(MY_TIER, state);
-                if (state.is(MINEABLE_TAG))
-                    return TierSortingRegistry.isCorrectTierForDrops(MY_TIER, state);
-                return false;
-            }
-        };
-    });
-
-    public TagBasedToolTypesTest(IEventBus modEventBus) {
-        BLOCKS.register(modEventBus);
-        ITEMS.register(modEventBus);
-        modEventBus.addListener(this::gatherData);
-        modEventBus.addListener(this::addCreative);
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES)
-            event.accept(TOOL);
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
-            event.accept(ORE_ITEM);
-    }
-
-    @SubscribeEvent
-    public void gatherData(GatherDataEvent event) {
-        DataGenerator gen = event.getGenerator();
-        ExistingFileHelper existing = event.getExistingFileHelper();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-        final PackOutput output = gen.getPackOutput();
-
-        gen.addProvider(event.includeServer(), new BlockTagsProvider(output, lookupProvider, MODID, existing) {
-            @Override
-            protected void addTags(HolderLookup.Provider registry) {
-                this.tag(MINEABLE_TAG).add(STONE.get());
-                this.tag(REQUIRES_TAG).add(STONE.get());
-            }
-        });
-
-        final class TestBlockLootProvider extends BlockLootSubProvider {
-            public TestBlockLootProvider() {
-                super(Set.of(), FeatureFlags.REGISTRY.allFlags());
-            }
-
-            @Override
-            protected Iterable<Block> getKnownBlocks() {
-                return BLOCKS.getEntries().stream().map(Supplier::get).collect(Collectors.toList());
-            }
-
-            @Override
-            protected void generate() {
-                this.dropSelf(STONE.get());
-            }
-        }
-
-        gen.addProvider(event.includeServer(), new LootTableProvider(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(TestBlockLootProvider::new, LootContextParamSets.BLOCK)), lookupProvider));
-
-        gen.addProvider(event.includeClient(), new BlockStateProvider(output, MODID, existing) {
-            @Override
-            protected void registerStatesAndModels() {
-                simpleBlockWithItem(STONE.get(), models().cubeAll(STONE.getId().getPath(), mcLoc("block/debug")));
-            }
-        });
-        gen.addProvider(event.includeClient(), new ItemModelProvider(output, MODID, existing) {
-            @Override
-            protected void registerModels() {
-                getBuilder(TOOL.getId().getPath())
-                        .parent(new UncheckedModelFile("item/generated"))
-                        .texture("layer0", mcLoc("item/wooden_pickaxe"));
-            }
-        });
-    }
+//    private static final TagKey<Block> MINEABLE_TAG = BlockTags.create(new ResourceLocation(MODID, "minable/my_tool"));
+//    private static final TagKey<Block> REQUIRES_TAG = BlockTags.create(new ResourceLocation(MODID, "needs_my_tier_tool"));
+//
+//    private static final Tier MY_TIER = TierSortingRegistry.registerTier(
+//            new SimpleTier(5, 5000, 10, 100, 0, REQUIRES_TAG, () -> Ingredient.of(Items.BEDROCK)),
+//            new ResourceLocation(MODID, "my_tier"),
+//            List.of(Tiers.DIAMOND), List.of());
+//
+//    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+//    private static final DeferredBlock<Block> STONE = BLOCKS.registerSimpleBlock("test_stone", BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F));
+//
+//    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+//    @SuppressWarnings("unused")
+//    private static final DeferredItem<BlockItem> ORE_ITEM = ITEMS.registerSimpleBlockItem(STONE);
+//    private static final DeferredItem<Item> TOOL = ITEMS.register("test_tool", () -> {
+//        return new DiggerItem(MY_TIER, MINEABLE_TAG, new Item.Properties().attributes(DiggerItem.createAttributes(MY_TIER, 1, 1))) {
+//            @Override
+//            public float getDestroySpeed(ItemStack stack, BlockState state) {
+//                if (state.is(BlockTags.MINEABLE_WITH_AXE)) return speed;
+//                if (state.is(BlockTags.MINEABLE_WITH_PICKAXE)) return speed;
+//                return super.getDestroySpeed(stack, state);
+//            }
+//
+//            @Override
+//            public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+//                if (state.is(BlockTags.MINEABLE_WITH_PICKAXE))
+//                    return TierSortingRegistry.isCorrectTierForDrops(Tiers.WOOD, state);
+//                if (state.is(BlockTags.MINEABLE_WITH_AXE))
+//                    return TierSortingRegistry.isCorrectTierForDrops(MY_TIER, state);
+//                if (state.is(MINEABLE_TAG))
+//                    return TierSortingRegistry.isCorrectTierForDrops(MY_TIER, state);
+//                return false;
+//            }
+//        };
+//    });
+//
+//    public TagBasedToolTypesTest(IEventBus modEventBus) {
+//        BLOCKS.register(modEventBus);
+//        ITEMS.register(modEventBus);
+//        modEventBus.addListener(this::gatherData);
+//        modEventBus.addListener(this::addCreative);
+//    }
+//
+//    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+//        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES)
+//            event.accept(TOOL);
+//        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
+//            event.accept(ORE_ITEM);
+//    }
+//
+//    @SubscribeEvent
+//    public void gatherData(GatherDataEvent event) {
+//        DataGenerator gen = event.getGenerator();
+//        ExistingFileHelper existing = event.getExistingFileHelper();
+//        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+//        final PackOutput output = gen.getPackOutput();
+//
+//        gen.addProvider(event.includeServer(), new BlockTagsProvider(output, lookupProvider, MODID, existing) {
+//            @Override
+//            protected void addTags(HolderLookup.Provider registry) {
+//                this.tag(MINEABLE_TAG).add(STONE.get());
+//                this.tag(REQUIRES_TAG).add(STONE.get());
+//            }
+//        });
+//
+//        final class TestBlockLootProvider extends BlockLootSubProvider {
+//            public TestBlockLootProvider() {
+//                super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+//            }
+//
+//            @Override
+//            protected Iterable<Block> getKnownBlocks() {
+//                return BLOCKS.getEntries().stream().map(Supplier::get).collect(Collectors.toList());
+//            }
+//
+//            @Override
+//            protected void generate() {
+//                this.dropSelf(STONE.get());
+//            }
+//        }
+//
+//        gen.addProvider(event.includeServer(), new LootTableProvider(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(TestBlockLootProvider::new, LootContextParamSets.BLOCK)), lookupProvider));
+//
+//        gen.addProvider(event.includeClient(), new BlockStateProvider(output, MODID, existing) {
+//            @Override
+//            protected void registerStatesAndModels() {
+//                simpleBlockWithItem(STONE.get(), models().cubeAll(STONE.getId().getPath(), mcLoc("block/debug")));
+//            }
+//        });
+//        gen.addProvider(event.includeClient(), new ItemModelProvider(output, MODID, existing) {
+//            @Override
+//            protected void registerModels() {
+//                getBuilder(TOOL.getId().getPath())
+//                        .parent(new UncheckedModelFile("item/generated"))
+//                        .texture("layer0", mcLoc("item/wooden_pickaxe"));
+//            }
+//        });
+//    }
 }

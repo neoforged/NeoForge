@@ -17,6 +17,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -47,7 +48,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
@@ -365,7 +365,7 @@ public interface IItemExtension {
      * @return the damage value
      */
     default int getDamage(ItemStack stack) {
-        return stack.getOrDefault(DataComponents.DAMAGE, 0);
+        return Mth.clamp(stack.getOrDefault(DataComponents.DAMAGE, 0), 0, stack.getMaxDamage());
     }
 
     /**
@@ -375,9 +375,8 @@ public interface IItemExtension {
      * @param stack The itemstack that is damaged
      * @return the damage value
      */
-    @SuppressWarnings("deprecation")
     default int getMaxDamage(ItemStack stack) {
-        return self().getMaxDamage();
+        return stack.getOrDefault(DataComponents.MAX_DAMAGE, 0);
     }
 
     /**
@@ -399,7 +398,7 @@ public interface IItemExtension {
      * @param damage the new damage value
      */
     default void setDamage(ItemStack stack, int damage) {
-        stack.set(DataComponents.DAMAGE, Math.max(damage, 0));
+        stack.set(DataComponents.DAMAGE, Mth.clamp(damage, 0, stack.getMaxDamage()));
     }
 
     /**
@@ -415,26 +414,13 @@ public interface IItemExtension {
     }
 
     /**
-     * ItemStack sensitive version of {@link Item#isCorrectToolForDrops(BlockState)}
-     *
-     * @param stack The itemstack used to harvest the block
-     * @param state The block trying to harvest
-     * @return true if the stack can harvest the block
-     */
-    default boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        return self().isCorrectToolForDrops(state);
-    }
-
-    /**
-     * Gets the maximum number of items that this stack should be able to hold. This
-     * is a ItemStack (and thus NBT) sensitive version of {@link Item#getMaxStackSize()}.
+     * Gets the maximum number of items that this stack should be able to hold.
      *
      * @param stack The ItemStack
      * @return The maximum size this item can be stacked to
      */
-    @SuppressWarnings("deprecation")
     default int getMaxStackSize(ItemStack stack) {
-        return self().getMaxStackSize();
+        return stack.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
     }
 
     /**
@@ -461,7 +447,7 @@ public interface IItemExtension {
      * @return true if the enchantment can be applied to this item
      */
     default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return stack.getItem().builtInRegistryHolder().is(enchantment.getMatch());
+        return stack.getItem().builtInRegistryHolder().is(enchantment.getSupportedItems());
     }
 
     /**
@@ -703,7 +689,7 @@ public interface IItemExtension {
      * @param stack ItemStack in the Chest slot of the entity.
      */
     default boolean isDamageable(ItemStack stack) {
-        return self().canBeDepleted();
+        return stack.has(DataComponents.MAX_DAMAGE);
     }
 
     /**
@@ -743,7 +729,7 @@ public interface IItemExtension {
      */
     @Nullable // read javadoc to find a potential problem
     default FoodProperties getFoodProperties(ItemStack stack, @Nullable LivingEntity entity) {
-        return self().getFoodProperties();
+        return stack.get(DataComponents.FOOD);
     }
 
     /**

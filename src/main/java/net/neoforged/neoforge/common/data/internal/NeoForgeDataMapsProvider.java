@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
@@ -57,7 +58,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
                 .forEach((type, sound) -> imitations.add(type.builtInRegistryHolder(), new ParrotImitation(sound), false));
 
         final var raidHeroGifts = builder(NeoForgeDataMaps.RAID_HERO_GIFTS);
-        ObfuscationReflectionHelper.<Map<VillagerProfession, ResourceLocation>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
+        ObfuscationReflectionHelper.<Map<VillagerProfession, ResourceKey<LootTable>>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
                 .forEach((type, lootTable) -> raidHeroGifts.add(BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(type), new RaidHeroGift(lootTable), false));
     }
 }

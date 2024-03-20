@@ -23,6 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -35,7 +36,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantment.Rarity;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
@@ -79,17 +79,12 @@ public class GlobalLootModifiersTest {
     private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<SmeltingEnchantmentModifier>> SMELTING = GLM.register("smelting", SmeltingEnchantmentModifier.CODEC);
     private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<WheatSeedsConverterModifier>> WHEATSEEDS = GLM.register("wheat_harvest", WheatSeedsConverterModifier.CODEC);
     private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<SilkTouchTestModifier>> SILKTOUCH = GLM.register("silk_touch_bamboo", SilkTouchTestModifier.CODEC);
-    private static final DeferredHolder<Enchantment, Enchantment> SMELT = ENCHANTS.register("smelt", () -> new SmelterEnchantment(Rarity.UNCOMMON, ItemTags.MINING_ENCHANTABLE, EquipmentSlot.MAINHAND));
+    private static final DeferredHolder<Enchantment, Enchantment> SMELT = ENCHANTS.register("smelt", () -> new Enchantment(
+            Enchantment.definition(ItemTags.MINING_ENCHANTABLE, 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlot.MAINHAND)));
 
     @OnInit
     static void init(final TestFramework framework) {
         HELPER.register(framework.modEventBus());
-    }
-
-    private static class SmelterEnchantment extends Enchantment {
-        protected SmelterEnchantment(Rarity rarityIn, TagKey<Item> typeIn, EquipmentSlot... slots) {
-            super(rarityIn, typeIn, slots);
-        }
     }
 
     /**
@@ -143,7 +138,7 @@ public class GlobalLootModifiersTest {
             fakeTool.enchant(Enchantments.SILK_TOUCH, 1);
             LootParams.Builder builder = new LootParams.Builder(context.getLevel());
             builder.withParameter(LootContextParams.TOOL, fakeTool);
-            LootTable loottable = context.getLevel().getServer().getLootData().getLootTable(context.getParamOrNull(LootContextParams.BLOCK_STATE).getBlock().getLootTable());
+            LootTable loottable = context.getLevel().getServer().reloadableRegistries().getLootTable(context.getParamOrNull(LootContextParams.BLOCK_STATE).getBlock().getLootTable());
             return loottable.getRandomItems(builder.create(LootContextParamSets.EMPTY)); // TODO - porting: we need an AT
         }
 
@@ -312,7 +307,7 @@ public class GlobalLootModifiersTest {
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST.defaultBlockState()))
                 .thenMap(() -> helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class))
-                .thenExecute(chest -> chest.setLootTable(new ResourceLocation("chests/simple_dungeon"), 124424))
+                .thenExecute(chest -> chest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("chests/simple_dungeon")), 124424))
 
                 .thenExecute(chest -> chest.unpackLootTable(helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL)))
 
@@ -322,7 +317,7 @@ public class GlobalLootModifiersTest {
                         .collect(Collectors.toMap(ItemStack::getItem, ItemStack::getCount, Integer::sum)))
 
                 .thenMapToSequence(stacks -> helper
-                        .startSequence(() -> helper.getLevel().getServer().getLootData().getLootTable(new ResourceLocation("chests/simple_dungeon"))
+                        .startSequence(() -> helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("chests/simple_dungeon")))
                                 .getRandomItems(new LootParams.Builder(helper.getLevel())
                                         .withParameter(LootContextParams.ORIGIN, helper.absoluteVec(new Vec3(1, 3, 1)))
                                         .create(LootContextParamSets.CHEST), 124424))

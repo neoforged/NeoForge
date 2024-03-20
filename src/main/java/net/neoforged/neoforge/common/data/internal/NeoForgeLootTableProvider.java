@@ -18,12 +18,15 @@ import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.data.loot.packs.VanillaLootTableProvider;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -63,7 +66,7 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationcontext) {
+    protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
         // Do not validate against all registered loot tables
     }
 
@@ -202,7 +205,7 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
                 boolean expand = getPrivateValue(TagEntry.class, tagEntry, "expand");
                 builder = expand ? TagEntry.expandTag(tag) : TagEntry.tagContents(tag);
             } else if (singleton instanceof NestedLootTable reference) {
-                Either<ResourceLocation, LootTable> contents = getPrivateValue(NestedLootTable.class, reference, "contents");
+                Either<ResourceKey<LootTable>, LootTable> contents = getPrivateValue(NestedLootTable.class, reference, "contents");
                 builder = contents.map(NestedLootTable::lootTableReference, NestedLootTable::inlineLootTable);
             } else {
                 throw new IllegalStateException("Unknown LootPoolSingletonContainer type: " + singleton.getClass().getName());

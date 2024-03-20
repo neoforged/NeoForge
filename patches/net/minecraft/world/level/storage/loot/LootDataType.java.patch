@@ -1,37 +1,36 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataType.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataType.java
-@@ -18,15 +_,29 @@
-     private static final Logger LOGGER = LogUtils.getLogger();
-     public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(LootItemConditions.CODEC, "predicates", createSimpleValidator());
-     public static final LootDataType<LootItemFunction> MODIFIER = new LootDataType<>(LootItemFunctions.CODEC, "item_modifiers", createSimpleValidator());
--    public static final LootDataType<LootTable> TABLE = new LootDataType<>(LootTable.CODEC, "loot_tables", createLootTableValidator());
-+    public static final LootDataType<LootTable> TABLE = new LootDataType<>(LootTable.CODEC, "loot_tables", createLootTableValidator(), LootTable.EMPTY, LootTable::setLootTableId);
-     private final Codec<T> codec;
-     private final String directory;
-     private final LootDataType.Validator<T> validator;
-+    @org.jetbrains.annotations.Nullable
-+    private final T defaultValue;
-+    private final Codec<Optional<T>> conditionalCodec;
-+    private final java.util.function.BiConsumer<T, ResourceLocation> idSetter;
+@@ -17,7 +_,7 @@
+ import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
+ import org.slf4j.Logger;
  
+-public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, String directory, LootDataType.Validator<T> validator) {
++public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, String directory, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, Codec<Optional<T>> conditionalCodec, java.util.function.BiConsumer<T, ResourceLocation> idSetter) {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(
+         Registries.PREDICATE, LootItemConditions.DIRECT_CODEC, "predicates", createSimpleValidator()
+@@ -26,17 +_,32 @@
+         Registries.ITEM_MODIFIER, LootItemFunctions.ROOT_CODEC, "item_modifiers", createSimpleValidator()
+     );
+     public static final LootDataType<LootTable> TABLE = new LootDataType<>(
+-        Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, "loot_tables", createLootTableValidator()
++        Registries.LOOT_TABLE, LootTable.DIRECT_CODEC, "loot_tables", createLootTableValidator(), LootTable.EMPTY, LootTable::setLootTableId
+     );
++
 +    /**
-+     * @deprecated Neo: use the constructor {@link #LootDataType(Codec, String, Validator, T, java.util.function.BiConsumer) with a default value and id setter} to support conditions
++     * @deprecated Neo: use the constructor {@link #LootDataType(ResourceKey, Codec, String, Validator, T, java.util.function.BiConsumer) with a default value and id setter} to support conditions
 +     */
 +    @Deprecated
-     private LootDataType(Codec<T> p_298773_, String p_279433_, LootDataType.Validator<T> p_279363_) {
-+        this(p_298773_, p_279433_, p_279363_, null, (it, id) -> {});
++    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, String directory, LootDataType.Validator<T> validator) {
++        this(registryKey, codec, directory, validator, null, (it, id) -> {});
 +    }
-+    private LootDataType(Codec<T> p_298773_, String p_279433_, LootDataType.Validator<T> p_279363_, @org.jetbrains.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, ResourceLocation> idSetter) {
-         this.codec = p_298773_;
-         this.directory = p_279433_;
-         this.validator = p_279363_;
-+        this.defaultValue = defaultValue;
-+        this.idSetter = idSetter;
-+        this.conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
-     }
++
++    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, String directory, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, ResourceLocation> idSetter) {
++        this(registryKey, codec, directory, validator, defaultValue, net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec), idSetter);
++    }
  
-     public String directory() {
-@@ -38,9 +_,12 @@
+     public void runValidation(ValidationContext p_279366_, ResourceKey<T> p_336149_, T p_279124_) {
+         this.validator.run(p_279366_, p_336149_, p_279124_);
      }
  
      public <V> Optional<T> deserialize(ResourceLocation p_279253_, DynamicOps<V> p_324006_, V p_324329_) {
@@ -46,16 +45,16 @@
      }
  
      public static Stream<LootDataType<?>> values() {
-@@ -54,9 +_,12 @@
+@@ -50,9 +_,12 @@
      }
  
      private static LootDataType.Validator<LootTable> createLootTableValidator() {
--        return (p_279333_, p_279227_, p_279406_) -> p_279406_.validate(
--                p_279333_.setParams(p_279406_.getParamSet()).enterElement("{" + p_279227_.type().directory + ":" + p_279227_.location() + "}", p_279227_)
+-        return (p_335318_, p_335319_, p_335320_) -> p_335320_.validate(
+-                p_335318_.setParams(p_335320_.getParamSet()).enterElement("{" + p_335319_.registry() + "/" + p_335319_.location() + "}", p_335319_)
 +        return (p_279333_, p_279227_, p_279406_) -> {
 +            p_279406_ = net.neoforged.neoforge.event.EventHooks.loadLootTable(p_279406_.getLootTableId(), p_279406_);
 +            p_279406_.validate(
-+                    p_279333_.setParams(p_279406_.getParamSet()).enterElement("{" + p_279227_.type().directory + ":" + p_279227_.location() + "}", p_279227_)
++                    p_279333_.setParams(p_279406_.getParamSet()).enterElement("{" + p_279227_.registry() + ":" + p_279227_.location() + "}", p_279227_)
              );
 +        };
      }

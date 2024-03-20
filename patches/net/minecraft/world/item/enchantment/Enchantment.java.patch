@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -19,7 +_,7 @@
+@@ -20,7 +_,7 @@
  import net.minecraft.world.item.Item;
  import net.minecraft.world.item.ItemStack;
  
--public abstract class Enchantment {
-+public abstract class Enchantment implements net.neoforged.neoforge.common.extensions.IEnchantmentExtension {
-     private final EquipmentSlot[] slots;
-     private final Enchantment.Rarity rarity;
-     private final TagKey<Item> match;
-@@ -79,6 +_,7 @@
+-public class Enchantment {
++public class Enchantment implements net.neoforged.neoforge.common.extensions.IEnchantmentExtension {
+     private final Enchantment.EnchantmentDefinition definition;
+     @Nullable
+     protected String descriptionId;
+@@ -111,6 +_,7 @@
          return 0;
      }
  
@@ -17,16 +17,16 @@
      public float getDamageBonus(int p_44682_, @Nullable EntityType<?> p_320800_) {
          return 0.0F;
      }
-@@ -119,7 +_,7 @@
+@@ -151,7 +_,7 @@
      }
  
      public boolean canEnchant(ItemStack p_44689_) {
--        return p_44689_.getItem().builtInRegistryHolder().is(this.match);
+-        return p_44689_.getItem().builtInRegistryHolder().is(this.definition.supportedItems());
 +        return canApplyAtEnchantingTable(p_44689_);
      }
  
      public void doPostAttack(LivingEntity p_44686_, Entity p_44687_, int p_44688_) {
-@@ -141,6 +_,24 @@
+@@ -173,6 +_,24 @@
      }
  
      public boolean isDiscoverable() {

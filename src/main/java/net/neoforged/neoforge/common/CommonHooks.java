@@ -588,7 +588,7 @@ public class CommonHooks {
         return ret;
     }
 
-    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, int baseCost, Player player) {
+    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
         if (NeoForge.EVENT_BUS.post(e).isCanceled())
             return false;

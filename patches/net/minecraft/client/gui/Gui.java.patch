@@ -195,7 +195,7 @@
              this.spectatorGui.renderTooltip(p_316628_);
          }
      }
-@@ -629,18 +_,23 @@
+@@ -634,18 +_,23 @@
      }
  
      private void renderSelectedItemName(GuiGraphics p_283501_) {
@@ -207,7 +207,7 @@
          if (this.toolHighlightTimer > 0 && !this.lastToolHighlight.isEmpty()) {
              MutableComponent mutablecomponent = Component.empty()
                  .append(this.lastToolHighlight.getHoverName())
--                .withStyle(this.lastToolHighlight.getRarity().color);
+-                .withStyle(this.lastToolHighlight.getRarity().color());
 +                .withStyle(this.lastToolHighlight.getRarity().getStyleModifier());
              if (this.lastToolHighlight.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
@@ -222,7 +222,7 @@
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  k += 14;
              }
-@@ -652,7 +_,13 @@
+@@ -657,7 +_,13 @@
  
              if (l > 0) {
                  p_283501_.fill(j - 2, k - 2, j + i + 2, k + 9 + 2, this.minecraft.options.getBackgroundColor(0));
@@ -237,7 +237,7 @@
              }
          }
  
-@@ -774,7 +_,15 @@
+@@ -779,7 +_,15 @@
          return (int)Math.ceil((double)p_93013_ / 10.0);
      }
  
@@ -253,27 +253,28 @@
          Player player = this.getCameraPlayer();
          if (player != null) {
              int i = Mth.ceil(player.getHealth());
-@@ -801,7 +_,7 @@
-             int l = fooddata.getFoodLevel();
-             int i1 = p_283143_.guiWidth() / 2 - 91;
-             int j1 = p_283143_.guiWidth() / 2 + 91;
--            int k1 = p_283143_.guiHeight() - 39;
-+            int k1 = p_283143_.guiHeight() - leftHeight;
+@@ -804,35 +_,62 @@
+             this.random.setSeed((long)(this.tickCount * 312871));
+             int l = p_283143_.guiWidth() / 2 - 91;
+             int i1 = p_283143_.guiWidth() / 2 + 91;
+-            int j1 = p_283143_.guiHeight() - 39;
++            int j1 = p_283143_.guiHeight() - leftHeight;
              float f = Math.max((float)player.getAttributeValue(Attributes.MAX_HEALTH), (float)Math.max(k, i));
-             int l1 = Mth.ceil(player.getAbsorptionAmount());
-             int i2 = Mth.ceil((f + (float)l1) / 2.0F / 10.0F);
-@@ -809,11 +_,25 @@
-             int k2 = k1 - (i2 - 1) * j2 - 10;
-             int l2 = k1 - 10;
-             int i3 = player.getArmorValue();
-+            leftHeight += (i2 - 1) * j2 + 10;
-             int j3 = -1;
+             int k1 = Mth.ceil(player.getAbsorptionAmount());
+             int l1 = Mth.ceil((f + (float)k1) / 2.0F / 10.0F);
+             int i2 = Math.max(10 - (l1 - 2), 3);
+             int j2 = j1 - 10;
++            leftHeight += (l1 - 1) * i2 + 10;
+             int k2 = -1;
              if (player.hasEffect(MobEffects.REGENERATION)) {
-                 j3 = this.tickCount % Mth.ceil(f + 5.0F);
+                 k2 = this.tickCount % Mth.ceil(f + 5.0F);
              }
- 
+-
+-            this.minecraft.getProfiler().push("armor");
+-            renderArmor(p_283143_, player, j1, l1, i2, l);
+-            this.minecraft.getProfiler().popPush("health");
 +            this.minecraft.getProfiler().push("health");
-+            this.renderHearts(p_283143_, player, i1, k1, j2, j3, f, i, k, l1, flag);
+             this.renderHearts(p_283143_, player, l, j1, i2, k2, f, i, k, k1, flag);
 +            this.minecraft.getProfiler().pop();
 +        }
 +    }
@@ -281,48 +282,28 @@
 +    private void renderArmorLevel(GuiGraphics p_283143_) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            int i1 = p_283143_.guiWidth() / 2 - 91;
-+            int k2 = p_283143_.guiHeight() - leftHeight;
-+            int i3 = player.getArmorValue();
-+
-             this.minecraft.getProfiler().push("armor");
- 
-             for(int k3 = 0; k3 < 10; ++k3) {
-@@ -833,12 +_,26 @@
-                 }
-             }
- 
--            this.minecraft.getProfiler().popPush("health");
--            this.renderHearts(p_283143_, player, i1, k1, j2, j3, f, i, k, l1, flag);
-+            if (i3 > 0) {
++            int l = p_283143_.guiWidth() / 2 - 91;
++            this.minecraft.getProfiler().push("armor");
++            renderArmor(p_283143_, player, p_283143_.guiHeight() - leftHeight + 10, 1, 0, l);
++            this.minecraft.getProfiler().pop();
++            if (player.getArmorValue() > 0) {
 +                leftHeight += 10;
 +            }
-+
-+            this.minecraft.getProfiler().pop();
 +        }
 +    }
 +
 +    private void renderFoodLevel(GuiGraphics p_283143_) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            FoodData fooddata = player.getFoodData();
-+            int l = fooddata.getFoodLevel();
-+            int j1 = p_283143_.guiWidth() / 2 + 91;
-+            int k1 = p_283143_.guiHeight() - rightHeight;
-+
              LivingEntity livingentity = this.getPlayerVehicleWithHealth();
-             int l4 = this.getVehicleMaxHearts(livingentity);
-             if (l4 == 0) {
+             int l2 = this.getVehicleMaxHearts(livingentity);
+             if (l2 == 0) {
 -                this.minecraft.getProfiler().popPush("food");
 +                this.minecraft.getProfiler().push("food");
- 
-                 for(int i4 = 0; i4 < 10; ++i4) {
-                     int j4 = k1;
-@@ -870,15 +_,22 @@
-                     }
-                 }
- 
--                l2 -= 10;
++                int i1 = p_283143_.guiWidth() / 2 + 91;
++                int j1 = p_283143_.guiHeight() - rightHeight;
+                 this.renderFood(p_283143_, player, j1, i1);
+-                j2 -= 10;
 +                rightHeight += 10;
 +                this.minecraft.getProfiler().pop();
              }
@@ -334,27 +315,27 @@
 +    private void renderAirLevel(GuiGraphics p_283143_) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            int j1 = p_283143_.guiWidth() / 2 + 91;
++            int i1 = p_283143_.guiWidth() / 2 + 91;
 +
 +            this.minecraft.getProfiler().push("air");
-             int i5 = player.getMaxAirSupply();
-             int j5 = Math.min(player.getAirSupply(), i5);
-             if (player.isEyeInFluid(FluidTags.WATER) || j5 < i5) {
--                int k5 = this.getVisibleVehicleHeartRows(l4) - 1;
--                l2 -= k5 * 10;
-+                int l2 = p_283143_.guiHeight() - rightHeight;
-                 int l5 = Mth.ceil((double)(j5 - 2) * 10.0 / (double)i5);
-                 int i6 = Mth.ceil((double)j5 * 10.0 / (double)i5) - l5;
- 
-@@ -889,6 +_,7 @@
-                         p_283143_.blitSprite(AIR_BURSTING_SPRITE, j1 - j6 * 8 - 9, l2, 9, 9);
-                     }
+             int i3 = player.getMaxAirSupply();
+             int j3 = Math.min(player.getAirSupply(), i3);
+             if (player.isEyeInFluid(FluidTags.WATER) || j3 < i3) {
+-                int k3 = this.getVisibleVehicleHeartRows(l2) - 1;
+-                j2 -= k3 * 10;
++                int j2 = p_283143_.guiHeight() - rightHeight;
+                 int l3 = Mth.ceil((double)(j3 - 2) * 10.0 / (double)i3);
+                 int i4 = Mth.ceil((double)j3 * 10.0 / (double)i3) - l3;
+                 RenderSystem.enableBlend();
+@@ -846,6 +_,7 @@
                  }
+ 
+                 RenderSystem.disableBlend();
 +                rightHeight += 10;
              }
  
              this.minecraft.getProfiler().pop();
-@@ -963,7 +_,7 @@
+@@ -985,7 +_,7 @@
              if (i != 0) {
                  int j = (int)Math.ceil((double)livingentity.getHealth());
                  this.minecraft.getProfiler().popPush("mountHealth");
@@ -362,16 +343,16 @@
 +                int k = p_283368_.guiHeight() - rightHeight;
                  int l = p_283368_.guiWidth() / 2 + 91;
                  int i1 = k;
- 
-@@ -984,6 +_,7 @@
+                 int j1 = 0;
+@@ -1008,6 +_,7 @@
                      }
  
                      i1 -= 10;
 +                    rightHeight += 10;
+                     j1 += 20;
                  }
-             }
-         }
-@@ -1137,7 +_,7 @@
+ 
+@@ -1164,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !itemstack.is(this.lastToolHighlight.getItem())
@@ -380,7 +361,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  --this.toolHighlightTimer;
-@@ -1262,6 +_,11 @@
+@@ -1289,6 +_,11 @@
                  p_282761_.drawString(font, SAVING_TEXT, p_282761_.guiWidth() - j - 10, p_282761_.guiHeight() - 15, k);
              }
          }

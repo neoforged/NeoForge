@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
-@@ -225,8 +_,10 @@
+@@ -226,8 +_,10 @@
      private void ageUp() {
          Level $$1 = this.level();
          if ($$1 instanceof ServerLevel serverlevel) {

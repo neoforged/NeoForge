@@ -150,7 +150,7 @@ public class ItemTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom rarities (with custom styles) work on items")
     static void itemCustomRarity(final DynamicTest test, final RegistrationHelper reg) {
-        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
+        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", new ResourceLocation(reg.modId(), "custom"), style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
         final Supplier<Item> item = reg.items().registerSimpleItem("test", new Item.Properties().rarity(rarity))
                 .withLang("Custom rarity test");
 

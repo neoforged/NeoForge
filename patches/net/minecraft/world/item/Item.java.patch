@@ -11,10 +11,10 @@
 +    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
      public static final UUID BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
      public static final UUID BASE_ATTACK_SPEED_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
-     public static final int MAX_STACK_SIZE = 64;
-@@ -99,12 +_,14 @@
-         this.foodProperties = p_41383_.foodProperties;
-         this.isFireResistant = p_41383_.isFireResistant;
+     public static final int DEFAULT_MAX_STACK_SIZE = 64;
+@@ -88,12 +_,14 @@
+         this.components = p_41383_.buildAndValidateComponents();
+         this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
@@ -28,7 +28,7 @@
      }
  
      @Deprecated
-@@ -119,6 +_,8 @@
+@@ -112,6 +_,8 @@
      public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
      }
  
@@ -37,48 +37,32 @@
      public void onDestroyed(ItemEntity p_150887_) {
      }
  
-@@ -143,9 +_,9 @@
-     }
+@@ -138,7 +_,7 @@
  
      public InteractionResultHolder<ItemStack> use(Level p_41432_, Player p_41433_, InteractionHand p_41434_) {
--        if (this.isEdible()) {
--            ItemStack itemstack = p_41433_.getItemInHand(p_41434_);
--            if (p_41433_.canEat(this.getFoodProperties().canAlwaysEat())) {
-+        ItemStack itemstack = p_41433_.getItemInHand(p_41434_);
-+        if (itemstack.isEdible()) {
-+            if (p_41433_.canEat(itemstack.getFoodProperties(p_41433_).canAlwaysEat())) {
+         ItemStack itemstack = p_41433_.getItemInHand(p_41434_);
+-        FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
++        FoodProperties foodproperties = itemstack.getFoodProperties(p_41433_);
+         if (foodproperties != null) {
+             if (p_41433_.canEat(foodproperties.canAlwaysEat())) {
                  p_41433_.startUsingItem(p_41434_);
-                 return InteractionResultHolder.consume(itemstack);
-             } else {
-@@ -160,10 +_,12 @@
-         return this.isEdible() ? p_41411_.eat(p_41410_, p_41409_) : p_41409_;
-     }
- 
-+    @Deprecated // Use ItemStack sensitive version.
-     public final int getMaxStackSize() {
-         return this.maxStackSize;
-     }
- 
-+    @Deprecated // Use ItemStack sensitive version.
-     public final int getMaxDamage() {
-         return this.maxDamage;
-     }
-@@ -177,11 +_,12 @@
+@@ -160,12 +_,13 @@
      }
  
      public int getBarWidth(ItemStack p_150900_) {
--        return Mth.clamp(Math.round(13.0F - (float)p_150900_.getDamageValue() * 13.0F / (float)this.maxDamage), 0, 13);
+-        return Mth.clamp(Math.round(13.0F - (float)p_150900_.getDamageValue() * 13.0F / (float)p_150900_.getMaxDamage()), 0, 13);
 +        return Math.round(13.0F - (float)p_150900_.getDamageValue() * 13.0F / (float)this.getMaxDamage(p_150900_));
      }
  
      public int getBarColor(ItemStack p_150901_) {
--        float f = Math.max(0.0F, ((float)this.maxDamage - (float)p_150901_.getDamageValue()) / (float)this.maxDamage);
+         int i = p_150901_.getMaxDamage();
+-        float f = Math.max(0.0F, ((float)i - (float)p_150901_.getDamageValue()) / (float)i);
 +        float stackMaxDamage = this.getMaxDamage(p_150901_);
 +        float f = Math.max(0.0F, (stackMaxDamage - (float)p_150901_.getDamageValue()) / stackMaxDamage);
          return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
      }
  
-@@ -217,7 +_,7 @@
+@@ -215,7 +_,7 @@
  
      @Override
      public String toString() {
@@ -87,7 +71,7 @@
      }
  
      protected String getOrCreateDescriptionId() {
-@@ -237,10 +_,12 @@
+@@ -235,10 +_,12 @@
      }
  
      @Nullable
@@ -100,25 +84,16 @@
      public boolean hasCraftingRemainingItem() {
          return this.craftingRemainingItem != null;
      }
-@@ -265,7 +_,7 @@
+@@ -262,7 +_,7 @@
+     }
  
      public int getUseDuration(ItemStack p_41454_) {
-         if (p_41454_.getItem().isEdible()) {
--            return this.getFoodProperties().isFastFood() ? 16 : 32;
-+            return p_41454_.getFoodProperties(null).isFastFood() ? 16 : 32;
-         } else {
-             return 0;
-         }
-@@ -307,7 +_,7 @@
+-        FoodProperties foodproperties = p_41454_.get(DataComponents.FOOD);
++        FoodProperties foodproperties = p_41454_.getFoodProperties(null);
+         return foodproperties != null ? foodproperties.eatDurationTicks() : 0;
      }
  
-     public boolean isEnchantable(ItemStack p_41456_) {
--        return this.getMaxStackSize() == 1 && this.canBeDepleted();
-+        return this.getMaxStackSize(p_41456_) == 1 && this.isDamageable(p_41456_);
-     }
- 
-     protected static BlockHitResult getPlayerPOVHitResult(Level p_41436_, Player p_41437_, ClipContext.Fluid p_41438_) {
-@@ -316,6 +_,8 @@
+@@ -294,6 +_,8 @@
          return p_41436_.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, p_41438_, p_41437_));
      }
  
@@ -127,7 +102,7 @@
      public int getEnchantmentValue() {
          return 0;
      }
-@@ -324,13 +_,20 @@
+@@ -302,13 +_,20 @@
          return false;
      }
  
@@ -150,16 +125,7 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -341,6 +_,8 @@
-         return this.foodProperties != null;
-     }
- 
-+    // Use IForgeItem#getFoodProperties(ItemStack, LivingEntity) in favour of this.
-+    @Deprecated
-     @Nullable
-     public FoodProperties getFoodProperties() {
-         return this.foodProperties;
-@@ -375,6 +_,32 @@
+@@ -336,6 +_,32 @@
          return this.requiredFeatures;
      }
  
@@ -192,16 +158,16 @@
      public static class Properties {
          private static final Interner<DataComponentMap> COMPONENT_INTERNER = Interners.newStrongInterner();
          @Nullable
-@@ -388,6 +_,7 @@
-         FoodProperties foodProperties;
-         boolean isFireResistant;
+@@ -343,6 +_,7 @@
+         @Nullable
+         Item craftingRemainingItem;
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
 +        private boolean canRepair = true;
  
          public Item.Properties food(FoodProperties p_41490_) {
-             this.foodProperties = p_41490_;
-@@ -429,12 +_,18 @@
-             return this;
+             return this.component(DataComponents.FOOD, p_41490_);
+@@ -372,12 +_,18 @@
+             return this.component(DataComponents.FIRE_RESISTANT, Unit.INSTANCE);
          }
  
 +        public Item.Properties setNoRepair() {

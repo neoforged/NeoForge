@@ -13,7 +13,7 @@
      }
  
      public static ItemEnchantments updateEnchantments(ItemStack p_331034_, Consumer<ItemEnchantments.Mutable> p_332031_) {
-@@ -73,7 +_,7 @@
+@@ -77,7 +_,7 @@
      }
  
      private static void runIterationOnItem(EnchantmentHelper.EnchantmentVisitor p_44851_, ItemStack p_44852_) {
@@ -22,7 +22,7 @@
  
          for(Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
              p_44851_.accept(entry.getKey().value(), entry.getIntValue());
-@@ -94,7 +_,7 @@
+@@ -98,7 +_,7 @@
  
      public static float getDamageBonus(ItemStack p_44834_, @Nullable EntityType<?> p_320195_) {
          MutableFloat mutablefloat = new MutableFloat();
@@ -31,7 +31,7 @@
          return mutablefloat.floatValue();
      }
  
-@@ -109,6 +_,7 @@
+@@ -113,6 +_,7 @@
              runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44824_.getAllSlots());
          }
  
@@ -39,7 +39,7 @@
          if (p_44825_ instanceof Player) {
              runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44824_.getMainHandItem());
          }
-@@ -120,6 +_,7 @@
+@@ -124,6 +_,7 @@
              runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44897_.getAllSlots());
          }
  
@@ -47,7 +47,7 @@
          if (p_44897_ instanceof Player) {
              runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44897_.getMainHandItem());
          }
-@@ -241,7 +_,7 @@
+@@ -245,7 +_,7 @@
  
      public static int getEnchantmentCost(RandomSource p_220288_, int p_220289_, int p_220290_, ItemStack p_220291_) {
          Item item = p_220291_.getItem();
@@ -56,7 +56,7 @@
          if (i <= 0) {
              return 0;
          } else {
-@@ -274,7 +_,7 @@
+@@ -278,7 +_,7 @@
      public static List<EnchantmentInstance> selectEnchantment(RandomSource p_220298_, ItemStack p_220299_, int p_220300_, boolean p_220301_) {
          List<EnchantmentInstance> list = Lists.newArrayList();
          Item item = p_220299_.getItem();
@@ -65,12 +65,12 @@
          if (i <= 0) {
              return list;
          } else {
-@@ -328,7 +_,7 @@
-         boolean flag = p_44819_.is(Items.BOOK);
- 
+@@ -334,7 +_,7 @@
          for(Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
--            if ((!enchantment.isTreasureOnly() || p_44820_) && enchantment.isDiscoverable() && (enchantment.canEnchant(p_44819_) || flag)) {
-+            if ((!enchantment.isTreasureOnly() || p_44820_) && enchantment.isDiscoverable() && (enchantment.canApplyAtEnchantingTable(p_44819_) || (flag && enchantment.isAllowedOnBooks()))) {
+             if ((!enchantment.isTreasureOnly() || p_44820_)
+                 && enchantment.isDiscoverable()
+-                && (flag || enchantment.canEnchant(p_44819_) && enchantment.isPrimaryItem(p_44819_))) {
++                && ((flag && enchantment.isAllowedOnBooks()) || enchantment.canApplyAtEnchantingTable(p_44819_) && enchantment.isPrimaryItem(p_44819_))) {
                  for(int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                      if (p_44818_ >= enchantment.getMinCost(i) && p_44818_ <= enchantment.getMaxCost(i)) {
                          list.add(new EnchantmentInstance(enchantment, i));

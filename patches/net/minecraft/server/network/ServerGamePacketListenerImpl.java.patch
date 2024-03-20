@@ -52,7 +52,7 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -1031,8 +_,10 @@
+@@ -1027,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {
                      ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
@@ -65,7 +65,7 @@
                      this.player.stopUsingItem();
                  }
  
-@@ -1060,7 +_,7 @@
+@@ -1056,7 +_,7 @@
                      .handleBlockBreakAction(
                          blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
                      );
@@ -74,7 +74,7 @@
                  return;
              default:
                  throw new IllegalArgumentException("Invalid player action");
-@@ -1079,7 +_,7 @@
+@@ -1075,7 +_,7 @@
      @Override
      public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
          PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
@@ -83,7 +83,7 @@
          ServerLevel serverlevel = this.player.serverLevel();
          InteractionHand interactionhand = p_9930_.getHand();
          ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1229,8 +_,9 @@
+@@ -1225,8 +_,9 @@
                      }
  
                      CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
@@ -94,7 +94,7 @@
                          PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
                          this.broadcastChatMessage(playerchatmessage1);
                      });
-@@ -1507,7 +_,11 @@
+@@ -1503,7 +_,11 @@
      
                          @Override
                          public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
@@ -107,7 +107,7 @@
                          }
      
                          @Override
-@@ -1752,7 +_,7 @@
+@@ -1749,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -116,7 +116,7 @@
                  );
          }
      }
-@@ -1786,7 +_,27 @@
+@@ -1783,7 +_,27 @@
      }
  
      @Override
@@ -145,7 +145,7 @@
      }
  
      @Override
-@@ -1797,5 +_,9 @@
+@@ -1794,5 +_,9 @@
      @FunctionalInterface
      interface EntityInteraction {
          InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);

@@ -9,10 +9,10 @@
      private static final ConcurrentMap<ResourceKey.InternKey, ResourceKey<?>> VALUES = new MapMaker().weakValues().makeMap();
      private final ResourceLocation registryName;
      private final ResourceLocation location;
-@@ -60,6 +_,13 @@
+@@ -64,6 +_,13 @@
  
-     public ResourceLocation registry() {
-         return this.registryName;
+     public ResourceKey<Registry<T>> registryKey() {
+         return createRegistryKey(this.registryName);
 +    }
 +
 +    @Override

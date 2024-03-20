@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -336,6 +_,10 @@
+@@ -339,6 +_,10 @@
          });
      }
  

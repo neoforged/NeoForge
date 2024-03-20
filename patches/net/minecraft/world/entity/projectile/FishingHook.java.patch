@@ -35,7 +35,7 @@
 +                    .withParameter(LootContextParams.KILLER_ENTITY, this.getOwner())
                      .withLuck((float)this.luck + player.getLuck())
                      .create(LootContextParamSets.FISHING);
-                 LootTable loottable = this.level().getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);
+                 LootTable loottable = this.level().getServer().reloadableRegistries().getLootTable(BuiltInLootTables.FISHING);
                  List<ItemStack> list = loottable.getRandomItems(lootparams);
 +                event = new net.neoforged.neoforge.event.entity.player.ItemFishedEvent(list, this.onGround() ? 2 : 1, this);
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
