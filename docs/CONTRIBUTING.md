@@ -7,6 +7,24 @@ Contributing to NeoForge
 
 3) Follow the code style of the class you're working in (braces on newlines & spaces instead of tabs in Forge classes, inline brackets in patches, etc).
 
+## Workflow
+
+1. Have preliminary discussions on Discord (`#neoforge-github`)
+2. Fork the repository
+3. Check out your fork
+4. Make a branch
+5. Run `gradlew setup` from the project root to decompile sources and apply current patches
+6. Import project into your IDE (IntelliJ/Eclipse) or Reload Gradle Project
+7. Modify the patched Minecraft sources in `projects/neoforge/src/main/java` as needed. The unmodified sources are available in `projects/base/src/main/java` for your reference. Do not modify these.
+8. Test your changes
+   - Run the game (Runs are available in the IDE)
+   - Run `gradlew :tests:runGameTestServer` or `Tests: GameTestServer` from IDE
+   - Run `gradlew :tests:runGameTestClient` or `Tests: GameTestClient` from IDE
+9. Run `gradlew unpackSourcePatches` to generate patch-files from the patched sources
+10. Run `gradlew applyAllFormatting` to automatically format sources
+11. Check correct formatting with `gradlew spotlessCheck`
+12. Commit & Push
+13. Make PR
 
 Contributor License Agreement
 =============================
