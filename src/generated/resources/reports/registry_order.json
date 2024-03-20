@@ -73,6 +73,7 @@
     "minecraft:data_component_type",
     "minecraft:entity_sub_predicate_type",
     "minecraft:item_sub_predicate_type",
+    "minecraft:map_decoration_type",
     "neoforge:attachment_types",
     "neoforge:biome_modifier_serializers",
     "neoforge:condition_codecs",

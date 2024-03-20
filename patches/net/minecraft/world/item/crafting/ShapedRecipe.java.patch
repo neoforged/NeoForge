@@ -28,7 +28,7 @@
 +    }
 +
 +    @Override
-     public ItemStack getResultItem(RegistryAccess p_266881_) {
+     public ItemStack getResultItem(HolderLookup.Provider p_335668_) {
          return this.result;
      }
 @@ -85,7 +_,7 @@

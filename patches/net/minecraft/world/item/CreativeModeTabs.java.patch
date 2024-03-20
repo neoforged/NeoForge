@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/item/CreativeModeTabs.java
 +++ b/net/minecraft/world/item/CreativeModeTabs.java
-@@ -1836,7 +_,7 @@
+@@ -1837,7 +_,7 @@
      ) {
          p_270903_.listElements()
              .map(Holder::value)
--            .filter(p_319722_ -> p_270380_.contains(p_319722_.getMatch()))
+-            .filter(p_335280_ -> p_270380_.contains(p_335280_.getSupportedItems()))
 +            .filter(p_270008_ -> p_270008_.allowedInCreativeTab(Items.ENCHANTED_BOOK, p_270380_))
              .map(p_270038_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(p_270038_, p_270038_.getMaxLevel())))
              .forEach(p_269989_ -> p_270868_.accept(p_269989_, p_270407_));
      }
-@@ -1846,7 +_,7 @@
+@@ -1847,7 +_,7 @@
      ) {
          p_270628_.listElements()
              .map(Holder::value)
--            .filter(p_319724_ -> p_271024_.contains(p_319724_.getMatch()))
+-            .filter(p_335276_ -> p_271024_.contains(p_335276_.getSupportedItems()))
 +            .filter(p_269991_ -> p_269991_.allowedInCreativeTab(Items.ENCHANTED_BOOK, p_271024_))
              .flatMap(
                  p_270024_ -> IntStream.rangeClosed(p_270024_.getMinLevel(), p_270024_.getMaxLevel())

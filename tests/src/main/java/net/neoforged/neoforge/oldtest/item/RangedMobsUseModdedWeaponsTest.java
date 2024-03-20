@@ -33,8 +33,8 @@ public class RangedMobsUseModdedWeaponsTest {
     public static final String MOD_ID = "ranged_mobs_use_modded_weapons_test";
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredItem<Item> MODDED_BOW = ITEMS.register("modded_bow", () -> new BowItem(new Item.Properties().defaultDurability(384)));
-    private static final DeferredItem<Item> MODDED_CROSSBOW = ITEMS.register("modded_crossbow", () -> new CrossbowItem(new Item.Properties().defaultDurability(326)));
+    private static final DeferredItem<Item> MODDED_BOW = ITEMS.register("modded_bow", () -> new BowItem(new Item.Properties().durability(384)));
+    private static final DeferredItem<Item> MODDED_CROSSBOW = ITEMS.register("modded_crossbow", () -> new CrossbowItem(new Item.Properties().durability(326)));
 
     public RangedMobsUseModdedWeaponsTest(IEventBus modEventBus) {
         if (ENABLE) {

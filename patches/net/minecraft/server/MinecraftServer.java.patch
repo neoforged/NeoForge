@@ -183,16 +183,16 @@
      }
  
      public SystemReport fillSystemReport(SystemReport p_177936_) {
-@@ -1420,7 +_,7 @@
+@@ -1419,7 +_,7 @@
+ 
      public CompletableFuture<Void> reloadResources(Collection<String> p_129862_) {
-         RegistryAccess.Frozen registryaccess$frozen = this.registries.getAccessForLoading(RegistryLayer.RELOADABLE);
          CompletableFuture<Void> completablefuture = CompletableFuture.<ImmutableList>supplyAsync(
 -                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
 +                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).flatMap(Pack::streamSelfAndChildren).map(Pack::open).collect(ImmutableList.toImmutableList()),
                  this
              )
              .thenCompose(
-@@ -1457,6 +_,7 @@
+@@ -1456,6 +_,7 @@
                      this.getPlayerList().reloadResources();
                      this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());
                      this.structureTemplateManager.onResourceManagerReload(this.resources.resourceManager);
@@ -200,7 +200,7 @@
                  },
                  this
              );
-@@ -1470,10 +_,13 @@
+@@ -1469,10 +_,13 @@
      public static WorldDataConfiguration configurePackRepository(
          PackRepository p_248681_, DataPackConfig p_248920_, boolean p_249869_, FeatureFlagSet p_251243_
      ) {
@@ -216,7 +216,7 @@
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
-@@ -1657,6 +_,31 @@
+@@ -1658,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);
  
@@ -248,7 +248,7 @@
      public void dumpServerProperties(Path p_177911_) throws IOException {
      }
  
-@@ -1818,6 +_,10 @@
+@@ -1819,6 +_,10 @@
  
      public WorldData getWorldData() {
          return this.worldData;

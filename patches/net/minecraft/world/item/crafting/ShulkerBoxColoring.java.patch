@@ -11,7 +11,7 @@
  
 @@ -43,7 +_,7 @@
  
-     public ItemStack assemble(CraftingContainer p_44322_, RegistryAccess p_266985_) {
+     public ItemStack assemble(CraftingContainer p_44322_, HolderLookup.Provider p_335717_) {
          ItemStack itemstack = ItemStack.EMPTY;
 -        DyeItem dyeitem = (DyeItem)Items.WHITE_DYE;
 +        net.minecraft.world.item.DyeColor dyecolor = net.minecraft.world.item.DyeColor.WHITE;

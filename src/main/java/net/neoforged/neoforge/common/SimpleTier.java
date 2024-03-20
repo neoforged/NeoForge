@@ -15,24 +15,20 @@ import net.minecraft.world.level.block.Block;
  * Helper class to define a custom tier
  */
 public final class SimpleTier implements Tier {
-    private final int level;
+    private final TagKey<Block> incorrectBlocksForDrops;
     private final int uses;
     private final float speed;
     private final float attackDamageBonus;
     private final int enchantmentValue;
-
-    private final TagKey<Block> tag;
-
     private final Supplier<Ingredient> repairIngredient;
 
-    public SimpleTier(int level, int uses, float speed, float attackDamageBonus, int enchantmentValue,
-            TagKey<Block> tag, Supplier<Ingredient> repairIngredient) {
-        this.level = level;
+    public SimpleTier(TagKey<Block> incorrectBlocksForDrops, int uses, float speed, float attackDamageBonus, int enchantmentValue,
+            Supplier<Ingredient> repairIngredient) {
+        this.incorrectBlocksForDrops = incorrectBlocksForDrops;
         this.uses = uses;
         this.speed = speed;
         this.attackDamageBonus = attackDamageBonus;
         this.enchantmentValue = enchantmentValue;
-        this.tag = tag;
         this.repairIngredient = repairIngredient;
     }
 
@@ -52,17 +48,13 @@ public final class SimpleTier implements Tier {
     }
 
     @Override
-    public int getLevel() {
-        return this.level;
+    public TagKey<Block> getIncorrectBlocksForDrops() {
+        return incorrectBlocksForDrops;
     }
 
     @Override
     public int getEnchantmentValue() {
         return this.enchantmentValue;
-    }
-
-    public TagKey<Block> getTag() {
-        return this.tag;
     }
 
     @Override
@@ -73,12 +65,11 @@ public final class SimpleTier implements Tier {
     @Override
     public String toString() {
         return "SimpleTier[" +
-                "level=" + level + ", " +
+                "incorrectBlocksForDrops=" + incorrectBlocksForDrops + ", " +
                 "uses=" + uses + ", " +
                 "speed=" + speed + ", " +
                 "attackDamageBonus=" + attackDamageBonus + ", " +
                 "enchantmentValue=" + enchantmentValue + ", " +
-                "tag=" + tag + ", " +
                 "repairIngredient=" + repairIngredient + ']';
     }
 }

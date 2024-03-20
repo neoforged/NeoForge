@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/saveddata/maps/MapDecoration.java
 +++ b/net/minecraft/world/level/saveddata/maps/MapDecoration.java
-@@ -13,7 +_,7 @@
- import net.minecraft.util.StringRepresentable;
- import net.minecraft.world.level.material.MapColor;
+@@ -9,7 +_,7 @@
+ import net.minecraft.network.codec.StreamCodec;
+ import net.minecraft.resources.ResourceLocation;
  
--public record MapDecoration(MapDecoration.Type type, byte x, byte y, byte rot, Optional<Component> name) {
-+public record MapDecoration(MapDecoration.Type type, byte x, byte y, byte rot, Optional<Component> name) { // Porting 1.20.5 this is synced now reevaluate shouldRenderForIndex
+-public record MapDecoration(Holder<MapDecorationType> type, byte x, byte y, byte rot, Optional<Component> name) {
++public record MapDecoration(Holder<MapDecorationType> type, byte x, byte y, byte rot, Optional<Component> name) {  // Porting 1.20.5 this is synced now reevaluate shouldRenderForIndex
      public static final StreamCodec<RegistryFriendlyByteBuf, MapDecoration> STREAM_CODEC = StreamCodec.composite(
-         MapDecoration.Type.STREAM_CODEC,
+         MapDecorationType.STREAM_CODEC,
          MapDecoration::type,

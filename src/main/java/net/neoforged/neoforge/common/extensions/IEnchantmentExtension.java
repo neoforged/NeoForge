@@ -38,6 +38,6 @@ public interface IEnchantmentExtension {
      * @return whether item variants of this enchantment can be added to a given creative tab with the allowed categories
      */
     default boolean allowedInCreativeTab(Item book, Set<TagKey<Item>> allowedCategories) {
-        return self().isAllowedOnBooks() && allowedCategories.contains(self().getMatch());
+        return self().isAllowedOnBooks() && allowedCategories.contains(self().getSupportedItems());
     }
 }

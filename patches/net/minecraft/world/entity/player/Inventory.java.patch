@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -134,7 +_,7 @@
+@@ -133,7 +_,7 @@
  
          for(int k = 0; k < 9; ++k) {
              int l = (this.selected + k) % 9;
@@ -9,7 +9,7 @@
                  return l;
              }
          }
-@@ -222,13 +_,18 @@
+@@ -214,13 +_,18 @@
      }
  
      public void tick() {
@@ -29,7 +29,7 @@
      }
  
      public boolean add(ItemStack p_36055_) {
-@@ -276,6 +_,8 @@
+@@ -268,6 +_,8 @@
              } catch (Throwable throwable) {
                  CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");

@@ -1,17 +1,20 @@
 --- a/net/minecraft/world/entity/animal/Wolf.java
 +++ b/net/minecraft/world/entity/animal/Wolf.java
-@@ -415,8 +_,9 @@
+@@ -422,10 +_,11 @@
          if (!this.level().isClientSide || this.isBaby() && this.isFood(itemstack)) {
              if (this.isTame()) {
                  if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
-+                    this.heal(2.0F * itemstack.getFoodProperties(this).getNutrition());
-                     itemstack.consume(1, p_30412_);
--                    this.heal(2.0F * (float)item.getFoodProperties().getNutrition());
+-                    itemstack.consume(1, p_30412_);
+-                    FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
++                    FoodProperties foodproperties = itemstack.getFoodProperties(this);
+                     float f = foodproperties != null ? (float)foodproperties.nutrition() : 1.0F;
+                     this.heal(2.0F * f);
++                    itemstack.consume(1, p_30412_);
 +                    this.gameEvent(GameEvent.EAT); // Neo: add EAT game event
                      return InteractionResult.sidedSuccess(this.level().isClientSide());
                  } else {
                      if (item instanceof DyeItem dyeitem && this.isOwnedBy(p_30412_)) {
-@@ -482,7 +_,7 @@
+@@ -491,7 +_,7 @@
      }
  
      private void tryToTame(Player p_333736_) {
@@ -20,12 +23,3 @@
              this.tame(p_333736_);
              this.navigation.stop();
              this.setTarget(null);
-@@ -521,7 +_,7 @@
-     @Override
-     public boolean isFood(ItemStack p_30440_) {
-         Item item = p_30440_.getItem();
--        return item.isEdible() && item.getFoodProperties().isMeat();
-+        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
-     }
- 
-     @Override

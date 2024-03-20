@@ -133,11 +133,12 @@ public class TierSortingRegistry {
         if (!isTierSorted(tier))
             return isCorrectTierVanilla(tier, state);
 
-        for (int x = sortedTiers.indexOf(tier) + 1; x < sortedTiers.size(); x++) {
-            TagKey<Block> tag = sortedTiers.get(x).getTag();
-            if (tag != null && state.is(tag))
-                return false;
-        }
+        // TODO 1.20.5: fix this
+//        for (int x = sortedTiers.indexOf(tier) + 1; x < sortedTiers.size(); x++) {
+//            TagKey<Block> tag = sortedTiers.get(x).getTag();
+//            if (tag != null && state.is(tag))
+//                return false;
+//        }
         return true;
     }
 
@@ -158,14 +159,15 @@ public class TierSortingRegistry {
      * Fallback for when a tier isn't in the registry, copy of the logic in {@link DiggerItem#isCorrectToolForDrops}
      */
     private static boolean isCorrectTierVanilla(Tier tier, BlockState state) {
-        int i = tier.getLevel();
-        if (i < 3 && state.is(BlockTags.NEEDS_DIAMOND_TOOL)) {
-            return false;
-        } else if (i < 2 && state.is(BlockTags.NEEDS_IRON_TOOL)) {
-            return false;
-        } else if (i < 1 && state.is(BlockTags.NEEDS_STONE_TOOL)) {
-            return false;
-        }
+        // TODO 1.20.5: fix this
+//        int i = tier.getLevel();
+//        if (i < 3 && state.is(BlockTags.NEEDS_DIAMOND_TOOL)) {
+//            return false;
+//        } else if (i < 2 && state.is(BlockTags.NEEDS_IRON_TOOL)) {
+//            return false;
+//        } else if (i < 1 && state.is(BlockTags.NEEDS_STONE_TOOL)) {
+//            return false;
+//        }
         return true;
     }
 

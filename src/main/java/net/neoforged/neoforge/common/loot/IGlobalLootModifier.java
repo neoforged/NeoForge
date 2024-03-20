@@ -29,7 +29,7 @@ public interface IGlobalLootModifier {
             .dispatch(IGlobalLootModifier::codec, Function.identity());
     Codec<Optional<WithConditions<IGlobalLootModifier>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC);
 
-    Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemConditions.CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
+    Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemConditions.DIRECT_CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
 
     /**
      * Applies the modifier to the list of generated loot. This function needs to be responsible for

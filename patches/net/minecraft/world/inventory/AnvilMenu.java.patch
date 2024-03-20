@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -78,6 +_,8 @@
+@@ -79,6 +_,8 @@
              p_150474_.giveExperienceLevels(-this.cost.get());
          }
  
@@ -9,7 +9,7 @@
          this.inputSlots.setItem(0, ItemStack.EMPTY);
          if (this.repairItemCountCost > 0) {
              ItemStack itemstack = this.inputSlots.getItem(1);
-@@ -94,7 +_,7 @@
+@@ -95,7 +_,7 @@
          this.cost.set(0);
          this.access.execute((p_150479_, p_150480_) -> {
              BlockState blockstate = p_150479_.getBlockState(p_150480_);
@@ -18,9 +18,9 @@
                  BlockState blockstate1 = AnvilBlock.damage(blockstate);
                  if (blockstate1 == null) {
                      p_150479_.removeBlock(p_150480_, false);
-@@ -123,8 +_,10 @@
-             j += itemstack.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0))
-                 + itemstack2.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0));
+@@ -124,8 +_,10 @@
+             j += (long)itemstack.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0)).intValue()
+                 + (long)itemstack2.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0)).intValue();
              this.repairItemCountCost = 0;
 +            boolean flag = false;
 +            if (!net.neoforged.neoforge.common.CommonHooks.onAnvilChange(this, itemstack, itemstack2, resultSlots, itemName, j, this.player)) return;
@@ -30,21 +30,24 @@
                  if (itemstack1.isDamageableItem() && itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
                      int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
                      if (l2 <= 0) {
-@@ -233,6 +_,7 @@
+@@ -228,6 +_,7 @@
                  i += k;
                  itemstack1.remove(DataComponents.CUSTOM_NAME);
              }
 +            if (flag && !itemstack1.isBookEnchantable(itemstack2)) itemstack1 = ItemStack.EMPTY;
  
-             this.cost.set(j + i);
-             if (i <= 0) {
-@@ -301,5 +_,9 @@
+             int k2 = (int)Mth.clamp(j + (long)i, 0L, 2147483647L);
+             this.cost.set(k2);
+@@ -297,5 +_,12 @@
  
      public int getCost() {
          return this.cost.get();
 +    }
 +
-+    public void setMaximumCost(int value) {
-+        this.cost.set(value);
++    /**
++     * Neo: Sets the cost. Will be clamped to an integer.
++     */
++    public void setMaximumCost(long value) {
++        this.cost.set((int)Mth.clamp(value, 0L, Integer.MAX_VALUE));
      }
  }
