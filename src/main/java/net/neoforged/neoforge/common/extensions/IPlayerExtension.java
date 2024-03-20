@@ -129,7 +129,8 @@ public interface IPlayerExtension {
     }
 
     /**
-     * Determine whether a player is allowed creative flight via game mode or attribute.<br>
+     * Determine whether a player is allowed creative flight via game mode or attribute.
+     * <p>
      * Modders are discouraged from setting {@link Abilities#mayfly} directly.
      *
      * @return true when creative flight is available
