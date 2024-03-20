@@ -7,8 +7,10 @@ package net.neoforged.neoforge.fluids.capability.templates;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.fluids.FluidResource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.ResourceAmount;
 
 /**
  * FluidHandlerItemStack is a template capability provider for ItemStacks.
@@ -38,12 +40,12 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     public FluidStack getFluid() {
-        // TODO 1.20.5: should not need a copy if it's immutable.
-        return container.getOrDefault(NeoForgeMod.FLUID_STACK_COMPONENT.get(), FluidStack.EMPTY).copy();
+        var component = container.get(NeoForgeMod.FLUID_STACK_COMPONENT.get());
+        return component == null ? FluidStack.EMPTY : component.resource().toStack(component.amount());
     }
 
     protected void setFluid(FluidStack fluid) {
-        container.set(NeoForgeMod.FLUID_STACK_COMPONENT.get(), fluid);
+        container.set(NeoForgeMod.FLUID_STACK_COMPONENT.get(), new ResourceAmount<>(FluidResource.of(fluid), fluid.getAmount()));
     }
 
     @Override

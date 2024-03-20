@@ -149,7 +149,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidResource;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -172,6 +172,7 @@ import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
+import net.neoforged.neoforge.transfer.ResourceAmount;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -209,12 +210,11 @@ public class NeoForgeMod {
      * <p><b>This component should only be used on item stacks from your mod.
      * Otherwise, do not query it or assume it exists.
      * Inter-mod fluid container interactions should happen using {@link Capabilities.FluidHandler#ITEM}.</b>
-     *
-     * <p><b>Do not mutate the returned fluid stack.</b>
-     *
-     * TODO 1.20.5: replace by immutable FluidStack version/wrapper.
      */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FluidStack>> FLUID_STACK_COMPONENT = DATA_COMPONENTS.register("fluid_stack", () -> DataComponentType.<FluidStack>builder().persistent(FluidStack.CODEC).networkSynchronized(FluidStack.STREAM_CODEC).build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceAmount<FluidResource>>> FLUID_STACK_COMPONENT = DATA_COMPONENTS.register("fluid_stack", () -> DataComponentType.<ResourceAmount<FluidResource>>builder()
+            .persistent(FluidResource.OPTIONAL_WITH_AMOUNT_CODEC)
+            .networkSynchronized(ResourceAmount.streamCodec(FluidResource.OPTIONAL_STREAM_CODEC))
+            .build());
 
     /**
      * Stock loot modifier type that adds loot from a subtable to the final loot.

@@ -38,6 +38,8 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.items.ItemResource;
+import net.neoforged.neoforge.transfer.ResourceAmount;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -491,5 +493,12 @@ public interface IItemStackExtension {
     @Nullable
     default <T> T getCapability(ItemCapability<T, Void> capability) {
         return capability.getCapability(self(), null);
+    }
+
+    /**
+     * Creates a new {@link ResourceAmount} that represents this item stack.
+     */
+    default ResourceAmount<ItemResource> immutable() {
+        return new ResourceAmount<>(ItemResource.of(self()), self().getCount());
     }
 }
