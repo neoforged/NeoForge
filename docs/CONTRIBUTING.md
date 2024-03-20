@@ -13,7 +13,7 @@ Contributing to NeoForge
 1. Fork the repository
 2. Check out your fork
 3. Make a branch
-4. Run `gradlew setup` from the project root
+4. Run `gradlew :neoforge:setup` from the project root
 5. Import project into your IDE (IntelliJ/Eclipse) or Reload Gradle Project
 6. Make your changes, modify the decompiled Minecraft source-code as needed
 7. Test your changes
