@@ -189,7 +189,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
                                         FeatureFlags.DEFAULT_FLAGS,
                                         List.of(),
                                         true),
-                                new PackSelectionConfig(true, Pack.Position.BOTTOM, true))));
+                                new PackSelectionConfig(true, Pack.Position.TOP, true))));
             }
         });
         return newName;
