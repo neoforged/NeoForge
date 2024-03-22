@@ -56,7 +56,7 @@ public class ClientModLoader {
         createRunnableWithCatch(() -> ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ImmediateWindowHandler::renderTick)).run();
         if (error == null) {
             ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES);
-            DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getDataPackNames());
+            DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames(PackType.SERVER_DATA));
             mcResourceManager.registerReloadListener(ClientModLoader::onResourceReload);
             mcResourceManager.registerReloadListener(BrandingControl.resourceManagerReloadListener());
         }

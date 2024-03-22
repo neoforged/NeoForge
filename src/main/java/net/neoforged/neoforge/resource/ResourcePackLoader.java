@@ -94,7 +94,7 @@ public class ResourcePackLoader {
         for (Map.Entry<IModFile, Pack.ResourcesSupplier> e : modResourcePacks.entrySet()) {
             IModInfo mod = e.getKey().getModInfos().get(0);
             if ("minecraft".equals(mod.getModId())) continue; // skip the minecraft "mod"
-            final String name = "mod:" + mod.getModId();
+            final String name = "mod/" + mod.getModId();
             final String packName = mod.getOwningFile().getFile().getFileName();
 
             try {
@@ -200,29 +200,27 @@ public class ResourcePackLoader {
         return new PathPackResources.PathResourcesSupplier(mf.getFile().getSecureJar().getRootPath(), true);
     }
 
-    public static List<String> getDataPackNames() {
-        List<String> ids = new ArrayList<>(ModList.get().getModFiles().stream().filter(IModFileInfo::showAsDataPack)
+    public static List<String> getPackNames(PackType packType) {
+        List<String> ids = new ArrayList<>();
+        ids.add(packType == PackType.CLIENT_RESOURCES ? MOD_RESOURCES_ID : MOD_DATA_ID);
+        ids.addAll(ModList.get().getModFiles().stream().filter(packType == PackType.CLIENT_RESOURCES ? IModFileInfo::showAsResourcePack : IModFileInfo::showAsDataPack)
+                .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
                 .map(IModFileInfo::getFile)
-                .map(mf -> "mod:" + mf.getModInfos().get(0).getModId()).filter(n -> !n.equals("mod:minecraft"))
+                .map(mf -> "mod/" + mf.getModInfos().get(0).getModId())
                 .toList());
-        ids.add(MOD_DATA_ID);
         return ids;
+    }
+
+
+    @Deprecated(forRemoval = true, since = "1.20.4")
+    public static List<String> getDataPackNames() {
+        return getPackNames(PackType.SERVER_DATA);
     }
 
     public static <V> Comparator<Map.Entry<String, V>> getSorter(PackType packType) {
         List<String> order = new ArrayList<>();
         order.add("vanilla");
-        if (packType == PackType.CLIENT_RESOURCES) {
-            order.add(MOD_RESOURCES_ID);
-        } else {
-            order.add(MOD_DATA_ID);
-        }
-
-        ModList.get().getModFiles().stream()
-                .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
-                .map(e -> e.getMods().get(0).getModId())
-                .map(e -> "mod:" + e)
-                .forEach(order::add);
+        order.addAll(getPackNames(packType));
 
         final Object2IntMap<String> order_f = new Object2IntOpenHashMap<>(order.size());
         for (int x = 0; x < order.size(); x++)

@@ -181,7 +181,7 @@
          RegistryAccess.Frozen registryaccess$frozen = this.registries.getAccessForLoading(RegistryLayer.RELOADABLE);
          CompletableFuture<Void> completablefuture = CompletableFuture.<ImmutableList>supplyAsync(
 -                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
-+                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).flatMap(Pack::streamSelfAndChildren).map(Pack::open).collect(ImmutableList.toImmutableList()),
++                () -> this.packRepository.rebuildSelected(p_129862_).stream().map(Pack::open).collect(ImmutableList.toImmutableList()),
                  this
              )
              .thenCompose(
@@ -207,6 +207,15 @@
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
+@@ -1446,7 +_,7 @@
+ 
+             for(Pack pack : p_248681_.getAvailablePacks()) {
+                 String s1 = pack.getId();
+-                if (!p_248920_.getDisabled().contains(s1)) {
++                if (!p_248920_.getDisabled().contains(s1) && !pack.isHidden()) {
+                     FeatureFlagSet featureflagset = pack.getRequestedFeatures();
+                     boolean flag = set.contains(s1);
+                     if (!flag && pack.getPackSource().shouldAddAutomatically()) {
 @@ -1616,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);
