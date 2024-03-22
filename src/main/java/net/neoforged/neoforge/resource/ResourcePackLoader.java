@@ -211,7 +211,6 @@ public class ResourcePackLoader {
         return ids;
     }
 
-
     @Deprecated(forRemoval = true, since = "1.20.4")
     public static List<String> getDataPackNames() {
         return getPackNames(PackType.SERVER_DATA);
