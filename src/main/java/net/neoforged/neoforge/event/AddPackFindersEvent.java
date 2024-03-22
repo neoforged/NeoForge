@@ -29,8 +29,8 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
      * Adds a new source to the list of pack finders.
      *
      * <p>Sources are processed in the order that they are added to the event.
-     * Use {@link Pack.Position#TOP} to add low priority packs,
-     * and {@link Pack.Position#BOTTOM} to add high priority packs.
+     * Use {@link Pack.Position#TOP} to add high priority packs,
+     * and {@link Pack.Position#BOTTOM} to add low priority packs.
      * 
      * @param source the pack finder
      */
