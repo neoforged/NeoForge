@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -241,7 +242,7 @@ public class ResourcePackLoader {
         };
     }
 
-    public static void reorderNewlyDiscoveredPacks(Set<String> set, List<String> old, PackRepository packRepository) {
+    public static void reorderNewlyDiscoveredPacks(Collection<String> set, Collection<String> old, PackRepository packRepository) {
         Set<String> added = Sets.newLinkedHashSet(set);
         Set<String> oldSet = Sets.newLinkedHashSet(old);
         set.clear();
