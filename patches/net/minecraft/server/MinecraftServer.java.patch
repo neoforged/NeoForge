@@ -207,15 +207,6 @@
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
-@@ -1446,7 +_,7 @@
- 
-             for(Pack pack : p_248681_.getAvailablePacks()) {
-                 String s1 = pack.getId();
--                if (!p_248920_.getDisabled().contains(s1)) {
-+                if (!p_248920_.getDisabled().contains(s1) && !pack.isHidden()) {
-                     FeatureFlagSet featureflagset = pack.getRequestedFeatures();
-                     boolean flag = set.contains(s1);
-                     if (!flag && pack.getPackSource().shouldAddAutomatically()) {
 @@ -1478,6 +_,8 @@
                  set.add("vanilla");
              }
