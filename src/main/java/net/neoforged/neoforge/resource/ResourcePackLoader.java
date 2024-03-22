@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.resource;
 
+import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -237,5 +239,21 @@ public class ResourcePackLoader {
             if (i2 == -1) return -1;
             return i2 - i1;
         };
+    }
+
+    public static void reorderNewlyDiscoveredPacks(Set<String> set, List<String> old, PackRepository packRepository) {
+        Set<String> added = Sets.newLinkedHashSet(set);
+        Set<String> oldSet = Sets.newLinkedHashSet(old);
+        set.clear();
+        List<String> newOrder = new ArrayList<>();
+        for (String s : added) {
+            Pack pack = packRepository.getPack(s);
+            if (!oldSet.contains(s) && pack != null && pack.getDefaultPosition() == Pack.Position.BOTTOM) {
+                newOrder.add(0, s);
+            } else {
+                newOrder.add(s);
+            }
+        }
+        set.addAll(newOrder);
     }
 }

@@ -216,6 +216,15 @@
                      FeatureFlagSet featureflagset = pack.getRequestedFeatures();
                      boolean flag = set.contains(s1);
                      if (!flag && pack.getPackSource().shouldAddAutomatically()) {
+@@ -1478,6 +_,8 @@
+                 set.add("vanilla");
+             }
+ 
++            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, p_248920_.getEnabled(), p_248681_);
++
+             p_248681_.setSelected(set);
+             DataPackConfig datapackconfig = getSelectedPacks(p_248681_);
+             FeatureFlagSet featureflagset1 = p_248681_.getRequestedFeatureFlags();
 @@ -1616,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);

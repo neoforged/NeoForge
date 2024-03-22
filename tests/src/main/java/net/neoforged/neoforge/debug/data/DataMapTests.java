@@ -64,7 +64,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
             protected void gather() {
                 builder(someData)
@@ -82,7 +82,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather() {
                 builder(someData)
@@ -144,7 +144,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
             protected void gather() {
                 builder(someData)
@@ -164,7 +164,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather() {
                 builder(someData)
