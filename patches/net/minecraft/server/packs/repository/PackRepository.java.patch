@@ -9,6 +9,22 @@
      }
  
      public void reload() {
+@@ -33,10 +_,13 @@
+     }
+ 
+     private Map<String, Pack> discoverAvailable() {
+-        Map<String, Pack> map = Maps.newTreeMap();
++        // Neo: sort packs within a source by name, between sources according to source order
++        Map<String, Pack> map = Maps.newLinkedHashMap();
+ 
+         for(RepositorySource repositorysource : this.sources) {
+-            repositorysource.loadPacks(p_143903_ -> map.put(p_143903_.getId(), p_143903_));
++            Map<String, Pack> sourceMap = Maps.newTreeMap();
++            repositorysource.loadPacks(p_143903_ -> sourceMap.put(p_143903_.getId(), p_143903_));
++            map.putAll(sourceMap);
+         }
+ 
+         return ImmutableMap.copyOf(map);
 @@ -71,11 +_,12 @@
      }
  

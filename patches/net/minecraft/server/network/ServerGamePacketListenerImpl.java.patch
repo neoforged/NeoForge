@@ -73,6 +73,15 @@
  
              itemstack1.addTagElement("author", StringTag.valueOf(this.player.getName().getString()));
              if (this.player.isTextFilteringEnabled()) {
+@@ -952,7 +_,7 @@
+                                     && !flag
+                                     && this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR
+                                     && !this.server.isFlightAllowed()
+-                                    && !this.player.getAbilities().mayfly
++                                    && !this.player.mayFly()
+                                     && !this.player.hasEffect(MobEffects.LEVITATION)
+                                     && !this.player.isFallFlying()
+                                     && !this.player.isAutoSpinAttack()
 @@ -1028,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {
@@ -146,6 +155,15 @@
                          }
      
                          @Override
+@@ -1688,7 +_,7 @@
+     @Override
+     public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
+         PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
+-        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.getAbilities().mayfly;
++        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.mayFly();
+     }
+ 
+     @Override
 @@ -1745,7 +_,7 @@
              throw new IllegalStateException("Client acknowledged config, but none was requested");
          } else {

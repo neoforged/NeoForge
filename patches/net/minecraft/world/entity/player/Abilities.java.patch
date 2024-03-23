@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/entity/player/Abilities.java
++++ b/net/minecraft/world/entity/player/Abilities.java
+@@ -5,6 +_,10 @@
+ public class Abilities {
+     public boolean invulnerable;
+     public boolean flying;
++    /**
++     * @deprecated Neoforge: use {@link net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly} to read and {@link net.neoforged.neoforge.common.NeoForgeMod#CREATIVE_FLIGHT} Attribute to modify
++     */
++    @Deprecated
+     public boolean mayfly;
+     public boolean instabuild;
+     public boolean mayBuild = true;
