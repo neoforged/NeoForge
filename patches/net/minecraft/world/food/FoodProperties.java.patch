@@ -30,7 +30,7 @@
              FoodProperties.PossibleEffect::probability,
              FoodProperties.PossibleEffect::new
          );
-+        
++
 +        private PossibleEffect(MobEffectInstance effect, float probability) {
 +            this(() -> effect, probability);
 +        }
