@@ -26,15 +26,14 @@
          public static final Codec<FoodProperties.PossibleEffect> CODEC = RecordCodecBuilder.create(
              p_336029_ -> p_336029_.group(
                          MobEffectInstance.CODEC.fieldOf("effect").forGetter(FoodProperties.PossibleEffect::effect),
-@@ -94,9 +_,13 @@
-             FoodProperties.PossibleEffect::probability,
+@@ -95,8 +_,12 @@
              FoodProperties.PossibleEffect::new
          );
-+
+ 
 +        private PossibleEffect(MobEffectInstance effect, float probability) {
 +            this(() -> effect, probability);
 +        }
- 
++
          public MobEffectInstance effect() {
 -            return new MobEffectInstance(this.effect);
 +            return new MobEffectInstance(this.effectSupplier.get());
