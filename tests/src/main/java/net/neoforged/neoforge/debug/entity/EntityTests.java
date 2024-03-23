@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -98,10 +99,10 @@ public class EntityTests {
         protected void addAdditionalSaveData(CompoundTag tag) {}
 
         @Override
-        public void writeSpawnData(FriendlyByteBuf buffer) {}
+        public void writeSpawnData(RegistryFriendlyByteBuf buffer) {}
 
         @Override
-        public void readSpawnData(FriendlyByteBuf additionalData) {}
+        public void readSpawnData(RegistryFriendlyByteBuf additionalData) {}
     }
 
     public static final class AdaptedSpawnEntity extends Entity {

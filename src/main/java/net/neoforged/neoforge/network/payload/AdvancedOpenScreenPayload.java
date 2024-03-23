@@ -5,9 +5,7 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import java.util.function.Consumer;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -16,7 +14,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.ApiStatus;
@@ -43,10 +40,6 @@ public record AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Comp
             NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,
             AdvancedOpenScreenPayload::additionalData,
             AdvancedOpenScreenPayload::new);
-    public AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, Consumer<FriendlyByteBuf> dataWriter) {
-        this(windowId, menuType, name, FriendlyByteBufUtil.writeCustomData(dataWriter));
-    }
-
     @Override
     public Type<AdvancedOpenScreenPayload> type() {
         return TYPE;

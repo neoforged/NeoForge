@@ -106,11 +106,11 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider p_9033_) {
-+        return openMenu(p_9033_, (java.util.function.Consumer<net.minecraft.network.FriendlyByteBuf>) null);
++        return openMenu(p_9033_, (java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf>) null);
 +    }
 +
 +    @Override
-+    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable java.util.function.Consumer<net.minecraft.network.FriendlyByteBuf> extraDataWriter) {
++    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf> extraDataWriter) {
          if (p_9033_ == null) {
              return OptionalInt.empty();
          } else {
@@ -131,7 +131,7 @@
                      .send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
 +                } else {
 +                    this.connection
-+                        .send(new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName(), extraDataWriter));
++                        .send(new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName(), net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(extraDataWriter, registryAccess())));
 +                }
                  this.initMenu(abstractcontainermenu);
                  this.containerMenu = abstractcontainermenu;
