@@ -42,7 +42,7 @@ public record AdvancedAddEntityPayload(int entityId, byte[] customPayload) imple
             return new byte[0];
         }
 
-        return FriendlyByteBufUtil.writeCustomData(additionalSpawnData::writeSpawnData);
+        return FriendlyByteBufUtil.writeCustomData(additionalSpawnData::writeSpawnData, entity.registryAccess());
     }
 
     @Override

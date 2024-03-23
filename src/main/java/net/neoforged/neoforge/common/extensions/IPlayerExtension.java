@@ -8,7 +8,7 @@ package net.neoforged.neoforge.common.extensions;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -62,7 +62,7 @@ public interface IPlayerExtension {
      * @param extraDataWriter Consumer to write any additional data the GUI needs
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
-    default OptionalInt openMenu(MenuProvider menuProvider, Consumer<FriendlyByteBuf> extraDataWriter) {
+    default OptionalInt openMenu(MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
     }
 }
