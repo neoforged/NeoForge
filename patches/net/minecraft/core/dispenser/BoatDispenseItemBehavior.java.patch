@@ -4,7 +4,7 @@
          double d2 = vec3.y() + (double)((float)direction.getStepY() * 1.125F);
          double d3 = vec3.z() + (double)direction.getStepZ() * d0;
          BlockPos blockpos = p_302460_.pos().relative(direction);
-+        Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(serverlevel, d0, d1, d2) : new Boat(serverlevel, d0, d1, d2));
++        Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(serverlevel, d1, d2, d3) : new Boat(serverlevel, d1, d2, d3));
 +        EntityType.<Boat>createDefaultStackConfig(serverlevel, p_123376_, null).accept(boat);
 +        boat.setVariant(this.type);
 +        boat.setYRot(direction.toYRot());

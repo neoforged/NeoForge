@@ -118,6 +118,10 @@ public class NeoForgeEventHandler {
                 if (!player.connection.isConnected(RegistryDataMapSyncPayload.ID)) {
                     return;
                 }
+                if (player.connection.getConnection().isMemoryConnection()) {
+                    // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
+                    return;
+                }
                 final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
                 if (playerMaps == null) return; // Skip gametest players for instance
                 handleSync(player, regOpt.get(), playerMaps.getOrDefault(registry, List.of()));

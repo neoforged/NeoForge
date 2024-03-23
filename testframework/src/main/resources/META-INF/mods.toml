@@ -3,6 +3,6 @@ loaderVersion="[1,)"
 license="LGPL v2.1"
 [[mods]]
 modId="testframework"
-version="1"
+version="${version}"
 displayName="Test Framework"
 description="A test framework"

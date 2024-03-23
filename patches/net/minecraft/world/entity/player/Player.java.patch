@@ -20,7 +20,7 @@
  
      public Player(Level p_250508_, BlockPos p_250289_, float p_251702_, GameProfile p_252153_) {
          super(EntityType.PLAYER, p_250508_);
-@@ -206,7 +_,10 @@
+@@ -206,7 +_,11 @@
              .add(Attributes.ATTACK_DAMAGE, 1.0)
              .add(Attributes.MOVEMENT_SPEED, 0.1F)
              .add(Attributes.ATTACK_SPEED)
@@ -28,7 +28,8 @@
 +            .add(Attributes.LUCK)
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.BLOCK_REACH.value())
 +            .add(Attributes.ATTACK_KNOCKBACK)
-+            .add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_REACH.value());
++            .add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_REACH.value())
++            .add(net.neoforged.neoforge.common.NeoForgeMod.CREATIVE_FLIGHT.value());
      }
  
      @Override
@@ -320,10 +321,12 @@
          } else {
              boolean flag = block.isPossibleToRespawnInThis(blockstate);
              BlockState blockstate1 = p_36131_.getBlockState(p_36132_.above());
-@@ -1501,6 +_,7 @@
+@@ -1500,7 +_,8 @@
+ 
      @Override
      public boolean causeFallDamage(float p_150093_, float p_150094_, DamageSource p_150095_) {
-         if (this.abilities.mayfly) {
+-        if (this.abilities.mayfly) {
++        if (this.mayFly()) {
 +            net.neoforged.neoforge.event.EventHooks.onPlayerFall(this, p_150093_, p_150093_);
              return false;
          } else {
