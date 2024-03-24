@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class CraftingHelper {
-
     /**
      * Codec that accepts either object-form NBT via {@link CompoundTag#CODEC} or stringified NBT via {@link TagParser#AS_CODEC}.
      * <p>
