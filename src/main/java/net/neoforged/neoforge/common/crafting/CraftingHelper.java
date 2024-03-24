@@ -22,7 +22,13 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class CraftingHelper {
-    public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC);
+
+    /**
+     * Codec that accepts either object-form NBT via {@link CompoundTag#CODEC} or stringified NBT via {@link TagParser#AS_CODEC}.
+     * <p>
+     * Always outputs object-form NBT.
+     */
+    public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(CompoundTag.CODEC, TagParser.AS_CODEC);
 
     @ApiStatus.Internal
     public static Codec<ItemStack> smeltingResultCodec() {
