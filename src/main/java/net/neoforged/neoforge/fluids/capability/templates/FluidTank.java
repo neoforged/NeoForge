@@ -66,7 +66,9 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     }
 
     public CompoundTag writeToNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-        fluid.save(lookupProvider, nbt);
+        if (!fluid.isEmpty()) {
+            fluid.save(lookupProvider, nbt);
+        }
 
         return nbt;
     }
