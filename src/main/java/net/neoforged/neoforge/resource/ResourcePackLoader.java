@@ -219,6 +219,7 @@ public class ResourcePackLoader {
         return getPackNames(PackType.SERVER_DATA);
     }
 
+    @Deprecated(forRemoval = true, since = "1.20.4")
     public static <V> Comparator<Map.Entry<String, V>> getSorter(PackType packType) {
         List<String> order = new ArrayList<>();
         order.add("vanilla");
