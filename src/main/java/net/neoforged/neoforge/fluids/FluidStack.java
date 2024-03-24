@@ -66,6 +66,23 @@ public final class FluidStack implements DataComponentHolder {
                             ExtraCodecs.strictOptionalField(DataComponentPatch.CODEC, "components", DataComponentPatch.EMPTY)
                                     .forGetter(stack -> stack.components.asPatch()))
                             .apply(instance, FluidStack::new)));
+
+    /**
+     * A standard codec for fluid stacks that always deserializes with a fixed amount,
+     * and does not accept empty stacks.
+     *
+     * <p>Fluid equivalent of {@link ItemStack#SINGLE_ITEM_CODEC}.
+     */
+    public static Codec<FluidStack> fixedAmountCodec(int amount) {
+        return ExtraCodecs.lazyInitializedCodec(
+                () -> RecordCodecBuilder.create(
+                        instance -> instance.group(
+                                FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::getFluidHolder),
+                                ExtraCodecs.strictOptionalField(DataComponentPatch.CODEC, "components", DataComponentPatch.EMPTY)
+                                        .forGetter(stack -> stack.components.asPatch()))
+                                .apply(instance, (holder, patch) -> new FluidStack(holder, amount, patch))));
+    }
+
     /**
      * A standard codec for fluid stacks that accepts empty stacks, serializing them as {@code {}}.
      */
