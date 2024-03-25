@@ -46,7 +46,6 @@ import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.StringUtils;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
-import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -297,7 +296,7 @@ public class ModListScreen extends Screen {
     private void displayModConfig() {
         if (selected == null) return;
         try {
-            ConfigScreenHandler.getScreenFactoryFor(selected.getInfo()).map(f -> f.apply(this.minecraft, this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
+            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(this.minecraft, this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
         } catch (final Exception e) {
             LOGGER.error("There was a critical issue trying to build the config GUI for {}", selected.getInfo().getModId(), e);
         }
@@ -371,7 +370,7 @@ public class ModListScreen extends Screen {
             return;
         }
         IModInfo selectedMod = selected.getInfo();
-        this.configButton.active = ConfigScreenHandler.getScreenFactoryFor(selectedMod).isPresent();
+        this.configButton.active = IConfigScreenFactory.getForMod(selectedMod).isPresent();
         List<String> lines = new ArrayList<>();
         VersionChecker.CheckResult vercheck = VersionChecker.getResult(selectedMod);
 

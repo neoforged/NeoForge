@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[1,]"
+loaderVersion="[3,]"
 issueTrackerURL="https://github.com/neoforged/NeoForge/issues"
 logoFile="neoforged_logo.png"
 license="LGPL v2.1"
