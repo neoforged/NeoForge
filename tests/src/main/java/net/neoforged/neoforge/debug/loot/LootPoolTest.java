@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.loot;
 
 import java.util.List;
 import java.util.Set;
-
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.gametest.framework.GameTest;
