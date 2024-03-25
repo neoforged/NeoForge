@@ -162,7 +162,6 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(TierSortingRegistry.getReloadListener());
         event.addListener(CreativeModeTabRegistry.getReloadListener());
     }
 

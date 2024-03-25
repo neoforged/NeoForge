@@ -14,7 +14,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
-import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
 import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
@@ -44,7 +43,6 @@ public class ConfigurationInitialization {
         }
 
         //These two can always be registered they detect the listener connection type internally and will skip themselves.
-        event.register(new SyncTierSortingRegistry(event.getListener()));
         event.register(new RegistryDataMapNegotiation(event.getListener()));
     }
 }

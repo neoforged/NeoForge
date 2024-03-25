@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Block;
 /**
  * Helper class to define a custom tier
  */
-public final class SimpleTier implements Tier {
+public class SimpleTier implements Tier {
     private final TagKey<Block> incorrectBlocksForDrops;
     private final int uses;
     private final float speed;
