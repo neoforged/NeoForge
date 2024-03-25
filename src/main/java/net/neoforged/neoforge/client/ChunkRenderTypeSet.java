@@ -8,7 +8,6 @@ package net.neoforged.neoforge.client;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,14 +19,26 @@ import net.minecraft.client.renderer.RenderType;
  * An immutable ordered set (not implementing {@link java.util.Set}) of chunk {@linkplain RenderType render types}.
  * <p>
  * Considerably speeds up lookups and merges of sets of chunk {@linkplain RenderType render types}.
- * Users should cache their instances of this class whenever possible, as instantiating it is cheap, but not free.
+ * Users should cache references to this class whenever possible, as looking up the appropriate instance is cheap,
+ * but not free.
  */
 public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
     private static final List<RenderType> CHUNK_RENDER_TYPES_LIST = RenderType.chunkBufferLayers();
     private static final RenderType[] CHUNK_RENDER_TYPES = CHUNK_RENDER_TYPES_LIST.toArray(new RenderType[0]);
 
+    private static final int POSSIBLE_RENDER_TYPE_COMBINATIONS = (1 << CHUNK_RENDER_TYPES.length);
+    private static final int MASK_ALL = POSSIBLE_RENDER_TYPE_COMBINATIONS - 1;
+
     private static final ChunkRenderTypeSet NONE = new None();
     private static final ChunkRenderTypeSet ALL = new All();
+
+    private static final ChunkRenderTypeSet[] UNIVERSE = Util.make(new ChunkRenderTypeSet[POSSIBLE_RENDER_TYPE_COMBINATIONS], array -> {
+        array[0] = NONE;
+        for (int i = 1; i < (array.length - 1); i++) {
+            array[i] = new ChunkRenderTypeSet(i);
+        }
+        array[MASK_ALL] = ALL;
+    });
 
     public static ChunkRenderTypeSet none() {
         return NONE;
@@ -48,13 +59,13 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
     }
 
     private static ChunkRenderTypeSet of(Iterable<RenderType> renderTypes) {
-        var bits = new BitSet();
+        int mask = 0;
         for (RenderType renderType : renderTypes) {
             int index = renderType.getChunkLayerId();
             Preconditions.checkArgument(index >= 0, "Attempted to create chunk render type set with a non-chunk render type: " + renderType);
-            bits.set(index);
+            mask |= (1 << index);
         }
-        return new ChunkRenderTypeSet(bits);
+        return UNIVERSE[mask];
     }
 
     public static ChunkRenderTypeSet union(ChunkRenderTypeSet... sets) {
@@ -68,10 +79,10 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
     }
 
     public static ChunkRenderTypeSet union(Iterable<ChunkRenderTypeSet> sets) {
-        var bits = new BitSet();
+        int mask = 0;
         for (var set : sets)
-            bits.or(set.bits);
-        return new ChunkRenderTypeSet(bits);
+            mask |= set.mask;
+        return UNIVERSE[mask];
     }
 
     public static ChunkRenderTypeSet intersection(ChunkRenderTypeSet... sets) {
@@ -85,56 +96,47 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
     }
 
     public static ChunkRenderTypeSet intersection(Iterable<ChunkRenderTypeSet> sets) {
-        var bits = new BitSet();
-        bits.set(0, CHUNK_RENDER_TYPES.length);
+        int mask = MASK_ALL; // all render types
         for (var set : sets)
-            bits.and(set.bits);
-        return new ChunkRenderTypeSet(bits);
+            mask &= set.mask;
+        return UNIVERSE[mask];
     }
 
-    private final BitSet bits;
+    private final int mask;
+    private final ImmutableList<RenderType> containedTypes;
 
-    private ChunkRenderTypeSet(BitSet bits) {
-        this.bits = bits;
+    private ChunkRenderTypeSet(int mask) {
+        this.mask = mask;
+        ImmutableList.Builder<RenderType> builder = ImmutableList.builder();
+        while (mask != 0) {
+            int nextId = Integer.numberOfTrailingZeros(mask);
+            mask &= ~(1 << nextId);
+            builder.add(CHUNK_RENDER_TYPES[nextId]);
+        }
+        this.containedTypes = builder.build();
     }
 
     public boolean isEmpty() {
-        return bits.isEmpty();
+        return mask == 0;
     }
 
     public boolean contains(RenderType renderType) {
         int id = renderType.getChunkLayerId();
-        return id >= 0 && bits.get(id);
+        return id >= 0 && (mask & (1 << id)) != 0;
     }
 
     @Override
     public Iterator<RenderType> iterator() {
-        return new IteratorImpl();
+        return this.containedTypes.iterator();
     }
 
     public List<RenderType> asList() {
-        return ImmutableList.copyOf(this);
-    }
-
-    private final class IteratorImpl implements Iterator<RenderType> {
-        private int index = bits.nextSetBit(0);
-
-        @Override
-        public boolean hasNext() {
-            return index >= 0;
-        }
-
-        @Override
-        public RenderType next() {
-            var renderType = CHUNK_RENDER_TYPES[index];
-            index = bits.nextSetBit(index + 1);
-            return renderType;
-        }
+        return this.containedTypes;
     }
 
     private static final class None extends ChunkRenderTypeSet {
         private None() {
-            super(new BitSet());
+            super(0);
         }
 
         @Override
@@ -160,7 +162,7 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
 
     private static final class All extends ChunkRenderTypeSet {
         private All() {
-            super(Util.make(new BitSet(), bits -> bits.set(0, CHUNK_RENDER_TYPES.length)));
+            super(MASK_ALL);
         }
 
         @Override
