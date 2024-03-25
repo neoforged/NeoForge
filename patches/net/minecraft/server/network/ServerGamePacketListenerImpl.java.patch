@@ -69,7 +69,7 @@
              if (compoundtag != null) {
                  itemstack1.setTag(compoundtag.copy());
              }
-+            net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack1);
++            net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack1);
  
              itemstack1.addTagElement("author", StringTag.valueOf(this.player.getName().getString()));
              if (this.player.isTextFilteringEnabled()) {
