@@ -20,12 +20,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
 
 public class CraftingHelper {
-    public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC);
-    @ApiStatus.Internal
-    public static final Codec<ItemStack> SMELTING_RESULT_CODEC = ExtraCodecs
-            .either(ItemStack.SINGLE_ITEM_CODEC, ItemStack.CODEC)
-            .xmap(either -> either.map(Function.identity(), Function.identity()), stack -> stack.getCount() != 1 ? Either.right(stack) : Either.left(stack));
-
     @ApiStatus.Internal
     public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
         var compoundIngredientCodec = ExtraCodecs.lazyInitializedCodec(() -> allowEmpty ? CompoundIngredient.DIRECT_CODEC : CompoundIngredient.DIRECT_CODEC_NONEMPTY);
