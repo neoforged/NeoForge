@@ -4,7 +4,7 @@
     "item": "minecraft:diamond_block"
   },
   "result": {
-    "item": "minecraft:diamond",
+    "id": "minecraft:diamond",
     "count": 9
   },
   "cookingtime": 100
