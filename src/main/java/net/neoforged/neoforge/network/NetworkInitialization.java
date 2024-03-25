@@ -22,8 +22,6 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
-import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
-import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.ClientRegistryManager;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -38,10 +36,6 @@ public class NetworkInitialization {
                 .versioned(NeoForgeVersion.getSpec())
                 .optional();
         registrar
-                .common(
-                        TierSortingRegistryPayload.TYPE,
-                        TierSortingRegistryPayload.STREAM_CODEC,
-                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .common(
                         ConfigFilePayload.TYPE,
                         ConfigFilePayload.STREAM_CODEC,
@@ -59,10 +53,6 @@ public class NetworkInitialization {
                         FrozenRegistrySyncCompletedPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
                                 .server(ServerPayloadHandler.getInstance()::handle))
-                .configuration(
-                        TierSortingRegistrySyncCompletePayload.TYPE,
-                        TierSortingRegistrySyncCompletePayload.STREAM_CODEC,
-                        handlers -> handlers.server(ServerPayloadHandler.getInstance()::handle))
                 .configuration(
                         KnownRegistryDataMapsPayload.TYPE,
                         KnownRegistryDataMapsPayload.STREAM_CODEC,

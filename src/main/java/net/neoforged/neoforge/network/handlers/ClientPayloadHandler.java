@@ -24,7 +24,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -40,7 +39,6 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
-import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -94,10 +92,6 @@ public class ClientPayloadHandler {
 
     public void handle(ConfigFilePayload payload, IPayloadContext context) {
         ConfigSync.INSTANCE.receiveSyncedConfig(payload.contents(), payload.fileName());
-    }
-
-    public void handle(TierSortingRegistryPayload payload, IPayloadContext context) {
-        TierSortingRegistry.handleSync(payload, context);
     }
 
     public void handle(AdvancedAddEntityPayload advancedAddEntityPayload, PlayPayloadContext context) {
