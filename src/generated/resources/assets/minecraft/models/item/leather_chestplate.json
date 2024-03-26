@@ -1,0 +1,53 @@
+{
+  "base": {
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "minecraft:item/leather_chestplate",
+      "layer1": "minecraft:item/leather_chestplate_overlay"
+    }
+  },
+  "loader": "neoforge:trimmable_armor",
+  "trimmed": {
+    "base_asset": "minecraft:trims/items/chestplate_trim",
+    "model": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "minecraft:item/leather_chestplate",
+        "layer1": "minecraft:item/leather_chestplate_overlay"
+      }
+    },
+    "overrides": {
+      "amethyst": {
+        "parent": "minecraft:item/leather_chestplate_amethyst_trim"
+      },
+      "copper": {
+        "parent": "minecraft:item/leather_chestplate_copper_trim"
+      },
+      "diamond": {
+        "parent": "minecraft:item/leather_chestplate_diamond_trim"
+      },
+      "emerald": {
+        "parent": "minecraft:item/leather_chestplate_emerald_trim"
+      },
+      "gold": {
+        "parent": "minecraft:item/leather_chestplate_gold_trim"
+      },
+      "iron": {
+        "parent": "minecraft:item/leather_chestplate_iron_trim"
+      },
+      "lapis": {
+        "parent": "minecraft:item/leather_chestplate_lapis_trim"
+      },
+      "netherite": {
+        "parent": "minecraft:item/leather_chestplate_netherite_trim"
+      },
+      "quartz": {
+        "parent": "minecraft:item/leather_chestplate_quartz_trim"
+      },
+      "redstone": {
+        "parent": "minecraft:item/leather_chestplate_redstone_trim"
+      }
+    },
+    "target_texture": "layer2"
+  }
+}
