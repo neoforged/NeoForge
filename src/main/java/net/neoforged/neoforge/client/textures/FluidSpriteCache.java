@@ -42,6 +42,13 @@ public final class FluidSpriteCache {
         };
     }
 
+    /**
+     * {@return a specified sprite or a missing sprite texture if sprite is not found.
+     */
+    public static TextureAtlasSprite getSprites(ResourceLocation texture) {
+        return textureLookup.getOrDefault(texture, missingSprite);
+    }
+
     @ApiStatus.Internal
     @SuppressWarnings("deprecation")
     public static void reload() {
