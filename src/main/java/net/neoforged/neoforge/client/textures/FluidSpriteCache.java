@@ -43,7 +43,7 @@ public final class FluidSpriteCache {
     }
 
     /**
-     * {@return a specified sprite or a missing sprite texture if sprite is not found.
+     * {@return a specified sprite or a missing sprite texture if sprite is not found}
      */
     public static TextureAtlasSprite getSprite(ResourceLocation texture) {
         return textureLookup.getOrDefault(texture, missingSprite);
