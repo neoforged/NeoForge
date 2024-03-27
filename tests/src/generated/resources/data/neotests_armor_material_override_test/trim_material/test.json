@@ -1,0 +1,10 @@
+{
+  "asset_name": "iron_darker",
+  "description": "Test Material",
+  "ingredient": "minecraft:cobblestone",
+  "item_model_index": 0.125,
+  "override_armor_materials": {
+    "diamond": "gold_darker",
+    "test_material": "gold_darker"
+  }
+}

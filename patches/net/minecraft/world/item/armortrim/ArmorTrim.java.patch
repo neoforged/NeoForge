@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/item/armortrim/ArmorTrim.java
++++ b/net/minecraft/world/item/armortrim/ArmorTrim.java
+@@ -56,8 +_,8 @@
+     }
+ 
+     private String getColorPaletteSuffix(ArmorMaterial p_268122_) {
+-        Map<ArmorMaterials, String> map = this.material.value().overrideArmorMaterials();
+-        return p_268122_ instanceof ArmorMaterials && map.containsKey(p_268122_) ? map.get(p_268122_) : this.material.value().assetName();
++        Map<String, String> map = this.material.value().overrideArmorMaterialNames(); // Neo: Allow using modded ArmorMaterials for overrides
++        return map.containsKey(p_268122_.getName()) ? map.get(p_268122_.getName()) : this.material.value().assetName();
+     }
+ 
+     public boolean hasPatternAndMaterial(Holder<TrimPattern> p_266942_, Holder<TrimMaterial> p_267247_) {
