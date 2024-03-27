@@ -11,13 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
-import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
-import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
-import net.neoforged.neoforge.network.handling.ISynchronizedWorkHandler;
-import net.neoforged.neoforge.network.handling.ITaskCompletedHandler;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 /**
  * Defines a registrar for custom payloads that can be sent over the network.
@@ -88,7 +82,7 @@ public interface IPayloadRegistrar {
      * @return The registrar.
      * @implNote This method will capture all internal errors and wrap them in a {@link RegistrationFailedException}.
      */
-    <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPlayPayloadHandler<T> handler);
+    <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler);
 
     /**
      * Registers a new payload type for the play phase.
@@ -106,7 +100,7 @@ public interface IPayloadRegistrar {
      * @return The registrar.
      * @implNote This method will capture all internal errors and wrap them in a {@link RegistrationFailedException}.
      */
-    <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPlayPayloadHandler<T>>> handler);
+    <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<DirectionalPayloadHandlerBuilder<T>> handler);
 
     /**
      * Registers a new payload type for the configuration phase.
@@ -118,7 +112,7 @@ public interface IPayloadRegistrar {
      * @return The registrar.
      * @implNote This method will capture all internal errors and wrap them in a {@link RegistrationFailedException}.
      */
-    <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IConfigurationPayloadHandler<T> handler);
+    <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler);
 
     /**
      * Registers a new payload type for the configuration phase.
@@ -136,7 +130,7 @@ public interface IPayloadRegistrar {
      * @return The registrar.
      * @implNote This method will capture all internal errors and wrap them in a {@link RegistrationFailedException}.
      */
-    <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IConfigurationPayloadHandler<T>>> handler);
+    <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<DirectionalPayloadHandlerBuilder<T>> handler);
 
     /**
      * Registers a new payload type for all supported phases.
@@ -166,7 +160,7 @@ public interface IPayloadRegistrar {
      * @param handler The handler for the payload.
      * @return The registrar.
      */
-    <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPayloadHandler<T>>> handler);
+    <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<DirectionalPayloadHandlerBuilder<T>> handler);
 
     /**
      * Defines that the payloads registered by this registrar have a specific version associated with them.

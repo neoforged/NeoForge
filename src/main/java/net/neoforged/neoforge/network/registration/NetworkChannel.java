@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.network.registration;
 
 import java.util.Optional;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -16,6 +17,13 @@ import org.jetbrains.annotations.ApiStatus;
  * @param chosenVersion The chosen version, if any.
  */
 @ApiStatus.Internal
-public record NetworkChannel(
-        ResourceLocation id,
-        Optional<String> chosenVersion) {}
+public record NetworkChannel(ResourceLocation id, Optional<String> chosenVersion) {
+    public NetworkChannel(FriendlyByteBuf buf) {
+        this(buf.readResourceLocation(), buf.readOptional(FriendlyByteBuf::readUtf));
+    }
+
+    public static void write(FriendlyByteBuf buf, NetworkChannel channel) {
+        buf.writeResourceLocation(channel.id);
+        buf.writeOptional(channel.chosenVersion, FriendlyByteBuf::writeUtf);
+    }
+}

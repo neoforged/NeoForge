@@ -4,7 +4,7 @@
          }
  
          private void broadcastDataValue(AbstractContainerMenu p_143455_, int p_143456_, int p_143457_) {
-+            if (ServerPlayer.this.connection.isConnected(net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload.ID)) {
++            if (ServerPlayer.this.connection.hasChannel(net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload.ID)) {
 +                ServerPlayer.this.connection.send(new net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload(p_143455_.containerId, p_143456_, p_143457_));
 +                return;
 +            }

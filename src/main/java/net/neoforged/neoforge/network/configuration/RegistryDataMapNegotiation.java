@@ -34,7 +34,7 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
-        if (!listener.isConnected(KnownRegistryDataMapsPayload.ID)) {
+        if (!listener.hasChannel(KnownRegistryDataMapsPayload.ID)) {
             final var mandatory = RegistryManager.getDataMaps().values()
                     .stream()
                     .flatMap(map -> map.values().stream())

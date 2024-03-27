@@ -9,13 +9,15 @@ import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * A record that holds the information needed to describe a registered play payload, its reader and handler.
+ * A record that holds the information needed to describe a registered payload, its reader and handler.
  *
+ * @param id       The id of the payload
  * @param reader   The reader for the payload
  * @param handler  The handler for the payload
  * @param version  The version of the payload
@@ -24,20 +26,20 @@ import org.jetbrains.annotations.ApiStatus;
  * @param <T>      The type of the payload
  */
 @ApiStatus.Internal
-public record PlayRegistration<T extends CustomPacketPayload>(
+public record PayloadRegistration<T extends CustomPacketPayload>(
+        ResourceLocation id,
         FriendlyByteBuf.Reader<T> reader,
-        IPlayPayloadHandler<T> handler,
+        IPayloadHandler<T> handler,
         Optional<String> version,
         Optional<PacketFlow> flow,
-        boolean optional) implements IPlayPayloadHandler<CustomPacketPayload>, FriendlyByteBuf.Reader<CustomPacketPayload> {
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+        boolean optional) implements IPayloadHandler<T>, FriendlyByteBuf.Reader<T> {
     @Override
-    public void handle(CustomPacketPayload payload, PlayPayloadContext context) {
-        ((IPlayPayloadHandler) handler).handle(payload, context);
+    public T apply(FriendlyByteBuf buffer) {
+        return reader.apply(buffer);
     }
 
     @Override
-    public CustomPacketPayload apply(FriendlyByteBuf buffer) {
-        return reader.apply(buffer);
+    public void handle(T payload, IPayloadContext context) {
+        this.handler.handle(payload, context);
     }
 }

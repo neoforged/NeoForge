@@ -10,7 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
@@ -30,11 +30,11 @@ public record ChangeStatusPayload(MutableTestFramework framework, String testId,
         return ID;
     }
 
-    public void handle(PlayPayloadContext context) {
+    public void handle(IPayloadContext context) {
         switch (context.flow().getReceptionSide()) {
             case CLIENT -> framework.tests().setStatus(testId, status);
             case SERVER -> {
-                final Player player = context.player().orElseThrow();
+                final Player player = Objects.requireNonNull(context.sender());
                 if (framework.configuration().isEnabled(Feature.CLIENT_MODIFICATIONS) && Objects.requireNonNull(player.getServer()).getPlayerList().isOp(player.getGameProfile())) {
                     framework.tests().byId(testId).ifPresent(test -> framework.changeStatus(test, status, player));
                 }

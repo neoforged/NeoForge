@@ -29,7 +29,6 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.connection.ConnectionPhase;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -84,7 +83,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                                 splitter.receivedPacket(payload, context);
                             } else {
                                 LOGGER.error("Received split packet without a splitter");
-                                context.replyHandler().disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
+                                context.disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
                             }
                         });
     }
@@ -179,13 +178,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
             } else {
                 receivedBuffers.clear();
                 full.release();
-
-                context.workHandler()
-                        .submitAsync(() -> context.packetHandler().handle(packet))
-                        .exceptionally(throwable -> {
-                            LOGGER.error("Error handling packet", throwable);
-                            return null;
-                        });
+                context.enqueueWork(() -> context.handle(packet));
             }
         }
     }
@@ -208,7 +201,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     }
 
     public static RemoteCompatibility getRemoteCompatibility(Connection manager) {
-        return NetworkRegistry.getInstance().isConnected(manager, ConnectionPhase.ANY, SplitPacketPayload.ID) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
+        return NetworkRegistry.hasChannel(manager, null, SplitPacketPayload.ID) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
     }
 
     public static boolean isRemoteCompatible(Connection manager) {

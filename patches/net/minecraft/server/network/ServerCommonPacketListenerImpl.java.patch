@@ -6,7 +6,7 @@
  
 +    @Override
      public void send(Packet<?> p_295099_, @Nullable PacketSendListener p_296321_) {
-+        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295099_, this)) {
++        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.canSendPacket(p_295099_, this)) {
 +            return;
 +        }
 +

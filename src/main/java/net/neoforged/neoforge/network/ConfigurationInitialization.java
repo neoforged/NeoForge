@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
 import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
-import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
@@ -22,14 +22,14 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class ConfigurationInitialization {
     @SubscribeEvent
-    private static void configureModdedClient(OnGameConfigurationEvent event) {
-        if (event.getListener().isConnected(FrozenRegistrySyncStartPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistryPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistrySyncCompletedPayload.ID)) {
+    private static void configureModdedClient(RegisterConfigurationTasksEvent event) {
+        if (event.getListener().hasChannel(FrozenRegistrySyncStartPayload.ID) &&
+                event.getListener().hasChannel(FrozenRegistryPayload.ID) &&
+                event.getListener().hasChannel(FrozenRegistrySyncCompletedPayload.ID)) {
             event.register(new SyncRegistries());
         }
 
-        if (event.getListener().isConnected(ConfigFilePayload.ID)) {
+        if (event.getListener().hasChannel(ConfigFilePayload.ID)) {
             event.register(new SyncConfig(event.getListener()));
         }
 
