@@ -61,7 +61,6 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
@@ -78,6 +77,7 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -93,7 +93,6 @@ import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event.Result;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
@@ -118,14 +117,13 @@ import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
-import net.neoforged.neoforge.event.entity.living.LivingPackSizeEvent;
+import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
-import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
+import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType;
@@ -207,8 +205,7 @@ public class EventHooks {
     @ApiStatus.Internal
     public static boolean checkSpawnPlacements(EntityType<?> entityType, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random, boolean defaultResult) {
         var event = new SpawnPlacementCheck(entityType, level, spawnType, pos, random, defaultResult);
-        NeoForge.EVENT_BUS.post(event);
-        return event.getResult() == Result.DEFAULT ? defaultResult : event.getResult() == Result.ALLOW;
+        return NeoForge.EVENT_BUS.post(event).getPlacementCheckResult();
     }
 
     /**
@@ -224,26 +221,26 @@ public class EventHooks {
     public static boolean checkSpawnPosition(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType) {
         var event = new PositionCheck(mob, level, spawnType, null);
         NeoForge.EVENT_BUS.post(event);
-        if (event.getResult() == Result.DEFAULT) {
+        if (event.getResult() == PositionCheck.Result.DEFAULT) {
             return mob.checkSpawnRules(level, spawnType) && mob.checkSpawnObstruction(level);
         }
-        return event.getResult() == Result.ALLOW;
+        return event.getResult() == PositionCheck.Result.SUCCEED;
     }
 
     /**
-     * Specialized variant of {@link #checkSpawnPosition} for spawners, as they have slightly different checks.
+     * Specialized variant of {@link #checkSpawnPosition} for spawners, as they have slightly different checks, and pass through the {@link BaseSpawner} to the event.
      * 
-     * @see #CheckSpawnPosition
+     * @see #checkSpawnPosition(Mob, ServerLevelAccessor, MobSpawnType)
      * @implNote See in-line comments about custom spawn rules.
      */
     public static boolean checkSpawnPositionSpawner(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, SpawnData spawnData, BaseSpawner spawner) {
-        var event = new PositionCheck(mob, level, spawnType, null);
+        var event = new PositionCheck(mob, level, spawnType, spawner);
         NeoForge.EVENT_BUS.post(event);
-        if (event.getResult() == Result.DEFAULT) {
+        if (event.getResult() == PositionCheck.Result.DEFAULT) {
             // Spawners do not evaluate Mob#checkSpawnRules if any custom rules are present. This is despite the fact that these two methods do not check the same things.
             return (spawnData.getCustomSpawnRules().isPresent() || mob.checkSpawnRules(level, spawnType)) && mob.checkSpawnObstruction(level);
         }
-        return event.getResult() == Result.ALLOW;
+        return event.getResult() == PositionCheck.Result.SUCCEED;
     }
 
     /**
@@ -318,10 +315,23 @@ public class EventHooks {
         return event;
     }
 
-    public static Result canEntityDespawn(Mob entity, ServerLevelAccessor level) {
-        AllowDespawn event = new AllowDespawn(entity, level);
+    /**
+     * Fires {@link MobDespawnEvent} and returns true if the default logic should be ignored.
+     * 
+     * @param entity The entity being despawned.
+     * @return True if the event result is not {@link MobDespawnEvent.Result#DEFAULT}, and the vanilla logic should be ignored.
+     */
+    public static boolean checkMobDespawn(Mob mob) {
+        MobDespawnEvent event = new MobDespawnEvent(mob, (ServerLevel) mob.level());
         NeoForge.EVENT_BUS.post(event);
-        return event.getResult();
+
+        switch (event.getResult()) {
+            case ALLOW -> mob.discard();
+            case DEFAULT -> {}
+            case DENY -> mob.setNoActionTime(0);
+        }
+
+        return event.getResult() != MobDespawnEvent.Result.DEFAULT;
     }
 
     public static int getItemBurnTime(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType) {
@@ -338,10 +348,19 @@ public class EventHooks {
         return event.getDroppedExperience();
     }
 
-    public static int getMaxSpawnPackSize(Mob entity) {
-        LivingPackSizeEvent maxCanSpawnEvent = new LivingPackSizeEvent(entity);
-        NeoForge.EVENT_BUS.post(maxCanSpawnEvent);
-        return maxCanSpawnEvent.getResult() == Result.ALLOW ? maxCanSpawnEvent.getMaxPackSize() : entity.getMaxSpawnClusterSize();
+    /**
+     * Fires {@link SpawnClusterSizeEvent} and returns the size as a result of the event.
+     * <p>
+     * Called in {@link NaturalSpawner#spawnCategoryForPosition} where {@link Mob#getMaxSpawnClusterSize()} would normally be called.
+     * 
+     * @param entity The entity whose max spawn cluster size is being queried.
+     * 
+     * @return The new spawn cluster size.
+     */
+    public static int getMaxSpawnClusterSize(Mob entity) {
+        var event = new SpawnClusterSizeEvent(entity);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getSize();
     }
 
     public static Component getPlayerDisplayName(Player player, Component username) {
@@ -366,12 +385,6 @@ public class EventHooks {
         ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags);
         NeoForge.EVENT_BUS.post(event);
         return event;
-    }
-
-    public static SummonAidEvent fireZombieSummonAid(Zombie zombie, Level level, int x, int y, int z, LivingEntity attacker, double summonChance) {
-        SummonAidEvent summonEvent = new SummonAidEvent(zombie, level, x, y, z, attacker, summonChance);
-        NeoForge.EVENT_BUS.post(summonEvent);
-        return summonEvent;
     }
 
     public static boolean onEntityStruckByLightning(Entity entity, LightningBolt bolt) {
