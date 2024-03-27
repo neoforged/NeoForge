@@ -188,7 +188,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
                                         FeatureFlags.DEFAULT_FLAGS,
                                         List.of(),
                                         true),
-                                Pack.Position.BOTTOM,
+                                Pack.Position.TOP,
                                 true,
                                 PackSource.SERVER)));
             }

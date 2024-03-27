@@ -181,7 +181,7 @@
          RegistryAccess.Frozen registryaccess$frozen = this.registries.getAccessForLoading(RegistryLayer.RELOADABLE);
          CompletableFuture<Void> completablefuture = CompletableFuture.<ImmutableList>supplyAsync(
 -                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
-+                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).flatMap(Pack::streamSelfAndChildren).map(Pack::open).collect(ImmutableList.toImmutableList()),
++                () -> this.packRepository.rebuildSelected(p_129862_).stream().map(Pack::open).collect(ImmutableList.toImmutableList()),
                  this
              )
              .thenCompose(
@@ -207,6 +207,15 @@
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
+@@ -1478,6 +_,8 @@
+                 set.add("vanilla");
+             }
+ 
++            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, p_248920_.getEnabled(), p_248681_);
++
+             p_248681_.setSelected(set);
+             DataPackConfig datapackconfig = getSelectedPacks(p_248681_);
+             FeatureFlagSet featureflagset1 = p_248681_.getRequestedFeatureFlags();
 @@ -1616,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);
