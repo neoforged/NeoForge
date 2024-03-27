@@ -111,11 +111,11 @@ public class I18nExtension {
     }
 
     public static String getDisplayName(final IModInfo modInfo) {
-        return parseMessageWithFallback("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo::getDisplayName);
+        return getPattern("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo::getDisplayName);
     }
 
     public static String getDescription(final IModInfo modInfo) {
-        return parseMessageWithFallback("fml.menu.mods.info.description." + modInfo.getModId(), modInfo::getDescription);
+        return getPattern("fml.menu.mods.info.description." + modInfo.getModId(), modInfo::getDescription);
     }
 
     public static String stripSpecialChars(String message) {
