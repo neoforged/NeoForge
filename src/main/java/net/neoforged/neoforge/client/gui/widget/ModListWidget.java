@@ -6,12 +6,14 @@
 package net.neoforged.neoforge.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.neoforge.client.gui.ModListScreen;
@@ -75,12 +77,19 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            Component name = Component.literal(stripControlCodes(I18nExtension.getDisplayName(modInfo)));
-            Component version = Component.literal(stripControlCodes(MavenVersionStringHelper.artifactVersionToString(modInfo.getVersion())));
+            String modid = stripControlCodes(modInfo.getModId());
+            String i18nName = stripControlCodes(I18nExtension.getDisplayName(modInfo));
+            String rawName = stripControlCodes(modInfo.getDisplayName());
+            String version = stripControlCodes(MavenVersionStringHelper.artifactVersionToString(modInfo.getVersion()));
+            MutableComponent heading = Component.literal(i18nName).withStyle(ChatFormatting.WHITE);
+            if (!rawName.equals(i18nName)) {
+                heading.append(Component.literal(" (" + rawName + ")").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
+            }
+            Component subheading = Component.literal(modid + " " + version).withStyle(ChatFormatting.GRAY);
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(modInfo);
             Font font = this.parent.getFontRenderer();
-            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(name, listWidth))), left + 3, top + 2, 0xFFFFFF, false);
-            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(version, listWidth))), left + 3, top + 2 + font.lineHeight, 0xCCCCCC, false);
+            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(heading, listWidth))), left + 3, top + 2, 0xFFFFFF, false);
+            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(subheading, listWidth))), left + 3, top + 2 + font.lineHeight, 0xCCCCCC, false);
             if (vercheck.status().shouldDraw()) {
                 //TODO: Consider adding more icons for visualization
                 RenderSystem.setShaderColor(1, 1, 1, 1);
