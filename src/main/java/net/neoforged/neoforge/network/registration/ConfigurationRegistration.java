@@ -18,6 +18,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @param reader   The reader for the payload
  * @param handler  The handler for the payload
+ * @param modId    The id of the mod that registered the payload
  * @param version  The version of the payload
  * @param flow     The flow of the payload
  * @param optional Whether the payload is optional
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 public record ConfigurationRegistration<T extends CustomPacketPayload>(
         FriendlyByteBuf.Reader<T> reader,
         IConfigurationPayloadHandler<T> handler,
+        String modId,
         Optional<String> version,
         Optional<PacketFlow> flow,
         boolean optional) implements IConfigurationPayloadHandler<CustomPacketPayload>, FriendlyByteBuf.Reader<CustomPacketPayload> {

@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
@@ -56,7 +57,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPlayPayloadHandler<T> handler) {
         play(
                 id, new PlayRegistration<>(
-                        reader, handler, version, Optional.empty(), optional));
+                        reader, handler, ModLoadingContext.get().getActiveNamespace(), version, Optional.empty(), optional));
         return this;
     }
 
@@ -64,7 +65,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IConfigurationPayloadHandler<T> handler) {
         configuration(
                 id, new ConfigurationRegistration<>(
-                        reader, handler, version, Optional.empty(), optional));
+                        reader, handler, ModLoadingContext.get().getActiveNamespace(), version, Optional.empty(), optional));
         return this;
     }
 
@@ -75,7 +76,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         final PlayPayloadHandler<T> innerHandler = builder.create();
         play(
                 id, new PlayRegistration<>(
-                        reader, innerHandler, version, innerHandler.flow(), optional));
+                        reader, innerHandler, ModLoadingContext.get().getActiveNamespace(), version, innerHandler.flow(), optional));
         return this;
     }
 
@@ -86,7 +87,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         final ConfigurationPayloadHandler<T> innerHandler = builder.create();
         configuration(
                 id, new ConfigurationRegistration<>(
-                        reader, innerHandler, version, innerHandler.flow(), optional));
+                        reader, innerHandler, ModLoadingContext.get().getActiveNamespace(), version, innerHandler.flow(), optional));
         return this;
     }
 
