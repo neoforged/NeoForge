@@ -209,6 +209,7 @@
   "neoforge.block_reach": "블록 상호작용 거리",
   "neoforge.entity_reach": "엔티티 상호작용 거리",
   "neoforge.step_height": "걸어 올라갈 수 있는 높이",
+  "neoforge.creative_flight": "Creative Flight",
   "fluid_type.minecraft.milk": "우유",
   "fluid_type.minecraft.flowing_milk": "우유",
   "neoforge.froge.warningScreen.title": "NeoForge snapshots notice",

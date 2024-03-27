@@ -209,6 +209,7 @@
   "neoforge.block_reach": "Block-Reichweite",
   "neoforge.entity_reach": "Entity-Reichweite",
   "neoforge.step_height": "Schritthöhe",
+  "neoforge.creative_flight": "Creative Flight",
   "fluid_type.minecraft.milk": "Milch",
   "fluid_type.minecraft.flowing_milk": "Milch",
   "neoforge.froge.warningScreen.title": "Information zu NeoForge-Snapshots",

@@ -209,6 +209,7 @@
   "neoforge.block_reach": "方塊破壞距離",
   "neoforge.entity_reach": "實體攻擊距離",
   "neoforge.step_height": "行走高度",
+  "neoforge.creative_flight": "Creative Flight",
   "fluid_type.minecraft.milk": "奶",
   "fluid_type.minecraft.flowing_milk": "奶",
   "neoforge.froge.warningScreen.title": "NeoForge 快照提醒",
