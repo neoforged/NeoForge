@@ -68,8 +68,8 @@
 +        p_281607_.pose().popPose();
 +    }
 +
-+    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, int i, int j, @Nullable String countString) {
-+            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString;
++    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, int x, int y, @Nullable String countString) {
++            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString; int i = x; int j = y;
              int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
              if (p_282613_.isFake()) {
                  p_281607_.renderFakeItem(itemstack, i, j, j1);
