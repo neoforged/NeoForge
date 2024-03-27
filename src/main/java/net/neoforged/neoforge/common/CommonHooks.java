@@ -104,7 +104,6 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
@@ -180,7 +179,6 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
@@ -919,22 +917,6 @@ public class CommonHooks {
             return false;
         BlockState state = level.getBlockState(pos);
         return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
-    }
-
-    /**
-     * Gets the burn time of this itemstack.
-     */
-    public static int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
-        if (stack.isEmpty()) {
-            return 0;
-        } else {
-            int ret = stack.getBurnTime(recipeType);
-            if (ret == -1) {
-                var fuel = stack.getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-                ret = fuel == null ? 0 : fuel.burnTime();
-            }
-            return EventHooks.getItemBurnTime(stack, ret, recipeType);
-        }
     }
 
     /**
