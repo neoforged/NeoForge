@@ -61,7 +61,7 @@
   "fml.language.missingversion": "Mod File {5} needs language provider {3}:{4,vr} to load\n§7We have found {6,i18n,fml.messages.artifactversion}",
   "fml.modloading.missingclasses": "The Mod File {3} has mods that were not found",
   "fml.modloading.missingmetadata": "mods.toml missing metadata for modid {3}",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} has class loading errors\n§7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) has class loading errors\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name} ({0,modinfo,id}) has failed to load correctly\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name} ({0,modinfo,id}) is missing a feature it requires to run\n§7It requires {3,featurebound} but {4} is available",
   "fml.modloading.uncaughterror": "An uncaught parallel processing error has occurred.\n§7{2,exc,msg}",

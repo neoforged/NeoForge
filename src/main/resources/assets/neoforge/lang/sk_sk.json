@@ -61,7 +61,7 @@
   "fml.language.missingversion": "Súbor módu {5} potrebuje poskytovateľa jazyku {3}:{4,vr} pre načítanie §7 Našli sme {6,i18n,fml.messages.artifactversion}",
   "fml.modloading.missingclasses": "Súbor módu {3} obsahuje módy, ktoré neboli nájdené",
   "fml.modloading.missingmetadata": "v mods.toml chýbajú metadata pre modid {3}",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} má chyby načítavania triedy §7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) má chyby načítavania triedy §7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name}({0,modinfo,id}) sa nenačítal správne\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name} ({0,modinfo,id}) neobsahuje funkciu ktorú potrebuje pre spustenie\n§7Vyžaduje {3,featurebound} ale {4} je k dispozícii",
   "fml.modloading.uncaughterror": "Vyskytla sa nezachytená chyba paralelného spracovania.\n§7{2,exc,msg}",
