@@ -46,6 +46,18 @@
          }
      }
  
+@@ -243,6 +_,11 @@
+         return this.requiredFeatures;
+     }
+ 
++    @Override
++    public boolean isFeatureEnabled() {
++        return properties.isFeatureEnabled.getAsBoolean();
++    }
++
+     @Deprecated
+     public BlockState rotate(BlockState p_60530_, Rotation p_60531_) {
+         return p_60530_;
 @@ -365,13 +_,14 @@
          if (f == -1.0F) {
              return 0.0F;
@@ -150,6 +162,14 @@
          BlockBehaviour.StatePredicate isRedstoneConductor = (p_284888_, p_284889_, p_284890_) -> p_284888_.isCollisionShapeFullBlock(p_284889_, p_284890_);
          BlockBehaviour.StatePredicate isSuffocating = (p_284885_, p_284886_, p_284887_) -> p_284885_.blocksMotion()
                  && p_284885_.isCollisionShapeFullBlock(p_284886_, p_284887_);
+@@ -996,6 +_,7 @@
+         boolean dynamicShape;
+         FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
+         Optional<BlockBehaviour.OffsetFunction> offsetFunction = Optional.empty();
++        private java.util.function.BooleanSupplier isFeatureEnabled = net.neoforged.neoforge.common.extensions.IFeatureElementExtension::always;
+ 
+         private Properties() {
+         }
 @@ -1127,9 +_,15 @@
              return this;
          }
@@ -167,3 +187,19 @@
          }
  
          public BlockBehaviour.Properties ignitedByLava() {
+@@ -1243,8 +_,15 @@
+             return this;
+         }
+ 
++        /** @deprecated use {@linkplain #isFeatureEnabled(java.util.function.BooleanSupplier)} */
++        @java.lang.Deprecated
+         public BlockBehaviour.Properties requiredFeatures(FeatureFlag... p_248792_) {
+             this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_248792_);
++            return this;
++        }
++
++        public BlockBehaviour.Properties isFeatureEnabled(java.util.function.BooleanSupplier isFeatureEnabled) {
++            this.isFeatureEnabled = isFeatureEnabled;
+             return this;
+         }
+ 
