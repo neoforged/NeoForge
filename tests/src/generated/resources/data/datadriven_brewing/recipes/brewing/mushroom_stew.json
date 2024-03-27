@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:simple_brewing",
+  "catalyst": {
+    "tag": "forge:mushrooms"
+  },
+  "input": {
+    "item": "minecraft:bowl"
+  },
+  "output": {
+    "item": "minecraft:mushroom_stew"
+  }
+}

@@ -8,14 +8,16 @@
  
      public PlayerList(MinecraftServer p_203842_, LayeredRegistryAccess<RegistryLayer> p_251844_, PlayerDataStorage p_203844_, int p_203845_) {
          this.server = p_203842_;
-@@ -194,6 +_,7 @@
+@@ -194,7 +_,8 @@
          servergamepacketlistenerimpl.send(new ClientboundChangeDifficultyPacket(leveldata.getDifficulty(), leveldata.isDifficultyLocked()));
          servergamepacketlistenerimpl.send(new ClientboundPlayerAbilitiesPacket(p_11263_.getAbilities()));
          servergamepacketlistenerimpl.send(new ClientboundSetCarriedItemPacket(p_11263_.getInventory().selected));
+-        servergamepacketlistenerimpl.send(new ClientboundUpdateRecipesPacket(this.server.getRecipeManager().getRecipes()));
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, p_11263_));
-         servergamepacketlistenerimpl.send(new ClientboundUpdateRecipesPacket(this.server.getRecipeManager().getRecipes()));
++        servergamepacketlistenerimpl.send(new ClientboundUpdateRecipesPacket(net.neoforged.neoforge.network.configuration.CheckBrewingRecipeCompatability.filterCompatible(servergamepacketlistenerimpl, this.server.getRecipeManager().getRecipes())));
          this.sendPlayerPermissionLevel(p_11263_);
          p_11263_.getStats().markAllDirty();
+         p_11263_.getRecipeBook().sendInitialRecipeBook(p_11263_);
 @@ -262,6 +_,7 @@
          }
  

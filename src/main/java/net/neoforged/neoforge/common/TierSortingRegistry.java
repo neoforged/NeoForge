@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
@@ -309,7 +310,7 @@ public class TierSortingRegistry {
             if (allowVanilla()) {
                 listener.finishCurrentTask(SyncTierSortingRegistry.TYPE);
             } else {
-                listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
+                listener.disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", Language.getInstance().getOrDefault("neoforge.network.negotiation.failure.vanilla.client.not_supported"), NeoForgeVersion.getVersion()));
             }
             return;
         }
