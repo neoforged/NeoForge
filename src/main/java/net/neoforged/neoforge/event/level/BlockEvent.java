@@ -66,7 +66,7 @@ public abstract class BlockEvent extends Event {
             super(level, pos, state);
             this.player = player;
 
-            if (state == null || !CommonHooks.isCorrectToolForDrops(state, player)) // Handle empty block or player unable to break block scenario
+            if (state == null || !CommonHooks.isCorrectToolForDrops(level, pos, state, player)) // Handle empty block or player unable to break block scenario
             {
                 this.exp = 0;
             } else {

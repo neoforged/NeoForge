@@ -184,12 +184,6 @@ public class EventHooks {
         return event;
     }
 
-    public static boolean doPlayerHarvestCheck(Player player, BlockState state, boolean success) {
-        PlayerEvent.HarvestCheck event = new PlayerEvent.HarvestCheck(player, state, success);
-        NeoForge.EVENT_BUS.post(event);
-        return event.canHarvest();
-    }
-
     public static float getBreakSpeed(Player player, BlockState state, float original, BlockPos pos) {
         PlayerEvent.BreakSpeed event = new PlayerEvent.BreakSpeed(player, state, original, pos);
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getNewSpeed());
