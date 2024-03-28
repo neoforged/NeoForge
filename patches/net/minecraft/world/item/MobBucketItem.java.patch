@@ -14,11 +14,11 @@
 -        super(p_151138_, p_151140_);
 -        this.type = p_151137_;
 -        this.emptySound = p_151139_;
-+        this(() -> p_151137_, () -> p_151138_, () -> p_151139_, p_151140_);
++        this(() -> p_151137_, p_151138_, () -> p_151139_, p_151140_);
 +    }
 +
-+    public MobBucketItem(java.util.function.Supplier<? extends EntityType<?>> entitySupplier, java.util.function.Supplier<? extends Fluid> fluidSupplier, java.util.function.Supplier<? extends SoundEvent> soundSupplier, Item.Properties properties) {
-+        super(fluidSupplier, properties);
++    public MobBucketItem(java.util.function.Supplier<? extends EntityType<?>> entitySupplier, Fluid fluid, java.util.function.Supplier<? extends SoundEvent> soundSupplier, Item.Properties properties) {
++        super(fluid, properties);
 +        this.emptySoundSupplier = soundSupplier;
 +        this.entityTypeSupplier = entitySupplier;
      }
