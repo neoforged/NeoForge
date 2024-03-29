@@ -28,7 +28,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      */
     default void jumpInFluid(FluidType type) {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.value()), 0.0D));
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED), 0.0D));
     }
 
     /**
@@ -37,7 +37,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      */
     default void sinkInFluid(FluidType type) {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.value()), 0.0D));
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED), 0.0D));
     }
 
     /**

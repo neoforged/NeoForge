@@ -5,13 +5,13 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
@@ -48,15 +49,15 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         fuels.remove(ItemTags.NON_FLAMMABLE_WOOD);
 
         final var vibrationFrequencies = builder(NeoForgeDataMaps.VIBRATION_FREQUENCIES);
-        ((Object2IntMap<GameEvent>) VibrationSystem.VIBRATION_FREQUENCY_FOR_EVENT)
-                .forEach((event, frequency) -> vibrationFrequencies.add(event.builtInRegistryHolder(), new VibrationFrequency(frequency), false));
+        ((Reference2IntMap<ResourceKey<GameEvent>>) VibrationSystem.VIBRATION_FREQUENCY_FOR_EVENT)
+                .forEach((event, frequency) -> vibrationFrequencies.add(event, new VibrationFrequency(frequency), false));
 
         final var imitations = builder(NeoForgeDataMaps.PARROT_IMITATIONS);
         ObfuscationReflectionHelper.<Map<EntityType<?>, SoundEvent>, Parrot>getPrivateValue(Parrot.class, null, "MOB_SOUND_MAP")
                 .forEach((type, sound) -> imitations.add(type.builtInRegistryHolder(), new ParrotImitation(sound), false));
 
         final var raidHeroGifts = builder(NeoForgeDataMaps.RAID_HERO_GIFTS);
-        ObfuscationReflectionHelper.<Map<VillagerProfession, ResourceLocation>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
+        ObfuscationReflectionHelper.<Map<VillagerProfession, ResourceKey<LootTable>>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
                 .forEach((type, lootTable) -> raidHeroGifts.add(BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(type), new RaidHeroGift(lootTable), false));
     }
 }

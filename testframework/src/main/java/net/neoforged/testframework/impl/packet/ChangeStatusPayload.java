@@ -17,8 +17,7 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 
 public record ChangeStatusPayload(MutableTestFramework framework, String testId, Test.Status status) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_status");
-    @Override
+    public static final CustomPacketPayload.Type<ChangeStatusPayload> ID = new Type<>(new ResourceLocation("neoforge", "tf_change_status"));
     public void write(FriendlyByteBuf buf) {
         buf.writeUtf(testId);
         buf.writeEnum(status.result());
@@ -26,7 +25,7 @@ public record ChangeStatusPayload(MutableTestFramework framework, String testId,
     }
 
     @Override
-    public ResourceLocation id() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 

@@ -5,12 +5,14 @@
 
 package net.neoforged.neoforge.debug.enchantment;
 
-import java.util.Map;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -27,17 +29,17 @@ public class EnchantmentLevelTests {
     @TestHolder(description = "Tests whether the GetEnchantmentLevelEvent can properly modify enchantment levels.")
     static void getEnchLevelEvent(final DynamicTest test, final RegistrationHelper reg) {
         test.eventListeners().forge().addListener((GetEnchantmentLevelEvent e) -> {
-            Map<Enchantment, Integer> enchants = e.getEnchantments();
+            ItemEnchantments.Mutable enchants = e.getEnchantments();
 
             // Increase the level of sharpness by 1 in all cases.
             if (e.isTargetting(Enchantments.SHARPNESS)) {
-                enchants.put(Enchantments.SHARPNESS, enchants.getOrDefault(Enchantments.SHARPNESS, 0) + 1);
+                enchants.set(Enchantments.SHARPNESS, enchants.getLevel(Enchantments.SHARPNESS) + 1);
             }
 
             // Increase the level of fire aspect by 1 if the stack contains specific NBT.
             if (e.isTargetting(Enchantments.FIRE_ASPECT)) {
-                if (e.getStack().getTagElement("boost_fire_aspect") != null) {
-                    enchants.put(Enchantments.FIRE_ASPECT, enchants.getOrDefault(Enchantments.FIRE_ASPECT, 0) + 1);
+                if (e.getStack().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("boost_fire_aspect")) {
+                    enchants.set(Enchantments.FIRE_ASPECT, enchants.getLevel(Enchantments.FIRE_ASPECT) + 1);
                 }
             }
         });
@@ -49,7 +51,7 @@ public class EnchantmentLevelTests {
             helper.assertTrue(stack.getEnchantmentLevel(Enchantments.FIRE_ASPECT) == 0, "Fire Aspect level was not zero");
             helper.assertTrue(stack.getEnchantmentLevel(Enchantments.SHARPNESS) == 1, "Sharpness level was not one");
 
-            stack.getOrCreateTagElement("boost_fire_aspect"); // Creates the sub-compound "boost_fire_aspect" which will trigger the event listener above.
+            CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.put("boost_fire_aspect", new CompoundTag())); // Creates the sub-compound "boost_fire_aspect" which will trigger the event listener above.
             stack.enchant(Enchantments.SHARPNESS, 5);
 
             helper.assertTrue(stack.getEnchantmentLevel(Enchantments.FIRE_ASPECT) == 1, "Fire Aspect level was not one");

@@ -7,8 +7,10 @@ package net.neoforged.neoforge.debug.loot;
 
 import java.util.List;
 import java.util.Set;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -23,7 +25,7 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "loot")
 public class LootPoolTest {
-    private static final ResourceLocation TEST_LOOT_TABLE = new ResourceLocation("neoforge", "test_loot_table");
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE = ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("neoforge", "test_loot_table"));
 
     @GameTest
     @EmptyTemplate
@@ -33,8 +35,8 @@ public class LootPoolTest {
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
-                        new LootTableProvider.SubProviderEntry(() -> p_249643_ -> {
-                            p_249643_.accept(
+                        new LootTableProvider.SubProviderEntry(() -> (provider, consumer) -> {
+                            consumer.accept(
                                     TEST_LOOT_TABLE,
                                     LootTable.lootTable()
                                             .withPool(LootPool.lootPool()
@@ -42,10 +44,11 @@ public class LootPoolTest {
                                                     .name("custom_name"))
                                             .withPool(LootPool.lootPool()
                                                     .add(LootItem.lootTableItem(Items.GOLD_NUGGET))));
-                        }, LootContextParamSets.ALL_PARAMS))));
+                        }, LootContextParamSets.ALL_PARAMS)),
+                event.getLookupProvider()));
 
         test.onGameTest(helper -> {
-            var testTable = helper.getLevel().getServer().getLootData().getLootTable(TEST_LOOT_TABLE);
+            var testTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(TEST_LOOT_TABLE);
 
             helper.assertTrue(testTable.getPool("custom_name") != null, "Expected custom_name pool");
             helper.assertTrue(testTable.getPool("pool1") != null, "Expected unnamed pool pool1");

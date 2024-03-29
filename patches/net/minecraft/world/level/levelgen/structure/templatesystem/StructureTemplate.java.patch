@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -217,6 +_,10 @@
+@@ -219,6 +_,10 @@
          return transform(p_74565_, p_74564_.getMirror(), p_74564_.getRotation(), p_74564_.getRotationPivot());
      }
  
@@ -11,16 +11,16 @@
      public boolean placeInWorld(
          ServerLevelAccessor p_230329_, BlockPos p_230330_, BlockPos p_230331_, StructurePlaceSettings p_230332_, RandomSource p_230333_, int p_230334_
      ) {
-@@ -240,7 +_,7 @@
+@@ -242,7 +_,7 @@
                  int j1 = Integer.MIN_VALUE;
  
-                 for(StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : processBlockInfos(
+                 for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : processBlockInfos(
 -                    p_230329_, p_230330_, p_230331_, p_230332_, list
 +                    p_230329_, p_230330_, p_230331_, p_230332_, list, this
                  )) {
                      BlockPos blockpos = structuretemplate$structureblockinfo.pos;
                      if (boundingbox == null || boundingbox.isInside(blockpos)) {
-@@ -353,15 +_,7 @@
+@@ -355,15 +_,7 @@
                  }
  
                  if (!p_230332_.isIgnoreEntities()) {
@@ -37,7 +37,7 @@
                  }
  
                  return true;
-@@ -390,12 +_,20 @@
+@@ -402,12 +_,20 @@
      }
  
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
@@ -58,16 +58,16 @@
          List<StructureTemplate.StructureBlockInfo> list = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> list1 = new ArrayList<>();
  
-@@ -410,7 +_,7 @@
+@@ -422,7 +_,7 @@
  
-             while(structuretemplate$structureblockinfo1 != null && iterator.hasNext()) {
+             while (structuretemplate$structureblockinfo1 != null && iterator.hasNext()) {
                  structuretemplate$structureblockinfo1 = iterator.next()
 -                    .processBlock(p_278297_, p_74519_, p_74520_, structuretemplate$structureblockinfo, structuretemplate$structureblockinfo1, p_74521_);
 +                    .process(p_278297_, p_74519_, p_74520_, structuretemplate$structureblockinfo, structuretemplate$structureblockinfo1, p_74521_, template);
              }
  
              if (structuretemplate$structureblockinfo1 != null) {
-@@ -426,21 +_,29 @@
+@@ -438,21 +_,29 @@
          return list1;
      }
  
@@ -80,7 +80,7 @@
 -        @Nullable BoundingBox p_74529_,
 -        boolean p_74530_
 -    ) {
--        for(StructureTemplate.StructureEntityInfo structuretemplate$structureentityinfo : this.entityInfoList) {
+-        for (StructureTemplate.StructureEntityInfo structuretemplate$structureentityinfo : this.entityInfoList) {
 -            BlockPos blockpos = transform(structuretemplate$structureentityinfo.blockPos, p_74526_, p_74527_, p_74528_).offset(p_74525_);
 -            if (p_74529_ == null || p_74529_.isInside(blockpos)) {
 +    public static List<StructureTemplate.StructureEntityInfo> processEntityInfos(@Nullable StructureTemplate template, LevelAccessor p_215387_0_, BlockPos p_215387_1_, StructurePlaceSettings p_215387_2_, List<StructureTemplate.StructureEntityInfo> p_215387_3_) {
@@ -111,17 +111,17 @@
                  ListTag listtag = new ListTag();
                  listtag.add(DoubleTag.valueOf(vec31.x));
                  listtag.add(DoubleTag.valueOf(vec31.y));
-@@ -450,10 +_,10 @@
-                 createEntityIgnoreException(p_74524_, compoundtag)
-                     .ifPresent(
-                         p_275190_ -> {
--                            float f = p_275190_.rotate(p_74527_);
--                            f += p_275190_.mirror(p_74526_) - p_275190_.getYRot();
-+                            float f = p_275190_.rotate(placementIn.getRotation());
-+                            f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
-                             p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
--                            if (p_74530_ && p_275190_ instanceof Mob) {
-+                            if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
-                                 ((Mob)p_275190_)
-                                     .finalizeSpawn(
-                                         p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, null, compoundtag
+@@ -460,10 +_,10 @@
+                 compoundtag.put("Pos", listtag);
+                 compoundtag.remove("UUID");
+                 createEntityIgnoreException(p_74524_, compoundtag).ifPresent(p_275190_ -> {
+-                    float f = p_275190_.rotate(p_74527_);
+-                    f += p_275190_.mirror(p_74526_) - p_275190_.getYRot();
++                    float f = p_275190_.rotate(placementIn.getRotation());
++                    f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
+                     p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
+-                    if (p_74530_ && p_275190_ instanceof Mob) {
++                    if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
+                         ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, null);
+                     }
+ 

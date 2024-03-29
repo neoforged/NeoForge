@@ -9,14 +9,14 @@
 +    boolean isModded
  ) {
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
-         p_304170_ -> p_304170_.group(
+         p_337519_ -> p_337519_.group(
 @@ -29,7 +_,8 @@
-                     ServerStatus.Players.CODEC.optionalFieldOf("players").forGetter(ServerStatus::players),
-                     ServerStatus.Version.CODEC.optionalFieldOf("version").forGetter(ServerStatus::version),
-                     ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon),
--                    Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat)
+                     ServerStatus.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerStatus::players),
+                     ServerStatus.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerStatus::version),
+                     ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
+-                    Codec.BOOL.lenientOptionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat)
 +                    Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat),
 +                    Codec.BOOL.optionalFieldOf("isModded", Boolean.FALSE).forGetter(ServerStatus::isModded)
                  )
-                 .apply(p_304170_, ServerStatus::new)
+                 .apply(p_337519_, ServerStatus::new)
      );

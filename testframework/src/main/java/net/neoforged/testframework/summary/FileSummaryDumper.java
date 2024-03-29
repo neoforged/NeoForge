@@ -5,7 +5,6 @@
 
 package net.neoforged.testframework.summary;
 
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,12 +19,14 @@ public interface FileSummaryDumper extends SummaryDumper {
     default void dump(TestSummary summary, Logger logger) {
         logger.info("Test summary processing...");
         Path outputPath = outputPath(summary.frameworkId());
-        LamdbaExceptionUtils.uncheck(() -> {
+        try {
             Files.createDirectories(outputPath.getParent());
             try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(outputPath))) {
                 this.write(summary, logger, writer);
             }
-        });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         logger.info("Wrote test summary to {}", outputPath);
     }
 }

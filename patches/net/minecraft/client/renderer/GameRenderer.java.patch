@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -334,6 +_,8 @@
+@@ -306,6 +_,8 @@
              this.loadEffect(new ResourceLocation("shaders/post/spider.json"));
          } else if (p_109107_ instanceof EnderMan) {
              this.loadEffect(new ResourceLocation("shaders/post/invert.json"));
@@ -9,51 +9,15 @@
          }
      }
  
-@@ -759,6 +_,7 @@
-                     p_311462_ -> rendertypeBreezeWindShader = p_311462_
+@@ -731,6 +_,7 @@
                  )
              );
+             this.loadBlurEffect();
 +            net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.RegisterShadersEvent(p_250719_, list1));
          } catch (IOException ioexception) {
              list1.forEach(p_172729_ -> p_172729_.getFirst().close());
              throw new RuntimeException("could not reload shaders", ioexception);
-@@ -834,12 +_,25 @@
-                 this.minecraft.getProfiler().push("pick");
-                 this.minecraft.crosshairPickEntity = null;
-                 double d0 = (double)this.minecraft.gameMode.getPickRange();
-+                double entityReach = this.minecraft.player.getEntityReach(); // Note - MC-76493 - We must validate players cannot click-through objects.
-+                d0 = Math.max(d0, entityReach); // Calculate hit results with the max of both reach distances, and compare against the individual ones later. This prevents click-through.
-                 this.minecraft.hitResult = entity.pick(d0, p_109088_, false);
-                 Vec3 vec3 = entity.getEyePosition(p_109088_);
-+                if (false) { // These flags are unused with attributes.
-                 boolean flag = this.minecraft.gameMode.hasFarPickRange();
-                 d0 = flag ? 6.0 : d0;
-                 boolean flag1 = !flag;
--                double d1 = this.minecraft.hitResult != null ? this.minecraft.hitResult.getLocation().distanceToSqr(vec3) : d0 * d0;
-+                }
-+                // If we picked a block, we need to ignore entities past that block. Added != MISS check to not truncate on failed picks.
-+                // Also fixes MC-250858
-+                // Note: If vanilla ever actually fixes MC-250858 and adds this != MISS check, IPlayerExtension#getEntityReach needs to be updated from +2 to +3.
-+                double d1 = this.minecraft.hitResult != null && this.minecraft.hitResult.getType() != HitResult.Type.MISS ? this.minecraft.hitResult.getLocation().distanceToSqr(vec3) : d0 * d0;
-+                double blockReach = this.minecraft.player.getBlockReach();
-+                // Discard the block pick result as a miss if it is outside the block reach.
-+                if (d1 > blockReach * blockReach) {
-+                    Vec3 pos = this.minecraft.hitResult.getLocation();
-+                    this.minecraft.hitResult = BlockHitResult.miss(pos, Direction.getNearest(vec3.x, vec3.y, vec3.z), BlockPos.containing(pos));
-+                }
-                 Vec3 vec31 = entity.getViewVector(1.0F);
-                 Vec3 vec32 = vec3.add(vec31.x * d0, vec31.y * d0, vec31.z * d0);
-                 float f = 1.0F;
-@@ -850,7 +_,7 @@
-                 if (entityhitresult != null) {
-                     Vec3 vec33 = entityhitresult.getLocation();
-                     double d2 = vec3.distanceToSqr(vec33);
--                    if (flag1 && d2 > 9.0) {
-+                    if (d2 > d1 || d2 > entityReach * entityReach) { // Discard if the result is behind a block, or past the entity reach max. The var "flag" no longer has a use.
-                         this.minecraft.hitResult = BlockHitResult.miss(vec33, Direction.getNearest(vec31.x, vec31.y, vec31.z), BlockPos.containing(vec33));
-                     } else if (d2 < d1 || this.minecraft.hitResult == null) {
-                         this.minecraft.hitResult = entityhitresult;
-@@ -902,7 +_,7 @@
+@@ -889,7 +_,7 @@
                  d0 *= Mth.lerp(this.minecraft.options.fovEffectScale().get(), 1.0, 0.85714287F);
              }
  
@@ -62,7 +26,7 @@
          }
      }
  
-@@ -919,6 +_,10 @@
+@@ -905,6 +_,10 @@
                  return;
              }
  
@@ -70,10 +34,10 @@
 +            var lastSrc = livingentity.getLastDamageSource();
 +            if (lastSrc != null && lastSrc.is(net.neoforged.neoforge.common.Tags.DamageTypes.NO_FLINCH)) return;
 +
-             float f3 = f2 / (float)livingentity.hurtDuration;
-             float f4 = Mth.sin(f3 * f3 * f3 * f3 * (float) Math.PI);
-             float f5 = livingentity.getHurtDir();
-@@ -1074,13 +_,13 @@
+             f2 /= (float)livingentity.hurtDuration;
+             f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
+             float f3 = livingentity.getHurtDir();
+@@ -1054,12 +_,12 @@
                      (float)((double)window.getHeight() / window.getGuiScale()),
                      0.0F,
                      1000.0F,
@@ -81,15 +45,14 @@
 +                    net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane()
                  );
              RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
-             PoseStack posestack = RenderSystem.getModelViewStack();
-             posestack.pushPose();
-             posestack.setIdentity();
--            posestack.translate(0.0F, 0.0F, -11000.0F);
-+            posestack.translate(0.0D, 0.0D, 10000F - net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
+             Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
+             matrix4fstack.pushMatrix();
+-            matrix4fstack.translation(0.0F, 0.0F, -11000.0F);
++            matrix4fstack.translation(0.0F, 0.0F, 10000F - net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
              RenderSystem.applyModelViewMatrix();
              Lighting.setupFor3DItems();
              GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
-@@ -1114,7 +_,7 @@
+@@ -1093,7 +_,7 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
@@ -98,22 +61,21 @@
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -1289,6 +_,9 @@
+@@ -1269,12 +_,16 @@
+         }
  
-         Matrix4f matrix4f = posestack.last().pose();
          this.resetProjectionMatrix(matrix4f);
 +        net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, camera, p_109090_);
 +        camera.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
-+        p_109092_.mulPose(Axis.ZP.rotationDegrees(cameraSetup.getRoll()));
-         p_109092_.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
-         p_109092_.mulPose(Axis.YP.rotationDegrees(camera.getYRot() + 180.0F));
-         Matrix3f matrix3f = new Matrix3f(p_109092_.last().normal()).invert();
-@@ -1297,6 +_,8 @@
+         Matrix4f matrix4f1 = new Matrix4f()
+-            .rotationXYZ(camera.getXRot() * (float) (Math.PI / 180.0), camera.getYRot() * (float) (Math.PI / 180.0) + (float) Math.PI, 0.0F);
++            .rotationXYZ(camera.getXRot() * (float) (Math.PI / 180.0), camera.getYRot() * (float) (Math.PI / 180.0) + (float) Math.PI, cameraSetup.getRoll() * (float) (Math.PI / 180.0));
+         this.minecraft
              .levelRenderer
-             .prepareCullFrustum(p_109092_, camera.getPosition(), this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));
-         this.minecraft.levelRenderer.renderLevel(p_109092_, p_109090_, p_109091_, flag, camera, this, this.lightTexture, matrix4f);
-+        this.minecraft.getProfiler().popPush("forge_render_last");
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, p_109092_, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
+             .prepareCullFrustum(camera.getPosition(), matrix4f1, this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));
+         this.minecraft.levelRenderer.renderLevel(p_109090_, p_109091_, flag, camera, this, this.lightTexture, matrix4f1, matrix4f);
++        this.minecraft.getProfiler().popPush("neoforge_render_last");
++        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, null, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
          this.minecraft.getProfiler().popPush("hand");
          if (this.renderHand) {
              RenderSystem.clear(256, Minecraft.ON_OSX);

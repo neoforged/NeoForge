@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -88,7 +_,7 @@
-         if (blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)) {
-             return true;
-         } else {
--            return p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
-+            return p_54881_.getRawBrightness(p_54882_, 0) < 13 && blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, this);
-         }
+@@ -87,7 +_,7 @@
+         BlockState blockstate = p_54881_.getBlockState(blockpos);
+         return blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)
+             ? true
+-            : p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
++            : p_54881_.getRawBrightness(p_54882_, 0) < 13 && blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, this);
      }
  
-@@ -99,8 +_,10 @@
+     public boolean growMushroom(ServerLevel p_221774_, BlockPos p_221775_, BlockState p_221776_, RandomSource p_221777_) {
+@@ -97,8 +_,10 @@
          if (optional.isEmpty()) {
              return false;
          } else {

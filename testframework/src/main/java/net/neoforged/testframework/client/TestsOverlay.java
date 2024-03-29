@@ -17,19 +17,19 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.MutableTestFramework;
 
-public final class TestsOverlay implements IGuiOverlay {
+public final class TestsOverlay implements LayeredDraw.Layer {
     public static final int MAX_DISPLAYED = 5;
     public static final ResourceLocation BG_TEXTURE = new ResourceLocation("testframework", "textures/gui/background.png");
 
@@ -46,15 +46,15 @@ public final class TestsOverlay implements IGuiOverlay {
     }
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics poseStack, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics poseStack, float partialTick) {
         if (!enabled.getAsBoolean()) return;
 
         List<Test> enabled = impl.tests().enabled().collect(Collectors.toCollection(ArrayList::new));
         if (enabled.isEmpty()) return;
 
-        final Font font = gui.getFont();
+        final Font font = Minecraft.getInstance().font;
         final int startX = 10, startY = 10;
-        final int maxWidth = screenWidth / 3;
+        final int maxWidth = poseStack.guiWidth() / 3;
         int x = startX, y = startY;
         int maxX = x;
 
@@ -104,22 +104,22 @@ public final class TestsOverlay implements IGuiOverlay {
                         RenderSystem.defaultBlendFunc();
                     });
 
-                    final XY xy = renderTest(gui, font, test, poseStack, maxWidth, x, y, ((int) (fade * 255f) << 24) | 0xffffff, renderingQueue.currentProgress());
+                    final XY xy = renderTest(font, test, poseStack, maxWidth, x, y, ((int) (fade * 255f) << 24) | 0xffffff, renderingQueue.currentProgress());
                     y = xy.y() + 5;
                     maxX = Math.max(maxX, xy.x());
 
                     renderingQueue.add(RenderSystem::disableBlend);
                     fading.put(test, fade);
                 } else {
-                    final XY xy = renderTest(gui, font, test, poseStack, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
+                    final XY xy = renderTest(font, test, poseStack, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
                     y = xy.y() + 5;
                     maxX = Math.max(maxX, xy.x());
                 }
 
-                if (y >= screenHeight) {
+                if (y >= poseStack.guiHeight()) {
                     int endIndex = actuallyToRender.indexOf(test) + 1;
                     // If the y is greater than the height, don't render this test at all
-                    if (y > screenHeight) {
+                    if (y > poseStack.guiHeight()) {
                         endIndex--;
                         renderingQueue.revert();
                         y = lastY;
@@ -143,14 +143,14 @@ public final class TestsOverlay implements IGuiOverlay {
                 int lastY = y;
                 int lastMaxX = maxX;
                 renderingQueue.push();
-                final XY xy = renderTest(gui, font, test, poseStack, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
+                final XY xy = renderTest(font, test, poseStack, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
                 y = xy.y() + 5;
                 maxX = Math.max(maxX, xy.x());
 
-                if (y >= screenHeight) {
+                if (y >= poseStack.guiHeight()) {
                     int endIndex = enabled.indexOf(test) + 1;
                     // If the y is greater than the height, don't render this test at all
-                    if (y > screenHeight) {
+                    if (y > poseStack.guiHeight()) {
                         renderingQueue.revert();
                         y = lastY;
                         maxX = lastMaxX;
@@ -187,7 +187,7 @@ public final class TestsOverlay implements IGuiOverlay {
             Test.Result.NOT_PROCESSED, new ResourceLocation("testframework", "textures/gui/test_not_processed.png")));
 
     // TODO - maybe "group" together tests in the same group?
-    private XY renderTest(ExtendedGui gui, Font font, Test test, GuiGraphics stack, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {
+    private XY renderTest(Font font, Test test, GuiGraphics stack, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {
         final Test.Status status = impl.tests().getStatus(test.id());
         final FormattedCharSequence bullet = Component.literal("- ").withStyle(ChatFormatting.BLACK).getVisualOrderText();
         rendering.add(withXY(x, y, (x$, y$) -> stack.drawString(font, bullet, x$, y$ - 1, colour)));

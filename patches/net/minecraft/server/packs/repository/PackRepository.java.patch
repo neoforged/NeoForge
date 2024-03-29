@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/repository/PackRepository.java
 +++ b/net/minecraft/server/packs/repository/PackRepository.java
-@@ -23,7 +_,7 @@
+@@ -22,7 +_,7 @@
      private List<Pack> selected = ImmutableList.of();
  
      public PackRepository(RepositorySource... p_251886_) {
@@ -9,7 +9,7 @@
      }
  
      public void reload() {
-@@ -33,10 +_,13 @@
+@@ -32,10 +_,13 @@
      }
  
      private Map<String, Pack> discoverAvailable() {
@@ -17,7 +17,7 @@
 +        // Neo: sort packs within a source by name, between sources according to source order
 +        Map<String, Pack> map = Maps.newLinkedHashMap();
  
-         for(RepositorySource repositorysource : this.sources) {
+         for (RepositorySource repositorysource : this.sources) {
 -            repositorysource.loadPacks(p_143903_ -> map.put(p_143903_.getId(), p_143903_));
 +            Map<String, Pack> sourceMap = Maps.newTreeMap();
 +            repositorysource.loadPacks(p_143903_ -> sourceMap.put(p_143903_.getId(), p_143903_));
@@ -25,22 +25,22 @@
          }
  
          return ImmutableMap.copyOf(map);
-@@ -71,11 +_,12 @@
+@@ -70,11 +_,12 @@
      }
  
      private List<Pack> rebuildSelected(Collection<String> p_10518_) {
--        List<Pack> list = this.getAvailablePacks(p_10518_).collect(Collectors.toList());
-+        List<Pack> list = this.getAvailablePacks(p_10518_).flatMap(p -> Stream.concat(Stream.of(p), p.getChildren().stream())).collect(Collectors.toList());
+-        List<Pack> list = this.getAvailablePacks(p_10518_).collect(Util.toMutableList());
++        List<Pack> list = this.getAvailablePacks(p_10518_).flatMap(p -> Stream.concat(Stream.of(p), p.getChildren().stream())).collect(java.util.stream.Collectors.toList());
  
-         for(Pack pack : this.available.values()) {
+         for (Pack pack : this.available.values()) {
              if (pack.isRequired() && !list.contains(pack)) {
--                pack.getDefaultPosition().insert(list, pack, Functions.identity(), false);
-+                int i = pack.getDefaultPosition().insert(list, pack, Functions.identity(), false);
+-                pack.getDefaultPosition().insert(list, pack, Pack::selectionConfig, false);
++                int i = pack.getDefaultPosition().insert(list, pack, Pack::selectionConfig, false);
 +                list.addAll(i + 1, pack.getChildren());
              }
          }
  
-@@ -95,7 +_,7 @@
+@@ -94,7 +_,7 @@
      }
  
      public Collection<String> getSelectedIds() {
@@ -49,7 +49,7 @@
      }
  
      public FeatureFlagSet getRequestedFeatureFlags() {
-@@ -109,6 +_,10 @@
+@@ -108,6 +_,10 @@
      @Nullable
      public Pack getPack(String p_10508_) {
          return this.available.get(p_10508_);

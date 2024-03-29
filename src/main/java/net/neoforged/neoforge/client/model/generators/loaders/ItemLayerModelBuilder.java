@@ -142,7 +142,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         JsonObject layerObj = new JsonObject();
 
         for (Int2ObjectMap.Entry<ExtraFaceData> entry : this.faceData.int2ObjectEntrySet()) {
-            layerObj.add(String.valueOf(entry.getIntKey()), ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, entry.getValue()).getOrThrow(false, s -> {}));
+            layerObj.add(String.valueOf(entry.getIntKey()), ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, entry.getValue()).getOrThrow());
         }
 
         forgeData.add("layers", layerObj);

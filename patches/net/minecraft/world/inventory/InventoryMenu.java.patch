@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/InventoryMenu.java
 +++ b/net/minecraft/world/inventory/InventoryMenu.java
-@@ -68,7 +_,7 @@
+@@ -70,7 +_,7 @@
  
                  @Override
                  public boolean mayPlace(ItemStack p_39746_) {

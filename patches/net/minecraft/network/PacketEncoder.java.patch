@@ -1,11 +1,21 @@
 --- a/net/minecraft/network/PacketEncoder.java
 +++ b/net/minecraft/network/PacketEncoder.java
-@@ -46,7 +_,7 @@
+@@ -25,6 +_,8 @@
  
-                     JvmProfiler.INSTANCE.onPacketSent(codecdata.protocol(), i, p_130545_.channel().remoteAddress(), k);
-                 } catch (Throwable throwable) {
--                    LOGGER.error("Error receiving packet {}", i, throwable);
-+                    LOGGER.error("Error sending packet {}", i, throwable); // Neo: fix flipped log message
-                     if (p_130546_.isSkippable()) {
-                         throw new SkipPacketException(throwable);
-                     }
+         try {
+             int i = p_130547_.writerIndex();
++            // Neo: Wrap buffer with ChannelHandlerContext
++            p_130547_ = new net.neoforged.neoforge.network.connection.ChannelAwareFriendlyByteBuf(p_130547_, p_130545_);
+             this.protocolInfo.codec().encode(p_130547_, p_130546_);
+             int j = p_130547_.writerIndex() - i;
+             if (j > 8388608) {
+@@ -42,5 +_,9 @@
+         } finally {
+             ProtocolSwapHandler.handleOutboundTerminalPacket(p_130545_, p_130546_);
+         }
++    }
++
++    public ProtocolInfo<T> getProtocolInfo() {
++        return protocolInfo;
+     }
+ }

@@ -70,7 +70,7 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
         ClientboundUpdateAttributesPacket newPacket = new ClientboundUpdateAttributesPacket(msg.getEntityId(), Collections.emptyList());
         msg.getValues().stream()
                 .filter(snapshot -> {
-                    ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(snapshot.getAttribute());
+                    ResourceLocation key = snapshot.attribute().unwrapKey().map(ResourceKey::location).orElse(null);
                     return key != null && key.getNamespace().equals("minecraft");
                 })
                 .forEach(snapshot -> newPacket.getValues().add(snapshot));

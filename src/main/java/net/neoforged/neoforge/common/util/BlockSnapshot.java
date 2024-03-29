@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.util;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -58,12 +59,12 @@ public class BlockSnapshot {
     }
 
     public static BlockSnapshot create(ResourceKey<Level> dim, LevelAccessor world, BlockPos pos, int flag) {
-        return new BlockSnapshot(dim, world, pos, world.getBlockState(pos), getBlockEntityTag(world.getBlockEntity(pos)), flag);
+        return new BlockSnapshot(dim, world, pos, world.getBlockState(pos), getBlockEntityTag(world.getBlockEntity(pos), world.registryAccess()), flag);
     }
 
     @Nullable
-    private static CompoundTag getBlockEntityTag(@Nullable BlockEntity te) {
-        return te == null ? null : te.saveWithFullMetadata();
+    private static CompoundTag getBlockEntityTag(@Nullable BlockEntity te, HolderLookup.Provider provider) {
+        return te == null ? null : te.saveWithFullMetadata(provider);
     }
 
     public BlockState getCurrentBlock() {
@@ -86,8 +87,8 @@ public class BlockSnapshot {
     }
 
     @Nullable
-    public BlockEntity getBlockEntity() {
-        return getTag() != null ? BlockEntity.loadStatic(getPos(), getReplacedBlock(), getTag()) : null;
+    public BlockEntity getBlockEntity(HolderLookup.Provider provider) {
+        return getTag() != null ? BlockEntity.loadStatic(getPos(), getReplacedBlock(), getTag(), provider) : null;
     }
 
     public boolean restore() {
@@ -123,7 +124,7 @@ public class BlockSnapshot {
         if (getTag() != null) {
             te = world.getBlockEntity(pos);
             if (te != null) {
-                te.load(getTag());
+                te.loadWithComponents(getTag(), world.registryAccess());
                 te.setChanged();
             }
         }

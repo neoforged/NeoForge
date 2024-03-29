@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/BrewingStandMenu.java
 +++ b/net/minecraft/world/inventory/BrewingStandMenu.java
-@@ -77,7 +_,7 @@
+@@ -80,7 +_,7 @@
                      if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
                          return ItemStack.EMPTY;
                      }
@@ -9,7 +9,7 @@
                      if (!this.moveItemStackTo(itemstack1, 0, 3, false)) {
                          return ItemStack.EMPTY;
                      }
-@@ -151,7 +_,7 @@
+@@ -154,7 +_,7 @@
  
          @Override
          public boolean mayPlace(ItemStack p_39121_) {
@@ -18,15 +18,15 @@
          }
  
          @Override
-@@ -179,6 +_,7 @@
+@@ -182,6 +_,7 @@
          public void onTake(Player p_150499_, ItemStack p_150500_) {
-             Potion potion = PotionUtils.getPotion(p_150500_);
-             if (p_150499_ instanceof ServerPlayer) {
+             Optional<Holder<Potion>> optional = p_150500_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
+             if (optional.isPresent() && p_150499_ instanceof ServerPlayer serverplayer) {
 +                net.neoforged.neoforge.event.EventHooks.onPlayerBrewedPotion(p_150499_, p_150500_);
-                 CriteriaTriggers.BREWED_POTION.trigger((ServerPlayer)p_150499_, potion.builtInRegistryHolder());
+                 CriteriaTriggers.BREWED_POTION.trigger(serverplayer, optional.get());
              }
  
-@@ -186,7 +_,7 @@
+@@ -189,7 +_,7 @@
          }
  
          public static boolean mayPlaceItem(ItemStack p_39134_) {

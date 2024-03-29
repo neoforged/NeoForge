@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:diamond_block"
-            ]
+            "items": "minecraft:diamond_block"
           }
         ]
       },
@@ -19,7 +17,8 @@
     "description": "You obtained a DiamondBlock",
     "frame": "challenge",
     "icon": {
-      "item": "minecraft:diamond_block"
+      "count": 1,
+      "id": "minecraft:diamond_block"
     },
     "title": {
       "translate": "block.minecraft.diamond_block"

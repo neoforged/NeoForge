@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/LevelSummary.java
 +++ b/net/minecraft/world/level/storage/LevelSummary.java
-@@ -270,6 +_,10 @@
+@@ -275,6 +_,10 @@
          }
      }
  

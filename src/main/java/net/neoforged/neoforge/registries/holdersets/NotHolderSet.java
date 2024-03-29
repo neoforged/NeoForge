@@ -7,6 +7,7 @@ package net.neoforged.neoforge.registries.holdersets;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,8 +41,8 @@ import org.jetbrains.annotations.Nullable;
  */
 // this doesn't extend CompositeHolderSet because it doesn't need to cache a set
 public class NotHolderSet<T> implements ICustomHolderSet<T> {
-    public static <T> Codec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
-        return RecordCodecBuilder.<NotHolderSet<T>>create(
+    public static <T> MapCodec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+        return RecordCodecBuilder.<NotHolderSet<T>>mapCodec(
                 builder -> builder
                         .group(
                                 RegistryOps.retrieveRegistryLookup(registryKey).forGetter(NotHolderSet::registryLookup),

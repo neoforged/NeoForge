@@ -192,7 +192,7 @@
                  return true;
              }
  
-             for(int i = 0; i < 9; ++i) {
+             for (int i = 0; i < 9; i++) {
 -                if (this.minecraft.options.keyHotbarSlots[i].matches(p_97806_, p_97807_)) {
 +                if (this.minecraft.options.keyHotbarSlots[i].isActiveAndMatches(InputConstants.getKey(p_97806_, p_97807_))) {
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ClickType.SWAP);

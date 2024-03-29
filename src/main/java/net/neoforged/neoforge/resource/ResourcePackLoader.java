@@ -26,7 +26,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.packs.FeatureFlagsMetadataSection;
 import net.minecraft.server.packs.OverlayMetadataSection;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
@@ -36,7 +38,6 @@ import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.fml.ModList;
@@ -55,6 +56,7 @@ public class ResourcePackLoader {
     public static final String MOD_RESOURCES_ID = "mod_resources";
     private static Map<IModFile, Pack.ResourcesSupplier> modResourcePacks;
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final PackSelectionConfig MOD_PACK_SELECTION_CONFIG = new PackSelectionConfig(false, Pack.Position.BOTTOM, false);
 
     public static Optional<Pack.ResourcesSupplier> getPackFor(String modId) {
         return Optional.ofNullable(ModList.get().getModFileById(modId)).map(IModFileInfo::getFile).map(mf -> modResourcePacks.get(mf));
@@ -98,18 +100,21 @@ public class ResourcePackLoader {
             final String packName = mod.getOwningFile().getFile().getFileName();
 
             try {
+                var locationInfo = new PackLocationInfo(
+                        name,
+                        Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
+                        PackSource.DEFAULT,
+                        Optional.empty());
+
                 final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack());
                 final Pack modPack;
                 // Packs displayed separately must be valid
                 if (isRequired) {
                     modPack = Pack.readMetaAndCreate(
-                            name,
-                            Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
-                            false,
+                            locationInfo,
                             e.getValue(),
                             packType,
-                            Pack.Position.BOTTOM,
-                            PackSource.DEFAULT);
+                            MOD_PACK_SELECTION_CONFIG);
 
                     if (modPack == null) {
                         ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
@@ -117,13 +122,10 @@ public class ResourcePackLoader {
                     }
                 } else {
                     modPack = readWithOptionalMeta(
-                            name,
-                            Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
-                            false,
+                            locationInfo,
                             e.getValue(),
                             packType,
-                            Pack.Position.BOTTOM,
-                            PackSource.DEFAULT);
+                            MOD_PACK_SELECTION_CONFIG);
                 }
 
                 if (isRequired) {
@@ -142,26 +144,23 @@ public class ResourcePackLoader {
 
     public static final MetadataSectionType<PackMetadataSection> OPTIONAL_FORMAT = MetadataSectionType.fromCodec("pack", RecordCodecBuilder.create(
             in -> in.group(
-                    ExtraCodecs.strictOptionalField(ComponentSerialization.CODEC, "description", Component.empty()).forGetter(PackMetadataSection::description),
-                    ExtraCodecs.strictOptionalField(Codec.INT, "pack_format", -1).forGetter(PackMetadataSection::packFormat),
-                    ExtraCodecs.strictOptionalField(InclusiveRange.codec(Codec.INT), "supported_formats").forGetter(PackMetadataSection::supportedFormats))
+                    ComponentSerialization.CODEC.optionalFieldOf("description", Component.empty()).forGetter(PackMetadataSection::description),
+                    Codec.INT.optionalFieldOf("pack_format", -1).forGetter(PackMetadataSection::packFormat),
+                    InclusiveRange.codec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackMetadataSection::supportedFormats))
                     .apply(in, PackMetadataSection::new)));
 
     public static Pack readWithOptionalMeta(
-            String id,
-            Component title,
-            boolean required,
+            PackLocationInfo location,
             Pack.ResourcesSupplier resources,
             PackType type,
-            Pack.Position position,
-            PackSource source) throws IOException {
-        final Pack.Info packInfo = readInfo(type, resources, id, title);
-        return Pack.create(id, title, required, resources, packInfo, position, false, source);
+            PackSelectionConfig selectionConfig) throws IOException {
+        final Pack.Metadata packInfo = readMeta(type, location, resources);
+        return new Pack(location, resources, packInfo, selectionConfig);
     }
 
-    private static Pack.Info readInfo(PackType type, Pack.ResourcesSupplier resources, String id, Component title) throws IOException {
+    private static Pack.Metadata readMeta(PackType type, PackLocationInfo location, Pack.ResourcesSupplier resources) throws IOException {
         final int currentVersion = SharedConstants.getCurrentVersion().getPackVersion(type);
-        try (final PackResources primaryResources = resources.openPrimary(id)) {
+        try (final PackResources primaryResources = resources.openPrimary(location)) {
             final PackMetadataSection metadata = primaryResources.getMetadataSection(OPTIONAL_FORMAT);
 
             final FeatureFlagSet flags = Optional.ofNullable(primaryResources.getMetadataSection(FeatureFlagsMetadataSection.TYPE))
@@ -173,16 +172,16 @@ public class ResourcePackLoader {
                     .orElse(List.of());
 
             if (metadata == null) {
-                return new Pack.Info(title, PackCompatibility.COMPATIBLE, flags, overlays, primaryResources.isHidden());
+                return new Pack.Metadata(location.title(), PackCompatibility.COMPATIBLE, flags, overlays, primaryResources.isHidden());
             }
 
             final PackCompatibility compatibility;
             if (metadata.packFormat() == -1 && metadata.supportedFormats().isEmpty()) {
                 compatibility = PackCompatibility.COMPATIBLE;
             } else {
-                compatibility = PackCompatibility.forVersion(Pack.getDeclaredPackVersions(id, metadata), currentVersion);
+                compatibility = PackCompatibility.forVersion(Pack.getDeclaredPackVersions(location.id(), metadata), currentVersion);
             }
-            return new Pack.Info(metadata.description(), compatibility, flags, overlays, primaryResources.isHidden());
+            return new Pack.Metadata(metadata.description(), compatibility, flags, overlays, primaryResources.isHidden());
         }
     }
 
@@ -190,14 +189,16 @@ public class ResourcePackLoader {
         final String id = packType == PackType.CLIENT_RESOURCES ? MOD_RESOURCES_ID : MOD_DATA_ID;
         final String name = packType == PackType.CLIENT_RESOURCES ? "Mod Resources" : "Mod Data";
         final String descriptionKey = packType == PackType.CLIENT_RESOURCES ? "fml.resources.modresources" : "fml.resources.moddata";
-        return Pack.readMetaAndCreate(id, Component.literal(name), true,
+        return Pack.readMetaAndCreate(
+                new PackLocationInfo(id, Component.literal(name), PackSource.DEFAULT, Optional.empty()),
                 new EmptyPackResources.EmptyResourcesSupplier(new PackMetadataSection(Component.translatable(descriptionKey, hiddenPacks.size()),
-                        SharedConstants.getCurrentVersion().getPackVersion(packType)), false),
-                packType, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks);
+                        SharedConstants.getCurrentVersion().getPackVersion(packType))),
+                packType,
+                new PackSelectionConfig(true, Pack.Position.BOTTOM, false)).withChildren(hiddenPacks);
     }
 
     public static Pack.ResourcesSupplier createPackForMod(IModFileInfo mf) {
-        return new PathPackResources.PathResourcesSupplier(mf.getFile().getSecureJar().getRootPath(), true);
+        return new PathPackResources.PathResourcesSupplier(mf.getFile().getSecureJar().getRootPath());
     }
 
     public static List<String> getDataPackNames() {

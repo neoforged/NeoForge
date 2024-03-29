@@ -1,23 +1,23 @@
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -368,7 +_,7 @@
-                 DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_123562_.getItem();
-                 BlockPos blockpos = p_302435_.pos().relative(p_302435_.state().getValue(DispenserBlock.FACING));
-                 Level level = p_302435_.level();
+@@ -231,7 +_,7 @@
+                 DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_338251_.getItem();
+                 BlockPos blockpos = p_338850_.pos().relative(p_338850_.state().getValue(DispenserBlock.FACING));
+                 Level level = p_338850_.level();
 -                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null)) {
-+                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null, p_123562_)) {
-                     dispensiblecontaineritem.checkExtraContent(null, level, p_123562_, blockpos);
++                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null, p_338251_)) {
+                     dispensiblecontaineritem.checkExtraContent(null, level, p_338251_, blockpos);
                      return new ItemStack(Items.BUCKET);
                  } else {
-@@ -431,9 +_,10 @@
+@@ -293,9 +_,10 @@
                  } else if (CampfireBlock.canLight(blockstate) || CandleBlock.canLight(blockstate) || CandleCakeBlock.canLight(blockstate)) {
                      level.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
                      level.gameEvent(null, GameEvent.BLOCK_CHANGE, blockpos);
 -                } else if (blockstate.getBlock() instanceof TntBlock) {
 -                    TntBlock.explode(level, blockpos);
 -                    level.removeBlock(blockpos, false);
-+                } else if (blockstate.isFlammable(level, blockpos, p_302453_.state().getValue(DispenserBlock.FACING).getOpposite())) {
-+                    blockstate.onCaughtFire(level, blockpos, p_302453_.state().getValue(DispenserBlock.FACING).getOpposite(), null);
++                } else if (blockstate.isFlammable(level, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite())) {
++                    blockstate.onCaughtFire(level, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite(), null);
 +                    if (blockstate.getBlock() instanceof TntBlock)
 +                        level.removeBlock(blockpos, false);
                  } else {

@@ -75,7 +75,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
                     ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                     if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket) {
                         FluidStack extracted = new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);
-                        if (!resource.isFluidEqual(extracted)) {
+                        if (!FluidStack.isSameFluidSameComponents(resource, extracted)) {
                             //Be loud if something went wrong
                             LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
                                     BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.getFluid()));
@@ -85,7 +85,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
                     }
                 } else {
                     FluidStack extracted = new FluidStack(fluidState.getType(), FluidType.BUCKET_VOLUME);
-                    if (resource.isFluidEqual(extracted)) {
+                    if (FluidStack.isSameFluid(resource, extracted)) {
                         //Validate NBT matches
                         return extracted;
                     }

@@ -5,20 +5,18 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 /**
  * FluidHandlerItemStackSimple is a template capability provider for ItemStacks.
- * Data is stored directly in the vanilla NBT, in the same way as the old ItemFluidContainer.
+ * Data is stored in the {@link NeoForgeMod#FLUID_STACK_COMPONENT} component.
  *
- * This implementation only allows item containers to be fully filled or emptied, similar to vanilla buckets.
+ * <p>This implementation only allows item containers to be fully filled or emptied, similar to vanilla buckets.
  */
 public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
-    public static final String FLUID_NBT_KEY = "Fluid";
-
     protected ItemStack container;
     protected int capacity;
 
@@ -37,21 +35,12 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
     }
 
     public FluidStack getFluid() {
-        CompoundTag tagCompound = container.getTag();
-        if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
-            return FluidStack.EMPTY;
-        }
-        return FluidStack.loadFluidStackFromNBT(tagCompound.getCompound(FLUID_NBT_KEY));
+        // TODO 1.20.5: should not need a copy if it's immutable.
+        return container.getOrDefault(NeoForgeMod.FLUID_STACK_COMPONENT.get(), FluidStack.EMPTY).copy();
     }
 
     protected void setFluid(FluidStack fluid) {
-        if (!container.hasTag()) {
-            container.setTag(new CompoundTag());
-        }
-
-        CompoundTag fluidTag = new CompoundTag();
-        fluid.writeToNBT(fluidTag);
-        container.getTag().put(FLUID_NBT_KEY, fluidTag);
+        container.set(NeoForgeMod.FLUID_STACK_COMPONENT.get(), fluid);
     }
 
     @Override
@@ -97,7 +86,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
+        if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, getFluid())) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
@@ -142,7 +131,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
      * Can be used to destroy the container with "container.stackSize--"
      */
     protected void setContainerToEmpty() {
-        container.removeTagKey(FLUID_NBT_KEY);
+        container.remove(NeoForgeMod.FLUID_STACK_COMPONENT.get());
     }
 
     /**

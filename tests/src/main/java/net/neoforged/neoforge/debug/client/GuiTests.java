@@ -10,14 +10,19 @@ import java.util.Random;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import net.neoforged.testframework.DynamicTest;
@@ -105,5 +110,61 @@ public class GuiTests {
         private void pushLayerButton(Button button) {
             this.minecraft.pushGuiLayer(new TestLayer(Component.literal("LayerScreen")));
         }
+    }
+
+    @TestHolder(description = "Checks that GUI layers can move hearts, air bubbles, etc")
+    static void testGuiLayerLeftRightHeight(DynamicTest test) {
+        test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
+            event.registerBelow(VanillaGuiLayers.PLAYER_HEALTH, new ResourceLocation(test.createModId(), "left1"), makeLeftOverlay(test, 3, 0x80FF0000));
+            event.registerBelow(VanillaGuiLayers.ARMOR_LEVEL, new ResourceLocation(test.createModId(), "left2"), makeLeftOverlay(test, 3, 0x80CC0000));
+            event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, new ResourceLocation(test.createModId(), "left3"), makeLeftOverlay(test, 3, 0x80990000));
+
+            event.registerBelow(VanillaGuiLayers.FOOD_LEVEL, new ResourceLocation(test.createModId(), "right1"), makeRightOverlay(test, 2, 0x8000FF00));
+            event.registerBelow(VanillaGuiLayers.VEHICLE_HEALTH, new ResourceLocation(test.createModId(), "right2"), makeRightOverlay(test, 2, 0x8000DD00));
+            event.registerBelow(VanillaGuiLayers.AIR_LEVEL, new ResourceLocation(test.createModId(), "right3"), makeRightOverlay(test, 2, 0x8000BB00));
+            event.registerAbove(VanillaGuiLayers.AIR_LEVEL, new ResourceLocation(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
+        });
+
+        test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
+            if (chatEvent.getMessage().equalsIgnoreCase("gui layer test")) {
+                test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
+                        """
+                                Do you see green rectangles on the right and red rectangles on the left?
+                                Do the vanilla hearts, armor, food, vehicle health and air overlays move accordingly?
+                                """));
+            }
+        });
+    }
+
+    private static LayeredDraw.Layer makeRightOverlay(DynamicTest test, int height, int color) {
+        return (guiGraphics, partialTick) -> {
+            if (!test.framework().tests().isEnabled(test.id())) {
+                return;
+            }
+            var gui = Minecraft.getInstance().gui;
+            guiGraphics.fill(
+                    guiGraphics.guiWidth() / 2 + 91 - 80,
+                    guiGraphics.guiHeight() - gui.rightHeight + 9 - height,
+                    guiGraphics.guiWidth() / 2 + 91,
+                    guiGraphics.guiHeight() - gui.rightHeight + 9,
+                    color);
+            gui.rightHeight += height + 1;
+        };
+    }
+
+    private static LayeredDraw.Layer makeLeftOverlay(DynamicTest test, int height, int color) {
+        return (guiGraphics, partialTick) -> {
+            if (!test.framework().tests().isEnabled(test.id())) {
+                return;
+            }
+            var gui = Minecraft.getInstance().gui;
+            guiGraphics.fill(
+                    guiGraphics.guiWidth() / 2 - 91,
+                    guiGraphics.guiHeight() - gui.leftHeight + 9 - height,
+                    guiGraphics.guiWidth() / 2 - 91 + 80,
+                    guiGraphics.guiHeight() - gui.leftHeight + 9,
+                    color);
+            gui.leftHeight += height + 1;
+        };
     }
 }

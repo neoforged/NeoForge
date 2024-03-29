@@ -9,7 +9,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.mojang.logging.LogUtils;
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
+import cpw.mods.modlauncher.api.LambdaExceptionUtils;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.invoke.MethodHandle;
@@ -64,7 +64,7 @@ public final class FrameworkCollectors {
             final Type annType = Type.getType(annotation);
             return container.getModInfo().getOwningFile().getFile().getScanResult()
                     .getAnnotations().stream().filter(it -> annType.equals(it.annotationType()) && it.targetType() == ElementType.TYPE && SIDE_FILTER.test(it))
-                    .map(LamdbaExceptionUtils.rethrowFunction(annotationData -> {
+                    .map(LambdaExceptionUtils.rethrowFunction(annotationData -> {
                         final Class<?> clazz = Class.forName(annotationData.clazz().getClassName());
                         return (Test) clazz.getDeclaredConstructor().newInstance();
                     })).toList();
@@ -119,7 +119,7 @@ public final class FrameworkCollectors {
         final SetMultimap<OnInit.Stage, Consumer<MutableTestFramework>> set = Multimaps.newSetMultimap(new EnumMap<>(OnInit.Stage.class), HashSet::new);
         findMethodsWithAnnotation(container, d -> true, OnInit.class)
                 .filter(method -> Modifier.isStatic(method.getModifiers()) && method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(TestFrameworkImpl.class))
-                .forEach(LamdbaExceptionUtils.rethrowConsumer(method -> {
+                .forEach(LambdaExceptionUtils.rethrowConsumer(method -> {
                     final MethodHandle handle = ReflectionUtils.handle(method);
                     set.put(method.getAnnotation(OnInit.class).value(), framework -> {
                         try {
@@ -142,7 +142,7 @@ public final class FrameworkCollectors {
         container.getModInfo().getOwningFile().getFile().getScanResult()
                 .getAnnotations().stream()
                 .filter(it -> it.targetType() == ElementType.FIELD && it.annotationType().equals(regStrTemplate))
-                .map(LamdbaExceptionUtils.rethrowFunction(data -> Class.forName(data.clazz().getClassName()).getDeclaredField(data.memberName())))
+                .map(LambdaExceptionUtils.rethrowFunction(data -> Class.forName(data.clazz().getClassName()).getDeclaredField(data.memberName())))
                 .filter(it -> Modifier.isStatic(it.getModifiers()) && (StructureTemplate.class.isAssignableFrom(it.getType()) || Supplier.class.isAssignableFrom(it.getType())))
                 .forEach(field -> {
                     try {
@@ -170,7 +170,7 @@ public final class FrameworkCollectors {
         final Type asmType = Type.getType(TestGroup.class);
         container.getModInfo().getOwningFile().getFile().getScanResult()
                 .getAnnotations().stream().filter(it -> asmType.equals(it.annotationType()))
-                .forEach(LamdbaExceptionUtils.rethrowConsumer(annotationData -> {
+                .forEach(LambdaExceptionUtils.rethrowConsumer(annotationData -> {
                     final Class<?> clazz = Class.forName(annotationData.clazz().getClassName());
                     final Field field = clazz.getDeclaredField(annotationData.memberName());
                     final String groupId = (String) field.get(null);
@@ -195,7 +195,7 @@ public final class FrameworkCollectors {
         return container.getModInfo().getOwningFile().getFile().getScanResult()
                 .getAnnotations().stream().filter(it -> annType.equals(it.annotationType()) && it.targetType() == ElementType.METHOD && annotationPredicate.test(it))
                 .filter(it -> !excludedSides.contains(it.clazz().getClassName()))
-                .map(LamdbaExceptionUtils.rethrowFunction(annotationData -> {
+                .map(LambdaExceptionUtils.rethrowFunction(annotationData -> {
                     final Class<?> clazz = Class.forName(annotationData.clazz().getClassName());
                     final String methodName = annotationData.memberName().substring(0, annotationData.memberName().indexOf("("));
                     return ReflectionUtils.methodMatching(clazz, it -> it.getName().equals(methodName) && it.getAnnotation(annotation) != null);

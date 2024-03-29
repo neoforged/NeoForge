@@ -5,7 +5,10 @@
 
 package net.neoforged.neoforge.oldtest;
 
+import java.util.Optional;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
@@ -33,8 +36,7 @@ public class AddPackFinderEventTest {
     public void addPackFinders(AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
             var resourcePath = ModList.get().getModFileById(MODID).getFile().findResource("test_nested_resource_pack");
-            var pack = Pack.readMetaAndCreate("builtin/add_pack_finders_test", Component.literal("display name"), true,
-                    BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath, true)), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.BUILT_IN);
+            var pack = Pack.readMetaAndCreate(new PackLocationInfo("builtin/add_pack_finders_test", Component.literal("display name"), PackSource.BUILT_IN, Optional.empty()), BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath)), PackType.CLIENT_RESOURCES, new PackSelectionConfig(true, Pack.Position.BOTTOM, false));
             event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
         }
     }

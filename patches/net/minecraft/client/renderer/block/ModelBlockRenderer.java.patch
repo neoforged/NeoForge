@@ -80,7 +80,7 @@
          ModelBlockRenderer.AmbientOcclusionFace modelblockrenderer$ambientocclusionface = new ModelBlockRenderer.AmbientOcclusionFace();
 @@ -90,7 +_,7 @@
  
-         for(Direction direction : DIRECTIONS) {
+         for (Direction direction : DIRECTIONS) {
              p_234398_.setSeed(p_234399_);
 -            List<BakedQuad> list = p_234392_.getQuads(p_234393_, direction, p_234398_);
 +            List<BakedQuad> list = p_234392_.getQuads(p_234393_, direction, p_234398_, modelData, renderType);
@@ -127,7 +127,7 @@
          BitSet bitset = new BitSet(3);
          BlockPos.MutableBlockPos blockpos$mutableblockpos = p_234405_.mutable();
  
-         for(Direction direction : DIRECTIONS) {
+         for (Direction direction : DIRECTIONS) {
              p_234409_.setSeed(p_234410_);
 -            List<BakedQuad> list = p_234403_.getQuads(p_234404_, direction, p_234409_);
 +            List<BakedQuad> list = p_234403_.getQuads(p_234404_, direction, p_234409_, modelData, renderType);
@@ -145,13 +145,13 @@
          }
 @@ -158,6 +_,7 @@
      ) {
-         for(BakedQuad bakedquad : p_111018_) {
+         for (BakedQuad bakedquad : p_111018_) {
              this.calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.getVertices(), bakedquad.getDirection(), p_111019_, p_111020_);
 +            if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_111020_.get(0), p_111021_.brightness, p_111021_.lightmap))
              p_111021_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.getDirection(), p_111019_, p_111020_, bakedquad.isShade());
              this.putQuadData(
                  p_111013_,
-@@ -322,6 +_,7 @@
+@@ -323,6 +_,7 @@
          }
      }
  
@@ -159,7 +159,7 @@
      public void renderModel(
          PoseStack.Pose p_111068_,
          VertexConsumer p_111069_,
-@@ -333,16 +_,32 @@
+@@ -334,16 +_,32 @@
          int p_111075_,
          int p_111076_
      ) {
@@ -182,7 +182,7 @@
          RandomSource randomsource = RandomSource.create();
          long i = 42L;
  
-         for(Direction direction : DIRECTIONS) {
+         for (Direction direction : DIRECTIONS) {
              randomsource.setSeed(42L);
 -            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, direction, randomsource), p_111075_, p_111076_);
 +            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, direction, randomsource, modelData, renderType), p_111075_, p_111076_);

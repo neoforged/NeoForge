@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/SnowGolem.java
 +++ b/net/minecraft/world/entity/animal/SnowGolem.java
-@@ -95,7 +_,7 @@
+@@ -92,7 +_,7 @@
                  this.hurt(this.damageSources().onFire(), 1.0F);
              }
  
@@ -9,7 +9,7 @@
                  return;
              }
  
-@@ -135,7 +_,7 @@
+@@ -127,7 +_,7 @@
      @Override
      protected InteractionResult mobInteract(Player p_29920_, InteractionHand p_29921_) {
          ItemStack itemstack = p_29920_.getItemInHand(p_29921_);

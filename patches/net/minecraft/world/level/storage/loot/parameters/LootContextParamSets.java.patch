@@ -4,11 +4,11 @@
      public static final LootContextParamSet EMPTY = register("empty", p_81454_ -> {
      });
      public static final LootContextParamSet CHEST = register(
--        "chest", p_81452_ -> p_81452_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
+-        "chest", p_323464_ -> p_323464_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
 +        "chest", p_81452_ -> p_81452_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.KILLER_ENTITY) //Forge: Chest minecarts can have killer entities
      );
      public static final LootContextParamSet COMMAND = register(
-         "command", p_81450_ -> p_81450_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
+         "command", p_330195_ -> p_330195_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
 @@ -29,7 +_,7 @@
          "selector", p_81442_ -> p_81442_.required(LootContextParams.ORIGIN).required(LootContextParams.THIS_ENTITY)
      );

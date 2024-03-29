@@ -41,7 +41,7 @@
      @Override
 @@ -109,6 +_,7 @@
      @Override
-     public FluidState getFluidState(BlockState p_54765_) {
+     protected FluidState getFluidState(BlockState p_54765_) {
          int i = p_54765_.getValue(LEVEL);
 +        if (!fluidStateCacheInitialized) initFluidStateCache();
          return this.stateCache.get(Math.min(i, 8));
@@ -50,7 +50,7 @@
 @@ -134,7 +_,7 @@
  
      @Override
-     public void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
+     protected void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
 -        if (this.shouldSpreadLiquid(p_54755_, p_54756_, p_54754_)) {
 +        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54755_, p_54756_)) {
              p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.fluid.getTickDelay(p_54755_));
@@ -59,7 +59,7 @@
 @@ -150,11 +_,12 @@
  
      @Override
-     public void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, BlockPos p_54713_, boolean p_54714_) {
+     protected void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, BlockPos p_54713_, boolean p_54714_) {
 -        if (this.shouldSpreadLiquid(p_54710_, p_54711_, p_54709_)) {
 +        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54710_, p_54711_)) {
              p_54710_.scheduleTick(p_54711_, p_54709_.getFluidState().getType(), this.fluid.getTickDelay(p_54710_));

@@ -14,7 +14,7 @@
          this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
          p_252014_.pop();
      }
-@@ -482,7 +_,17 @@
+@@ -481,7 +_,17 @@
          }
  
          @Override
@@ -32,7 +32,7 @@
              ModelBakery.BakedCacheKey modelbakery$bakedcachekey = new ModelBakery.BakedCacheKey(p_252176_, p_249765_.getRotation(), p_249765_.isUvLocked());
              BakedModel bakedmodel = ModelBakery.this.bakedCache.get(modelbakery$bakedcachekey);
              if (bakedmodel != null) {
-@@ -491,11 +_,11 @@
+@@ -490,11 +_,11 @@
                  UnbakedModel unbakedmodel = this.getModel(p_252176_);
                  if (unbakedmodel instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {
                      return ModelBakery.ITEM_MODEL_GENERATOR

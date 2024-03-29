@@ -1,10 +1,10 @@
 --- a/net/minecraft/gametest/framework/GameTestInfo.java
 +++ b/net/minecraft/gametest/framework/GameTestInfo.java
-@@ -247,6 +_,7 @@
-     public void prepareTestStructure(BlockPos p_309710_) {
-         this.structureBlockEntity = StructureUtils.prepareTestStructure(this, p_309710_, this.getRotation(), this.level);
+@@ -264,6 +_,7 @@
+         BlockPos blockpos = this.getOrCalculateNorthwestCorner();
+         this.structureBlockEntity = StructureUtils.prepareTestStructure(this, blockpos, this.getRotation(), this.level);
          this.structureBlockPos = this.structureBlockEntity.getBlockPos();
 +        this.structureBlockEntity.setMetaData(this.getTestName()); // Neo: set the test name as metadata as it isn't always RL-compatible
          StructureUtils.addCommandBlockAndButtonToStartTest(this.structureBlockPos, new BlockPos(1, 0, -1), this.getRotation(), this.level);
+         StructureUtils.encaseStructure(this.getStructureBounds(), this.level, !this.testFunction.skyAccess());
          this.listeners.forEach(p_127630_ -> p_127630_.testStructureLoaded(this));
-     }

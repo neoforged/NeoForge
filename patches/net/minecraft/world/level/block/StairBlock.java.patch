@@ -42,18 +42,22 @@
      }
  
      @Override
-@@ -243,4 +_,14 @@
-     public boolean isPathfindable(BlockState p_56891_, BlockGetter p_56892_, BlockPos p_56893_, PathComputationType p_56894_) {
+@@ -243,4 +_,18 @@
+     protected boolean isPathfindable(BlockState p_56891_, PathComputationType p_56894_) {
          return false;
      }
 +
-+    // Forge Start
++    // NEO START
++
 +    private final java.util.function.Supplier<BlockState> stateSupplier;
++
 +    private Block getModelBlock() {
-+         return getModelState().getBlock();
++        return getModelState().getBlock();
 +    }
++
 +    protected BlockState getModelState() {
-+         return stateSupplier.get();
++        return stateSupplier.get();
 +    }
-+    // Forge end
++
++    // NEO END
  }
