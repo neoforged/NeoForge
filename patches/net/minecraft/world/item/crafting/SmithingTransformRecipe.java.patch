@@ -4,7 +4,7 @@
          if (compoundtag != null) {
              itemstack.setTag(compoundtag.copy());
          }
-+        net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(p_267036_.getItem(1), itemstack);
++        net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(p_267036_.getItem(1), itemstack);
  
          return itemstack;
      }

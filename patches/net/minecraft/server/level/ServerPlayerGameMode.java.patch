@@ -1,5 +1,16 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
+@@ -65,7 +_,10 @@
+     protected void setGameModeForPlayer(GameType p_9274_, @Nullable GameType p_9275_) {
+         this.previousGameModeForPlayer = p_9275_;
+         this.gameModeForPlayer = p_9274_;
++        // Neo: preserve flying state, removed on tick if Attribute or ability no longer applies
++        boolean wasFlying = this.player.getAbilities().flying;
+         p_9274_.updatePlayerAbilities(this.player.getAbilities());
++        this.player.getAbilities().flying = wasFlying || this.player.getAbilities().flying;
+     }
+ 
+     public GameType getGameModeForPlayer() {
 @@ -126,7 +_,11 @@
      }
  

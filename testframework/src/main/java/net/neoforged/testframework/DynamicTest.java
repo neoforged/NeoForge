@@ -51,7 +51,7 @@ public interface DynamicTest extends Test {
      * Marks this test as {@linkplain Result#PASSED passed}.
      */
     default void pass() {
-        updateStatus(new Status(Result.PASSED, ""), null);
+        updateStatus(Status.passed(), null);
     }
 
     /**
@@ -60,7 +60,7 @@ public interface DynamicTest extends Test {
      * @param message additional information explaining why the test failed
      */
     default void fail(String message) {
-        updateStatus(new Status(Result.FAILED, message), null);
+        updateStatus(Status.failed(message), null);
     }
 
     /**

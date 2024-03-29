@@ -15,12 +15,6 @@ installerProfile {
     profile = 'NeoForge'
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(project.java_version))
-    }
-}
-
 minecraft {
     accessTransformers {
         file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')

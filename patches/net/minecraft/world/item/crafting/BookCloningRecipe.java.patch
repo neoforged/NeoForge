@@ -4,7 +4,7 @@
              CompoundTag compoundtag = itemstack.getTag().copy();
              compoundtag.putInt("generation", WrittenBookItem.getGeneration(itemstack) + 1);
              itemstack2.setTag(compoundtag);
-+            net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack2);
++            net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack2);
              return itemstack2;
          } else {
              return ItemStack.EMPTY;

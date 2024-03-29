@@ -8,7 +8,7 @@
      public void tesselateBlock(
          BlockAndTintGetter p_234380_,
          BakedModel p_234381_,
-@@ -52,15 +_,31 @@
+@@ -52,15 +_,35 @@
          long p_234388_,
          int p_234389_
      ) {
@@ -29,7 +29,11 @@
 +        net.neoforged.neoforge.client.model.data.ModelData modelData,
 +        net.minecraft.client.renderer.RenderType renderType
 +    ) {
-+        boolean flag = Minecraft.useAmbientOcclusion() && p_234382_.getLightEmission(p_234380_, p_234383_) == 0 && p_234381_.useAmbientOcclusion(p_234382_, renderType);
++        boolean flag = Minecraft.useAmbientOcclusion() && switch(p_234381_.useAmbientOcclusion(p_234382_, modelData, renderType)) {
++            case TRUE -> true;
++            case DEFAULT -> p_234382_.getLightEmission(p_234380_, p_234383_) == 0;
++            case FALSE -> false;
++        };
          Vec3 vec3 = p_234382_.getOffset(p_234380_, p_234383_);
          p_234384_.translate(vec3.x, vec3.y, vec3.z);
  

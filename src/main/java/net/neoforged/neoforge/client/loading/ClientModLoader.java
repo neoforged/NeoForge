@@ -30,7 +30,6 @@ import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -56,8 +55,7 @@ public class ClientModLoader {
         LanguageHook.loadBuiltinLanguages();
         createRunnableWithCatch(() -> ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ImmediateWindowHandler::renderTick)).run();
         if (error == null) {
-            ResourcePackLoader.loadResourcePacks(defaultResourcePacks, map -> ResourcePackLoader.buildPackFinder(map, PackType.CLIENT_RESOURCES));
-            ModLoader.get().postEvent(new AddPackFindersEvent(PackType.CLIENT_RESOURCES, defaultResourcePacks::addPackFinder));
+            ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES);
             DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getDataPackNames());
             mcResourceManager.registerReloadListener(ClientModLoader::onResourceReload);
             mcResourceManager.registerReloadListener(BrandingControl.resourceManagerReloadListener());

@@ -36,6 +36,7 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.ENCHANTMENT, // Required for EnchantmentMenu syncing
             BuiltInRegistries.ENTITY_TYPE, // Required for Entity spawn packets
             BuiltInRegistries.ITEM, // Required for Item/ItemStack packets
+            BuiltInRegistries.FLUID, // Required for Fluid/FluidStack packets
             BuiltInRegistries.PARTICLE_TYPE, // Required for ParticleType packets
             BuiltInRegistries.BLOCK_ENTITY_TYPE, // Required for BlockEntity packets
             BuiltInRegistries.PAINTING_VARIANT, // Required for EntityDataSerializers

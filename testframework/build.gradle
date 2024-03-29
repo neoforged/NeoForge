@@ -1,9 +1,12 @@
 plugins {
     id 'java'
+    id 'maven-publish'
     id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
     id 'net.neoforged.gradle.platform'
 }
+
+java.withSourcesJar()
 
 repositories {
     maven {
@@ -26,6 +29,31 @@ dependencies {
 license {
     header = rootProject.file('codeformat/HEADER.txt')
     include '**/*.java'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties version: version
+
+    filesMatching(['META-INF/mods.toml']) {
+        expand version: version
+    }
+}
+
+publishing {
+    publications.create('TestFramework', MavenPublication) {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+
+        from components.java
+    }
+    repositories {
+        maven rootProject.gradleutils.getPublishingMaven()
+    }
 }
 
 apply from: rootProject.file('buildscript/spotless-rules.gradle')

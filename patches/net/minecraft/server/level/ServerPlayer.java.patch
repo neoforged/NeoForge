@@ -11,6 +11,18 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(p_143455_.containerId, p_143456_, p_143457_));
          }
      };
+@@ -546,6 +_,11 @@
+                 this.connection.send(new ClientboundSetExperiencePacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
+             }
+ 
++            if (this.getAbilities().flying && !this.mayFly()) {
++                this.getAbilities().flying = false;
++                this.onUpdateAbilities();
++            }
++
+             if (this.tickCount % 20 == 0) {
+                 CriteriaTriggers.LOCATION.trigger(this);
+             }
 @@ -594,6 +_,7 @@
      @Override
      public void die(DamageSource p_9035_) {

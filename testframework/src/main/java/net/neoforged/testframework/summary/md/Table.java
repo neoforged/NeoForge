@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.testframework.impl.md;
+package net.neoforged.testframework.summary.md;
 
 import java.util.ArrayList;
 import java.util.Arrays;

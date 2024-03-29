@@ -190,11 +190,11 @@ public abstract class AbstractTest implements Test {
     }
 
     protected void fail(String message) {
-        updateStatus(new Status(Result.FAILED, message), null);
+        updateStatus(Status.failed(message), null);
     }
 
     protected void pass() {
-        updateStatus(new Status(Result.PASSED, ""), null);
+        updateStatus(Status.passed(), null);
     }
 
     public final void requestConfirmation(Player player, Component message) {
