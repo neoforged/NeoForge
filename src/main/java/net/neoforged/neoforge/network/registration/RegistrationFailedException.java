@@ -99,10 +99,6 @@ public class RegistrationFailedException extends RuntimeException {
          */
         DUPLICATE_ID((id, namespace) -> "Duplicate payload id " + id + " for payload in namespace " + namespace + "."),
         /**
-         * The payload id is registered in the wrong namespace.
-         */
-        INVALID_NAMESPACE((id, namespace) -> "Try registering payload in namespace " + namespace + " for payload with id " + id + "."),
-        /**
          * The registrar is invalid.
          */
         INVALID_REGISTRAR((id, namespace) -> "Invalid registrar. It can not be used to register payloads."),
