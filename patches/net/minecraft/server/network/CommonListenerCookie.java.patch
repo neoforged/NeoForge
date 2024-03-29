@@ -1,20 +1,19 @@
 --- a/net/minecraft/server/network/CommonListenerCookie.java
 +++ b/net/minecraft/server/network/CommonListenerCookie.java
-@@ -3,7 +_,16 @@
+@@ -3,7 +_,15 @@
  import com.mojang.authlib.GameProfile;
  import net.minecraft.server.level.ClientInformation;
  
--public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation) {
-+public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
-+
+-public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean transferred) {
++public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean transferred, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
 +    /**
-+     * @deprecated Use {@link #CommonListenerCookie(GameProfile, int, ClientInformation, net.neoforged.neoforge.network.connection.ConnectionType)} instead, to indicate whether the connection is modded.
++     * @deprecated Use {@link #CommonListenerCookie(GameProfile, int, ClientInformation, boolean, net.neoforged.neoforge.network.connection.ConnectionType)} instead, to indicate whether the connection is modded.
 +     */
 +    @Deprecated
-+    public CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation) {
-+        this(gameProfile, latency, clientInformation, net.neoforged.neoforge.network.connection.ConnectionType.VANILLA);
++    public CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean transferred) {
++        this(gameProfile, latency, clientInformation, transferred, net.neoforged.neoforge.network.connection.ConnectionType.VANILLA);
 +    }
 +
-     public static CommonListenerCookie createInitial(GameProfile p_302024_) {
-         return new CommonListenerCookie(p_302024_, 0, ClientInformation.createDefault());
+     public static CommonListenerCookie createInitial(GameProfile p_302024_, boolean p_320180_) {
+         return new CommonListenerCookie(p_302024_, 0, ClientInformation.createDefault(), p_320180_);
      }

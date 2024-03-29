@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.item;
 
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +35,7 @@ public class ItemStackedOnOtherTest {
             ItemStack carried = event.getCarriedItem();
             ItemStack current = event.getStackedOnItem();
             if (carried.is(Items.DIAMOND_SWORD) && current.isDamageableItem()) {
-                current.hurtAndBreak(1, player, p -> {});
+                current.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
                 event.setCanceled(true);
             }
         }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/FurnaceResultSlot.java
 +++ b/net/minecraft/world/inventory/FurnaceResultSlot.java
-@@ -53,5 +_,6 @@
+@@ -49,5 +_,6 @@
          }
  
          this.removeCount = 0;

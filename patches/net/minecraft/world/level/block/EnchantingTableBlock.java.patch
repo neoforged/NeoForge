@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/EnchantingTableBlock.java
++++ b/net/minecraft/world/level/block/EnchantingTableBlock.java
+@@ -47,7 +_,7 @@
+     }
+ 
+     public static boolean isValidBookShelf(Level p_340976_, BlockPos p_340984_, BlockPos p_341294_) {
+-        return p_340976_.getBlockState(p_340984_.offset(p_341294_)).is(BlockTags.ENCHANTMENT_POWER_PROVIDER)
++        return p_340976_.getBlockState(p_340984_.offset(p_341294_)).getEnchantPowerBonus(p_340976_, p_340984_.offset(p_341294_)) != 0
+             && p_340976_.getBlockState(p_340984_.offset(p_341294_.getX() / 2, p_341294_.getY(), p_341294_.getZ() / 2))
+                 .is(BlockTags.ENCHANTMENT_POWER_TRANSMITTER);
+     }

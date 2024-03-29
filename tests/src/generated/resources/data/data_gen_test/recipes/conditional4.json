@@ -21,6 +21,6 @@
   ],
   "result": {
     "count": 9,
-    "item": "minecraft:netherite_block"
+    "id": "minecraft:netherite_block"
   }
 }

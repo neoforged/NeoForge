@@ -12,6 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -144,8 +145,9 @@ class TagsCommand {
         final ResourceLocation elementLocation = ResourceLocationArgument.getId(ctx, "element");
         final ResourceKey<?> elementKey = ResourceKey.create(cast(registryKey), elementLocation);
 
-        final Holder<?> elementHolder = registry.getHolder(cast(elementKey))
-                .orElseThrow(() -> UNKNOWN_ELEMENT.create(elementLocation, registryKey.location()));
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        final Optional<Holder<?>> elementHolderOpt = registry.getHolder(TagsCommand.<ResourceKey>cast(elementKey));
+        final Holder<?> elementHolder = elementHolderOpt.orElseThrow(() -> UNKNOWN_ELEMENT.create(elementLocation, registryKey.location()));
 
         final long containingTagsCount = elementHolder.tags().count();
 

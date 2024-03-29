@@ -30,7 +30,7 @@ public record SyncRegistries() implements ICustomConfigurationTask {
     public void run(Consumer<CustomPacketPayload> sender) {
         sender.accept(new FrozenRegistrySyncStartPayload(RegistryManager.getRegistryNamesForSyncToClient()));
         RegistryManager.generateRegistryPackets(false).forEach(sender);
-        sender.accept(new FrozenRegistrySyncCompletedPayload());
+        sender.accept(FrozenRegistrySyncCompletedPayload.INSTANCE);
     }
 
     @Override

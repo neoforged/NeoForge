@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import java.util.Map;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +19,9 @@ import net.neoforged.neoforge.registries.datamaps.DataMapType;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> registryKey,
         Map<ResourceLocation, Map<ResourceKey<T>, ?>> dataMaps) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation("neoforge:registry_data_map_sync");
+    public static final CustomPacketPayload.Type<RegistryDataMapSyncPayload<?>> TYPE = new Type<>(new ResourceLocation("neoforge:registry_data_map_sync"));
+    public static final StreamCodec<FriendlyByteBuf, RegistryDataMapSyncPayload<?>> STREAM_CODEC = StreamCodec.ofMember(
+            RegistryDataMapSyncPayload::write, RegistryDataMapSyncPayload::decode);
 
     public static <T> RegistryDataMapSyncPayload<T> decode(FriendlyByteBuf buf) {
         //noinspection RedundantCast javac complains about this cast
@@ -30,7 +33,6 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
         return new RegistryDataMapSyncPayload<>(registryKey, attach);
     }
 
-    @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeResourceKey(registryKey);
         buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceLocation, (b1, key, attach) -> {
@@ -40,7 +42,7 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<RegistryDataMapSyncPayload<?>> type() {
+        return TYPE;
     }
 }

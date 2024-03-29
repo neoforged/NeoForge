@@ -72,7 +72,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu<RecipeBookTestContainer> 
                     if (!toReplace.isEmpty()) {
                         if (toRemove.isEmpty())
                             craftingContainer.setItem(i, toRemove);
-                        else if (ItemStack.isSameItemSameTags(toRemove, toReplace)) {
+                        else if (ItemStack.isSameItemSameComponents(toRemove, toReplace)) {
                             toReplace.grow(toRemove.getCount());
                             craftingContainer.setItem(i, toReplace);
                         } else if (!player.getInventory().add(toReplace))

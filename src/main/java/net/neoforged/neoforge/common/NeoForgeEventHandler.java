@@ -114,7 +114,7 @@ public class NeoForgeEventHandler {
                     .registry(registry);
             if (regOpt.isEmpty()) return;
             event.getRelevantPlayers().forEach(player -> {
-                if (!player.connection.isConnected(RegistryDataMapSyncPayload.ID)) {
+                if (!player.connection.isConnected(RegistryDataMapSyncPayload.TYPE)) {
                     return;
                 }
                 if (player.connection.getConnection().isMemoryConnection()) {
@@ -165,7 +165,6 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(TierSortingRegistry.getReloadListener());
         event.addListener(CreativeModeTabRegistry.getReloadListener());
     }
 

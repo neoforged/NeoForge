@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.server.command.generation;
 
-import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import java.util.Comparator;
@@ -20,12 +19,13 @@ import net.minecraft.nbt.visitors.FieldSelector;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -165,10 +165,10 @@ public class GenerationTask {
         }
     }
 
-    private void acceptChunkResult(long chunk, Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure> result) {
+    private void acceptChunkResult(long chunk, ChunkResult<ChunkAccess> result) {
         this.server.submit(() -> this.releaseChunk(chunk));
 
-        if (result.left().isPresent()) {
+        if (result.isSuccess()) {
             this.okCount.getAndIncrement();
         } else {
             this.errorCount.getAndIncrement();

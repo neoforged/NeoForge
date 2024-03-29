@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -82,9 +83,9 @@ public class AddReloadListenerEvent extends Event {
         }
 
         @Override
-        public void injectContext(ICondition.IContext context, RegistryAccess regAccess) {
+        public void injectContext(ICondition.IContext context, HolderLookup.Provider registryLookup) {
             if (this.wrapped instanceof ContextAwareReloadListener contextAwareListener) {
-                contextAwareListener.injectContext(context, regAccess);
+                contextAwareListener.injectContext(context, registryLookup);
             }
         }
 

@@ -3,9 +3,9 @@
 @@ -14,7 +_,7 @@
      }
  
-     protected boolean checkExtraStartConditions(ServerLevel p_24388_, Mob p_24389_) {
--        return p_24389_.isInWater() && p_24389_.getFluidHeight(FluidTags.WATER) > p_24389_.getFluidJumpThreshold() || p_24389_.isInLava();
-+        return p_24389_.isInWater() && p_24389_.getFluidHeight(FluidTags.WATER) > p_24389_.getFluidJumpThreshold() || p_24389_.isInLava() || p_24389_.isInFluidType((fluidType, height) -> p_24389_.canSwimInFluidType(fluidType) && height > p_24389_.getFluidJumpThreshold());
+     public static boolean shouldSwim(Mob p_316787_) {
+-        return p_316787_.isInWater() && p_316787_.getFluidHeight(FluidTags.WATER) > p_316787_.getFluidJumpThreshold() || p_316787_.isInLava();
++        return p_316787_.isInWater() && p_316787_.getFluidHeight(FluidTags.WATER) > p_316787_.getFluidJumpThreshold() || p_316787_.isInLava() || p_316787_.isInFluidType((fluidType, height) -> p_316787_.canSwimInFluidType(fluidType) && height > p_316787_.getFluidJumpThreshold());
      }
  
-     protected boolean canStillUse(ServerLevel p_24391_, Mob p_24392_, long p_24393_) {
+     protected boolean checkExtraStartConditions(ServerLevel p_24388_, Mob p_24389_) {

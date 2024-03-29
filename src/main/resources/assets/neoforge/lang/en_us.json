@@ -222,10 +222,6 @@
   "neoforge.container.enchant.limitedEnchantability": "Limited Enchantability",
   "neoforge.swim_speed": "Swim Speed",
   "neoforge.name_tag_distance": "Nametag Render Distance",
-  "neoforge.entity_gravity": "Gravity",
-  "neoforge.block_reach": "Block Reach",
-  "neoforge.entity_reach": "Entity Reach",
-  "neoforge.step_height": "Step Height",
   "neoforge.creative_flight": "Creative Flight",
 
   "fluid_type.minecraft.milk": "Milk",

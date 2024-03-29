@@ -1,68 +1,21 @@
 --- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
-@@ -17,10 +_,53 @@
-         .put(BrandPayload.ID, BrandPayload::new)
-         .build();
+@@ -17,7 +_,17 @@
+     public static final StreamCodec<FriendlyByteBuf, ServerboundCustomPayloadPacket> STREAM_CODEC = CustomPacketPayload.<FriendlyByteBuf>codec(
+             p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),
+             Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), p_333493_ -> {
+-            })
++            }),
++            net.minecraft.network.ConnectionProtocol.PLAY,
++            net.minecraft.network.protocol.PacketFlow.SERVERBOUND
++        )
++        .map(ServerboundCustomPayloadPacket::new, ServerboundCustomPayloadPacket::payload);
++    public static final StreamCodec<FriendlyByteBuf, ServerboundCustomPayloadPacket> CONFIG_STREAM_CODEC = CustomPacketPayload.<FriendlyByteBuf>codec(
++            p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),
++            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), p_333493_ -> {
++            }),
++            net.minecraft.network.ConnectionProtocol.CONFIGURATION,
++            net.minecraft.network.protocol.PacketFlow.SERVERBOUND
+         )
+         .map(ServerboundCustomPayloadPacket::new, ServerboundCustomPayloadPacket::payload);
  
-+    /**
-+     * Creates a new packet with a custom payload from the network.
-+     * @param p_296108_ The buffer to read the packet from.
-+     * @deprecated Use {@link #ServerboundCustomPayloadPacket(FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, as this variant can only read vanilla payloads.
-+     */
-+    @Deprecated
-     public ServerboundCustomPayloadPacket(FriendlyByteBuf p_296108_) {
-         this(readPayload(p_296108_.readResourceLocation(), p_296108_));
-     }
- 
-+    /**
-+     * Creates a new packet with a custom payload from the network.
-+     *
-+     * @param p_296108_ The buffer to read the packet from.
-+     * @param context The context of the channel handler
-+     * @param protocol The protocol of the connection
-+     */
-+    public ServerboundCustomPayloadPacket(FriendlyByteBuf p_296108_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
-+        this(readPayload(p_296108_.readResourceLocation(), p_296108_, context, protocol));
-+    }
-+
-+    /**
-+     * Reads the payload from the given buffer.
-+     *
-+     * @param p_294367_ The id of the payload
-+     * @param p_294321_ The buffer to read from
-+     * @param context The context of the channel handler
-+     * @param protocol The protocol of the connection
-+     * @return The payload
-+     */
-+    private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
-+        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getReader(p_294367_, context, protocol, KNOWN_TYPES);
-+        try {
-+        return (CustomPacketPayload) (reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
-+        } catch (RuntimeException e) {
-+            throw new RuntimeException("Failed reading custom payload " + p_294367_ + ": " + e, e); // Make it easier to debug which mod payload failed to be decoded
-+        }
-+    }
-+
-+    /**
-+     * Reads the payload from the given buffer.
-+     * @param p_294367_ The id of the payload
-+     * @param p_294321_ The buffer to read from
-+     * @return The payload
-+     * @deprecated Use {@link #readPayload(ResourceLocation, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, as this variant can only read vanilla payloads.
-+     */
-+    @Deprecated
-     private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_) {
-         FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = KNOWN_TYPES.get(p_294367_);
-         return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
-@@ -39,7 +_,11 @@
-     @Override
-     public void write(FriendlyByteBuf p_295621_) {
-         p_295621_.writeResourceLocation(this.payload.id());
-+        try {
-         this.payload.write(p_295621_);
-+        } catch (RuntimeException e) {
-+            throw new RuntimeException("Failed writing custom payload " + this.payload.id() + ": " + e, e); // Make it easier to debug which mod payload failed to be encoded
-+        }
-     }
- 
-     public void handle(ServerCommonPacketListener p_295862_) {

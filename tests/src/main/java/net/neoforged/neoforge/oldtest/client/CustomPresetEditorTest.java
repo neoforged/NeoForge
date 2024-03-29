@@ -20,7 +20,7 @@ import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -68,7 +68,7 @@ public class CustomPresetEditorTest {
             });
         }
 
-        private static WorldPreset makeWorldPreset(BootstapContext<WorldPreset> context) {
+        private static WorldPreset makeWorldPreset(BootstrapContext<WorldPreset> context) {
             Holder<NoiseGeneratorSettings> overworldNoise = context.lookup(Registries.NOISE_SETTINGS)
                     .getOrThrow(NoiseGeneratorSettings.OVERWORLD);
             Holder<Biome> plains = context.lookup(Registries.BIOME)

@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/item/MilkBucketItem.java
 +++ b/net/minecraft/world/item/MilkBucketItem.java
-@@ -28,7 +_,7 @@
-         }
+@@ -25,7 +_,7 @@
  
+         p_42923_.consume(1, p_42925_);
          if (!p_42924_.isClientSide) {
 -            p_42925_.removeAllEffects();
 +            p_42925_.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.MILK);

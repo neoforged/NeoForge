@@ -48,7 +48,7 @@ public class ClientRegistryManager {
     }
 
     public static void handleKnownDataMaps(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
-        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {}
+        record MandatoryEntry(ResourceKey<? extends Registry<?>> registry, ResourceLocation id) {}
         final Set<MandatoryEntry> ourMandatory = new HashSet<>();
         RegistryManager.getDataMaps().forEach((reg, values) -> values.values().forEach(attach -> {
             if (attach.mandatorySync()) {
@@ -92,7 +92,7 @@ public class ClientRegistryManager {
             return;
         }
 
-        final var known = new HashMap<ResourceKey<Registry<?>>, Collection<ResourceLocation>>();
+        final var known = new HashMap<ResourceKey<? extends Registry<?>>, Collection<ResourceLocation>>();
         RegistryManager.getDataMaps().forEach((key, vals) -> known.put(key, vals.keySet()));
         context.replyHandler().send(new KnownRegistryDataMapsReplyPayload(known));
     }

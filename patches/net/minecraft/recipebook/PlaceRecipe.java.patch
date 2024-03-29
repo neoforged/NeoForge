@@ -1,15 +1,11 @@
 --- a/net/minecraft/recipebook/PlaceRecipe.java
 +++ b/net/minecraft/recipebook/PlaceRecipe.java
-@@ -11,9 +_,9 @@
+@@ -9,7 +_,7 @@
+     default void placeRecipe(int p_135409_, int p_135410_, int p_135411_, RecipeHolder<?> p_301225_, Iterator<T> p_135413_, int p_135414_) {
          int i = p_135409_;
          int j = p_135410_;
-         Recipe<?> recipe = p_301225_.value();
--        if (recipe instanceof ShapedRecipe shapedrecipe) {
--            i = shapedrecipe.getWidth();
--            j = shapedrecipe.getHeight();
-+        if (recipe instanceof net.neoforged.neoforge.common.crafting.IShapedRecipe shapedrecipe) {
-+            i = shapedrecipe.getRecipeWidth();
-+            j = shapedrecipe.getRecipeHeight();
+-        if (p_301225_.value() instanceof ShapedRecipe shapedrecipe) {
++        if (p_301225_.value() instanceof net.neoforged.neoforge.common.crafting.IShapedRecipe<?> shapedrecipe) {
+             i = shapedrecipe.getWidth();
+             j = shapedrecipe.getHeight();
          }
- 
-         int k1 = 0;

@@ -13,16 +13,20 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import net.minecraft.client.resources.ClientPackSource;
 import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.data.DataProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.VanillaPackResources;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
@@ -107,7 +111,7 @@ public class ExistingFileHelper {
             File file = existing.toFile();
             if (!file.exists())
                 continue;
-            PackResources pack = file.isDirectory() ? new PathPackResources(file.getName(), file.toPath(), false) : new FilePackResources(file.getName(), new FilePackResources.SharedZipFileAccess(file), false, "");
+            PackResources pack = file.isDirectory() ? new PathPackResources(new PackLocationInfo(file.getName(), Component.empty(), PackSource.BUILT_IN, Optional.empty()), file.toPath()) : new FilePackResources(new PackLocationInfo(file.getName(), Component.empty(), PackSource.BUILT_IN, Optional.empty()), new FilePackResources.SharedZipFileAccess(file), "");
             candidateClientResources.add(pack);
             candidateServerResources.add(pack);
         }
@@ -116,8 +120,8 @@ public class ExistingFileHelper {
             if (modFileInfo != null) {
                 // Only opens primary packs - overlays are not currently considered for datagen
                 final String name = "mod:" + existingMod;
-                candidateClientResources.add(ResourcePackLoader.createPackForMod(modFileInfo).openPrimary(name));
-                candidateServerResources.add(ResourcePackLoader.createPackForMod(modFileInfo).openPrimary(name));
+                candidateClientResources.add(ResourcePackLoader.createPackForMod(modFileInfo).openPrimary(new PackLocationInfo(name, Component.empty(), PackSource.BUILT_IN, Optional.empty())));
+                candidateServerResources.add(ResourcePackLoader.createPackForMod(modFileInfo).openPrimary(new PackLocationInfo(name, Component.empty(), PackSource.BUILT_IN, Optional.empty())));
             }
         }
 

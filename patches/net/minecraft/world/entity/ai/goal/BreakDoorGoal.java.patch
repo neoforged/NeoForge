@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
-@@ -31,7 +_,7 @@
-     public boolean canUse() {
+@@ -32,7 +_,7 @@
          if (!super.canUse()) {
              return false;
--        } else if (!this.mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+        } else if (!net.neoforged.neoforge.common.CommonHooks.canEntityDestroy(this.mob.level(), this.doorPos, this.mob)) {
-             return false;
          } else {
-             return this.isValidDifficulty(this.mob.level().getDifficulty()) && !this.isOpen();
+-            return !this.mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
++            return !net.neoforged.neoforge.common.CommonHooks.canEntityDestroy(this.mob.level(), this.doorPos, this.mob)
+                 ? false
+                 : this.isValidDifficulty(this.mob.level().getDifficulty()) && !this.isOpen();
+         }

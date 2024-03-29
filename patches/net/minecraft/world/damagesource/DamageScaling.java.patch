@@ -11,7 +11,7 @@
      ALWAYS("always");
  
 -    public static final Codec<DamageScaling> CODEC = StringRepresentable.fromEnum(DamageScaling::values);
-+    public static final Codec<DamageScaling> CODEC = net.minecraft.util.ExtraCodecs.lazyInitializedCodec(() -> StringRepresentable.fromEnum(DamageScaling::values));
++    public static final Codec<DamageScaling> CODEC = Codec.lazyInitialized(() -> StringRepresentable.fromEnum(DamageScaling::values));
      private final String id;
  
      private DamageScaling(String p_270266_) {

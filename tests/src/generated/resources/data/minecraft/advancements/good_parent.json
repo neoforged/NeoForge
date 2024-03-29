@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:cobblestone"
-            ]
+            "items": "minecraft:cobblestone"
           }
         ]
       },
@@ -19,7 +17,8 @@
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "description": "You got cobblestone",
     "icon": {
-      "item": "minecraft:cobblestone"
+      "count": 1,
+      "id": "minecraft:cobblestone"
     },
     "show_toast": false,
     "title": {

@@ -53,7 +53,7 @@
 +            List<List<BakedQuad>> list = Lists.newArrayList();
              long k = p_235052_.nextLong();
  
-             for(int j = 0; j < bitset.length(); ++j) {
+             for (int j = 0; j < bitset.length(); j++) {
                  if (bitset.get(j)) {
 -                    list.addAll(this.selectors.get(j).getRight().getQuads(p_235050_, p_235051_, RandomSource.create(k)));
 +                    var model = this.selectors.get(j).getRight();

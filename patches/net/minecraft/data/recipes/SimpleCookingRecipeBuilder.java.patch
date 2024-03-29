@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
-@@ -27,6 +_,7 @@
+@@ -28,6 +_,7 @@
      private final RecipeCategory category;
      private final CookingBookCategory bookCategory;
      private final Item result;
@@ -8,7 +8,7 @@
      private final Ingredient ingredient;
      private final float experience;
      private final int cookingTime;
-@@ -44,9 +_,22 @@
+@@ -45,9 +_,22 @@
          int p_250189_,
          AbstractCookingRecipe.Factory<?> p_311960_
      ) {
@@ -32,7 +32,7 @@
          this.ingredient = p_250362_;
          this.experience = p_251204_;
          this.cookingTime = p_250189_;
-@@ -85,6 +_,38 @@
+@@ -86,6 +_,38 @@
          return new SimpleCookingRecipeBuilder(p_250319_, CookingBookCategory.FOOD, p_250377_, p_248930_, p_252329_, p_250482_, SmokingRecipe::new);
      }
  
@@ -71,7 +71,7 @@
      public SimpleCookingRecipeBuilder unlockedBy(String p_176792_, Criterion<?> p_300970_) {
          this.criteria.put(p_176792_, p_300970_);
          return this;
-@@ -110,7 +_,7 @@
+@@ -111,7 +_,7 @@
          this.criteria.forEach(advancement$builder::addCriterion);
          AbstractCookingRecipe abstractcookingrecipe = this.factory
              .create(

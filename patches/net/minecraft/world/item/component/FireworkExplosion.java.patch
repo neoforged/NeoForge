@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/item/component/FireworkExplosion.java
++++ b/net/minecraft/world/item/component/FireworkExplosion.java
+@@ -107,7 +_,7 @@
+         return new FireworkExplosion(this.shape, this.colors, new IntArrayList(p_330678_), this.hasTrail, this.hasTwinkle);
+     }
+ 
+-    public static enum Shape implements StringRepresentable {
++    public static enum Shape implements StringRepresentable, net.neoforged.neoforge.common.IExtensibleEnum {
+         SMALL_BALL(0, "small_ball"),
+         LARGE_BALL(1, "large_ball"),
+         STAR(2, "star"),
+@@ -117,8 +_,8 @@
+         private static final IntFunction<FireworkExplosion.Shape> BY_ID = ByIdMap.continuous(
+             FireworkExplosion.Shape::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO
+         );
+-        public static final StreamCodec<ByteBuf, FireworkExplosion.Shape> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, FireworkExplosion.Shape::getId);
+-        public static final Codec<FireworkExplosion.Shape> CODEC = StringRepresentable.fromValues(FireworkExplosion.Shape::values);
++        public static final StreamCodec<ByteBuf, FireworkExplosion.Shape> STREAM_CODEC = net.neoforged.neoforge.common.IExtensibleEnum.createStreamCodecForExtensibleEnum(Shape::values);
++        public static final Codec<FireworkExplosion.Shape> CODEC = net.neoforged.neoforge.common.IExtensibleEnum.createCodecForExtensibleEnum(Shape::values, Shape::getShape);
+         private final int id;
+         private final String name;
+ 
+@@ -137,6 +_,17 @@
+ 
+         public static FireworkExplosion.Shape byId(int p_330838_) {
+             return BY_ID.apply(p_330838_);
++        }
++
++        public static FireworkExplosion.Shape getShape(String name) {
++            for (Shape ret : values())
++                if (ret.name().equals(name))
++                    return ret;
++            return SMALL_BALL;
++        }
++
++        public static Shape create(String registryName, int id, String shapeName) {
++            throw new IllegalStateException("Enum not extended");
+         }
+ 
+         @Override

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -66,7 +67,7 @@ public interface StructureModifier {
     /**
      * @return the codec which serializes and deserializes this structure modifier
      */
-    Codec<? extends StructureModifier> codec();
+    MapCodec<? extends StructureModifier> codec();
 
     enum Phase {
         /**

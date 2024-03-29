@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/Camera.java
 +++ b/net/minecraft/client/Camera.java
-@@ -56,7 +_,7 @@
-                 this.setRotation(this.yRot + 180.0F, -this.xRot);
+@@ -58,7 +_,7 @@
              }
  
--            this.move(-this.getMaxZoom(4.0), 0.0, 0.0);
-+            this.move(-this.getMaxZoom(net.neoforged.neoforge.client.ClientHooks.getDetachedCameraDistance(this, p_90579_, 4.0)), 0.0, 0.0);
+             float f = p_90577_ instanceof LivingEntity livingentity ? livingentity.getScale() : 1.0F;
+-            this.move(-this.getMaxZoom((double)(4.0F * f)), 0.0, 0.0);
++            this.move(-this.getMaxZoom((double)(net.neoforged.neoforge.client.ClientHooks.getDetachedCameraDistance(this, p_90579_, f, 4.0) * f)), 0.0, 0.0);
          } else if (p_90577_ instanceof LivingEntity && ((LivingEntity)p_90577_).isSleeping()) {
              Direction direction = ((LivingEntity)p_90577_).getBedOrientation();
              this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
-@@ -223,6 +_,18 @@
+@@ -225,6 +_,18 @@
  
      public float getPartialTickTime() {
          return this.partialTickTime;

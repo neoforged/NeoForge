@@ -39,7 +39,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
     private final BlockPos pos;
     @Nullable
     private final Direction face;
-    private InteractionResult cancellationResult = InteractionResult.PASS;
 
     protected PlayerInteractEvent(Player player, InteractionHand hand, BlockPos pos, @Nullable Direction face) {
         super(Preconditions.checkNotNull(player, "Null player in PlayerInteractEvent!"));
@@ -58,6 +57,8 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link EntityInteract}.
      */
     public static class EntityInteractSpecific extends PlayerInteractEvent implements ICancellableEvent {
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
         private final Vec3 localPos;
         private final Entity target;
 
@@ -81,6 +82,23 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         public Entity getTarget() {
             return target;
         }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
+        }
     }
 
     /**
@@ -97,6 +115,8 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link RightClickItem}.
      */
     public static class EntityInteract extends PlayerInteractEvent implements ICancellableEvent {
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
         private final Entity target;
 
         public EntityInteract(Player player, InteractionHand hand, Entity target) {
@@ -106,6 +126,23 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
 
         public Entity getTarget() {
             return target;
+        }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
         }
     }
 
@@ -123,6 +160,8 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * Note that handling things differently on the client vs server may cause desynchronizations!
      */
     public static class RightClickBlock extends PlayerInteractEvent implements ICancellableEvent {
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
         private Result useBlock = Result.DEFAULT;
         private Result useItem = Result.DEFAULT;
         private BlockHitResult hitVec;
@@ -180,6 +219,23 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
                 useItem = Result.DENY;
             }
         }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
+        }
     }
 
     /**
@@ -190,8 +246,27 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then continue to other hands.
      */
     public static class RightClickItem extends PlayerInteractEvent implements ICancellableEvent {
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
         public RightClickItem(Player player, InteractionHand hand) {
             super(player, hand, player.blockPosition(), null);
+        }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
         }
     }
 
@@ -362,23 +437,5 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      */
     public LogicalSide getSide() {
         return getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;
-    }
-
-    /**
-     * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
-     *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
-     *         the client to keep trying more interactions until something works.
-     */
-    public InteractionResult getCancellationResult() {
-        return cancellationResult;
-    }
-
-    /**
-     * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
-     * method of the event.
-     * Note that this only has an effect on {@link RightClickBlock}, {@link RightClickItem}, {@link EntityInteract}, and {@link EntityInteractSpecific}.
-     */
-    public void setCancellationResult(InteractionResult result) {
-        this.cancellationResult = result;
     }
 }

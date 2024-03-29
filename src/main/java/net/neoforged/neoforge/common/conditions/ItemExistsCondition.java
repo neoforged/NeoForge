@@ -5,13 +5,13 @@
 
 package net.neoforged.neoforge.common.conditions;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 public class ItemExistsCondition implements ICondition {
-    public static Codec<ItemExistsCondition> CODEC = RecordCodecBuilder.create(
+    public static MapCodec<ItemExistsCondition> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             ResourceLocation.CODEC.fieldOf("item").forGetter(ItemExistsCondition::getItem))
@@ -37,7 +37,7 @@ public class ItemExistsCondition implements ICondition {
     }
 
     @Override
-    public Codec<? extends ICondition> codec() {
+    public MapCodec<? extends ICondition> codec() {
         return CODEC;
     }
 

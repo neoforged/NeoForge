@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -21,19 +20,13 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Post
  */
 public abstract class RenderGuiEvent extends Event {
-    private final Window window;
     private final GuiGraphics guiGraphics;
     private final float partialTick;
 
     @ApiStatus.Internal
-    protected RenderGuiEvent(Window window, GuiGraphics guiGraphics, float partialTick) {
-        this.window = window;
+    protected RenderGuiEvent(GuiGraphics guiGraphics, float partialTick) {
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
-    }
-
-    public Window getWindow() {
-        return window;
     }
 
     public GuiGraphics getGuiGraphics() {
@@ -58,8 +51,8 @@ public abstract class RenderGuiEvent extends Event {
      */
     public static class Pre extends RenderGuiEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(Window window, GuiGraphics guiGraphics, float partialTick) {
-            super(window, guiGraphics, partialTick);
+        public Pre(GuiGraphics guiGraphics, float partialTick) {
+            super(guiGraphics, partialTick);
         }
     }
 
@@ -73,8 +66,8 @@ public abstract class RenderGuiEvent extends Event {
      */
     public static class Post extends RenderGuiEvent {
         @ApiStatus.Internal
-        public Post(Window window, GuiGraphics guiGraphics, float partialTick) {
-            super(window, guiGraphics, partialTick);
+        public Post(GuiGraphics guiGraphics, float partialTick) {
+            super(guiGraphics, partialTick);
         }
     }
 }

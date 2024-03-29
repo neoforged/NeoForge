@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/RenderBuffers.java
 +++ b/net/minecraft/client/renderer/RenderBuffers.java
 @@ -39,6 +_,7 @@
-             put(p_307112_, RenderType.waterMask());
+             put((Object2ObjectLinkedOpenHashMap<RenderType, BufferBuilder>)p_307112_, RenderType.waterMask());
              ModelBakery.DESTROY_TYPES.forEach(p_173062_ -> put(p_307112_, p_173062_));
          });
 +        net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent(sortedmap));

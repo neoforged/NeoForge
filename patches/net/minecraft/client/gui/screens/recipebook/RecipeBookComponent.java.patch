@@ -4,7 +4,7 @@
          this.initFilterButtonTextures();
          this.tabButtons.clear();
  
--        for(RecipeBookCategories recipebookcategories : RecipeBookCategories.getCategories(this.menu.getRecipeBookType())) {
+-        for (RecipeBookCategories recipebookcategories : RecipeBookCategories.getCategories(this.menu.getRecipeBookType())) {
 +        for(RecipeBookCategories recipebookcategories : this.menu.getRecipeBookCategories()) {
              this.tabButtons.add(new RecipeBookTabButton(recipebookcategories));
          }

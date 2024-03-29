@@ -16,7 +16,7 @@
           }
         ],
         "item": {
-          "tag": "minecraft:piglin_loved"
+          "items": "#minecraft:piglin_loved"
         },
         "player": [
           {
@@ -25,7 +25,9 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type": "neoforge:piglin_neutral_armor"
+                "type_specific": {
+                  "type": "neoforge:piglin_neutral_armor"
+                }
               }
             }
           }
@@ -48,7 +50,9 @@
           }
         ],
         "item": {
-          "type": "neoforge:piglin_currency"
+          "predicates": {
+            "neoforge:piglin_currency": {}
+          }
         },
         "player": [
           {
@@ -57,7 +61,9 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type": "neoforge:piglin_neutral_armor"
+                "type_specific": {
+                  "type": "neoforge:piglin_neutral_armor"
+                }
               }
             }
           }
@@ -71,7 +77,8 @@
       "translate": "advancements.nether.distract_piglin.description"
     },
     "icon": {
-      "item": "minecraft:gold_ingot"
+      "count": 1,
+      "id": "minecraft:gold_ingot"
     },
     "title": {
       "translate": "advancements.nether.distract_piglin.title"

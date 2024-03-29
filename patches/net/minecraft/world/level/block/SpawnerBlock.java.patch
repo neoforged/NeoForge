@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/level/block/SpawnerBlock.java
 @@ -46,10 +_,12 @@
      @Override
-     public void spawnAfterBreak(BlockState p_222477_, ServerLevel p_222478_, BlockPos p_222479_, ItemStack p_222480_, boolean p_222481_) {
+     protected void spawnAfterBreak(BlockState p_222477_, ServerLevel p_222478_, BlockPos p_222479_, ItemStack p_222480_, boolean p_222481_) {
          super.spawnAfterBreak(p_222477_, p_222478_, p_222479_, p_222480_, p_222481_);
 -        if (p_222481_) {
 -            int i = 15 + p_222478_.random.nextInt(15) + p_222478_.random.nextInt(15);

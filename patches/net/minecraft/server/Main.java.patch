@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -63,7 +_,7 @@
+@@ -64,7 +_,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
  
      @DontObfuscate
@@ -9,10 +9,10 @@
          SharedConstants.tryDetectVersion();
          OptionParser optionparser = new OptionParser();
          OptionSpec<Void> optionspec = optionparser.accepts("nogui");
-@@ -81,6 +_,15 @@
-         OptionSpec<Void> optionspec12 = optionparser.accepts("jfrProfile");
-         OptionSpec<Path> optionspec13 = optionparser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
-         OptionSpec<String> optionspec14 = optionparser.nonOptions();
+@@ -83,6 +_,15 @@
+         OptionSpec<Void> optionspec13 = optionparser.accepts("jfrProfile");
+         OptionSpec<Path> optionspec14 = optionparser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
+         OptionSpec<String> optionspec15 = optionparser.nonOptions();
 +        optionparser.accepts("allowUpdates").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE); // Forge: allow mod updates to proceed
 +        optionparser.accepts("gameDir").withRequiredArg().ofType(File.class).defaultsTo(new File(".")); //Forge: Consume this argument, we use it in the launcher, and the client side.
 +        final OptionSpec<net.minecraft.core.BlockPos> spawnPosOpt;
@@ -25,7 +25,7 @@
  
          try {
              OptionSet optionset = optionparser.parse(p_129699_);
-@@ -88,6 +_,13 @@
+@@ -90,6 +_,13 @@
                  optionparser.printHelpOn(System.err);
                  return;
              }
@@ -37,15 +37,16 @@
 +                return;
 +            }
  
-             Path path = optionset.valueOf(optionspec13);
+             Path path = optionset.valueOf(optionspec14);
              if (path != null) {
-@@ -103,23 +_,21 @@
+@@ -105,24 +_,22 @@
              Bootstrap.validate();
              Util.startTimerHackThread();
              Path path1 = Paths.get("server.properties");
 +            if (!optionset.has(optionspec1)) net.neoforged.neoforge.server.loading.ServerModLoader.load(); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
              DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(path1);
              dedicatedserversettings.forceSave();
+             RegionFileVersion.configure(dedicatedserversettings.getProperties().regionFileComression);
 -            Path path2 = Paths.get("eula.txt");
 -            Eula eula = new Eula(path2);
              if (optionset.has(optionspec1)) {
@@ -58,9 +59,9 @@
 -                return;
 -            }
 -
-             File file1 = new File(optionset.valueOf(optionspec8));
+             File file1 = new File(optionset.valueOf(optionspec9));
              Services services = Services.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), file1);
-             String s = Optional.ofNullable(optionset.valueOf(optionspec9)).orElse(dedicatedserversettings.getProperties().levelName);
+             String s = Optional.ofNullable(optionset.valueOf(optionspec10)).orElse(dedicatedserversettings.getProperties().levelName);
 +            if (s == null || s.isEmpty() || new File(file1, s).getAbsolutePath().equals(new File(s).getAbsolutePath())) {
 +                LOGGER.error("Invalid world directory specified, must not be null, empty or the same directory as your universe! " + s);
 +                return;
@@ -68,7 +69,7 @@
              LevelStorageSource levelstoragesource = LevelStorageSource.createDefault(file1.toPath());
              LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.validateAndCreateAccess(s);
              Dynamic<?> dynamic;
-@@ -128,6 +_,7 @@
+@@ -131,6 +_,7 @@
                  try {
                      dynamic = levelstoragesource$levelstorageaccess.getDataTag();
                      levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
@@ -76,7 +77,7 @@
                  } catch (NbtException | ReportedNbtException | IOException ioexception1) {
                      LevelStorageSource.LevelDirectory levelstoragesource$leveldirectory = levelstoragesource$levelstorageaccess.getLevelDirectory();
                      LOGGER.warn("Failed to load world data from {}", levelstoragesource$leveldirectory.dataFile(), ioexception1);
-@@ -136,6 +_,7 @@
+@@ -139,6 +_,7 @@
                      try {
                          dynamic = levelstoragesource$levelstorageaccess.getDataTagFallback();
                          levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
@@ -84,7 +85,7 @@
                      } catch (NbtException | ReportedNbtException | IOException ioexception) {
                          LOGGER.error("Failed to load world data from {}", levelstoragesource$leveldirectory.oldDataFile(), ioexception);
                          LOGGER.error(
-@@ -210,7 +_,10 @@
+@@ -213,7 +_,10 @@
                                                  : dedicatedserverproperties.worldOptions;
                                              worlddimensions = dedicatedserverproperties.createDimensions(p_307161_.datapackWorldgen());
                                          }
@@ -96,7 +97,7 @@
                                          WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(registry);
                                          Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_307161_.datapackWorldgen().allRegistriesLifecycle());
                                          return new WorldLoader.DataLoadOutput<>(
-@@ -246,24 +_,23 @@
+@@ -246,24 +_,22 @@
  
              WorldData worlddata = worldstem.worldData();
              levelstoragesource$levelstorageaccess.saveDataTag(registryaccess$frozen, worlddata);
@@ -111,22 +112,21 @@
 -                        dedicatedserversettings,
 -                        DataFixers.getDataFixer(),
 -                        services,
--                        LoggerChunkProgressListener::new
+-                        LoggerChunkProgressListener::createFromGameruleRadius
 -                    );
 +                    MinecraftServer dedicatedserver1;
 +                    if (gametestEnabled) {
 +                        net.neoforged.neoforge.gametest.GameTestHooks.registerGametests();
-+                        java.util.Collection<net.minecraft.gametest.framework.GameTestBatch> testBatches = net.minecraft.gametest.framework.GameTestRunner.groupTestsIntoBatches(net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions());
 +                        net.minecraft.core.BlockPos spawnPos = optionset.valueOf(spawnPosOpt);
-+                        dedicatedserver1 = net.minecraft.gametest.framework.GameTestServer.create(p_293760_, levelstoragesource$levelstorageaccess, packrepository, testBatches, spawnPos);
++                        dedicatedserver1 = net.minecraft.gametest.framework.GameTestServer.create(p_293760_, levelstoragesource$levelstorageaccess, packrepository, net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions(), spawnPos);
 +                    } else {
-+                        dedicatedserver1 = new DedicatedServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, dedicatedserversettings, DataFixers.getDataFixer(), services, LoggerChunkProgressListener::new);
++                        dedicatedserver1 = new DedicatedServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, dedicatedserversettings, DataFixers.getDataFixer(), services, LoggerChunkProgressListener::createFromGameruleRadius);
 +                    }
-                     dedicatedserver1.setPort(optionset.valueOf(optionspec10));
+                     dedicatedserver1.setPort(optionset.valueOf(optionspec11));
                      dedicatedserver1.setDemo(optionset.has(optionspec2));
-                     dedicatedserver1.setId(optionset.valueOf(optionspec11));
-                     boolean flag1 = !optionset.has(optionspec) && !optionset.valuesOf(optionspec14).contains("nogui");
--                    if (flag1 && !GraphicsEnvironment.isHeadless()) {
+                     dedicatedserver1.setId(optionset.valueOf(optionspec12));
+                     boolean flag2 = !optionset.has(optionspec) && !optionset.valuesOf(optionspec15).contains("nogui");
+-                    if (flag2 && !GraphicsEnvironment.isHeadless()) {
 -                        dedicatedserver1.showGui();
 +                    if (dedicatedserver1 instanceof DedicatedServer dedicatedServer && flag1 && !GraphicsEnvironment.isHeadless()) {
 +                        dedicatedServer.showGui();

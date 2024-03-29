@@ -46,7 +46,10 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.VILLAGER_TYPE, // Required for EntityDataSerializers
             BuiltInRegistries.VILLAGER_PROFESSION, // Required for EntityDataSerializers
             BuiltInRegistries.CAT_VARIANT, // Required for EntityDataSerializers
-            BuiltInRegistries.FROG_VARIANT // Required for EntityDataSerializers
+            BuiltInRegistries.FROG_VARIANT, // Required for EntityDataSerializers
+            BuiltInRegistries.DATA_COMPONENT_TYPE, // Required for itemstack sync
+            BuiltInRegistries.RECIPE_SERIALIZER, // Required for Recipe sync
+            BuiltInRegistries.ATTRIBUTE // Required for ClientboundUpdateAttributesPacket
     );
 
     private static void registerRegistries(NewRegistryEvent event) {
@@ -59,8 +62,6 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.DISPLAY_CONTEXTS);
         event.register(NeoForgeRegistries.INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
-        event.register(NeoForgeRegistries.ENTITY_PREDICATE_SERIALIZERS);
-        event.register(NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS);
         event.register(NeoForgeRegistries.ATTACHMENT_TYPES);
     }
 

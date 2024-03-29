@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,13 +19,13 @@ import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if all child ingredients match */
 public class IntersectionIngredient extends ChildBasedIngredient {
-    public static final Codec<IntersectionIngredient> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<IntersectionIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             Ingredient.LIST_CODEC.fieldOf("children").forGetter(ChildBasedIngredient::getChildren))
                     .apply(builder, IntersectionIngredient::new));
 
-    public static final Codec<IntersectionIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
+    public static final MapCodec<IntersectionIngredient> CODEC_NONEMPTY = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             Ingredient.LIST_CODEC_NONEMPTY.fieldOf("children").forGetter(ChildBasedIngredient::getChildren))
