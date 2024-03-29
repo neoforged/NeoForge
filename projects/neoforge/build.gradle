@@ -61,7 +61,6 @@ dependencies {
     installer "org.ow2.asm:asm-analysis:${project.asm_version}"
     installer "net.neoforged:accesstransformers:${project.accesstransformers_version}"
     installer "net.neoforged:bus:${project.eventbus_version}"
-    installer "net.neoforged.fancymodloader:spi:${project.fancy_mod_loader_version}"
     installer "net.neoforged:coremods:${project.coremods_version}"
     installer "cpw.mods:modlauncher:${project.modlauncher_version}"
     installer "net.minecraftforge:unsafe:${project.unsafe_version}"
@@ -81,6 +80,9 @@ dependencies {
     installer ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
+    // Manually override log4j since the version coming from other `installer` dependencies is outdated
+    installer "org.apache.logging.log4j:log4j-api:${project.log4j_version}"
+    installer "org.apache.logging.log4j:log4j-core:${project.log4j_version}"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 
@@ -245,7 +247,10 @@ publishing {
             }
         }
 
-        changelog.publish(it)
+        if (!rootProject.isPreReleaseVersion) {
+            // Only publish a changelog for releases
+            changelog.publish(it)
+        }
 
         versionMapping {
             usage('java-api') {

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.network.handling;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.Optional;
 import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -33,14 +34,23 @@ public interface IPayloadContext {
     ISynchronizedWorkHandler workHandler();
 
     /**
+     * {@return the current inbound protocol info of the connection}
+     */
+    ProtocolInfo<?> protocolInfo();
+
+    /**
      * {@return the flow of the packet}
      */
-    PacketFlow flow();
+    default PacketFlow flow() {
+        return protocolInfo().flow();
+    }
 
     /**
      * {@return the protocol of the connection}
      */
-    ConnectionProtocol protocol();
+    default ConnectionProtocol protocol() {
+        return protocolInfo().id();
+    }
 
     /**
      * {@return the channel handler context}

@@ -12,10 +12,12 @@ import javax.annotation.Nullable;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -23,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  * This event allows each {@link EntityType} to have a {@link SpawnPlacements.SpawnPredicate} registered or modified.
  * Spawn Predicates are checked whenever an {@link Entity} of the given {@link EntityType} spawns in the world naturally.
  *
- * If registering your own entity's spawn placements, you should use {@link SpawnPlacementRegisterEvent#register(EntityType, SpawnPlacements.Type, Heightmap.Types, SpawnPlacements.SpawnPredicate, Operation)}
+ * If registering your own entity's spawn placements, you should use {@link SpawnPlacementRegisterEvent#register(EntityType, SpawnPlacementType, Heightmap.Types, SpawnPlacements.SpawnPredicate, Operation)}
  * So that you ensure that your entity has a heightmap type and placement type registered.
  *
  * If modifying vanilla or another mod's spawn placements, you can use three operations:
@@ -65,7 +67,7 @@ public class SpawnPlacementRegisterEvent extends Event implements IModBusEvent {
      * Use {@code null} for the placement or heightmap to leave them as is (which should be done in almost every case)
      */
     @SuppressWarnings("unchecked")
-    public <T extends Entity> void register(EntityType<T> entityType, @Nullable SpawnPlacements.Type placementType, @Nullable Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate, Operation operation) {
+    public <T extends Entity> void register(EntityType<T> entityType, @Nullable SpawnPlacementType placementType, @Nullable Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate, Operation operation) {
         if (!map.containsKey(entityType)) {
             if (placementType == null) {
                 throw new NullPointerException("Registering a new Spawn Predicate requires a nonnull placement type! Entity Type: " + BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
@@ -103,10 +105,10 @@ public class SpawnPlacementRegisterEvent extends Event implements IModBusEvent {
         private final List<SpawnPlacements.SpawnPredicate<T>> andPredicates;
         @Nullable
         private SpawnPlacements.SpawnPredicate<T> replacementPredicate;
-        private SpawnPlacements.Type spawnType;
+        private SpawnPlacementType spawnType;
         private Heightmap.Types heightmapType;
 
-        public MergedSpawnPredicate(SpawnPlacements.SpawnPredicate<T> originalPredicate, SpawnPlacements.Type spawnType, Heightmap.Types heightmapType) {
+        public MergedSpawnPredicate(SpawnPlacements.SpawnPredicate<T> originalPredicate, SpawnPlacementType spawnType, Heightmap.Types heightmapType) {
             this.originalPredicate = originalPredicate;
             this.orPredicates = new ArrayList<>();
             this.andPredicates = new ArrayList<>();
@@ -115,7 +117,7 @@ public class SpawnPlacementRegisterEvent extends Event implements IModBusEvent {
             this.heightmapType = heightmapType;
         }
 
-        public SpawnPlacements.Type getSpawnType() {
+        public SpawnPlacementType getSpawnType() {
             return spawnType;
         }
 
@@ -123,7 +125,7 @@ public class SpawnPlacementRegisterEvent extends Event implements IModBusEvent {
             return heightmapType;
         }
 
-        private void merge(Operation operation, SpawnPlacements.SpawnPredicate<T> predicate, @Nullable SpawnPlacements.Type spawnType, @Nullable Heightmap.Types heightmapType) {
+        private void merge(Operation operation, SpawnPlacements.SpawnPredicate<T> predicate, @Nullable SpawnPlacementType spawnType, @Nullable Heightmap.Types heightmapType) {
             if (operation == Operation.AND) {
                 andPredicates.add(predicate);
             } else if (operation == Operation.OR) {

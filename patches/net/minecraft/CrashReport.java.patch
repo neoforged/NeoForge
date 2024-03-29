@@ -6,7 +6,7 @@
              p_127520_.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
 -            p_127520_.append("Stacktrace:\n");
 -
--            for(StackTraceElement stacktraceelement : this.uncategorizedStackTrace) {
+-            for (StackTraceElement stacktraceelement : this.uncategorizedStackTrace) {
 -                p_127520_.append("\t").append("at ").append(stacktraceelement);
 -                p_127520_.append("\n");
 -            }
@@ -16,7 +16,7 @@
 +            p_127520_.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.uncategorizedStackTrace));
          }
  
-         for(CrashReportCategory crashreportcategory : this.details) {
+         for (CrashReportCategory crashreportcategory : this.details) {
 @@ -74,6 +_,7 @@
              p_127520_.append("\n\n");
          }

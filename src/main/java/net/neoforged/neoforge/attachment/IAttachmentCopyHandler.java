@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.attachment;
 
+import net.minecraft.core.HolderLookup;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,5 +21,5 @@ public interface IAttachmentCopyHandler<T> {
      * @return the copy or null if it shouldn't be copied.
      */
     @Nullable
-    T copy(IAttachmentHolder holder, T attachment);
+    T copy(HolderLookup.Provider provider, IAttachmentHolder holder, T attachment);
 }

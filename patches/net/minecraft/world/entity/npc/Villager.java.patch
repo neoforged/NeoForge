@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -323,7 +_,7 @@
+@@ -322,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player p_35472_, InteractionHand p_35473_) {
          ItemStack itemstack = p_35472_.getItemInHand(p_35473_);
@@ -9,7 +9,7 @@
              return super.mobInteract(p_35472_, p_35473_);
          } else if (this.isBaby()) {
              this.setUnhappy();
-@@ -747,8 +_,9 @@
+@@ -740,8 +_,9 @@
  
      @Override
      protected Component getTypeName() {
@@ -20,7 +20,7 @@
          );
      }
  
-@@ -806,7 +_,7 @@
+@@ -797,7 +_,7 @@
  
      @Override
      public void thunderHit(ServerLevel p_35409_, LightningBolt p_35410_) {
@@ -29,7 +29,7 @@
              LOGGER.info("Villager {} was struck by lightning {}.", this, p_35410_);
              Witch witch = EntityType.WITCH.create(p_35409_);
              if (witch != null) {
-@@ -819,6 +_,7 @@
+@@ -810,6 +_,7 @@
                  }
  
                  witch.setPersistenceRequired();

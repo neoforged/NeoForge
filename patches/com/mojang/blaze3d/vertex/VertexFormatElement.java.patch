@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormatElement.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormatElement.java
-@@ -93,6 +_,10 @@
+@@ -91,6 +_,10 @@
          this.usage.clearBufferState(this.index, p_166964_);
      }
  
@@ -11,7 +11,7 @@
      @OnlyIn(Dist.CLIENT)
      public static enum Type {
          FLOAT(4, "Float", 5126),
-@@ -127,7 +_,7 @@
+@@ -125,7 +_,7 @@
      }
  
      @OnlyIn(Dist.CLIENT)
@@ -20,7 +20,7 @@
          POSITION("Position", (p_167043_, p_167044_, p_167045_, p_167046_, p_167047_, p_167048_) -> {
              GlStateManager._enableVertexAttribArray(p_167048_);
              GlStateManager._vertexAttribPointer(p_167048_, p_167043_, p_167044_, false, p_167045_, p_167046_);
-@@ -188,6 +_,10 @@
+@@ -186,6 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          public interface SetupState {
              void setupBufferState(int p_167053_, int p_167054_, int p_167055_, long p_167056_, int p_167057_, int p_167058_);

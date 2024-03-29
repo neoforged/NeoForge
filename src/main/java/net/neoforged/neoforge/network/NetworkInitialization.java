@@ -22,8 +22,6 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
-import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
-import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.ClientRegistryManager;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -39,56 +37,48 @@ public class NetworkInitialization {
                 .optional();
         registrar
                 .common(
-                        TierSortingRegistryPayload.ID,
-                        TierSortingRegistryPayload::new,
-                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
-                .common(
-                        ConfigFilePayload.ID,
-                        ConfigFilePayload::new,
+                        ConfigFilePayload.TYPE,
+                        ConfigFilePayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .configuration(
-                        FrozenRegistrySyncStartPayload.ID,
-                        FrozenRegistrySyncStartPayload::new,
+                        FrozenRegistrySyncStartPayload.TYPE,
+                        FrozenRegistrySyncStartPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .configuration(
-                        FrozenRegistryPayload.ID,
-                        FrozenRegistryPayload::new,
+                        FrozenRegistryPayload.TYPE,
+                        FrozenRegistryPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .configuration(
-                        FrozenRegistrySyncCompletedPayload.ID,
-                        FrozenRegistrySyncCompletedPayload::new,
+                        FrozenRegistrySyncCompletedPayload.TYPE,
+                        FrozenRegistrySyncCompletedPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
                                 .server(ServerPayloadHandler.getInstance()::handle))
                 .configuration(
-                        TierSortingRegistrySyncCompletePayload.ID,
-                        TierSortingRegistrySyncCompletePayload::new,
-                        handlers -> handlers.server(ServerPayloadHandler.getInstance()::handle))
-                .configuration(
-                        KnownRegistryDataMapsPayload.ID,
-                        KnownRegistryDataMapsPayload::new,
+                        KnownRegistryDataMapsPayload.TYPE,
+                        KnownRegistryDataMapsPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientRegistryManager::handleKnownDataMaps))
                 .configuration(
-                        KnownRegistryDataMapsReplyPayload.ID,
-                        KnownRegistryDataMapsReplyPayload::new,
+                        KnownRegistryDataMapsReplyPayload.TYPE,
+                        KnownRegistryDataMapsReplyPayload.STREAM_CODEC,
                         handlers -> handlers.server(RegistryManager::handleKnownDataMapsReply))
                 .play(
-                        AdvancedAddEntityPayload.ID,
-                        AdvancedAddEntityPayload::new,
+                        AdvancedAddEntityPayload.TYPE,
+                        AdvancedAddEntityPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .play(
-                        AdvancedOpenScreenPayload.ID,
-                        AdvancedOpenScreenPayload::new,
+                        AdvancedOpenScreenPayload.TYPE,
+                        AdvancedOpenScreenPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .play(
-                        AuxiliaryLightDataPayload.ID,
-                        AuxiliaryLightDataPayload::new,
+                        AuxiliaryLightDataPayload.TYPE,
+                        AuxiliaryLightDataPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .play(
-                        RegistryDataMapSyncPayload.ID,
-                        RegistryDataMapSyncPayload::decode,
+                        RegistryDataMapSyncPayload.TYPE,
+                        RegistryDataMapSyncPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientRegistryManager::handleDataMapSync))
-                .play(AdvancedContainerSetDataPayload.ID,
-                        AdvancedContainerSetDataPayload::new,
+                .play(AdvancedContainerSetDataPayload.TYPE,
+                        AdvancedContainerSetDataPayload.STREAM_CODEC,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle));
     }
 }

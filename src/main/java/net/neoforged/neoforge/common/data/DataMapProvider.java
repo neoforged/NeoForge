@@ -76,7 +76,7 @@ public abstract class DataMapProvider implements DataProvider {
     private <T, R> CompletableFuture<?> generate(Path out, CachedOutput cache, Builder<T, R> builder, DynamicOps<JsonElement> ops) {
         return CompletableFuture.supplyAsync(() -> {
             final Codec<Optional<WithConditions<DataMapFile<T, R>>>> withConditionsCodec = ConditionalOps.createConditionalCodecWithConditions(DataMapFile.codec(builder.registryKey, builder.type));
-            return withConditionsCodec.encodeStart(ops, Optional.of(builder.build())).getOrThrow(false, msg -> LOGGER.error("Failed to encode {}: {}", out, msg));
+            return withConditionsCodec.encodeStart(ops, Optional.of(builder.build())).getOrThrow(msg -> new RuntimeException("Failed to encode %s: %s".formatted(out, msg)));
         }).thenComposeAsync(encoded -> DataProvider.saveStable(cache, encoded, out));
     }
 

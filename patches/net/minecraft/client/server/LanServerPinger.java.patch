@@ -16,7 +16,7 @@
      private final String motd;
 @@ -40,7 +_,7 @@
  
-         while(!this.isInterrupted() && this.isRunning) {
+         while (!this.isInterrupted() && this.isRunning) {
              try {
 -                InetAddress inetaddress = InetAddress.getByName("224.0.2.60");
 +                InetAddress inetaddress = InetAddress.getByName(MULTICAST_GROUP);

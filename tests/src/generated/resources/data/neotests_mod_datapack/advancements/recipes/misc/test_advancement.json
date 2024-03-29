@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:scute"
-            ]
+            "items": "minecraft:turtle_scute"
           }
         ]
       },

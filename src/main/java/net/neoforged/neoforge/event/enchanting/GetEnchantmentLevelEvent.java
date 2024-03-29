@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.event.enchanting;
 
-import java.util.Map;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.extensions.IItemStackExtension;
 import org.jetbrains.annotations.Nullable;
@@ -20,11 +20,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class GetEnchantmentLevelEvent extends Event {
     protected final ItemStack stack;
-    protected final Map<Enchantment, Integer> enchantments;
+    protected final ItemEnchantments.Mutable enchantments;
     @Nullable
     protected final Enchantment targetEnchant;
 
-    public GetEnchantmentLevelEvent(ItemStack stack, Map<Enchantment, Integer> enchantments, @Nullable Enchantment targetEnchant) {
+    public GetEnchantmentLevelEvent(ItemStack stack, ItemEnchantments.Mutable enchantments, @Nullable Enchantment targetEnchant) {
         this.stack = stack;
         this.enchantments = enchantments;
         this.targetEnchant = targetEnchant;
@@ -40,7 +40,7 @@ public class GetEnchantmentLevelEvent extends Event {
     /**
      * Returns the mutable enchantment->level map.
      */
-    public Map<Enchantment, Integer> getEnchantments() {
+    public ItemEnchantments.Mutable getEnchantments() {
         return this.enchantments;
     }
 

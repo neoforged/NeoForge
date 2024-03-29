@@ -14,9 +14,11 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
@@ -53,7 +55,8 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     public GameTestPlayer moveToCentre() {
-        moveTo(helper.absoluteVec(new BlockPos(helper.testInfo.getStructureSize().getX() / 2, helper.testInfo.getStructureName().endsWith("_floor") ? 2 : 1, helper.testInfo.getStructureSize().getX() / 2).getCenter()).subtract(0, 0.5, 0));
+        Vec3i size = helper.testInfo.getStructureBlockEntity().getStructureSize();
+        moveTo(helper.absoluteVec(new BlockPos(size.getX() / 2, helper.testInfo.getStructureName().endsWith("_floor") ? 2 : 1, size.getX() / 2).getCenter()).subtract(0, 0.5, 0));
         return this;
     }
 
@@ -68,14 +71,17 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     public void testStructureLoaded(GameTestInfo i) {}
 
     @Override
-    public void testPassed(GameTestInfo i) {
+    public void testPassed(GameTestInfo i, GameTestRunner runner) {
         disconnectGameTest();
     }
 
     @Override
-    public void testFailed(GameTestInfo i) {
+    public void testFailed(GameTestInfo i, GameTestRunner runner) {
         disconnectGameTest();
     }
+
+    @Override
+    public void testAddedForRerun(GameTestInfo i, GameTestInfo i2, GameTestRunner runner) {}
 
     private final List<Consumer<? extends Event>> listeners = new ArrayList<>();
 

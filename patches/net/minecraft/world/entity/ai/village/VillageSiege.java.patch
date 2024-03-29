@@ -17,6 +17,6 @@
              try {
 -                zombie = new Zombie(p_27017_);
 +                zombie = EntityType.ZOMBIE.create(p_27017_); //Forge: Direct Initialization is deprecated, use EntityType.
-                 zombie.finalizeSpawn(p_27017_, p_27017_.getCurrentDifficultyAt(zombie.blockPosition()), MobSpawnType.EVENT, null, null);
+                 zombie.finalizeSpawn(p_27017_, p_27017_.getCurrentDifficultyAt(zombie.blockPosition()), MobSpawnType.EVENT, null);
              } catch (Exception exception) {
                  LOGGER.warn("Failed to create zombie for village siege at {}", vec3, exception);

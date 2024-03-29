@@ -1,33 +1,33 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -110,6 +_,17 @@
+@@ -112,6 +_,17 @@
          this.dynamicShape = p_60452_.dynamicShape;
          this.requiredFeatures = p_60452_.requiredFeatures;
          this.properties = p_60452_;
-+        final ResourceLocation lootTableCache = p_60452_.drops;
++        final ResourceKey<LootTable> lootTableCache = p_60452_.drops;
 +        if (lootTableCache != null) {
 +            this.lootTableSupplier = () -> lootTableCache;
 +        } else if (p_60452_.lootTableSupplier != null) {
 +            this.lootTableSupplier = p_60452_.lootTableSupplier;
 +        } else {
 +            this.lootTableSupplier = () -> {
-+                ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey((Block) this);
-+                return new ResourceLocation(registryName.getNamespace(), "blocks/" + registryName.getPath());
++                ResourceLocation resourcelocation = BuiltInRegistries.BLOCK.getKey(this.asBlock());
++                return ResourceKey.create(Registries.LOOT_TABLE, resourcelocation.withPrefix("blocks/"));
 +            };
 +        }
      }
  
      public BlockBehaviour.Properties properties() {
-@@ -165,7 +_,7 @@
+@@ -160,7 +_,7 @@
+     }
  
-     @Deprecated
-     public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
+     protected void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
 -        if (p_60515_.hasBlockEntity() && !p_60515_.is(p_60518_.getBlock())) {
 +        if (p_60515_.hasBlockEntity() && (!p_60515_.is(p_60518_.getBlock()) || !p_60518_.hasBlockEntity())) {
              p_60516_.removeBlockEntity(p_60517_);
          }
      }
-@@ -175,7 +_,7 @@
+@@ -169,7 +_,7 @@
          if (!p_311951_.isAir() && p_312925_.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = p_311951_.getBlock();
              boolean flag = p_312925_.getIndirectSourceEntity() instanceof Player;
@@ -36,7 +36,7 @@
                  BlockEntity blockentity = p_311951_.hasBlockEntity() ? p_312820_.getBlockEntity(p_312489_) : null;
                  LootParams.Builder lootparams$builder = new LootParams.Builder(serverlevel)
                      .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(p_312489_))
-@@ -190,8 +_,7 @@
+@@ -184,8 +_,7 @@
                  p_311951_.getDrops(lootparams$builder).forEach(p_311752_ -> p_312073_.accept(p_311752_, p_312489_));
              }
  
@@ -46,7 +46,7 @@
          }
      }
  
-@@ -365,13 +_,14 @@
+@@ -336,12 +_,13 @@
          if (f == -1.0F) {
              return 0.0F;
          } else {
@@ -57,23 +57,30 @@
          }
      }
  
-     @Deprecated
-     public void spawnAfterBreak(BlockState p_222949_, ServerLevel p_222950_, BlockPos p_222951_, ItemStack p_222952_, boolean p_222953_) {
+     protected void spawnAfterBreak(BlockState p_222949_, ServerLevel p_222950_, BlockPos p_222951_, ItemStack p_222952_, boolean p_222953_) {
 +        if (p_222953_) net.neoforged.neoforge.common.CommonHooks.dropXpForBlock(p_222949_, p_222950_, p_222951_, p_222952_);
      }
  
-     @Deprecated
-@@ -394,8 +_,7 @@
+     protected void attack(BlockState p_60499_, Level p_60500_, BlockPos p_60501_, Player p_60502_) {
+@@ -360,8 +_,7 @@
  
-     public final ResourceLocation getLootTable() {
+     public final ResourceKey<LootTable> getLootTable() {
          if (this.drops == null) {
 -            ResourceLocation resourcelocation = BuiltInRegistries.BLOCK.getKey(this.asBlock());
--            this.drops = resourcelocation.withPrefix("blocks/");
+-            this.drops = ResourceKey.create(Registries.LOOT_TABLE, resourcelocation.withPrefix("blocks/"));
 +            this.drops = this.lootTableSupplier.get();
          }
  
          return this.drops;
-@@ -417,6 +_,14 @@
+@@ -378,6 +_,7 @@
+         return this.isRandomlyTicking;
+     }
+ 
++    @Deprecated //Forge: Use more sensitive version {@link IForgeBlockState#getSoundType(IWorldReader, BlockPos, Entity) }
+     protected SoundType getSoundType(BlockState p_320941_) {
+         return this.soundType;
+     }
+@@ -394,6 +_,14 @@
          return this.properties.destroyTime;
      }
  
@@ -82,13 +89,13 @@
 +    }
 +
 +    /* ======================================== FORGE START ===================================== */
-+    private final java.util.function.Supplier<ResourceLocation> lootTableSupplier;
++    private final java.util.function.Supplier<ResourceKey<LootTable>> lootTableSupplier;
 +    /* ========================================= FORGE END ====================================== */
 +
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
          private final int lightEmission;
          private final boolean useShapeForLightOcclusion;
-@@ -550,12 +_,14 @@
+@@ -523,12 +_,14 @@
              return this.useShapeForLightOcclusion;
          }
  
@@ -104,7 +111,7 @@
          }
  
          public boolean ignitedByLava() {
-@@ -568,9 +_,11 @@
+@@ -541,9 +_,11 @@
          }
  
          public MapColor getMapColor(BlockGetter p_285002_, BlockPos p_285293_) {
@@ -117,7 +124,7 @@
          public BlockState rotate(Rotation p_60718_) {
              return this.getBlock().rotate(this.asState(), p_60718_);
          }
-@@ -624,6 +_,8 @@
+@@ -597,6 +_,8 @@
          }
  
          public PushReaction getPistonPushReaction() {
@@ -126,21 +133,29 @@
              return this.pushReaction;
          }
  
-@@ -751,6 +_,9 @@
+@@ -723,6 +_,9 @@
          }
  
-         public InteractionResult use(Level p_60665_, Player p_60666_, InteractionHand p_60667_, BlockHitResult p_60668_) {
-+            var useOnContext = new net.minecraft.world.item.context.UseOnContext(p_60665_, p_60666_, p_60667_, p_60666_.getItemInHand(p_60667_).copy(), p_60668_);
+         public ItemInteractionResult useItemOn(ItemStack p_316374_, Level p_316651_, Player p_316623_, InteractionHand p_316469_, BlockHitResult p_316877_) {
++            var useOnContext = new net.minecraft.world.item.context.UseOnContext(p_316651_, p_316623_, p_316469_, p_316623_.getItemInHand(p_316469_).copy(), p_316877_);
 +            var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(useOnContext, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.BLOCK));
 +            if (e.isCanceled()) return e.getCancellationResult();
-             return this.getBlock().use(this.asState(), p_60665_, p_60668_.getBlockPos(), p_60666_, p_60667_, p_60668_);
+             return this.getBlock().useItemOn(p_316374_, this.asState(), p_316651_, p_316877_.getBlockPos(), p_316623_, p_316469_, p_316877_);
          }
  
-@@ -982,11 +_,12 @@
+@@ -824,6 +_,7 @@
+             return this.getBlock().getSeed(this.asState(), p_60727_);
+         }
+ 
++        @Deprecated //Forge: Use more sensitive version {@link IForgeBlockState#getSoundType(IWorldReader, BlockPos, Entity) }
+         public SoundType getSoundType() {
+             return this.getBlock().getSoundType(this.asState());
+         }
+@@ -958,11 +_,12 @@
          PushReaction pushReaction = PushReaction.NORMAL;
          boolean spawnTerrainParticles = true;
          NoteBlockInstrument instrument = NoteBlockInstrument.HARP;
-+        private java.util.function.Supplier<ResourceLocation> lootTableSupplier;
++        private java.util.function.Supplier<ResourceKey<LootTable>> lootTableSupplier;
          boolean replaceable;
          BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (p_284893_, p_284894_, p_284895_, p_284896_) -> p_284893_.isFaceSturdy(
                      p_284894_, p_284895_, Direction.UP
@@ -150,7 +165,7 @@
          BlockBehaviour.StatePredicate isRedstoneConductor = (p_284888_, p_284889_, p_284890_) -> p_284888_.isCollisionShapeFullBlock(p_284889_, p_284890_);
          BlockBehaviour.StatePredicate isSuffocating = (p_284885_, p_284886_, p_284887_) -> p_284885_.blocksMotion()
                  && p_284885_.isCollisionShapeFullBlock(p_284886_, p_284887_);
-@@ -1127,9 +_,15 @@
+@@ -1103,9 +_,15 @@
              return this;
          }
  

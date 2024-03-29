@@ -1,6 +1,24 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -143,7 +_,7 @@
+@@ -92,7 +_,7 @@
+     public static final List<RegistryDataLoader.RegistryData<?>> DIMENSION_REGISTRIES = List.of(
+         new RegistryDataLoader.RegistryData<>(Registries.LEVEL_STEM, LevelStem.CODEC)
+     );
+-    public static final List<RegistryDataLoader.RegistryData<?>> SYNCHRONIZED_REGISTRIES = List.of(
++    public static final List<RegistryDataLoader.RegistryData<?>> SYNCHRONIZED_REGISTRIES = net.neoforged.neoforge.registries.DataPackRegistriesHooks.grabNetworkableRegistries(List.of(
+         new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
+@@ -101,7 +_,7 @@
+         new RegistryDataLoader.RegistryData<>(Registries.DIMENSION_TYPE, DimensionType.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.DAMAGE_TYPE, DamageType.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.BANNER_PATTERN, BannerPattern.DIRECT_CODEC)
+-    );
++    )); // Neo: Keep the list so custom registries can be added later
+ 
+     public static RegistryAccess.Frozen load(ResourceManager p_252046_, RegistryAccess p_249916_, List<RegistryDataLoader.RegistryData<?>> p_250344_) {
+         return load((p_321412_, p_321413_) -> p_321412_.loadFromResources(p_252046_, p_321413_), p_249916_, p_250344_);
+@@ -182,7 +_,7 @@
      }
  
      private static String registryDirPath(ResourceLocation p_252033_) {
@@ -8,30 +26,32 @@
 +        return net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
      }
  
-     static <E> void loadRegistryContents(
-@@ -156,7 +_,8 @@
+     private static <E> void loadElementFromResource(
+@@ -193,11 +_,16 @@
+         Resource p_326141_,
+         RegistrationInfo p_326033_
+     ) throws IOException {
++        Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(p_326476_));
+         try (Reader reader = p_326141_.openAsReader()) {
+             JsonElement jsonelement = JsonParser.parseReader(reader);
+-            DataResult<E> dataresult = p_326476_.parse(p_325932_, jsonelement);
+-            E e = dataresult.getOrThrow();
++            DataResult<Optional<E>> dataresult = decoder.parse(p_325932_, jsonelement);
++            Optional<E> candidate = dataresult.getOrThrow();
++            candidate.ifPresentOrElse(e -> {
+             p_326195_.register(p_326054_, e, p_326033_);
++            }, () -> {
++                LOGGER.debug("Skipping loading registry entry {} as its conditions were not met", p_326054_);
++            });
+         }
+     }
+ 
+@@ -210,7 +_,7 @@
      ) {
-         String s = registryDirPath(p_255792_.location());
+         String s = registryDirPath(p_321557_.key().location());
          FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
--        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_256369_);
-+        RegistryOps<JsonElement> registryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, p_256369_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
-+        Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(p_256232_));
+-        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_321612_);
++        RegistryOps<JsonElement> registryops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, p_321612_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
  
-         for(Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_256349_).entrySet()) {
+         for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
-@@ -165,10 +_,12 @@
- 
-             try (Reader reader = resource.openAsReader()) {
-                 JsonElement jsonelement = JsonParser.parseReader(reader);
--                DataResult<E> dataresult = p_256232_.parse(registryops, jsonelement);
--                E e = dataresult.getOrThrow(false, p_248715_ -> {
-+                DataResult<Optional<E>> dataresult = decoder.parse(registryops, jsonelement);
-+                Optional<E> candidate = dataresult.getOrThrow(true, p_248715_ -> {
-                 });
--                p_256211_.register(resourcekey, e, resource.isBuiltin() ? Lifecycle.stable() : dataresult.lifecycle());
-+                candidate.ifPresentOrElse(e -> {
-+                    p_256211_.register(resourcekey, e, resource.isBuiltin() ? Lifecycle.stable() : dataresult.lifecycle());
-+                }, () -> LOGGER.debug("Skipping loading registry entry {} as it's conditions were not met", resourcelocation));
-             } catch (Exception exception) {
-                 p_255884_.put(
-                     resourcekey,

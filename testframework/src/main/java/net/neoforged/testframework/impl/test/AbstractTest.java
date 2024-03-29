@@ -23,6 +23,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -115,7 +116,8 @@ public abstract class AbstractTest implements Test {
                 gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
-                StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()));
+                StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()),
+                gameTest.skyAccess());
     }
 
     protected String gameTestTemplate(GameTest gameTest) {
@@ -319,14 +321,17 @@ public abstract class AbstractTest implements Test {
                 public void testStructureLoaded(GameTestInfo pTestInfo) {}
 
                 @Override
-                public void testPassed(GameTestInfo pTestInfo) {
+                public void testPassed(GameTestInfo pTestInfo, GameTestRunner runner) {
                     isDuringGameTest = false;
                 }
 
                 @Override
-                public void testFailed(GameTestInfo pTestInfo) {
+                public void testFailed(GameTestInfo pTestInfo, GameTestRunner runner) {
                     isDuringGameTest = false;
                 }
+
+                @Override
+                public void testAddedForRerun(GameTestInfo p_320937_, GameTestInfo p_320294_, GameTestRunner p_320147_) {}
             });
             this.onGameTest.forEach(test -> test.accept(helper));
         }

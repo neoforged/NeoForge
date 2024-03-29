@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:iron_axe"
-            ]
+            "items": "minecraft:iron_axe"
           }
         ]
       },

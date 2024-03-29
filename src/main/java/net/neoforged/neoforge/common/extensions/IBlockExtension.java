@@ -17,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -64,7 +63,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -275,20 +274,6 @@ public interface IBlockExtension {
             return BedBlock.findStandUpPosition(type, levelReader, pos, state.getValue(BedBlock.FACING), orientation);
         }
         return Optional.empty();
-    }
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param state The current state
-     * @param level The current level
-     * @param pos   Block position in level
-     * @param type  The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    default boolean isValidSpawn(BlockState state, BlockGetter level, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType) {
-        return state.isValidSpawn(level, pos, entityType);
     }
 
     /**
@@ -534,7 +519,7 @@ public interface IBlockExtension {
      * @return A SoundType to use
      */
     default SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
-        return self().getSoundType(state);
+        return state.getSoundType();
     }
 
     /**
@@ -577,8 +562,8 @@ public interface IBlockExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
-        return state.getBlock() == Blocks.LAVA ? BlockPathTypes.LAVA : state.isBurning(level, pos) ? BlockPathTypes.DAMAGE_FIRE : null;
+    default PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+        return state.getBlock() == Blocks.LAVA ? PathType.LAVA : state.isBurning(level, pos) ? PathType.DAMAGE_FIRE : null;
     }
 
     /**
@@ -595,9 +580,9 @@ public interface IBlockExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getAdjacentBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType) {
-        if (state.is(Blocks.SWEET_BERRY_BUSH)) return BlockPathTypes.DANGER_OTHER;
-        else if (WalkNodeEvaluator.isBurningBlock(state)) return BlockPathTypes.DANGER_FIRE;
+    default PathType getAdjacentBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, PathType originalType) {
+        if (state.is(Blocks.SWEET_BERRY_BUSH)) return PathType.DANGER_OTHER;
+        else if (WalkNodeEvaluator.isBurningBlock(state)) return PathType.DANGER_FIRE;
         else return null;
     }
 

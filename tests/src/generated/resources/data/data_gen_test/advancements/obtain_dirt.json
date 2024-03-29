@@ -4,9 +4,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:dirt"
-            ]
+            "items": "minecraft:dirt"
           }
         ]
       },
@@ -19,7 +17,8 @@
       "translate": "dirt_description"
     },
     "icon": {
-      "item": "minecraft:dirt"
+      "count": 1,
+      "id": "minecraft:dirt"
     },
     "title": {
       "translate": "block.minecraft.dirt"

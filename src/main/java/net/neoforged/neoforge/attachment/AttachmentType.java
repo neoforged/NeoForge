@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
@@ -72,23 +73,23 @@ public final class AttachmentType<T> {
 
     private static <T> IAttachmentComparator<T> defaultComparator(@Nullable IAttachmentSerializer<?, T> serializer) {
         if (serializer == null) {
-            return (first, second) -> {
+            return (provider, first, second) -> {
                 throw new UnsupportedOperationException("Cannot compare non-serializable attachments");
             };
         }
-        return (first, second) -> Objects.equals(serializer.write(first), serializer.write(second));
+        return (provider, first, second) -> Objects.equals(serializer.write(provider, first), serializer.write(provider, second));
     }
 
     private static <T, H extends Tag> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<H, T> serializer) {
         if (serializer == null) {
-            return (holder, attachment) -> {
+            return (provider, holder, attachment) -> {
                 throw new UnsupportedOperationException("Cannot copy non-serializable attachments");
             };
         }
-        return (holder, attachment) -> {
-            H serialized = serializer.write(attachment);
+        return (provider, holder, attachment) -> {
+            H serialized = serializer.write(provider, attachment);
             if (serialized != null) {
-                return serializer.read(holder, serialized);
+                return serializer.read(provider, holder, serialized);
             }
             return null;
         };
@@ -141,16 +142,16 @@ public final class AttachmentType<T> {
     public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
         return builder(defaultValueConstructor).serialize(new IAttachmentSerializer<S, T>() {
             @Override
-            public T read(IAttachmentHolder holder, S tag) {
+            public T read(HolderLookup.Provider provider, IAttachmentHolder holder, S tag) {
                 var ret = defaultValueConstructor.apply(holder);
-                ret.deserializeNBT(tag);
+                ret.deserializeNBT(provider, tag);
                 return ret;
             }
 
             @Nullable
             @Override
-            public S write(T attachment) {
-                return attachment.serializeNBT();
+            public S write(HolderLookup.Provider provider, T attachment) {
+                return attachment.serializeNBT(provider);
             }
         });
     }
@@ -213,13 +214,13 @@ public final class AttachmentType<T> {
             // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
                 @Override
-                public T read(IAttachmentHolder holder, Tag tag) {
+                public T read(HolderLookup.Provider provider, IAttachmentHolder holder, Tag tag) {
                     return codec.parse(NbtOps.INSTANCE, tag).result().get();
                 }
 
                 @Nullable
                 @Override
-                public Tag write(T attachment) {
+                public Tag write(HolderLookup.Provider provider, T attachment) {
                     return shouldSerialize.test(attachment) ? codec.encodeStart(NbtOps.INSTANCE, attachment).result().get() : null;
                 }
             });

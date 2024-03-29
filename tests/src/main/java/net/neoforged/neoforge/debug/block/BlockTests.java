@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -70,16 +70,16 @@ public class BlockTests {
     }
 
     @GameTest
-    @EmptyTemplate(floor = true)
+    @EmptyTemplate(floor = true, value = "5x5x5") // barrier blocks may prevent respawn
     @TestHolder(description = "Tests if the Neo-added getRespawnPosition method correctly changes the position")
     static void customRespawnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var respawn = reg.blocks().register("respawn", () -> new Block(BlockBehaviour.Properties.of()) {
             @Override
-            public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
+            protected ItemInteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level world, BlockPos pos, Player player, InteractionHand p_316595_, BlockHitResult p_316140_) {
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.setRespawnPosition(world.dimension(), pos, 0, false, true);
                 }
-                return InteractionResult.sidedSuccess(world.isClientSide);
+                return ItemInteractionResult.sidedSuccess(world.isClientSide);
             }
 
             @Override

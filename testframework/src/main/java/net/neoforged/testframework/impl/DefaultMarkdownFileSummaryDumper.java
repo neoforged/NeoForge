@@ -27,7 +27,7 @@ public class DefaultMarkdownFileSummaryDumper implements FileSummaryDumper {
     }
 
     @Override
-    public void write(TestSummary summary, Logger logger, PrintWriter writer) {
+    public void write(TestSummary summary, Logger logger, PrintWriter writer) throws Exception {
         String disabledList = summary.testInfos()
                 .stream()
                 .filter(info -> !info.enabled())

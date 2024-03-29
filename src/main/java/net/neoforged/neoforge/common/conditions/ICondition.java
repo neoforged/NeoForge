@@ -11,6 +11,7 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -39,11 +39,11 @@ public interface ICondition {
     }
 
     static <V, T> Optional<T> getWithConditionalCodec(Codec<Optional<T>> codec, DynamicOps<V> ops, V element) {
-        return Util.getOrThrow(codec.parse(ops, element), JsonParseException::new);
+        return codec.parse(ops, element).getOrThrow(JsonParseException::new);
     }
 
     static <V, T> Optional<T> getWithWithConditionsCodec(Codec<Optional<WithConditions<T>>> codec, DynamicOps<V> ops, V elements) {
-        return Util.getOrThrow(codec.parse(ops, elements).promotePartial((m) -> {}), JsonParseException::new).map(WithConditions::carrier);
+        return codec.parse(ops, elements).promotePartial((m) -> {}).getOrThrow(JsonParseException::new).map(WithConditions::carrier);
     }
 
     static <V> boolean conditionsMatched(DynamicOps<V> ops, V element) {
@@ -78,7 +78,7 @@ public interface ICondition {
 
     boolean test(IContext context);
 
-    Codec<? extends ICondition> codec();
+    MapCodec<? extends ICondition> codec();
 
     interface IContext {
         IContext EMPTY = new IContext() {

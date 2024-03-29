@@ -1,47 +1,27 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -45,17 +_,23 @@
-     }
- 
-     protected void apply(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_) {
-+        var ops = this.makeConditionalOps();
+@@ -50,16 +_,22 @@
          this.hasErrors = false;
-         Map<RecipeType<?>, Builder<ResourceLocation, RecipeHolder<?>>> map = Maps.newHashMap();
-         Builder<ResourceLocation, RecipeHolder<?>> builder = ImmutableMap.builder();
+         Builder<RecipeType<?>, RecipeHolder<?>> builder = ImmutableMultimap.builder();
+         com.google.common.collect.ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> builder1 = ImmutableMap.builder();
+-        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
++        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
  
-         for(Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
+         for (Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
 +            if (resourcelocation.getPath().startsWith("_")) continue; //Forge: filter anything beginning with "_" as it's used for metadata.
  
              try {
--                RecipeHolder<?> recipeholder = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
--                map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
--                builder.put(resourcelocation, recipeholder);
-+                Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), ops);
-+                recipeHolderOptional.ifPresentOrElse(recipeholder -> {
-+                    map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
-+                    builder.put(resourcelocation, recipeholder);
+-                Recipe<?> recipe = Recipe.CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
++                var decoded = Recipe.CONDITIONAL_CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
++                decoded.ifPresentOrElse(r -> {
++                Recipe<?> recipe = r.carrier();
+                 RecipeHolder<?> recipeholder = new RecipeHolder<>(resourcelocation, recipe);
+                 builder.put(recipe.getType(), recipeholder);
+                 builder1.put(resourcelocation, recipeholder);
 +                }, () -> {
-+                    LOGGER.debug("Skipping loading recipe {} as it's conditions were not met", resourcelocation);
++                    LOGGER.debug("Skipping loading recipe {} as its conditions were not met", resourcelocation);
 +                });
              } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
                  LOGGER.error("Parsing error loading recipe {}", resourcelocation, jsonparseexception);
              }
-@@ -136,9 +_,15 @@
-         return this.recipes.values().stream().flatMap(p_220258_ -> p_220258_.keySet().stream());
-     }
- 
-+    /** @deprecated Forge: use {@linkplain #fromJson(ResourceLocation, JsonObject, com.mojang.serialization.DynamicOps) overload with context}. */
-+    @Deprecated
-     protected static RecipeHolder<?> fromJson(ResourceLocation p_44046_, JsonObject p_44047_) {
--        Recipe<?> recipe = Util.getOrThrow(Recipe.CODEC.parse(JsonOps.INSTANCE, p_44047_), JsonParseException::new);
--        return new RecipeHolder<>(p_44046_, recipe);
-+        return fromJson(p_44046_, p_44047_, JsonOps.INSTANCE).orElseThrow();
-+    }
-+
-+    public static Optional<RecipeHolder<?>> fromJson(ResourceLocation p_44046_, JsonObject p_44047_, com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonElementOps) {
-+        Optional<? extends Recipe<?>> recipe = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Recipe.CONDITIONAL_CODEC, jsonElementOps, p_44047_);
-+        return recipe.map(r -> new RecipeHolder<>(p_44046_, r));
-     }
- 
-     public void replaceRecipes(Iterable<RecipeHolder<?>> p_44025_) {

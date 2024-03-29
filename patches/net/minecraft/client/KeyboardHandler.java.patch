@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/KeyboardHandler.java
 +++ b/net/minecraft/client/KeyboardHandler.java
-@@ -364,7 +_,9 @@
+@@ -367,7 +_,9 @@
                  }
              }
  
@@ -11,7 +11,7 @@
                  if (this.minecraft.options.keyFullscreen.matches(p_90895_, p_90896_)) {
                      this.minecraft.getWindow().toggleFullScreen();
                      this.minecraft.options.fullscreen().set(this.minecraft.getWindow().isFullscreen());
-@@ -382,6 +_,8 @@
+@@ -385,6 +_,8 @@
                      );
                      return;
                  }
@@ -19,8 +19,8 @@
 +                    ((KeyBindsScreen)this.minecraft.screen).selectedKey = null; //Forge: Unset pure modifiers.
              }
  
-             if (this.minecraft.getNarrator().isActive() && this.minecraft.options.narratorHotkey().get()) {
-@@ -418,9 +_,13 @@
+             if (p_90897_ != 0) {
+@@ -412,9 +_,13 @@
                  Screen.wrapScreenError(() -> {
                      if (p_90897_ == 1 || p_90897_ == 2) {
                          screen.afterKeyboardAction();
@@ -36,7 +36,7 @@
                      }
                  }, "keyPressed event handler", screen.getClass().getCanonicalName());
                  if (aboolean[0]) {
-@@ -490,22 +_,27 @@
+@@ -483,22 +_,27 @@
                      }
                  }
              }
@@ -59,7 +59,7 @@
 +                        net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(guieventlistener, (char)p_90891_, p_90892_);
 +                    }, "charTyped event handler", guieventlistener.getClass().getCanonicalName());
                  } else {
-                     for(char c0 : Character.toChars(p_90891_)) {
+                     for (char c0 : Character.toChars(p_90891_)) {
 -                        Screen.wrapScreenError(
 -                            () -> guieventlistener.charTyped(c0, p_90892_), "charTyped event handler", guieventlistener.getClass().getCanonicalName()
 -                        );

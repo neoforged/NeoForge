@@ -6,6 +6,7 @@
 package net.neoforged.testframework.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -17,7 +18,7 @@ import net.neoforged.testframework.impl.TestFrameworkMod;
 
 public record TestEnabledLootCondition(TestFramework framework, String testId) implements LootItemCondition {
 
-    public static final Codec<TestEnabledLootCondition> CODEC = RecordCodecBuilder.create(in -> in.group(
+    public static final MapCodec<TestEnabledLootCondition> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
             MutableTestFramework.REFERENCE_CODEC.fieldOf("framework").forGetter(TestEnabledLootCondition::framework),
             Codec.STRING.fieldOf("test").forGetter(TestEnabledLootCondition::testId)).apply(in, TestEnabledLootCondition::new));
     public TestEnabledLootCondition(DynamicTest test) {

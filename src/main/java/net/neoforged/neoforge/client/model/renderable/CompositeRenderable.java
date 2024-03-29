@@ -50,7 +50,7 @@ public class CompositeRenderable implements IRenderable<CompositeRenderable.Tran
             Matrix4f matrix = context.getTransform(name);
             if (matrix != null) {
                 poseStack.pushPose();
-                poseStack.mulPoseMatrix(matrix);
+                poseStack.mulPose(matrix);
             }
 
             for (var part : children)

@@ -24,7 +24,7 @@
  
      private static boolean isNearWater(LevelReader p_53259_, BlockPos p_53260_) {
 +        BlockState state = p_53259_.getBlockState(p_53260_);
-         for(BlockPos blockpos : BlockPos.betweenClosed(p_53260_.offset(-4, 0, -4), p_53260_.offset(4, 1, 4))) {
+         for (BlockPos blockpos : BlockPos.betweenClosed(p_53260_.offset(-4, 0, -4), p_53260_.offset(4, 1, 4))) {
 -            if (p_53259_.getFluidState(blockpos).is(FluidTags.WATER)) {
 +            if (state.canBeHydrated(p_53259_, p_53260_, p_53259_.getFluidState(blockpos), blockpos)) {
                  return true;

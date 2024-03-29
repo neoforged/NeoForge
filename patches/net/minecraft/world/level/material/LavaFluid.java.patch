@@ -23,7 +23,7 @@
 @@ -111,7 +_,7 @@
  
      private boolean hasFlammableNeighbours(LevelReader p_76228_, BlockPos p_76229_) {
-         for(Direction direction : Direction.values()) {
+         for (Direction direction : Direction.values()) {
 -            if (this.isFlammable(p_76228_, p_76229_.relative(direction))) {
 +            if (this.isFlammable(p_76228_, p_76229_.relative(direction), direction.getOpposite())) {
                  return true;

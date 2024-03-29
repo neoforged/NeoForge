@@ -9,11 +9,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.Event.Result;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,14 +19,11 @@ import org.apache.logging.log4j.Logger;
 @Mod("potion_event_test")
 @Mod.EventBusSubscriber
 public class PotionEventTest {
-    private static Logger LOGGER = LogManager.getLogger(PotionEventTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(PotionEventTest.class);
 
-    public PotionEventTest(IEventBus modEventBus) {
-        modEventBus.addListener(this::onSetup);
-    }
-
-    private void onSetup(FMLCommonSetupEvent event) {
-        BrewingRecipeRegistry.addRecipe(Ingredient.of(Items.ICE), Ingredient.of(Items.LAVA_BUCKET), new ItemStack(Items.OBSIDIAN));
+    @SubscribeEvent
+    public static void onBrewingSetup(RegisterBrewingRecipesEvent event) {
+        event.getBuilder().addRecipe(Ingredient.of(Items.ICE), Ingredient.of(Items.LAVA_BUCKET), new ItemStack(Items.OBSIDIAN));
     }
 
     @SubscribeEvent

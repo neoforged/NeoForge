@@ -126,7 +126,7 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     private static Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, ProfilerFiller profiler, RegistryAccess access, ICondition.IContext context) {
-        final RegistryOps<JsonElement> ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, access), context);
+        final RegistryOps<JsonElement> ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, access), context);
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
         access.registries().forEach(registryEntry -> {
@@ -161,8 +161,7 @@ public class DataMapLoader implements PreparableReloadListener {
         for (final Resource resource : resources) {
             try (Reader reader = resource.openAsReader()) {
                 JsonElement jsonelement = JsonParser.parseReader(reader);
-                entries.add(codec.decode(ops, jsonelement)
-                        .getOrThrow(false, LOGGER::error).getFirst());
+                entries.add(codec.decode(ops, jsonelement).getOrThrow().getFirst());
             } catch (Exception exception) {
                 LOGGER.error("Could not read data map of type {} for registry {}", attachmentType.id(), registryKey, exception);
             }

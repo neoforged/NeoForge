@@ -24,13 +24,15 @@ import org.jetbrains.annotations.ApiStatus;
 public class CalculateDetachedCameraDistanceEvent extends Event {
     private final Camera camera;
     private final boolean cameraFlipped;
+    private final float entityScale;
 
     private double distance;
 
     @ApiStatus.Internal
-    public CalculateDetachedCameraDistanceEvent(Camera camera, boolean cameraFlipped, double distance) {
+    public CalculateDetachedCameraDistanceEvent(Camera camera, boolean cameraFlipped, float entityScale, double distance) {
         this.camera = camera;
         this.cameraFlipped = cameraFlipped;
+        this.entityScale = entityScale;
         this.distance = distance;
     }
 
@@ -49,14 +51,22 @@ public class CalculateDetachedCameraDistanceEvent extends Event {
     }
 
     /**
-     * Returns the distance from the camera to the {@linkplain Camera#getEntity() camera entity}.
+     * Returns the scaling factor that will be applied to the final distance,
+     * based on the size of the {@link Camera#getEntity() camera entity}.
+     */
+    public float getEntityScalingFactor() {
+        return entityScale;
+    }
+
+    /**
+     * Returns the pre-{@linkplain #getEntityScalingFactor() scaling factor} distance from the camera to the {@linkplain Camera#getEntity() camera entity}.
      */
     public double getDistance() {
         return distance;
     }
 
     /**
-     * Sets the distance from the camera to the {@linkplain Camera#getEntity() camera entity}.
+     * Sets the pre-{@linkplain #getEntityScalingFactor() scaling factor} distance from the camera to the {@linkplain Camera#getEntity() camera entity}.
      * 
      * @param distance The new distance from the camera to the {@linkplain Camera#getEntity() camera entity}
      */

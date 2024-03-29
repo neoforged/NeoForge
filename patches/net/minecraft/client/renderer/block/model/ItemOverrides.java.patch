@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/ItemOverrides.java
 +++ b/net/minecraft/client/renderer/block/model/ItemOverrides.java
-@@ -32,7 +_,15 @@
+@@ -31,7 +_,15 @@
          this.properties = new ResourceLocation[0];
      }
  
@@ -16,16 +16,16 @@
          this.properties = p_111743_.stream()
              .flatMap(ItemOverride::getPredicates)
              .map(ItemOverride.Predicate::getProperty)
-@@ -48,7 +_,7 @@
+@@ -47,7 +_,7 @@
  
-         for(int j = p_111743_.size() - 1; j >= 0; --j) {
+         for (int j = p_111743_.size() - 1; j >= 0; j--) {
              ItemOverride itemoverride = p_111743_.get(j);
 -            BakedModel bakedmodel = this.bakeModel(p_251211_, p_111741_, itemoverride);
 +            BakedModel bakedmodel = this.bakeModel(p_251211_, p_111741_, itemoverride, spriteGetter);
              ItemOverrides.PropertyMatcher[] aitemoverrides$propertymatcher = itemoverride.getPredicates().map(p_173477_ -> {
                  int k = object2intmap.getInt(p_173477_.getProperty());
                  return new ItemOverrides.PropertyMatcher(k, p_173477_.getValue());
-@@ -60,9 +_,9 @@
+@@ -59,9 +_,9 @@
      }
  
      @Nullable
@@ -37,7 +37,7 @@
      }
  
      @Nullable
-@@ -95,6 +_,10 @@
+@@ -93,6 +_,10 @@
          }
  
          return p_173465_;

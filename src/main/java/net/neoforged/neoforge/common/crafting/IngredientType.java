@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.crafting.Ingredient;
 
 /**
@@ -14,18 +14,18 @@ import net.minecraft.world.item.crafting.Ingredient;
  * {@code codec} allows ingredients that are known to be empty at deserialization time,
  * whereas {@code nonEmptyCodec} does not.
  */
-public record IngredientType<T extends Ingredient>(Codec<T> codec, Codec<T> nonEmptyCodec) {
+public record IngredientType<T extends Ingredient>(MapCodec<T> codec, MapCodec<T> nonEmptyCodec) {
     /**
      * Constructor for ingredient types that have the same codec for empty and non-empty serialization.
      */
-    public IngredientType(Codec<T> nonEmptyCodec) {
+    public IngredientType(MapCodec<T> nonEmptyCodec) {
         this(nonEmptyCodec, nonEmptyCodec);
     }
 
     /**
      * Returns the right codec for this ingredient type based on {@code allowEmpty}.
      */
-    public Codec<T> codec(boolean allowEmpty) {
+    public MapCodec<T> codec(boolean allowEmpty) {
         return allowEmpty ? codec : nonEmptyCodec;
     }
 }

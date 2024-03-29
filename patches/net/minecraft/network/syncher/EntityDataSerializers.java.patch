@@ -1,8 +1,8 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -156,17 +_,29 @@
-         FriendlyByteBuf::writeQuaternion, FriendlyByteBuf::readQuaternion
-     );
+@@ -133,17 +_,29 @@
+     public static final EntityDataSerializer<Vector3f> VECTOR3 = EntityDataSerializer.forValueType(ByteBufCodecs.VECTOR3F);
+     public static final EntityDataSerializer<Quaternionf> QUATERNION = EntityDataSerializer.forValueType(ByteBufCodecs.QUATERNIONF);
  
 +    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 +    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
@@ -13,8 +13,8 @@
      public static void registerSerializer(EntityDataSerializer<?> p_135051_) {
 -        SERIALIZERS.add(p_135051_);
 +        if (!STACK_WALKER.getCallerClass().equals(EntityDataSerializers.class)) {
-+            // TODO 1.20.5: throw an exception in dev instead
-+            LOGGER.error("Modded EntityDataSerializers must be registered to NeoForgeRegistries.ENTITY_DATA_SERIALIZERS instead to prevent ID mismatches between client and server!", new Throwable());
++            LOGGER.error("Modded EntityDataSerializers must be registered to NeoForgeRegistries.ENTITY_DATA_SERIALIZERS instead to prevent ID mismatches between client and server!");
++            throw new UnsupportedOperationException("Modded EntityDataSerializers must be registered to NeoForgeRegistries.ENTITY_DATA_SERIALIZERS instead to prevent ID mismatches between client and server!");
 +        }
 +
 +        if (SERIALIZERS.add(p_135051_) >= net.neoforged.neoforge.common.CommonHooks.VANILLA_SERIALIZER_LIMIT)

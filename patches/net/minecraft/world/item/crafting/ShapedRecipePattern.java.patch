@@ -31,7 +31,7 @@
      public static final MapCodec<ShapedRecipePattern> MAP_CODEC = ShapedRecipePattern.Data.MAP_CODEC
          .flatXmap(
              ShapedRecipePattern::unpack,
-@@ -176,16 +_,16 @@
+@@ -179,16 +_,16 @@
  
      public static record Data(Map<Character, Ingredient> key, List<String> pattern) {
          private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(p_312085_ -> {
@@ -44,7 +44,7 @@
              } else {
                  int i = p_312085_.get(0).length();
  
-                 for(String s : p_312085_) {
+                 for (String s : p_312085_) {
 -                    if (s.length() > 3) {
 -                        return DataResult.error(() -> "Invalid pattern: too many columns, 3 is maximum");
 +                    if (s.length() > maxWidth) {

@@ -23,6 +23,7 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -31,7 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -107,10 +108,8 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        @SuppressWarnings("deprecation")
-        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             if (level.getBlockEntity(pos) instanceof DioriteFlowerPotBlockEntity be) {
-                ItemStack stack = player.getItemInHand(hand);
                 boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().containsKey(BuiltInRegistries.ITEM.getKey(item));
                 boolean hasFlower = be.plant != Blocks.AIR;
 
@@ -136,12 +135,12 @@ public class FullPotsAccessorDemo {
                     }
 
                     level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                    return InteractionResult.sidedSuccess(level.isClientSide());
+                    return ItemInteractionResult.sidedSuccess(level.isClientSide());
                 } else {
-                    return InteractionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
-            return super.use(state, level, pos, player, hand, hit);
+            return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }
 
         @Override
@@ -184,13 +183,13 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public CompoundTag getUpdateTag() {
-            return saveWithFullMetadata();
+        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
+            return saveWithFullMetadata(holderLookup);
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag) {
-            super.handleUpdateTag(tag);
+        public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.handleUpdateTag(tag, holderLookup);
             modelData = modelData.derive().with(PLANT_PROPERTY, plant).build();
             requestModelDataUpdate();
         }
@@ -201,23 +200,23 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-            handleUpdateTag(pkt.getTag());
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holderLookup) {
+            handleUpdateTag(pkt.getTag(), holderLookup);
             //noinspection ConstantConditions
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.loadAdditional(tag, holderLookup);
             plant = BuiltInRegistries.BLOCK.get(new ResourceLocation(tag.getString("plant")));
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag) {
+        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             //noinspection ConstantConditions
             tag.putString("plant", BuiltInRegistries.BLOCK.getKey(plant).toString());
-            super.saveAdditional(tag);
+            super.saveAdditional(tag, holderLookup);
         }
     }
 

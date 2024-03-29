@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -40,12 +41,12 @@ public abstract class MobEffectEvent extends LivingEvent {
      * This Event does not have a result.
      */
     public static class Remove extends MobEffectEvent implements ICancellableEvent {
-        private final MobEffect effect;
+        private final Holder<MobEffect> effect;
         @Nullable
         private final EffectCure cure;
 
         @ApiStatus.Internal
-        public Remove(LivingEntity living, MobEffect effect, @Nullable EffectCure cure) {
+        public Remove(LivingEntity living, Holder<MobEffect> effect, @Nullable EffectCure cure) {
             super(living, living.getEffect(effect));
             this.effect = effect;
             this.cure = cure;
@@ -61,7 +62,7 @@ public abstract class MobEffectEvent extends LivingEvent {
         /**
          * @return the {@link MobEffect} which is being removed from the entity
          */
-        public MobEffect getEffect() {
+        public Holder<MobEffect> getEffect() {
             return this.effect;
         }
 
