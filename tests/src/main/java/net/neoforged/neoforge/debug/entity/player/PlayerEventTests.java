@@ -16,7 +16,7 @@ import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.BlockItem;
@@ -81,7 +81,7 @@ public class PlayerEventTests {
                             context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
                         }
                         test.pass();
-                        event.cancelWithResult(InteractionResult.SUCCESS);
+                        event.cancelWithResult(ItemInteractionResult.sidedSuccess(level.isClientSide));
                     }
                 }
             }

@@ -1,15 +1,11 @@
 --- a/net/minecraft/world/item/crafting/SimpleCookingSerializer.java
 +++ b/net/minecraft/world/item/crafting/SimpleCookingSerializer.java
-@@ -19,11 +_,7 @@
-                         ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(p_300832_ -> p_300832_.group),
+@@ -20,7 +_,7 @@
+                         Codec.STRING.optionalFieldOf("group", "").forGetter(p_300832_ -> p_300832_.group),
                          CookingBookCategory.CODEC.fieldOf("category").orElse(CookingBookCategory.MISC).forGetter(p_300828_ -> p_300828_.category),
                          Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(p_300833_ -> p_300833_.ingredient),
--                        BuiltInRegistries.ITEM
--                            .byNameCodec()
--                            .xmap(ItemStack::new, ItemStack::getItem)
--                            .fieldOf("result")
--                            .forGetter(p_300827_ -> p_300827_.result),
-+                        net.neoforged.neoforge.common.crafting.CraftingHelper.smeltingResultCodec().fieldOf("result").forGetter(p_300827_ -> p_300827_.result),
+-                        ItemStack.SINGLE_ITEM_CODEC.fieldOf("result").forGetter(p_300827_ -> p_300827_.result),
++                        ItemStack.CODEC.fieldOf("result").forGetter(p_300827_ -> p_300827_.result),
                          Codec.FLOAT.fieldOf("experience").orElse(0.0F).forGetter(p_300826_ -> p_300826_.experience),
                          Codec.INT.fieldOf("cookingtime").orElse(p_44331_).forGetter(p_300834_ -> p_300834_.cookingTime)
                      )

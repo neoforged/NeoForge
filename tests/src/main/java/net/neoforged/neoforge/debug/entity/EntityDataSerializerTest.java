@@ -11,6 +11,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -38,7 +40,7 @@ public class EntityDataSerializerTest {
     private static final RegistrationHelper REG_HELPER = RegistrationHelper.create("neotests_custom_entity_data_serializer");
     private static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<Byte>> TEST_SERIALIZER = REG_HELPER
             .registrar(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS)
-            .register("test_serializer", () -> EntityDataSerializer.simple((buf, b) -> buf.writeByte(b), FriendlyByteBuf::readByte));
+            .register("test_serializer", () -> EntityDataSerializer.forValueType(ByteBufCodecs.BYTE));
 
     @OnInit
     static void register(final TestFramework framework) {
@@ -61,7 +63,7 @@ public class EntityDataSerializerTest {
             }
             var pkt = new ClientboundSetEntityDataPacket(entity.getId(), items);
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            pkt.write(buf);
+            ClientboundSetEntityDataPacket.STREAM_CODEC.encode(new RegistryFriendlyByteBuf(buf, helper.getLevel().registryAccess()), pkt);
             helper.assertTrue(buf.readVarInt() == entity.getId(), "Entity ID didn't match"); // Drop entity ID
             buf.readByte(); // Drop item ID
             int expectedId = NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(TEST_SERIALIZER.get()) + CommonHooks.VANILLA_SERIALIZER_LIMIT;
@@ -83,8 +85,8 @@ public class EntityDataSerializerTest {
         }
 
         @Override
-        protected void defineSynchedData() {
-            entityData.define(DATA_TEST_VALUE, (byte) 0);
+        protected void defineSynchedData(SynchedEntityData.Builder p_326003_) {
+            p_326003_.define(DATA_TEST_VALUE, (byte) 0);
         }
 
         @Override

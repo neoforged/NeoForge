@@ -1,18 +1,18 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
 @@ -306,6 +_,8 @@
-             case TOOT_HORN:
-                 this.rightArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
-                 this.rightArm.yRot = this.head.yRot - (float) (Math.PI / 6);
+             case BRUSH:
+                 this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float) (Math.PI / 5);
+                 this.rightArm.yRot = 0.0F;
 +            default:
 +                this.rightArmPose.applyTransform(this, p_102876_, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
 @@ -348,6 +_,8 @@
-             case TOOT_HORN:
-                 this.leftArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
-                 this.leftArm.yRot = this.head.yRot + (float) (Math.PI / 6);
+             case BRUSH:
+                 this.leftArm.xRot = this.leftArm.xRot * 0.5F - (float) (Math.PI / 5);
+                 this.leftArm.yRot = 0.0F;
 +            default:
 +                this.leftArmPose.applyTransform(this, p_102879_, net.minecraft.world.entity.HumanoidArm.LEFT);
          }

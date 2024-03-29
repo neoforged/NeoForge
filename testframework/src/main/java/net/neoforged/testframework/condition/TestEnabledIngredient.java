@@ -6,6 +6,7 @@
 package net.neoforged.testframework.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import net.minecraft.world.item.ItemStack;
@@ -16,14 +17,14 @@ import net.neoforged.testframework.impl.TestFrameworkMod;
 import org.jetbrains.annotations.Nullable;
 
 public final class TestEnabledIngredient extends Ingredient {
-    public static final Codec<TestEnabledIngredient> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<TestEnabledIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             Ingredient.CODEC.fieldOf("base").forGetter(i -> i.base),
                             MutableTestFramework.REFERENCE_CODEC.fieldOf("framework").forGetter(i -> i.framework),
                             Codec.STRING.fieldOf("testId").forGetter(i -> i.testId))
                     .apply(builder, TestEnabledIngredient::new));
-    public static final Codec<TestEnabledIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
+    public static final MapCodec<TestEnabledIngredient> CODEC_NONEMPTY = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             Ingredient.CODEC_NONEMPTY.fieldOf("base").forGetter(i -> i.base),

@@ -22,7 +22,7 @@ public interface IMobEffectExtension {
      */
     default void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
         cures.addAll(EffectCures.DEFAULT_CURES);
-        if (self() == MobEffects.POISON) {
+        if (self() == MobEffects.POISON.value()) {
             cures.add(EffectCures.HONEY);
         }
     }

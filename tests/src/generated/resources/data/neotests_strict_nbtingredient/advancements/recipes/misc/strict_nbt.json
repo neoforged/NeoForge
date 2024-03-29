@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:diamond_pickaxe"
-            ]
+            "items": "minecraft:diamond_pickaxe"
           }
         ]
       },

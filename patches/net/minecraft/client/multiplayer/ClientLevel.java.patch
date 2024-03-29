@@ -27,7 +27,7 @@
      public void queueLightUpdate(Runnable p_194172_) {
 @@ -281,6 +_,7 @@
          p_104640_.setOldPosAndRot();
-         ++p_104640_.tickCount;
+         p_104640_.tickCount++;
          this.getProfiler().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
 +        if (p_104640_.canUpdate())
          p_104640_.tick();
@@ -71,7 +71,7 @@
          if (p_263514_ == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(p_263518_.value(), p_263487_, p_263538_, p_263524_, p_263536_, p_263509_));
          }
-@@ -1054,6 +_,7 @@
+@@ -1027,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty p_104852_) {
@@ -79,7 +79,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1090,14 +_,46 @@
+@@ -1063,14 +_,46 @@
              if (p_171712_ instanceof AbstractClientPlayer) {
                  ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
              }

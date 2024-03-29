@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.Recipe;
  * Note: These methods can't be named 'getHeight' or 'getWidth' due to obfusication issues.
  */
 public interface IShapedRecipe<T extends Container> extends Recipe<T> {
-    int getRecipeWidth();
+    int getWidth();
 
-    int getRecipeHeight();
+    int getHeight();
 }

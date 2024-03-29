@@ -6,11 +6,14 @@
 package net.neoforged.neoforge.common;
 
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,6 +28,7 @@ public final class EffectCure {
     private static final Map<String, EffectCure> CURES = new ConcurrentHashMap<>();
 
     public static Codec<EffectCure> CODEC = Codec.STRING.xmap(EffectCure::get, EffectCure::name);
+    public static final StreamCodec<ByteBuf, EffectCure> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(EffectCure::get, EffectCure::name);
 
     /**
      * {@return all registered cures}

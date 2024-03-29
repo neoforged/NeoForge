@@ -15,6 +15,7 @@
     "XXX"
   ],
   "result": {
-    "item": "minecraft:lantern"
+    "count": 1,
+    "id": "minecraft:lantern"
   }
 }

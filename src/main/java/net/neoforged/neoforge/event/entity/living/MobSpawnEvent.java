@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
@@ -264,19 +263,16 @@ public abstract class MobSpawnEvent extends EntityEvent {
         private DifficultyInstance difficulty;
         @Nullable
         private SpawnGroupData spawnData;
-        @Nullable
-        private CompoundTag spawnTag;
 
         /**
          * @apiNote Do not construct directly. Access via {@link EventHooks#onFinalizeSpawn} / {@link EventHooks#onFinalizeSpawnSpawner}.
          */
         @ApiStatus.Internal
-        public FinalizeSpawn(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag, @Nullable BaseSpawner spawner) {
+        public FinalizeSpawn(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable BaseSpawner spawner) {
             super(entity, level, x, y, z);
             this.difficulty = difficulty;
             this.spawnType = spawnType;
             this.spawnData = spawnData;
-            this.spawnTag = spawnTag;
             this.spawner = spawner;
         }
 
@@ -328,27 +324,6 @@ public abstract class MobSpawnEvent extends EntityEvent {
          */
         public void setSpawnData(@Nullable SpawnGroupData data) {
             this.spawnData = data;
-        }
-
-        /**
-         * This is the NBT data the entity was loaded from, if applicable. It is unknown if the entity has already been loaded from this data, or if it will be loaded later.
-         * Callers should not modify this data. If you need to change the data, you can create a copy, modify it, and set it via {@link FinalizeSpawn#setSpawnTag}
-         * 
-         * @return The spawn data this entity was or will be loaded from, if any.
-         */
-        @Nullable
-        public CompoundTag getSpawnTag() {
-            return this.spawnTag;
-        }
-
-        /**
-         * Sets the spawn data for this event, which will be propagated to {@link Mob#finalizeSpawn} unless cancelled.
-         * The only vanilla mob known to use this tag for anything in finalize is tropical fish for setting the variant when spawned via bucket.
-         * 
-         * @param tag The new spawn tag
-         */
-        public void setSpawnTag(@Nullable CompoundTag tag) {
-            this.spawnTag = tag;
         }
 
         /**

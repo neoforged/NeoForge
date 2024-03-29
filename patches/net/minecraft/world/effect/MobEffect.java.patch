@@ -1,33 +1,33 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -18,7 +_,7 @@
- import net.minecraft.world.entity.ai.attributes.AttributeMap;
- import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+@@ -30,7 +_,7 @@
+ import net.minecraft.world.flag.FeatureFlagSet;
+ import net.minecraft.world.flag.FeatureFlags;
  
--public class MobEffect {
-+public class MobEffect implements net.neoforged.neoforge.common.extensions.IMobEffectExtension {
-     private final Map<Attribute, AttributeModifierTemplate> attributeModifiers = Maps.newHashMap();
+-public class MobEffect implements FeatureElement {
++public class MobEffect implements FeatureElement, net.neoforged.neoforge.common.extensions.IMobEffectExtension {
+     private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
+     private final Map<Holder<Attribute>, MobEffect.AttributeTemplate> attributeModifiers = new Object2ObjectOpenHashMap<>();
      private final MobEffectCategory category;
-     private final int color;
-@@ -30,6 +_,7 @@
-     protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
-         this.category = p_19451_;
-         this.color = p_19452_;
+@@ -49,6 +_,7 @@
+             int i = p_333517_.isAmbient() ? AMBIENT_ALPHA : 255;
+             return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(i, p_19452_));
+         };
 +        initClient();
      }
  
-     public Optional<MobEffectInstance.FactorData> createFactorData() {
-@@ -114,6 +_,31 @@
-     public boolean isBeneficial() {
-         return this.category == MobEffectCategory.BENEFICIAL;
+     protected MobEffect(MobEffectCategory p_333963_, int p_333864_, ParticleOptions p_333716_) {
+@@ -174,6 +_,28 @@
+     public FeatureFlagSet requiredFeatures() {
+         return this.requiredFeatures;
      }
 +
-+    // FORGE START
++    // NEO START
 +    private Object effectRenderer;
 +
 +    /*
-+        DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
-+        Call RenderProperties.getEffectRenderer instead
++     * DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
++     * Call RenderProperties.getEffectRenderer instead
 +     */
 +    public Object getEffectRendererInternal() {
 +        return effectRenderer;
@@ -36,16 +36,13 @@
 +    private void initClient() {
 +        // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
 +        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.fml.loading.FMLLoader.getLaunchHandler().isData()) {
-+            initializeClient(properties -> {
-+                this.effectRenderer = properties;
-+            });
++            initializeClient(properties -> this.effectRenderer = properties);
 +        }
 +    }
 +
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
 +    }
-+    // END FORGE
-+
++    // END NEO
  
-     @Deprecated
-     public Holder.Reference<MobEffect> builtInRegistryHolder() {
+     static record AttributeTemplate(UUID id, double amount, AttributeModifier.Operation operation) {
+         public AttributeModifier create(String p_316465_, int p_316614_) {

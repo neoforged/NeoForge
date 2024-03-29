@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.network.registration;
 
 import java.util.Optional;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A record that holds the information needed to describe a registered play payload, its reader and handler.
  *
- * @param reader   The reader for the payload
+ * @param codec    The reader for the payload
  * @param handler  The handler for the payload
  * @param version  The version of the payload
  * @param flow     The flow of the payload
@@ -25,19 +26,14 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record PlayRegistration<T extends CustomPacketPayload>(
-        FriendlyByteBuf.Reader<T> reader,
+        StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
         IPlayPayloadHandler<T> handler,
         Optional<String> version,
         Optional<PacketFlow> flow,
-        boolean optional) implements IPlayPayloadHandler<CustomPacketPayload>, FriendlyByteBuf.Reader<CustomPacketPayload> {
+        boolean optional) implements IPlayPayloadHandler<CustomPacketPayload> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void handle(CustomPacketPayload payload, PlayPayloadContext context) {
         ((IPlayPayloadHandler) handler).handle(payload, context);
-    }
-
-    @Override
-    public CustomPacketPayload apply(FriendlyByteBuf buffer) {
-        return reader.apply(buffer);
     }
 }

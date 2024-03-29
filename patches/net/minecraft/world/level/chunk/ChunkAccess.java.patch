@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -54,7 +_,7 @@
+@@ -57,7 +_,7 @@
  import net.minecraft.world.ticks.TickContainerAccess;
  import org.slf4j.Logger;
  
@@ -9,7 +9,7 @@
      public static final int NO_FILLED_SECTION = -1;
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
-@@ -308,10 +_,19 @@
+@@ -311,10 +_,19 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -42,7 +42,7 @@
                              }
                          }
                      }
-@@ -469,4 +_,70 @@
+@@ -472,4 +_,70 @@
  
      public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
      }
@@ -91,8 +91,8 @@
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    @Nullable
-+    public final CompoundTag writeAttachmentsToNBT() {
-+        return getAttachmentHolder().serializeAttachments();
++    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
++        return getAttachmentHolder().serializeAttachments(provider);
 +    }
 +
 +    /**
@@ -102,8 +102,8 @@
 +     *
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final void readAttachmentsFromNBT(CompoundTag tag) {
-+        getAttachmentHolder().deserializeInternal(tag);
++    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
++        getAttachmentHolder().deserializeInternal(provider, tag);
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal

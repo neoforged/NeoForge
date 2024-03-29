@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/atlas/SpriteSources.java
 +++ b/net/minecraft/client/renderer/texture/atlas/SpriteSources.java
-@@ -16,7 +_,7 @@
+@@ -17,7 +_,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public class SpriteSources {

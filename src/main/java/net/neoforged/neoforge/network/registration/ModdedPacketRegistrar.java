@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
@@ -53,45 +55,37 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPlayPayloadHandler<T> handler) {
-        play(
-                id, new PlayRegistration<>(
-                        reader, handler, version, Optional.empty(), optional));
+    public <T extends CustomPacketPayload> IPayloadRegistrar play(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, IPlayPayloadHandler<T> handler) {
+        play(type.id(), new PlayRegistration<>(reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IConfigurationPayloadHandler<T> handler) {
-        configuration(
-                id, new ConfigurationRegistration<>(
-                        reader, handler, version, Optional.empty(), optional));
+    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IConfigurationPayloadHandler<T> handler) {
+        configuration(type.id(), new ConfigurationRegistration<>(reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPlayPayloadHandler<T>>> handler) {
+    public <T extends CustomPacketPayload> IPayloadRegistrar play(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPlayPayloadHandler<T>>> handler) {
         final PlayPayloadHandler.Builder<T> builder = new PlayPayloadHandler.Builder<>();
         handler.accept(builder);
         final PlayPayloadHandler<T> innerHandler = builder.create();
-        play(
-                id, new PlayRegistration<>(
-                        reader, innerHandler, version, innerHandler.flow(), optional));
+        play(type.id(), new PlayRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IConfigurationPayloadHandler<T>>> handler) {
+    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IConfigurationPayloadHandler<T>>> handler) {
         final ConfigurationPayloadHandler.Builder<T> builder = new ConfigurationPayloadHandler.Builder<>();
         handler.accept(builder);
         final ConfigurationPayloadHandler<T> innerHandler = builder.create();
-        configuration(
-                id, new ConfigurationRegistration<>(
-                        reader, innerHandler, version, innerHandler.flow(), optional));
+        configuration(type.id(), new ConfigurationRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPayloadHandler<T>>> handler) {
+    public <T extends CustomPacketPayload> IPayloadRegistrar common(CustomPacketPayload.Type<T> id, StreamCodec<? super FriendlyByteBuf, T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPayloadHandler<T>>> handler) {
         final PayloadHandlerBuilder<T> builder = new PayloadHandlerBuilder<>();
         handler.accept(builder);
         configuration(id, reader, builder::handleConfiguration);

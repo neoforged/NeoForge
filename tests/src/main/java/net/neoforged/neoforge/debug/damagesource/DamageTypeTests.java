@@ -29,6 +29,7 @@ import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.damagesource.IDeathMessageProvider;
 import net.neoforged.neoforge.common.damagesource.IScalingFunction;
@@ -91,7 +92,7 @@ public class DamageTypeTests {
         test.onGameTest(helper -> {
             Skeleton target = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 1, 1);
 
-            Player attacker = helper.makeMockSurvivalPlayer();
+            Player attacker = helper.makeMockPlayer(GameType.SURVIVAL);
             attacker.moveTo(helper.absoluteVec(new Vec3(2, 1, 1)));
             attacker.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(customSword));
 

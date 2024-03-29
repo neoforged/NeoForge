@@ -5,10 +5,12 @@
     {
       "type": "testframework:test_enabled",
       "base": {
-        "type": "neoforge:nbt",
-        "item": "minecraft:diamond_pickaxe",
-        "strict": true,
-        "tag": "{Damage:4}"
+        "type": "neoforge:components",
+        "components": {
+          "minecraft:damage": 4
+        },
+        "items": "minecraft:diamond_pickaxe",
+        "strict": true
       },
       "framework": "neotests:tests",
       "testId": "strictNBTIngredient"
@@ -18,6 +20,7 @@
     }
   ],
   "result": {
-    "item": "minecraft:acacia_boat"
+    "count": 1,
+    "id": "minecraft:acacia_boat"
   }
 }

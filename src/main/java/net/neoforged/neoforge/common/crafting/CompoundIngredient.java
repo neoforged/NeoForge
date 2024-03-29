@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -18,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if any of the child ingredients match */
 public class CompoundIngredient extends ChildBasedIngredient {
-    public static final Codec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC, "children", "ingredients").xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren).codec();
+    public static final MapCodec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC, "children", "ingredients").xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren);
     public static final Codec<CompoundIngredient> DIRECT_CODEC = Ingredient.LIST_CODEC.xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren);
-    public static final Codec<CompoundIngredient> CODEC_NONEMPTY = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren).codec();
+    public static final MapCodec<CompoundIngredient> CODEC_NONEMPTY = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren);
     public static final Codec<CompoundIngredient> DIRECT_CODEC_NONEMPTY = Ingredient.LIST_CODEC_NONEMPTY.xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren);
 
     protected CompoundIngredient(List<Ingredient> children) {

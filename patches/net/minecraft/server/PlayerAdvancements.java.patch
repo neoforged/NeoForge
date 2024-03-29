@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
-@@ -166,6 +_,8 @@
+@@ -165,6 +_,8 @@
      }
  
      public boolean award(AdvancementHolder p_300979_, String p_135990_) {
@@ -9,22 +9,22 @@
          boolean flag = false;
          AdvancementProgress advancementprogress = this.getOrStartProgress(p_300979_);
          boolean flag1 = advancementprogress.isDone();
-@@ -173,12 +_,14 @@
+@@ -172,12 +_,14 @@
              this.unregisterListeners(p_300979_);
              this.progressChanged.add(p_300979_);
              flag = true;
 +            net.neoforged.neoforge.event.EventHooks.onAdvancementProgressedEvent(this.player, p_300979_, advancementprogress, p_135990_, net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT);
              if (!flag1 && advancementprogress.isDone()) {
                  p_300979_.value().rewards().grant(this.player);
-                 p_300979_.value().display().ifPresent(p_311529_ -> {
-                     if (p_311529_.shouldAnnounceChat() && this.player.level().getGameRules().getBoolean(GameRules.RULE_ANNOUNCE_ADVANCEMENTS)) {
-                         this.playerList.broadcastSystemMessage(p_311529_.getType().createAnnouncement(p_300979_, this.player), false);
+                 p_300979_.value().display().ifPresent(p_337526_ -> {
+                     if (p_337526_.shouldAnnounceChat() && this.player.level().getGameRules().getBoolean(GameRules.RULE_ANNOUNCE_ADVANCEMENTS)) {
+                         this.playerList.broadcastSystemMessage(p_337526_.getType().createAnnouncement(p_300979_, this.player), false);
                      }
 +                    net.neoforged.neoforge.event.EventHooks.onAdvancementEarnedEvent(this.player, p_300979_);
                  });
              }
          }
-@@ -198,6 +_,7 @@
+@@ -197,6 +_,7 @@
              this.registerListeners(p_301073_);
              this.progressChanged.add(p_301073_);
              flag = true;

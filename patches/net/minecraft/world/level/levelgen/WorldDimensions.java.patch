@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/levelgen/WorldDimensions.java
++++ b/net/minecraft/world/level/levelgen/WorldDimensions.java
+@@ -36,7 +_,8 @@
+ public record WorldDimensions(Map<ResourceKey<LevelStem>, LevelStem> dimensions) {
+     public static final MapCodec<WorldDimensions> CODEC = RecordCodecBuilder.mapCodec(
+         p_325905_ -> p_325905_.group(
+-                    Codec.unboundedMap(ResourceKey.codec(Registries.LEVEL_STEM), LevelStem.CODEC).fieldOf("dimensions").forGetter(WorldDimensions::dimensions)
++                    // FORGE: Fix MC-197860
++                    new net.neoforged.neoforge.common.LenientUnboundedMapCodec<>(ResourceKey.codec(Registries.LEVEL_STEM), LevelStem.CODEC).fieldOf("dimensions").forGetter(WorldDimensions::dimensions)
+                 )
+                 .apply(p_325905_, p_325905_.stable(WorldDimensions::new))
+     );

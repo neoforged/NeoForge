@@ -13,8 +13,8 @@ import java.util.function.Predicate;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.BendingTrunkPlacer;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
 
 /**
  * A base implementation of a Global Loot Modifier for modders to extend.
@@ -45,7 +45,7 @@ public abstract class LootModifier implements IGlobalLootModifier {
      */
     protected LootModifier(LootItemCondition[] conditionsIn) {
         this.conditions = conditionsIn;
-        this.combinedConditions = LootItemConditions.andConditions(List.of(conditionsIn));
+        this.combinedConditions = AllOfCondition.allOf(List.of(conditionsIn));
     }
 
     @Override

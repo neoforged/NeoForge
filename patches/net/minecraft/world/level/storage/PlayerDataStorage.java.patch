@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -35,6 +_,7 @@
+@@ -39,6 +_,7 @@
              Path path2 = path.resolve(p_78434_.getStringUUID() + ".dat");
              Path path3 = path.resolve(p_78434_.getStringUUID() + ".dat_old");
              Util.safeReplaceFile(path2, path1, path3);
@@ -8,21 +8,16 @@
          } catch (Exception exception) {
              LOGGER.warn("Failed to save player data for {}", p_78434_.getName().getString());
          }
-@@ -58,6 +_,7 @@
-             compoundtag = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundtag, i);
-             p_78436_.load(compoundtag);
-         }
-+        net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
- 
-         return compoundtag;
-     }
-@@ -75,5 +_,9 @@
-         }
- 
-         return astring;
+@@ -80,7 +_,12 @@
+             int i = NbtUtils.getDataVersion(p_316252_, -1);
+             p_316252_ = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_316252_, i);
+             p_78436_.load(p_316252_);
++            net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
+             return p_316252_;
+         });
 +    }
 +
-+    public File getPlayerDataFolder() {
++    public File getPlayerDir() {
 +        return playerDir;
      }
  }

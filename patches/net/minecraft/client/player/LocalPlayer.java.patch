@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -158,6 +_,7 @@
+@@ -159,6 +_,7 @@
  
      @Override
      public boolean hurt(DamageSource p_108662_, float p_108663_) {
@@ -8,7 +8,7 @@
          return false;
      }
  
-@@ -294,6 +_,7 @@
+@@ -295,6 +_,7 @@
          ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
              : ServerboundPlayerActionPacket.Action.DROP_ITEM;
@@ -16,7 +16,7 @@
          ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
          this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
          return !itemstack.isEmpty();
-@@ -491,7 +_,14 @@
+@@ -492,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -102,9 +102,9 @@
          super.rideTick();
 +        if (this.wantsToStopRiding() && this.isPassenger()) this.input.shiftKeyDown = false;
          this.handsBusy = false;
-         Entity entity = this.getControlledVehicle();
-         if (entity instanceof Boat boat) {
-@@ -1053,7 +_,7 @@
+         if (this.getControlledVehicle() instanceof Boat boat) {
+             boat.setInput(this.input.left, this.input.right, this.input.up, this.input.down);
+@@ -1052,7 +_,7 @@
      }
  
      private boolean hasEnoughFoodToStartSprinting() {

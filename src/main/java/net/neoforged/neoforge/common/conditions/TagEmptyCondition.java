@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.conditions;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +13,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 
 public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
-    public static final Codec<TagEmptyCondition> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<TagEmptyCondition> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             ResourceLocation.CODEC.xmap(loc -> TagKey.create(Registries.ITEM, loc), TagKey::location).fieldOf("tag").forGetter(TagEmptyCondition::tag))
@@ -37,7 +37,7 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
     }
 
     @Override
-    public Codec<? extends ICondition> codec() {
+    public MapCodec<? extends ICondition> codec() {
         return CODEC;
     }
 

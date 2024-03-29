@@ -14,9 +14,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:diamond_block"
-            ]
+            "items": "minecraft:diamond_block"
           }
         ]
       },

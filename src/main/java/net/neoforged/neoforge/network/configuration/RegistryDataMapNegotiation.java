@@ -34,7 +34,7 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
-        if (!listener.isConnected(KnownRegistryDataMapsPayload.ID)) {
+        if (!listener.isConnected(KnownRegistryDataMapsPayload.TYPE)) {
             final var mandatory = RegistryManager.getDataMaps().values()
                     .stream()
                     .flatMap(map -> map.values().stream())
@@ -52,7 +52,7 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
             return;
         }
 
-        final Map<ResourceKey<Registry<?>>, List<KnownRegistryDataMapsPayload.KnownDataMap>> dataMaps = new HashMap<>();
+        final Map<ResourceKey<? extends Registry<?>>, List<KnownRegistryDataMapsPayload.KnownDataMap>> dataMaps = new HashMap<>();
         RegistryManager.getDataMaps().forEach((key, attach) -> {
             final List<KnownRegistryDataMapsPayload.KnownDataMap> list = new ArrayList<>();
             attach.forEach((id, val) -> {

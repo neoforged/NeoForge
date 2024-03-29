@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -37,26 +_,54 @@
+@@ -36,26 +_,54 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
      protected final Map<ResourceLocation, TagBuilder> builders = Maps.newLinkedHashMap();
@@ -57,9 +57,9 @@
      }
  
      protected abstract void addTags(HolderLookup.Provider p_256380_);
-@@ -86,7 +_,10 @@
-                                     ResourceLocation resourcelocation = p_255499_.getKey();
-                                     TagBuilder tagbuilder = p_255499_.getValue();
+@@ -88,7 +_,10 @@
+                                     ResourceLocation resourcelocation = p_323138_.getKey();
+                                     TagBuilder tagbuilder = p_323138_.getValue();
                                      List<TagEntry> list = tagbuilder.build();
 -                                    List<TagEntry> list1 = list.stream().filter(p_274771_ -> !p_274771_.verifyIfPresent(predicate, predicate1)).toList();
 +                                    List<TagEntry> list1 = java.util.stream.Stream.concat(list.stream(), tagbuilder.getRemoveEntries())
@@ -69,23 +69,21 @@
                                      if (!list1.isEmpty()) {
                                          throw new IllegalArgumentException(
                                              String.format(
-@@ -97,10 +_,10 @@
+@@ -99,8 +_,10 @@
                                              )
                                          );
                                      } else {
--                                        JsonElement jsonelement = TagFile.CODEC
--                                            .encodeStart(JsonOps.INSTANCE, new TagFile(list, false))
--                                            .getOrThrow(false, LOGGER::error);
 -                                        Path path = this.pathProvider.json(resourcelocation);
-+                                        var removed = tagbuilder.getRemoveEntries().toList();
-+                                        JsonElement jsonelement = TagFile.CODEC.encodeStart(JsonOps.INSTANCE, new TagFile(list, tagbuilder.isReplace(), removed)).getOrThrow(false, LOGGER::error);
+-                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, false), path);
 +                                        Path path = this.getPath(resourcelocation);
-+                                        if (path == null) return CompletableFuture.completedFuture(null); // Forge: Allow running this data provider without writing it. Recipe provider needs valid tags.
-                                         return DataProvider.saveStable(p_253684_, jsonelement, path);
++                                        if (path == null) return CompletableFuture.completedFuture(null); // Neo: Allow running this data provider without writing it. Recipe provider needs valid tags.
++                                        var removed = tagbuilder.getRemoveEntries().toList();
++                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, tagbuilder.isReplace(), removed), path);
                                      }
                                  }
-@@ -113,12 +_,24 @@
- 
+                             )
+@@ -110,12 +_,24 @@
+             );
      }
  
 +    private boolean missing(TagEntry reference) {
@@ -110,7 +108,7 @@
          return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
      }
  
-@@ -134,11 +_,13 @@
+@@ -131,11 +_,13 @@
          });
      }
  
@@ -127,7 +125,7 @@
          }
  
          public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
-@@ -168,6 +_,19 @@
+@@ -173,6 +_,19 @@
          public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation p_176842_) {
              this.builder.addOptionalTag(p_176842_);
              return this;

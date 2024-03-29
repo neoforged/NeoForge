@@ -16,14 +16,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -39,7 +39,6 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
-import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -87,7 +86,7 @@ public class ClientPayloadHandler {
             context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.failed", e.getMessage()));
             return null;
         }).thenAccept(v -> {
-            context.replyHandler().send(new FrozenRegistrySyncCompletedPayload());
+            context.replyHandler().send(FrozenRegistrySyncCompletedPayload.INSTANCE);
         });
     }
 
@@ -95,16 +94,12 @@ public class ClientPayloadHandler {
         ConfigSync.INSTANCE.receiveSyncedConfig(payload.contents(), payload.fileName());
     }
 
-    public void handle(TierSortingRegistryPayload payload, IPayloadContext context) {
-        TierSortingRegistry.handleSync(payload, context);
-    }
-
     public void handle(AdvancedAddEntityPayload advancedAddEntityPayload, PlayPayloadContext context) {
         context.workHandler().submitAsync(
                 () -> {
                     Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(advancedAddEntityPayload.entityId());
                     if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
-                        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()));
+                        final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()), entity.registryAccess());
                         try {
                             entityAdditionalSpawnData.readSpawnData(buf);
                         } finally {
@@ -120,7 +115,9 @@ public class ClientPayloadHandler {
 
     public void handle(AdvancedOpenScreenPayload msg, PlayPayloadContext context) {
         context.workHandler().submitAsync(() -> {
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
+            Minecraft mc = Minecraft.getInstance();
+            RegistryAccess registryAccess = mc.player.registryAccess();
+            final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()), registryAccess);
             try {
                 createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
             } finally {
@@ -132,9 +129,9 @@ public class ClientPayloadHandler {
         });
     }
 
-    private static <T extends AbstractContainerMenu> void createMenuScreen(Component name, MenuType<T> menuType, int windowId, FriendlyByteBuf buf) {
+    private static <T extends AbstractContainerMenu> void createMenuScreen(Component name, MenuType<T> menuType, int windowId, RegistryFriendlyByteBuf buf) {
         Minecraft mc = Minecraft.getInstance();
-        MenuScreens.getScreenFactory(menuType, mc, windowId, name).ifPresent(f -> {
+        MenuScreens.getScreenFactory(menuType).ifPresent(f -> {
             Screen s = f.create(menuType.create(windowId, mc.player.getInventory(), buf), mc.player.getInventory(), name);
             mc.player.containerMenu = ((MenuAccess<?>) s).getMenu();
             mc.setScreen(s);

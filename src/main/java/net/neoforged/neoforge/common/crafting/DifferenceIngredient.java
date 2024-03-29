@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,14 +18,14 @@ import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches everything from the first ingredient that is not included in the second ingredient */
 public class DifferenceIngredient extends ChildBasedIngredient {
-    public static final Codec<DifferenceIngredient> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<DifferenceIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             Ingredient.CODEC.fieldOf("base").forGetter(DifferenceIngredient::getBase),
                             Ingredient.CODEC.fieldOf("subtracted").forGetter(DifferenceIngredient::getSubtracted))
                     .apply(builder, DifferenceIngredient::new));
 
-    public static final Codec<DifferenceIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
+    public static final MapCodec<DifferenceIngredient> CODEC_NONEMPTY = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             Ingredient.CODEC_NONEMPTY.fieldOf("base").forGetter(DifferenceIngredient::getBase),

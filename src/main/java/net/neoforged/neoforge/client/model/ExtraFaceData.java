@@ -15,7 +15,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.util.ExtraCodecs;
 
 /**
  * Holds extra data that may be injected into a face.<p>
@@ -30,7 +29,7 @@ public record ExtraFaceData(int color, int blockLight, int skyLight, boolean amb
 
     public static final ExtraFaceData DEFAULT = new ExtraFaceData(0xFFFFFFFF, 0, 0, true);
 
-    public static final Codec<Integer> COLOR = new ExtraCodecs.EitherCodec<>(Codec.INT, Codec.STRING).xmap(
+    public static final Codec<Integer> COLOR = Codec.either(Codec.INT, Codec.STRING).xmap(
             either -> either.map(Function.identity(), str -> (int) Long.parseLong(str, 16)),
             color -> Either.right(Integer.toHexString(color)));
 
@@ -55,6 +54,6 @@ public record ExtraFaceData(int color, int blockLight, int skyLight, boolean amb
         if (obj == null) {
             return fallback;
         }
-        return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow(false, JsonParseException::new);
+        return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow(JsonParseException::new);
     }
 }

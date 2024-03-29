@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -163,7 +_,7 @@
-             --this.shakeTime;
+@@ -165,7 +_,7 @@
+             this.shakeTime--;
          }
  
 -        if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW)) {
@@ -9,7 +9,7 @@
              this.clearFire();
          }
  
-@@ -199,7 +_,9 @@
+@@ -201,7 +_,9 @@
                      }
                  }
  
@@ -17,6 +17,6 @@
 +                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
 +                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult))
 +                        break;
-                     this.onHit(hitresult);
+                     ProjectileDeflection projectiledeflection = this.hitOrDeflect(hitresult);
                      this.hasImpulse = true;
-                 }
+                     if (projectiledeflection != ProjectileDeflection.NONE) {

@@ -5,7 +5,8 @@
 
 package net.neoforged.neoforge.data.event;
 
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -126,12 +127,16 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         public void runAll() {
             Map<Path, List<DataGenerator>> paths = generators.stream().collect(Collectors.groupingBy(gen -> gen.getPackOutput().getOutputFolder(), LinkedHashMap::new, Collectors.toList()));
 
-            paths.values().forEach(LamdbaExceptionUtils.rethrowConsumer(lst -> {
+            paths.values().forEach(lst -> {
                 DataGenerator parent = lst.get(0);
                 for (int x = 1; x < lst.size(); x++)
                     lst.get(x).getProvidersView().forEach((name, provider) -> parent.addProvider(true, provider));
-                parent.run();
-            }));
+                try {
+                    parent.run();
+                } catch (IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            });
         }
     }
 }
