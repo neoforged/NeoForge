@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -475,6 +_,18 @@
+@@ -468,6 +_,18 @@
              }
          }
  
@@ -19,7 +19,7 @@
          public PlayerDataStorage createPlayerStorage() {
              this.checkLock();
              return new PlayerDataStorage(this, LevelStorageSource.this.fixerUpper);
-@@ -508,6 +_,7 @@
+@@ -501,6 +_,7 @@
              CompoundTag compoundtag = p_78292_.createTag(p_78291_, p_78293_);
              CompoundTag compoundtag1 = new CompoundTag();
              compoundtag1.put("Data", compoundtag);
@@ -27,7 +27,7 @@
              this.saveLevelData(compoundtag1);
          }
  
-@@ -527,6 +_,10 @@
+@@ -520,6 +_,10 @@
  
          public Optional<Path> getIconFile() {
              return !this.lock.isValid() ? Optional.empty() : Optional.of(this.levelDirectory.iconFile());

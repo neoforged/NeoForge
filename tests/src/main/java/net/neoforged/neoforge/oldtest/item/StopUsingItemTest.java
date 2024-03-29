@@ -86,7 +86,7 @@ public class StopUsingItemTest {
     }
 
     private void onVanillaEvent(VanillaGameEvent event) {
-        if (event.getVanillaEvent() == GameEvent.ITEM_INTERACT_FINISH && event.getCause() instanceof LivingEntity living && living.isUsingItem() && living.getUseItem().is(BAD.get()))
+        if (event.getVanillaEvent().is(GameEvent.ITEM_INTERACT_FINISH) && event.getCause() instanceof LivingEntity living && living.isUsingItem() && living.getUseItem().is(BAD.get()))
             InvertedTelescope.removeFov(living);
     }
 

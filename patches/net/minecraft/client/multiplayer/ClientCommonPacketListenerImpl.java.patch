@@ -1,12 +1,12 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -96,17 +_,17 @@
+@@ -98,17 +_,17 @@
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
 -            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
              if (custompacketpayload instanceof BrandPayload brandpayload) {
-+                PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
++                PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
                  this.serverBrand = brandpayload.brand();
                  this.telemetryManager.onServerBrandReceived(brandpayload.brand());
              } else {
@@ -19,9 +19,9 @@
 -    protected abstract void handleCustomPayload(CustomPacketPayload p_295776_);
 +    protected abstract void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295776_);
  
-     protected abstract RegistryAccess.Frozen registryAccess();
- 
-@@ -189,6 +_,10 @@
+     @Override
+     public void handleResourcePackPush(ClientboundResourcePackPushPacket p_314606_) {
+@@ -208,6 +_,10 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -32,17 +32,17 @@
          this.connection.send(p_295097_);
      }
  
-@@ -196,6 +_,9 @@
+@@ -215,6 +_,9 @@
      public void onDisconnect(Component p_295485_) {
          this.telemetryManager.onDisconnect();
-         this.minecraft.disconnect(this.createDisconnectScreen(p_295485_));
+         this.minecraft.disconnect(this.createDisconnectScreen(p_295485_), this.keepResourcePacks);
 +        if (!this.connection.isMemoryConnection()) {
 +            net.neoforged.neoforge.registries.RegistryManager.revertToFrozen();
 +        }
          LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
      }
  
-@@ -315,5 +_,15 @@
+@@ -334,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }

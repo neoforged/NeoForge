@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/damagesource/CombatTracker.java
 +++ b/net/minecraft/world/damagesource/CombatTracker.java
-@@ -90,6 +_,11 @@
+@@ -91,6 +_,11 @@
              DamageSource damagesource = combatentry.source();
              CombatEntry combatentry1 = this.getMostSignificantFall();
              DeathMessageType deathmessagetype = damagesource.type().deathMessageType();

@@ -1,0 +1,10 @@
+--- a/net/minecraft/core/component/DataComponentPatch.java
++++ b/net/minecraft/core/component/DataComponentPatch.java
+@@ -238,6 +_,7 @@
+         }
+ 
+         public <T> DataComponentPatch.Builder set(DataComponentType<T> p_332004_, T p_331566_) {
++            net.neoforged.neoforge.common.CommonHooks.validateComponent(p_331566_);
+             this.map.put(p_332004_, Optional.of(p_331566_));
+             return this;
+         }

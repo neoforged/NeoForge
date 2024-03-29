@@ -24,12 +24,12 @@
          synchronized(this.channels) {
              Class<? extends ServerSocketChannel> oclass;
              EventLoopGroup eventloopgroup;
-@@ -94,7 +_,7 @@
-                                     }
-                 
-                                     ChannelPipeline channelpipeline = p_9729_.pipeline()
--                                        .addLast("timeout", new ReadTimeoutHandler(30))
-+                                        .addLast("timeout", new ReadTimeoutHandler(READ_TIMEOUT))
-                                         .addLast("legacy_query", new LegacyQueryHandler(ServerConnectionListener.this.getServer()));
-                                     Connection.configureSerialization(channelpipeline, PacketFlow.SERVERBOUND, null);
-                                     int i = ServerConnectionListener.this.server.getRateLimitPacketsPerSecond();
+@@ -86,7 +_,7 @@
+                     } catch (ChannelException channelexception) {
+                     }
+ 
+-                    ChannelPipeline channelpipeline = p_9729_.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
++                    ChannelPipeline channelpipeline = p_9729_.pipeline().addLast("timeout", new ReadTimeoutHandler(READ_TIMEOUT));
+                     if (ServerConnectionListener.this.server.repliesToStatus()) {
+                         channelpipeline.addLast("legacy_query", new LegacyQueryHandler(ServerConnectionListener.this.getServer()));
+                     }

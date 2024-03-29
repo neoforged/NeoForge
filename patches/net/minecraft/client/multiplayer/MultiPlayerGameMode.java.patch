@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
-@@ -105,6 +_,7 @@
+@@ -106,6 +_,7 @@
      }
  
      public boolean destroyBlock(BlockPos p_105268_) {
@@ -8,7 +8,7 @@
          if (this.minecraft.player.blockActionRestricted(this.minecraft.level, p_105268_, this.localPlayerMode)) {
              return false;
          } else {
-@@ -119,9 +_,8 @@
+@@ -120,9 +_,8 @@
                  } else if (blockstate.isAir()) {
                      return false;
                  } else {
@@ -19,7 +19,7 @@
                      if (flag) {
                          block.destroy(level, p_105268_, blockstate);
                      }
-@@ -142,6 +_,7 @@
+@@ -143,6 +_,7 @@
                  BlockState blockstate = this.minecraft.level.getBlockState(p_105270_);
                  this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105270_, blockstate, 1.0F);
                  this.startPrediction(this.minecraft.level, p_233757_ -> {
@@ -27,7 +27,7 @@
                      this.destroyBlock(p_105270_);
                      return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, p_105270_, p_105271_, p_233757_);
                  });
-@@ -151,15 +_,19 @@
+@@ -152,15 +_,19 @@
                      this.connection
                          .send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, this.destroyBlockPos, p_105271_));
                  }
@@ -47,7 +47,7 @@
                      if (flag && blockstate1.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), p_105270_) >= 1.0F) {
                          this.destroyBlock(p_105270_);
                      } else {
-@@ -171,7 +_,7 @@
+@@ -172,7 +_,7 @@
                          this.minecraft.level.destroyBlockProgress(this.minecraft.player.getId(), this.destroyBlockPos, this.getDestroyStage());
                      }
  
@@ -56,7 +56,7 @@
                  });
              }
  
-@@ -202,6 +_,7 @@
+@@ -203,6 +_,7 @@
              BlockState blockstate1 = this.minecraft.level.getBlockState(p_105284_);
              this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105284_, blockstate1, 1.0F);
              this.startPrediction(this.minecraft.level, p_233753_ -> {
@@ -64,7 +64,7 @@
                  this.destroyBlock(p_105284_);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, p_105284_, p_105285_, p_233753_);
              });
-@@ -214,7 +_,7 @@
+@@ -215,7 +_,7 @@
              } else {
                  this.destroyProgress += blockstate.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), p_105284_);
                  if (this.destroyTicks % 4.0F == 0.0F) {
@@ -73,7 +73,7 @@
                      this.minecraft
                          .getSoundManager()
                          .play(
-@@ -231,6 +_,7 @@
+@@ -232,6 +_,7 @@
  
                  ++this.destroyTicks;
                  this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105284_, blockstate, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
@@ -81,25 +81,16 @@
                  if (this.destroyProgress >= 1.0F) {
                      this.isDestroying = false;
                      this.startPrediction(this.minecraft.level, p_233739_ -> {
-@@ -259,7 +_,7 @@
-     }
- 
-     public float getPickRange() {
--        return Player.getPickRange(this.localPlayerMode.isCreative());
-+        return (float) this.minecraft.player.getBlockReach();
-     }
- 
-     public void tick() {
-@@ -273,7 +_,7 @@
+@@ -270,7 +_,7 @@
  
      private boolean sameDestroyTarget(BlockPos p_105282_) {
          ItemStack itemstack = this.minecraft.player.getMainHandItem();
--        return p_105282_.equals(this.destroyBlockPos) && ItemStack.isSameItemSameTags(itemstack, this.destroyingItem);
+-        return p_105282_.equals(this.destroyBlockPos) && ItemStack.isSameItemSameComponents(itemstack, this.destroyingItem);
 +        return p_105282_.equals(this.destroyBlockPos) && !destroyingItem.shouldCauseBlockBreakReset(itemstack);
      }
  
      private void ensureHasSentCarriedItem() {
-@@ -301,25 +_,38 @@
+@@ -298,12 +_,23 @@
      private InteractionResult performUseItemOn(LocalPlayer p_233747_, InteractionHand p_233748_, BlockHitResult p_233749_) {
          BlockPos blockpos = p_233749_.getBlockPos();
          ItemStack itemstack = p_233747_.getItemInHand(p_233748_);
@@ -121,15 +112,11 @@
 +            boolean flag = !p_233747_.getMainHandItem().doesSneakBypassUse(p_233747_.level(), blockpos, p_233747_) || !p_233747_.getOffhandItem().doesSneakBypassUse(p_233747_.level(), blockpos, p_233747_);
              boolean flag1 = p_233747_.isSecondaryUseActive() && flag;
 -            if (!flag1) {
++            if (event.getUseBlock() == net.neoforged.bus.api.Event.Result.ALLOW || (event.getUseBlock() != net.neoforged.bus.api.Event.Result.DENY && !flag1)) {
                  BlockState blockstate = this.minecraft.level.getBlockState(blockpos);
                  if (!this.connection.isFeatureEnabled(blockstate.getBlock().requiredFeatures())) {
                      return InteractionResult.FAIL;
-                 }
- 
-+            if (event.getUseBlock() == net.neoforged.bus.api.Event.Result.ALLOW || (event.getUseBlock() != net.neoforged.bus.api.Event.Result.DENY && !flag1)) {
-                 InteractionResult interactionresult = blockstate.use(this.minecraft.level, p_233747_, p_233748_, p_233749_);
-                 if (interactionresult.consumesAction()) {
-                     return interactionresult;
+@@ -324,8 +_,10 @@
                  }
              }
  
@@ -142,7 +129,7 @@
                  InteractionResult interactionresult1;
                  if (this.localPlayerMode.isCreative()) {
                      int i = itemstack.getCount();
-@@ -355,10 +_,17 @@
+@@ -361,10 +_,17 @@
                      mutableobject.setValue(InteractionResult.PASS);
                      return serverbounduseitempacket;
                  } else {
@@ -160,7 +147,7 @@
                      }
  
                      mutableobject.setValue(interactionresultholder.getResult());
-@@ -396,6 +_,9 @@
+@@ -402,6 +_,9 @@
          this.ensureHasSentCarriedItem();
          Vec3 vec3 = p_105233_.getLocation().subtract(p_105232_.getX(), p_105232_.getY(), p_105232_.getZ());
          this.connection.send(ServerboundInteractPacket.createInteractionPacket(p_105232_, p_105231_.isShiftKeyDown(), p_105234_, vec3));

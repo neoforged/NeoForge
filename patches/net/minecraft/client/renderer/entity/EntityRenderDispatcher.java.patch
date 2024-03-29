@@ -15,7 +15,7 @@
                  p_114442_.pushPose();
                  double d3 = d0 + Mth.lerp((double)p_114445_, enderdragonpart.xOld, enderdragonpart.getX());
                  double d4 = d1 + Mth.lerp((double)p_114445_, enderdragonpart.yOld, enderdragonpart.getY());
-@@ -444,6 +_,10 @@
+@@ -438,6 +_,10 @@
          return this.itemInHandRenderer;
      }
  
@@ -26,7 +26,7 @@
      @Override
      public void onResourceManagerReload(ResourceManager p_174004_) {
          EntityRendererProvider.Context entityrendererprovider$context = new EntityRendererProvider.Context(
-@@ -451,5 +_,6 @@
+@@ -445,5 +_,6 @@
          );
          this.renderers = EntityRenderers.createEntityRenderers(entityrendererprovider$context);
          this.playerRenderers = EntityRenderers.createPlayerRenderers(entityrendererprovider$context);

@@ -1,34 +1,25 @@
 --- a/net/minecraft/world/entity/animal/Wolf.java
 +++ b/net/minecraft/world/entity/animal/Wolf.java
-@@ -342,11 +_,12 @@
-             return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
-         } else if (this.isTame()) {
-             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
-+                this.heal((float)itemstack.getFoodProperties(this).getNutrition());
-                 if (!p_30412_.getAbilities().instabuild) {
-                     itemstack.shrink(1);
-                 }
- 
--                this.heal((float)item.getFoodProperties().getNutrition());
-+                this.gameEvent(GameEvent.EAT, this);
-                 return InteractionResult.SUCCESS;
-             } else {
-                 if (item instanceof DyeItem dyeitem && this.isOwnedBy(p_30412_)) {
-@@ -379,7 +_,7 @@
-                 itemstack.shrink(1);
-             }
- 
--            if (this.random.nextInt(3) == 0) {
-+            if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_30412_)) {
-                 this.tame(p_30412_);
-                 this.navigation.stop();
-                 this.setTarget(null);
-@@ -419,7 +_,7 @@
-     @Override
-     public boolean isFood(ItemStack p_30440_) {
-         Item item = p_30440_.getItem();
--        return item.isEdible() && item.getFoodProperties().isMeat();
-+        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+@@ -422,10 +_,11 @@
+         if (!this.level().isClientSide || this.isBaby() && this.isFood(itemstack)) {
+             if (this.isTame()) {
+                 if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
+-                    itemstack.consume(1, p_30412_);
+-                    FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
++                    FoodProperties foodproperties = itemstack.getFoodProperties(this);
+                     float f = foodproperties != null ? (float)foodproperties.nutrition() : 1.0F;
+                     this.heal(2.0F * f);
++                    itemstack.consume(1, p_30412_);
++                    this.gameEvent(GameEvent.EAT); // Neo: add EAT game event
+                     return InteractionResult.sidedSuccess(this.level().isClientSide());
+                 } else {
+                     if (item instanceof DyeItem dyeitem && this.isOwnedBy(p_30412_)) {
+@@ -491,7 +_,7 @@
      }
  
-     @Override
+     private void tryToTame(Player p_333736_) {
+-        if (this.random.nextInt(3) == 0) {
++        if (this.random.nextInt(3) == 0  && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_333736_)) {
+             this.tame(p_333736_);
+             this.navigation.stop();
+             this.setTarget(null);

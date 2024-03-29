@@ -85,7 +85,7 @@ public class CustomElytraTest {
                 int nextFlightTick = flightTicks + 1;
                 if (nextFlightTick % 10 == 0) {
                     if (nextFlightTick % 20 == 0) {
-                        stack.hurtAndBreak(1, entity, e -> e.broadcastBreakEvent(EquipmentSlot.CHEST));
+                        stack.hurtAndBreak(1, entity, EquipmentSlot.CHEST);
                     }
                     entity.gameEvent(GameEvent.ELYTRA_GLIDE);
                 }

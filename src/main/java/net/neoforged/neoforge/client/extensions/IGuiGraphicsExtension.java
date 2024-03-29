@@ -5,7 +5,10 @@
 
 package net.neoforged.neoforge.client.extensions;
 
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -28,6 +31,22 @@ public interface IGuiGraphicsExtension {
 
     default int getColorFromFormattingCharacter(char c, boolean isLighter) {
         return TEXT_COLOR_CODES[isLighter ? "0123456789abcdef".indexOf(c) : "0123456789abcdef".indexOf(c) + 16];
+    }
+
+    /**
+     * Draws a left-aligned string, with a scrolling effect if the string is too long.
+     *
+     * @return the rendered width of the string, never more than {@code maxX - minX}
+     */
+    default int drawScrollingString(Font font, Component text, int minX, int maxX, int y, int color) {
+        int maxWidth = maxX - minX;
+        int textWidth = font.width(text.getVisualOrderText());
+        if (textWidth <= maxWidth) {
+            return self().drawString(font, text, minX, y, color);
+        } else {
+            AbstractWidget.renderScrollingString(self(), font, text, minX, y, maxX, y + font.lineHeight, color);
+            return maxWidth;
+        }
     }
 
     /**

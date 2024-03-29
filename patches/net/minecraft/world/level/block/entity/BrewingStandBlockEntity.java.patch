@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -152,6 +_,7 @@
+@@ -147,6 +_,7 @@
  
      private static boolean isBrewable(NonNullList<ItemStack> p_155295_) {
          ItemStack itemstack = p_155295_.get(3);
@@ -8,7 +8,7 @@
          if (itemstack.isEmpty()) {
              return false;
          } else if (!PotionBrewing.isIngredient(itemstack)) {
-@@ -169,21 +_,21 @@
+@@ -164,21 +_,21 @@
      }
  
      private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
@@ -37,7 +37,7 @@
  
          p_155293_.set(3, itemstack);
          p_155291_.levelEvent(1035, p_155292_, 0);
-@@ -236,11 +_,11 @@
+@@ -204,11 +_,11 @@
      @Override
      public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {
          if (p_59017_ == 3) {

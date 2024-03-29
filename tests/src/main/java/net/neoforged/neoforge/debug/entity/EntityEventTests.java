@@ -61,12 +61,12 @@ public class EntityEventTests {
     static void entityAttributeModificationEvent(final DynamicTest test, final RegistrationHelper reg) {
         final var testAttr = reg.registrar(Registries.ATTRIBUTE).register("test_attribute", () -> new RangedAttribute(reg.modId() + ".test_attr", 1.5D, 0.0D, 1024.0D).setSyncable(true));
         test.framework().modEventBus().addListener((final EntityAttributeModificationEvent event) -> {
-            event.add(EntityType.DONKEY, testAttr.get());
+            event.add(EntityType.DONKEY, testAttr);
         });
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.DONKEY, 1, 2, 1))
                 .thenExecute(donkey -> helper.assertEntityProperty(
-                        donkey, d -> d.getAttribute(testAttr.get()).getValue(), "test attribute", 1.5D))
+                        donkey, d -> d.getAttribute(testAttr).getValue(), "test attribute", 1.5D))
                 .thenSucceed());
     }
 }

@@ -19,6 +19,7 @@
     " # "
   ],
   "result": {
-    "item": "minecraft:dirt"
+    "count": 1,
+    "id": "minecraft:dirt"
   }
 }

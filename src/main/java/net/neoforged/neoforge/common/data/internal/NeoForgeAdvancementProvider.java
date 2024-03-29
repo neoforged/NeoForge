@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -13,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.Criterion;
@@ -33,6 +34,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.advancements.packs.VanillaAdvancementProvider;
 import net.minecraft.data.advancements.packs.VanillaHusbandryAdvancements;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -57,10 +59,10 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
     }
 
     private static List<AdvancementGenerator> getVanillaAdvancementProviders(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        List<UnaryOperator<Criterion<?>>> criteriaReplacers = new ArrayList<>();
+        List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers = new ArrayList<>();
         criteriaReplacers.add(replaceMatchToolCriteria(ToolActions.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
-        criteriaReplacers.add(replaceInteractCriteria(PiglinCurrencyItemPredicate.INSTANCE.toVanilla(), PiglinAi.BARTERING_ITEM));
-        criteriaReplacers.add(replaceWearingPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE.toVanilla(), predicate -> {
+        criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build(), PiglinAi.BARTERING_ITEM));
+        criteriaReplacers.add(replaceWearingPredicate(EntityPredicate.Builder.entity().subPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE).build(), predicate -> {
             if (predicate.head().filter(item -> predicateMatches(item, Items.GOLDEN_HELMET)).isPresent()) {
                 return true;
             } else if (predicate.chest().filter(item -> predicateMatches(item, Items.GOLDEN_CHESTPLATE)).isPresent()) {
@@ -77,14 +79,14 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                 .toList();
     }
 
-    private static UnaryOperator<Criterion<?>> replaceMatchToolCriteria(ToolAction toolAction, ItemLike... targetItem) {
+    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceMatchToolCriteria(ToolAction toolAction, ItemLike... targetItem) {
         UnaryOperator<LootItemCondition> replacer = condition -> {
             if (condition instanceof MatchTool toolMatch && toolMatch.predicate().filter(predicate -> predicateMatches(predicate, targetItem)).isPresent()) {
-                return new MatchTool(Optional.of(new ToolActionItemPredicate(toolAction).toVanilla()));
+                return new MatchTool(Optional.of(ItemPredicate.Builder.item().withSubPredicate(ToolActionItemPredicate.TYPE, new ToolActionItemPredicate(toolAction)).build()));
             }
             return null;
         };
-        return criterion -> {
+        return (criterion, registries) -> {
             if (criterion.trigger() instanceof ItemUsedOnLocationTrigger trigger && criterion.triggerInstance() instanceof ItemUsedOnLocationTrigger.TriggerInstance instance) {
                 ContextAwarePredicate newLocation = replaceConditions(instance.location().orElse(null), replacer, condition -> false);
                 if (newLocation != null) {
@@ -95,8 +97,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         };
     }
 
-    private static UnaryOperator<Criterion<?>> replaceInteractCriteria(ItemPredicate replacement, ItemLike... targetItem) {
-        return criterion -> {
+    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceInteractCriteria(ItemPredicate replacement, ItemLike... targetItem) {
+        return (criterion, registries) -> {
             if (criterion.trigger() instanceof PlayerInteractTrigger trigger && criterion.triggerInstance() instanceof PlayerInteractTrigger.TriggerInstance instance) {
                 if (instance.item().filter(predicate -> predicateMatches(predicate, targetItem)).isPresent()) {
                     return new Criterion<>(trigger, new PlayerInteractTrigger.TriggerInstance(instance.player(), Optional.of(replacement), instance.entity()));
@@ -120,7 +122,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         return true;
     }
 
-    private static UnaryOperator<Criterion<?>> replaceWearingPredicate(EntityPredicate replacement, Predicate<EntityEquipmentPredicate> shouldReplace) {
+    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceWearingPredicate(EntityPredicate replacement, Predicate<EntityEquipmentPredicate> shouldReplace) {
         return replacePlayerPredicate(condition -> {
             if (condition instanceof InvertedLootItemCondition inverted) {
                 if (inverted.term() instanceof LootItemEntityPropertyCondition entityPropertyCondition) {
@@ -138,30 +140,31 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         }, condition -> true);//Skip any additional replacements as we know they would be duplicates
     }
 
-    private static UnaryOperator<Criterion<?>> replacePlayerPredicate(UnaryOperator<LootItemCondition> replacer, Predicate<LootItemCondition> shouldSkipReplacement) {
-        return criterion -> {
+    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replacePlayerPredicate(UnaryOperator<LootItemCondition> replacer, Predicate<LootItemCondition> shouldSkipReplacement) {
+        return (criterion, registries) -> {
             if (criterion.triggerInstance() instanceof SimpleCriterionTrigger.SimpleInstance simpleInstance) {
                 ContextAwarePredicate newPlayer = replaceConditions(simpleInstance.player().orElse(null), replacer, shouldSkipReplacement);
                 if (newPlayer != null) {
-                    return replacePlayerPredicate((Criterion) criterion, newPlayer);
+                    return replacePlayerPredicate((Criterion) criterion, newPlayer, registries);
                 }
             }
             return null;
         };
     }
 
-    private static <T extends SimpleCriterionTrigger.SimpleInstance> Criterion<T> replacePlayerPredicate(Criterion<T> old, ContextAwarePredicate newPlayer) {
+    private static <T extends SimpleCriterionTrigger.SimpleInstance> Criterion<T> replacePlayerPredicate(Criterion<T> old, ContextAwarePredicate newPlayer, HolderLookup.Provider registries) {
         Codec<T> codec = old.trigger().codec();
-        return Util.getOrThrow(codec.encodeStart(JsonOps.INSTANCE, old.triggerInstance())
+        RegistryOps<JsonElement> registryops = registries.createSerializationContext(JsonOps.INSTANCE);
+        return codec.encodeStart(registryops, old.triggerInstance())
                 .flatMap(element -> {
                     if (element instanceof JsonObject object && object.has("player")) {
-                        object.add("player", Util.getOrThrow(ContextAwarePredicate.CODEC.encodeStart(JsonOps.INSTANCE, newPlayer), error -> new IllegalStateException("Unable to serialize new player predicate")));
-                        return codec.parse(JsonOps.INSTANCE, object);
+                        object.add("player", ContextAwarePredicate.CODEC.encodeStart(registryops, newPlayer).getOrThrow(error -> new IllegalStateException("Unable to serialize new player predicate")));
+                        return codec.parse(registryops, object);
                     }
                     return DataResult.error(() -> "Serialized instance does not contain a 'player' element");
                 })
-                .map(old.trigger()::createCriterion),
-                error -> new IllegalStateException("Unable to convert criterion serialization and replacement"));
+                .map(old.trigger()::createCriterion)
+                .getOrThrow(error -> new IllegalStateException("Unable to convert criterion serialization and replacement: " + error));
     }
 
     @Nullable
@@ -199,11 +202,11 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         return value;
     }
 
-    private record NeoForgeAdvancementGenerator(AdvancementSubProvider vanillaProvider, List<UnaryOperator<Criterion<?>>> criteriaReplacers) implements AdvancementGenerator {
+    private record NeoForgeAdvancementGenerator(AdvancementSubProvider vanillaProvider, List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers) implements AdvancementGenerator {
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             vanillaProvider.generate(registries, advancementHolder -> {
-                Advancement.Builder newBuilder = findAndReplaceInHolder(advancementHolder);
+                Advancement.Builder newBuilder = findAndReplaceInHolder(advancementHolder, registries);
                 if (newBuilder != null) {
                     newBuilder.save(saver, advancementHolder.id(), existingFileHelper);
                 }
@@ -211,14 +214,14 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         }
 
         @Nullable
-        private Advancement.Builder findAndReplaceInHolder(AdvancementHolder advancementHolder) {
+        private Advancement.Builder findAndReplaceInHolder(AdvancementHolder advancementHolder, HolderLookup.Provider registries) {
             Advancement advancement = advancementHolder.value();
             Advancement.Builder builder = Advancement.Builder.advancement();
             boolean hasReplaced = false;
             for (var entry : advancement.criteria().entrySet()) {
                 Criterion<?> criterion = entry.getValue();
                 for (var criteriaReplacer : criteriaReplacers) {
-                    Criterion<?> replacedCriterion = criteriaReplacer.apply(criterion);
+                    Criterion<?> replacedCriterion = criteriaReplacer.apply(criterion, registries);
                     if (replacedCriterion != null) {
                         hasReplaced = true;
                         criterion = replacedCriterion;

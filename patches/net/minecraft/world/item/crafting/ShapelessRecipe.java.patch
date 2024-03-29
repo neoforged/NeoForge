@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -19,12 +_,14 @@
+@@ -20,12 +_,14 @@
      final CraftingBookCategory category;
      final ItemStack result;
      final NonNullList<Ingredient> ingredients;
@@ -15,7 +15,7 @@
      }
  
      @Override
-@@ -54,17 +_,20 @@
+@@ -55,17 +_,20 @@
  
      public boolean matches(CraftingContainer p_44262_, Level p_44263_) {
          StackedContents stackedcontents = new StackedContents();
@@ -36,16 +36,8 @@
 +        return i == this.ingredients.size() && (isSimple ? stackedcontents.canCraft(this, null) : net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs,  this.ingredients) != null);
      }
  
-     public ItemStack assemble(CraftingContainer p_44260_, RegistryAccess p_266797_) {
-@@ -77,6 +_,7 @@
-     }
- 
-     public static class Serializer implements RecipeSerializer<ShapelessRecipe> {
-+        private static final net.minecraft.resources.ResourceLocation NAME = new net.minecraft.resources.ResourceLocation("minecraft", "crafting_shapeless");
-         private static final Codec<ShapelessRecipe> CODEC = RecordCodecBuilder.create(
-             p_311734_ -> p_311734_.group(
-                         ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(p_301127_ -> p_301127_.group),
-@@ -87,14 +_,13 @@
+     public ItemStack assemble(CraftingContainer p_44260_, HolderLookup.Provider p_335725_) {
+@@ -88,14 +_,13 @@
                              .fieldOf("ingredients")
                              .flatXmap(
                                  p_301021_ -> {

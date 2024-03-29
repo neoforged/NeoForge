@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/ShieldItem.java
 +++ b/net/minecraft/world/item/ShieldItem.java
-@@ -59,6 +_,13 @@
-         return compoundtag != null ? DyeColor.byId(compoundtag.getInt("Base")) : DyeColor.WHITE;
+@@ -54,6 +_,13 @@
+         return p_43092_.is(ItemTags.PLANKS) || super.isValidRepairItem(p_43091_, p_43092_);
      }
  
 +    /* ******************** FORGE START ******************** */

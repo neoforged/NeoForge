@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -69,10 +_,12 @@
+@@ -72,10 +_,12 @@
          this.setPvpAllowed(true);
          this.setFlightAllowed(true);
          this.initializeKeyPair();
@@ -13,7 +13,7 @@
          return true;
      }
  
-@@ -217,6 +_,7 @@
+@@ -224,6 +_,7 @@
  
      @Override
      public void halt(boolean p_120053_) {

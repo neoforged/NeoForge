@@ -29,9 +29,9 @@
      protected static void wasHurtBy(Piglin p_34838_, LivingEntity p_34839_) {
 @@ -650,7 +_,7 @@
      public static boolean isWearingGold(LivingEntity p_34809_) {
-         for(ItemStack itemstack : p_34809_.getArmorSlots()) {
+         for(ItemStack itemstack : p_34809_.getArmorAndBodyArmorSlots()) {
              Item item = itemstack.getItem();
--            if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial() == ArmorMaterials.GOLD) {
+-            if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial().is(ArmorMaterials.GOLD)) {
 +            if (itemstack.makesPiglinsNeutral(p_34809_)) {
                  return true;
              }

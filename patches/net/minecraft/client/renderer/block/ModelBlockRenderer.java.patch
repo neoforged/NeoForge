@@ -151,7 +151,7 @@
              p_111021_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.getDirection(), p_111019_, p_111020_, bakedquad.isShade());
              this.putQuadData(
                  p_111013_,
-@@ -322,6 +_,7 @@
+@@ -323,6 +_,7 @@
          }
      }
  
@@ -159,7 +159,7 @@
      public void renderModel(
          PoseStack.Pose p_111068_,
          VertexConsumer p_111069_,
-@@ -333,16 +_,32 @@
+@@ -334,16 +_,32 @@
          int p_111075_,
          int p_111076_
      ) {

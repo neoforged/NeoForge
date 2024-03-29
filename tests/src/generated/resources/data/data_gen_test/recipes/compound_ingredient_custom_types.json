@@ -10,10 +10,47 @@
         "tag": "minecraft:logs"
       },
       {
-        "type": "neoforge:nbt",
-        "item": "minecraft:stone_pickaxe",
-        "strict": true,
-        "tag": "{Damage:3}"
+        "type": "neoforge:components",
+        "components": {
+          "minecraft:attribute_modifiers": {
+            "modifiers": [
+              {
+                "type": "minecraft:generic.attack_damage",
+                "amount": 2.0,
+                "name": "Tool modifier",
+                "operation": "add_value",
+                "slot": "mainhand",
+                "uuid": [
+                  -885041709,
+                  1683771192,
+                  -1533567981,
+                  -1556236849
+                ]
+              },
+              {
+                "type": "minecraft:generic.attack_speed",
+                "amount": -2.799999952316284,
+                "name": "Tool modifier",
+                "operation": "add_value",
+                "slot": "mainhand",
+                "uuid": [
+                  -98353636,
+                  1098926181,
+                  -1340359474,
+                  -1752847197
+                ]
+              }
+            ]
+          },
+          "minecraft:damage": 3,
+          "minecraft:enchantments": {
+            "levels": {}
+          },
+          "minecraft:lore": [],
+          "minecraft:repair_cost": 0
+        },
+        "items": "minecraft:stone_pickaxe",
+        "strict": true
       }
     ]
   },
@@ -22,6 +59,7 @@
     "#"
   ],
   "result": {
-    "item": "minecraft:gold_block"
+    "count": 1,
+    "id": "minecraft:gold_block"
   }
 }

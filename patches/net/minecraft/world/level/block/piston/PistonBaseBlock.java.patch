@@ -36,7 +36,7 @@
                  }
 @@ -390,6 +_,10 @@
      @Override
-     public BlockState rotate(BlockState p_60215_, Rotation p_60216_) {
+     protected BlockState rotate(BlockState p_60215_, Rotation p_60216_) {
          return p_60215_.setValue(FACING, p_60216_.rotate(p_60215_.getValue(FACING)));
 +    }
 +

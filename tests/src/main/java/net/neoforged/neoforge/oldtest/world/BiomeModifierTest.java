@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.world;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Locale;
@@ -66,8 +67,8 @@ public class BiomeModifierTest {
     /* Static registry objects */
 
     // Biome Modifier Serializers
-    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
-    private static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<TestModifier>> MODIFY_BIOMES = BIOME_MODIFIER_SERIALIZERS.register("modify_biomes", () -> RecordCodecBuilder.create(builder -> builder.group(
+    private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
+    private static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<TestModifier>> MODIFY_BIOMES = BIOME_MODIFIER_SERIALIZERS.register("modify_biomes", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(TestModifier::biomes),
             Codec.STRING.xmap(s -> Precipitation.valueOf(s.toUpperCase(Locale.ROOT)), e -> e.name().toLowerCase(Locale.ROOT)).fieldOf("precipitation").forGetter(TestModifier::precipitation),
             Codec.INT.fieldOf("water_color").forGetter(TestModifier::waterColor)).apply(builder, TestModifier::new)));
@@ -151,7 +152,7 @@ public class BiomeModifierTest {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return MODIFY_BIOMES.get();
         }
     }

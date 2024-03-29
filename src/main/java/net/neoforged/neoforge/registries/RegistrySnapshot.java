@@ -15,13 +15,41 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 public class RegistrySnapshot {
     private static final Comparator<ResourceLocation> SORTER = ResourceLocation::compareNamespaced;
+    public static final StreamCodec<FriendlyByteBuf, RegistrySnapshot> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public RegistrySnapshot decode(FriendlyByteBuf buf) {
+            RegistrySnapshot snapshot = new RegistrySnapshot();
+            buf.readMap(size -> snapshot.ids, FriendlyByteBuf::readVarInt, FriendlyByteBuf::readResourceLocation);
+            buf.readMap(size -> snapshot.aliases, FriendlyByteBuf::readResourceLocation, FriendlyByteBuf::readResourceLocation);
+            return snapshot;
+        }
+
+        @Override
+        public synchronized void encode(FriendlyByteBuf buf, RegistrySnapshot snapshot) {
+            if (snapshot.binary == null) {
+                FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
+                try {
+                    pkt.writeMap(snapshot.ids, FriendlyByteBuf::writeVarInt, FriendlyByteBuf::writeResourceLocation);
+                    pkt.writeMap(snapshot.aliases, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeResourceLocation);
+                    snapshot.binary = new byte[pkt.readableBytes()];
+                    pkt.readBytes(snapshot.binary);
+                } finally {
+                    pkt.release();
+                }
+            }
+            buf.writeBytes(snapshot.binary);
+        }
+    };
+
     // Use a sorted map with the ID as the key.
     // We need the entries to be sorted by increasing order for client-side application of the snapshot to work.
     private final Int2ObjectSortedMap<ResourceLocation> ids = new Int2ObjectRBTreeMap<>();
@@ -57,44 +85,13 @@ public class RegistrySnapshot {
             for (var entry : registry.entrySet()) {
                 ResourceKey<T> key = entry.getKey();
                 T value = entry.getValue();
-                backup.registerMapping(registry.getId(key), key, value, registry.lifecycle(value));
+                backup.register(registry.getId(key), key, value, registry.registrationInfo(key).orElse(RegistrationInfo.BUILT_IN));
             }
             backup.freeze();
             this.fullBackup = backup;
         } else {
             this.fullBackup = null;
         }
-    }
-
-    /**
-     * Creates a registry snapshot from the received buffer.
-     * 
-     * @param buf the buffer containing the data of the received snapshot.
-     */
-    public RegistrySnapshot(FriendlyByteBuf buf) {
-        this();
-        buf.readMap(size -> this.ids, FriendlyByteBuf::readVarInt, FriendlyByteBuf::readResourceLocation);
-        buf.readMap(size -> this.aliases, FriendlyByteBuf::readResourceLocation, FriendlyByteBuf::readResourceLocation);
-    }
-
-    /**
-     * Write the registry snapshot to the given buffer and cache the binary data.
-     * 
-     * @param buf the buffer to write to.
-     */
-    public synchronized void write(FriendlyByteBuf buf) {
-        if (this.binary == null) {
-            FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
-            try {
-                pkt.writeMap(this.ids, FriendlyByteBuf::writeVarInt, FriendlyByteBuf::writeResourceLocation);
-                pkt.writeMap(this.aliases, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeResourceLocation);
-                this.binary = new byte[pkt.readableBytes()];
-                pkt.readBytes(this.binary);
-            } finally {
-                pkt.release();
-            }
-        }
-        buf.writeBytes(this.binary);
     }
 
     public Int2ObjectSortedMap<ResourceLocation> getIds() {

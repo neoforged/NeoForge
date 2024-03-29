@@ -193,7 +193,7 @@ public class ForcedChunkManager {
     public static void writeModForcedChunks(CompoundTag nbt, TicketTracker<BlockPos> blockForcedChunks, TicketTracker<UUID> entityForcedChunks) {
         if (!blockForcedChunks.isEmpty() || !entityForcedChunks.isEmpty()) {
             Map<ResourceLocation, Long2ObjectMap<CompoundTag>> forcedEntries = new HashMap<>();
-            writeForcedChunkOwners(forcedEntries, blockForcedChunks, "Blocks", Tag.TAG_COMPOUND, (pos, forcedBlocks) -> forcedBlocks.add(NbtUtils.writeBlockPos(pos)));
+            writeForcedChunkOwners(forcedEntries, blockForcedChunks, "Blocks", Tag.TAG_COMPOUND, (pos, forcedBlocks) -> forcedBlocks.add(writeBlockPos(pos)));
             writeForcedChunkOwners(forcedEntries, entityForcedChunks, "Entities", Tag.TAG_INT_ARRAY, (uuid, forcedEntities) -> forcedEntities.add(NbtUtils.createUUID(uuid)));
             ListTag forcedChunks = new ListTag();
             for (Map.Entry<ResourceLocation, Long2ObjectMap<CompoundTag>> entry : forcedEntries.entrySet()) {
@@ -270,8 +270,20 @@ public class ForcedChunkManager {
     private static void readBlockForcedChunks(ResourceLocation controllerId, long chunkPos, CompoundTag modEntry, String key, Map<TicketOwner<BlockPos>, LongSet> blockForcedChunks) {
         ListTag forcedBlocks = modEntry.getList(key, Tag.TAG_COMPOUND);
         for (int k = 0; k < forcedBlocks.size(); k++) {
-            blockForcedChunks.computeIfAbsent(new TicketOwner<>(controllerId, NbtUtils.readBlockPos(forcedBlocks.getCompound(k))), owner -> new LongOpenHashSet()).add(chunkPos);
+            blockForcedChunks.computeIfAbsent(new TicketOwner<>(controllerId, readBlockPos(forcedBlocks.getCompound(k))), owner -> new LongOpenHashSet()).add(chunkPos);
         }
+    }
+
+    private static BlockPos readBlockPos(CompoundTag compoundtag) {
+        return new BlockPos(compoundtag.getInt("X"), compoundtag.getInt("Y"), compoundtag.getInt("Z"));
+    }
+
+    public static CompoundTag writeBlockPos(BlockPos blockpos) {
+        CompoundTag compoundtag = new CompoundTag();
+        compoundtag.putInt("X", blockpos.getX());
+        compoundtag.putInt("Y", blockpos.getY());
+        compoundtag.putInt("Z", blockpos.getZ());
+        return compoundtag;
     }
 
     /**

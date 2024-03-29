@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -201,7 +202,7 @@ public class RegistryManager {
             for (var entry : backup.entrySet()) {
                 ResourceKey<T> key = entry.getKey();
                 T value = entry.getValue();
-                registry.registerMapping(backup.getId(key), key, value, backup.lifecycle(value));
+                registry.register(backup.getId(key), key, value, backup.registrationInfo(key).orElse(RegistrationInfo.BUILT_IN));
             }
         }
 
@@ -268,7 +269,7 @@ public class RegistryManager {
         FULL
     }
 
-    public static final AttributeKey<Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");
+    public static final AttributeKey<Map<ResourceKey<? extends Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");
 
     @ApiStatus.Internal
     public static void handleKnownDataMapsReply(final KnownRegistryDataMapsReplyPayload payload, final ConfigurationPayloadContext context) {

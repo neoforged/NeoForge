@@ -1,52 +1,37 @@
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-@@ -60,7 +_,14 @@
-         return BuiltInRegistries.ENCHANTMENT.getKey(p_182433_);
-     }
+@@ -33,9 +_,10 @@
+ public class EnchantmentHelper {
+     private static final float SWIFT_SNEAK_EXTRA_FACTOR = 0.15F;
  
-+    /** @deprecated forge: use {@link #getTagEnchantmentLevel(Enchantment, ItemStack)} or {@link ItemStack#getEnchantmentLevel(Enchantment)} */
++    /** @deprecated Neo: Use {@link ItemStack#getEnchantmentLevel(Enchantment)} for gameplay logic. Use the data component when modifying the enchantments. */
 +    @Deprecated
      public static int getItemEnchantmentLevel(Enchantment p_44844_, ItemStack p_44845_) {
+-        ItemEnchantments itemenchantments = p_44845_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+-        return itemenchantments.getLevel(p_44844_);
 +        return p_44845_.getEnchantmentLevel(p_44844_);
-+    }
-+
-+    /** Gets the enchantment level from NBT. Generally should use {@link ItemStack#getEnchantmentLevel(Enchantment)} for gameplay logic */
-+    public static int getTagEnchantmentLevel(Enchantment p_44844_, ItemStack p_44845_) {
-         if (p_44845_.isEmpty()) {
-             return 0;
-         } else {
-@@ -79,6 +_,7 @@
-         }
      }
  
-+    /** Gets all enchantment levels from NBT. Use {@link ItemStack#getAllEnchantments()} for gameplay logic */
-     public static Map<Enchantment, Integer> getEnchantments(ItemStack p_44832_) {
-         ListTag listtag = p_44832_.is(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantments(p_44832_) : p_44832_.getEnchantmentTags();
-         return deserializeEnchantments(listtag);
-@@ -118,6 +_,13 @@
+     public static ItemEnchantments updateEnchantments(ItemStack p_331034_, Consumer<ItemEnchantments.Mutable> p_332031_) {
+@@ -78,7 +_,7 @@
+     }
  
      private static void runIterationOnItem(EnchantmentHelper.EnchantmentVisitor p_44851_, ItemStack p_44852_) {
-         if (!p_44852_.isEmpty()) {
-+            if (true) { // forge: redirect enchantment logic to allow non-NBT enchants
-+                for (Map.Entry<Enchantment, Integer> entry : p_44852_.getAllEnchantments().entrySet()) {
-+                    p_44851_.accept(entry.getKey(), entry.getValue());
-+                }
-+                return;
-+            }
-+
-             ListTag listtag = p_44852_.getEnchantmentTags();
+-        ItemEnchantments itemenchantments = p_44852_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
++        ItemEnchantments itemenchantments = p_44852_.getAllEnchantments(); // Neo: Allow gameplay enchantments to run too.
  
-             for(int i = 0; i < listtag.size(); ++i) {
-@@ -143,7 +_,7 @@
+         for(Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
+             p_44851_.accept(entry.getKey().value(), entry.getIntValue());
+@@ -99,7 +_,7 @@
  
-     public static float getDamageBonus(ItemStack p_44834_, MobType p_44835_) {
+     public static float getDamageBonus(ItemStack p_44834_, @Nullable EntityType<?> p_320195_) {
          MutableFloat mutablefloat = new MutableFloat();
--        runIterationOnItem((p_44887_, p_44888_) -> mutablefloat.add(p_44887_.getDamageBonus(p_44888_, p_44835_)), p_44834_);
-+        runIterationOnItem((p_44887_, p_44888_) -> mutablefloat.add(p_44887_.getDamageBonus(p_44888_, p_44835_, p_44834_)), p_44834_);
+-        runIterationOnItem((p_319741_, p_319742_) -> mutablefloat.add(p_319741_.getDamageBonus(p_319742_, p_320195_)), p_44834_);
++        runIterationOnItem((p_44887_, p_44888_) -> mutablefloat.add(p_44887_.getDamageBonus(p_44888_, p_320195_, p_44834_)), p_44834_);
          return mutablefloat.floatValue();
      }
  
-@@ -158,6 +_,7 @@
+@@ -125,6 +_,7 @@
              runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44824_.getAllSlots());
          }
  
@@ -54,7 +39,7 @@
          if (p_44825_ instanceof Player) {
              runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44824_.getMainHandItem());
          }
-@@ -169,6 +_,7 @@
+@@ -136,6 +_,7 @@
              runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44897_.getAllSlots());
          }
  
@@ -62,7 +47,7 @@
          if (p_44897_ instanceof Player) {
              runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44897_.getMainHandItem());
          }
-@@ -290,7 +_,7 @@
+@@ -263,7 +_,7 @@
  
      public static int getEnchantmentCost(RandomSource p_220288_, int p_220289_, int p_220290_, ItemStack p_220291_) {
          Item item = p_220291_.getItem();
@@ -71,8 +56,8 @@
          if (i <= 0) {
              return 0;
          } else {
-@@ -328,7 +_,7 @@
-     public static List<EnchantmentInstance> selectEnchantment(RandomSource p_220298_, ItemStack p_220299_, int p_220300_, boolean p_220301_) {
+@@ -298,7 +_,7 @@
+     ) {
          List<EnchantmentInstance> list = Lists.newArrayList();
          Item item = p_220299_.getItem();
 -        int i = item.getEnchantmentValue();
@@ -80,12 +65,12 @@
          if (i <= 0) {
              return list;
          } else {
-@@ -383,7 +_,7 @@
-         boolean flag = p_44819_.is(Items.BOOK);
- 
-         for(Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
--            if ((!enchantment.isTreasureOnly() || p_44820_) && enchantment.isDiscoverable() && (enchantment.category.canEnchant(item) || flag)) {
-+            if ((!enchantment.isTreasureOnly() || p_44820_) && enchantment.isDiscoverable() && (enchantment.canApplyAtEnchantingTable(p_44819_) || (flag && enchantment.isAllowedOnBooks()))) {
+@@ -355,7 +_,7 @@
+             if (enchantment.isEnabled(p_338712_)
+                 && (!enchantment.isTreasureOnly() || p_44820_)
+                 && enchantment.isDiscoverable()
+-                && (flag || enchantment.canEnchant(p_44819_) && enchantment.isPrimaryItem(p_44819_))) {
++                    && ((flag && enchantment.isAllowedOnBooks()) || enchantment.canApplyAtEnchantingTable(p_44819_) && enchantment.isPrimaryItem(p_44819_))) {
                  for(int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                      if (p_44818_ >= enchantment.getMinCost(i) && p_44818_ <= enchantment.getMaxCost(i)) {
                          list.add(new EnchantmentInstance(enchantment, i));

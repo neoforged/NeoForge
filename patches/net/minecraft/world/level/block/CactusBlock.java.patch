@@ -12,7 +12,7 @@
 @@ -41,6 +_,7 @@
  
      @Override
-     public void tick(BlockState p_220908_, ServerLevel p_220909_, BlockPos p_220910_, RandomSource p_220911_) {
+     protected void tick(BlockState p_220908_, ServerLevel p_220909_, BlockPos p_220910_, RandomSource p_220911_) {
 +        if (!p_220909_.isAreaLoaded(p_220910_, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
          if (!p_220908_.canSurvive(p_220909_, p_220910_)) {
              p_220909_.destroyBlock(p_220910_, true);
@@ -45,7 +45,7 @@
      @Override
 @@ -115,5 +_,15 @@
      @Override
-     public boolean isPathfindable(BlockState p_51143_, BlockGetter p_51144_, BlockPos p_51145_, PathComputationType p_51146_) {
+     protected boolean isPathfindable(BlockState p_51143_, PathComputationType p_51146_) {
          return false;
 +    }
 +

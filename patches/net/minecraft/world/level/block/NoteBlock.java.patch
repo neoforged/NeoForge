@@ -1,20 +1,20 @@
 --- a/net/minecraft/world/level/block/NoteBlock.java
 +++ b/net/minecraft/world/level/block/NoteBlock.java
-@@ -104,7 +_,9 @@
-         } else if (p_55035_.isClientSide) {
+@@ -111,7 +_,9 @@
+         if (p_316774_.isClientSide) {
              return InteractionResult.SUCCESS;
          } else {
--            p_55034_ = p_55034_.cycle(NOTE);
-+            int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(p_55035_, p_55036_, p_55034_, p_55034_.getValue(NOTE), p_55034_.cycle(NOTE).getValue(NOTE));
+-            p_316441_ = p_316441_.cycle(NOTE);
++            int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(p_316774_, p_316344_, p_316441_, p_316441_.getValue(NOTE), p_316441_.cycle(NOTE).getValue(NOTE));
 +            if (_new == -1) return InteractionResult.FAIL;
-+            p_55034_ = p_55034_.setValue(NOTE, _new);
-             p_55035_.setBlock(p_55036_, p_55034_, 3);
-             this.playNote(p_55037_, p_55034_, p_55035_, p_55036_);
-             p_55037_.awardStat(Stats.TUNE_NOTEBLOCK);
-@@ -126,6 +_,9 @@
++            p_316441_ = p_316441_.setValue(NOTE, _new);
+             p_316774_.setBlock(p_316344_, p_316441_, 3);
+             this.playNote(p_316884_, p_316441_, p_316774_, p_316344_);
+             p_316884_.awardStat(Stats.TUNE_NOTEBLOCK);
+@@ -133,6 +_,9 @@
  
      @Override
-     public boolean triggerEvent(BlockState p_55023_, Level p_55024_, BlockPos p_55025_, int p_55026_, int p_55027_) {
+     protected boolean triggerEvent(BlockState p_55023_, Level p_55024_, BlockPos p_55025_, int p_55026_, int p_55027_) {
 +        net.neoforged.neoforge.event.level.NoteBlockEvent.Play e = new net.neoforged.neoforge.event.level.NoteBlockEvent.Play(p_55024_, p_55025_, p_55023_, p_55023_.getValue(NOTE), p_55023_.getValue(INSTRUMENT));
 +        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(e).isCanceled()) return false;
 +        p_55023_ = p_55023_.setValue(NOTE, e.getVanillaNoteId()).setValue(INSTRUMENT, e.getInstrument());

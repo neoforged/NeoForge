@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -163,7 +_,7 @@
+@@ -165,7 +_,7 @@
              --this.shakeTime;
          }
  
@@ -9,7 +9,7 @@
              this.clearFire();
          }
  
-@@ -199,7 +_,9 @@
+@@ -201,7 +_,9 @@
                      }
                  }
  

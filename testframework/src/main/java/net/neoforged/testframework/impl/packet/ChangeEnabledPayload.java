@@ -17,7 +17,7 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 
 public record ChangeEnabledPayload(MutableTestFramework framework, String testId, boolean enabled) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_enabled");
+    public static final CustomPacketPayload.Type<ChangeEnabledPayload> ID = new Type<>(new ResourceLocation("neoforge", "tf_change_enabled"));
     public void handle(PlayPayloadContext context) {
         switch (context.flow().getReceptionSide()) {
             case CLIENT -> {
@@ -37,14 +37,13 @@ public record ChangeEnabledPayload(MutableTestFramework framework, String testId
         return new ChangeEnabledPayload(framework, buf.readUtf(), buf.readBoolean());
     }
 
-    @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeUtf(testId);
         buf.writeBoolean(enabled);
     }
 
     @Override
-    public ResourceLocation id() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }

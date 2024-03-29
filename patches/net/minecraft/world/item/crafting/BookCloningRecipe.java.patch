@@ -1,14 +1,6 @@
 --- a/net/minecraft/world/item/crafting/BookCloningRecipe.java
 +++ b/net/minecraft/world/item/crafting/BookCloningRecipe.java
-@@ -68,6 +_,7 @@
-             CompoundTag compoundtag = itemstack.getTag().copy();
-             compoundtag.putInt("generation", WrittenBookItem.getGeneration(itemstack) + 1);
-             itemstack2.setTag(compoundtag);
-+            net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack2);
-             return itemstack2;
-         } else {
-             return ItemStack.EMPTY;
-@@ -79,8 +_,8 @@
+@@ -84,8 +_,8 @@
  
          for(int i = 0; i < nonnulllist.size(); ++i) {
              ItemStack itemstack = p_43820_.getItem(i);

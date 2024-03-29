@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/color/block/BlockColors.java
 +++ b/net/minecraft/client/color/block/BlockColors.java
-@@ -28,7 +_,8 @@
+@@ -29,7 +_,8 @@
  @OnlyIn(Dist.CLIENT)
  public class BlockColors {
      private static final int DEFAULT = -1;
@@ -10,10 +10,10 @@
      private final Map<Block, Set<Property<?>>> coloringStates = Maps.newHashMap();
  
      public static BlockColors createDefault() {
-@@ -96,11 +_,12 @@
+@@ -94,11 +_,12 @@
          }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
          blockcolors.addColoringState(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
-         blockcolors.register((p_92596_, p_92597_, p_92598_, p_92599_) -> p_92597_ != null && p_92598_ != null ? 2129968 : 7455580, Blocks.LILY_PAD);
+         blockcolors.register((p_92596_, p_92597_, p_92598_, p_92599_) -> p_92597_ != null && p_92598_ != null ? -14647248 : -9321636, Blocks.LILY_PAD);
 +        net.neoforged.neoforge.client.ClientHooks.onBlockColorsInit(blockcolors);
          return blockcolors;
      }
@@ -24,7 +24,7 @@
          if (blockcolor != null) {
              return blockcolor.getColor(p_92583_, null, null, 0);
          } else {
-@@ -110,13 +_,15 @@
+@@ -108,13 +_,15 @@
      }
  
      public int getColor(BlockState p_92578_, @Nullable BlockAndTintGetter p_92579_, @Nullable BlockPos p_92580_, int p_92581_) {

@@ -4,9 +4,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:crafting_table"
-            ]
+            "items": "minecraft:crafting_table"
           }
         ]
       },
@@ -18,7 +16,8 @@
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "description": "Changed Description",
     "icon": {
-      "item": "minecraft:grass_block"
+      "count": 1,
+      "id": "minecraft:grass_block"
     },
     "show_toast": false,
     "title": {

@@ -1,11 +1,11 @@
 --- a/net/minecraft/network/protocol/common/ServerCommonPacketListener.java
 +++ b/net/minecraft/network/protocol/common/ServerCommonPacketListener.java
-@@ -2,7 +_,7 @@
- 
+@@ -3,7 +_,7 @@
+ import net.minecraft.network.protocol.cookie.ServerCookiePacketListener;
  import net.minecraft.network.protocol.game.ServerPacketListener;
  
--public interface ServerCommonPacketListener extends ServerPacketListener {
-+public interface ServerCommonPacketListener extends ServerPacketListener, net.neoforged.neoforge.common.extensions.IServerCommonPacketListenerExtension {
+-public interface ServerCommonPacketListener extends ServerCookiePacketListener, ServerPacketListener {
++public interface ServerCommonPacketListener extends ServerCookiePacketListener, ServerPacketListener, net.neoforged.neoforge.common.extensions.IServerCommonPacketListenerExtension {
      void handleKeepAlive(ServerboundKeepAlivePacket p_296457_);
  
      void handlePong(ServerboundPongPacket p_294309_);

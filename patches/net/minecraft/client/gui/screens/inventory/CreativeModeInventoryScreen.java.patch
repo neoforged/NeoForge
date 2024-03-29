@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
-@@ -110,6 +_,8 @@
+@@ -112,6 +_,8 @@
      private boolean hasClickedOutside;
      private final Set<TagKey<Item>> visibleTags = new HashSet<>();
      private final boolean displayOperatorCreativeTab;
@@ -9,7 +9,7 @@
  
      public CreativeModeInventoryScreen(Player p_259788_, FeatureFlagSet p_260074_, boolean p_259569_) {
          super(new CreativeModeInventoryScreen.ItemPickerMenu(p_259788_), p_259788_.getInventory(), CommonComponents.EMPTY);
-@@ -142,7 +_,7 @@
+@@ -144,7 +_,7 @@
      private void refreshCurrentTabContents(Collection<ItemStack> p_261591_) {
          int i = this.menu.getRowIndexForScroll(this.scrollOffs);
          this.menu.items.clear();
@@ -18,7 +18,7 @@
              this.refreshSearchResults();
          } else {
              this.menu.items.addAll(p_261591_);
-@@ -309,6 +_,34 @@
+@@ -311,6 +_,34 @@
      protected void init() {
          if (this.minecraft.gameMode.hasInfiniteItems()) {
              super.init();
@@ -53,7 +53,7 @@
              this.searchBox = new EditBox(this.font, this.leftPos + 82, this.topPos + 6, 80, 9, Component.translatable("itemGroup.search"));
              this.searchBox.setMaxLength(50);
              this.searchBox.setBordered(false);
-@@ -355,7 +_,7 @@
+@@ -357,7 +_,7 @@
      public boolean charTyped(char p_98521_, int p_98522_) {
          if (this.ignoreTextInput) {
              return false;
@@ -62,7 +62,7 @@
              return false;
          } else {
              String s = this.searchBox.getValue();
-@@ -374,7 +_,7 @@
+@@ -376,7 +_,7 @@
      @Override
      public boolean keyPressed(int p_98547_, int p_98548_, int p_98549_) {
          this.ignoreTextInput = false;
@@ -71,7 +71,7 @@
              if (this.minecraft.options.keyChat.matches(p_98547_, p_98548_)) {
                  this.ignoreTextInput = true;
                  this.selectTab(CreativeModeTabs.searchTab());
-@@ -410,6 +_,7 @@
+@@ -412,6 +_,7 @@
      }
  
      private void refreshSearchResults() {
@@ -79,7 +79,7 @@
          this.menu.items.clear();
          this.visibleTags.clear();
          String s = this.searchBox.getValue();
-@@ -419,10 +_,10 @@
+@@ -421,10 +_,10 @@
              SearchTree<ItemStack> searchtree;
              if (s.startsWith("#")) {
                  s = s.substring(1);
@@ -92,7 +92,7 @@
              }
  
              this.menu.items.addAll(searchtree.search(s.toLowerCase(Locale.ROOT)));
-@@ -449,7 +_,8 @@
+@@ -451,7 +_,8 @@
      @Override
      protected void renderLabels(GuiGraphics p_283168_, int p_281774_, int p_281466_) {
          if (selectedTab.showTitle()) {
@@ -102,7 +102,7 @@
          }
      }
  
-@@ -459,7 +_,7 @@
+@@ -461,7 +_,7 @@
              double d0 = p_98531_ - (double)this.leftPos;
              double d1 = p_98532_ - (double)this.topPos;
  
@@ -111,7 +111,7 @@
                  if (this.checkTabClicked(creativemodetab, d0, d1)) {
                      return true;
                  }
-@@ -481,7 +_,7 @@
+@@ -483,7 +_,7 @@
              double d1 = p_98623_ - (double)this.topPos;
              this.scrolling = false;
  
@@ -120,7 +120,7 @@
                  if (this.checkTabClicked(creativemodetab, d0, d1)) {
                      this.selectTab(creativemodetab);
                      return true;
-@@ -499,6 +_,7 @@
+@@ -501,6 +_,7 @@
      private void selectTab(CreativeModeTab p_98561_) {
          CreativeModeTab creativemodetab = selectedTab;
          selectedTab = p_98561_;
@@ -128,7 +128,7 @@
          this.quickCraftSlots.clear();
          this.menu.items.clear();
          this.clearDraggingState();
-@@ -575,13 +_,15 @@
+@@ -577,13 +_,15 @@
              this.originalSlots = null;
          }
  
@@ -145,7 +145,7 @@
  
              this.refreshSearchResults();
          } else {
-@@ -644,7 +_,7 @@
+@@ -646,7 +_,7 @@
      public void render(GuiGraphics p_283000_, int p_281317_, int p_282770_, float p_281295_) {
          super.render(p_283000_, p_281317_, p_282770_, p_281295_);
  
@@ -154,7 +154,7 @@
              if (this.checkTabHovering(p_283000_, creativemodetab, p_281317_, p_282770_)) {
                  break;
              }
-@@ -656,6 +_,15 @@
+@@ -658,6 +_,15 @@
              p_283000_.renderTooltip(this.font, TRASH_SLOT_TOOLTIP, p_281317_, p_282770_);
          }
  
@@ -170,7 +170,7 @@
          this.renderTooltip(p_283000_, p_281317_, p_282770_);
      }
  
-@@ -663,7 +_,7 @@
+@@ -665,7 +_,7 @@
      public List<Component> getTooltipFromContainerItem(ItemStack p_281769_) {
          boolean flag = this.hoveredSlot != null && this.hoveredSlot instanceof CreativeModeInventoryScreen.CustomCreativeSlot;
          boolean flag1 = selectedTab.getType() == CreativeModeTab.Type.CATEGORY;
@@ -179,7 +179,7 @@
          TooltipFlag.Default tooltipflag$default = this.minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
          TooltipFlag tooltipflag = flag ? tooltipflag$default.asCreative() : tooltipflag$default;
          List<Component> list = p_281769_.getTooltipLines(this.minecraft.player, tooltipflag);
-@@ -682,7 +_,7 @@
+@@ -684,7 +_,7 @@
              int i = 1;
  
              for(CreativeModeTab creativemodetab : CreativeModeTabs.tabs()) {
@@ -188,7 +188,7 @@
                      list1.add(i++, creativemodetab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
                  }
              }
-@@ -693,14 +_,14 @@
+@@ -695,14 +_,14 @@
  
      @Override
      protected void renderBg(GuiGraphics p_282663_, float p_282504_, int p_282089_, int p_282249_) {
@@ -205,7 +205,7 @@
              this.leftPos,
              this.topPos,
              0,
-@@ -713,10 +_,11 @@
+@@ -715,10 +_,11 @@
          int k = this.topPos + 18;
          int i = k + 112;
          if (selectedTab.canScroll()) {
@@ -218,7 +218,7 @@
          this.renderTabButton(p_282663_, selectedTab);
          if (selectedTab.getType() == CreativeModeTab.Type.INVENTORY) {
              InventoryScreen.renderEntityInInventoryFollowsMouse(
-@@ -735,7 +_,7 @@
+@@ -737,7 +_,7 @@
      }
  
      private int getTabX(CreativeModeTab p_260136_) {
@@ -227,7 +227,7 @@
          int j = 27;
          int k = 27 * i;
          if (p_260136_.isAlignedRight()) {
-@@ -747,7 +_,7 @@
+@@ -749,7 +_,7 @@
  
      private int getTabY(CreativeModeTab p_260181_) {
          int i = 0;
@@ -236,7 +236,7 @@
              i -= 32;
          } else {
              i += this.imageHeight;
-@@ -775,8 +_,8 @@
+@@ -777,8 +_,8 @@
  
      protected void renderTabButton(GuiGraphics p_283590_, CreativeModeTab p_283489_) {
          boolean flag = p_283489_ == selectedTab;
@@ -247,7 +247,7 @@
          int j = this.leftPos + this.getTabX(p_283489_);
          int k = this.topPos - (flag1 ? 28 : -(this.imageHeight - 4));
          ResourceLocation[] aresourcelocation;
-@@ -786,6 +_,7 @@
+@@ -788,6 +_,7 @@
              aresourcelocation = flag ? SELECTED_BOTTOM_TABS : UNSELECTED_BOTTOM_TABS;
          }
  
@@ -255,7 +255,7 @@
          p_283590_.blitSprite(aresourcelocation[Mth.clamp(i, 0, aresourcelocation.length)], j, k, 26, 32);
          p_283590_.pose().pushPose();
          p_283590_.pose().translate(0.0F, 0.0F, 100.0F);
-@@ -828,6 +_,14 @@
+@@ -829,6 +_,14 @@
          }
      }
  
@@ -270,7 +270,7 @@
      @OnlyIn(Dist.CLIENT)
      static class CustomCreativeSlot extends Slot {
          public CustomCreativeSlot(Container p_98633_, int p_98634_, int p_98635_, int p_98636_) {
-@@ -1014,6 +_,22 @@
+@@ -1015,6 +_,22 @@
          @Override
          public boolean mayPickup(Player p_98665_) {
              return this.target.mayPickup(p_98665_);

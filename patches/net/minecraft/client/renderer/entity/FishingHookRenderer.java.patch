@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/FishingHookRenderer.java
 +++ b/net/minecraft/client/renderer/entity/FishingHookRenderer.java
-@@ -49,7 +_,7 @@
+@@ -45,7 +_,7 @@
              p_114708_.popPose();
              int i = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
              ItemStack itemstack = player.getMainHandItem();

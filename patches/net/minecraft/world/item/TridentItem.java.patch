@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/item/TridentItem.java
 +++ b/net/minecraft/world/item/TridentItem.java
-@@ -151,4 +_,9 @@
-     public int getEnchantmentValue() {
-         return 1;
+@@ -161,4 +_,9 @@
+         throwntrident.pickup = AbstractArrow.Pickup.ALLOWED;
+         return throwntrident;
      }
 +
 +    @Override

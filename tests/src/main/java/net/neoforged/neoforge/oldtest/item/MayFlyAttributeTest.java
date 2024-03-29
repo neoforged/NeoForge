@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.item;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -36,7 +37,7 @@ public class MayFlyAttributeTest {
     protected static final String MODID = "may_fly_attribute_item";
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final AttributeModifier MODIFIER = new AttributeModifier(MODID, 1D, AttributeModifier.Operation.ADDITION);
+    private static final AttributeModifier MODIFIER = new AttributeModifier(MODID, 1D, AttributeModifier.Operation.ADD_VALUE);
 
     public MayFlyAttributeTest(IEventBus modEventBus) {
         ITEMS.register(modEventBus);
@@ -58,9 +59,9 @@ public class MayFlyAttributeTest {
         }
 
         @Override
-        public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-            return ImmutableMultimap.<Attribute, AttributeModifier>builder()
-                    .put(NeoForgeMod.CREATIVE_FLIGHT.value(), MODIFIER)
+        public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+            return ImmutableMultimap.<Holder<Attribute>, AttributeModifier>builder()
+                    .put(NeoForgeMod.CREATIVE_FLIGHT, MODIFIER)
                     .build();
         }
     }

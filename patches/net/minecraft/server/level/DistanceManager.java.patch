@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/DistanceManager.java
 +++ b/net/minecraft/server/level/DistanceManager.java
-@@ -55,6 +_,8 @@
+@@ -54,6 +_,8 @@
      private long ticketTickCounter;
      private int simulationDistance = 10;
  
@@ -9,7 +9,7 @@
      protected DistanceManager(Executor p_140774_, Executor p_140775_) {
          ProcessorHandle<Runnable> processorhandle = ProcessorHandle.of("player ticket throttler", p_140775_::execute);
          ChunkTaskPriorityQueueSorter chunktaskpriorityqueuesorter = new ChunkTaskPriorityQueueSorter(ImmutableList.of(processorhandle), p_140774_, 4);
-@@ -152,6 +_,10 @@
+@@ -151,6 +_,10 @@
          if (p_140786_.getTicketLevel() < i) {
              this.ticketTracker.update(p_140785_, p_140786_.getTicketLevel(), true);
          }
@@ -20,7 +20,7 @@
      }
  
      void removeTicket(long p_140819_, Ticket<?> p_140820_) {
-@@ -164,6 +_,13 @@
+@@ -163,6 +_,13 @@
          }
  
          this.ticketTracker.update(p_140819_, getTicketLevelAt(sortedarrayset), false);
@@ -34,7 +34,7 @@
      }
  
      public <T> void addTicket(TicketType<T> p_140793_, ChunkPos p_140794_, int p_140795_, T p_140796_) {
-@@ -176,14 +_,20 @@
+@@ -175,14 +_,20 @@
      }
  
      public <T> void addRegionTicket(TicketType<T> p_140841_, ChunkPos p_140842_, int p_140843_, T p_140844_) {
@@ -57,7 +57,7 @@
          long i = p_140851_.toLong();
          this.removeTicket(i, ticket);
          this.tickingTicketsTracker.removeTicket(i, ticket);
-@@ -267,6 +_,11 @@
+@@ -266,6 +_,11 @@
  
      public String getDebugStatus() {
          return this.ticketThrottler.getDebugStatus();

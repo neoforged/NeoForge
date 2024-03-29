@@ -30,37 +30,12 @@ public class ItemHandlerHelper {
         return stack;
     }
 
+    @Deprecated(forRemoval = true, since = "1.20.5")
     public static boolean canItemStacksStack(ItemStack a, ItemStack b) {
-        if (a.isEmpty() || !ItemStack.isSameItem(a, b) || a.hasTag() != b.hasTag())
-            return false;
-
-        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areAttachmentsCompatible(b);
+        return ItemStack.isSameItemSameComponents(a, b);
     }
 
-    /**
-     * A relaxed version of canItemStacksStack that stacks itemstacks with different metadata if they don't have subtypes.
-     * This usually only applies when players pick up items.
-     */
-    public static boolean canItemStacksStackRelaxed(ItemStack a, ItemStack b) {
-        if (a.isEmpty() || b.isEmpty() || a.getItem() != b.getItem())
-            return false;
-
-        if (!a.isStackable())
-            return false;
-
-        // Metadata value only matters when the item has subtypes
-        // Vanilla stacks non-subtype items with different metadata together
-        // TODO Item subtypes, is this still necessary?
-        /* e.g. a stick with metadata 0 and a stick with metadata 1 stack
-        if (a.getHasSubtypes() && a.getMetadata() != b.getMetadata())
-            return false;
-        */
-        if (a.hasTag() != b.hasTag())
-            return false;
-
-        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areAttachmentsCompatible(b);
-    }
-
+    @Deprecated(forRemoval = true, since = "1.20.5")
     public static ItemStack copyStackWithSize(ItemStack itemStack, int size) {
         if (size == 0)
             return ItemStack.EMPTY;
@@ -88,7 +63,7 @@ public class ItemHandlerHelper {
         // go through the inventory and try to fill up already existing items
         for (int i = 0; i < sizeInventory; i++) {
             ItemStack slot = inventory.getStackInSlot(i);
-            if (canItemStacksStackRelaxed(slot, stack)) {
+            if (canItemStacksStack(slot, stack)) {
                 stack = inventory.insertItem(i, stack, simulate);
 
                 if (stack.isEmpty()) {

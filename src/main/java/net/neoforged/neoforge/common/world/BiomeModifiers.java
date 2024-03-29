@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.world;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +55,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.ADD_FEATURES_BIOME_MODIFIER_TYPE.get();
         }
     }
@@ -99,7 +99,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.REMOVE_FEATURES_BIOME_MODIFIER_TYPE.get();
         }
     }
@@ -169,7 +169,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.ADD_SPAWNS_BIOME_MODIFIER_TYPE.get();
         }
     }
@@ -202,7 +202,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.REMOVE_SPAWNS_BIOME_MODIFIER_TYPE.get();
         }
     }
@@ -234,7 +234,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.ADD_CARVERS_BIOME_MODIFIER_TYPE.get();
         }
     }
@@ -278,7 +278,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.REMOVE_CARVERS_BIOME_MODIFIER_TYPE.get();
         }
     }
@@ -315,7 +315,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.ADD_SPAWN_COSTS_BIOME_MODIFIER_TYPE.get();
         }
     }
@@ -347,7 +347,7 @@ public final class BiomeModifiers {
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec() {
+        public MapCodec<? extends BiomeModifier> codec() {
             return NeoForgeMod.REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE.get();
         }
     }

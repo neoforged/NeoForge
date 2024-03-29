@@ -7,7 +7,6 @@ package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.ExtraCodecs;
 
 /**
  * Data map value for {@linkplain NeoForgeDataMaps#VIBRATION_FREQUENCIES vibration frequencies}.
@@ -17,7 +16,7 @@ import net.minecraft.util.ExtraCodecs;
 public record VibrationFrequency(int frequency) {
     public static final Codec<VibrationFrequency> FREQUENCY_CODEC = Codec.intRange(1, 15)
             .xmap(VibrationFrequency::new, VibrationFrequency::frequency);
-    public static final Codec<VibrationFrequency> CODEC = ExtraCodecs.withAlternative(
+    public static final Codec<VibrationFrequency> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(in -> in.group(
                     Codec.intRange(1, 15).fieldOf("frequency").forGetter(VibrationFrequency::frequency)).apply(in, VibrationFrequency::new)),
             FREQUENCY_CODEC);

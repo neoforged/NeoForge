@@ -1,6 +1,35 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -34,15 +_,35 @@
+@@ -29,22 +_,62 @@
+ 
+ public class Ingredient implements Predicate<ItemStack> {
+     public static final Ingredient EMPTY = new Ingredient(Stream.empty());
+-    public static final StreamCodec<RegistryFriendlyByteBuf, Ingredient> CONTENTS_STREAM_CODEC = ItemStack.LIST_STREAM_CODEC
+-        .map(p_319730_ -> fromValues(p_319730_.stream().map(Ingredient.ItemValue::new)), p_319731_ -> Arrays.asList(p_319731_.getItems()));
++    public static final StreamCodec<RegistryFriendlyByteBuf, Ingredient> CONTENTS_STREAM_CODEC = new StreamCodec<>() {
++        private static final StreamCodec<RegistryFriendlyByteBuf, Ingredient> CODEC_STREAM_CODEC = net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.lazy(() -> net.minecraft.network.codec.ByteBufCodecs.fromCodecWithRegistries(CODEC));
++
++        @Override
++        public void encode(RegistryFriendlyByteBuf buf, Ingredient ingredient) {
++            if (ingredient.synchronizeWithContents()) {
++                ItemStack.LIST_STREAM_CODEC.encode(buf, Arrays.asList(ingredient.getItems()));
++            } else {
++                buf.writeVarInt(-1);
++                CODEC_STREAM_CODEC.encode(buf, ingredient);
++            }
++        }
++
++        @Override
++        public Ingredient decode(RegistryFriendlyByteBuf buf) {
++            var size = buf.readVarInt();
++            if (size == -1) {
++                return CODEC_STREAM_CODEC.decode(buf);
++            }
++            return fromValues(Stream.generate(() -> ItemStack.STREAM_CODEC.decode(buf)).limit(size).map(Ingredient.ItemValue::new));
++        }
++    };
+     public final Ingredient.Value[] values;
+     @Nullable
      private ItemStack[] itemStacks;
      @Nullable
      private IntList stackingIds;
@@ -39,7 +68,7 @@
      }
  
      public ItemStack[] getItems() {
-@@ -63,7 +_,7 @@
+@@ -65,7 +_,7 @@
              return p_43914_.isEmpty();
          } else {
              for(ItemStack itemstack : this.getItems()) {
@@ -48,7 +77,7 @@
                      return true;
                  }
              }
-@@ -72,6 +_,10 @@
+@@ -74,6 +_,10 @@
          }
      }
  
@@ -59,25 +88,7 @@
      public IntList getStackingIds() {
          if (this.stackingIds == null) {
              ItemStack[] aitemstack = this.getItems();
-@@ -88,11 +_,24 @@
-     }
- 
-     public final void toNetwork(FriendlyByteBuf p_43924_) {
--        p_43924_.writeCollection(Arrays.asList(this.getItems()), FriendlyByteBuf::writeItem);
-+        if (synchronizeWithContents()) {
-+            p_43924_.writeCollection(Arrays.asList(this.getItems()), FriendlyByteBuf::writeItem);
-+        }
-+        else {
-+            p_43924_.writeVarInt(-1);
-+            p_43924_.writeWithCodec(net.minecraft.nbt.NbtOps.INSTANCE, CODEC, this);
-+        }
-+    }
-+
-+    /**
-+     * {@return if {@code true}, this ingredient will be synchronized using its contents, as in vanilla, otherwise it will be synchronized via the {@link #codec(boolean) codec}}
-+     */
-+    public boolean synchronizeWithContents() {
-+        return true;
+@@ -90,7 +_,7 @@
      }
  
      public boolean isEmpty() {
@@ -86,7 +97,7 @@
      }
  
      @Override
-@@ -100,6 +_,10 @@
+@@ -98,6 +_,17 @@
          return p_301003_ instanceof Ingredient ingredient ? Arrays.equals((Object[])this.values, (Object[])ingredient.values) : false;
      }
  
@@ -94,33 +105,17 @@
 +        return true;
 +    }
 +
++    /**
++     * {@return if {@code true}, this ingredient will be synchronized using its contents, as in vanilla, otherwise it will be synchronized via the {@link #codec(boolean) codec}}
++     */
++    public boolean synchronizeWithContents() {
++        return true;
++    }
++
      public static Ingredient fromValues(Stream<? extends Ingredient.Value> p_43939_) {
          Ingredient ingredient = new Ingredient(p_43939_);
          return ingredient.isEmpty() ? EMPTY : ingredient;
-@@ -125,11 +_,21 @@
-         return fromValues(Stream.of(new Ingredient.TagValue(p_204133_)));
-     }
- 
-+    public static Ingredient fromJson(com.google.gson.JsonElement element, boolean nonEmpty) {
-+        Codec<Ingredient> codec = nonEmpty ? CODEC : CODEC_NONEMPTY;
-+        return net.minecraft.Util.getOrThrow(codec.parse(com.mojang.serialization.JsonOps.INSTANCE, element), IllegalStateException::new);
-+    }
-+
-     public static Ingredient fromNetwork(FriendlyByteBuf p_43941_) {
--        return fromValues(p_43941_.<ItemStack>readList(FriendlyByteBuf::readItem).stream().map(Ingredient.ItemValue::new));
-+        var size = p_43941_.readVarInt();
-+        if (size == -1) {
-+            return p_43941_.readWithCodecTrusted(net.minecraft.nbt.NbtOps.INSTANCE, CODEC);
-+        }
-+        return new Ingredient(Stream.generate(() -> new Ingredient.ItemValue(p_43941_.readItem())).limit(size));
-     }
- 
-     private static Codec<Ingredient> codec(boolean p_301074_) {
-+        //PATCH: 1.20.2: Wrap in dispatch codec with fallback.
-         Codec<Ingredient.Value[]> codec = Codec.list(Ingredient.Value.CODEC)
-             .comapFlatMap(
-                 p_300810_ -> !p_301074_ && p_300810_.size() < 1
-@@ -152,7 +_,11 @@
+@@ -146,7 +_,11 @@
              );
      }
  
@@ -131,9 +126,9 @@
 +        }
 +
          static final Codec<Ingredient.ItemValue> CODEC = RecordCodecBuilder.create(
-             p_311727_ -> p_311727_.group(ItemStack.SINGLE_ITEM_CODEC.fieldOf("item").forGetter(p_300919_ -> p_300919_.item))
-                     .apply(p_311727_, Ingredient.ItemValue::new)
-@@ -164,7 +_,7 @@
+             p_330109_ -> p_330109_.group(ItemStack.SIMPLE_ITEM_CODEC.fieldOf("item").forGetter(p_300919_ -> p_300919_.item))
+                     .apply(p_330109_, Ingredient.ItemValue::new)
+@@ -158,7 +_,7 @@
                  return false;
              } else {
                  Ingredient.ItemValue ingredient$itemvalue = (Ingredient.ItemValue)p_301316_;
@@ -142,7 +137,7 @@
              }
          }
  
-@@ -172,6 +_,11 @@
+@@ -166,6 +_,11 @@
          public Collection<ItemStack> getItems() {
              return Collections.singleton(this.item);
          }
@@ -154,17 +149,19 @@
      }
  
      public static record TagValue(TagKey<Item> tag) implements Ingredient.Value {
-@@ -193,6 +_,9 @@
+@@ -187,6 +_,11 @@
                  list.add(new ItemStack(holder));
              }
  
-+            if (list.size() == 0) {
-+                list.add(new ItemStack(net.minecraft.world.level.block.Blocks.BARRIER).setHoverName(net.minecraft.network.chat.Component.literal("Empty Tag: " + this.tag.location())));
++            if (list.isEmpty()) {
++                net.minecraft.world.item.ItemStack itemStack = new net.minecraft.world.item.ItemStack(net.minecraft.world.level.block.Blocks.BARRIER);
++                itemStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal("Empty Tag: " + this.tag.location()));
++                list.add(itemStack);
 +            }
              return list;
          }
      }
-@@ -210,5 +_,9 @@
+@@ -204,5 +_,9 @@
              });
  
          Collection<ItemStack> getItems();

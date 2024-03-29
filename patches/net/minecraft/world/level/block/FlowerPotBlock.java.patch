@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -35,6 +_,7 @@
+@@ -36,6 +_,7 @@
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      public static final float AABB_SIZE = 3.0F;
      protected static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
@@ -8,7 +8,7 @@
      private final Block potted;
  
      @Override
-@@ -42,10 +_,31 @@
+@@ -43,10 +_,31 @@
          return CODEC;
      }
  
@@ -43,25 +43,25 @@
      }
  
      @Override
-@@ -62,7 +_,7 @@
-     public InteractionResult use(BlockState p_53540_, Level p_53541_, BlockPos p_53542_, Player p_53543_, InteractionHand p_53544_, BlockHitResult p_53545_) {
-         ItemStack itemstack = p_53543_.getItemInHand(p_53544_);
-         Item item = itemstack.getItem();
--        BlockState blockstate = (item instanceof BlockItem ? POTTED_BY_CONTENT.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR)
-+        BlockState blockstate = (item instanceof BlockItem ? getEmptyPot().fullPots.getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(((BlockItem)item).getBlock()), () -> Blocks.AIR).get() : Blocks.AIR)
+@@ -59,7 +_,7 @@
+         ItemStack p_316610_, BlockState p_316240_, Level p_316456_, BlockPos p_316502_, Player p_316491_, InteractionHand p_316444_, BlockHitResult p_316826_
+     ) {
+         Item item = p_316610_.getItem();
+-        BlockState blockstate = (item instanceof BlockItem blockitem ? POTTED_BY_CONTENT.getOrDefault(blockitem.getBlock(), Blocks.AIR) : Blocks.AIR)
++        BlockState blockstate = (item instanceof BlockItem blockitem ? getEmptyPot().fullPots.getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(blockitem.getBlock()), () -> Blocks.AIR).get() : Blocks.AIR)
              .defaultBlockState();
-         boolean flag = blockstate.is(Blocks.AIR);
-         boolean flag1 = this.isEmpty();
-@@ -81,7 +_,7 @@
-                     p_53543_.drop(itemstack1, false);
-                 }
- 
--                p_53541_.setBlock(p_53542_, Blocks.FLOWER_POT.defaultBlockState(), 3);
-+                p_53541_.setBlock(p_53542_, getEmptyPot().defaultBlockState(), 3);
+         if (blockstate.isAir()) {
+             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+@@ -84,7 +_,7 @@
+                 p_316338_.drop(itemstack, false);
              }
  
-             p_53541_.gameEvent(p_53543_, GameEvent.BLOCK_CHANGE, p_53542_);
-@@ -108,11 +_,32 @@
+-            p_316655_.setBlock(p_316654_, Blocks.FLOWER_POT.defaultBlockState(), 3);
++            p_316655_.setBlock(p_316654_, getEmptyPot().defaultBlockState(), 3);
+             p_316655_.gameEvent(p_316338_, GameEvent.BLOCK_CHANGE, p_316654_);
+             return InteractionResult.sidedSuccess(p_316655_.isClientSide);
+         }
+@@ -107,11 +_,32 @@
      }
  
      public Block getPotted() {
@@ -70,7 +70,7 @@
      }
  
      @Override
-     public boolean isPathfindable(BlockState p_53535_, BlockGetter p_53536_, BlockPos p_53537_, PathComputationType p_53538_) {
+     protected boolean isPathfindable(BlockState p_53535_, PathComputationType p_53538_) {
          return false;
      }
 +

@@ -10,7 +10,7 @@
                              int i3 = clickaction == ClickAction.PRIMARY ? itemstack10.getCount() : 1;
 @@ -609,14 +_,15 @@
                  ItemStack itemstack = slot.getItem();
-                 if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(p_38904_, itemstack)) {
+                 if (!itemstack.isEmpty() && ItemStack.isSameItemSameComponents(p_38904_, itemstack)) {
                      int j = itemstack.getCount() + p_38904_.getCount();
 -                    if (j <= p_38904_.getMaxStackSize()) {
 +                    int maxSize = Math.min(slot.getMaxStackSize(), p_38904_.getMaxStackSize());
@@ -28,12 +28,3 @@
                          slot.setChanged();
                          flag = true;
                      }
-@@ -703,7 +_,7 @@
-         return switch(p_279288_) {
-             case 0 -> Mth.floor((float)p_279172_.getCount() / (float)p_279393_.size());
-             case 1 -> 1;
--            case 2 -> p_279172_.getItem().getMaxStackSize();
-+            case 2 -> p_279172_.getMaxStackSize();
-             default -> p_279172_.getCount();
-         };
-     }

@@ -58,7 +58,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
 
     private static final DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = (source, stack) -> {
         Direction face = source.state().getValue(DispenserBlock.FACING);
-        EntityType<?> type = ((SpawnEggItem) stack.getItem()).getType(stack.getTag());
+        EntityType<?> type = ((SpawnEggItem) stack.getItem()).getType(stack);
 
         try {
             type.spawn(source.level(), stack, null, source.pos().relative(face), MobSpawnType.DISPENSER, face != Direction.UP, false);

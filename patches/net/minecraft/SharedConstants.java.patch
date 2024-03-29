@@ -1,8 +1,8 @@
 --- a/net/minecraft/SharedConstants.java
 +++ b/net/minecraft/SharedConstants.java
-@@ -122,7 +_,8 @@
-     public static final long MAXIMUM_TICK_TIME_NANOS = Duration.ofMillis(300L).toNanos();
+@@ -123,7 +_,8 @@
      public static final boolean USE_WORKFLOWS_HOOKS = false;
+     public static final boolean USE_DEVONLY = false;
      public static boolean CHECK_DATA_FIXER_SCHEMA = true;
 -    public static boolean IS_RUNNING_IN_IDE;
 +    public static boolean IS_RUNNING_IN_IDE = !net.neoforged.fml.loading.FMLLoader.isProduction();
@@ -10,7 +10,7 @@
      public static Set<TypeReference> DATA_FIX_TYPES_TO_OPTIMIZE = Set.of();
      public static final int WORLD_RESOLUTION = 16;
      public static final int MAX_CHAT_LENGTH = 256;
-@@ -204,6 +_,7 @@
+@@ -185,6 +_,7 @@
      }
  
      static {

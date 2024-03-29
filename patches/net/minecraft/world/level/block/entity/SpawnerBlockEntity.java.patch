@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/SpawnerBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SpawnerBlockEntity.java
-@@ -29,6 +_,8 @@
+@@ -30,6 +_,8 @@
                  p_155771_.sendBlockUpdated(p_155772_, blockstate, blockstate, 4);
              }
          }

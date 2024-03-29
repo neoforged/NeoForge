@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/grower/TreeGrower.java
 +++ b/net/minecraft/world/level/block/grower/TreeGrower.java
-@@ -131,6 +_,9 @@
+@@ -130,6 +_,9 @@
                  .registryOrThrow(Registries.CONFIGURED_FEATURE)
                  .getHolder(resourcekey)
                  .orElse(null);
@@ -10,7 +10,7 @@
              if (holder != null) {
                  for(int i = 0; i >= -1; --i) {
                      for(int j = 0; j >= -1; --j) {
-@@ -164,6 +_,9 @@
+@@ -163,6 +_,9 @@
                  .registryOrThrow(Registries.CONFIGURED_FEATURE)
                  .getHolder(resourcekey1)
                  .orElse(null);
