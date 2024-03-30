@@ -14,7 +14,6 @@ import org.jetbrains.annotations.ApiStatus;
  * Represents the input to the negotiation process for a single network payload type.
  *
  * @param id       The id of the payload type.
- * @param modId    The id of the mod that registered the payload.
  * @param version  The version of the payload type.
  * @param flow     The flow of the payload type.
  * @param optional Whether the payload type is optional.
@@ -22,7 +21,6 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public record NegotiableNetworkComponent(
         ResourceLocation id,
-        Optional<String> modId,
         Optional<String> version,
         Optional<PacketFlow> flow,
         boolean optional) {}

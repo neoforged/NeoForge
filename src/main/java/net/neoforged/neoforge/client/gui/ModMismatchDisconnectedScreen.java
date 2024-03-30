@@ -38,7 +38,6 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.I18nExtension;
-import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
@@ -61,9 +60,8 @@ public class ModMismatchDisconnectedScreen extends Screen {
         this.modsDir = FMLPaths.MODSDIR.get();
         this.logFile = FMLPaths.GAMEDIR.get().resolve(Paths.get("logs", "latest.log"));
         this.mismatchedChannelData = mismatchedChannelData;
-        this.mismatchedChannelData.replaceAll((id, r) -> { //Enhance the reason components provided by the server with the info of which mod owns the given channel, if such a mod can be found on the client
-            String owningModId = NetworkRegistry.getInstance().getOwningModId(id);
-            Optional<String> modDisplayName = ModList.get().getModContainerById(owningModId).map(mod -> mod.getModInfo().getDisplayName());
+        this.mismatchedChannelData.replaceAll((id, r) -> { //Enhance the reason components provided by the server with the info of which mod likely owns the given channel (based on the channel's namespace), if such a mod can be found on the client
+            Optional<String> modDisplayName = ModList.get().getModContainerById(id.getNamespace()).map(mod -> mod.getModInfo().getDisplayName());
             return modDisplayName.isPresent() && !(r.getContents() instanceof TranslatableContents c && c.getKey().equals("neoforge.network.negotiation.failure.mod")) ? Component.translatable("neoforge.network.negotiation.failure.mod", modDisplayName.get(), r) : r;
         });
         this.mismatchedChannelData.forEach((id, r) -> LOGGER.warn("Channel [{}] failed to connect: {}", id, r.getString()));
@@ -144,8 +142,8 @@ public class ModMismatchDisconnectedScreen extends Screen {
 
         /**
          * Iterates over the raw channel mismatch data and merges entries with the same reason component into one channel mismatch entry each.
-         * Due to the reason component always containing the display name of the mod that owns the associated channel, this step effectively groups channels by their owning mod,
-         * so users can see more easily which mods are the culprits of the negotiation failure that caused this screen to appear.
+         * Due to the reason component always containing the display name of the mod that likely owns the associated channel, this step effectively groups channels by their most likely owning mod candidate,
+         * so users can see more easily which mods might be the culprits of the negotiation failure that caused this screen to appear.
          *
          * @param mismatchedChannelData The raw mismatched channel data received from the server, which might contain entries with duplicate channel mismatch reasons
          * @return A map containing channel mismatch entries with unique reasons. Each channel mismatch entry contains the list of all channels that share the same reason component,

@@ -56,7 +56,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPlayPayloadHandler<T> handler) {
         play(
                 id, new PlayRegistration<>(
-                        reader, handler, modId, version, Optional.empty(), optional));
+                        reader, handler, id, version, Optional.empty(), optional));
         return this;
     }
 
@@ -64,7 +64,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IConfigurationPayloadHandler<T> handler) {
         configuration(
                 id, new ConfigurationRegistration<>(
-                        reader, handler, modId, version, Optional.empty(), optional));
+                        reader, handler, id, version, Optional.empty(), optional));
         return this;
     }
 
@@ -75,7 +75,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         final PlayPayloadHandler<T> innerHandler = builder.create();
         play(
                 id, new PlayRegistration<>(
-                        reader, innerHandler, modId, version, innerHandler.flow(), optional));
+                        reader, innerHandler, id, version, innerHandler.flow(), optional));
         return this;
     }
 
@@ -86,7 +86,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         final ConfigurationPayloadHandler<T> innerHandler = builder.create();
         configuration(
                 id, new ConfigurationRegistration<>(
-                        reader, innerHandler, modId, version, innerHandler.flow(), optional));
+                        reader, innerHandler, id, version, innerHandler.flow(), optional));
         return this;
     }
 
@@ -118,6 +118,10 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
 
         if (payloads.containsKey(id)) {
             throw new RegistrationFailedException(id, modId, RegistrationFailedException.Reason.DUPLICATE_ID);
+        }
+
+        if (!id.getNamespace().equals(modId)) {
+            throw new RegistrationFailedException(id, modId, RegistrationFailedException.Reason.INVALID_NAMESPACE);
         }
     }
 

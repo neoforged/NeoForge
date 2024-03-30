@@ -464,10 +464,10 @@ public class NetworkRegistry {
     public void onModdedConnectionDetectedAtServer(ServerConfigurationPacketListener sender, Set<ModdedNetworkQueryComponent> configuration, Set<ModdedNetworkQueryComponent> play) {
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
                 knownConfigurationRegistrations.entrySet().stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), Optional.of(entry.getValue().modId()), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
                         .toList(),
                 configuration.stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.id(), Optional.empty(), entry.version(), entry.flow(), entry.optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.id(), entry.version(), entry.flow(), entry.optional()))
                         .toList());
 
         sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
@@ -486,10 +486,10 @@ public class NetworkRegistry {
 
         final NegotiationResult playNegotiationResult = NetworkComponentNegotiator.negotiate(
                 knownPlayRegistrations.entrySet().stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), Optional.of(entry.getValue().modId()), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
                         .toList(),
                 play.stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.id(), Optional.empty(), entry.version(), entry.flow(), entry.optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.id(), entry.version(), entry.flow(), entry.optional()))
                         .toList());
 
         //Negotiation failed. Disconnect the client.
@@ -533,7 +533,7 @@ public class NetworkRegistry {
 
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
                 knownConfigurationRegistrations.entrySet().stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), Optional.of(entry.getValue().modId()), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
                         .toList(),
                 List.of());
 
@@ -550,7 +550,7 @@ public class NetworkRegistry {
 
         final NegotiationResult playNegotiationResult = NetworkComponentNegotiator.negotiate(
                 knownPlayRegistrations.entrySet().stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), Optional.of(entry.getValue().modId()), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
                         .toList(),
                 List.of());
 
@@ -795,7 +795,7 @@ public class NetworkRegistry {
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
                 List.of(),
                 knownConfigurationRegistrations.entrySet().stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), Optional.of(entry.getValue().modId()), entry.getValue().flow(), entry.getValue().optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
                         .toList());
 
         //Because we are in vanilla land, no matter what we are not able to support any custom channels.
@@ -812,7 +812,7 @@ public class NetworkRegistry {
         final NegotiationResult playNegotiationResult = NetworkComponentNegotiator.negotiate(
                 List.of(),
                 knownPlayRegistrations.entrySet().stream()
-                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), Optional.of(entry.getValue().modId()), entry.getValue().flow(), entry.getValue().optional()))
+                        .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
                         .toList());
 
         //Negotiation failed. Disconnect the client.
@@ -886,24 +886,6 @@ public class NetworkRegistry {
         }
 
         return getKnownAdHocChannelsOfOtherEnd(connection).contains(payloadId);
-    }
-
-    /**
-     * Returns the id of the mod that registered the given payload. This information is not sent over the network, and can thus
-     * only be retrieved if the payload was registered on the same logical side as this method is called from.
-     *
-     * @param payloadId The payload id to check.
-     * @return The id of the mod that registered the payload with the given id, or an empty string if the payload wasn't registered
-     *         by a mod on the same logical side as this method is called from.
-     */
-    public String getOwningModId(ResourceLocation payloadId) {
-        String owningModId = "";
-        if (knownConfigurationRegistrations.containsKey(payloadId))
-            owningModId = knownConfigurationRegistrations.get(payloadId).modId();
-        else if (knownPlayRegistrations.containsKey(payloadId))
-            owningModId = knownPlayRegistrations.get(payloadId).modId();
-
-        return owningModId;
     }
 
     /**
