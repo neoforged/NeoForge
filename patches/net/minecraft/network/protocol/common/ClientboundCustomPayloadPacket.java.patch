@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
-@@ -53,10 +_,43 @@
+@@ -53,10 +_,47 @@
          .put(WorldGenAttemptDebugPayload.ID, WorldGenAttemptDebugPayload::new)
          .build();
  
@@ -33,8 +33,12 @@
 +     * @return The payload
 +     */
 +    private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
++        try {
 +        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getReader(p_294367_, context, protocol, KNOWN_TYPES);
-+        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
++        return (CustomPacketPayload) (reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
++        } catch (RuntimeException e) {
++            throw new RuntimeException("Failed reading custom payload " + p_294367_ + ": " + e, e); // Make it easier to debug which mod payload failed to be decoded
++        }
 +    }
 +
 +    /**
@@ -44,3 +48,15 @@
      private static CustomPacketPayload readPayload(ResourceLocation p_294802_, FriendlyByteBuf p_294886_) {
          FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = KNOWN_TYPES.get(p_294802_);
          return (CustomPacketPayload)(reader != null ? reader.apply(p_294886_) : readUnknownPayload(p_294802_, p_294886_));
+@@ -75,7 +_,11 @@
+     @Override
+     public void write(FriendlyByteBuf p_295630_) {
+         p_295630_.writeResourceLocation(this.payload.id());
++        try {
+         this.payload.write(p_295630_);
++        } catch (RuntimeException e) {
++            throw new RuntimeException("Failed writing custom payload " + this.payload.id() + ": " + e, e); // Make it easier to debug which mod payload failed to be encoded
++        }
+     }
+ 
+     public void handle(ClientCommonPacketListener p_295761_) {
