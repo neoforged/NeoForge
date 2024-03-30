@@ -1,12 +1,13 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -34,15 +_,35 @@
+@@ -34,15 +_,36 @@
      private ItemStack[] itemStacks;
      @Nullable
      private IntList stackingIds;
 -    public static final Codec<Ingredient> CODEC = codec(true);
 -    public static final Codec<Ingredient> CODEC_NONEMPTY = codec(false);
 +    private final java.util.function.Supplier<? extends net.neoforged.neoforge.common.crafting.IngredientType<?>> type;
++    @Nullable private Boolean areAllStacksEmpty;
 +
 +    public static final Codec<Ingredient> VANILLA_CODEC = codec(true);
 +    public static final Codec<Ingredient> VANILLA_CODEC_NONEMPTY = codec(false);
@@ -59,7 +60,7 @@
      public IntList getStackingIds() {
          if (this.stackingIds == null) {
              ItemStack[] aitemstack = this.getItems();
-@@ -88,11 +_,24 @@
+@@ -88,11 +_,39 @@
      }
  
      public final void toNetwork(FriendlyByteBuf p_43924_) {
@@ -78,11 +79,26 @@
 +     */
 +    public boolean synchronizeWithContents() {
 +        return true;
++    }
++
++    private boolean areAllStacksEmpty() {
++        Boolean empty = this.areAllStacksEmpty;
++        if (empty == null) {
++            boolean allEmpty = true;
++            for (ItemStack stack : this.getItems()) {
++                if (!stack.isEmpty()) {
++                    allEmpty = false;
++                    break;
++                }
++            }
++            this.areAllStacksEmpty = empty = allEmpty;
++        }
++        return empty;
      }
  
      public boolean isEmpty() {
 -        return this.values.length == 0;
-+        return this.values.length == 0 || Arrays.stream(getItems()).allMatch(ItemStack::isEmpty);
++        return this.values.length == 0 || this.areAllStacksEmpty();
      }
  
      @Override
