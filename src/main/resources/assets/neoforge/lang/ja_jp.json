@@ -41,7 +41,7 @@
   "fml.menu.accessdenied.title": "サーバーアクセスが拒否されました",
   "fml.menu.accessdenied.message": "ファンシー Mod ローダーがこのサーバーに接続できませんでした\nサーバー {0} は改造されたアクセスを禁止しています",
   "fml.menu.backupfailed.title": "バックアップに失敗しました",
-  "fml.menu.backupfailed.message": "There was an error saving the archive {0}\nPlease fix the problem and try again",
+  "fml.menu.backupfailed.message": "アーカイブ {0}\nを保存する際にエラーが発生しました。問題を解決してもう一度やり直してください。",
   "fml.button.open.file": "{0} を開く",
   "fml.button.open.mods.folder": "Modフォルダを開く",
   "fml.button.continue.launch": "メインメニューに進む",
