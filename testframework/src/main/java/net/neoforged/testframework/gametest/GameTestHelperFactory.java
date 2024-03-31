@@ -1,14 +1,12 @@
 package net.neoforged.testframework.gametest;
 
+import java.lang.invoke.MethodType;
+import java.util.function.Function;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.neoforged.testframework.impl.ReflectionUtils;
 
-import java.lang.invoke.MethodType;
-import java.util.function.Function;
-
 public interface GameTestHelperFactory<T extends GameTestHelper> extends Function<GameTestInfo, T> {
-
     static <T extends GameTestHelper> GameTestHelperFactory<T> forType(Class<?> helperClass) {
         var constructor = ReflectionUtils.constructor(helperClass, MethodType.methodType(void.class, GameTestInfo.class));
 

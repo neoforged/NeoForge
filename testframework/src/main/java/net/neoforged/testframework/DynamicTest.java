@@ -98,7 +98,7 @@ public interface DynamicTest extends Test {
      * Registers a listener to run when the GameTest version of this test is run.
      *
      * @param helperType the type to use for the helper
-     * @param consumer the listener
+     * @param consumer   the listener
      */
     <T extends GameTestHelper> void onGameTest(Class<T> helperType, final Consumer<T> consumer);
 
