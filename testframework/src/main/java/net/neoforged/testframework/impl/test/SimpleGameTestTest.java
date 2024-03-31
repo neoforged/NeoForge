@@ -1,16 +1,12 @@
 package net.neoforged.testframework.impl.test;
 
+import java.util.function.Consumer;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.neoforged.testframework.TestFramework;
-import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTestData;
-import net.neoforged.testframework.gametest.GameTestHelperFactory;
-
-import java.util.function.Consumer;
 
 public class SimpleGameTestTest<T extends GameTestHelper> extends AbstractTest.Dynamic {
-
     private final Class<T> helperType;
     private final Consumer<T> function;
 
