@@ -100,7 +100,7 @@ public final class FrameworkCollectors {
                             return new MethodBasedGameTestTest(method, ExtendedGameTestHelper.class);
                         }
 
-                        return new MethodBasedGameTestTest(method, method.getParameterTypes()[0]);
+                        return new MethodBasedGameTestTest(method, (Class<? extends GameTestHelper>) method.getParameterTypes()[0]);
                     })).toList();
         }
 

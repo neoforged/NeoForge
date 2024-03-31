@@ -19,9 +19,9 @@ public class MethodBasedGameTestTest extends AbstractTest.Dynamic {
     private final Method method;
     private final Class<? extends GameTestHelper> helperType;
 
-    public MethodBasedGameTestTest(Method method, Class<?> helperType) {
+    public MethodBasedGameTestTest(Method method, Class<? extends GameTestHelper> helperType) {
         this.method = method;
-        this.helperType = (Class<? extends GameTestHelper>) helperType;
+        this.helperType = helperType;
 
         configureFrom(AnnotationHolder.method(method));
         this.visuals.description().add(Component.literal("GameTest-only"));
