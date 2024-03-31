@@ -194,21 +194,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         return getLevel().getCapability(cap, absolutePos(pos), context);
     }
 
-    @Nullable
-    public <T, C> T getCapability(BlockCapability<T, C> cap, BlockPos pos, @Nullable BlockState state, @Nullable BlockEntity blockEntity, C context) {
-        return getLevel().getCapability(cap, absolutePos(pos), state, blockEntity, context);
-    }
-
     public <T, C> T requireCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
         final var capability = getCapability(cap, pos, context);
-        if (capability == null) {
-            throw new GameTestAssertPosException("Expected capability " + cap + " but there was none", absolutePos(pos), pos, getTick());
-        }
-        return capability;
-    }
-
-    public <T, C> T requireCapability(BlockCapability<T, C> cap, BlockPos pos, @Nullable BlockState state, @Nullable BlockEntity blockEntity, C context) {
-        final var capability = getCapability(cap, pos, state, blockEntity, context);
         if (capability == null) {
             throw new GameTestAssertPosException("Expected capability " + cap + " but there was none", absolutePos(pos), pos, getTick());
         }
