@@ -55,8 +55,6 @@ import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-
 public class ExtendedGameTestHelper extends GameTestHelper {
     public ExtendedGameTestHelper(GameTestInfo info) {
         super(info);
@@ -190,7 +188,6 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     public <T extends BlockEntity> T requireBlockEntity(int x, int y, int z, Class<T> type) {
         return requireBlockEntity(new BlockPos(x, y, z), type);
     }
-
 
     @Nullable
     public <T, C> T getCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
