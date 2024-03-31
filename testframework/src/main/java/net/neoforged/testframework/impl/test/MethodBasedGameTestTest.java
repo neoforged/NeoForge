@@ -5,20 +5,26 @@
 
 package net.neoforged.testframework.impl.test;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTestHelperFactory;
 import net.neoforged.testframework.impl.ReflectionUtils;
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
 
 public class MethodBasedGameTestTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
     private final Method method;
+    private final Class<? extends GameTestHelper> helperType;
 
-    public MethodBasedGameTestTest(Method method) {
+    public MethodBasedGameTestTest(Method method, Class<?> helperType) {
         this.method = method;
+        this.helperType = (Class<? extends GameTestHelper>) helperType;
 
         configureFrom(AnnotationHolder.method(method));
         this.visuals.description().add(Component.literal("GameTest-only"));
@@ -32,7 +38,7 @@ public class MethodBasedGameTestTest extends AbstractTest.Dynamic {
 
         configureGameTest(method.getAnnotation(GameTest.class), method.getAnnotation(EmptyTemplate.class));
 
-        onGameTest(helper -> {
+        onGameTest(helperType, helper -> {
             try {
                 handle.invoke(helper);
             } catch (Throwable exception) {
