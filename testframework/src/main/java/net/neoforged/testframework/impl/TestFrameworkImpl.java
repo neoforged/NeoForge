@@ -51,6 +51,7 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.annotation.TestHolderGenerator;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.DynamicStructureTemplates;
@@ -67,6 +68,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 @ApiStatus.Internal
 @ParametersAreNonnullByDefault
@@ -262,6 +264,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         tests.addAll(FrameworkCollectors.Tests.forMethodsWithAnnotation(container, TestHolder.class));
         tests.addAll(FrameworkCollectors.Tests.forGameTestMethodsWithAnnotation(container, TestHolder.class));
         tests.addAll(FrameworkCollectors.Tests.forClassesWithAnnotation(container, TestHolder.class));
+        tests.addAll(FrameworkCollectors.Tests.forGeneratorMethodsWithAnnotation(container, TestHolderGenerator.class));
         return tests;
     }
 

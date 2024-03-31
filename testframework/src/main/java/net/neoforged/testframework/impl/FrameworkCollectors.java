@@ -97,6 +97,36 @@ public final class FrameworkCollectors {
                     .<Test>map(MethodBasedGameTestTest::new).toList();
         }
 
+        public static List<Test> forGeneratorMethodsWithAnnotation(ModContainer container, Class<? extends Annotation> annotation) {
+            return findMethodsWithAnnotation(container, SIDE_FILTER, annotation)
+                    .filter(method -> {
+                        if (!Modifier.isStatic(method.getModifiers())) {
+                            LogUtils.getLogger().warn("Attempted to register method-based gametest generator on non-static method: " + method);
+                            return false;
+                        }
+                        if (method.getParameterTypes().length != 0 || !Iterable.class.isAssignableFrom(method.getReturnType())) {
+                            LogUtils.getLogger().warn("Attempted to register method-based gametest generator with invalid signature: " + method);
+                            return false;
+                        }
+
+                        return true;
+                    }).<Test>mapMulti((method, downstream) -> {
+                        try {
+                            var iterable = (Iterable<?>) method.invoke(null);
+
+                            for (Object o : iterable) {
+                                if (!(o instanceof Test test)) {
+                                    LogUtils.getLogger().warn("Attempted to register method-based gametest generator with invalid return type: " + method);
+                                    continue;
+                                }
+                                downstream.accept(test);
+                            }
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).toList();
+        }
+
         public static List<Test> eventTestMethodsWithAnnotation(ModContainer container, Class<? extends Annotation> annotation) {
             return findMethodsWithAnnotation(container, SIDE_FILTER, annotation)
                     .filter(method -> method.getParameterTypes().length == 2 && Event.class.isAssignableFrom(method.getParameterTypes()[0]) && method.getParameterTypes()[1].isAssignableFrom(MethodBasedEventTest.class))
