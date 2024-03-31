@@ -11,7 +11,6 @@ import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
 import net.minecraft.Util;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
