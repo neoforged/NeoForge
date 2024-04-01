@@ -615,6 +615,7 @@ public class NeoForgeMod {
         ITEM_PREDICATE_CODECS.register(modEventBus);
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
+        GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);

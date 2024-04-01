@@ -49,6 +49,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
@@ -186,6 +187,19 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public <T extends BlockEntity> T requireBlockEntity(int x, int y, int z, Class<T> type) {
         return requireBlockEntity(new BlockPos(x, y, z), type);
+    }
+
+    @Nullable
+    public <T, C> T getCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
+        return getLevel().getCapability(cap, absolutePos(pos), context);
+    }
+
+    public <T, C> T requireCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
+        final var capability = getCapability(cap, pos, context);
+        if (capability == null) {
+            throw new GameTestAssertPosException("Expected capability " + cap + " but there was none", absolutePos(pos), pos, getTick());
+        }
+        return capability;
     }
 
     public <T> ParametrizedGameTestSequence<T> startSequence(Supplier<T> value) {
