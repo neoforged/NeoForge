@@ -141,8 +141,7 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
             if (!stacks.get(i).isEmpty()) {
                 CompoundTag itemTag = new CompoundTag();
                 itemTag.putInt("Slot", i);
-                stacks.get(i).save(provider, itemTag);
-                nbtTagList.add(itemTag);
+                nbtTagList.add(stacks.get(i).save(provider, itemTag));
             }
         }
         CompoundTag nbt = new CompoundTag();
