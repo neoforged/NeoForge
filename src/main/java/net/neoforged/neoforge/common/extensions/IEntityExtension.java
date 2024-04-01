@@ -24,6 +24,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.neoforge.attachment.AttachmentInternals;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -393,5 +395,16 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         if (this instanceof IEntityWithComplexSpawn) {
             bundleBuilder.accept(new AdvancedAddEntityPayload(self()));
         }
+    }
+
+    /**
+     * Copies the serialized attachments from another entity to this entity.
+     *
+     * @param other   the entity that attachments should be copied from
+     * @param isDeath if {@code true}, only attachments with {@link AttachmentType.Builder#copyOnDeath()} set are copied;
+     *                if {@code false}, all serializable attachments are copied.
+     */
+    default void copyAttachmentsFrom(Entity other, boolean isDeath) {
+        AttachmentInternals.copyEntityAttachments(self(), other, isDeath);
     }
 }

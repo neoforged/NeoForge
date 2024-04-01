@@ -7,8 +7,10 @@ package net.neoforged.neoforge.attachment;
 
 import java.util.function.Predicate;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -44,14 +46,21 @@ public final class AttachmentInternals {
         copyAttachments(provider, from, to, type -> true);
     }
 
+    /**
+     * Do not call directly, use {@link IEntityExtension#copyAttachmentsFrom(Entity, boolean)}.
+     */
+    public static void copyEntityAttachments(Entity from, Entity to, boolean isDeath) {
+        copyAttachments(from.registryAccess(), from, to, isDeath ? type -> type.copyOnDeath : type -> true);
+    }
+
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        copyAttachments(event.getEntity().registryAccess(), event.getOriginal(), event.getEntity(), event.isWasDeath() ? type -> type.copyOnDeath : type -> true);
+        event.getEntity().copyAttachmentsFrom(event.getOriginal(), event.isWasDeath());
     }
 
     @SubscribeEvent
     public static void onLivingConvert(LivingConversionEvent.Post event) {
-        copyAttachments(event.getEntity().registryAccess(), event.getEntity(), event.getOutcome(), type -> type.copyOnDeath);
+        event.getOutcome().copyAttachmentsFrom(event.getEntity(), true);
     }
 
     private AttachmentInternals() {}
