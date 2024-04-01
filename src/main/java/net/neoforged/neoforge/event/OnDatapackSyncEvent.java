@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event;
 
+import java.util.stream.Stream;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.neoforged.bus.api.Event;
@@ -30,6 +31,14 @@ public class OnDatapackSyncEvent extends Event {
      */
     public PlayerList getPlayerList() {
         return this.playerList;
+    }
+
+    /**
+     * @return A stream of players to sync datapacks to. If a player is specified,
+     *         the stream will only contain that player.
+     */
+    public Stream<ServerPlayer> getRelevantPlayers() {
+        return this.player == null ? this.playerList.getPlayers().stream() : Stream.of(this.player);
     }
 
     /**
