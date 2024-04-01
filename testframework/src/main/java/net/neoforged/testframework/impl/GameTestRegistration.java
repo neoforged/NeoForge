@@ -5,7 +5,6 @@
 
 package net.neoforged.testframework.impl;
 
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,15 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public final class GameTestRegistration {
-    public static final Method REGISTER_METHOD = LamdbaExceptionUtils.uncheck(() -> GameTestRegistration.class.getDeclaredMethod("register"));
+    public static final Method REGISTER_METHOD;
+
+    static {
+        try {
+            REGISTER_METHOD = GameTestRegistration.class.getDeclaredMethod("register");
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @GameTestGenerator
     public static List<TestFunction> register() {

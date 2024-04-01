@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,11 +73,13 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
 
         ImmutableList.Builder<CompletableFuture<?>> futuresBuilder = new ImmutableList.Builder<>();
 
-        toSerialize.forEach(LamdbaExceptionUtils.rethrowBiConsumer((name, lootModifier) -> {
+        for (var entry : toSerialize.entrySet()) {
+            var name = entry.getKey();
+            var lootModifier = entry.getValue();
             entries.add(new ResourceLocation(modid, name));
             Path modifierPath = modifierFolderPath.resolve(name + ".json");
             futuresBuilder.add(DataProvider.saveStable(cache, registries, IGlobalLootModifier.CONDITIONAL_CODEC, Optional.of(lootModifier), modifierPath));
-        }));
+        }
 
         JsonObject forgeJson = new JsonObject();
         forgeJson.addProperty("replace", this.replace);

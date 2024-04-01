@@ -83,7 +83,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
-import net.neoforged.fml.IExtensionPoint;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingContext;
@@ -612,8 +611,6 @@ public class NeoForgeMod {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
         modEventBus.register(NeoForgeConfig.class);
         NeoForgeRegistriesSetup.setup(modEventBus);
-        // Forge does not display problems when the remote is not matching.
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true));
         StartupMessageManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 
         NeoForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
