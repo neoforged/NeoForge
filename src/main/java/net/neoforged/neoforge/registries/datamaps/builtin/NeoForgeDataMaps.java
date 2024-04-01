@@ -14,6 +14,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -42,6 +43,9 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
             id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
+
+    public static final DataMapType<Block, Flattenable> FLATTENABLES = DataMapType.builder(
+            id("flattenables"), Registries.BLOCK, Flattenable.CODEC).synced(Flattenable.FLATTENABLE_CODEC, false).build();
 
     /**
      * The {@linkplain Item} data map that replaces {@link AbstractFurnaceBlockEntity#getFuel()}.
@@ -82,6 +86,9 @@ public class NeoForgeDataMaps {
     public static final DataMapType<VillagerProfession, RaidHeroGift> RAID_HERO_GIFTS = DataMapType.builder(
             id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
 
+    public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
+            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_VARIANT_CODEC, false).build();
+
     /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
      * <p>
@@ -105,6 +112,7 @@ public class NeoForgeDataMaps {
         event.register(FURNACE_FUELS);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
+        event.register(STRIPPABLES);
         event.register(VIBRATION_FREQUENCIES);
     }
 }

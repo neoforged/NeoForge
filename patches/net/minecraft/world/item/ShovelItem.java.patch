@@ -9,7 +9,7 @@
              BlockState blockstate2 = null;
              if (blockstate1 != null && level.getBlockState(blockpos.above()).isAir()) {
                  level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
-@@ -71,5 +_,15 @@
+@@ -71,5 +_,22 @@
                  return InteractionResult.PASS;
              }
          }
@@ -17,7 +17,14 @@
 +
 +    @org.jetbrains.annotations.Nullable
 +    public static BlockState getShovelPathingState(BlockState originalState) {
-+        return FLATTENABLES.get(originalState.getBlock());
++        BlockState blockState;
++        var flattenable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FLATTENABLES);
++        if (flattenable != null) {
++            blockState = flattenable.flattened().defaultBlockState();
++        } else {
++            blockState = FLATTENABLES.get(originalState.getBlock());
++        }
++        return blockState;
 +    }
 +
 +    @Override
