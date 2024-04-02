@@ -8,6 +8,7 @@ package net.neoforged.neoforge.fluids.capability.templates;
 import java.util.function.Predicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -60,14 +61,16 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     }
 
     public FluidTank readFromNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-        FluidStack fluid = FluidStack.parseOptional(lookupProvider, nbt);
-        setFluid(fluid);
+        if (nbt.contains("Fluid", Tag.TAG_COMPOUND)) {
+            fluid = FluidStack.parseOptional(lookupProvider, nbt.getCompound("Fluid"));
+        }
+
         return this;
     }
 
     public CompoundTag writeToNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
         if (!fluid.isEmpty()) {
-            fluid.save(lookupProvider, nbt);
+            nbt.put("Fluid", fluid.save(lookupProvider));
         }
 
         return nbt;
