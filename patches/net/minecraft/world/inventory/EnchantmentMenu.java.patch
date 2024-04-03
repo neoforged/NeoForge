@@ -41,7 +41,7 @@
                                      if (compoundtag != null) {
                                          itemstack2.setTag(compoundtag.copy());
                                      }
-+                                    net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack2);
++                                    net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack2);
          
                                      this.enchantSlots.setItem(0, itemstack2);
                                  }
