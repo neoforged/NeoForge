@@ -31,6 +31,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.internal.BrandingControl;
+import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
@@ -38,7 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientModLoader {
+public class ClientModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean loading;
     private static Minecraft mc;
@@ -53,7 +54,7 @@ public class ClientModLoader {
         ClientModLoader.mc = minecraft;
         LogicalSidedProvider.setClient(() -> minecraft);
         LanguageHook.loadBuiltinLanguages();
-        createRunnableWithCatch(() -> ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ImmediateWindowHandler::renderTick)).run();
+        createRunnableWithCatch(() -> begin(ImmediateWindowHandler::renderTick)).run();
         if (error == null) {
             ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES);
             DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getDataPackNames());
@@ -63,9 +64,9 @@ public class ClientModLoader {
     }
 
     private static CompletableFuture<Void> onResourceReload(final PreparableReloadListener.PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller prepareProfiler, final ProfilerFiller executeProfiler, final Executor asyncExecutor, final Executor syncExecutor) {
-        return CompletableFuture.runAsync(createRunnableWithCatch(() -> startModLoading(ModWorkManager.wrappedExecutor(syncExecutor), asyncExecutor)), ModWorkManager.parallelExecutor())
+        return CompletableFuture.runAsync(createRunnableWithCatch(() -> startModLoading(syncExecutor, asyncExecutor)), ModWorkManager.parallelExecutor())
                 .thenCompose(stage::wait)
-                .thenRunAsync(() -> finishModLoading(ModWorkManager.wrappedExecutor(syncExecutor), asyncExecutor), ModWorkManager.parallelExecutor());
+                .thenRunAsync(() -> finishModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor());
     }
 
     private static Runnable createRunnableWithCatch(Runnable r) {
@@ -79,12 +80,12 @@ public class ClientModLoader {
         };
     }
 
-    private static void startModLoading(ModWorkManager.DrivenExecutor syncExecutor, Executor parallelExecutor) {
-        createRunnableWithCatch(() -> ModLoader.get().loadMods(syncExecutor, parallelExecutor, ImmediateWindowHandler::renderTick)).run();
+    private static void startModLoading(Executor syncExecutor, Executor parallelExecutor) {
+        createRunnableWithCatch(() -> load(syncExecutor, parallelExecutor)).run();
     }
 
-    private static void finishModLoading(ModWorkManager.DrivenExecutor syncExecutor, Executor parallelExecutor) {
-        createRunnableWithCatch(() -> ModLoader.get().finishMods(syncExecutor, parallelExecutor, ImmediateWindowHandler::renderTick)).run();
+    private static void finishModLoading(Executor syncExecutor, Executor parallelExecutor) {
+        createRunnableWithCatch(() -> finish(syncExecutor, parallelExecutor)).run();
         loading = false;
         loadingComplete = true;
         // reload game settings on main thread

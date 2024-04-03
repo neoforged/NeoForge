@@ -15,14 +15,14 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.server.Bootstrap;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModWorkManager;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.internal.CommonModLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DatagenModLoader {
+public class DatagenModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static GatherDataEvent.DataGeneratorConfig dataGeneratorConfig;
     private static ExistingFileHelper existingFileHelper;
@@ -40,7 +40,7 @@ public class DatagenModLoader {
         LOGGER.info("Initializing Data Gatherer for mods {}", mods);
         runningDataGen = true;
         Bootstrap.bootStrap();
-        ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
+        begin(() -> {});
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
         dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, serverGenerators,
                 clientGenerators, devToolGenerators, reportsGenerator, structureValidator, flat);

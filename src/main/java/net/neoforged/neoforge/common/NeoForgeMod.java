@@ -84,7 +84,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingStage;
 import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.StartupMessageManager;
 import net.neoforged.fml.VersionChecker;
@@ -615,8 +614,7 @@ public class NeoForgeMod {
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;
             ModLoader.get().addWarning(new ModLoadingWarning(
-                    container.getModInfo(), ModLoadingStage.CONSTRUCT,
-                    "loadwarning.neoforge.prbuild"));
+                    container.getModInfo(), "loadwarning.neoforge.prbuild"));
         }
     }
 
