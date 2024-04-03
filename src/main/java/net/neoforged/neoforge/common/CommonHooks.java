@@ -923,6 +923,7 @@ public class CommonHooks {
 
     /**
      * Gets the burn time of this itemstack.
+     * 
      * @deprecated Use {@link IItemStackExtension#getBurnTime(RecipeType)} instead.
      */
     @Deprecated(forRemoval = true, since = "1.20.4")
