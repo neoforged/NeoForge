@@ -37,7 +37,7 @@
 -                            if (p_285343_.test(blockstate)) {
 -                                p_285030_.accept(blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k), blockstate);
 +                            blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k);
-+                            if (fineFilter.test(blockstate, blockpos$mutableblockpos.immutable())) {
++                            if (fineFilter.test(blockstate, blockpos$mutableblockpos)) {
 +                                p_285030_.accept(blockpos$mutableblockpos, blockstate);
                              }
                          }
