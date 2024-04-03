@@ -77,11 +77,11 @@ public interface IItemStackExtension {
      *          the {@code furnace_fuels.json} file.
      */
     default int getBurnTime(@Nullable RecipeType<?> recipeType) {
-        int ret = self().getItem().getBurnTime(self(), recipeType);
+        int burnTime = self().getItem().getBurnTime(self(), recipeType);
         if (self().isEmpty()) {
             return 0;
         }
-        return EventHooks.getItemBurnTime(self(), ret, recipeType);
+        return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {

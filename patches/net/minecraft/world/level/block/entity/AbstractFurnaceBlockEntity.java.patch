@@ -24,14 +24,17 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingProgress;
                  case 3:
-@@ -111,10 +_,26 @@
+@@ -111,10 +_,29 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
 +        this.recipeType = p_154994_;
      }
  
-+    /**@deprecated Neo: get burn times by calling {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#getBurnTime(RecipeType)}*/ @Deprecated
++    /**
++     * @deprecated Neo: get burn times by calling {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#getBurnTime(RecipeType)}
++     */
++    @Deprecated
      public static Map<Item, Integer> getFuel() {
          Map<Item, Integer> map = Maps.newLinkedHashMap();
 +        buildFuels((e, time) -> e.ifRight(tag -> add(map, tag, time)).ifLeft(item -> add(map, item, time)));

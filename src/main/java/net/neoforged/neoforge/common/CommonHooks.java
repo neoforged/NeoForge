@@ -104,6 +104,7 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
@@ -132,6 +133,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
+import net.neoforged.neoforge.common.extensions.IItemStackExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -917,6 +919,16 @@ public class CommonHooks {
             return false;
         BlockState state = level.getBlockState(pos);
         return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
+    }
+
+    /**
+     * Gets the burn time of this itemstack.
+     * @deprecated Use {@link IItemStackExtension#getBurnTime(RecipeType)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.4")
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.20.5 or 1.21")
+    public static int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
+        return stack.getBurnTime(recipeType);
     }
 
     /**
