@@ -96,7 +96,7 @@ public final class ModelData {
             Preconditions.checkState(property.test(value), "The provided value is invalid for this property.");
             properties.put(property, value);
             // Convert to a hash map if needed
-            if (properties.size() >= HASH_THRESHOLD && properties instanceof Reference2ReferenceArrayMap<ModelProperty<?>, Object>) {
+            if (properties.size() == HASH_THRESHOLD && properties instanceof Reference2ReferenceArrayMap<ModelProperty<?>, Object>) {
                 properties = new Reference2ReferenceOpenHashMap<>(properties);
             }
             return this;
