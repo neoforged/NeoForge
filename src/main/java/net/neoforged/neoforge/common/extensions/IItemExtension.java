@@ -48,8 +48,6 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -593,16 +591,15 @@ public interface IItemExtension {
     }
 
     /**
-     * @return the fuel burn time for this item stack in a furnace. Return 0 to make
+     * @return the fuel burn time for this itemStack in a furnace. Return 0 to make
      *         it not act as a fuel. Return -1 to let the default vanilla logic
      *         decide.
      * @apiNote This method takes precedence over the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS data map}.
-     *          However, you should use the data map unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
+     *          However, you should use the datamap unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
      */
     @ApiStatus.OverrideOnly
     default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-        FurnaceFuel fuel = self().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-        return fuel == null ? 0 : fuel.burnTime();
+        return -1;
     }
 
     /**
