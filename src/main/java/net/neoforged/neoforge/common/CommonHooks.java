@@ -922,12 +922,11 @@ public class CommonHooks {
     }
 
     /**
-     * Gets the burn time of this itemstack.
+     * Gets the burn time of this item stack.
      * 
      * @deprecated Use {@link IItemStackExtension#getBurnTime(RecipeType)} instead.
      */
-    @Deprecated(forRemoval = true, since = "1.20.4")
-    @ApiStatus.ScheduledForRemoval(inVersion = "1.20.5 or 1.21")
+    @Deprecated(forRemoval = true, since = "1.20.5")
     public static int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
         return stack.getBurnTime(recipeType);
     }

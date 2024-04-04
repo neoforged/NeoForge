@@ -39,6 +39,8 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -70,16 +72,23 @@ public interface IItemStackExtension {
     }
 
     /**
-     * @return the fuel burn time for this itemStack in a furnace. Return 0 to make
-     *         it not act as a fuel. Return -1 to let the default vanilla logic
-     *         decide.
+     * Returns the fuel burn time for this item stack. If it is zero, this item is not a fuel.
+     * <p>
+     * Will never return a negative value.
+     * 
+     * @return the fuel burn time for this item stack in a furnace.
      * @apiNote This method by default returns the {@code burn_time} specified in
      *          the {@code furnace_fuels.json} file.
      */
     default int getBurnTime(@Nullable RecipeType<?> recipeType) {
-        int burnTime = self().getItem().getBurnTime(self(), recipeType);
         if (self().isEmpty()) {
             return 0;
+        }
+        // TODO 1.20.5: Throw if the returned value from the item is negative, and move datamap logic to the item method.
+        int burnTime = self().getItem().getBurnTime(self(), recipeType);
+        if (burnTime < 0) {
+            FurnaceFuel fuel = self().getItem().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
+            burnTime = fuel != null ? fuel.burnTime() : 0;
         }
         return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
     }

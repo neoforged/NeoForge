@@ -48,7 +48,6 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -594,15 +593,15 @@ public interface IItemExtension {
 
     /**
      * @return the fuel burn time for this item stack in a furnace. Return 0 to make
-     *         it not act as a fuel. Return -1 to let the default vanilla logic
-     *         decide.
-     * @apiNote This method takes precedence over the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS data map}.
+     *         it not act as a fuel. Call super to let the {@link NeoForgeDataMaps#FURNACE_FUELS} decide.
+     * @apiNote This method takes precedence over the {@link NeoForgeDataMaps#FURNACE_FUELS data map}.
      *          However, you should use the data map unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
+     * @implNote Overriders should call super instead of directly returning -1.
      */
     @ApiStatus.OverrideOnly
     default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-        FurnaceFuel fuel = self().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-        return fuel == null ? 0 : fuel.burnTime();
+        // TODO 1.20.5: Change default logic from -1 to calling the datamap (moving the logic from the itemstack method).
+        return -1;
     }
 
     /**
