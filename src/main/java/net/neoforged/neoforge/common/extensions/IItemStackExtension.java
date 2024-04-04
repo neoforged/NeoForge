@@ -73,9 +73,15 @@ public interface IItemStackExtension {
      * @return the fuel burn time for this itemStack in a furnace. Return 0 to make
      *         it not act as a fuel. Return -1 to let the default vanilla logic
      *         decide.
+     * @apiNote This method by default returns the {@code burn_time} specified in
+     *          the {@code furnace_fuels.json} file.
      */
     default int getBurnTime(@Nullable RecipeType<?> recipeType) {
-        return self().getItem().getBurnTime(self(), recipeType);
+        int burnTime = self().getItem().getBurnTime(self(), recipeType);
+        if (self().isEmpty()) {
+            return 0;
+        }
+        return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
