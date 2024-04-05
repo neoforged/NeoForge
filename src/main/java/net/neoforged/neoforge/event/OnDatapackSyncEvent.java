@@ -27,23 +27,27 @@ public class OnDatapackSyncEvent extends Event {
     }
 
     /**
-     * @return The server's player list to get a view of all players.
+     * Gets the server's player list, containing all players, when the event fires.
+     *
+     * @return The server's player list.
      */
     public PlayerList getPlayerList() {
         return this.playerList;
     }
 
     /**
-     * @return A stream of players to sync datapacks to. If a player is specified,
-     *         the stream will only contain that player.
+     * Creates a stream of players that need to receive data during this event, which is the specified player (if present) or all players.
+     *
+     * @return A stream of players to sync data to.
      */
     public Stream<ServerPlayer> getRelevantPlayers() {
         return this.player == null ? this.playerList.getPlayers().stream() : Stream.of(this.player);
     }
 
     /**
-     * @return The player to sync datapacks to. Null when syncing for all players,
-     *         such as when the reload command runs.
+     * Gets the player that is joining the server, or null when syncing for all players, such as when the reload command runs.
+     *
+     * @return The player to sync datapacks to. Null when syncing for all players.
      */
     @Nullable
     public ServerPlayer getPlayer() {
