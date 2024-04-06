@@ -35,7 +35,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import org.slf4j.Logger;
 
 /**
- * The {@code /neoforge registryDump} command for printing out the contents of a registry to a file in the game directory's dumps/registry folder.
+ * The {@code /neoforge dump registry} command for printing out the contents of a registry to a file in the game directory's dumps/registry folder.
  * </ul>
  */
 class DumpCommand {
