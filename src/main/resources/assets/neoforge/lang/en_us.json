@@ -145,6 +145,8 @@
   "commands.neoforge.tags.containing_tag_count": "Containing tags: %s",
   "commands.neoforge.tags.element": "%s : %s",
   "commands.neoforge.tags.page_info": "%s <page %s / %s>",
+  "commands.neoforge.registry_dump.success": "New file created with %s registry's contents is at %s",
+  "commands.neoforge.registry_dump.failure": "Failed to create new file with %s registry's contents at %s",
   "commands.neoforge.chunkgen.progress_bar_title": "Generating chunks...",
   "commands.neoforge.chunkgen.progress_bar_progress": "Generating {0} chunks - ",
   "commands.neoforge.chunkgen.progress_bar_errors": "({0} errors!)",
