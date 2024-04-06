@@ -35,10 +35,10 @@ import net.neoforged.fml.loading.FMLLoader;
 import org.slf4j.Logger;
 
 /**
- * The {@code /neoforge registryDump} command for printing out the contents of a registry to a file.
+ * The {@code /neoforge registryDump} command for printing out the contents of a registry to a file in the game directory's dumps/registry folder.
  * </ul>
  */
-class RegistryDumpCommand {
+class DumpCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation("root"));
@@ -55,7 +55,7 @@ class RegistryDumpCommand {
                 .requires(cs -> cs.hasPermission(Commands.LEVEL_ADMINS))
                 .then(Commands.literal("registry")
                         .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
-                                .suggests(RegistryDumpCommand::suggestRegistries)
+                                .suggests(DumpCommand::suggestRegistries)
                                 .executes(context -> dumpRegistry(context, false, false))
                                 .then(Commands.argument(ALPHABETICAL_SORT_PARAM, BoolArgumentType.bool())
                                         .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), false))
