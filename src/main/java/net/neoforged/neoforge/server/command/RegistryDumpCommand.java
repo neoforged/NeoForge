@@ -13,6 +13,14 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.logging.LogUtils;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -24,18 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLLoader;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 /**
  * The {@code /neoforge registryDump} command for printing out the contents of a registry to a file.
@@ -62,7 +59,7 @@ class RegistryDumpCommand {
                         .then(Commands.argument(ALPHABETICAL_SORT_PARAM, BoolArgumentType.bool())
                                 .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), false))
                                 .then(Commands.argument(PRINT_NUMERIC_ID_PARAM, BoolArgumentType.bool())
-                                        .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context,ALPHABETICAL_SORT_PARAM), BoolArgumentType.getBool(context,PRINT_NUMERIC_ID_PARAM))))));
+                                        .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), BoolArgumentType.getBool(context, PRINT_NUMERIC_ID_PARAM))))));
     }
 
     private static int dumpRegistry(final CommandContext<CommandSourceStack> ctx, boolean alphabeticalSort, boolean printNumericIds) throws CommandSyntaxException {
@@ -93,19 +90,17 @@ class RegistryDumpCommand {
                 }
             }
 
-            ctx.getSource().sendSuccess(() ->
-                    Component.translatable(
-                            "commands.neoforge.registry_dump.success",
-                            Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.YELLOW),
-                            Component.literal(registryDumpFile.getFileName().toString())
-                                    .withStyle(ChatFormatting.UNDERLINE)
-                                    .withStyle(ChatFormatting.GOLD)
-                                    .withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, registryDumpFile.toString())))),
-            false);
+            ctx.getSource().sendSuccess(() -> Component.translatable(
+                    "commands.neoforge.registry_dump.success",
+                    Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.YELLOW),
+                    Component.literal(registryDumpFile.getFileName().toString())
+                            .withStyle(ChatFormatting.UNDERLINE)
+                            .withStyle(ChatFormatting.GOLD)
+                            .withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, registryDumpFile.toString())))),
+                    false);
 
             return 1;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             ctx.getSource().sendFailure(
                     Component.translatable(
@@ -119,7 +114,6 @@ class RegistryDumpCommand {
         }
     }
 
-    @NotNull
     private static List<ResourceLocation> getSortedRegistryKeys(boolean alphabeticalSort, boolean printNumericIds, Registry<?> registry) {
         List<ResourceLocation> sortedRegistryNames = new ArrayList<>(registry.keySet());
 
@@ -131,8 +125,7 @@ class RegistryDumpCommand {
 
                 return r1.getNamespace().compareTo(r2.getNamespace());
             });
-        }
-        else if (printNumericIds) {
+        } else if (printNumericIds) {
             sortedRegistryNames = sortedRegistryNames.stream().sorted(Comparator.comparingInt(registry::getId)).toList();
         }
 
