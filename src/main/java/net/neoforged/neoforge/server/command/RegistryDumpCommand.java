@@ -42,24 +42,25 @@ class RegistryDumpCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation("root"));
-    private static final String ALPHABETICAL_SORT_PARAM = "alphabeticalSort";
-    private static final String PRINT_NUMERIC_ID_PARAM = "printNumericIds";
+    private static final String ALPHABETICAL_SORT_PARAM = "alphabetical_sort";
+    private static final String PRINT_NUMERIC_ID_PARAM = "print_numeric_ids";
 
     private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.tags.error.unknown_registry", key));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
-         * /neoforge registryDump <registry> <alphabeticalSort> <printNumericIds>
+         * /neoforge dump registry <registry> <alphabetical_sort> <print_numeric_ids>
          */
-        return Commands.literal("registryDump")
-                .requires(cs -> cs.hasPermission(2))
-                .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
-                        .suggests(RegistryDumpCommand::suggestRegistries)
-                        .executes(context -> dumpRegistry(context, false, false))
-                        .then(Commands.argument(ALPHABETICAL_SORT_PARAM, BoolArgumentType.bool())
-                                .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), false))
-                                .then(Commands.argument(PRINT_NUMERIC_ID_PARAM, BoolArgumentType.bool())
-                                        .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), BoolArgumentType.getBool(context, PRINT_NUMERIC_ID_PARAM))))));
+        return Commands.literal("dump")
+                .requires(cs -> cs.hasPermission(Commands.LEVEL_ADMINS))
+                .then(Commands.literal("registry")
+                        .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
+                                .suggests(RegistryDumpCommand::suggestRegistries)
+                                .executes(context -> dumpRegistry(context, false, false))
+                                .then(Commands.argument(ALPHABETICAL_SORT_PARAM, BoolArgumentType.bool())
+                                        .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), false))
+                                        .then(Commands.argument(PRINT_NUMERIC_ID_PARAM, BoolArgumentType.bool())
+                                                .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), BoolArgumentType.getBool(context, PRINT_NUMERIC_ID_PARAM)))))));
     }
 
     private static int dumpRegistry(final CommandContext<CommandSourceStack> ctx, boolean alphabeticalSort, boolean printNumericIds) throws CommandSyntaxException {
@@ -71,11 +72,12 @@ class RegistryDumpCommand {
 
         String fileLocationForErrorReporting = "";
         try {
-            Path registryDumpDirectory = FMLLoader.getGamePath().resolve("registry_dumps");
-            Files.createDirectories(registryDumpDirectory);
+            Path registryDumpDirectory = FMLLoader.getGamePath().resolve("dumps").resolve("registry");
+            Path registryNamespaceDirectory = registryDumpDirectory.resolve(registryKey.location().getNamespace().replaceAll("[/:.]", "_"));
+            Files.createDirectories(registryNamespaceDirectory);
 
-            String fileName = registryKey.location().toString().replaceAll("[/:.]", "_") + ".txt";
-            Path registryDumpFile = Paths.get(registryDumpDirectory.toString(), fileName);
+            String fileName = registryKey.location().getPath().replaceAll("[/:.]", "_") + ".txt";
+            Path registryDumpFile = Paths.get(registryNamespaceDirectory.toString(), fileName);
             fileLocationForErrorReporting = registryDumpFile.toString();
 
             try (var outputStream = Files.newOutputStream(registryDumpFile)) {
@@ -93,7 +95,7 @@ class RegistryDumpCommand {
             ctx.getSource().sendSuccess(() -> Component.translatable(
                     "commands.neoforge.registry_dump.success",
                     Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.YELLOW),
-                    Component.literal(registryDumpFile.getFileName().toString())
+                    Component.literal("..." + FMLLoader.getGamePath().relativize(registryDumpFile))
                             .withStyle(ChatFormatting.UNDERLINE)
                             .withStyle(ChatFormatting.GOLD)
                             .withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, registryDumpFile.toString())))),
@@ -118,13 +120,7 @@ class RegistryDumpCommand {
         List<ResourceLocation> sortedRegistryNames = new ArrayList<>(registry.keySet());
 
         if (alphabeticalSort) {
-            sortedRegistryNames.sort((r1, r2) -> {
-                if (r1.getNamespace().equals(r2.getNamespace())) {
-                    return r1.getPath().compareTo(r2.getPath());
-                }
-
-                return r1.getNamespace().compareTo(r2.getNamespace());
-            });
+            sortedRegistryNames.sort(ResourceLocation::compareNamespaced);
         } else if (printNumericIds) {
             sortedRegistryNames = sortedRegistryNames.stream().sorted(Comparator.comparingInt(registry::getId)).toList();
         }
@@ -132,18 +128,21 @@ class RegistryDumpCommand {
         return sortedRegistryNames;
     }
 
-    private static CompletableFuture<Suggestions> suggestRegistries(final CommandContext<CommandSourceStack> ctx,
+    private static CompletableFuture<Suggestions> suggestRegistries(
+            final CommandContext<CommandSourceStack> ctx,
             final SuggestionsBuilder builder) {
         ctx.getSource().registryAccess().registries()
                 .map(RegistryAccess.RegistryEntry::key)
                 .map(ResourceKey::location)
                 .map(ResourceLocation::toString)
                 .forEach(builder::suggest);
+
         return builder.buildFuture();
     }
 
     @SuppressWarnings("SameParameterValue")
-    private static <T> Optional<ResourceKey<T>> getResourceKey(final CommandContext<CommandSourceStack> ctx,
+    private static <T> Optional<ResourceKey<T>> getResourceKey(
+            final CommandContext<CommandSourceStack> ctx,
             final String name,
             final ResourceKey<Registry<T>> registryKey) {
         // Don't inline to avoid an unchecked cast warning due to raw types
