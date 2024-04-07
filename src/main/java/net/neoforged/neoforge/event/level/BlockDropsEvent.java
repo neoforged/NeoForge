@@ -5,12 +5,18 @@
 
 package net.neoforged.neoforge.event.level;
 
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +25,8 @@ import org.jetbrains.annotations.Nullable;
  * It is safe to modify the Block in this event, as it has already been replaced.
  */
 public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
-    private final List<ItemStack> drops;
+
+    private final List<ItemEntity> dropEntities;
     private final Entity destroyingEntity;
     private final ItemStack tool;
 
@@ -30,10 +37,18 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
      */
     public BlockDropsEvent(LevelAccessor level, BlockPos pos, BlockState state, List<ItemStack> drops, @Nullable Entity destroyer, ItemStack tool) {
         super(level, pos, state);
-        this.drops = drops;
+        this.dropEntities = new ArrayList<>();
         this.destroyingEntity = destroyer;
         this.tool = tool;
         this.dropXpWhenCancelled = true;
+
+        for(ItemStack drop : drops) {
+            Vec3 offset = pos.getCenter().add(
+                    Mth.nextDouble(level.getRandom(), -0.25, 0.25),
+                    Mth.nextDouble(level.getRandom(), -0.25, 0.25) - (double)EntityType.ITEM.getHeight() / 2.0,
+                    Mth.nextDouble(level.getRandom(), -0.25, 0.25));
+            dropEntities.add(new ItemEntity((ServerLevel)level, offset.x(), offset.y(), offset.z(), drop));
+        }
     }
 
     /**
@@ -46,12 +61,12 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
     }
 
     /**
-     * Returns a list of drops determined for this broken block.
+     * Returns a list of ItemEntities determined for this broken block.
      * 
-     * @return An immutable list of ItemStacks.
+     * @return A modifiable list of ItemStacks.
      */
-    public List<ItemStack> getDrops() {
-        return drops;
+    public List<ItemEntity> getDrops() {
+        return dropEntities;
     }
 
     /**

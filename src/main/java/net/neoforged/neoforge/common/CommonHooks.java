@@ -107,6 +107,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -452,7 +453,12 @@ public class CommonHooks {
         BlockDropsEvent event = new BlockDropsEvent(level, pos, state, List.copyOf(drops), breaker, breakerTool);
         NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
-            drops.forEach(item -> Block.popResource(level, pos, item));
+            event.getDrops().forEach(i -> {
+                if (!level.isClientSide && !i.getItem().isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+                    i.setDefaultPickUpDelay();
+                    level.addFreshEntity(i);
+                }
+            });
             state.spawnAfterBreak((ServerLevel) level, pos, breakerTool, dropXp);
         } else if (event.isDropXpWhenCancelled()) {
             net.neoforged.neoforge.common.CommonHooks.dropXpForBlock(state, (ServerLevel) level, pos, breakerTool);
