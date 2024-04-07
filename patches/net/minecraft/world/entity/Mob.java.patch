@@ -69,6 +69,17 @@
              Vec3i vec3i = this.getPickupReach();
  
              for(ItemEntity itementity : this.level()
+@@ -544,6 +_,10 @@
+     }
+ 
+     protected void pickUpItem(ItemEntity p_21471_) {
++        if(!net.neoforged.neoforge.event.EventHooks.onItemAllowPickup(p_21471_)) {
++            return;
++        }
++
+         ItemStack itemstack = p_21471_.getItem();
+         ItemStack itemstack1 = this.equipItemIfPossible(itemstack.copy());
+         if (!itemstack1.isEmpty()) {
 @@ -698,6 +_,14 @@
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {

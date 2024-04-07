@@ -110,6 +110,7 @@ import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.item.ItemAllowPickupEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
@@ -479,10 +480,21 @@ public class EventHooks {
         return event.getExtraLife();
     }
 
+    @Deprecated(forRemoval = true) // to be replaced with onItemAllowPickup
     public static int onItemPickup(ItemEntity entityItem, Player player) {
-        var event = new EntityItemPickupEvent(player, entityItem);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
-        return event.getResult() == Result.ALLOW ? 1 : 0;
+        var event = NeoForge.EVENT_BUS.post(new EntityItemPickupEvent(player, entityItem));
+        var hook = event.isCanceled() ? -1 : event.getResult() == Result.ALLOW ? 1 : 0;
+
+        if (hook != -1 && !onItemAllowPickup(entityItem))
+            hook = -1;
+
+        return hook;
+    }
+
+    public static boolean onItemAllowPickup(ItemEntity itemEntity) {
+        // cancelled - disallow item pickup
+        // not cancelled allow item pickup
+        return !NeoForge.EVENT_BUS.post(new ItemAllowPickupEvent(itemEntity)).isCanceled();
     }
 
     public static boolean canMountEntity(Entity entityMounting, Entity entityBeingMounted, boolean isMounting) {

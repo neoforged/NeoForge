@@ -17,6 +17,17 @@
          Container container = getSourceContainer(p_155553_, p_155554_, blockpos, blockstate);
          if (container != null) {
              Direction direction = Direction.DOWN;
+@@ -210,6 +_,10 @@
+     }
+ 
+     public static boolean addItem(Container p_59332_, ItemEntity p_59333_) {
++        if(!net.neoforged.neoforge.event.EventHooks.onItemAllowPickup(p_59333_)) {
++            return false;
++        }
++
+         boolean flag = false;
+         ItemStack itemstack = p_59333_.getItem().copy();
+         ItemStack itemstack1 = addItem(null, p_59332_, itemstack, null);
 @@ -421,5 +_,9 @@
      @Override
      protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
