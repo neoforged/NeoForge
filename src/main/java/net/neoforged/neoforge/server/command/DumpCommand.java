@@ -24,6 +24,7 @@ import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLLoader;
@@ -87,13 +88,19 @@ class DumpCommand {
                 }
             }
 
+            MutableComponent filePathComponent = Component.literal("..." + FMLLoader.getGamePath().relativize(registryDumpFile))
+                    .withStyle(ChatFormatting.UNDERLINE)
+                    .withStyle(ChatFormatting.GOLD);
+
+            // Click action not allow on dedicated servers as client cannot click link to a server's file path.
+            if (!FMLLoader.getDist().isDedicatedServer()) {
+                filePathComponent.withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, registryDumpFile.toString())));
+            }
+
             ctx.getSource().sendSuccess(() -> Component.translatable(
                     "commands.neoforge.dump.success",
                     Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.YELLOW),
-                    Component.literal("..." + FMLLoader.getGamePath().relativize(registryDumpFile))
-                            .withStyle(ChatFormatting.UNDERLINE)
-                            .withStyle(ChatFormatting.GOLD)
-                            .withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, registryDumpFile.toString())))),
+                    filePathComponent),
                     false);
 
             return 1;
