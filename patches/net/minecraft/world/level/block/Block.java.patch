@@ -39,7 +39,30 @@
          } else if (blockstate.canOcclude()) {
              Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(p_152445_, blockstate, p_152448_);
              Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> object2bytelinkedopenhashmap = OCCLUSION_CACHE.get();
-@@ -305,9 +_,12 @@
+@@ -290,24 +_,33 @@
+ 
+     public static void dropResources(BlockState p_49951_, Level p_49952_, BlockPos p_49953_) {
+         if (p_49952_ instanceof ServerLevel) {
+-            getDrops(p_49951_, (ServerLevel)p_49952_, p_49953_, null).forEach(p_152406_ -> popResource(p_49952_, p_49953_, p_152406_));
+-            p_49951_.spawnAfterBreak((ServerLevel)p_49952_, p_49953_, ItemStack.EMPTY, true);
++            net.neoforged.neoforge.common.CommonHooks.interceptBlockDrops(
++                    p_49952_, p_49953_, p_49951_,
++                    getDrops(p_49951_, (ServerLevel)p_49952_, p_49953_, null),
++                    null, ItemStack.EMPTY, true);
+         }
+     }
+ 
+     public static void dropResources(BlockState p_49893_, LevelAccessor p_49894_, BlockPos p_49895_, @Nullable BlockEntity p_49896_) {
+         if (p_49894_ instanceof ServerLevel) {
+-            getDrops(p_49893_, (ServerLevel)p_49894_, p_49895_, p_49896_).forEach(p_49859_ -> popResource((ServerLevel)p_49894_, p_49895_, p_49859_));
+-            p_49893_.spawnAfterBreak((ServerLevel)p_49894_, p_49895_, ItemStack.EMPTY, true);
++            net.neoforged.neoforge.common.CommonHooks.interceptBlockDrops(
++                    (ServerLevel)p_49894_, p_49895_, p_49893_,
++                    getDrops(p_49893_, (ServerLevel)p_49894_, p_49895_, p_49896_),
++                    null, ItemStack.EMPTY, true);
+         }
+     }
+ 
      public static void dropResources(
          BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
      ) {
@@ -47,9 +70,12 @@
 +    }
 +    public static void dropResources(BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_, boolean dropXp) {
          if (p_49883_ instanceof ServerLevel) {
-             getDrops(p_49882_, (ServerLevel)p_49883_, p_49884_, p_49885_, p_49886_, p_49887_).forEach(p_49944_ -> popResource(p_49883_, p_49884_, p_49944_));
+-            getDrops(p_49882_, (ServerLevel)p_49883_, p_49884_, p_49885_, p_49886_, p_49887_).forEach(p_49944_ -> popResource(p_49883_, p_49884_, p_49944_));
 -            p_49882_.spawnAfterBreak((ServerLevel)p_49883_, p_49884_, p_49887_, true);
-+            p_49882_.spawnAfterBreak((ServerLevel)p_49883_, p_49884_, p_49887_, dropXp);
++            net.neoforged.neoforge.common.CommonHooks.interceptBlockDrops(
++                    p_49883_, p_49884_, p_49882_,
++                    getDrops(p_49882_, (ServerLevel)p_49883_, p_49884_, p_49885_, p_49886_, p_49887_),
++                    p_49886_, p_49887_, dropXp);
          }
      }
  

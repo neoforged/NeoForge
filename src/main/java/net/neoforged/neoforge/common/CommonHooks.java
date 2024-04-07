@@ -447,6 +447,17 @@ public class CommonHooks {
             state.getBlock().popExperience(level, pos, exp);
     }
 
+    public static void interceptBlockDrops(Level level, BlockPos pos, BlockState state, List<ItemStack> drops, @Nullable Entity breaker, ItemStack breakerTool, boolean dropXp) {
+        BlockEvent.DestroyedEvent event = new BlockEvent.DestroyedEvent(level, pos, state, List.copyOf(drops), breaker, breakerTool);
+        NeoForge.EVENT_BUS.post(event);
+        if (!event.isCanceled()) {
+            drops.forEach(item -> Block.popResource(level, pos, item));
+            state.spawnAfterBreak((ServerLevel) level, pos, breakerTool, dropXp);
+        } else if (event.isDropXpWhenCancelled()) {
+            net.neoforged.neoforge.common.CommonHooks.dropXpForBlock(state, (ServerLevel) level, pos, breakerTool);
+        }
+    }
+
     public static int onBlockBreakEvent(Level level, GameType gameType, ServerPlayer entityPlayer, BlockPos pos) {
         // Logic from tryHarvestBlock for pre-canceling the event
         boolean preCancelEvent = false;
