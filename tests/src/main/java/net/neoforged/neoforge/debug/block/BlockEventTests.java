@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
@@ -34,7 +35,7 @@ public class BlockEventTests {
     @GameTest(template = TestsMod.TEMPLATE_3x3)
     @TestHolder(description = "Tests if the BlockDestroyed event is fired and works properly.")
     public static void blockDestroyedEvent(final DynamicTest test) {
-        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockEvent.DestroyedEvent event) -> {
+        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
             if (event.getState().getBlock() == Blocks.DIRT && !event.getTool().is(ItemTags.SHOVELS)) {
                 event.setCanceled(true); // Make dirt not drop unless it was broken by a shovel to test cancellation as a whole.
             }

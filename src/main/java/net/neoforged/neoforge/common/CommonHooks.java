@@ -177,6 +177,7 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -448,7 +449,7 @@ public class CommonHooks {
     }
 
     public static void interceptBlockDrops(Level level, BlockPos pos, BlockState state, List<ItemStack> drops, @Nullable Entity breaker, ItemStack breakerTool, boolean dropXp) {
-        BlockEvent.DestroyedEvent event = new BlockEvent.DestroyedEvent(level, pos, state, List.copyOf(drops), breaker, breakerTool);
+        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, List.copyOf(drops), breaker, breakerTool);
         NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
             drops.forEach(item -> Block.popResource(level, pos, item));
