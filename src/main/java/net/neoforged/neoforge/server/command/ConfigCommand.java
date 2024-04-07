@@ -16,8 +16,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.server.command.arguments.EnumArgument;
-import net.neoforged.neoforge.server.command.arguments.ModIdArgument;
 
 public class ConfigCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
