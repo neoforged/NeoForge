@@ -81,7 +81,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -112,8 +111,6 @@ import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
-import net.neoforged.neoforge.event.entity.item.ItemPickupAllowedEvent;
-import net.neoforged.neoforge.event.entity.item.ItemPickupEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
@@ -482,6 +479,12 @@ public class EventHooks {
         return event.getExtraLife();
     }
 
+    public static int onItemPickup(ItemEntity entityItem, Player player) {
+        var event = new EntityItemPickupEvent(player, entityItem);
+        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
+        return event.getResult() == Result.ALLOW ? 1 : 0;
+    }
+
     public static boolean canMountEntity(Entity entityMounting, Entity entityBeingMounted, boolean isMounting) {
         boolean isCanceled = NeoForge.EVENT_BUS.post(new EntityMountEvent(entityMounting, entityBeingMounted, entityMounting.level(), isMounting)).isCanceled();
 
@@ -820,71 +823,8 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
     }
 
-    // Modders should be encouraged to fire this event for their custom means of item pickup (this should be fired post item pickup)
-    public static void fireItemPickupEvent(ItemPickupEvent event) {
-        NeoForge.EVENT_BUS.post(event);
-    }
-
-    public static void firePlayerItemPickupEvent(ItemEntity itemEntity, Player target, ItemStack clone) {
-        // fire the legacy event so that we dont break mods using it
-        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemPickupEvent(target, itemEntity, clone));
-        fireItemPickupEvent(new ItemPickupEvent.ByPlayer(itemEntity, target, clone));
-    }
-
-    public static void fireHopperItemPickupEvent(ItemEntity itemEntity, Hopper target, ItemStack clone) {
-        fireItemPickupEvent(new ItemPickupEvent.ByHopper(itemEntity, target, clone));
-    }
-
-    public static void fireMobItemPickupEvent(ItemEntity itemEntity, Mob target, ItemStack clone) {
-        fireItemPickupEvent(new ItemPickupEvent.ByMob(itemEntity, target, clone));
-    }
-
-    /**
-     * Base method for determining if item pickup should be allowed or not.
-     * <p>
-     * Should be preferred to use a type specific override where possible.
-     * <p>
-     * Modders should be encouraged to fire this event for their custom means of item pickup.
-     *
-     * <ul>
-     * <li>{@code <= -1} - Item pickup disallowed</li>
-     * <li>{@code 0} - Item pickup allowed</li>
-     * <li>{@code >= 1} - Item pickup forcefully allowed</li>
-     * </ul>
-     *
-     * @return State determining if item pickup should be allowed or not.
-     */
-    public static int onItemPickupAllowed(ItemPickupAllowedEvent event) {
-        return switch (NeoForge.EVENT_BUS.post(event).getResult()) {
-            case ALLOW -> 1; // forcefully allowed
-            case DENY -> -1; // disallowed
-            default -> 0; // default behavior
-        };
-    }
-
-    public static int onItemPickupAllowedByPlayer(ItemEntity itemEntity, Player target) {
-        // legacy event takes priority, as its what modders are currently using
-        var legacyEvent = NeoForge.EVENT_BUS.post(new EntityItemPickupEvent(target, itemEntity));
-        // legacy event ignored 'DENY'/'DEFAULT results, delegating it to whether or not event was cancelled
-        // cancelled -> -1
-        // ALLOW -> 1
-        // anything else -> 0
-        var legacyAllowed = legacyEvent.isCanceled() ? -1 : legacyEvent.getResult() == Result.ALLOW ? 1 : 0;
-
-        // if legacy did not forcefully allow or disallow, delegate to new custom logic
-        if (legacyAllowed == 0) {
-            return onItemPickupAllowed(new ItemPickupAllowedEvent.ByPlayer(itemEntity, target));
-        }
-
-        return legacyAllowed;
-    }
-
-    public static int onItemPickupAllowedByHopper(ItemEntity itemEntity, Hopper target) {
-        return onItemPickupAllowed(new ItemPickupAllowedEvent.ByHopper(itemEntity, target));
-    }
-
-    public static int onItemPickupAllowedByMob(ItemEntity itemEntity, Mob target) {
-        return onItemPickupAllowed(new ItemPickupAllowedEvent.ByMob(itemEntity, target));
+    public static void firePlayerItemPickupEvent(Player player, ItemEntity item, ItemStack clone) {
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemPickupEvent(player, item, clone));
     }
 
     public static void firePlayerCraftingEvent(Player player, ItemStack crafted, Container craftMatrix) {

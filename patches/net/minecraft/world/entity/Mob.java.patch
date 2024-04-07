@@ -69,24 +69,6 @@
              Vec3i vec3i = this.getPickupReach();
  
              for(ItemEntity itementity : this.level()
-@@ -544,9 +_,16 @@
-     }
-
-     protected void pickUpItem(ItemEntity p_21471_) {
-+        var hook = net.neoforged.neoforge.event.EventHooks.onItemPickupAllowedByMob(p_21471_, this);
-+
-+        if(hook <= -1) {
-+            return;
-+        }
-+
-         ItemStack itemstack = p_21471_.getItem();
-         ItemStack itemstack1 = this.equipItemIfPossible(itemstack.copy());
--        if (!itemstack1.isEmpty()) {
-+        if (hook >= 1 || !itemstack1.isEmpty()) {
-+            net.neoforged.neoforge.event.EventHooks.fireMobItemPickupEvent(p_21471_, this, itemstack1);
-             this.onItemPickup(p_21471_);
-             this.take(p_21471_, itemstack1.getCount());
-             itemstack.shrink(itemstack1.getCount());
 @@ -698,6 +_,14 @@
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {

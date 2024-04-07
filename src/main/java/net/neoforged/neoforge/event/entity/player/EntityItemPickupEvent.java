@@ -9,7 +9,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.event.entity.item.ItemPickupAllowedEvent;
 
 /**
  * This event is called when a player collides with a EntityItem on the ground.
@@ -20,10 +19,7 @@ import net.neoforged.neoforge.event.entity.item.ItemPickupAllowedEvent;
  * entity if all the items are picked up.
  *
  * setResult(ALLOW) is the same as the old setHandled()
- *
- * @deprecated To be replaced with {@linkplain ItemPickupAllowedEvent.ByPlayer}
  */
-@Deprecated
 @Event.HasResult
 public class EntityItemPickupEvent extends PlayerEvent implements ICancellableEvent {
     private final ItemEntity item;
