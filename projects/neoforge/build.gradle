@@ -237,12 +237,6 @@ publishing {
             artifact (signInstallerJar.output) {
                 classifier 'installer'
             }
-            artifact (userdevJar) {
-                classifier 'userdev'
-            }
-            artifact (sourcesJar) {
-                classifier 'sources'
-            }
         }
 
         changelog.publish(it)
