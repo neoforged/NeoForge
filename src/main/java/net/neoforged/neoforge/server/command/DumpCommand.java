@@ -10,8 +10,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.logging.LogUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,14 +17,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -52,10 +47,10 @@ class DumpCommand {
          * /neoforge dump registry <registry> <alphabetical_sort> <print_numeric_ids>
          */
         return Commands.literal("dump")
-                .requires(cs -> cs.hasPermission(Commands.LEVEL_ADMINS))
+                .requires(cs -> cs.hasPermission(Commands.LEVEL_OWNERS))
                 .then(Commands.literal("registry")
                         .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
-                                .suggests(DumpCommand::suggestRegistries)
+                                .suggests(CommandUtils::suggestRegistries)
                                 .executes(context -> dumpRegistry(context, false, false))
                                 .then(Commands.argument(ALPHABETICAL_SORT_PARAM, BoolArgumentType.bool())
                                         .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), false))
@@ -64,7 +59,7 @@ class DumpCommand {
     }
 
     private static int dumpRegistry(final CommandContext<CommandSourceStack> ctx, boolean alphabeticalSort, boolean printNumericIds) throws CommandSyntaxException {
-        final ResourceKey<? extends Registry<?>> registryKey = getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
+        final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
 
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
@@ -126,27 +121,5 @@ class DumpCommand {
         }
 
         return sortedRegistryNames;
-    }
-
-    private static CompletableFuture<Suggestions> suggestRegistries(
-            final CommandContext<CommandSourceStack> ctx,
-            final SuggestionsBuilder builder) {
-        ctx.getSource().registryAccess().registries()
-                .map(RegistryAccess.RegistryEntry::key)
-                .map(ResourceKey::location)
-                .map(ResourceLocation::toString)
-                .forEach(builder::suggest);
-
-        return builder.buildFuture();
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static <T> Optional<ResourceKey<T>> getResourceKey(
-            final CommandContext<CommandSourceStack> ctx,
-            final String name,
-            final ResourceKey<Registry<T>> registryKey) {
-        // Don't inline to avoid an unchecked cast warning due to raw types
-        final ResourceKey<?> key = ctx.getArgument(name, ResourceKey.class);
-        return key.cast(registryKey);
     }
 }

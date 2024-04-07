@@ -12,11 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Pair;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -30,7 +26,6 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -75,7 +70,7 @@ class TagsCommand {
         return Commands.literal("tags")
                 .requires(cs -> cs.hasPermission(2))
                 .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
-                        .suggests(TagsCommand::suggestRegistries)
+                        .suggests(CommandUtils::suggestRegistries)
                         .then(Commands.literal("list")
                                 .executes(ctx -> listTags(ctx, 1))
                                 .then(Commands.argument("page", IntegerArgumentType.integer(1))
@@ -95,7 +90,7 @@ class TagsCommand {
     }
 
     private static int listTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
-        final ResourceKey<? extends Registry<?>> registryKey = getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
+        final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
@@ -118,7 +113,7 @@ class TagsCommand {
     }
 
     private static int listTagElements(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
-        final ResourceKey<? extends Registry<?>> registryKey = getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
+        final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
@@ -144,7 +139,7 @@ class TagsCommand {
     }
 
     private static int queryElementTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
-        final ResourceKey<? extends Registry<?>> registryKey = getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
+        final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
@@ -207,33 +202,14 @@ class TagsCommand {
         return header.append("\n").append(tagElements);
     }
 
-    private static CompletableFuture<Suggestions> suggestRegistries(final CommandContext<CommandSourceStack> ctx,
-            final SuggestionsBuilder builder) {
-        ctx.getSource().registryAccess().registries()
-                .map(RegistryAccess.RegistryEntry::key)
-                .map(ResourceKey::location)
-                .map(ResourceLocation::toString)
-                .forEach(builder::suggest);
-        return builder.buildFuture();
-    }
-
     private static SuggestionProvider<CommandSourceStack> suggestFromRegistry(
             final Function<Registry<?>, Iterable<ResourceLocation>> namesFunction) {
-        return (ctx, builder) -> getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
+        return (ctx, builder) -> CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .flatMap(key -> ctx.getSource().registryAccess().registry(key).map(registry -> {
                     SharedSuggestionProvider.suggestResource(namesFunction.apply(registry), builder);
                     return builder.buildFuture();
                 }))
                 .orElseGet(builder::buildFuture);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static <T> Optional<ResourceKey<T>> getResourceKey(final CommandContext<CommandSourceStack> ctx,
-            final String name,
-            final ResourceKey<Registry<T>> registryKey) {
-        // Don't inline to avoid an unchecked cast warning due to raw types
-        final ResourceKey<?> key = ctx.getArgument(name, ResourceKey.class);
-        return key.cast(registryKey);
     }
 
     @SuppressWarnings("unchecked")
