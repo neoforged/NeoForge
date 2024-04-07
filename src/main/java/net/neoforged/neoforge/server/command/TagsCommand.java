@@ -11,16 +11,13 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.datafixers.util.Pair;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.Holder;
@@ -77,13 +74,13 @@ class TagsCommand {
                                         .executes(ctx -> listTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))))
                         .then(Commands.literal("get")
                                 .then(Commands.argument("tag", ResourceLocationArgument.id())
-                                        .suggests(suggestFromRegistry(r -> r.getTagNames().map(TagKey::location)::iterator))
+                                        .suggests(CommandUtils.suggestFromRegistry(r -> r.getTagNames().map(TagKey::location)::iterator, ROOT_REGISTRY_KEY))
                                         .executes(ctx -> listTagElements(ctx, 1))
                                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
                                                 .executes(ctx -> listTagElements(ctx, IntegerArgumentType.getInteger(ctx, "page"))))))
                         .then(Commands.literal("query")
                                 .then(Commands.argument("element", ResourceLocationArgument.id())
-                                        .suggests(suggestFromRegistry(Registry::keySet))
+                                        .suggests(CommandUtils.suggestFromRegistry(Registry::keySet, ROOT_REGISTRY_KEY))
                                         .executes(ctx -> queryElementTags(ctx, 1))
                                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
                                                 .executes(ctx -> queryElementTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))))));
@@ -200,16 +197,6 @@ class TagsCommand {
                 .forEach(tagElements::append);
 
         return header.append("\n").append(tagElements);
-    }
-
-    private static SuggestionProvider<CommandSourceStack> suggestFromRegistry(
-            final Function<Registry<?>, Iterable<ResourceLocation>> namesFunction) {
-        return (ctx, builder) -> CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
-                .flatMap(key -> ctx.getSource().registryAccess().registry(key).map(registry -> {
-                    SharedSuggestionProvider.suggestResource(namesFunction.apply(registry), builder);
-                    return builder.buildFuture();
-                }))
-                .orElseGet(builder::buildFuture);
     }
 
     @SuppressWarnings("unchecked")

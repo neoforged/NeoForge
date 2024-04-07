@@ -6,14 +6,17 @@
 package net.neoforged.neoforge.server.command;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Utility class for various command-related operations.
@@ -27,6 +30,17 @@ public final class CommandUtils {
             final CommandContext<CommandSourceStack> ctx,
             final SuggestionsBuilder builder) {
         return SharedSuggestionProvider.suggestResource(ctx.getSource().registryAccess().listRegistries().map(ResourceKey::location), builder);
+    }
+
+    public static <T extends Registry<?>> SuggestionProvider<CommandSourceStack> suggestFromRegistry(
+            final Function<Registry<?>, Iterable<ResourceLocation>> namesFunction,
+            final ResourceKey<Registry<T>> registryKey) {
+        return (ctx, builder) -> CommandUtils.getResourceKey(ctx, "registry", registryKey)
+                .flatMap(key -> ctx.getSource().registryAccess().registry(key).map(registry -> {
+                    SharedSuggestionProvider.suggestResource(namesFunction.apply(registry), builder);
+                    return builder.buildFuture();
+                }))
+                .orElseGet(builder::buildFuture);
     }
 
     @SuppressWarnings("SameParameterValue")
