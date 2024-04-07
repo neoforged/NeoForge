@@ -23,7 +23,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.neoforged.neoforge.server.command.EnumArgument;
+import net.neoforged.neoforge.server.command.arguments.EnumArgument;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.group.Groupable;

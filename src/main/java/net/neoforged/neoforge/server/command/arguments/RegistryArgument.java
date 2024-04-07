@@ -1,9 +1,4 @@
-/*
- * Copyright (c) NeoForged and contributors
- * SPDX-License-Identifier: LGPL-2.1-only
- */
-
-package net.neoforged.neoforge.server.command;
+package net.neoforged.neoforge.server.command.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -12,14 +7,15 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class RegistryArgument implements ArgumentType<ResourceLocation> {
     private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.arguments.registry.error.unknown_registry", key));
