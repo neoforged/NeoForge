@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
  * It is safe to modify the Block in this event, as it has already been replaced.
  */
 public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
-
     private final List<ItemEntity> dropEntities;
     private final Entity destroyingEntity;
     private final ItemStack tool;
@@ -42,12 +41,12 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
         this.tool = tool;
         this.dropXpWhenCancelled = true;
 
-        for(ItemStack drop : drops) {
+        for (ItemStack drop : drops) {
             Vec3 offset = pos.getCenter().add(
                     Mth.nextDouble(level.getRandom(), -0.25, 0.25),
-                    Mth.nextDouble(level.getRandom(), -0.25, 0.25) - (double)EntityType.ITEM.getHeight() / 2.0,
+                    Mth.nextDouble(level.getRandom(), -0.25, 0.25) - (double) EntityType.ITEM.getHeight() / 2.0,
                     Mth.nextDouble(level.getRandom(), -0.25, 0.25));
-            dropEntities.add(new ItemEntity((ServerLevel)level, offset.x(), offset.y(), offset.z(), drop));
+            dropEntities.add(new ItemEntity((ServerLevel) level, offset.x(), offset.y(), offset.z(), drop));
         }
     }
 
