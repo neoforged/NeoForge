@@ -40,7 +40,7 @@ class DumpCommand {
     private static final String ALPHABETICAL_SORT_PARAM = "alphabetical_sort";
     private static final String PRINT_NUMERIC_ID_PARAM = "print_numeric_ids";
 
-    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.tags.error.unknown_registry", key));
+    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.dump.error.unknown_registry", key));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
@@ -88,7 +88,7 @@ class DumpCommand {
             }
 
             ctx.getSource().sendSuccess(() -> Component.translatable(
-                    "commands.neoforge.registry_dump.success",
+                    "commands.neoforge.dump.success",
                     Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.YELLOW),
                     Component.literal("..." + FMLLoader.getGamePath().relativize(registryDumpFile))
                             .withStyle(ChatFormatting.UNDERLINE)
@@ -101,7 +101,7 @@ class DumpCommand {
 
             ctx.getSource().sendFailure(
                     Component.translatable(
-                            "commands.neoforge.registry_dump.failure",
+                            "commands.neoforge.dump.failure",
                             Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.YELLOW),
                             Component.literal(fileLocationForErrorReporting).withStyle(ChatFormatting.GOLD)));
 

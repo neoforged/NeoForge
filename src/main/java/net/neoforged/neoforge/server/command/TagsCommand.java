@@ -34,7 +34,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 
 /**
- * The {@code /forge tags} command for listing a registry's tags, getting the elements of tags, and querying the tags of a
+ * The {@code /neoforge tags} command for listing a registry's tags, getting the elements of tags, and querying the tags of a
  * registry object.
  *
  * <p>Each command is paginated, showing {@value PAGE_SIZE} entries at a time. When there are more than 0 entries,
@@ -44,9 +44,9 @@ import net.minecraft.util.Mth;
  *
  * <p>The command has three subcommands:</p>
  * <ul>
- * <li>{@code /forge tags &lt;registry> list [page]} - Lists all available tags in the given registry.</li>
- * <li>{@code /forge tags &lt;registry> get &lt;tag> [page]} - Gets all elements of the given tag in the given registry.</li>
- * <li>{@code /forge tags &lt;registry> query &lt;element> [page]} - Queries for all tags in the given registry which
+ * <li>{@code /neoforge tags &lt;registry> list [page]} - Lists all available tags in the given registry.</li>
+ * <li>{@code /neoforge tags &lt;registry> get &lt;tag> [page]} - Gets all elements of the given tag in the given registry.</li>
+ * <li>{@code /neoforge tags &lt;registry> query &lt;element> [page]} - Queries for all tags in the given registry which
  * contain the given registry object.</li>
  * </ul>
  */
@@ -60,9 +60,9 @@ class TagsCommand {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
-         * /forge tags <registry> list [page]
-         * /forge tags <registry> get <tag> [page]
-         * /forge tags <registry> query <element> [page]
+         * /neoforge tags <registry> list [page]
+         * /neoforge tags <registry> get <tag> [page]
+         * /neoforge tags <registry> query <element> [page]
          */
         return Commands.literal("tags")
                 .requires(cs -> cs.hasPermission(2))
@@ -111,7 +111,7 @@ class TagsCommand {
 
     private static int listTagElements(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
-                .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
+                .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
@@ -137,7 +137,7 @@ class TagsCommand {
 
     private static int queryElementTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
-                .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
+                .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
