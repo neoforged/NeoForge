@@ -9,25 +9,25 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.logging.LogUtils;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.server.command.arguments.RegistryArgument;
 import org.slf4j.Logger;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * The {@code /neoforge dump registry} command for printing out the contents of a registry to a file in the game directory's dumps/registry folder.
@@ -36,11 +36,9 @@ import org.slf4j.Logger;
 class DumpCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation("root"));
+    private static final String REGISTRY_PARAM = "registry";
     private static final String ALPHABETICAL_SORT_PARAM = "alphabetical_sort";
     private static final String PRINT_NUMERIC_ID_PARAM = "print_numeric_ids";
-
-    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.tags.error.unknown_registry", key));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
@@ -49,21 +47,16 @@ class DumpCommand {
         return Commands.literal("dump")
                 .requires(cs -> cs.hasPermission(Commands.LEVEL_OWNERS))
                 .then(Commands.literal("registry")
-                        .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
-                                .suggests(CommandUtils::suggestRegistries)
-                                .executes(context -> dumpRegistry(context, false, false))
+                        .then(Commands.argument(REGISTRY_PARAM, RegistryArgument.registryArgument())
+                                .executes(context -> dumpRegistry(context, RegistryArgument.getRegistry(context, REGISTRY_PARAM), false, false))
                                 .then(Commands.argument(ALPHABETICAL_SORT_PARAM, BoolArgumentType.bool())
-                                        .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), false))
+                                        .executes(context -> dumpRegistry(context, RegistryArgument.getRegistry(context, REGISTRY_PARAM), BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), false))
                                         .then(Commands.argument(PRINT_NUMERIC_ID_PARAM, BoolArgumentType.bool())
-                                                .executes(context -> dumpRegistry(context, BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), BoolArgumentType.getBool(context, PRINT_NUMERIC_ID_PARAM)))))));
+                                                .executes(context -> dumpRegistry(context, RegistryArgument.getRegistry(context, REGISTRY_PARAM), BoolArgumentType.getBool(context, ALPHABETICAL_SORT_PARAM), BoolArgumentType.getBool(context, PRINT_NUMERIC_ID_PARAM)))))));
     }
 
-    private static int dumpRegistry(final CommandContext<CommandSourceStack> ctx, boolean alphabeticalSort, boolean printNumericIds) throws CommandSyntaxException {
-        final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
-                .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
-
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
-                .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
+    private static int dumpRegistry(final CommandContext<CommandSourceStack> ctx, Registry<?> registry, boolean alphabeticalSort, boolean printNumericIds) {
+        final ResourceKey<? extends Registry<?>> registryKey = registry.key();
 
         String fileLocationForErrorReporting = "";
         try {
