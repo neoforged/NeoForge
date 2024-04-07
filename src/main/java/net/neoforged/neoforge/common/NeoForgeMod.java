@@ -165,9 +165,8 @@ import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 import net.neoforged.neoforge.registries.holdersets.NotHolderSet;
 import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
-import net.neoforged.neoforge.server.command.arguments.EnumArgument;
-import net.neoforged.neoforge.server.command.arguments.ModIdArgument;
-import net.neoforged.neoforge.server.command.arguments.RegistryArgument;
+import net.neoforged.neoforge.server.command.EnumArgument;
+import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
@@ -197,8 +196,6 @@ public class NeoForgeMod {
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
             SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
-    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<RegistryArgument>> REGISTRY_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("registry", () -> ArgumentTypeInfos.registerByClass(RegistryArgument.class,
-            SingletonArgumentInfo.contextFree(RegistryArgument::registryArgument)));
 
     public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
     public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));

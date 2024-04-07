@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.server.command.arguments;
+package net.neoforged.neoforge.server.command;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
