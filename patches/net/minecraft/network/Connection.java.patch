@@ -46,14 +46,18 @@
              this.packetListener = p_320940_;
              this.disconnectListener = null;
              UnconfiguredPipelineHandler.InboundConfigurationTask unconfiguredpipelinehandler$inboundconfigurationtask = UnconfiguredPipelineHandler.setupInboundProtocol(
-@@ -233,6 +_,7 @@
+@@ -231,7 +_,10 @@
+             if (bundlerinfo != null) {
+                 PacketBundleUnpacker packetbundleunpacker = new PacketBundleUnpacker(bundlerinfo);
                  unconfiguredpipelinehandler$outboundconfigurationtask = unconfiguredpipelinehandler$outboundconfigurationtask.andThen(
-                     p_319516_ -> p_319516_.pipeline().addAfter("encoder", "unbundler", packetbundleunpacker)
+-                    p_319516_ -> p_319516_.pipeline().addAfter("encoder", "unbundler", packetbundleunpacker)
++                    p_319516_ -> {
++                        p_319516_.pipeline().addAfter("encoder", "unbundler", packetbundleunpacker);
++                        net.neoforged.neoforge.network.filters.NetworkFilters.injectIfNecessary(this); // Neo: our handlers must be between the encoder and the unbundler, so re-inject them
++                    }
                  );
-+                net.neoforged.neoforge.network.filters.NetworkFilters.injectIfNecessary(this); // Neo: our handlers must be between the encoder and the unbundler, so re-inject them
              }
  
-             boolean flag = p_319974_.id() == ConnectionProtocol.LOGIN;
 @@ -404,7 +_,7 @@
          if (this.address == null) {
              return "local";
