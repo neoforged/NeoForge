@@ -4,7 +4,7 @@
  
      @Override
      public boolean hurt(DamageSource p_108662_, float p_108663_) {
-+        net.neoforged.neoforge.common.CommonHooks.onPlayerAttack(this, p_108662_, p_108663_);
++        net.neoforged.neoforge.common.CommonHooks.onPlayerEntityPreDamage(this, this.damageContainer);
          return false;
      }
  

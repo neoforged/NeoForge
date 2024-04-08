@@ -39,13 +39,13 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
-import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -188,8 +188,8 @@ public class LivingEntityEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ShieldBlockEvent is fired")
     static void shieldBlockEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ShieldBlockEvent event) -> {
-            if (event.getDamageSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity() instanceof Zombie zombie && Objects.equals(zombie.getName(), Component.literal("shieldblock"))) {
+        test.eventListeners().forge().addListener((final DamageBlockEvent event) -> {
+            if (event.getBlocked() && event.getDamageSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity() instanceof Zombie zombie && Objects.equals(zombie.getName(), Component.literal("shieldblock"))) {
                 zombie.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.STONE));
                 event.setBlockedDamage(event.getOriginalBlockedDamage() / 2);
                 arrow.discard();

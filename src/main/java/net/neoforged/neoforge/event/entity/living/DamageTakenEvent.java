@@ -9,6 +9,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
  * LivingDamageEvent is fired just before damage is applied to entity.<br>
@@ -28,27 +29,10 @@ import net.neoforged.neoforge.common.CommonHooks;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * 
- * @see LivingHurtEvent
+ * @see IncomingDamageEvent
  **/
-public class LivingDamageEvent extends LivingEvent implements ICancellableEvent {
-    private final DamageSource source;
-    private float amount;
-
-    public LivingDamageEvent(LivingEntity entity, DamageSource source, float amount) {
-        super(entity);
-        this.source = source;
-        this.amount = amount;
-    }
-
-    public DamageSource getSource() {
-        return source;
-    }
-
-    public float getAmount() {
-        return amount;
-    }
-
-    public void setAmount(float amount) {
-        this.amount = amount;
+public class DamageTakenEvent extends DamageSequenceEvent {
+    public DamageTakenEvent(LivingEntity entity, DamageContainer container) {
+        super(entity, container);
     }
 }

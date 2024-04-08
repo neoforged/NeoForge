@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
  * LivingAttackEvent is fired when a living Entity is attacked. <br>
@@ -30,21 +31,16 @@ import net.neoforged.neoforge.common.NeoForge;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class LivingAttackEvent extends LivingEvent implements ICancellableEvent {
-    private final DamageSource source;
-    private final float amount;
-
-    public LivingAttackEvent(LivingEntity entity, DamageSource source, float amount) {
-        super(entity);
-        this.source = source;
-        this.amount = amount;
+public class EntityPreDamageEvent extends DamageSequenceEvent implements ICancellableEvent {
+    public EntityPreDamageEvent(LivingEntity entity, DamageContainer container) {
+        super(entity, container);
     }
 
     public DamageSource getSource() {
-        return source;
+        return this.container.getSource();
     }
 
     public float getAmount() {
-        return amount;
+        return this.container.getNewDamage();
     }
 }

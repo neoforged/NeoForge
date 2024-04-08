@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -70,6 +72,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
@@ -95,12 +99,14 @@ import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -148,6 +154,7 @@ import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
@@ -167,25 +174,27 @@ import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
+import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
+import net.neoforged.neoforge.event.entity.living.DamageTakenEvent;
 import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
+import net.neoforged.neoforge.event.entity.living.EntityPreDamageEvent;
+import net.neoforged.neoforge.event.entity.living.IncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
+import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
@@ -238,12 +247,20 @@ public class CommonHooks {
         return event;
     }
 
-    public static boolean onLivingAttack(LivingEntity entity, DamageSource src, float amount) {
-        return entity instanceof Player || !NeoForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
+    public static boolean onEntityInvulnerablityCheck(Entity entity, DamageSource source, boolean isInvul) {
+        return NeoForge.EVENT_BUS.post(new EntityInvulnerablityCheckEvent(entity, source, isInvul)).isInvulnerable();
     }
 
-    public static boolean onPlayerAttack(LivingEntity entity, DamageSource src, float amount) {
-        return !NeoForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
+    public static boolean onLivingTick(LivingEntity entity) {
+        return NeoForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent(entity)).isCanceled();
+    }
+
+    public static boolean onEntityPreDamage(LivingEntity entity, DamageContainer container) {
+        return entity instanceof Player || !NeoForge.EVENT_BUS.post(new EntityPreDamageEvent(entity, container)).isCanceled();
+    }
+
+    public static boolean onPlayerEntityPreDamage(LivingEntity entity, DamageContainer container) {
+        return !NeoForge.EVENT_BUS.post(new EntityPreDamageEvent(entity, container)).isCanceled();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ) {
@@ -256,14 +273,33 @@ public class CommonHooks {
         return !NeoForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand)).isCanceled();
     }
 
-    public static float onLivingHurt(LivingEntity entity, DamageSource src, float amount) {
-        LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
-        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
+    public static void onIncomingDamage(LivingEntity entity, DamageContainer container) {
+        NeoForge.EVENT_BUS.post(new IncomingDamageEvent(entity, container));
     }
 
-    public static float onLivingDamage(LivingEntity entity, DamageSource src, float amount) {
-        LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
-        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
+    public static void onLivingDamageTaken(LivingEntity entity, DamageContainer container) {
+        NeoForge.EVENT_BUS.post(new DamageTakenEvent(entity, container));
+    }
+
+    public static void onArmorHurt(DamageSource source, NonNullList<ItemStack> armor, float damage, Player player) {
+        EnumMap<EquipmentSlot, ItemStack> armorMap = new EnumMap<>(EquipmentSlot.class);
+        EnumMap<EquipmentSlot, Float> damageMap = new EnumMap<>(EquipmentSlot.class);
+        for (int index : Inventory.ALL_ARMOR_SLOTS) {
+            ItemStack armorPiece = armor.get(index);
+            if (armorPiece.isEmpty()) continue;
+            EquipmentSlot slot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index);
+            armorMap.put(slot, armor.get(index));
+            damageMap.put(slot, damage);
+        }
+
+        ArmorHurtEvent event = NeoForge.EVENT_BUS.post(new ArmorHurtEvent(armorMap, damageMap, player));
+        if (event.isCanceled()) return;
+        event.getArmorMap().forEach((slot, armorPiece) -> {
+            if ((!source.is(DamageTypeTags.IS_FIRE) || !armorPiece.getItem().isFireResistant()) && armorPiece.getItem() instanceof ArmorItem) {
+                Float finalDamage = event.isCanceled() ? event.getOriginalDamage(slot) : event.getNewDamage(slot);
+                armorPiece.hurtAndBreak(finalDamage.intValue(), player, p_35997_ -> p_35997_.broadcastBreakEvent(slot));
+            }
+        });
     }
 
     public static boolean onLivingDeath(LivingEntity entity, DamageSource src) {
@@ -1001,8 +1037,8 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new EntityEvent.EnteringSection(entity, packedOldPos, packedNewPos));
     }
 
-    public static ShieldBlockEvent onShieldBlock(LivingEntity blocker, DamageSource source, float blocked) {
-        ShieldBlockEvent e = new ShieldBlockEvent(blocker, source, blocked);
+    public static DamageBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, boolean originalBlocked) {
+        DamageBlockEvent e = new DamageBlockEvent(blocker, container, originalBlocked);
         NeoForge.EVENT_BUS.post(e);
         return e;
     }

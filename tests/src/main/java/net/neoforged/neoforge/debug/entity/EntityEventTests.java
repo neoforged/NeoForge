@@ -8,6 +8,8 @@ package net.neoforged.neoforge.debug.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.Cow;
@@ -17,13 +19,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTestPlayer;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = { EntityTests.GROUP + ".event", "event" })
@@ -92,5 +97,23 @@ public class EntityEventTests {
                 .thenIdle(10)
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if EntityInvulnerabilityCheckEvent prevents damage when modified.")
+    static void entityInvulnerabilityCheckEvent(final DynamicTest test, final RegistrationHelper reg) {
+        test.eventListeners().forge().addListener((final EntityInvulnerablityCheckEvent event) -> {
+            if (event.getEntity() instanceof GameTestPlayer entity)
+                event.setInvulnerable(false);
+        });
+
+        test.onGameTest(helper -> {
+            DamageSource source = new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.MOB_ATTACK));
+            helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
+                    .thenExecute(player -> player.setInvulnerable(true))
+                    .thenWaitUntil(player -> helper.assertTrue(!player.isInvulnerableTo(source), "Player Invulnerability not bypassed."))
+                    .thenSucceed();
+        });
     }
 }

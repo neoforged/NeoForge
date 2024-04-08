@@ -38,7 +38,7 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.debug.EventTests;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.DamageTakenEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -276,8 +276,8 @@ public class DataMapTests {
             }
         });
 
-        test.eventListeners().forge().addListener((final LivingDamageEvent event) -> {
-            final ExperienceGrant grant = event.getSource().typeHolder().getData(xpGrant);
+        test.eventListeners().forge().addListener((final DamageTakenEvent event) -> {
+            final ExperienceGrant grant = event.getDamageContainer().getSource().typeHolder().getData(xpGrant);
             if (grant != null && event.getEntity() instanceof Player player) {
                 player.giveExperiencePoints(grant.amount());
             }
