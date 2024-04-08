@@ -30,7 +30,7 @@
          this.synchronizeRegistriesTask = new SynchronizeRegistriesTask(list, layeredregistryaccess);
          this.configurationTasks.add(this.synchronizeRegistriesTask);
          this.addOptionalTasks();
-@@ -87,6 +_,55 @@
+@@ -87,6 +_,60 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
@@ -60,6 +60,11 @@
 +                            moddedEnvironmentPayload.configuration(),
 +                            moddedEnvironmentPayload.play()
 +                    );
++            return;
++        }
++        if (p_294276_.type().id().getNamespace().equals("minecraft")) {
++            // Vanilla clients send minecraft:brand packets.
++            super.handleCustomPayload(p_294276_);
 +            return;
 +        }
 +
