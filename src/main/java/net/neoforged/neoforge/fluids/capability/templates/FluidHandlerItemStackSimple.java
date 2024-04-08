@@ -5,26 +5,30 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 /**
  * FluidHandlerItemStackSimple is a template capability provider for ItemStacks.
- * Data is stored in the {@link NeoForgeMod#FLUID_STACK_COMPONENT} component.
+ * Data is stored in a {@link SimpleFluidContent} component.
  *
  * <p>This implementation only allows item containers to be fully filled or emptied, similar to vanilla buckets.
  */
 public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
+    protected final DataComponentType<SimpleFluidContent> componentType;
     protected ItemStack container;
     protected int capacity;
 
     /**
-     * @param container The container itemStack, data is stored on it directly as NBT.
-     * @param capacity  The maximum capacity of this fluid tank.
+     * @param componentType The data component type to use for data storage.
+     * @param container     The container itemStack, data is stored on it directly as NBT.
+     * @param capacity      The maximum capacity of this fluid tank.
      */
-    public FluidHandlerItemStackSimple(ItemStack container, int capacity) {
+    public FluidHandlerItemStackSimple(DataComponentType<SimpleFluidContent> componentType, ItemStack container, int capacity) {
+        this.componentType = componentType;
         this.container = container;
         this.capacity = capacity;
     }
@@ -35,12 +39,11 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
     }
 
     public FluidStack getFluid() {
-        // TODO 1.20.5: should not need a copy if it's immutable.
-        return container.getOrDefault(NeoForgeMod.FLUID_STACK_COMPONENT.get(), FluidStack.EMPTY).copy();
+        return container.getOrDefault(componentType, SimpleFluidContent.EMPTY).copy();
     }
 
     protected void setFluid(FluidStack fluid) {
-        container.set(NeoForgeMod.FLUID_STACK_COMPONENT.get(), fluid);
+        container.set(componentType, SimpleFluidContent.copyOf(fluid));
     }
 
     @Override
@@ -131,15 +134,15 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
      * Can be used to destroy the container with "container.stackSize--"
      */
     protected void setContainerToEmpty() {
-        container.remove(NeoForgeMod.FLUID_STACK_COMPONENT.get());
+        container.remove(componentType);
     }
 
     /**
      * Destroys the container item when it's emptied.
      */
     public static class Consumable extends FluidHandlerItemStackSimple {
-        public Consumable(ItemStack container, int capacity) {
-            super(container, capacity);
+        public Consumable(DataComponentType<SimpleFluidContent> componentType, ItemStack container, int capacity) {
+            super(componentType, container, capacity);
         }
 
         @Override
@@ -155,8 +158,8 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
     public static class SwapEmpty extends FluidHandlerItemStackSimple {
         protected final ItemStack emptyContainer;
 
-        public SwapEmpty(ItemStack container, ItemStack emptyContainer, int capacity) {
-            super(container, capacity);
+        public SwapEmpty(DataComponentType<SimpleFluidContent> componentType, ItemStack container, ItemStack emptyContainer, int capacity) {
+            super(componentType, container, capacity);
             this.emptyContainer = emptyContainer;
         }
 
