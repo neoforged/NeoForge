@@ -61,7 +61,6 @@ dependencies {
     installer "org.ow2.asm:asm-analysis:${project.asm_version}"
     installer "net.neoforged:accesstransformers:${project.accesstransformers_version}"
     installer "net.neoforged:bus:${project.eventbus_version}"
-    installer "net.neoforged.fancymodloader:spi:${project.fancy_mod_loader_version}"
     installer "net.neoforged:coremods:${project.coremods_version}"
     installer "cpw.mods:modlauncher:${project.modlauncher_version}"
     installer "net.minecraftforge:unsafe:${project.unsafe_version}"

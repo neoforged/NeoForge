@@ -62,7 +62,7 @@
 +                    );
 +            return;
 +        }
-+        if (p_294276_.type().id().getNamespace().equals("minecraft")) {
++        if (p_294276_.payload().type().id().getNamespace().equals("minecraft")) {
 +            // Vanilla clients send minecraft:brand packets.
 +            super.handleCustomPayload(p_294276_);
 +            return;
