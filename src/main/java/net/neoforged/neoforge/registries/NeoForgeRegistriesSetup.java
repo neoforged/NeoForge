@@ -47,7 +47,9 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.VILLAGER_PROFESSION, // Required for EntityDataSerializers
             BuiltInRegistries.CAT_VARIANT, // Required for EntityDataSerializers
             BuiltInRegistries.FROG_VARIANT, // Required for EntityDataSerializers
-            BuiltInRegistries.DATA_COMPONENT_TYPE // Required for itemstack sync
+            BuiltInRegistries.DATA_COMPONENT_TYPE, // Required for itemstack sync
+            BuiltInRegistries.RECIPE_SERIALIZER, // Required for Recipe sync
+            BuiltInRegistries.ATTRIBUTE // Required for ClientboundUpdateAttributesPacket TODO: check vanilla-neo connections?
     );
 
     private static void registerRegistries(NewRegistryEvent event) {

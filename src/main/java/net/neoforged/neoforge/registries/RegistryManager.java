@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+@ApiStatus.Internal
 public class RegistryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Marker REGISTRIES = MarkerFactory.getMarker("REGISTRIES");
@@ -95,7 +96,6 @@ public class RegistryManager {
         pendingModdedRegistries = null;
     }
 
-    @ApiStatus.Internal
     public static void initDataMaps() {
         final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> dataMapTypes = new HashMap<>();
         ModLoader.get().postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
@@ -271,9 +271,15 @@ public class RegistryManager {
 
     public static final AttributeKey<Map<ResourceKey<? extends Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");
 
-    @ApiStatus.Internal
     public static void handleKnownDataMapsReply(final KnownRegistryDataMapsReplyPayload payload, final ConfigurationPayloadContext context) {
         context.channelHandlerContext().attr(ATTRIBUTE_KNOWN_DATA_MAPS).set(payload.dataMaps());
         context.taskCompletedHandler().onTaskCompleted(RegistryDataMapNegotiation.TYPE);
+    }
+
+    public static boolean isNonSyncedBuiltInRegistry(Registry<?> registry) {
+        if (!BuiltInRegistries.REGISTRY.containsKey((ResourceKey) registry.key())) {
+            return false; // Dynamic registry
+        }
+        return !registry.doesSync();
     }
 }
