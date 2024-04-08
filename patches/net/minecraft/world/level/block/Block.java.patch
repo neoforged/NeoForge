@@ -152,7 +152,7 @@
 +
 +    /**
 +     * Short-lived holder of dropped item entities.
-+     * 
++     *
 +     * When not null, records all item entities from {@link #popResource(Level, Supplier, ItemStack)} instead of adding them to the world.
 +     */
 +    @Nullable
@@ -160,7 +160,7 @@
 +
 +    /**
 +     * Initializes {@link #capturedDrops}, starting the drop capture process.
-+     * 
++     *
 +     * Must only be called on the server thread.
 +     */
 +    private static void beginCapturingDrops() {
