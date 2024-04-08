@@ -40,8 +40,7 @@ public class BlockEventTests {
                 event.setCanceled(true); // Make dirt not drop unless it was broken by a shovel to test cancellation as a whole.
             }
             if (event.getState().getBlock() == Blocks.NETHER_QUARTZ_ORE && event.getTool().is(Items.IRON_PICKAXE)) {
-                event.setDropXpWhenCancelled(true);
-                event.setCanceled(true); // Make Nether Quartz only drop XP and no items when broken with an Iron Pickaxe.
+                event.setCanceled(true); // Make Nether Quartz drop no items when broken with an Iron Pickaxe.
             }
             test.pass();
         }));
@@ -59,7 +58,6 @@ public class BlockEventTests {
                 .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.IRON_PICKAXE), helper.makeMockSurvivalPlayer()))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.NETHER_QUARTZ_ORE, pos))
                 .thenExecute(() -> helper.assertItemEntityNotPresent(Items.QUARTZ))
-                .thenExecute(() -> helper.assertEntityPresent(EntityType.EXPERIENCE_ORB))
                 .thenSucceed());
     }
 

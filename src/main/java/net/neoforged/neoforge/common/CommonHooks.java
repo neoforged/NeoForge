@@ -107,7 +107,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -449,19 +448,27 @@ public class CommonHooks {
             state.getBlock().popExperience(level, pos, exp);
     }
 
-    public static void interceptBlockDrops(Level level, BlockPos pos, BlockState state, List<ItemStack> drops, @Nullable Entity breaker, ItemStack breakerTool, boolean dropXp) {
-        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, List.copyOf(drops), breaker, breakerTool);
+    /**
+     * Fires the {@link BlockDropsEvent} when block drops are determined.
+     * If the event is not cancelled, all drops must be added to the world, and then {@link Block#spawnAfterBreak} must be called.
+     * 
+     * @param level       The level
+     * @param pos         The broken block's position
+     * @param state       The broken block's state
+     * @param blockEntity The block entity from the given position
+     * @param drops       The list of all items dropped by the block
+     * @param breaker     The entity who broke the block, or null if unknown
+     * @param tool        The tool used when breaking the block; may be empty
+     * @param dropXp      The value of the patched-in dropXp parameter from dropResources.
+     */
+    public static void handleBlockDrops(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool, boolean dropXp) {
+        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, blockEntity, drops, breaker, tool);
         NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
-            event.getDrops().forEach(i -> {
-                if (!level.isClientSide && !i.getItem().isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-                    i.setDefaultPickUpDelay();
-                    level.addFreshEntity(i);
-                }
-            });
-            state.spawnAfterBreak((ServerLevel) level, pos, breakerTool, dropXp);
-        } else if (event.isDropXpWhenCancelled()) {
-            net.neoforged.neoforge.common.CommonHooks.dropXpForBlock(state, (ServerLevel) level, pos, breakerTool);
+            for (ItemEntity entity : event.getDrops()) {
+                level.addFreshEntity(entity);
+            }
+            state.spawnAfterBreak((ServerLevel) level, pos, tool, dropXp);
         }
     }
 
