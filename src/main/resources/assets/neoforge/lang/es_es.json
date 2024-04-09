@@ -238,8 +238,8 @@
   "neoforge.network.registries.sync.missing": "¡No se han recibido todos los registros esperados del servidor! (faltan: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "The server send registries with unknown keys: %s",
   "neoforge.network.registries.sync.failed": "No se pudieron sincronizar los registros desde el servidor: %s",
-  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s",
-  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
-  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
-  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
+  "neoforge.network.aux_light_data.failed": "Error al manejar datos de carga ligera auxiliares para el chunk %s: %s",
+  "neoforge.network.data_maps.failed": "Error al sincronizar el mapa de datos de registro para el registro %s: %s",
+  "neoforge.network.data_maps.missing_our": "No se puede conectar al servidor ya que al servidor le faltan mapas de datos de registro obligatorios que están presentes en el cliente: %s",
+  "neoforge.network.data_maps.missing_their": "No es posible conectarse al servidor ya que el servidor tiene mapas de datos de registro obligatorios que no están presentes en el cliente: %s"
 }
