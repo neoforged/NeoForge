@@ -497,7 +497,7 @@ public class EventHooks {
      * Cancelling this event should disallow the item from being picked up.
      *
      * @param itemEntity Item entity attempting to be picked up.
-     * @return {@code true} if item pickup is allowed otherwise {@code false}.
+     * @return {@code true} if item pickup is allowed otherwise {@code false} to disallow item pickup.
      */
     public static boolean onItemAllowPickup(ItemEntity itemEntity) {
         return !NeoForge.EVENT_BUS.post(new ItemAllowPickupEvent(itemEntity)).isCanceled();
