@@ -491,9 +491,15 @@ public class EventHooks {
         return hook;
     }
 
+    /**
+     * Fires the {@linkplain ItemAllowPickupEvent} event to determine whether item pickup should be allowed or not.
+     * <p>
+     * Cancelling this event should disallow the item from being picked up.
+     *
+     * @param itemEntity Item entity attempting to be picked up.
+     * @return {@code true} if item pickup is allowed otherwise {@code false}.
+     */
     public static boolean onItemAllowPickup(ItemEntity itemEntity) {
-        // cancelled - disallow item pickup
-        // not cancelled allow item pickup
         return !NeoForge.EVENT_BUS.post(new ItemAllowPickupEvent(itemEntity)).isCanceled();
     }
 
