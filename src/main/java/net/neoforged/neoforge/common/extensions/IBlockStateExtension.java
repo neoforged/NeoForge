@@ -42,6 +42,7 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +67,17 @@ public interface IBlockStateExtension {
      */
     default float getFriction(LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return self().getBlock().getFriction(self(), level, pos, entity);
+    }
+
+    /**
+     * Whether this block state has dynamic light emission which is not solely based on its underlying block or its
+     * state properties and instead uses the {@link BlockPos}, the {@link AuxiliaryLightManager} or another external
+     * data source to determine its light value in {@link #getLightEmission(BlockGetter, BlockPos)}
+     *
+     * @return true if this block state cannot determine its light emission solely based on its properties, false otherwise
+     */
+    default boolean hasDynamicLightEmission() {
+        return self().getBlock().hasDynamicLightEmission(self());
     }
 
     /**
