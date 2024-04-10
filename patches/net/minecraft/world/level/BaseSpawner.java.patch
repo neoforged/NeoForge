@@ -19,7 +19,7 @@
 +                                ((Mob)entity).finalizeSpawn(p_151312_, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
                              }
  
-                             spawndata.getEquipmentLootTable().ifPresent(mob::equip);
+                             spawndata.getEquipment().ifPresent(mob::equip);
 @@ -309,4 +_,12 @@
      public double getoSpin() {
          return this.oSpin;

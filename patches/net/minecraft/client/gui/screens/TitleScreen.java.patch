@@ -23,7 +23,7 @@
                      .tooltip(tooltip)
                      .build()
              )
-@@ -294,6 +_,7 @@
+@@ -290,6 +_,7 @@
                  this.warningLabel.render(p_282860_, i);
              }
  
@@ -31,7 +31,7 @@
              if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
                  this.splash.render(p_282860_, this.width, this.font, i);
              }
-@@ -309,7 +_,13 @@
+@@ -305,7 +_,13 @@
                  s = s + I18n.get("menu.modded");
              }
  

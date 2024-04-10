@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/food/FoodData.java
 +++ b/net/minecraft/world/food/FoodData.java
-@@ -23,8 +_,14 @@
-         this.saturationLevel = Math.min(this.saturationLevel + (float)p_38708_ * p_38709_ * 2.0F, (float)this.foodLevel);
+@@ -27,8 +_,13 @@
+         this.add(p_38708_, FoodConstants.saturationByModifier(p_38708_, p_38709_));
      }
  
 +    // Use the LivingEntity sensitive version in favour of this.
@@ -10,9 +10,8 @@
 -        FoodProperties foodproperties = p_38714_.get(DataComponents.FOOD);
 +        this.eat(p_38714_, null);
 +    }
-+
 +    public void eat(ItemStack p_38714_, @org.jetbrains.annotations.Nullable net.minecraft.world.entity.LivingEntity entity) {
 +        FoodProperties foodproperties = p_38714_.getFoodProperties(entity);
          if (foodproperties != null) {
-             this.eat(foodproperties.nutrition(), foodproperties.saturationModifier());
+             this.add(foodproperties.nutrition(), foodproperties.saturation());
          }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/TestCommand.java
 +++ b/net/minecraft/gametest/framework/TestCommand.java
-@@ -328,7 +_,7 @@
+@@ -343,7 +_,7 @@
              } else {
                  BlockPos blockpos1 = blockpos.subtract(optional.get());
                  String s = blockpos1.getX() + ", " + blockpos1.getY() + ", " + blockpos1.getZ();

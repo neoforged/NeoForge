@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/piglin/AbstractPiglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/AbstractPiglin.java
-@@ -83,7 +_,7 @@
+@@ -82,7 +_,7 @@
              this.timeInOverworld = 0;
          }
  
@@ -9,7 +9,7 @@
              this.playConvertedSound();
              this.finishConversion((ServerLevel)this.level());
          }
-@@ -97,6 +_,7 @@
+@@ -96,6 +_,7 @@
          ZombifiedPiglin zombifiedpiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, true);
          if (zombifiedpiglin != null) {
              zombifiedpiglin.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));

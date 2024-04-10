@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -341,6 +_,7 @@
+@@ -343,6 +_,7 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final DebugSampleSubscriber debugSampleSubscriber;
@@ -8,15 +8,15 @@
      @Nullable
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
-@@ -361,6 +_,7 @@
-         if (p_295121_.chatState() != null) {
+@@ -364,6 +_,7 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
+ 
 +        this.connectionType = p_295121_.connectionType();
+         this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
      }
  
-     public ClientSuggestionProvider getSuggestionsProvider() {
-@@ -421,6 +_,7 @@
+@@ -425,6 +_,7 @@
  
          this.minecraft.debugRenderer.clear();
          this.minecraft.player.resetPos();
@@ -24,7 +24,7 @@
          this.minecraft.player.setId(p_105030_.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
-@@ -819,7 +_,8 @@
+@@ -823,7 +_,8 @@
                          this.serverData,
                          this.postDisconnectScreen,
                          this.serverCookies,
@@ -34,7 +34,7 @@
                      )
                  )
              );
-@@ -1151,6 +_,7 @@
+@@ -1155,6 +_,7 @@
          }
  
          localplayer1.resetPos();
@@ -42,7 +42,7 @@
          this.level.addEntity(localplayer1);
          localplayer1.setYRot(-180.0F);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
-@@ -1279,10 +_,7 @@
+@@ -1283,10 +_,7 @@
          PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
          BlockPos blockpos = p_104976_.getPos();
          this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
@@ -54,7 +54,7 @@
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1449,7 +_,9 @@
+@@ -1453,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -65,7 +65,7 @@
      }
  
      @Override
-@@ -1471,6 +_,7 @@
+@@ -1475,6 +_,7 @@
          ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
          clientrecipebook.setupCollections(this.recipeManager.getRecipes(), this.minecraft.level.registryAccess());
          this.minecraft.populateSearchTree(SearchRegistry.RECIPE_COLLECTIONS, clientrecipebook.getCollections());
@@ -73,7 +73,7 @@
      }
  
      @Override
-@@ -1902,7 +_,21 @@
+@@ -1906,7 +_,21 @@
      }
  
      @Override
@@ -96,7 +96,7 @@
          if (p_295851_ instanceof PathfindingDebugPayload pathfindingdebugpayload) {
              this.minecraft
                  .debugRenderer
-@@ -2385,6 +_,8 @@
+@@ -2389,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -105,7 +105,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2394,6 +_,7 @@
+@@ -2398,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -113,7 +113,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2468,5 +_,9 @@
+@@ -2472,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;
@@ -122,4 +122,5 @@
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
 +        return this.connectionType;
      }
- }
+ 
+     public PotionBrewing potionBrewing() {

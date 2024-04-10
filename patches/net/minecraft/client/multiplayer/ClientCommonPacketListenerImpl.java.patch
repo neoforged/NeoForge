@@ -21,7 +21,7 @@
  
      @Override
      public void handleResourcePackPush(ClientboundResourcePackPushPacket p_314606_) {
-@@ -208,6 +_,10 @@
+@@ -212,6 +_,10 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -32,7 +32,7 @@
          this.connection.send(p_295097_);
      }
  
-@@ -215,6 +_,9 @@
+@@ -219,6 +_,9 @@
      public void onDisconnect(Component p_295485_) {
          this.telemetryManager.onDisconnect();
          this.minecraft.disconnect(this.createDisconnectScreen(p_295485_), this.keepResourcePacks);
@@ -42,7 +42,7 @@
          LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
      }
  
-@@ -334,5 +_,15 @@
+@@ -338,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }

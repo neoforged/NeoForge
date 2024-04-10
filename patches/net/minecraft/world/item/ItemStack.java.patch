@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -88,7 +_,7 @@
+@@ -92,7 +_,7 @@
  import org.apache.commons.lang3.mutable.MutableBoolean;
  import org.slf4j.Logger;
  
 -public final class ItemStack implements DataComponentHolder {
 +public final class ItemStack implements DataComponentHolder, net.neoforged.neoforge.common.extensions.IItemStackExtension {
-     private static final Codec<Holder<Item>> ITEM_NON_AIR_CODEC = BuiltInRegistries.ITEM
+     public static final Codec<Holder<Item>> ITEM_NON_AIR_CODEC = BuiltInRegistries.ITEM
          .holderByNameCodec()
          .validate(
-@@ -297,7 +_,7 @@
+@@ -327,7 +_,7 @@
      }
  
      public boolean is(Holder<Item> p_220166_) {
@@ -18,7 +18,7 @@
      }
  
      public boolean is(HolderSet<Item> p_298683_) {
-@@ -309,13 +_,30 @@
+@@ -339,13 +_,30 @@
      }
  
      public InteractionResult useOn(UseOnContext p_41662_) {
@@ -47,10 +47,10 @@
              Item item = this.getItem();
 -            InteractionResult interactionresult = item.useOn(p_41662_);
 +            InteractionResult interactionresult = callback.apply(p_41662_);
-             if (player != null && interactionresult.shouldAwardStats()) {
+             if (player != null && interactionresult.indicateItemUse()) {
                  player.awardStat(Stats.ITEM_USED.get(item));
              }
-@@ -357,7 +_,7 @@
+@@ -387,7 +_,7 @@
      }
  
      public int getMaxStackSize() {
@@ -59,7 +59,7 @@
      }
  
      public boolean isStackable() {
-@@ -369,23 +_,28 @@
+@@ -399,23 +_,28 @@
      }
  
      public boolean isDamaged() {
@@ -92,7 +92,7 @@
              if (p_220158_ > 0) {
                  int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, this);
                  int j = 0;
-@@ -402,8 +_,8 @@
+@@ -432,8 +_,8 @@
                  }
              }
  
@@ -103,7 +103,7 @@
              }
  
              int l = this.getDamageValue() + p_220158_;
-@@ -420,7 +_,7 @@
+@@ -450,7 +_,7 @@
                  return;
              }
  
@@ -112,7 +112,7 @@
                  p_41624_.broadcastBreakEvent(p_319898_);
                  Item item = this.getItem();
                  this.shrink(1);
-@@ -660,7 +_,7 @@
+@@ -706,7 +_,7 @@
              return List.of();
          } else {
              List<Component> list = Lists.newArrayList();
@@ -121,7 +121,7 @@
              if (this.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
              }
-@@ -715,6 +_,7 @@
+@@ -761,6 +_,7 @@
                  list.add(DISABLED_ITEM_TOOLTIP);
              }
  
@@ -129,7 +129,7 @@
              return list;
          }
      }
-@@ -855,11 +_,15 @@
+@@ -901,11 +_,15 @@
  
      public void forEachModifier(EquipmentSlot p_332001_, BiConsumer<Holder<Attribute>, AttributeModifier> p_330882_) {
          ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -147,7 +147,7 @@
      }
  
      public Component getDisplayName() {
-@@ -870,7 +_,7 @@
+@@ -916,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
          if (!this.isEmpty()) {
@@ -156,7 +156,7 @@
                  .withStyle(p_220170_ -> p_220170_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(this))));
          }
  
-@@ -927,6 +_,8 @@
+@@ -973,6 +_,8 @@
          this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
      }
  

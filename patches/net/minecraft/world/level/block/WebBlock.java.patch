@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/WebBlock.java
 +++ b/net/minecraft/world/level/block/WebBlock.java
-@@ -8,7 +_,7 @@
+@@ -10,7 +_,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.phys.Vec3;
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -197,7 +_,7 @@
+@@ -198,7 +_,7 @@
      private final List<CustomSpawner> customSpawners;
      @Nullable
      private EndDragonFight dragonFight;
@@ -9,7 +9,7 @@
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-@@ -296,6 +_,8 @@
+@@ -297,6 +_,8 @@
          this.randomSequences = Objects.requireNonNullElseGet(
              p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.factory(i), "random_sequences")
          );
@@ -18,7 +18,7 @@
      }
  
      @Deprecated
-@@ -340,7 +_,7 @@
+@@ -341,7 +_,7 @@
          if (this.sleepStatus.areEnoughSleeping(i) && this.sleepStatus.areEnoughDeepSleeping(i, this.players)) {
              if (this.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
                  long j = this.levelData.getDayTime() + 24000L;
@@ -27,7 +27,7 @@
              }
  
              this.wakeUpAllPlayers();
-@@ -378,7 +_,7 @@
+@@ -379,7 +_,7 @@
  
          this.handlingTick = false;
          profilerfiller.pop();
@@ -36,7 +36,7 @@
          if (flag1) {
              this.resetEmptyTime();
          }
-@@ -410,7 +_,9 @@
+@@ -411,7 +_,9 @@
                              }
  
                              profilerfiller.push("tick");
@@ -47,7 +47,7 @@
                              profilerfiller.pop();
                          }
                      }
-@@ -540,6 +_,7 @@
+@@ -541,6 +_,7 @@
          BlockPos blockpos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p_295060_);
          BlockPos blockpos1 = blockpos.below();
          Biome biome = this.getBiome(blockpos).value();
@@ -55,7 +55,7 @@
          if (biome.shouldFreeze(this, blockpos1)) {
              this.setBlockAndUpdate(blockpos1, Blocks.ICE.defaultBlockState());
          }
-@@ -712,15 +_,19 @@
+@@ -713,15 +_,19 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
@@ -79,7 +79,7 @@
          }
      }
  
-@@ -773,6 +_,7 @@
+@@ -774,6 +_,7 @@
              ProfilerFiller profilerfiller = this.getProfiler();
              profilerfiller.push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_8664_.getType()).toString());
              profilerfiller.incrementCounter("tickPassenger");
@@ -87,7 +87,7 @@
              p_8664_.rideTick();
              profilerfiller.pop();
  
-@@ -805,6 +_,7 @@
+@@ -806,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();
              }
@@ -95,7 +95,7 @@
          }
      }
  
-@@ -898,6 +_,7 @@
+@@ -899,6 +_,7 @@
      }
  
      private void addPlayer(ServerPlayer p_8854_) {
@@ -103,7 +103,7 @@
          Entity entity = this.getEntities().get(p_8854_.getUUID());
          if (entity != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", p_8854_.getUUID());
-@@ -905,7 +_,8 @@
+@@ -906,7 +_,8 @@
              this.removePlayerImmediately((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
          }
  
@@ -113,7 +113,7 @@
      }
  
      private boolean addEntity(Entity p_8873_) {
-@@ -913,7 +_,12 @@
+@@ -914,7 +_,12 @@
              LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.getKey(p_8873_.getType()));
              return false;
          } else {
@@ -127,7 +127,7 @@
          }
      }
  
-@@ -961,6 +_,12 @@
+@@ -962,6 +_,12 @@
          float p_263390_,
          long p_263403_
      ) {
@@ -140,7 +140,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -978,6 +_,12 @@
+@@ -979,6 +_,12 @@
      public void playSeededSound(
          @Nullable Player p_263545_, Entity p_263544_, Holder<SoundEvent> p_263491_, SoundSource p_263542_, float p_263530_, float p_263520_, long p_263490_
      ) {
@@ -153,7 +153,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1021,6 +_,7 @@
+@@ -1022,6 +_,7 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> p_316597_, Vec3 p_215042_, GameEvent.Context p_215043_) {
@@ -161,7 +161,7 @@
          this.gameEventDispatcher.post(p_316597_, p_215042_, p_215043_);
      }
  
-@@ -1059,11 +_,16 @@
+@@ -1060,11 +_,16 @@
  
      @Override
      public void updateNeighborsAt(BlockPos p_215045_, Block p_215046_) {
@@ -178,7 +178,7 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
      }
  
-@@ -1721,8 +_,8 @@
+@@ -1727,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -189,7 +189,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1741,24 +_,61 @@
+@@ -1747,24 +_,61 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(

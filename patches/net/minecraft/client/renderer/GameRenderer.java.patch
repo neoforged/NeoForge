@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -306,6 +_,8 @@
+@@ -310,6 +_,8 @@
              this.loadEffect(new ResourceLocation("shaders/post/spider.json"));
          } else if (p_109107_ instanceof EnderMan) {
              this.loadEffect(new ResourceLocation("shaders/post/invert.json"));
@@ -9,7 +9,7 @@
          }
      }
  
-@@ -731,6 +_,7 @@
+@@ -735,6 +_,7 @@
                  )
              );
              this.loadBlurEffect();
@@ -17,7 +17,7 @@
          } catch (IOException ioexception) {
              list1.forEach(p_172729_ -> p_172729_.getFirst().close());
              throw new RuntimeException("could not reload shaders", ioexception);
-@@ -889,7 +_,7 @@
+@@ -893,7 +_,7 @@
                  d0 *= Mth.lerp(this.minecraft.options.fovEffectScale().get(), 1.0, 0.85714287F);
              }
  
@@ -26,7 +26,7 @@
          }
      }
  
-@@ -905,6 +_,10 @@
+@@ -909,6 +_,10 @@
                  return;
              }
  
@@ -37,7 +37,7 @@
              f2 /= (float)livingentity.hurtDuration;
              f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
              float f3 = livingentity.getHurtDir();
-@@ -1054,12 +_,12 @@
+@@ -1058,12 +_,12 @@
                      (float)((double)window.getHeight() / window.getGuiScale()),
                      0.0F,
                      1000.0F,
@@ -52,7 +52,7 @@
              RenderSystem.applyModelViewMatrix();
              Lighting.setupFor3DItems();
              GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
-@@ -1093,7 +_,7 @@
+@@ -1097,7 +_,7 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
@@ -61,7 +61,7 @@
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -1269,12 +_,16 @@
+@@ -1273,12 +_,16 @@
          }
  
          this.resetProjectionMatrix(matrix4f);

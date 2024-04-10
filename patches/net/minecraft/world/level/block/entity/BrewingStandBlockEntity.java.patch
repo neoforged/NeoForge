@@ -2,21 +2,22 @@
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 @@ -147,6 +_,7 @@
  
-     private static boolean isBrewable(NonNullList<ItemStack> p_155295_) {
+     private static boolean isBrewable(PotionBrewing p_341061_, NonNullList<ItemStack> p_155295_) {
          ItemStack itemstack = p_155295_.get(3);
 +        if (!itemstack.isEmpty()) return net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.canBrew(p_155295_, itemstack, SLOTS_FOR_SIDES); // divert to VanillaBrewingRegistry
          if (itemstack.isEmpty()) {
              return false;
-         } else if (!PotionBrewing.isIngredient(itemstack)) {
-@@ -164,21 +_,21 @@
+         } else if (!p_341061_.isIngredient(itemstack)) {
+@@ -164,22 +_,22 @@
      }
  
      private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
 +        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(p_155293_)) return;
          ItemStack itemstack = p_155293_.get(3);
+         PotionBrewing potionbrewing = p_155291_.potionBrewing();
  
 -        for (int i = 0; i < 3; i++) {
--            p_155293_.set(i, PotionBrewing.mix(itemstack, p_155293_.get(i)));
+-            p_155293_.set(i, potionbrewing.mix(itemstack, p_155293_.get(i)));
 -        }
 -
 -        itemstack.shrink(1);
@@ -37,11 +38,11 @@
  
          p_155293_.set(3, itemstack);
          p_155291_.levelEvent(1035, p_155292_, 0);
-@@ -204,11 +_,11 @@
-     @Override
+@@ -206,11 +_,11 @@
      public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {
          if (p_59017_ == 3) {
--            return PotionBrewing.isIngredient(p_59018_);
+             PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
+-            return potionbrewing.isIngredient(p_59018_);
 +            return net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(p_59018_);
          } else {
              return p_59017_ == 4

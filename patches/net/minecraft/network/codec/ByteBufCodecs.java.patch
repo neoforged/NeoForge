@@ -1,15 +1,15 @@
 --- a/net/minecraft/network/codec/ByteBufCodecs.java
 +++ b/net/minecraft/network/codec/ByteBufCodecs.java
-@@ -454,7 +_,11 @@
+@@ -463,7 +_,11 @@
      ) {
          return new StreamCodec<RegistryFriendlyByteBuf, R>() {
-             private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf p_331260_) {
--                return p_320353_.apply(p_331260_.registryAccess().registryOrThrow(p_319942_));
-+                var registry = p_331260_.registryAccess().registryOrThrow(p_319942_);
+             private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf p_330361_) {
+-                return p_320353_.apply(p_330361_.registryAccess().registryOrThrow(p_319942_));
++                var registry = p_330361_.registryAccess().registryOrThrow(p_319942_);
 +                if (net.neoforged.neoforge.registries.RegistryManager.isNonSyncedBuiltInRegistry(registry)) {
 +                    throw new IllegalStateException("Cannot use ID syncing for non-synced built-in registry: " + registry.key());
 +                }
 +                return p_320353_.apply(registry);
              }
  
-             public R decode(RegistryFriendlyByteBuf p_331078_) {
+             public R decode(RegistryFriendlyByteBuf p_331253_) {

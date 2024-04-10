@@ -1,24 +1,15 @@
 --- a/net/minecraft/world/inventory/BrewingStandMenu.java
 +++ b/net/minecraft/world/inventory/BrewingStandMenu.java
-@@ -80,7 +_,7 @@
-                     if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
-                         return ItemStack.EMPTY;
-                     }
--                } else if (BrewingStandMenu.PotionSlot.mayPlaceItem(itemstack) && itemstack.getCount() == 1) {
-+                } else if (BrewingStandMenu.PotionSlot.mayPlaceItem(itemstack)) {
-                     if (!this.moveItemStackTo(itemstack1, 0, 3, false)) {
-                         return ItemStack.EMPTY;
-                     }
-@@ -154,7 +_,7 @@
+@@ -153,7 +_,7 @@
  
          @Override
          public boolean mayPlace(ItemStack p_39121_) {
--            return PotionBrewing.isIngredient(p_39121_);
+-            return this.potionBrewing.isIngredient(p_39121_);
 +            return net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(p_39121_);
          }
+     }
  
-         @Override
-@@ -182,6 +_,7 @@
+@@ -176,6 +_,7 @@
          public void onTake(Player p_150499_, ItemStack p_150500_) {
              Optional<Holder<Potion>> optional = p_150500_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
              if (optional.isPresent() && p_150499_ instanceof ServerPlayer serverplayer) {
@@ -26,7 +17,7 @@
                  CriteriaTriggers.BREWED_POTION.trigger(serverplayer, optional.get());
              }
  
-@@ -189,7 +_,7 @@
+@@ -183,7 +_,7 @@
          }
  
          public static boolean mayPlaceItem(ItemStack p_39134_) {

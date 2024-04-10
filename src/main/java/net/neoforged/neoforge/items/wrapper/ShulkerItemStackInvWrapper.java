@@ -137,6 +137,6 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     }
 
     private void setItemList(NonNullList<ItemStack> itemStacks) {
-        this.stack.set(DataComponents.CONTAINER, ItemContainerContents.copyOf(itemStacks));
+        this.stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(itemStacks));
     }
 }

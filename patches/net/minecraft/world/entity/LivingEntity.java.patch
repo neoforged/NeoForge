@@ -170,7 +170,7 @@
                          this.lastHurtByPlayer = player;
                      } else {
                          this.lastHurtByPlayer = null;
-@@ -1241,7 +_,7 @@
+@@ -1245,7 +_,7 @@
              if (this instanceof ServerPlayer) {
                  CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer)this, p_21016_, f, p_21017_, flag);
                  if (f1 > 0.0F && f1 < 3.4028235E37F) {
@@ -365,11 +365,12 @@
      }
  
      @Override
-@@ -2075,14 +_,17 @@
-         }
+@@ -2077,15 +_,18 @@
+             }
  
-         this.hasImpulse = true;
-+        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
+             this.hasImpulse = true;
++            net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
+         }
      }
  
 +    @Deprecated // FORGE: use sinkInFluid instead
@@ -385,7 +386,7 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2107,7 +_,8 @@
+@@ -2110,7 +_,8 @@
              }
  
              FluidState fluidstate = this.level().getFluidState(this.blockPosition());
@@ -395,7 +396,7 @@
                  double d9 = this.getY();
                  float f4 = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
                  float f5 = 0.02F;
-@@ -2129,6 +_,7 @@
+@@ -2132,6 +_,7 @@
                      f4 = 0.96F;
                  }
  
@@ -403,7 +404,7 @@
                  this.moveRelative(f5, p_21280_);
                  this.move(MoverType.SELF, this.getDeltaMovement());
                  Vec3 vec36 = this.getDeltaMovement();
-@@ -2142,6 +_,7 @@
+@@ -2145,6 +_,7 @@
                  if (this.horizontalCollision && this.isFree(vec32.x, vec32.y + 0.6F - this.getY() + d9, vec32.z)) {
                      this.setDeltaMovement(vec32.x, 0.3F, vec32.z);
                  }
@@ -411,7 +412,7 @@
              } else if (this.isInLava() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
                  double d8 = this.getY();
                  this.moveRelative(0.02F, p_21280_);
-@@ -2204,7 +_,7 @@
+@@ -2207,7 +_,7 @@
                  }
              } else {
                  BlockPos blockpos = this.getBlockPosBelowThatAffectsMyMovement();
@@ -420,7 +421,7 @@
                  float f3 = this.onGround() ? f2 * 0.91F : 0.91F;
                  Vec3 vec35 = this.handleRelativeFrictionAndCalculateMovement(p_21280_, f2);
                  double d2 = vec35.y;
-@@ -2298,7 +_,7 @@
+@@ -2301,7 +_,7 @@
              double d0 = Mth.clamp(p_21298_.x, -0.15F, 0.15F);
              double d1 = Mth.clamp(p_21298_.z, -0.15F, 0.15F);
              double d2 = Math.max(p_21298_.y, -0.15F);
@@ -429,7 +430,7 @@
                  d2 = 0.0;
              }
  
-@@ -2331,6 +_,7 @@
+@@ -2334,6 +_,7 @@
  
      @Override
      public void tick() {
@@ -437,7 +438,7 @@
          super.tick();
          this.updatingUsingItem();
          this.updateSwimAmount();
-@@ -2481,6 +_,7 @@
+@@ -2484,6 +_,7 @@
              };
              ItemStack itemstack1 = this.getItemBySlot(equipmentslot);
              if (this.equipmentHasChanged(itemstack, itemstack1)) {
@@ -445,7 +446,7 @@
                  if (map == null) {
                      map = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -2640,6 +_,9 @@
+@@ -2643,6 +_,9 @@
          this.level().getProfiler().push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double d3;
@@ -455,7 +456,7 @@
              if (this.isInLava()) {
                  d3 = this.getFluidHeight(FluidTags.LAVA);
              } else {
-@@ -2650,15 +_,17 @@
+@@ -2653,15 +_,17 @@
              double d4 = this.getFluidJumpThreshold();
              if (!flag || this.onGround() && !(d3 > d4)) {
                  if (!this.isInLava() || this.onGround() && !(d3 > d4)) {
@@ -475,7 +476,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -2723,6 +_,8 @@
+@@ -2726,6 +_,8 @@
          boolean flag = this.getSharedFlag(7);
          if (flag && !this.onGround() && !this.isPassenger() && !this.hasEffect(MobEffects.LEVITATION)) {
              ItemStack itemstack = this.getItemBySlot(EquipmentSlot.CHEST);
@@ -484,7 +485,7 @@
              if (itemstack.is(Items.ELYTRA) && ElytraItem.isFlyEnabled(itemstack)) {
                  flag = true;
                  int i = this.fallFlyTicks + 1;
-@@ -2980,8 +_,11 @@
+@@ -2983,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -498,7 +499,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -2990,12 +_,15 @@
+@@ -2993,12 +_,15 @@
      }
  
      protected void updateUsingItem(ItemStack p_147201_) {
@@ -515,7 +516,7 @@
              this.completeUsingItem();
          }
      }
-@@ -3030,8 +_,10 @@
+@@ -3033,8 +_,10 @@
      public void startUsingItem(InteractionHand p_21159_) {
          ItemStack itemstack = this.getItemInHand(p_21159_);
          if (!itemstack.isEmpty() && !this.isUsingItem()) {
@@ -527,7 +528,7 @@
              if (!this.level().isClientSide) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, p_21159_ == InteractionHand.OFF_HAND);
-@@ -3107,7 +_,8 @@
+@@ -3110,7 +_,8 @@
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
                      this.triggerItemUseEffects(this.useItem, 16);
@@ -537,7 +538,7 @@
                      if (itemstack != this.useItem) {
                          this.setItemInHand(interactionhand, itemstack);
                      }
-@@ -3132,7 +_,11 @@
+@@ -3135,7 +_,11 @@
  
      public void releaseUsingItem() {
          if (!this.useItem.isEmpty()) {
@@ -549,7 +550,7 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3142,6 +_,7 @@
+@@ -3145,6 +_,7 @@
      }
  
      public void stopUsingItem() {
@@ -557,7 +558,7 @@
          if (!this.level().isClientSide) {
              boolean flag = this.isUsingItem();
              this.setLivingEntityFlag(1, false);
-@@ -3157,7 +_,7 @@
+@@ -3160,7 +_,7 @@
      public boolean isBlocking() {
          if (this.isUsingItem() && !this.useItem.isEmpty()) {
              Item item = this.useItem.getItem();
@@ -566,7 +567,7 @@
          } else {
              return false;
          }
-@@ -3298,8 +_,8 @@
+@@ -3301,8 +_,8 @@
          }
  
          BlockState blockstate = this.level().getBlockState(p_21141_);
@@ -577,7 +578,7 @@
          }
  
          this.setPose(Pose.SLEEPING);
-@@ -3314,15 +_,17 @@
+@@ -3317,15 +_,17 @@
      }
  
      private boolean checkBedExists() {
@@ -598,7 +599,7 @@
                  Vec3 vec31 = BedBlock.findStandUpPosition(this.getType(), this.level(), p_261435_, direction, this.getYRot()).orElseGet(() -> {
                      BlockPos blockpos = p_261435_.above();
                      return new Vec3((double)blockpos.getX() + 0.5, (double)blockpos.getY() + 0.1, (double)blockpos.getZ() + 0.5);
-@@ -3343,7 +_,9 @@
+@@ -3346,7 +_,9 @@
      @Nullable
      public Direction getBedOrientation() {
          BlockPos blockpos = this.getSleepingPos().orElse(null);
@@ -609,7 +610,7 @@
      }
  
      @Override
-@@ -3352,11 +_,11 @@
+@@ -3355,11 +_,11 @@
      }
  
      public ItemStack getProjectile(ItemStack p_21272_) {
@@ -623,7 +624,7 @@
          if (foodproperties != null) {
              p_21067_.playSound(
                  null,
-@@ -3407,6 +_,39 @@
+@@ -3410,6 +_,39 @@
          return p_320526_ == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
      }
  
@@ -663,7 +664,7 @@
      @Override
      public AABB getBoundingBoxForCulling() {
          if (this.getItemBySlot(EquipmentSlot.HEAD).is(Items.DRAGON_HEAD)) {
-@@ -3418,6 +_,8 @@
+@@ -3421,6 +_,8 @@
      }
  
      public static EquipmentSlot getEquipmentSlotForItem(ItemStack p_147234_) {
@@ -672,7 +673,7 @@
          Equipable equipable = Equipable.get(p_147234_);
          return equipable != null ? equipable.getEquipmentSlot() : EquipmentSlot.MAINHAND;
      }
-@@ -3495,7 +_,7 @@
+@@ -3498,7 +_,7 @@
      }
  
      public boolean canDisableShield() {
