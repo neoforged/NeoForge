@@ -87,7 +87,10 @@ public final class ModelData {
                 // When cloning the map, use the expected type based on size
                 properties = parent.properties.size() >= HASH_THRESHOLD ? new Reference2ReferenceOpenHashMap<>(parent.properties) : new Reference2ReferenceArrayMap<>(parent.properties);
             } else {
-                properties = new Reference2ReferenceArrayMap<>();
+                // Allocate the maximum number of entries we'd ever put into the map.
+                // We convert to a hash map *after* insertion of the HASH_THRESHOLD
+                // entry, so we need at least that many spots.
+                properties = new Reference2ReferenceArrayMap<>(HASH_THRESHOLD);
             }
         }
 
