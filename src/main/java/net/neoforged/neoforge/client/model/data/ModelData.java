@@ -75,7 +75,7 @@ public final class ModelData {
          * Hash maps are slower than array maps for *extremely* small maps (empty maps or singletons are the most
          * extreme examples). Many block entities/models only use a single model data property, which means the
          * overhead of hashing is quite wasteful. However, we do want to support any number of properties with
-         * reasonable performance. Therefore, we use an array map until the number of properties exceeds this
+         * reasonable performance. Therefore, we use an array map until the number of properties reaches this
          * threshold, at which point we convert it to a hash map.
          */
         private static final int HASH_THRESHOLD = 4;
