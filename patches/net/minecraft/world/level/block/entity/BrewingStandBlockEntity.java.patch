@@ -1,14 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -147,6 +_,7 @@
- 
-     private static boolean isBrewable(PotionBrewing p_341061_, NonNullList<ItemStack> p_155295_) {
-         ItemStack itemstack = p_155295_.get(3);
-+        if (!itemstack.isEmpty()) return net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.canBrew(p_155295_, itemstack, SLOTS_FOR_SIDES); // divert to VanillaBrewingRegistry
-         if (itemstack.isEmpty()) {
-             return false;
-         } else if (!p_341061_.isIngredient(itemstack)) {
-@@ -164,22 +_,22 @@
+@@ -164,6 +_,7 @@
      }
  
      private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
@@ -16,14 +8,13 @@
          ItemStack itemstack = p_155293_.get(3);
          PotionBrewing potionbrewing = p_155291_.potionBrewing();
  
--        for (int i = 0; i < 3; i++) {
--            p_155293_.set(i, potionbrewing.mix(itemstack, p_155293_.get(i)));
--        }
--
+@@ -171,15 +_,17 @@
+             p_155293_.set(i, potionbrewing.mix(itemstack, p_155293_.get(i)));
+         }
+ 
 -        itemstack.shrink(1);
 -        if (itemstack.getItem().hasCraftingRemainingItem()) {
 -            ItemStack itemstack1 = new ItemStack(itemstack.getItem().getCraftingRemainingItem());
-+        net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.brewPotions(p_155293_, itemstack, SLOTS_FOR_SIDES);
 +        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(p_155293_);
 +        if (itemstack.hasCraftingRemainingItem()) {
 +            ItemStack itemstack1 = itemstack.getCraftingRemainingItem();
@@ -38,17 +29,19 @@
  
          p_155293_.set(3, itemstack);
          p_155291_.levelEvent(1035, p_155292_, 0);
-@@ -206,11 +_,11 @@
+@@ -204,13 +_,13 @@
+ 
+     @Override
      public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {
++        PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
          if (p_59017_ == 3) {
-             PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
--            return potionbrewing.isIngredient(p_59018_);
-+            return net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(p_59018_);
+-            PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
+             return potionbrewing.isIngredient(p_59018_);
          } else {
              return p_59017_ == 4
                  ? p_59018_.is(Items.BLAZE_POWDER)
 -                : (p_59018_.is(Items.POTION) || p_59018_.is(Items.SPLASH_POTION) || p_59018_.is(Items.LINGERING_POTION) || p_59018_.is(Items.GLASS_BOTTLE))
-+                : net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.isValidInput(p_59018_)
++                : (potionbrewing.isInput(p_59018_) || p_59018_.is(Items.GLASS_BOTTLE))
                      && this.getItem(p_59017_).isEmpty();
          }
      }
