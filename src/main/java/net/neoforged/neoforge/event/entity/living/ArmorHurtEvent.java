@@ -7,7 +7,6 @@ package net.neoforged.neoforge.event.entity.living;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
