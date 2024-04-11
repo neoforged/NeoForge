@@ -6,8 +6,9 @@
 package net.neoforged.neoforge.client.model.data;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.client.renderer.RenderType;
@@ -37,12 +38,19 @@ public final class ModelData {
 
     private final Map<ModelProperty<?>, Object> properties;
 
+    @Nullable
+    private Set<ModelProperty<?>> propertySetView;
+
     private ModelData(Map<ModelProperty<?>, Object> properties) {
         this.properties = properties;
     }
 
     public Set<ModelProperty<?>> getProperties() {
-        return properties.keySet();
+        var view = propertySetView;
+        if (view == null) {
+            propertySetView = view = Collections.unmodifiableSet(properties.keySet());
+        }
+        return view;
     }
 
     public boolean has(ModelProperty<?> property) {
@@ -63,11 +71,26 @@ public final class ModelData {
     }
 
     public static final class Builder {
-        private final Map<ModelProperty<?>, Object> properties = new IdentityHashMap<>();
+        /**
+         * Hash maps are slower than array maps for *extremely* small maps (empty maps or singletons are the most
+         * extreme examples). Many block entities/models only use a single model data property, which means the
+         * overhead of hashing is quite wasteful. However, we do want to support any number of properties with
+         * reasonable performance. Therefore, we use an array map until the number of properties reaches this
+         * threshold, at which point we convert it to a hash map.
+         */
+        private static final int HASH_THRESHOLD = 4;
+
+        private Map<ModelProperty<?>, Object> properties;
 
         private Builder(@Nullable ModelData parent) {
             if (parent != null) {
-                properties.putAll(parent.properties);
+                // When cloning the map, use the expected type based on size
+                properties = parent.properties.size() >= HASH_THRESHOLD ? new Reference2ReferenceOpenHashMap<>(parent.properties) : new Reference2ReferenceArrayMap<>(parent.properties);
+            } else {
+                // Allocate the maximum number of entries we'd ever put into the map.
+                // We convert to a hash map *after* insertion of the HASH_THRESHOLD
+                // entry, so we need at least that many spots.
+                properties = new Reference2ReferenceArrayMap<>(HASH_THRESHOLD);
             }
         }
 
@@ -75,13 +98,16 @@ public final class ModelData {
         public <T> Builder with(ModelProperty<T> property, T value) {
             Preconditions.checkState(property.test(value), "The provided value is invalid for this property.");
             properties.put(property, value);
+            // Convert to a hash map if needed
+            if (properties.size() == HASH_THRESHOLD && properties instanceof Reference2ReferenceArrayMap<ModelProperty<?>, Object>) {
+                properties = new Reference2ReferenceOpenHashMap<>(properties);
+            }
             return this;
         }
 
         @Contract("-> new")
         public ModelData build() {
-            // IdentityHashMap is slow when calling get() on an empty instance, so use a singleton empty map if possible
-            return new ModelData(properties.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(properties));
+            return new ModelData(properties);
         }
     }
 }
