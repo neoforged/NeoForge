@@ -144,6 +144,7 @@ public interface DamageContainer {
      */
     float getAbsorption();
 
+    @ApiStatus.Internal
     public class InternalDamageContainer implements DamageContainer {
         private final EnumMap<Reduction, List<BiFunction<DamageContainer, Float, Float>>> reductionMap = new EnumMap<>(Reduction.class);
         private final float originalDamage;
