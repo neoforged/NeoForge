@@ -282,22 +282,20 @@ public class CommonHooks {
     }
 
     public static void onArmorHurt(DamageSource source, NonNullList<ItemStack> armor, float damage, Player player) {
-        EnumMap<EquipmentSlot, ItemStack> armorMap = new EnumMap<>(EquipmentSlot.class);
-        EnumMap<EquipmentSlot, Float> damageMap = new EnumMap<>(EquipmentSlot.class);
+        EnumMap<EquipmentSlot, ArmorHurtEvent.ArmorEntry> armorMap = new EnumMap<>(EquipmentSlot.class);
         for (int index : Inventory.ALL_ARMOR_SLOTS) {
             ItemStack armorPiece = armor.get(index);
             if (armorPiece.isEmpty()) continue;
             EquipmentSlot slot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index);
-            armorMap.put(slot, armor.get(index));
-            damageMap.put(slot, damage);
+            armorMap.put(slot, new ArmorHurtEvent.ArmorEntry(armorPiece, damage));
         }
 
-        ArmorHurtEvent event = NeoForge.EVENT_BUS.post(new ArmorHurtEvent(armorMap, damageMap, player));
+        ArmorHurtEvent event = NeoForge.EVENT_BUS.post(new ArmorHurtEvent(armorMap, player));
         if (event.isCanceled()) return;
-        event.getArmorMap().forEach((slot, armorPiece) -> {
-            if ((!source.is(DamageTypeTags.IS_FIRE) || !armorPiece.getItem().isFireResistant()) && armorPiece.getItem() instanceof ArmorItem) {
-                Float finalDamage = event.isCanceled() ? event.getOriginalDamage(slot) : event.getNewDamage(slot);
-                armorPiece.hurtAndBreak(finalDamage.intValue(), player, p_35997_ -> p_35997_.broadcastBreakEvent(slot));
+        event.getArmorMap().forEach((slot, entry) -> {
+            if ((!source.is(DamageTypeTags.IS_FIRE) || !entry.armorItemStack.getItem().isFireResistant()) && entry.armorItemStack.getItem() instanceof ArmorItem) {
+                Float finalDamage = event.isCanceled() ? entry.originalDamage : entry.newDamage;
+                entry.armorItemStack.hurtAndBreak(finalDamage.intValue(), player, p_35997_ -> p_35997_.broadcastBreakEvent(slot));
             }
         });
     }

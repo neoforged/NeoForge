@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event.entity.living;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -26,16 +27,24 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is fired on the {@link NeoForge#EVENT_BUS}
  */
 public class ArmorHurtEvent extends PlayerEvent implements ICancellableEvent {
-    private final EnumMap<EquipmentSlot, ItemStack> armorItemStack;
-    private final EnumMap<EquipmentSlot, Float> originalDamage;
-    private final EnumMap<EquipmentSlot, Float> damage;
+    public static class ArmorEntry {
+        public ItemStack armorItemStack;
+        public final float originalDamage;
+        public float newDamage;
+
+        public ArmorEntry(ItemStack armorStack, float damageIn) {
+            this.armorItemStack = armorStack;
+            this.originalDamage = damageIn;
+            this.newDamage = damageIn;
+        }
+    }
+
+    private final EnumMap<EquipmentSlot, ArmorEntry> armorEntries;
 
     @ApiStatus.Internal
-    public ArmorHurtEvent(EnumMap<EquipmentSlot, ItemStack> armorItemStack, EnumMap<EquipmentSlot, Float> damage, Player player) {
+    public ArmorHurtEvent(EnumMap<EquipmentSlot, ArmorEntry> armorMap, Player player) {
         super(player);
-        this.armorItemStack = armorItemStack;
-        this.originalDamage = damage;
-        this.damage = damage;
+        this.armorEntries = armorMap;
     }
 
     /**
@@ -44,17 +53,17 @@ public class ArmorHurtEvent extends PlayerEvent implements ICancellableEvent {
      * @return the {@link ItemStack} to be hurt for the given slot
      */
     public ItemStack getArmorItemStack(EquipmentSlot slot) {
-        return armorItemStack.getOrDefault(slot, ItemStack.EMPTY);
+        return armorEntries.containsKey(slot) ? armorEntries.get(slot).armorItemStack : ItemStack.EMPTY;
     }
 
     /** {@return the original damage before any event modifications} */
     public Float getOriginalDamage(EquipmentSlot slot) {
-        return originalDamage.getOrDefault(slot, 0f);
+        return armorEntries.containsKey(slot) ? armorEntries.get(slot).originalDamage : 0f;
     }
 
     /** {@return the amount to hurt the armor if the event is not cancelled} */
     public Float getNewDamage(EquipmentSlot slot) {
-        return damage.getOrDefault(slot, 0f);
+        return armorEntries.containsKey(slot) ? armorEntries.get(slot).newDamage : 0f;
     }
 
     /**
@@ -63,11 +72,11 @@ public class ArmorHurtEvent extends PlayerEvent implements ICancellableEvent {
      * @param damage the new amount to hurt the armor. Values below zero will be set to zero.
      */
     public void setNewDamage(EquipmentSlot slot, float damage) {
-        if (this.damage.containsKey(slot)) this.damage.put(slot, Math.max(damage, 0));
+        if (this.armorEntries.containsKey(slot)) this.armorEntries.get(slot).newDamage = damage;
     }
 
     /** Used internally to get the full map of {@link ItemStack}s to be hurt */
-    public Map<EquipmentSlot, ItemStack> getArmorMap() {
-        return armorItemStack;
+    public Map<EquipmentSlot, ArmorEntry> getArmorMap() {
+        return armorEntries;
     }
 }
