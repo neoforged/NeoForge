@@ -286,18 +286,14 @@ public class CommonHooks {
         for (int index : Inventory.ALL_ARMOR_SLOTS) {
             ItemStack armorPiece = armor.get(index);
             if (armorPiece.isEmpty()) continue;
+            float damageAfterFireResist = ((!source.is(DamageTypeTags.IS_FIRE) || !armorPiece.getItem().isFireResistant()) && armorPiece.getItem() instanceof ArmorItem) ? damage : 0;
             EquipmentSlot slot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index);
-            armorMap.put(slot, new ArmorHurtEvent.ArmorEntry(armorPiece, damage));
+            armorMap.put(slot, new ArmorHurtEvent.ArmorEntry(armorPiece, damageAfterFireResist));
         }
 
         ArmorHurtEvent event = NeoForge.EVENT_BUS.post(new ArmorHurtEvent(armorMap, player));
         if (event.isCanceled()) return;
-        event.getArmorMap().forEach((slot, entry) -> {
-            if ((!source.is(DamageTypeTags.IS_FIRE) || !entry.armorItemStack.getItem().isFireResistant()) && entry.armorItemStack.getItem() instanceof ArmorItem) {
-                Float finalDamage = event.isCanceled() ? entry.originalDamage : entry.newDamage;
-                entry.armorItemStack.hurtAndBreak(finalDamage.intValue(), player, p_35997_ -> p_35997_.broadcastBreakEvent(slot));
-            }
-        });
+        event.getArmorMap().forEach((slot, entry) -> entry.armorItemStack.hurtAndBreak(entry.newDamage.intValue(), player, p_35997_ -> p_35997_.broadcastBreakEvent(slot)));
     }
 
     public static boolean onLivingDeath(LivingEntity entity, DamageSource src) {
