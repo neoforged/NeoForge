@@ -273,12 +273,12 @@ public class CommonHooks {
         return !NeoForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand)).isCanceled();
     }
 
-    public static void onIncomingDamage(LivingEntity entity, DamageContainer container) {
-        NeoForge.EVENT_BUS.post(new IncomingDamageEvent(entity, container));
+    public static float onIncomingDamage(LivingEntity entity, DamageContainer container) {
+        return NeoForge.EVENT_BUS.post(new IncomingDamageEvent(entity, container)).getDamageContainer().getNewDamage();
     }
 
     public static void onLivingDamageTaken(LivingEntity entity, DamageContainer container) {
-        NeoForge.EVENT_BUS.post(new DamageTakenEvent(entity, container));
+        NeoForge.EVENT_BUS.post(new DamageTakenEvent(entity, new DamageContainer.ResultDamageContainer(container)));
     }
 
     public static void onArmorHurt(DamageSource source, NonNullList<ItemStack> armor, float damage, Player player) {

@@ -22,7 +22,7 @@
      private float swimAmountO;
      protected Brain<?> brain;
      private boolean skipDropExperience;
-+    protected net.neoforged.neoforge.common.damagesource.DamageContainer damageContainer;
++    protected net.neoforged.neoforge.common.damagesource.DamageContainer.InternalDamageContainer damageContainer;
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
          super(p_20966_, p_20967_);
@@ -156,7 +156,7 @@
          } else if (p_21016_.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          } else {
-+            this.damageContainer = this.damageContainer == null ? new net.neoforged.neoforge.common.damagesource.DamageContainer(p_21016_, p_21017_) : this.damageContainer;
++            this.damageContainer = this.damageContainer == null ? new net.neoforged.neoforge.common.damagesource.DamageContainer.InternalDamageContainer(p_21016_, p_21017_) : this.damageContainer;
 +            if (!net.neoforged.neoforge.common.CommonHooks.onEntityPreDamage(this, this.damageContainer)) return false;
              if (this.isSleeping() && !this.level().isClientSide) {
                  this.stopSleeping();
@@ -377,7 +377,7 @@
                      }
                  }
              }
-@@ -1636,20 +_,23 @@
+@@ -1636,20 +_,22 @@
                  int k = EnchantmentHelper.getDamageProtection(this.getArmorSlots(), p_21193_);
                  if (k > 0) {
                      p_21194_ = CombatRules.getDamageAfterMagicAbsorb(p_21194_, (float)k);
@@ -396,19 +396,24 @@
 -            float f1 = Math.max(p_21241_ - this.getAbsorptionAmount(), 0.0F);
 -            this.setAbsorptionAmount(this.getAbsorptionAmount() - (p_21241_ - f1));
 -            float f = p_21241_ - f1;
-+            net.neoforged.neoforge.common.CommonHooks.onIncomingDamage(this, this.damageContainer);
-+            if (this.damageContainer.getNewDamage() <= 0) return;
-+            this.damageContainer.setArmorReduction(this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainer.getNewDamage()));
++            this.damageContainer.setArmorReduction(this.damageContainer.getNewDamage() - this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainer.getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(p_21240_, this.damageContainer.getNewDamage());
-+            float f1 = Math.max(this.damageContainer.getNewDamage() - this.getAbsorptionAmount(), 0.0F);
-+            this.damageContainer.setAbsorption(f1);
-+            net.neoforged.neoforge.common.CommonHooks.onLivingDamageTaken(this, this.damageContainer);
-+            this.setAbsorptionAmount(this.getAbsorptionAmount() - (this.damageContainer.getNewDamage() - f1));
++            this.damageContainer.setAbsorption(this.getAbsorptionAmount());
++            float f1 = Math.max(this.damageContainer.getNewDamage() - this.damageContainer.getAbsorption(), 0.0F);
++            this.setAbsorptionAmount(this.damageContainer.getAbsorption() - (this.damageContainer.getNewDamage() - f1));
++            f1 = net.neoforged.neoforge.common.CommonHooks.onIncomingDamage(this, this.damageContainer);
++            if (f1 <= 0) return;
 +            float f = this.damageContainer.getNewDamage() - f1;
              if (f > 0.0F && f < 3.4028235E37F) {
                  Entity entity = p_21240_.getEntity();
                  if (entity instanceof ServerPlayer serverplayer) {
-@@ -1662,8 +_,8 @@
+@@ -1657,13 +_,14 @@
+                 }
+             }
+ 
++            net.neoforged.neoforge.common.CommonHooks.onLivingDamageTaken(this, this.damageContainer);
+             if (f1 != 0.0F) {
+                 this.getCombatTracker().recordDamage(p_21240_, f1);
                  this.setHealth(this.getHealth() - f1);
                  this.setAbsorptionAmount(this.getAbsorptionAmount() - f1);
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);

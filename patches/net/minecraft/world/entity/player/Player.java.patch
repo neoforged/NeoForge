@@ -117,7 +117,7 @@
              if (this.isDeadOrDying()) {
                  return false;
              } else {
-+                this.damageContainer = new net.neoforged.neoforge.common.damagesource.DamageContainer(p_36154_, p_36155_);
++                this.damageContainer = new net.neoforged.neoforge.common.damagesource.DamageContainer.InternalDamageContainer(p_36154_, p_36155_);
 +                if (!net.neoforged.neoforge.common.CommonHooks.onPlayerEntityPreDamage(this, this.damageContainer)) return false;
                  if (!this.level().isClientSide) {
                      this.removeEntitiesOnShoulder();
@@ -161,7 +161,7 @@
                  if (this.useItem.isEmpty()) {
                      if (interactionhand == InteractionHand.MAIN_HAND) {
                          this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-@@ -923,26 +_,28 @@
+@@ -923,26 +_,27 @@
  
      @Override
      protected void actuallyHurt(DamageSource p_36312_, float p_36313_) {
@@ -185,19 +185,18 @@
 -
 -                this.gameEvent(GameEvent.ENTITY_DAMAGE);
 -            }
-+        net.neoforged.neoforge.common.CommonHooks.onIncomingDamage(this, this.damageContainer);
-+        if (this.damageContainer.getNewDamage() <= 0) return;
-+        this.damageContainer.setArmorReduction(this.getDamageAfterArmorAbsorb(p_36312_, this.damageContainer.getNewDamage()));
++        this.damageContainer.setArmorReduction(this.damageContainer.getNewDamage() - this.getDamageAfterArmorAbsorb(p_36312_, this.damageContainer.getNewDamage()));
 +        this.getDamageAfterMagicAbsorb(p_36312_, this.damageContainer.getNewDamage());
-+        float f1 = Math.max(this.damageContainer.getNewDamage() - this.getAbsorptionAmount(), 0.0F);
-+        this.damageContainer.setAbsorption(f1);
-+        net.neoforged.neoforge.common.CommonHooks.onLivingDamageTaken(this, this.damageContainer);
-+        this.setAbsorptionAmount(this.getAbsorptionAmount() - (this.damageContainer.getNewDamage() - f1));
++        this.damageContainer.setAbsorption(this.getAbsorptionAmount());
++        float f1 = Math.max(this.damageContainer.getNewDamage() - this.damageContainer.getAbsorption(), 0.0F);
++        this.setAbsorptionAmount(this.damageContainer.getAbsorption() - (this.damageContainer.getNewDamage() - f1));
++        f1 = net.neoforged.neoforge.common.CommonHooks.onIncomingDamage(this, this.damageContainer);
++        if (f1 <= 0) return;
 +        float f = this.damageContainer.getNewDamage() - f1;
 +        if (f > 0.0F && f < 3.4028235E37F) {
 +            this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(f * 10.0F));
 +        }
-+
++        net.neoforged.neoforge.common.CommonHooks.onLivingDamageTaken(this, this.damageContainer);
 +        if (f1 != 0.0F) {
 +            this.causeFoodExhaustion(p_36312_.getFoodExhaustion());
 +            this.getCombatTracker().recordDamage(p_36312_, f1);
