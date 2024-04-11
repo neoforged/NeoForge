@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.server.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -73,7 +74,7 @@ class DumpCommand {
             Files.createDirectories(registryNamespaceDirectory);
 
             String fileName = registryKey.location().getPath().replaceAll("[/:.]", "_") + ".txt";
-            Path registryDumpFile = Paths.get(registryNamespaceDirectory.toString(), fileName);
+            Path registryDumpFile = registryNamespaceDirectory.resolve(fileName);
             fileLocationForErrorReporting = registryDumpFile.toString();
 
             try (var outputStream = Files.newOutputStream(registryDumpFile)) {
@@ -84,7 +85,7 @@ class DumpCommand {
                     if (printNumericIds) {
                         results = registry.getId(registryKeys) + " - " + results;
                     }
-                    outputStream.write((results + "\r\n").getBytes());
+                    outputStream.write((results + "\n").getBytes());
                 }
             }
 
@@ -103,7 +104,7 @@ class DumpCommand {
                     filePathComponent),
                     false);
 
-            return 1;
+            return Command.SINGLE_SUCCESS;
         } catch (Exception e) {
 
             ctx.getSource().sendFailure(

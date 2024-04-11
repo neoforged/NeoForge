@@ -34,8 +34,9 @@ public final class CommandUtils {
 
     public static <T extends Registry<?>> SuggestionProvider<CommandSourceStack> suggestFromRegistry(
             final Function<Registry<?>, Iterable<ResourceLocation>> namesFunction,
+            final String argumentString,
             final ResourceKey<Registry<T>> registryKey) {
-        return (ctx, builder) -> CommandUtils.getResourceKey(ctx, "registry", registryKey)
+        return (ctx, builder) -> CommandUtils.getResourceKey(ctx, argumentString, registryKey)
                 .flatMap(key -> ctx.getSource().registryAccess().registry(key).map(registry -> {
                     SharedSuggestionProvider.suggestResource(namesFunction.apply(registry), builder);
                     return builder.buildFuture();
