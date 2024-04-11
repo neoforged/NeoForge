@@ -54,9 +54,10 @@ public class DamageBlockEvent extends DamageSequenceEvent implements ICancellabl
     }
 
     /**
-     * Controls if {@link LivingEntity#hurtCurrentlyUsedShield} is called.
+     * If the event is {@link #getBlocked()} and the user is holding a shield, the returned amount
+     * will be taken from the item's durability.
      * 
-     * @return If the shield item will take durability damage or not.
+     * @return The amount of sheild durability damage to take.
      */
     public float shieldDamage() {
         return this.shieldDamage;

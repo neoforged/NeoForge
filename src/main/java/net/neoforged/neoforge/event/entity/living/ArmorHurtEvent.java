@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
+import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -25,12 +26,12 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is fired on the {@link NeoForge#EVENT_BUS}
  */
 public class ArmorHurtEvent extends PlayerEvent implements ICancellableEvent {
-    private final Map<EquipmentSlot, ItemStack> armorItemStack;
-    private final Map<EquipmentSlot, Float> originalDamage;
-    private final Map<EquipmentSlot, Float> damage;
+    private final EnumMap<EquipmentSlot, ItemStack> armorItemStack;
+    private final EnumMap<EquipmentSlot, Float> originalDamage;
+    private final EnumMap<EquipmentSlot, Float> damage;
 
     @ApiStatus.Internal
-    public ArmorHurtEvent(Map<EquipmentSlot, ItemStack> armorItemStack, Map<EquipmentSlot, Float> damage, Player player) {
+    public ArmorHurtEvent(EnumMap<EquipmentSlot, ItemStack> armorItemStack, EnumMap<EquipmentSlot, Float> damage, Player player) {
         super(player);
         this.armorItemStack = armorItemStack;
         this.originalDamage = damage;

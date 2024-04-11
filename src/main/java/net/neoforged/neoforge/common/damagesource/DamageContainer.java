@@ -66,7 +66,7 @@ public interface DamageContainer {
     /**
      * Adds a callback modifier to the vanilla damage reductions. Each function will be performed in sequence
      * on the vanilla value at the time the {@link Reduction} type is set by vanilla.
-     * <h4>Note: only the {@link net.neoforged.neoforge.event.entity.living.IncomingDamageEvent IncomingDamageEvent}
+     * <h4>Note: only the {@link net.neoforged.neoforge.event.entity.living.EntityPreDamageEvent EntityPreDamageEvent}
      * happens early enough in the sequence for this method to have any effect.</h4>
      *
      * @param type      The reduction type your function will apply to
