@@ -12,11 +12,14 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * The ShieldBlockEvent is fired when an entity successfully blocks with a shield.<br>
+ * The ShieldBlockEvent is fired when an entity is hurt and vanilla checks if the entity is attempting
+ * to block with a shield.<br>
  * Cancelling this event will have the same impact as if the shield was not eligible to block.<br>
  * The damage blocked cannot be set lower than zero or greater than the original value.<br>
- * Note: The shield item stack "should" be available from {@link LivingEntity#getUseItem()}
- * at least for players.
+ * <h4>Note: This event fires whether the player is actively using a shield or not. Vanilla shield
+ * blocking logic is captured and passed into the event via {@link #getOriginalBlock()}. If this is
+ * true, The shield item stack "should" be available from {@link LivingEntity#getUseItem()} at least
+ * for players.</h4>
  */
 public class DamageBlockEvent extends DamageSequenceEvent implements ICancellableEvent {
     private float dmgBlocked;
@@ -26,10 +29,10 @@ public class DamageBlockEvent extends DamageSequenceEvent implements ICancellabl
 
     public DamageBlockEvent(LivingEntity blocker, DamageContainer container, boolean originalBlockedState) {
         super(blocker, container);
-        this.dmgBlocked = container.getOriginalDamage();
+        this.dmgBlocked = container.getNewDamage();
         this.originalBlocked = originalBlockedState;
         this.newBlocked = originalBlockedState;
-        this.shieldDamage = container.getOriginalDamage();
+        this.shieldDamage = container.getNewDamage();
     }
 
     /**
@@ -44,25 +47,25 @@ public class DamageBlockEvent extends DamageSequenceEvent implements ICancellabl
      *         incoming damage value.
      */
     public float getOriginalBlockedDamage() {
-        return this.getDamageContainer().getOriginalDamage();
+        return this.getDamageContainer().getNewDamage();
     }
 
     /**
      * @return The current amount of damage blocked, as a result of this event.
      */
     public float getBlockedDamage() {
-        return this.dmgBlocked;
+        return Math.min(this.dmgBlocked, container.getNewDamage());
     }
 
     /**
      * If the event is {@link #getBlocked()} and the user is holding a shield, the returned amount
      * will be taken from the item's durability.
      * 
-     * @return The amount of sheild durability damage to take.
+     * @return The amount of shield durability damage to take.
      */
     public float shieldDamage() {
         if (newBlocked)
-            return shieldDamage >= 0 ? shieldDamage : dmgBlocked;
+            return shieldDamage >= 0 ? shieldDamage : getBlockedDamage();
         return 0;
     }
 
@@ -75,9 +78,11 @@ public class DamageBlockEvent extends DamageSequenceEvent implements ICancellabl
     }
 
     /**
-     * Set if the shield will take durability damage or not.
+     * Set how much durability the shield will lose if {@link #getBlocked()} is true.
+     *
+     * @param damage the new durability value taken from the shield on successful block
      */
-    public void setShieldTakesDamage(float damage) {
+    public void setShieldDamage(float damage) {
         this.shieldDamage = damage;
     }
 
