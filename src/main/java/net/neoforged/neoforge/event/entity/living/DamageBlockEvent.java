@@ -20,7 +20,7 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  */
 public class DamageBlockEvent extends DamageSequenceEvent implements ICancellableEvent {
     private float dmgBlocked;
-    private float shieldDamage = 0;
+    private float shieldDamage = -1;
     private final boolean originalBlocked;
     private boolean newBlocked;
 
@@ -61,7 +61,9 @@ public class DamageBlockEvent extends DamageSequenceEvent implements ICancellabl
      * @return The amount of sheild durability damage to take.
      */
     public float shieldDamage() {
-        return this.shieldDamage;
+        if (newBlocked)
+            return shieldDamage >= 0 ? shieldDamage : dmgBlocked;
+        return 0;
     }
 
     /**
