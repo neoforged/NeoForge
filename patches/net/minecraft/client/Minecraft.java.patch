@@ -225,11 +225,20 @@
          }
  
          if (this.fpsPieResults != null) {
+@@ -1261,7 +_,7 @@
+         boolean flag1 = this.hasSingleplayerServer()
+             && (this.screen != null && this.screen.isPauseScreen() || this.overlay != null && this.overlay.isPauseScreen())
+             && !this.singleplayerServer.isPublished();
+-        if (this.pause != flag1) {
++        if (this.pause != flag1 && !net.neoforged.neoforge.client.ClientHooks.onClientPauseChangePre(flag1)) {
+             if (flag1) {
+                 this.pausePartialTick = this.timer.partialTick;
+             } else {
 @@ -1269,6 +_,7 @@
              }
  
              this.pause = flag1;
-+            net.neoforged.neoforge.client.ClientHooks.onClientPauseUpdate(this.pause);
++            net.neoforged.neoforge.client.ClientHooks.onClientPauseChangePost(flag1);
          }
  
          long l = Util.getNanos();

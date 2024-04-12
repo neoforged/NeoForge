@@ -135,7 +135,7 @@ import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
-import net.neoforged.neoforge.client.event.ClientPauseUpdatedEvent;
+import net.neoforged.neoforge.client.event.ClientPauseChangeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
@@ -244,8 +244,13 @@ public class ClientHooks {
         return result != null ? result : _default;
     }
 
-    public static void onClientPauseUpdate(boolean paused) {
-        NeoForge.EVENT_BUS.post(new ClientPauseUpdatedEvent(paused));
+    public static boolean onClientPauseChangePre(boolean pause) {
+        var event = NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Pre(pause));
+        return event.isCanceled();
+    }
+
+    public static void onClientPauseChangePost(boolean pause) {
+        NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Post(pause));
     }
 
     public static boolean onDrawHighlight(LevelRenderer context, Camera camera, HitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
