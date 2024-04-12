@@ -14,10 +14,10 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * implementations of this class should be used to allow simple discrimination
  * of where in the damage sequence the {@link DamageContainer} is.
  * <br>
- * {@link #container} can be accessed to modify or obtain values from the damage
- * sequence. Note that depending on where in the damage sequence a child event
- * is invoked, modification of a value may have no effect. Read the documentation
- * on the child event of your listener for more detail.
+ * The {@link DamageContainer container} can be accessed to modify or obtain values
+ * from the damage sequence. Note that depending on where in the damage sequence
+ * a child event is invoked, modification of a value may have no effect. Read the
+ * documentation on the child event of your listener for more detail.
  * <br>
  * This event is not {@link ICancellableEvent} by default. Implementation classes
  * can implement this interface if their corresponding hooks effectively terminate
