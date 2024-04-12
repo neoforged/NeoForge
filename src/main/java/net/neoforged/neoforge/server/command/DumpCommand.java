@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 
 /**
  * The {@code /neoforge dump registry} command for printing out the contents of a registry to a file in the game directory's dumps/registry folder.
- * </ul>
  */
 class DumpCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
