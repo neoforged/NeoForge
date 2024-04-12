@@ -114,7 +114,7 @@
   "commands.neoforge.dimensions.list": "Currently registered dimensions by type:",
   "commands.neoforge.dump.success": "New file created with %s registry's contents is at %s",
   "commands.neoforge.dump.failure": "Failed to create new file with %s registry's contents at %s",
-  "commands.neoforge.dump.error.unknown_element": "Unknown element '%s' in registry '%s'",
+  "commands.neoforge.dump.error.unknown_registry": "Unknown element '%s' in registry '%s'",
   "commands.neoforge.entity.list.invalid": "Invalid filter, does not match any entities. Use /neoforge entity list for a proper list",
   "commands.neoforge.entity.list.invalidworld": "Could not load world for dimension {0}. Please select a valid dimension.",
   "commands.neoforge.entity.list.none": "No entities found.",
