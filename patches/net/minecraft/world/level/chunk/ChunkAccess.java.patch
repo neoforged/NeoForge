@@ -29,10 +29,10 @@
 +    public void findBlocks(Predicate<BlockState> p_285343_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-         for(int i = this.getMinSection(); i < this.getMaxSection(); ++i) {
-@@ -323,8 +_,9 @@
-                     for(int k = 0; k < 16; ++k) {
-                         for(int l = 0; l < 16; ++l) {
+         for (int i = this.getMinSection(); i < this.getMaxSection(); i++) {
+@@ -326,8 +_,9 @@
+                     for (int k = 0; k < 16; k++) {
+                         for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
 -                            if (p_285343_.test(blockstate)) {
 -                                p_285030_.accept(blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k), blockstate);
