@@ -29,6 +29,7 @@ public class DamageBlockEvent extends DamageSequenceEvent implements ICancellabl
         this.dmgBlocked = container.getOriginalDamage();
         this.originalBlocked = originalBlockedState;
         this.newBlocked = originalBlockedState;
+        this.shieldDamage = container.getOriginalDamage();
     }
 
     /**

@@ -293,7 +293,7 @@ public class CommonHooks {
 
         ArmorHurtEvent event = NeoForge.EVENT_BUS.post(new ArmorHurtEvent(armorMap, player));
         if (event.isCanceled()) return;
-        event.getArmorMap().forEach((slot, entry) -> entry.armorItemStack.hurtAndBreak(entry.newDamage.intValue(), player, p_35997_ -> p_35997_.broadcastBreakEvent(slot)));
+        event.getArmorMap().forEach((slot, entry) -> entry.armorItemStack.hurtAndBreak((int) entry.newDamage, player, p_35997_ -> p_35997_.broadcastBreakEvent(slot)));
     }
 
     public static boolean onLivingDeath(LivingEntity entity, DamageSource src) {

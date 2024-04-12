@@ -29,7 +29,7 @@ public class ArmorHurtEvent extends PlayerEvent implements ICancellableEvent {
     public static class ArmorEntry {
         public ItemStack armorItemStack;
         public final float originalDamage;
-        public Float newDamage;
+        public float newDamage;
 
         public ArmorEntry(ItemStack armorStack, float damageIn) {
             this.armorItemStack = armorStack;
