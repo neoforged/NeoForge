@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
-@@ -17,10 +_,49 @@
+@@ -17,10 +_,53 @@
          .put(BrandPayload.ID, BrandPayload::new)
          .build();
  
@@ -36,7 +36,11 @@
 +     */
 +    private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
 +        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getReader(p_294367_, context, protocol, KNOWN_TYPES);
-+        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
++        try {
++        return (CustomPacketPayload) (reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
++        } catch (RuntimeException e) {
++            throw new RuntimeException("Failed reading custom payload " + p_294367_ + ": " + e, e); // Make it easier to debug which mod payload failed to be decoded
++        }
 +    }
 +
 +    /**
@@ -50,3 +54,15 @@
      private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_) {
          FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = KNOWN_TYPES.get(p_294367_);
          return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
+@@ -39,7 +_,11 @@
+     @Override
+     public void write(FriendlyByteBuf p_295621_) {
+         p_295621_.writeResourceLocation(this.payload.id());
++        try {
+         this.payload.write(p_295621_);
++        } catch (RuntimeException e) {
++            throw new RuntimeException("Failed writing custom payload " + this.payload.id() + ": " + e, e); // Make it easier to debug which mod payload failed to be encoded
++        }
+     }
+ 
+     public void handle(ServerCommonPacketListener p_295862_) {
