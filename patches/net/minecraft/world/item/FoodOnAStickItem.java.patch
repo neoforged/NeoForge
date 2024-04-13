@@ -4,7 +4,7 @@
                  if (itemstack.isEmpty()) {
                      ItemStack itemstack1 = new ItemStack(Items.FISHING_ROD);
                      itemstack1.setTag(itemstack.getTag());
-+                    net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack1);
++                    net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack1);
                      return InteractionResultHolder.success(itemstack1);
                  }
  

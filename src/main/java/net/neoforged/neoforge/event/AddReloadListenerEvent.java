@@ -19,6 +19,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 
 /**
  * The main ResourceManager is recreated on each reload, just after {@link ReloadableServerResources}'s creation.
@@ -73,11 +74,18 @@ public class AddReloadListenerEvent extends Event {
         return registryAccess;
     }
 
-    private static class WrappedStateAwareListener implements PreparableReloadListener {
+    private static class WrappedStateAwareListener extends ContextAwareReloadListener implements PreparableReloadListener {
         private final PreparableReloadListener wrapped;
 
         private WrappedStateAwareListener(final PreparableReloadListener wrapped) {
             this.wrapped = wrapped;
+        }
+
+        @Override
+        public void injectContext(ICondition.IContext context, RegistryAccess regAccess) {
+            if (this.wrapped instanceof ContextAwareReloadListener contextAwareListener) {
+                contextAwareListener.injectContext(context, regAccess);
+            }
         }
 
         @Override

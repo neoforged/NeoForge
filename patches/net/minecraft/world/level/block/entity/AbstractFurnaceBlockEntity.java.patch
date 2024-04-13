@@ -24,14 +24,17 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingProgress;
                  case 3:
-@@ -111,10 +_,26 @@
+@@ -111,10 +_,29 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
 +        this.recipeType = p_154994_;
      }
  
-+    /**@deprecated Forge: get burn times by calling CommonHooks#getBurnTime(ItemStack)*/ @Deprecated
++    /**
++     * @deprecated Neo: get burn times by calling {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#getBurnTime(RecipeType)}
++     */
++    @Deprecated
      public static Map<Item, Integer> getFuel() {
          Map<Item, Integer> map = Maps.newLinkedHashMap();
 +        buildFuels((e, time) -> e.ifRight(tag -> add(map, tag, time)).ifLeft(item -> add(map, item, time)));
@@ -171,7 +174,7 @@
          } else {
              Item item = p_58343_.getItem();
 -            return getFuel().getOrDefault(item, 0);
-+            return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58343_, this.recipeType);
++            return p_58343_.getBurnTime(this.recipeType);
          }
      }
  
@@ -180,7 +183,7 @@
  
      public static boolean isFuel(ItemStack p_58400_) {
 -        return getFuel().containsKey(p_58400_.getItem());
-+        return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58400_, null) > 0;
++        return p_58400_.getBurnTime(null) > 0;
      }
  
      @Override
@@ -189,7 +192,7 @@
          } else {
              ItemStack itemstack = this.items.get(1);
 -            return isFuel(p_58390_) || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
-+            return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58390_, this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
++            return p_58390_.getBurnTime(this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
          }
      }
  

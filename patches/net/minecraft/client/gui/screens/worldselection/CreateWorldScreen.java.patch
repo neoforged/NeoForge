@@ -4,7 +4,7 @@
      public static void openFresh(Minecraft p_232897_, @Nullable Screen p_232898_) {
          queueLoadScreen(p_232897_, PREPARING_WORLD_DATA);
          PackRepository packrepository = new PackRepository(new ServerPacksSource(p_232897_.directoryValidator()));
-+        net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.event.AddPackFindersEvent(net.minecraft.server.packs.PackType.SERVER_DATA, packrepository::addPackFinder));
++        net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(packrepository, net.minecraft.server.packs.PackType.SERVER_DATA);
          WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
          CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
              worldloader$initconfig,
@@ -32,7 +32,7 @@
          if (path != null) {
              if (this.tempDataPackRepository == null) {
                  this.tempDataPackRepository = ServerPacksSource.createPackRepository(path, this.packValidator);
-+                net.neoforged.neoforge.resource.ResourcePackLoader.loadResourcePacks(this.tempDataPackRepository, map -> net.neoforged.neoforge.resource.ResourcePackLoader.buildPackFinder(map, net.minecraft.server.packs.PackType.SERVER_DATA));
++                net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(this.tempDataPackRepository, net.minecraft.server.packs.PackType.SERVER_DATA);
                  this.tempDataPackRepository.reload();
              }
  

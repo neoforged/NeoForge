@@ -193,11 +193,9 @@
                  },
                  this
              );
-@@ -1429,10 +_,13 @@
-     public static WorldDataConfiguration configurePackRepository(
+@@ -1430,9 +_,11 @@
          PackRepository p_248681_, DataPackConfig p_248920_, boolean p_249869_, FeatureFlagSet p_251243_
      ) {
-+        net.neoforged.neoforge.resource.ResourcePackLoader.loadResourcePacks(p_248681_, map -> net.neoforged.neoforge.resource.ResourcePackLoader.buildPackFinder(map, PackType.SERVER_DATA));
          p_248681_.reload();
 +        DataPackConfig.DEFAULT.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());
 +        p_248920_.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());

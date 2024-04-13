@@ -33,7 +33,7 @@
  
 -        ItemStack itemstack2 = ShulkerBoxBlock.getColoredItemStack(dyeitem.getDyeColor());
 +        ItemStack itemstack2 = ShulkerBoxBlock.getColoredItemStack(dyecolor);
-+        net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack2);
++        net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack2);
          if (itemstack.hasTag()) {
              itemstack2.setTag(itemstack.getTag().copy());
          }

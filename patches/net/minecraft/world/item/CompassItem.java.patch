@@ -4,7 +4,7 @@
                  ItemStack itemstack1 = new ItemStack(Items.COMPASS, 1);
                  CompoundTag compoundtag = itemstack.hasTag() ? itemstack.getTag().copy() : new CompoundTag();
                  itemstack1.setTag(compoundtag);
-+                net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack1);
++                net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack1);
                  if (!player.getAbilities().instabuild) {
                      itemstack.shrink(1);
                  }
