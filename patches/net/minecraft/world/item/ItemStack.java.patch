@@ -9,14 +9,10 @@
      public static final Codec<Holder<Item>> ITEM_NON_AIR_CODEC = BuiltInRegistries.ITEM
          .holderByNameCodec()
          .validate(
-@@ -234,6 +_,14 @@
+@@ -234,6 +_,10 @@
          return !this.isEmpty() ? this.components.asPatch() : DataComponentPatch.EMPTY;
      }
  
-+    public int getComponentsPatchSize() {
-+        return !this.isEmpty() ? this.components.patchSize() : 0;
-+    }
-+
 +    public boolean isComponentsPatchEmpty() {
 +        return !this.isEmpty() ? this.components.isPatchEmpty() : true;
 +    }
