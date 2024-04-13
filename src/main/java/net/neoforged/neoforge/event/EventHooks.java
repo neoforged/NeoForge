@@ -63,6 +63,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
@@ -360,8 +361,8 @@ public class EventHooks {
         return event.getNewState();
     }
 
-    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags) {
-        ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags);
+    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
+        ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
