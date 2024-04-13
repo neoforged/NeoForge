@@ -8,3 +8,14 @@
          this.ensureMapOwnership();
          T t = this.prototype.get((DataComponentType<? extends T>)p_330791_);
          Optional<T> optional;
+@@ -192,6 +_,10 @@
+         }
+ 
+         return i;
++    }
++
++    public boolean isPatchEmpty() {
++        return this.patch.isEmpty();
+     }
+ 
+     public DataComponentPatch asPatch() {

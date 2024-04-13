@@ -156,6 +156,10 @@ public final class FluidStack implements DataComponentHolder {
         return !this.isEmpty() ? this.components.asPatch() : DataComponentPatch.EMPTY;
     }
 
+    public boolean isComponentsPatchEmpty() {
+        return !this.isEmpty() ? this.components.isPatchEmpty() : true;
+    }
+
     public FluidStack(Holder<Fluid> fluid, int amount, DataComponentPatch patch) {
         this(fluid.value(), amount, PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch));
     }
