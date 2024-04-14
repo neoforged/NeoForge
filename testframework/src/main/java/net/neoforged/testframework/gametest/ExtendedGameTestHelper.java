@@ -42,6 +42,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -231,6 +232,14 @@ public class ExtendedGameTestHelper extends GameTestHelper {
                     pos,
                     this.getTick());
         }
+    }
+
+    public void breakBlock(BlockPos relativePos, ItemStack tool, @Nullable Entity breakingEntity) {
+        BlockState state = getBlockState(relativePos);
+        BlockPos absolutePos = absolutePos(relativePos);
+        BlockEntity blockEntity = state.hasBlockEntity() ? getLevel().getBlockEntity(absolutePos) : null;
+        Block.dropResources(state, getLevel(), absolutePos, blockEntity, breakingEntity, tool);
+        getLevel().destroyBlock(absolutePos, false);
     }
 
     public void boneMeal(BlockPos pos, Player player) {

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Sheep;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
@@ -30,6 +32,35 @@ import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = { BlockTests.GROUP + ".event", "event" })
 public class BlockEventTests {
+    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @TestHolder(description = "Tests if the BlockDestroyed event is fired and works properly.")
+    public static void blockDestroyedEvent(final DynamicTest test) {
+        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
+            if (event.getState().getBlock() == Blocks.DIRT && !event.getTool().is(ItemTags.SHOVELS)) {
+                event.setCanceled(true); // Make dirt not drop unless it was broken by a shovel to test cancellation as a whole.
+            }
+            if (event.getState().getBlock() == Blocks.NETHER_QUARTZ_ORE && event.getTool().is(Items.IRON_PICKAXE)) {
+                event.setCanceled(true); // Make Nether Quartz drop no items when broken with an Iron Pickaxe.
+            }
+            test.pass();
+        }));
+
+        BlockPos pos = new BlockPos(1, 1, 1);
+
+        test.onGameTest(helper -> helper
+                .startSequence() // Dirt Test
+                .thenExecute(() -> helper.setBlock(pos, Blocks.DIRT))
+                .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.DIAMOND_HOE), helper.makeMockSurvivalPlayer()))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos))
+                .thenExecute(() -> helper.assertItemEntityNotPresent(Items.DIRT))
+                .thenIdle(5) // Quartz Test
+                .thenExecute(() -> helper.setBlock(pos, Blocks.NETHER_QUARTZ_ORE))
+                .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.IRON_PICKAXE), helper.makeMockSurvivalPlayer()))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.NETHER_QUARTZ_ORE, pos))
+                .thenExecute(() -> helper.assertItemEntityNotPresent(Items.QUARTZ))
+                .thenSucceed());
+    }
+
     @GameTest(template = TestsMod.TEMPLATE_3x3)
     @TestHolder(description = "Tests if the entity place event is fired")
     public static void entityPlacedEvent(final DynamicTest test) {
