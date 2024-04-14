@@ -219,7 +219,7 @@
                          this.neighborChanged(blockstate, blockpos, p_46719_, p_46718_, false);
                      }
                  }
-@@ -1062,6 +_,24 @@
+@@ -1062,6 +_,18 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;
@@ -235,12 +235,6 @@
 +        if (value > maxEntityRadius)
 +            maxEntityRadius = value;
 +        return maxEntityRadius;
-+    }
-+
-+    @Override
-+    @Nullable
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager.Active getModelDataManager() {
-+        return null;
      }
  
      public final boolean isDebug() {

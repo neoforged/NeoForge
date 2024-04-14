@@ -20,11 +20,10 @@
              );
              return this.lastRebuildTask;
          }
-@@ -501,10 +_,20 @@
+@@ -501,10 +_,17 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
              protected RenderChunkRegion region;
-+            private final net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot modelData;
 +            private final List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers;
  
 +            @Deprecated
@@ -35,8 +34,6 @@
 +            public RebuildTask(double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
                  super(RenderSection.this, p_294400_, p_295207_);
                  this.region = p_294382_;
-+                var manager = p_294382_ != null ? p_294382_.getModelDataManager() : null;
-+                this.modelData = manager != null ? manager : net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot.EMPTY;
 +                this.additionalRenderers = additionalRenderers;
              }
  
@@ -47,7 +44,7 @@
                          if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
 -                            RenderType rendertype2 = ItemBlockRenderTypes.getChunkRenderType(blockstate);
 +                            var model = blockrenderdispatcher.getBlockModel(blockstate);
-+                            var modelData = this.modelData.getAtOrEmpty(blockpos2);
++                            var modelData = renderchunkregion.getModelData(blockpos2);
 +                            modelData = model.getModelData(renderchunkregion, blockpos2, blockstate, modelData);
 +                            randomsource.setSeed(blockstate.getSeed(blockpos2));
 +                            for (RenderType rendertype2 : model.getRenderTypes(blockstate, randomsource, modelData)) {

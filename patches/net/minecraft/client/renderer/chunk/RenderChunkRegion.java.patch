@@ -20,7 +20,7 @@
      }
  
      @Override
-@@ -73,5 +_,23 @@
+@@ -73,5 +_,22 @@
      @Override
      public int getHeight() {
          return this.level.getHeight();
@@ -32,9 +32,8 @@
 +    }
 +
 +    @Override
-+    @Nullable
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot getModelDataManager() {
-+        return modelDataManager;
++    public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
++        return modelDataManager != null ? modelDataManager.getAt(pos) : net.neoforged.neoforge.client.model.data.ModelData.EMPTY;
 +    }
 +
 +    @Override

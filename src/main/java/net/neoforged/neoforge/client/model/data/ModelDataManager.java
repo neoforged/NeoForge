@@ -10,7 +10,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -23,124 +22,117 @@ import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A manager for the lifecycle of all the {@link ModelData} instances in a {@link Level}.
+ *
+ * Users should not instantiate this unless they know what they are doing. The manager is also not thread-safe,
+ * it should only be interacted with on the main client thread.
  */
 @EventBusSubscriber(modid = "neoforge", bus = Bus.FORGE, value = Dist.CLIENT)
-public abstract sealed class ModelDataManager permits ModelDataManager.Active, ModelDataManager.Snapshot {
-    ModelDataManager() {}
+public class ModelDataManager {
+    private final Thread owningThread = Thread.currentThread();
+    private final Level level;
+    private final Long2ObjectMap<Set<BlockPos>> needModelDataRefresh = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<Long2ObjectMap<ModelData>> modelDataCache = new Long2ObjectOpenHashMap<>();
+
+    public ModelDataManager(Level level) {
+        this.level = level;
+    }
 
     /**
-     * {@return the {@link ModelData} stored for the given position or {@code null} if none is present}
-     * 
-     * @param pos The position to query
+     * Request a refresh of the stored data for the given {@link BlockEntity}. The given {@code BlockEntity}
+     * must be in the level owning this manager
      */
-    @Nullable
-    public abstract ModelData getAt(BlockPos pos);
+    public void requestRefresh(BlockEntity blockEntity) {
+        if (isOtherThread()) {
+            throw new UnsupportedOperationException("Cannot request ModelData refresh outside the owning thread: " + owningThread);
+        }
+
+        Preconditions.checkNotNull(blockEntity, "BlockEntity must not be null");
+        Preconditions.checkState(blockEntity.getLevel() == level, "BlockEntity does not belong to the level owning this manager");
+        needModelDataRefresh.computeIfAbsent(SectionPos.asLong(blockEntity.getBlockPos()), $ -> new HashSet<>())
+                .add(blockEntity.getBlockPos());
+    }
 
     /**
-     * {@return the {@link ModelData} stored for the given position or {@link ModelData#EMPTY} if none is present}
-     * 
-     * @param pos The position to query
+     * Provides all the model data for a given chunk section. This is useful for mods which wish to efficiently
+     * snapshot some of the model data in a level.
+     * <p></p>
+     * The returned map must be copied if it needs to be accessed from another thread, as it may be modified
+     * by this data manager.
+     *
+     * @param pos the section to query
+     * @return an (unmodifiable) map containing the {@link ModelData} stored for the given chunk section
      */
-    public abstract ModelData getAtOrEmpty(BlockPos pos);
+    public Long2ObjectMap<ModelData> getAt(SectionPos pos) {
+        long sectionKey = pos.asLong();
+        refreshAt(sectionKey);
+        var map = modelDataCache.get(sectionKey);
+        if (map != null) {
+            return Long2ObjectMaps.unmodifiable(map);
+        } else {
+            return Long2ObjectMaps.emptyMap();
+        }
+    }
+
+    /**
+     * Retrieves model data for a block at the given position.
+     *
+     * @param pos the position to query
+     * @return the model data at this position, or {@link ModelData#EMPTY} if none exists
+     */
+    public ModelData getAt(BlockPos pos) {
+        Preconditions.checkArgument(level.isClientSide, "Cannot request model data for server level");
+        long sectionPos = SectionPos.asLong(pos);
+        refreshAt(sectionPos);
+        return modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()).getOrDefault(pos.asLong(), ModelData.EMPTY);
+    }
 
     /**
      * Snapshot the state of this manager for all sections in the volume specified by the given section coordinates.
-     * 
+     *
      * @throws IllegalArgumentException if this is a snapshot and the given region doesn't match the snapshot's region
      */
-    @ApiStatus.Internal
-    public abstract ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ);
+    public ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
+        if (isOtherThread()) {
+            throw new UnsupportedOperationException("Cannot snapshot active manager outside the owning thread: " + owningThread);
+        }
+        return new ModelDataManager.Snapshot(this, sectionMinX, sectionMinY, sectionMinZ, sectionMaxX, sectionMaxY, sectionMaxZ);
+    }
 
-    /**
-     * The active manager owned by the client's level and operated on the main client thread.
-     * <p>
-     * Users should not be instantiating this themselves unless they know what they're doing.
-     */
-    @ApiStatus.Internal
-    public static final class Active extends ModelDataManager {
-        private final Thread owningThread = Thread.currentThread();
-        private final Level level;
-        private final Long2ObjectMap<Set<BlockPos>> needModelDataRefresh = new Long2ObjectOpenHashMap<>();
-        private final Long2ObjectMap<Long2ObjectMap<ModelData>> modelDataCache = new Long2ObjectOpenHashMap<>();
-
-        public Active(Level level) {
-            this.level = level;
+    private void refreshAt(long section) {
+        if (isOtherThread()) {
+            return;
         }
 
-        /**
-         * Request a refresh of the stored data for the given {@link BlockEntity}. The given {@code BlockEntity}
-         * must be in the level owning this manager
-         */
-        public void requestRefresh(BlockEntity blockEntity) {
-            if (isOtherThread()) {
-                throw new UnsupportedOperationException("Cannot request ModelData refresh outside the owning thread: " + owningThread);
-            }
+        Set<BlockPos> needUpdate = needModelDataRefresh.remove(section);
 
-            Preconditions.checkNotNull(blockEntity, "BlockEntity must not be null");
-            Preconditions.checkState(blockEntity.getLevel() == level, "BlockEntity does not belong to the level owning this manager");
-            needModelDataRefresh.computeIfAbsent(SectionPos.asLong(blockEntity.getBlockPos()), $ -> new HashSet<>())
-                    .add(blockEntity.getBlockPos());
-        }
-
-        @Override
-        @Nullable
-        public ModelData getAt(BlockPos pos) {
-            Preconditions.checkArgument(level.isClientSide, "Cannot request model data for server level");
-            long sectionPos = SectionPos.asLong(pos);
-            refreshAt(sectionPos);
-            return modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()).get(pos.asLong());
-        }
-
-        @Override
-        public ModelData getAtOrEmpty(BlockPos pos) {
-            return Objects.requireNonNullElse(getAt(pos), ModelData.EMPTY);
-        }
-
-        @Override
-        public ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
-            if (isOtherThread()) {
-                throw new UnsupportedOperationException("Cannot snapshot active manager outside the owning thread: " + owningThread);
-            }
-            return new ModelDataManager.Snapshot(this, sectionMinX, sectionMinY, sectionMinZ, sectionMaxX, sectionMaxY, sectionMaxZ);
-        }
-
-        private void refreshAt(long section) {
-            if (isOtherThread()) {
-                return;
-            }
-
-            Set<BlockPos> needUpdate = needModelDataRefresh.remove(section);
-
-            if (needUpdate != null) {
-                Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, $ -> new Long2ObjectOpenHashMap<>());
-                for (BlockPos pos : needUpdate) {
-                    BlockEntity toUpdate = level.getBlockEntity(pos);
-                    ModelData newData = ModelData.EMPTY;
-                    // Query the BE for new model data if it exists
-                    if (toUpdate != null && !toUpdate.isRemoved()) {
-                        newData = toUpdate.getModelData();
-                    }
-                    // Make sure we don't bother storing empty data in the map
-                    if (newData != ModelData.EMPTY) {
-                        data.put(pos.asLong(), newData);
-                    } else {
-                        data.remove(pos.asLong());
-                    }
+        if (needUpdate != null) {
+            Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, $ -> new Long2ObjectOpenHashMap<>());
+            for (BlockPos pos : needUpdate) {
+                BlockEntity toUpdate = level.getBlockEntity(pos);
+                ModelData newData = ModelData.EMPTY;
+                // Query the BE for new model data if it exists
+                if (toUpdate != null && !toUpdate.isRemoved()) {
+                    newData = toUpdate.getModelData();
                 }
-                // Remove the map completely if it's now empty
-                if (data.isEmpty()) {
-                    modelDataCache.remove(section);
+                // Make sure we don't bother storing empty data in the map
+                if (newData != ModelData.EMPTY) {
+                    data.put(pos.asLong(), newData);
+                } else {
+                    data.remove(pos.asLong());
                 }
             }
+            // Remove the map completely if it's now empty
+            if (data.isEmpty()) {
+                modelDataCache.remove(section);
+            }
         }
+    }
 
-        private boolean isOtherThread() {
-            return Thread.currentThread() != owningThread;
-        }
+    private boolean isOtherThread() {
+        return Thread.currentThread() != owningThread;
     }
 
     /**
@@ -148,17 +140,12 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
      * prepared for re-rendering. Holds an immutable copy of the applicable subset of the active manager's state.
      */
     @ApiStatus.Internal
-    public static final class Snapshot extends ModelDataManager {
+    public static final class Snapshot {
         public static final ModelDataManager.Snapshot EMPTY = new ModelDataManager.Snapshot();
 
         private final Long2ObjectMap<ModelData> modelDataCache;
-        private final long sectionMin;
-        private final long sectionMax;
 
-        Snapshot(ModelDataManager.Active srcManager, int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
-            this.sectionMin = SectionPos.asLong(sectionMinX, sectionMinY, sectionMinZ);
-            this.sectionMax = SectionPos.asLong(sectionMaxX, sectionMaxY, sectionMaxZ);
-
+        Snapshot(ModelDataManager srcManager, int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
             Long2ObjectMap<ModelData> cache = new Long2ObjectOpenHashMap<>();
             for (int x = sectionMinX; x <= sectionMaxX; x++) {
                 for (int y = sectionMinY; y <= sectionMaxY; y++) {
@@ -173,27 +160,11 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
 
         private Snapshot() {
-            this.sectionMin = this.sectionMax = SectionPos.asLong(0, 0, 0);
             this.modelDataCache = Long2ObjectMaps.emptyMap();
         }
 
-        @Override
-        @Nullable
         public ModelData getAt(BlockPos pos) {
-            return modelDataCache.get(pos.asLong());
-        }
-
-        @Override
-        public ModelData getAtOrEmpty(BlockPos pos) {
             return modelDataCache.getOrDefault(pos.asLong(), ModelData.EMPTY);
-        }
-
-        @Override
-        public ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
-            Preconditions.checkArgument(
-                    this.sectionMin == SectionPos.asLong(sectionMinX, sectionMinY, sectionMinZ) && this.sectionMax == SectionPos.asLong(sectionMaxX, sectionMaxY, sectionMaxZ),
-                    "Cannot request snapshot for a different range from this snapshot");
-            return this;
         }
     }
 
@@ -204,13 +175,13 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
             return;
 
         var modelDataManager = level.getModelDataManager();
-        if (modelDataManager instanceof Active activeManager) {
+        if (modelDataManager != null) {
             ChunkPos chunk = event.getChunk().getPos();
             int maxSection = level.getMaxSection();
             for (int y = level.getMinSection(); y < maxSection; y++) {
                 long section = SectionPos.asLong(chunk.x, y, chunk.z);
-                activeManager.needModelDataRefresh.remove(section);
-                activeManager.modelDataCache.remove(section);
+                modelDataManager.needModelDataRefresh.remove(section);
+                modelDataManager.modelDataCache.remove(section);
             }
         }
     }

@@ -111,5 +111,5 @@
 +        return attachmentHolder;
 +    }
 +    @Nullable
-+    public net.minecraft.world.level.LevelAccessor getWorldForge() { return null; }
++    public net.minecraft.world.level.Level getWorldForge() { return null; }
  }
