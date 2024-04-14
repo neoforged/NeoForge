@@ -7,18 +7,10 @@ package net.neoforged.neoforge.debug;
 
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestInfo;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameType;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
-
-import java.util.function.Consumer;
 
 @ForEachTest(groups = CustomHelperTests.GROUP)
 public class CustomHelperTests {
@@ -32,7 +24,6 @@ public class CustomHelperTests {
     }
 
     public static class Helper extends ExtendedGameTestHelper {
-
         public Helper(GameTestInfo info) {
             super(info);
         }
