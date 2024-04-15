@@ -661,10 +661,8 @@ public class ClientHooks {
 
     public static boolean isNameplateInRenderDistance(Entity entity, double squareDistance) {
         if (entity instanceof LivingEntity) {
-            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
-            if (attribute != null) {
-                return !(squareDistance > (attribute.getValue() * attribute.getValue()));
-            }
+            double value = ((LivingEntity) entity).getAttributeValue(NeoForgeMod.NAMETAG_DISTANCE);
+            return !(squareDistance > value * value);
         }
         return !(squareDistance > 4096.0f);
     }
