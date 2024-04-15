@@ -5,15 +5,13 @@
 
 package net.neoforged.neoforge.common.data.fixes;
 
-import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.TypeRewriteRule;
-import com.mojang.datafixers.Typed;
+import com.mojang.datafixers.*;
 import com.mojang.datafixers.schemas.Schema;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.mojang.datafixers.types.Type;
 import net.minecraft.util.datafix.fixes.References;
 
 public class NeoForgeEntityLegacyAttributesFix extends DataFix {
@@ -29,9 +27,28 @@ public class NeoForgeEntityLegacyAttributesFix extends DataFix {
     @Override
     protected TypeRewriteRule makeRule() {
         Schema schema = this.getInputSchema();
+        Type<?> itemStackType = schema.getType(References.ITEM_STACK);
+        OpticFinder<?> itemStackTag = itemStackType.findField("tag");
         return TypeRewriteRule.seq(
+                this.fixTypeEverywhereTyped(this.name + " (ItemStack)", itemStackType, typed -> typed.updateTyped(itemStackTag, this::fixItemStackTag)),
                 this.fixTypeEverywhereTyped(name + " (Entity)", schema.getType(References.ENTITY), this::removeLegacyAttributes),
                 this.fixTypeEverywhereTyped(name + " (Player)", schema.getType(References.PLAYER), this::removeLegacyAttributes));
+    }
+
+    private Typed<?> fixItemStackTag(Typed<?> typed) {
+        return typed.update(
+                DSL.remainderFinder(),
+                tagDynamic -> tagDynamic.update(
+                        "AttributeModifiers",
+                        modifiersDynamic -> DataFixUtils.orElse(
+                                modifiersDynamic.asStreamOpt()
+                                        .result()
+                                        .map(dynamics -> dynamics.filter(dynamic -> dynamic.get("AttributeName").asString().result().map(str -> !legacyAttributes.contains(str)).orElse(true)))
+                                        .map(modifiersDynamic::createList),
+                                modifiersDynamic
+                        )
+                )
+        );
     }
 
     private Typed<?> removeLegacyAttributes(Typed<?> typed) {
