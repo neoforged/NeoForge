@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
-@@ -118,6 +_,7 @@
+@@ -119,6 +_,7 @@
      public static void openFresh(Minecraft p_232897_, @Nullable Screen p_232898_) {
          queueLoadScreen(p_232897_, PREPARING_WORLD_DATA);
          PackRepository packrepository = new PackRepository(new ServerPacksSource(p_232897_.directoryValidator()));
@@ -8,7 +8,7 @@
          WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
          CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
              worldloader$initconfig,
-@@ -243,6 +_,10 @@
+@@ -244,6 +_,10 @@
              WorldCreationContext worldcreationcontext = this.uiState.getSettings();
              LevelSettings levelsettings = this.createLevelSettings(flag);
              WorldData worlddata = new PrimaryLevelData(levelsettings, worldcreationcontext.options(), p_250577_, p_249994_);
@@ -19,7 +19,7 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, worlddata);
-@@ -424,7 +_,7 @@
+@@ -432,7 +_,7 @@
                                          if (p_269627_) {
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
@@ -28,7 +28,7 @@
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),
-@@ -542,6 +_,7 @@
+@@ -551,6 +_,7 @@
          if (path != null) {
              if (this.tempDataPackRepository == null) {
                  this.tempDataPackRepository = ServerPacksSource.createPackRepository(path, this.packValidator);

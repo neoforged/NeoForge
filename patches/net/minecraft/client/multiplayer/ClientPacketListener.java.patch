@@ -34,7 +34,7 @@
                      )
                  )
              );
-@@ -1155,6 +_,7 @@
+@@ -1158,6 +_,7 @@
          }
  
          localplayer1.resetPos();
@@ -42,7 +42,7 @@
          this.level.addEntity(localplayer1);
          localplayer1.setYRot(-180.0F);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
-@@ -1283,10 +_,7 @@
+@@ -1299,10 +_,7 @@
          PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
          BlockPos blockpos = p_104976_.getPos();
          this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
@@ -54,7 +54,7 @@
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1453,7 +_,9 @@
+@@ -1469,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -65,15 +65,15 @@
      }
  
      @Override
-@@ -1475,6 +_,7 @@
+@@ -1491,6 +_,7 @@
          ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
-         clientrecipebook.setupCollections(this.recipeManager.getRecipes(), this.minecraft.level.registryAccess());
+         clientrecipebook.setupCollections(this.recipeManager.getOrderedRecipes(), this.minecraft.level.registryAccess());
          this.minecraft.populateSearchTree(SearchRegistry.RECIPE_COLLECTIONS, clientrecipebook.getCollections());
 +        net.neoforged.neoforge.client.ClientHooks.onRecipesUpdated(this.recipeManager);
      }
  
      @Override
-@@ -1906,7 +_,21 @@
+@@ -1922,7 +_,21 @@
      }
  
      @Override
@@ -96,7 +96,7 @@
          if (p_295851_ instanceof PathfindingDebugPayload pathfindingdebugpayload) {
              this.minecraft
                  .debugRenderer
-@@ -2389,6 +_,8 @@
+@@ -2405,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -105,7 +105,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2398,6 +_,7 @@
+@@ -2414,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -113,7 +113,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2472,6 +_,10 @@
+@@ -2488,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -421,6 +_,7 @@
+@@ -422,6 +_,7 @@
                  this.modified = true;
              }
  
@@ -8,7 +8,7 @@
              return p_140179_;
          }
      }
-@@ -534,6 +_,7 @@
+@@ -535,6 +_,7 @@
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && p_203002_ != null) {
                      if (p_203002_ instanceof LevelChunk) {
                          ((LevelChunk)p_203002_).setLoaded(false);
@@ -16,7 +16,7 @@
                      }
  
                      this.save(p_203002_);
-@@ -731,11 +_,22 @@
+@@ -732,11 +_,22 @@
              }
  
              levelchunk.setFullStatus(() -> ChunkLevel.fullStatus(p_140384_.getTicketLevel()));
@@ -39,7 +39,7 @@
              }
  
              return levelchunk;
-@@ -835,6 +_,7 @@
+@@ -836,6 +_,7 @@
  
                  this.level.getProfiler().incrementCounter("chunkSave");
                  CompoundTag compoundtag = ChunkSerializer.write(this.level, p_140259_);
@@ -47,7 +47,7 @@
                  this.write(chunkpos, compoundtag).exceptionallyAsync(p_329914_ -> {
                      this.level.getServer().reportChunkSaveFailure(chunkpos);
                      return null;
-@@ -897,9 +_,11 @@
+@@ -898,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
@@ -59,7 +59,7 @@
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
-@@ -1098,6 +_,7 @@
+@@ -1099,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }
  
@@ -67,7 +67,7 @@
              this.updateChunkTracking(p_140185_);
          }
      }
-@@ -1149,7 +_,7 @@
+@@ -1150,7 +_,7 @@
      }
  
      protected void addEntity(Entity p_140200_) {

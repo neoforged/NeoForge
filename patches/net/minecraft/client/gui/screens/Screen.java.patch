@@ -60,7 +60,7 @@
      private void scheduleNarration(long p_169381_, boolean p_169382_) {
          this.nextNarrationTime = Util.getMillis() + p_169381_;
          if (p_169382_) {
-@@ -653,5 +_,13 @@
+@@ -657,5 +_,13 @@
              this.index = p_169425_;
              this.priority = p_169426_;
          }

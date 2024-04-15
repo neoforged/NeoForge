@@ -21,7 +21,7 @@
          }
  
          this.minecraft.setScreen(new BackupConfirmScreen(p_307323_, (p_307085_, p_307086_) -> {
-@@ -373,10 +_,19 @@
+@@ -377,10 +_,19 @@
          WorldData worlddata = p_330774_.worldData();
          boolean flag = worlddata.worldGenOptions().isOldCustomizedWorld();
          boolean flag1 = worlddata.worldGenSettingsLifecycle() != Lifecycle.stable();

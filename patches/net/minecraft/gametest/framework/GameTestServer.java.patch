@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
-@@ -148,6 +_,7 @@
+@@ -149,6 +_,7 @@
      public boolean initServer() {
          this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {
          });
@@ -8,7 +8,7 @@
          this.loadLevel();
          ServerLevel serverlevel = this.overworld();
          this.testBatches = Lists.newArrayList(GameTestBatchFactory.fromTestFunction(this.testFunctions, serverlevel));
-@@ -155,6 +_,7 @@
+@@ -156,6 +_,7 @@
          int i = 20000000;
          serverlevel.setWeatherParameters(20000000, 20000000, false, false);
          LOGGER.info("Started game test server");

@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -52,17 +_,23 @@
+@@ -50,16 +_,22 @@
          this.hasErrors = false;
-         Map<RecipeType<?>, Builder<ResourceLocation, RecipeHolder<?>>> map = Maps.newHashMap();
-         Builder<ResourceLocation, RecipeHolder<?>> builder = ImmutableMap.builder();
+         Builder<RecipeType<?>, RecipeHolder<?>> builder = ImmutableMultimap.builder();
+         com.google.common.collect.ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> builder1 = ImmutableMap.builder();
 -        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
 +        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
  
@@ -12,14 +12,13 @@
 +            if (resourcelocation.getPath().startsWith("_")) continue; //Forge: filter anything beginning with "_" as it's used for metadata.
  
              try {
-                 JsonObject jsonobject = GsonHelper.convertToJsonObject(entry.getValue(), "top element");
--                Recipe<?> recipe = Recipe.CODEC.parse(registryops, jsonobject).getOrThrow(JsonParseException::new);
-+                var decoded = Recipe.CONDITIONAL_CODEC.parse(registryops, jsonobject).getOrThrow(JsonParseException::new);
+-                Recipe<?> recipe = Recipe.CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
++                var decoded = Recipe.CONDITIONAL_CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
 +                decoded.ifPresentOrElse(r -> {
 +                Recipe<?> recipe = r.carrier();
                  RecipeHolder<?> recipeholder = new RecipeHolder<>(resourcelocation, recipe);
-                 map.computeIfAbsent(recipe.getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
-                 builder.put(resourcelocation, recipeholder);
+                 builder.put(recipe.getType(), recipeholder);
+                 builder1.put(resourcelocation, recipeholder);
 +                }, () -> {
 +                    LOGGER.debug("Skipping loading recipe {} as its conditions were not met", resourcelocation);
 +                });

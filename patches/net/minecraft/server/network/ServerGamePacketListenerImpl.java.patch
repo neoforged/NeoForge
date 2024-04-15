@@ -52,7 +52,7 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -935,7 +_,7 @@
+@@ -937,7 +_,7 @@
                                      && !flag1
                                      && this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR
                                      && !this.server.isFlightAllowed()
@@ -61,7 +61,7 @@
                                      && !this.player.hasEffect(MobEffects.LEVITATION)
                                      && !flag
                                      && !flag3
-@@ -1018,8 +_,10 @@
+@@ -1020,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {
                      ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
@@ -74,7 +74,7 @@
                      this.player.stopUsingItem();
                  }
  
-@@ -1047,7 +_,7 @@
+@@ -1049,7 +_,7 @@
                      .handleBlockBreakAction(
                          blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
                      );
@@ -83,7 +83,7 @@
                  return;
              default:
                  throw new IllegalArgumentException("Invalid player action");
-@@ -1066,7 +_,7 @@
+@@ -1068,7 +_,7 @@
      @Override
      public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
          PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
@@ -92,7 +92,7 @@
          ServerLevel serverlevel = this.player.serverLevel();
          InteractionHand interactionhand = p_9930_.getHand();
          ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1212,8 +_,9 @@
+@@ -1214,8 +_,9 @@
                  }
  
                  CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
@@ -103,7 +103,7 @@
                      PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
                      this.broadcastChatMessage(playerchatmessage1);
                  });
-@@ -1540,7 +_,11 @@
+@@ -1542,7 +_,11 @@
      
                          @Override
                          public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
@@ -116,7 +116,7 @@
                          }
      
                          @Override
-@@ -1727,7 +_,7 @@
+@@ -1729,7 +_,7 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
          PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
@@ -125,7 +125,7 @@
      }
  
      @Override
-@@ -1786,7 +_,7 @@
+@@ -1788,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -134,7 +134,7 @@
                  );
          }
      }
-@@ -1820,7 +_,27 @@
+@@ -1822,7 +_,27 @@
      }
  
      @Override
@@ -163,7 +163,7 @@
      }
  
      @Override
-@@ -1831,5 +_,9 @@
+@@ -1833,5 +_,9 @@
      @FunctionalInterface
      interface EntityInteraction {
          InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);

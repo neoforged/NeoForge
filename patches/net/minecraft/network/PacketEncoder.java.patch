@@ -1,15 +1,15 @@
 --- a/net/minecraft/network/PacketEncoder.java
 +++ b/net/minecraft/network/PacketEncoder.java
-@@ -25,6 +_,8 @@
+@@ -21,6 +_,8 @@
+         PacketType<? extends Packet<? super T>> packettype = p_130546_.type();
  
          try {
-             int i = p_130547_.writerIndex();
 +            // Neo: Wrap buffer with ChannelHandlerContext
 +            p_130547_ = new net.neoforged.neoforge.network.connection.ChannelAwareFriendlyByteBuf(p_130547_, p_130545_);
              this.protocolInfo.codec().encode(p_130547_, p_130546_);
-             int j = p_130547_.writerIndex() - i;
-             if (j > 8388608) {
-@@ -42,5 +_,9 @@
+             int i = p_130547_.readableBytes();
+             if (LOGGER.isDebugEnabled()) {
+@@ -40,5 +_,9 @@
          } finally {
              ProtocolSwapHandler.handleOutboundTerminalPacket(p_130545_, p_130546_);
          }

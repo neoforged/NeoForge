@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -98,17 +_,17 @@
+@@ -105,17 +_,17 @@
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
@@ -21,7 +21,7 @@
  
      @Override
      public void handleResourcePackPush(ClientboundResourcePackPushPacket p_314606_) {
-@@ -212,6 +_,10 @@
+@@ -219,6 +_,10 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -32,7 +32,7 @@
          this.connection.send(p_295097_);
      }
  
-@@ -219,6 +_,9 @@
+@@ -226,6 +_,9 @@
      public void onDisconnect(Component p_295485_) {
          this.telemetryManager.onDisconnect();
          this.minecraft.disconnect(this.createDisconnectScreen(p_295485_), this.keepResourcePacks);
@@ -42,7 +42,7 @@
          LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
      }
  
-@@ -338,5 +_,15 @@
+@@ -345,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }

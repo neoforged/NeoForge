@@ -673,7 +673,7 @@
          Equipable equipable = Equipable.get(p_147234_);
          return equipable != null ? equipable.getEquipmentSlot() : EquipmentSlot.MAINHAND;
      }
-@@ -3498,7 +_,7 @@
+@@ -3499,7 +_,7 @@
      }
  
      public boolean canDisableShield() {
