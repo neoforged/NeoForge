@@ -5,14 +5,8 @@
 
 package net.neoforged.neoforge.network;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -30,63 +24,68 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Means to distribute packets in various ways
  */
 public class PacketDistributor<T> {
-    public static void sendToPlayer(@Nullable ServerPlayer player, CustomPacketPayload... payloads) {
+    public static void sendToPlayer(@Nullable ServerPlayer player, CustomPacketPayload payload) {
         if (player != null) {
-            playerConsumer(player).accept(toVanillaPacket(payloads));
+            player.connection.send(toVanillaPacket(payload));
         }
     }
 
     /**
      * Send all the players in the dimension.
      */
-    public static void sendToDimension(@Nullable ResourceKey<Level> level, CustomPacketPayload... payloads) {
+    public static void sendToDimension(@Nullable ResourceKey<Level> level, CustomPacketPayload payload) {
         if (level != null) {
-            playerListDimConsumer(level).accept(toVanillaPacket(payloads));
+            getServer().getPlayerList().broadcastAll(toVanillaPacket(payload), level);
         }
     }
 
-    public static void sendNear(@Nullable TargetPoint targetPoint, CustomPacketPayload... payloads) {
+    public static void sendNear(@Nullable TargetPoint targetPoint, CustomPacketPayload payload) {
         if (targetPoint != null) {
-            playerListPointConsumer(targetPoint).accept(toVanillaPacket(payloads));
+            getServer().getPlayerList().broadcast(targetPoint.excluded, targetPoint.x, targetPoint.y, targetPoint.z, targetPoint.r2, targetPoint.dim, toVanillaPacket(payload));
         }
     }
 
-    public static void sendToAll(CustomPacketPayload... payloads) {
-        playerListAll().accept(toVanillaPacket(payloads));
+    public static void sendToAll(CustomPacketPayload payload) {
+        getServer().getPlayerList().broadcastAll(toVanillaPacket(payload));
     }
 
-    public static void sendToServer(CustomPacketPayload... payloads) {
-        clientToServer().accept(toVanillaPacket(payloads));
+    public static void sendToServer(CustomPacketPayload payload) {
+        Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(toVanillaPacket(payload));
     }
 
-    public static void sendToTrackingEntity(@Nullable Entity entity, CustomPacketPayload... payloads) {
+    public static void sendToTrackingEntity(@Nullable Entity entity, CustomPacketPayload payload) {
         if (entity != null) {
-            trackingEntity(entity).accept(toVanillaPacket(payloads));
+            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, toVanillaPacket(payload));
         }
     }
 
-    public static void sendToTrackingEntityAndSelf(@Nullable Entity entity, CustomPacketPayload... payloads) {
+    public static void sendToTrackingEntityAndSelf(@Nullable Entity entity, CustomPacketPayload payload) {
         if (entity != null) {
-            trackingEntityAndSelf(entity).accept(toVanillaPacket(payloads));
+            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, toVanillaPacket(payload));
+            trackingEntityAndSelf(entity).accept(toVanillaPacket(payload));
         }
     }
 
-    public static void sendToTrackingChunk(@Nullable LevelChunk levelChunk, CustomPacketPayload... payloads) {
+    public static void sendToTrackingChunk(@Nullable LevelChunk levelChunk, CustomPacketPayload payload) {
         if (levelChunk != null) {
-            trackingChunk(levelChunk).accept(toVanillaPacket(payloads));
+            ((ServerChunkCache) levelChunk.getLevel().getChunkSource()).chunkMap.getPlayers(levelChunk.getPos(), false).forEach(e -> e.connection.send(toVanillaPacket(payload)));
         }
     }
 
-    private static Packet<?> toVanillaPacket(CustomPacketPayload... payloads) {
-        ClientboundCustomPayloadPacket vanillaPacket = null;
-        for (var p : payloads) {
-            vanillaPacket = new ClientboundCustomPayloadPacket(p);
-        }
-        return vanillaPacket;
+    private static Packet<?> toVanillaPacket(CustomPacketPayload payload) {
+        return new ClientboundCustomPayloadPacket(payload);
     }
 
     public static final class TargetPoint {
