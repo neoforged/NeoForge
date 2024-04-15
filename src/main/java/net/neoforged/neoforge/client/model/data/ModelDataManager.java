@@ -11,12 +11,14 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
@@ -131,6 +133,11 @@ public class ModelDataManager {
                 // Query the BE for new model data if it exists
                 if (toUpdate != null && !toUpdate.isRemoved()) {
                     newData = toUpdate.getModelData();
+                    // Sanity check so that mods cannot cause impossible-to-trace NPEs in other code later
+                    //noinspection ConstantValue
+                    if (newData == null) {
+                        throw new NullPointerException("Null ModelData provided by " + BlockEntityType.getKey(toUpdate.getType()) + " @ " + pos);
+                    }
                 }
                 // Make sure we don't bother storing empty data in the map
                 if (newData != ModelData.EMPTY) {
