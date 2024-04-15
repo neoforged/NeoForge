@@ -78,8 +78,6 @@ public abstract class AbstractTest implements Test {
                     Component.literal(marker.title().isBlank() ? TestFrameworkImpl.capitaliseWords(id(), "_") : marker.title()),
                     Stream.of(marker.description()).<Component>map(Component::literal).collect(Collectors.toCollection(ArrayList::new)));
             groups.addAll(List.of(marker.groups()));
-        } else {
-            visuals = new Visuals(Component.literal(TestFrameworkImpl.capitaliseWords(id(), "_")), List.of());
         }
 
         final WithListener withListener = holder.get(WithListener.class);
