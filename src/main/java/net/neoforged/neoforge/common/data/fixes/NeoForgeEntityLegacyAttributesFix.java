@@ -5,13 +5,17 @@
 
 package net.neoforged.neoforge.common.data.fixes;
 
-import com.mojang.datafixers.*;
+import com.mojang.datafixers.DSL;
+import com.mojang.datafixers.DataFix;
+import com.mojang.datafixers.DataFixUtils;
+import com.mojang.datafixers.OpticFinder;
+import com.mojang.datafixers.TypeRewriteRule;
+import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.datafixers.types.Type;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.mojang.datafixers.types.Type;
 import net.minecraft.util.datafix.fixes.References;
 
 public class NeoForgeEntityLegacyAttributesFix extends DataFix {
@@ -45,10 +49,7 @@ public class NeoForgeEntityLegacyAttributesFix extends DataFix {
                                         .result()
                                         .map(dynamics -> dynamics.filter(dynamic -> dynamic.get("AttributeName").asString().result().map(str -> !legacyAttributes.contains(str)).orElse(true)))
                                         .map(modifiersDynamic::createList),
-                                modifiersDynamic
-                        )
-                )
-        );
+                                modifiersDynamic)));
     }
 
     private Typed<?> removeLegacyAttributes(Typed<?> typed) {
