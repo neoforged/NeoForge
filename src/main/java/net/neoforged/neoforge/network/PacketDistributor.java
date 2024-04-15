@@ -5,13 +5,6 @@
 
 package net.neoforged.neoforge.network;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
@@ -29,58 +22,61 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Means to distribute packets in various ways
  */
 public class PacketDistributor<T> {
+
+    public static void sendToPlayer(ServerPlayer player, CustomPacketPayload... payloads) {
+        playerConsumer(player).accept(toVanillaPacket(payloads));
+    }
+
     /**
-     * Send to the player specified
-     * <br/>
-     * {@link #with(Object)} Player
+     * Send all the players in the dimension.
      */
-    public static final PacketDistributor<ServerPlayer> PLAYER = new PacketDistributor<>(PacketDistributor::playerConsumer, PacketFlow.CLIENTBOUND);
-    /**
-     * Send to everyone in the dimension specified
-     * <br/>
-     * {@link #with(Object)} DimensionType
-     */
-    public static final PacketDistributor<ResourceKey<Level>> DIMENSION = new PacketDistributor<>(PacketDistributor::playerListDimConsumer, PacketFlow.CLIENTBOUND);
-    /**
-     * Send to everyone near the {@link TargetPoint} specified
-     * <br/>
-     * {@link #with(Object)} TargetPoint
-     */
-    public static final PacketDistributor<TargetPoint> NEAR = new PacketDistributor<>(PacketDistributor::playerListPointConsumer, PacketFlow.CLIENTBOUND);
-    /**
-     * Send to everyone
-     * <br/>
-     * {@link #noArg()}
-     */
-    public static final PacketDistributor<Void> ALL = new PacketDistributor<>(PacketDistributor::playerListAll, PacketFlow.CLIENTBOUND);
-    /**
-     * Send to the server (CLIENT to SERVER)
-     * <br/>
-     * {@link #noArg()}
-     */
-    public static final PacketDistributor<Void> SERVER = new PacketDistributor<>(PacketDistributor::clientToServer, PacketFlow.SERVERBOUND);
-    /**
-     * Send to all tracking the Entity
-     * <br/>
-     * {@link #with(Object)} Entity
-     */
-    public static final PacketDistributor<Entity> TRACKING_ENTITY = new PacketDistributor<>(PacketDistributor::trackingEntity, PacketFlow.CLIENTBOUND);
-    /**
-     * Send to all tracking the Entity and Player
-     * <br/>
-     * {@link #with(Object)} Entity
-     */
-    public static final PacketDistributor<Entity> TRACKING_ENTITY_AND_SELF = new PacketDistributor<>(PacketDistributor::trackingEntityAndSelf, PacketFlow.CLIENTBOUND);
-    /**
-     * Send to all tracking the Chunk
-     * <br/>
-     * {@link #with(Object)} Chunk
-     */
-    public static final PacketDistributor<LevelChunk> TRACKING_CHUNK = new PacketDistributor<>(PacketDistributor::trackingChunk, PacketFlow.CLIENTBOUND);
+    public static void sendToDimension(ResourceKey<Level> level, CustomPacketPayload... payloads) {
+        playerListDimConsumer(level).accept(toVanillaPacket(payloads));
+    }
+
+    public static void sendNear(TargetPoint targetPoint, CustomPacketPayload... payloads) {
+        playerListPointConsumer(targetPoint).accept(toVanillaPacket(payloads));
+    }
+
+    public static void sendToAll(CustomPacketPayload... payloads) {
+        playerListAll().accept(toVanillaPacket(payloads));
+    }
+
+    public static void sendToServer(CustomPacketPayload... payloads) {
+        clientToServer().accept(toVanillaPacket(payloads));
+    }
+
+    public static void sendToTrackingEntity(Entity entity, CustomPacketPayload... payloads) {
+        trackingEntity(entity).accept(toVanillaPacket(payloads));
+    }
+
+    public static void sendToTrackingEntityAndSelf(Entity entity, CustomPacketPayload... payloads) {
+        trackingEntityAndSelf(entity).accept(toVanillaPacket(payloads));
+    }
+
+    public static void sendToTrackingChunk(LevelChunk levelChunk, CustomPacketPayload... payloads) {
+        trackingChunk(levelChunk).accept(toVanillaPacket(payloads));
+    }
+
+    private static Packet<?> toVanillaPacket(CustomPacketPayload... payloads) {
+        ClientboundCustomPayloadPacket vanillaPacket = null;
+        for (var p : payloads) {
+            vanillaPacket = new ClientboundCustomPayloadPacket(p);
+        }
+        return vanillaPacket;
+    }
 
     public static final class TargetPoint {
         private final ServerPlayer excluded;
@@ -111,7 +107,7 @@ public class PacketDistributor<T> {
 
         /**
          * A target point without excluded entity
-         * 
+         *
          * @param x   X
          * @param y   Y
          * @param z   Z
@@ -129,7 +125,7 @@ public class PacketDistributor<T> {
 
         /**
          * Helper to build a TargetPoint without excluded Entity
-         * 
+         *
          * @param x   X
          * @param y   Y
          * @param z   Z
@@ -145,7 +141,6 @@ public class PacketDistributor<T> {
 
     /**
      * A Distributor curried with a specific value instance, for actual dispatch
-     *
      */
     public static class PacketTarget {
         private final Consumer<Packet<?>> packetConsumer;
@@ -195,69 +190,41 @@ public class PacketDistributor<T> {
         this((d, t) -> functor.apply(d), flow);
     }
 
-    /**
-     * Apply the supplied value to the specific distributor to generate an instance for sending packets to.
-     * 
-     * @param input The input to apply
-     * @return A curried instance
-     */
-    public PacketTarget with(T input) {
-        return new PacketTarget(functor.apply(this, input), this);
+    private static Consumer<Packet<?>> playerConsumer(final ServerPlayer player) {
+        return p -> player.connection.send(p);
     }
 
-    /**
-     * Apply a no argument value to a distributor to generate an instance for sending packets to.
-     *
-     * @see #ALL
-     * @see #SERVER
-     * @return A curried instance
-     */
-    public PacketTarget noArg() {
-        return new PacketTarget(functor.apply(this, null), this);
-    }
-
-    private Consumer<Packet<?>> playerConsumer(final ServerPlayer entityPlayerMP) {
-        return p -> entityPlayerMP.connection.send(p);
-    }
-
-    private Consumer<Packet<?>> playerListDimConsumer(final ResourceKey<Level> dimensionType) {
+    private static Consumer<Packet<?>> playerListDimConsumer(final ResourceKey<Level> dimensionType) {
         return p -> getServer().getPlayerList().broadcastAll(p, dimensionType);
     }
 
-    private Consumer<Packet<?>> playerListAll() {
+    private static Consumer<Packet<?>> playerListAll() {
         return p -> getServer().getPlayerList().broadcastAll(p);
     }
 
-    private Consumer<Packet<?>> clientToServer() {
+    private static Consumer<Packet<?>> clientToServer() {
         return p -> Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(p);
     }
 
-    private Consumer<Packet<?>> playerListPointConsumer(final TargetPoint targetPoint) {
+    private static Consumer<Packet<?>> playerListPointConsumer(final TargetPoint targetPoint) {
         return p -> {
-            final TargetPoint tp = targetPoint;
-            getServer().getPlayerList().broadcast(tp.excluded, tp.x, tp.y, tp.z, tp.r2, tp.dim, p);
+            getServer().getPlayerList().broadcast(targetPoint.excluded, targetPoint.x, targetPoint.y, targetPoint.z, targetPoint.r2, targetPoint.dim, p);
         };
     }
 
-    private Consumer<Packet<?>> trackingEntity(final Entity entity) {
-        return p -> {
-            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, p);
-        };
+    private static Consumer<Packet<?>> trackingEntity(final Entity entity) {
+        return p -> ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, p);
     }
 
-    private Consumer<Packet<?>> trackingEntityAndSelf(final Entity entity) {
-        return p -> {
-            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, p);
-        };
+    private static Consumer<Packet<?>> trackingEntityAndSelf(final Entity entity) {
+        return p -> ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, p);
     }
 
-    private Consumer<Packet<?>> trackingChunk(final LevelChunk chunkPos) {
-        return p -> {
-            ((ServerChunkCache) chunkPos.getLevel().getChunkSource()).chunkMap.getPlayers(chunkPos.getPos(), false).forEach(e -> e.connection.send(p));
-        };
+    private static Consumer<Packet<?>> trackingChunk(final LevelChunk chunkPos) {
+        return p -> ((ServerChunkCache) chunkPos.getLevel().getChunkSource()).chunkMap.getPlayers(chunkPos.getPos(), false).forEach(e -> e.connection.send(p));
     }
 
-    private MinecraftServer getServer() {
+    private static MinecraftServer getServer() {
         return ServerLifecycleHooks.getCurrentServer();
     }
 }

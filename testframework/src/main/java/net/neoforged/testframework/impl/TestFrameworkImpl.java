@@ -305,8 +305,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(
-                () -> PacketDistributor.ALL.noArg().send(packet),
-                () -> PacketDistributor.SERVER.noArg().send(packet),
+                () -> PacketDistributor.sendToAll(packet),
+                () -> PacketDistributor.sendToServer(packet),
                 null);
     }
 
@@ -332,8 +332,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         final ChangeEnabledPayload packet = new ChangeEnabledPayload(TestFrameworkImpl.this, test.id(), enabled);
         sendPacketIfOn(
-                () -> PacketDistributor.ALL.noArg().send(packet),
-                () -> PacketDistributor.SERVER.noArg().send(packet),
+                () -> PacketDistributor.sendToAll(packet),
+                () -> PacketDistributor.sendToServer(packet),
                 null);
     }
 
