@@ -55,7 +55,7 @@ public class LevelEventTests {
     }
 
     @GameTest
-    @TestHolder
+    @TestHolder(description = "Tests if the alter ground event is fired, replacing podzol with redstone blocks")
     static void alterGroundEvent(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(16, 32, 16)
                 .fill(0, 0, 0, 15, 0, 15, Blocks.DIRT.defaultBlockState())
