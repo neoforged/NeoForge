@@ -1,16 +1,15 @@
 package net.neoforged.neoforge.common.data.fixes;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.TypeRewriteRule;
+import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
-import net.minecraft.util.datafix.fixes.References;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import net.minecraft.util.datafix.fixes.References;
 
 public class NeoForgeEntityLegacyAttributesFix extends DataFix {
     private final Set<String> legacyAttributes = new HashSet<>();
@@ -27,8 +26,7 @@ public class NeoForgeEntityLegacyAttributesFix extends DataFix {
         Schema schema = this.getInputSchema();
         return TypeRewriteRule.seq(
                 this.fixTypeEverywhereTyped(name + " (Entity)", schema.getType(References.ENTITY), this::removeLegacyAttributes),
-                this.fixTypeEverywhereTyped(name + " (Player)", schema.getType(References.PLAYER), this::removeLegacyAttributes)
-        );
+                this.fixTypeEverywhereTyped(name + " (Player)", schema.getType(References.PLAYER), this::removeLegacyAttributes));
     }
 
     private Typed<?> removeLegacyAttributes(Typed<?> typed) {
@@ -39,14 +37,8 @@ public class NeoForgeEntityLegacyAttributesFix extends DataFix {
                         attributesDynamic -> DataFixUtils.orElse(
                                 attributesDynamic.asStreamOpt()
                                         .result()
-                                        .map(dynamics ->
-                                                dynamics.filter(dynamic ->
-                                                        dynamic.get("Name").asString().result().map(str -> !legacyAttributes.contains(str)).orElse(true)
-                                                ))
+                                        .map(dynamics -> dynamics.filter(dynamic -> dynamic.get("Name").asString().result().map(str -> !legacyAttributes.contains(str)).orElse(true)))
                                         .map(attributesDynamic::createList),
-                                attributesDynamic
-                        )
-                )
-        );
+                                attributesDynamic)));
     }
 }
