@@ -152,7 +152,7 @@ public class ModelDataManager {
 
     @SubscribeEvent
     public static void onChunkUnload(ChunkEvent.Unload event) {
-        var level = event.getChunk().getWorldForge();
+        var level = event.getChunk().getLevel();
         if (level == null)
             return;
 
