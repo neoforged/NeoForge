@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.model.data;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -21,7 +22,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Unmodifiable;
 
 /**
  * A manager for the lifecycle of all the {@link ModelData} instances in a {@link Level}.
@@ -35,6 +36,7 @@ public class ModelDataManager {
     private final Level level;
     private final Long2ObjectMap<Set<BlockPos>> needModelDataRefresh = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectMap<Long2ObjectMap<ModelData>> modelDataCache = new Long2ObjectOpenHashMap<>();
+    public static final Long2ObjectFunction<ModelData> EMPTY_SNAPSHOT = pos -> ModelData.EMPTY;
 
     public ModelDataManager(Level level) {
         this.level = level;
@@ -56,8 +58,8 @@ public class ModelDataManager {
     }
 
     /**
-     * Provides all the model data for a given chunk section. This is useful for mods which wish to efficiently
-     * snapshot some of the model data in a level.
+     * Provides all the model data for a given chunk section. This is useful for mods which wish to retrieve
+     * a fast view of the model data for a single section in a level.
      * <p></p>
      * The returned map must be copied if it needs to be accessed from another thread, as it may be modified
      * by this data manager.
@@ -91,14 +93,25 @@ public class ModelDataManager {
 
     /**
      * Snapshot the state of this manager for all sections in the volume specified by the given section coordinates.
-     *
-     * @throws IllegalArgumentException if this is a snapshot and the given region doesn't match the snapshot's region
+     * The snapshot will return {@link ModelData#EMPTY} for nonexistent keys.
      */
-    public ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
+    @Unmodifiable
+    public Long2ObjectFunction<ModelData> snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
         if (isOtherThread()) {
             throw new UnsupportedOperationException("Cannot snapshot active manager outside the owning thread: " + owningThread);
         }
-        return new ModelDataManager.Snapshot(this, sectionMinX, sectionMinY, sectionMinZ, sectionMaxX, sectionMaxY, sectionMaxZ);
+        Long2ObjectMap<ModelData> cache = new Long2ObjectOpenHashMap<>();
+        cache.defaultReturnValue(ModelData.EMPTY);
+        for (int x = sectionMinX; x <= sectionMaxX; x++) {
+            for (int y = sectionMinY; y <= sectionMaxY; y++) {
+                for (int z = sectionMinZ; z <= sectionMaxZ; z++) {
+                    long sectionPos = SectionPos.asLong(x, y, z);
+                    refreshAt(sectionPos);
+                    cache.putAll(modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()));
+                }
+            }
+        }
+        return cache.isEmpty() ? EMPTY_SNAPSHOT : cache;
     }
 
     private void refreshAt(long section) {
@@ -133,39 +146,6 @@ public class ModelDataManager {
 
     private boolean isOtherThread() {
         return Thread.currentThread() != owningThread;
-    }
-
-    /**
-     * A snapshot of the active manager's state in the specified sections at the point in time when a chunk section was
-     * prepared for re-rendering. Holds an immutable copy of the applicable subset of the active manager's state.
-     */
-    @ApiStatus.Internal
-    public static final class Snapshot {
-        public static final ModelDataManager.Snapshot EMPTY = new ModelDataManager.Snapshot();
-
-        private final Long2ObjectMap<ModelData> modelDataCache;
-
-        Snapshot(ModelDataManager srcManager, int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
-            Long2ObjectMap<ModelData> cache = new Long2ObjectOpenHashMap<>();
-            for (int x = sectionMinX; x <= sectionMaxX; x++) {
-                for (int y = sectionMinY; y <= sectionMaxY; y++) {
-                    for (int z = sectionMinZ; z <= sectionMaxZ; z++) {
-                        long sectionPos = SectionPos.asLong(x, y, z);
-                        srcManager.refreshAt(sectionPos);
-                        cache.putAll(srcManager.modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()));
-                    }
-                }
-            }
-            this.modelDataCache = cache.isEmpty() ? Long2ObjectMaps.emptyMap() : cache;
-        }
-
-        private Snapshot() {
-            this.modelDataCache = Long2ObjectMaps.emptyMap();
-        }
-
-        public ModelData getAt(BlockPos pos) {
-            return modelDataCache.getOrDefault(pos.asLong(), ModelData.EMPTY);
-        }
     }
 
     @SubscribeEvent

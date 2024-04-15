@@ -1,22 +1,21 @@
 --- a/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
 +++ b/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
-@@ -20,12 +_,19 @@
+@@ -20,12 +_,18 @@
      private final int centerZ;
      protected final RenderChunk[][] chunks;
      protected final Level level;
-+    @Nullable
-+    private final net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot modelDataManager;
++    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot;
  
 +    @Deprecated
      RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[][] p_200459_) {
-+        this(p_200456_, p_200457_, p_200458_, p_200459_, null);
++        this(p_200456_, p_200457_, p_200458_, p_200459_, net.neoforged.neoforge.client.model.data.ModelDataManager.EMPTY_SNAPSHOT);
 +    }
-+    RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[][] p_200459_, @Nullable net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot modelDataManager) {
++    RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[][] p_200459_, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot) {
          this.level = p_200456_;
          this.centerX = p_200457_;
          this.centerZ = p_200458_;
          this.chunks = p_200459_;
-+        this.modelDataManager = modelDataManager;
++        this.modelDataSnapshot = modelDataSnapshot;
      }
  
      @Override
@@ -33,7 +32,7 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
-+        return modelDataManager != null ? modelDataManager.getAt(pos) : net.neoforged.neoforge.client.model.data.ModelData.EMPTY;
++        return modelDataSnapshot.get(pos.asLong());
 +    }
 +
 +    @Override
