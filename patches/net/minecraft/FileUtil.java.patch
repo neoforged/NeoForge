@@ -1,11 +1,10 @@
 --- a/net/minecraft/FileUtil.java
 +++ b/net/minecraft/FileUtil.java
-@@ -13,12 +_,15 @@
+@@ -13,12 +_,14 @@
  import java.util.List;
  import java.util.regex.Matcher;
  import java.util.regex.Pattern;
 +
-+import net.neoforged.neoforge.common.NeoForgeMod;
  import org.apache.commons.io.FilenameUtils;
  
  public class FileUtil {
@@ -21,7 +20,7 @@
  
          p_133732_ = p_133732_.replaceAll("[./\"]", "_");
 -        if (RESERVED_WINDOWS_FILENAMES.matcher(p_133732_).matches()) {
-+        if ((NeoForgeMod.getMc268617Fix() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(p_133732_).matches()) {
++        if ((net.neoforged.neoforge.common.NeoForgeMod.getMc268617Fix() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(p_133732_).matches()) {
              p_133732_ = "_" + p_133732_ + "_";
          }
  
@@ -30,7 +29,7 @@
      public static boolean isPathPortable(Path p_133735_) {
          for(Path path : p_133735_) {
 -            if (RESERVED_WINDOWS_FILENAMES.matcher(path.toString()).matches()) {
-+            if ((NeoForgeMod.getMc268617Fix() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(path.toString()).matches()) {
++            if ((net.neoforged.neoforge.common.NeoForgeMod.getMc268617Fix() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(path.toString()).matches()) {
                  return false;
              }
          }
