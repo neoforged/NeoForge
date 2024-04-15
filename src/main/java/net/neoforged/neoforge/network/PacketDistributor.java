@@ -21,6 +21,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +36,25 @@ import java.util.function.Supplier;
  */
 public class PacketDistributor<T> {
 
-    public static void sendToPlayer(ServerPlayer player, CustomPacketPayload... payloads) {
-        playerConsumer(player).accept(toVanillaPacket(payloads));
+    public static void sendToPlayer(@Nullable ServerPlayer player, CustomPacketPayload... payloads) {
+        if (player != null) {
+            playerConsumer(player).accept(toVanillaPacket(payloads));
+        }
     }
 
     /**
      * Send all the players in the dimension.
      */
-    public static void sendToDimension(ResourceKey<Level> level, CustomPacketPayload... payloads) {
-        playerListDimConsumer(level).accept(toVanillaPacket(payloads));
+    public static void sendToDimension(@Nullable ResourceKey<Level> level, CustomPacketPayload... payloads) {
+        if (level != null) {
+            playerListDimConsumer(level).accept(toVanillaPacket(payloads));
+        }
     }
 
-    public static void sendNear(TargetPoint targetPoint, CustomPacketPayload... payloads) {
-        playerListPointConsumer(targetPoint).accept(toVanillaPacket(payloads));
+    public static void sendNear(@Nullable TargetPoint targetPoint, CustomPacketPayload... payloads) {
+        if (targetPoint != null) {
+            playerListPointConsumer(targetPoint).accept(toVanillaPacket(payloads));
+        }
     }
 
     public static void sendToAll(CustomPacketPayload... payloads) {
@@ -58,16 +65,22 @@ public class PacketDistributor<T> {
         clientToServer().accept(toVanillaPacket(payloads));
     }
 
-    public static void sendToTrackingEntity(Entity entity, CustomPacketPayload... payloads) {
-        trackingEntity(entity).accept(toVanillaPacket(payloads));
+    public static void sendToTrackingEntity(@Nullable Entity entity, CustomPacketPayload... payloads) {
+        if (entity != null) {
+            trackingEntity(entity).accept(toVanillaPacket(payloads));
+        }
     }
 
-    public static void sendToTrackingEntityAndSelf(Entity entity, CustomPacketPayload... payloads) {
-        trackingEntityAndSelf(entity).accept(toVanillaPacket(payloads));
+    public static void sendToTrackingEntityAndSelf(@Nullable Entity entity, CustomPacketPayload... payloads) {
+        if (entity != null) {
+            trackingEntityAndSelf(entity).accept(toVanillaPacket(payloads));
+        }
     }
 
-    public static void sendToTrackingChunk(LevelChunk levelChunk, CustomPacketPayload... payloads) {
-        trackingChunk(levelChunk).accept(toVanillaPacket(payloads));
+    public static void sendToTrackingChunk(@Nullable LevelChunk levelChunk, CustomPacketPayload... payloads) {
+        if (levelChunk != null) {
+            trackingChunk(levelChunk).accept(toVanillaPacket(payloads));
+        }
     }
 
     private static Packet<?> toVanillaPacket(CustomPacketPayload... payloads) {
