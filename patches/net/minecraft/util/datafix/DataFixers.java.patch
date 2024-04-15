@@ -1,0 +1,22 @@
+--- a/net/minecraft/util/datafix/DataFixers.java
++++ b/net/minecraft/util/datafix/DataFixers.java
+@@ -1327,6 +_,19 @@
+         p_14514_.addFixer(new TrialSpawnerConfigFix(schema218));
+         p_14514_.addFixer(new AddNewChoices(schema218, "Added Ominous Item Spawner", References.ENTITY));
+         Schema schema219 = p_14514_.addSchema(3828, SAME_NAMESPACED);
++
++        // Neo: add fixer for 1.20.4 -> 1.20.5 which removes old attributes
++        p_14514_.addFixer(new net.neoforged.neoforge.common.data.fixes.NeoForgeEntityLegacyAttributesFix(
++                "Remove attributes made irrelevant by vanilla 1.20.5",
++                schema219,
++                java.util.List.of(
++                        "neoforge:entity_gravity",
++                        "neoforge:block_reach",
++                        "neoforge:entity_reach",
++                        "neoforge:step_height"
++                )
++        ));
++
+         p_14514_.addFixer(new EmptyItemInVillagerTradeFix(schema219));
+     }
+ 
