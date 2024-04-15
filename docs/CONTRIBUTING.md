@@ -49,10 +49,12 @@ Contributing to NeoForge
 6. Run tests (see above)
 7. Fix any problems found by tests
 8. Create a squashed branch (i.e. `<mc_version>-squashed`)
-9. Remove MC sources and commit
-10. Squash all commits that were created on top of the base branch specified in 1
-11. **Make absolutly sure no Minecraft sources are still present in the history of the branch**
-12. If this is the first snapshot for a new version, publish this kits branch to a `port/<mc_version>` branch on the main repository, otherwise push just the new, squashed commit
+9. Generate patches (`unpackSourcePatches`)
+10. Apply formatting (`applyAllFormatting`)
+11. Remove MC sources and commit
+12. Squash all commits from "Initial base" created by the action, ensure the resulting commit contains no bot authorship (due to CLA signing issues later).
+13. **Make absolutly sure no Minecraft sources are still present in the history of the branch**
+14. If this is the first snapshot for a new version, publish this kits branch to a `port/<mc_version>` branch on the main repository, otherwise push just the new, squashed commit
 
 Contributor License Agreement
 =============================
