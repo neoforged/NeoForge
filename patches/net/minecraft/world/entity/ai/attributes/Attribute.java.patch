@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/ai/attributes/Attribute.java
++++ b/net/minecraft/world/entity/ai/attributes/Attribute.java
+@@ -24,6 +_,17 @@
+         return this;
+     }
+ 
++    private boolean saveDefault = true; // Neo: allow attributes to not be saved if they have their default value and no modifiers
++
++    public Attribute setSaveDefault(boolean saveDefault) {
++        this.saveDefault = saveDefault;
++        return this;
++    }
++
++    public boolean isSaveDefault() {
++        return saveDefault;
++    }
++
+     public double sanitizeValue(double p_22083_) {
+         return p_22083_;
+     }
