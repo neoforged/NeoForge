@@ -23,6 +23,7 @@ import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 /**
  * A manager for the lifecycle of all the {@link ModelData} instances in a {@link Level}.
@@ -67,6 +68,7 @@ public class ModelDataManager {
      * @param pos the section to query
      * @return an (unmodifiable) map containing the {@link ModelData} stored for the given chunk section
      */
+    @UnmodifiableView
     public Long2ObjectMap<ModelData> getAt(SectionPos pos) {
         long sectionKey = pos.asLong();
         refreshAt(sectionKey);
