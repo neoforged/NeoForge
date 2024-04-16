@@ -99,7 +99,7 @@ public class SimpleFluidContent implements DataComponentHolder {
         return FluidStack.isSameFluidSameComponents(fluidStack, other);
     }
 
-    public boolean is(SimpleFluidContent content) {
+    public boolean isSameFluidSameComponents(SimpleFluidContent content) {
         return isSameFluidSameComponents(content.fluidStack);
     }
 
