@@ -23,7 +23,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 /**
@@ -98,7 +97,6 @@ public class ModelDataManager {
      * Snapshot the state of this manager for all sections in the volume specified by the given section coordinates.
      * The snapshot will return {@link ModelData#EMPTY} for nonexistent keys.
      */
-    @Unmodifiable
     public Long2ObjectFunction<ModelData> snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
         if (isOtherThread()) {
             throw new UnsupportedOperationException("Cannot snapshot active manager outside the owning thread: " + owningThread);
