@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -114,6 +116,26 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void add(EntityType<?> key, String name) {
         add(key.getDescriptionId(), name);
+    }
+
+    public void addTag(Supplier<? extends TagKey<?>> key, String name) {
+        add(key.get(), name);
+    }
+
+    public void add(TagKey<?> tagKey, String name) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("tag.");
+
+        ResourceLocation registryIdentifier = tagKey.registry().location();
+        ResourceLocation tagResourceLocation = tagKey.location();
+
+        stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))
+                .append(".")
+                .append(tagResourceLocation.getNamespace())
+                .append(".")
+                .append(tagResourceLocation.getPath().replace("/", ".").replace(":", "."));
+
+        add(stringBuilder.toString(), name);
     }
 
     public void add(String key, String value) {

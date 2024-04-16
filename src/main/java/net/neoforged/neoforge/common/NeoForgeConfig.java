@@ -68,9 +68,22 @@ public class NeoForgeConfig {
      * General configuration that doesn't need to be synchronized but needs to be available before server startup
      */
     public static class Common {
+        public final ModConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logUntranslatedItemTagWarnings;
+        public final ModConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logLegacyTagWarnings;
+
         Common(ModConfigSpec.Builder builder) {
-            builder.comment("[DEPRECATED / NO EFFECT]: General configuration settings")
+            builder.comment("General configuration settings")
                     .push("general");
+
+            logUntranslatedItemTagWarnings = builder
+                    .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.")
+                    .translation("forge.configgui.logUntranslatedItemTagWarnings")
+                    .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.SILENCED);
+
+            logLegacyTagWarnings = builder
+                    .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
+                    .translation("forge.configgui.logLegacyTagWarnings")
+                    .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
 
             builder.pop();
         }

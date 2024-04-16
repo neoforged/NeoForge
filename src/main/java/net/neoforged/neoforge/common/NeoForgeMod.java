@@ -92,6 +92,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -118,13 +119,16 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeAdvancementProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeDataMapsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeEnchantmentTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeLanguageProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
@@ -602,6 +606,8 @@ public class NeoForgeMod {
         UsernameCache.load();
         if (dist.isClient()) ClientCommandHandler.init();
         DualStackUtils.initialise();
+        TagConventionLogWarning.init();
+        if (FMLEnvironment.dist == Dist.CLIENT) TagConventionLogWarningClient.init();
 
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);
@@ -647,15 +653,18 @@ public class NeoForgeMod {
         gen.addProvider(event.includeServer(), new NeoForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeServer(), new NeoForgeEnchantmentTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new NeoForgeLootTableProvider(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new NeoForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeServer(), new NeoForgeStructureTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeRegistryOrderReportProvider(packOutput));
         gen.addProvider(event.includeServer(), new NeoForgeDataMapsProvider(packOutput, lookupProvider));
 
         gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
+        gen.addProvider(event.includeClient(), new NeoForgeLanguageProvider(packOutput));
     }
 
     // done in an event instead of deferred to only enable if a mod requests it
