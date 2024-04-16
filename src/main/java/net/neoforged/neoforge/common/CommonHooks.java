@@ -55,7 +55,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -122,7 +121,6 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -486,19 +484,9 @@ public class CommonHooks {
         event.setCanceled(preCancelEvent);
         NeoForge.EVENT_BUS.post(event);
 
-        // Handle if the event is canceled
+        // If the event is canceled, let the client know the block still exists
         if (event.isCanceled()) {
-            // Let the client know the block still exists
             entityPlayer.connection.send(new ClientboundBlockUpdatePacket(level, pos));
-
-            // Update any tile entity data for this block
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity != null) {
-                Packet<?> pkt = blockEntity.getUpdatePacket();
-                if (pkt != null) {
-                    entityPlayer.connection.send(pkt);
-                }
-            }
         }
         return event.isCanceled() ? -1 : event.getExpToDrop();
     }

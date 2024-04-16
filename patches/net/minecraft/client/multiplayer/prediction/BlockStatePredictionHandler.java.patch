@@ -1,0 +1,38 @@
+--- a/net/minecraft/client/multiplayer/prediction/BlockStatePredictionHandler.java
++++ b/net/minecraft/client/multiplayer/prediction/BlockStatePredictionHandler.java
+@@ -49,6 +_,14 @@
+                 p_233858_.syncBlockState(
+                     blockpos, blockstatepredictionhandler$serververifiedstate.blockState, blockstatepredictionhandler$serververifiedstate.playerPos
+                 );
++                // Neo: Restore the BlockEntity if one was present before the break was cancelled. Fixes MC-270804
++                if (blockstatepredictionhandler$serververifiedstate.snapshot != null &&
++                        blockstatepredictionhandler$serververifiedstate.blockState == blockstatepredictionhandler$serververifiedstate.snapshot.getReplacedBlock()) {
++                    if (blockstatepredictionhandler$serververifiedstate.snapshot.restoreBlockEntity(p_233858_, blockpos)) {
++                        // Attempt a re-render if BE data was loaded, since some blocks may depend on it.
++                        p_233858_.sendBlockUpdated(blockpos, blockstatepredictionhandler$serververifiedstate.blockState, blockstatepredictionhandler$serververifiedstate.blockState, 3);
++                    }
++                }
+             }
+         }
+     }
+@@ -72,8 +_,20 @@
+         return this.isPredicting;
+     }
+ 
++    /**
++     * Sets the stored BlockSnapshot on the ServerVerifiedState for the given position.
++     * This method is only called after {@link #retainKnownServerState}, so we are certain a map entry exists.
++     */
++    public void retainSnapshot(BlockPos pos, net.neoforged.neoforge.common.util.BlockSnapshot snapshot) {
++        this.serverVerifiedStates.get(pos.asLong()).snapshot = snapshot;
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     static class ServerVerifiedState {
++        /**
++         * Neo: Used to hold all data necessary for clientside restoration during break denial.
++         */
++        net.neoforged.neoforge.common.util.BlockSnapshot snapshot;
+         final Vec3 playerPos;
+         int sequence;
+         BlockState blockState;

@@ -120,18 +120,29 @@ public class BlockSnapshot {
         if (world instanceof Level)
             ((Level) world).sendBlockUpdated(pos, current, replaced, flags);
 
+        restoreBlockEntity(world, pos);
+
+        if (DEBUG)
+            System.out.println("Restored " + this.toString());
+        return true;
+    }
+
+    /**
+     * Loads the stored {@link BlockEntity} data if one exists at the given position.
+     * 
+     * @return true if any data was loaded
+     */
+    public boolean restoreBlockEntity(LevelAccessor world, BlockPos pos) {
         BlockEntity te = null;
         if (getTag() != null) {
             te = world.getBlockEntity(pos);
             if (te != null) {
                 te.loadWithComponents(getTag(), world.registryAccess());
                 te.setChanged();
+                return true;
             }
         }
-
-        if (DEBUG)
-            System.out.println("Restored " + this.toString());
-        return true;
+        return false;
     }
 
     @Override
