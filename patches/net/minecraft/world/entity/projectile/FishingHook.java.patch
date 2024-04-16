@@ -15,7 +15,7 @@
  
      private void checkCollision() {
          HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
--        this.hitOrDeflect(hitresult);
+-        this.hitTargetOrDeflectSelf(hitresult);
 +        if (hitresult.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) this.onHit(hitresult);
      }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryOps.java
 +++ b/net/minecraft/resources/RegistryOps.java
-@@ -51,6 +_,11 @@
+@@ -35,6 +_,11 @@
          this.lookupProvider = p_255799_;
      }
  
@@ -12,7 +12,7 @@
      public <U> RegistryOps<U> withParent(DynamicOps<U> p_330654_) {
          return (RegistryOps<U>)(p_330654_ == this.delegate ? this : new RegistryOps<>(p_330654_, this.lookupProvider));
      }
-@@ -73,6 +_,20 @@
+@@ -74,6 +_,20 @@
                          : DataResult.error(() -> "Not a registry ops")
              )
              .forGetter(p_255526_ -> null);

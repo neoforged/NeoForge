@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -118,6 +_,7 @@
+@@ -119,6 +_,7 @@
          }
      }
  
@@ -8,7 +8,7 @@
      @Override
      public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
          this.renderBackground(p_281549_, p_281550_, p_282878_, p_282465_);
-@@ -203,7 +_,7 @@
+@@ -204,7 +_,7 @@
      }
  
      public void onClose() {
@@ -17,7 +17,7 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
-@@ -319,8 +_,11 @@
+@@ -320,8 +_,11 @@
          this.width = p_96608_;
          this.height = p_96609_;
          if (!this.initialized) {
@@ -29,7 +29,7 @@
          } else {
              this.repositionElements();
          }
-@@ -333,8 +_,11 @@
+@@ -334,8 +_,11 @@
      protected void rebuildWidgets() {
          this.clearWidgets();
          this.clearFocus();
@@ -41,7 +41,7 @@
      }
  
      @Override
-@@ -361,6 +_,7 @@
+@@ -362,6 +_,7 @@
  
          this.renderBlurredBackground(p_294317_);
          this.renderMenuBackground(p_283688_);
@@ -49,7 +49,7 @@
      }
  
      protected void renderBlurredBackground(float p_330683_) {
-@@ -487,6 +_,10 @@
+@@ -496,6 +_,10 @@
      public void onFilesDrop(List<Path> p_96591_) {
      }
  
@@ -60,7 +60,7 @@
      private void scheduleNarration(long p_169381_, boolean p_169382_) {
          this.nextNarrationTime = Util.getMillis() + p_169381_;
          if (p_169382_) {
-@@ -657,5 +_,13 @@
+@@ -666,5 +_,13 @@
              this.index = p_169425_;
              this.priority = p_169426_;
          }

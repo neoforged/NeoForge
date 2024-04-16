@@ -17,6 +17,6 @@
 +                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
 +                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult))
 +                        break;
-                     ProjectileDeflection projectiledeflection = this.hitOrDeflect(hitresult);
+                     ProjectileDeflection projectiledeflection = this.hitTargetOrDeflectSelf(hitresult);
                      this.hasImpulse = true;
                      if (projectiledeflection != ProjectileDeflection.NONE) {

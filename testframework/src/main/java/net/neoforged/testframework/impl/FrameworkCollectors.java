@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -86,7 +87,7 @@ public final class FrameworkCollectors {
 
         public static List<Test> forGameTestMethodsWithAnnotation(ModContainer container, Class<? extends Annotation> annotation) {
             return findMethodsWithAnnotation(container, SIDE_FILTER, annotation)
-                    .filter(method -> method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(ExtendedGameTestHelper.class))
+                    .filter(method -> method.getParameterTypes().length == 1 && GameTestHelper.class.isAssignableFrom(method.getParameterTypes()[0]))
                     .filter(method -> {
                         if (Modifier.isStatic(method.getModifiers())) {
                             return true;
@@ -94,7 +95,13 @@ public final class FrameworkCollectors {
                         LogUtils.getLogger().warn("Attempted to register method-based gametest test on non-static method: " + method);
                         return false;
                     })
-                    .<Test>map(MethodBasedGameTestTest::new).toList();
+                    .<Test>map(LambdaExceptionUtils.rethrowFunction(method -> {
+                        if (method.getParameterTypes()[0].isAssignableFrom(ExtendedGameTestHelper.class)) {
+                            return new MethodBasedGameTestTest(method, ExtendedGameTestHelper.class);
+                        }
+
+                        return new MethodBasedGameTestTest(method, (Class<? extends GameTestHelper>) method.getParameterTypes()[0]);
+                    })).toList();
         }
 
         public static List<Test> eventTestMethodsWithAnnotation(ModContainer container, Class<? extends Annotation> annotation) {

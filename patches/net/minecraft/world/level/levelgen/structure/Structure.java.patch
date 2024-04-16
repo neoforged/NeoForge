@@ -22,7 +22,7 @@
      }
  
      public HolderSet<Biome> biomes() {
-@@ -191,6 +_,29 @@
+@@ -196,6 +_,29 @@
      }
  
      public abstract StructureType<?> type();
