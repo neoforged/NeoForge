@@ -62,8 +62,8 @@ public class ModelDataManager {
     /**
      * Provides all the model data for a given chunk section. This is useful for mods which wish to retrieve
      * a fast view of the model data for a single section in a level.
-     * <p></p>
-     * The returned map must be copied if it needs to be accessed from another thread, as it may be modified
+     *
+     * <p>The returned map must be copied if it needs to be accessed from another thread, as it may be modified
      * by this data manager.
      *
      * @param pos the section to query
