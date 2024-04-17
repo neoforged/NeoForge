@@ -40,7 +40,7 @@ public class ServerModLoader extends CommonModLoader {
             CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error, new File("."));
             throw error;
         }
-        List<ModLoadingWarning> warnings = ModLoader.get().getWarnings();
+        List<ModLoadingWarning> warnings = ModLoader.getWarnings();
         if (!warnings.isEmpty()) {
             LOGGER.warn(Logging.LOADING, "Mods loaded with {} warnings", warnings.size());
             warnings.forEach(warning -> LOGGER.warn(Logging.LOADING, warning.formatToString()));

@@ -20,12 +20,19 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
 
 /**
  * Internal class for handling the steps of mod loading that are common for client, data and server runs.
+ *
+ * <p><ul>
+ * <li>Client runs {@link #begin}, {@link #load} and {@link #finish} at different timings, see {@link ClientModLoader}.</li>
+ * <li>Server runs all 3 consecutively.</li>
+ * <li>Datagen only runs {@link #begin}.</li>
+ * </ul>
  */
 public abstract class CommonModLoader {
     private static boolean registriesLoaded = false;
@@ -37,9 +44,9 @@ public abstract class CommonModLoader {
     protected static void begin(Runnable periodicTask) {
         var syncExecutor = ModWorkManager.syncExecutor();
 
-        ModLoader.get().gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
+        ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
 
-        ModLoader.get().runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
+        ModLoader.runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
             RegistryManager.postNewRegistryEvent();
             GameData.unfreezeData();
             GameData.postRegisterEvents();
@@ -49,37 +56,37 @@ public abstract class CommonModLoader {
     }
 
     protected static void load(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {}; // no need to pass something else for now
+        Runnable periodicTask = () -> {}; // the server doesn't it, and minecraft has already opened its loading screen
 
         if (!ModLoader.isLoadingStateValid()) {
             return;
         }
 
-        ModLoader.get().runInitTask("Config loading", syncExecutor, periodicTask, () -> {
+        ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
             if (FMLEnvironment.dist == Dist.CLIENT) {
                 ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
             }
             ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
         });
 
-        ModLoader.get().dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
-        ModLoader.get().dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
+        ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
+        ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
                 FMLEnvironment.dist.isClient() ? FMLClientSetupEvent::new : FMLDedicatedServerSetupEvent::new);
 
-        ModLoader.get().runInitTask("Registration events", syncExecutor, periodicTask, RegistrationEvents::init);
+        ModLoader.runInitTask("Registration events", syncExecutor, periodicTask, RegistrationEvents::init);
     }
 
     protected static void finish(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {}; // no need to pass something else for now
+        Runnable periodicTask = () -> {};  // the server doesn't it, and minecraft has already opened its loading screen
 
         if (!ModLoader.isLoadingStateValid()) {
             return;
         }
 
-        ModLoader.get().dispatchParallelEvent("Enqueue IMC", syncExecutor, parallelExecutor, periodicTask, InterModEnqueueEvent::new);
-        ModLoader.get().dispatchParallelEvent("Process IMC", syncExecutor, parallelExecutor, periodicTask, InterModProcessEvent::new);
-        ModLoader.get().dispatchParallelEvent("Complete loading of %d mods".formatted(ModList.get().size()), syncExecutor, parallelExecutor, periodicTask, FMLLoadCompleteEvent::new);
+        ModLoader.dispatchParallelEvent("Enqueue IMC", syncExecutor, parallelExecutor, periodicTask, InterModEnqueueEvent::new);
+        ModLoader.dispatchParallelEvent("Process IMC", syncExecutor, parallelExecutor, periodicTask, InterModProcessEvent::new);
+        ModLoader.dispatchParallelEvent("Complete loading of %d mods".formatted(ModList.get().size()), syncExecutor, parallelExecutor, periodicTask, FMLLoadCompleteEvent::new);
 
-        ModLoader.get().runInitTask("Network registry lock", syncExecutor, periodicTask, NetworkRegistry.getInstance()::setup);
+        ModLoader.runInitTask("Network registry lock", syncExecutor, periodicTask, NetworkRegistry.getInstance()::setup);
     }
 }

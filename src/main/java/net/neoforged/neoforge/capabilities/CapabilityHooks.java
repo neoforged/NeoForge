@@ -45,7 +45,7 @@ public class CapabilityHooks {
         initialized = true;
 
         var event = new RegisterCapabilitiesEvent();
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(event);
 
         initFinished = true;
     }

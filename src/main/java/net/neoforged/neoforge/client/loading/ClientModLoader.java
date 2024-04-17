@@ -101,7 +101,7 @@ public class ClientModLoader extends CommonModLoader {
     }
 
     public static boolean completeModLoading() {
-        var warnings = ModLoader.get().getWarnings();
+        var warnings = ModLoader.getWarnings();
         boolean showWarnings = true;
         try {
             showWarnings = NeoForgeConfig.CLIENT.showLoadWarnings.get();

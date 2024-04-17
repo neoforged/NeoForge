@@ -66,7 +66,7 @@ public class ResourcePackLoader {
         // First add the mod's builtin packs
         resourcePacks.addPackFinder(buildPackFinder(modResourcePacks, packType));
         // Then fire the event to add more packs
-        ModLoader.get().postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder));
+        ModLoader.postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder));
     }
 
     @Deprecated(forRemoval = true, since = "1.20.4")
@@ -116,7 +116,7 @@ public class ResourcePackLoader {
                             MOD_PACK_SELECTION_CONFIG);
 
                     if (modPack == null) {
-                        ModLoader.get().addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
+                        ModLoader.addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
                         continue;
                     }
                 } else {
@@ -134,7 +134,7 @@ public class ResourcePackLoader {
                 }
             } catch (IOException exception) {
                 LOGGER.error("Failed to read pack.mcmeta file of mod {}", mod.getModId(), exception);
-                ModLoader.get().addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
+                ModLoader.addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
             }
         }
 
