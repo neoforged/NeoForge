@@ -16,12 +16,10 @@
              if (this.minecraft.options.touchscreen().get() || p_283396_) {
                  p_281612_.fill(p_282820_, p_283181_, p_282820_ + 32, p_283181_ + 32, -1601138544);
                  int j = p_283204_ - p_282820_;
-@@ -510,7 +_,8 @@
-                                 this.minecraft.setScreen(new ProgressScreen(true));
+@@ -511,6 +_,7 @@
                                  this.doDeleteWorld();
                              }
--            
-+
+ 
 +                            if (this.minecraft.screen instanceof ProgressScreen || this.minecraft.screen instanceof ConfirmScreen) // Neo - fix MC-251068
                              this.minecraft.setScreen(this.screen);
                          },
