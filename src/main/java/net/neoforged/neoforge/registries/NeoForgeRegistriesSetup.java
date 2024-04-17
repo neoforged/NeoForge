@@ -49,7 +49,15 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.FROG_VARIANT, // Required for EntityDataSerializers
             BuiltInRegistries.DATA_COMPONENT_TYPE, // Required for itemstack sync
             BuiltInRegistries.RECIPE_SERIALIZER, // Required for Recipe sync
-            BuiltInRegistries.ATTRIBUTE // Required for ClientboundUpdateAttributesPacket
+            BuiltInRegistries.ATTRIBUTE, // Required for ClientboundUpdateAttributesPacket
+
+            // Required due to appearing in usages of ByteBufCodecs#registry
+            BuiltInRegistries.POTION, // PotionContents#STREAM_CODEC
+            BuiltInRegistries.NUMBER_FORMAT_TYPE, // NumberFormatTypes#STREAM_CODEC
+            BuiltInRegistries.CUSTOM_STAT, // StatType creates a registry StreamCodec using the provided stat registry
+            BuiltInRegistries.POSITION_SOURCE_TYPE, // PositionSource#STREAM_CODEC
+            BuiltInRegistries.ARMOR_MATERIAL, // TrimMaterial#DIRECT_STREAM_CODEC
+            BuiltInRegistries.MAP_DECORATION_TYPE // MapDecorationType#STREAM_CODEC
     );
 
     private static void registerRegistries(NewRegistryEvent event) {
