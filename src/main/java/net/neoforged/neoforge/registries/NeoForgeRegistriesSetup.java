@@ -49,7 +49,8 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.FROG_VARIANT, // Required for EntityDataSerializers
             BuiltInRegistries.DATA_COMPONENT_TYPE, // Required for itemstack sync
             BuiltInRegistries.RECIPE_SERIALIZER, // Required for Recipe sync
-            BuiltInRegistries.ATTRIBUTE // Required for ClientboundUpdateAttributesPacket
+            BuiltInRegistries.ATTRIBUTE, // Required for ClientboundUpdateAttributesPacket
+            BuiltInRegistries.POTION // Required for DataComponents (DataComponents.POTION_CONTENTS)
     );
 
     private static void registerRegistries(NewRegistryEvent event) {
