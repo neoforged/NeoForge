@@ -29,7 +29,7 @@
      public static boolean canDestroy(BlockState p_31492_) {
          return !p_31492_.isAir() && !p_31492_.is(BlockTags.WITHER_IMMUNE);
      }
-@@ -495,6 +_,7 @@
+@@ -493,6 +_,7 @@
  
      @Override
      public void checkDespawn() {
