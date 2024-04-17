@@ -595,6 +595,9 @@ public class DeferredRegister<T> {
         }
     }
 
+    /**
+     * Specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
+     */
     public static class DataComponents extends DeferredRegister<DataComponentType<?>> {
         protected DataComponents(String namespace) {
             super(Registries.DATA_COMPONENT_TYPE, namespace);

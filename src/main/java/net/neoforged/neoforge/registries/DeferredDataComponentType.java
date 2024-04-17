@@ -1,20 +1,16 @@
 package net.neoforged.neoforge.registries;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
 /**
- * Special {@link DeferredHolder} for {@link DataComponentType DataComponentTypes} that implements {@link DataComponentType}.
+ * Special {@link DeferredHolder} for {@link DataComponentType DataComponentTypes}.
  *
  * @param <D> The data type of the component, which must implement {@link Object#equals(Object) equals} and {@link Object#hashCode() hashcode}.
  */
-public class DeferredDataComponentType<D> extends DeferredHolder<DataComponentType<?>, DataComponentType<D>> implements DataComponentType<D> {
+public class DeferredDataComponentType<D> extends DeferredHolder<DataComponentType<?>, DataComponentType<D>> {
     /**
      * Creates a new {@link DeferredHolder} targeting the {@link DataComponentType} with the specified name.
      * 
@@ -37,27 +33,5 @@ public class DeferredDataComponentType<D> extends DeferredHolder<DataComponentTy
 
     protected DeferredDataComponentType(ResourceKey<DataComponentType<?>> key) {
         super(key);
-    }
-
-    // Implement each of these to wrap the held data's methods in case they are implemented differently.
-    @Nullable
-    @Override
-    public Codec<D> codec() {
-        return get().codec();
-    }
-
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, D> streamCodec() {
-        return get().streamCodec();
-    }
-
-    @Override
-    public boolean isTransient() {
-        return get().isTransient();
-    }
-
-    @Override
-    public Codec<D> codecOrThrow() {
-        return get().codecOrThrow();
     }
 }
