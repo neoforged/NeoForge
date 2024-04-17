@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
@@ -392,12 +393,25 @@ public final class FluidStack implements DataComponentHolder {
         return this.components.set(type, component);
     }
 
+    @Nullable
+    public <T> T set(Supplier<? extends DataComponentType<T>> type, @Nullable T value) {
+        return set(type.get(), value);
+    }
+
     /**
      * Updates a data component if it exists, using an additional {@code updateContext}.
      */
     @Nullable
     public <T, U> T update(DataComponentType<T> type, T component, U updateContext, BiFunction<T, U, T> updater) {
         return this.set(type, updater.apply(this.getOrDefault(type, component), updateContext));
+    }
+
+    /**
+     * Updates a data component if it exists, using an additional {@code updateContext}.
+     */
+    @Nullable
+    public <T, U> T update(Supplier<? extends DataComponentType<T>> type, T component, U updateContext, BiFunction<T, U, T> updater) {
+        return update(type.get(), component, updateContext, updater);
     }
 
     /**
@@ -410,11 +424,27 @@ public final class FluidStack implements DataComponentHolder {
     }
 
     /**
+     * Updates a data component if it exists.
+     */
+    @Nullable
+    public <T> T update(Supplier<? extends DataComponentType<T>> type, T component, UnaryOperator<T> updater) {
+        return update(type.get(), component, updater);
+    }
+
+    /**
      * Removes a data component.
      */
     @Nullable
     public <T> T remove(DataComponentType<? extends T> type) {
         return this.components.remove(type);
+    }
+
+    /**
+     * Removes a data component.
+     */
+    @Nullable
+    public <T> T remove(Supplier<? extends DataComponentType<? extends T>> type) {
+        return remove(type.get());
     }
 
     /**
