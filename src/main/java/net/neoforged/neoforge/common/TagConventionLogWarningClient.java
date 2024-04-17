@@ -62,7 +62,9 @@ public final class TagConventionLogWarningClient {
                         stringBuilder.append("""
                                 \n	Dev warning - Untranslated Item Tags detected. Please translate your item tags so other mods such as recipe viewers can properly display your tag's name.
                                     The format desired is tag.item.<namespace>.<path> for the translation key with slashes in path turned into periods.
-                                    You can disable this message in Neoforge's common config by setting logUntranslatedItemTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
+                                    You can see a shortened version of this message by setting logUntranslatedItemTagWarnings in Neoforge's common config to "DEV_SHORT".
+                                    You can see individual untranslated item tags by setting logUntranslatedItemTagWarnings in Neoforge's common config to "DEV_VERBOSE".
+                                    Default is "SILENCED" to hide this message.
                                 """);
 
                         // Print out all untranslated tags when desired.
