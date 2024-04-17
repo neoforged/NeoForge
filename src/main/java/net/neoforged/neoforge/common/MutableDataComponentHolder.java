@@ -74,16 +74,16 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     }
 
     /**
-     * Copes a data component from {@code src} into {@code target}
+     * Copies a data component from {@code src}
      */
-    static <T> void copyFrom(DataComponentHolder src, MutableDataComponentHolder target, DataComponentType<T> componentType) {
-        target.set(componentType, src.get(componentType));
+    default <T> void copyFrom(DataComponentHolder src, DataComponentType<T> componentType) {
+        set(componentType, src.get(componentType));
     }
 
     /**
-     * Copes a data component from {@code src} into {@code target}
+     * Copies a data component from {@code src}
      */
-    static <T> void copyFrom(DataComponentHolder src, MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
-        copyFrom(src, target, componentType.get());
+    default <T> void copyFrom(DataComponentHolder src, Supplier<? extends DataComponentType<T>> componentType) {
+        copyFrom(src, componentType.get());
     }
 }
