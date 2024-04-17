@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -726,9 +_,10 @@
+@@ -724,9 +_,10 @@
              }
          },
          new OptionInstance.LazyEnum<>(
@@ -12,7 +12,7 @@
                          && !Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().contains(p_232011_)
                      ? Optional.empty()
                      : Optional.of(p_232011_),
-@@ -798,7 +_,7 @@
+@@ -796,7 +_,7 @@
          this.incompatibleResourcePacks.clear();
  
          for (Pack pack : p_275268_.getSelectedPacks()) {
@@ -21,7 +21,7 @@
                  this.resourcePacks.add(pack.getId());
                  if (!pack.getCompatibility().isCompatible()) {
                      this.incompatibleResourcePacks.add(pack.getId());
-@@ -1093,6 +_,7 @@
+@@ -1091,6 +_,7 @@
      }
  
      public Options(Minecraft p_92138_, File p_92139_) {
@@ -29,7 +29,7 @@
          this.minecraft = p_92138_;
          this.optionsFile = new File(p_92139_, "options.txt");
          boolean flag = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1230,11 +_,21 @@
+@@ -1228,11 +_,21 @@
          this.onboardAccessibility = p_168428_.process("onboardAccessibility", this.onboardAccessibility);
          p_168428_.process("menuBackgroundBlurriness", this.menuBackgroundBlurriness);
  
@@ -53,7 +53,7 @@
              }
          }
  
-@@ -1252,6 +_,9 @@
+@@ -1250,6 +_,9 @@
      }
  
      public void load() {
@@ -63,7 +63,7 @@
          try {
              if (!this.optionsFile.exists()) {
                  return;
-@@ -1279,7 +_,8 @@
+@@ -1277,7 +_,8 @@
                  }
              }
  
@@ -73,7 +73,7 @@
                  new Options.FieldAccess() {
                      @Nullable
                      private String getValueOrNull(String p_168459_) {
-@@ -1454,6 +_,7 @@
+@@ -1452,6 +_,7 @@
      }
  
      public ClientInformation buildPlayerInformation() {
@@ -81,7 +81,7 @@
          int i = 0;
  
          for (PlayerModelPart playermodelpart : this.modelParts) {
-@@ -1529,6 +_,23 @@
+@@ -1527,6 +_,23 @@
          }
  
          p_92146_.setSelected(set);
