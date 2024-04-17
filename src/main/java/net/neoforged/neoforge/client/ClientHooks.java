@@ -134,6 +134,7 @@ import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPauseUpdatedEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -149,6 +150,7 @@ import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -1002,5 +1004,41 @@ public class ClientHooks {
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
+    }
+
+    /**
+     * Fires {@link RenderFrameEvent.Pre}. Called just before {@link GameRenderer#render(float, long, boolean)} in {@link Minecraft#runTick(boolean)}.
+     * <p>
+     * Fired before the profiler section for "gameRenderer" is started.
+     * 
+     * @param partialTick The current partial tick
+     */
+    public static void fireRenderFramePre(float partialTick) {
+        NeoForge.EVENT_BUS.post(new RenderFrameEvent.Pre(partialTick));
+    }
+
+    /**
+     * Fires {@link RenderFrameEvent.Post}. Called just after {@link GameRenderer#render(float, long, boolean)} in {@link Minecraft#runTick(boolean)}.
+     * <p>
+     * Fired after the profiler section for "gameRenderer" is ended.
+     * 
+     * @param partialTick The current partial tick
+     */
+    public static void fireRenderFramePost(float partialRick) {
+        NeoForge.EVENT_BUS.post(new RenderFrameEvent.Post(partialRick));
+    }
+
+    /**
+     * Fires {@link ClientTickEvent.Pre}. Called from the head of {@link Minecraft#tick()}.
+     */
+    public static void fireClientTickPre() {
+        NeoForge.EVENT_BUS.post(new ClientTickEvent.Pre());
+    }
+
+    /**
+     * Fires {@link ClientTickEvent.Post}. Called from the tail of {@link Minecraft#tick()}.
+     */
+    public static void fireClientTickPost() {
+        NeoForge.EVENT_BUS.post(new ClientTickEvent.Post());
     }
 }

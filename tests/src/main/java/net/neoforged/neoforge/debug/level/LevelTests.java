@@ -9,7 +9,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.tick.LivingTickEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -49,7 +49,7 @@ public class LevelTests {
         final GameRules.Key<GameRules.BooleanValue> booleanGameRule = GameRules.register("%s:custom_boolean_game_rule".formatted(test.createModId()), GameRules.Category.MISC, GameRules.BooleanValue.create(true));
         final GameRules.Key<GameRules.IntegerValue> integerGameRule = GameRules.register("%s:custom_integer_game_rule".formatted(test.createModId()), GameRules.Category.MISC, GameRules.IntegerValue.create(1337));
 
-        test.eventListeners().forge().addListener((final LivingEvent.LivingTickEvent event) -> {
+        test.eventListeners().forge().addListener((LivingTickEvent.Pre event) -> {
             if (event.getEntity() instanceof ServerPlayer player && player.getGameProfile().getName().equals("test-mock-player")) {
                 if (player.level().getGameRules().getBoolean(booleanGameRule)) {
                     player.setHealth(player.getHealth() - player.level().getGameRules().getInt(integerGameRule));

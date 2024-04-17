@@ -15,6 +15,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -93,7 +94,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event.Result;
-import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
@@ -160,6 +160,9 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -809,44 +812,62 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
     }
 
-    public static void onRenderTickStart(float timer) {
-        NeoForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, timer));
+    /**
+     * Fires {@link PlayerTickEvent.Pre}. Called from the head of {@link Player#tick()}.
+     * 
+     * @param player The player being ticked
+     */
+    public static void firePlayerTickPre(Player player) {
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Pre(player));
     }
 
-    public static void onRenderTickEnd(float timer) {
-        NeoForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, timer));
+    /**
+     * Fires {@link PlayerTickEvent.Post}. Called from the tail of {@link Player#tick()}.
+     * 
+     * @param player The player being ticked
+     */
+    public static void firePlayerTickPost(Player player) {
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(player));
     }
 
-    public static void onPlayerPreTick(Player player) {
-        NeoForge.EVENT_BUS.post(new TickEvent.PlayerTickEvent(TickEvent.Phase.START, player));
+    /**
+     * Fires {@link LevelTickEvent.Pre}. Called from {@link Minecraft#tick()} and {@link MinecraftServer#tickChildren(BooleanSupplier)} just before the try block for level tick is entered.
+     * 
+     * @param level    The level being ticked
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     */
+    public static void fireLevelTickPre(Level level, BooleanSupplier haveTime) {
+        NeoForge.EVENT_BUS.post(new LevelTickEvent.Pre(haveTime, level));
     }
 
-    public static void onPlayerPostTick(Player player) {
-        NeoForge.EVENT_BUS.post(new TickEvent.PlayerTickEvent(TickEvent.Phase.END, player));
+    /**
+     * Fires {@link LevelTickEvent.Post}. Called from {@link Minecraft#tick()} and {@link MinecraftServer#tickChildren(BooleanSupplier)} just after the try block for level tick is exited.
+     * 
+     * @param level    The level being ticked
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     */
+    public static void fireLevelTickPost(Level level, BooleanSupplier haveTime) {
+        NeoForge.EVENT_BUS.post(new LevelTickEvent.Post(haveTime, level));
     }
 
-    public static void onPreLevelTick(Level level, BooleanSupplier haveTime) {
-        NeoForge.EVENT_BUS.post(new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.START, level, haveTime));
+    /**
+     * Fires {@link ServerTickEvent.Pre}. Called from the head of {@link MinecraftServer#tickServer(BooleanSupplier)}.
+     * 
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     * @param server   The current server
+     */
+    public static void fireServerTickPre(BooleanSupplier haveTime, MinecraftServer server) {
+        NeoForge.EVENT_BUS.post(new ServerTickEvent.Pre(haveTime, server));
     }
 
-    public static void onPostLevelTick(Level level, BooleanSupplier haveTime) {
-        NeoForge.EVENT_BUS.post(new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.END, level, haveTime));
-    }
-
-    public static void onPreClientTick() {
-        NeoForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.START));
-    }
-
-    public static void onPostClientTick() {
-        NeoForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
-    }
-
-    public static void onPreServerTick(BooleanSupplier haveTime, MinecraftServer server) {
-        NeoForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.START, haveTime, server));
-    }
-
-    public static void onPostServerTick(BooleanSupplier haveTime, MinecraftServer server) {
-        NeoForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, haveTime, server));
+    /**
+     * Fires {@link ServerTickEvent.Post}. Called from the tail of {@link MinecraftServer#tickServer(BooleanSupplier)}.
+     * 
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     * @param server   The current server
+     */
+    public static void fireServerTickPost(BooleanSupplier haveTime, MinecraftServer server) {
+        NeoForge.EVENT_BUS.post(new ServerTickEvent.Post(haveTime, server));
     }
 
     private static final WeightedRandomList<MobSpawnSettings.SpawnerData> NO_SPAWNS = WeightedRandomList.create();

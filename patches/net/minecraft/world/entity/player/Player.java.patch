@@ -35,7 +35,7 @@
  
      @Override
      public void tick() {
-+        net.neoforged.neoforge.event.EventHooks.onPlayerPreTick(this);
++        net.neoforged.neoforge.event.EventHooks.firePlayerTickPre(this);
          this.noPhysics = this.isSpectator();
          if (this.isSpectator()) {
              this.setOnGround(false);
@@ -52,7 +52,7 @@
          this.turtleHelmetTick();
          this.cooldowns.tick();
          this.updatePlayerPose();
-+        net.neoforged.neoforge.event.EventHooks.onPlayerPostTick(this);
++        net.neoforged.neoforge.event.EventHooks.firePlayerTickPost(this);
      }
  
      @Override

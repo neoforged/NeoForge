@@ -185,6 +185,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
+import net.neoforged.neoforge.event.tick.LivingTickEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -234,8 +235,23 @@ public class CommonHooks {
         return event;
     }
 
-    public static boolean onLivingTick(LivingEntity entity) {
-        return NeoForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent(entity)).isCanceled();
+    /**
+     * Fires {@link LivingTickEvent.Pre}. Called from the head of {@link LivingEntity#tick()}.
+     * 
+     * @param entity The entity being ticked
+     * @return The event
+     */
+    public static LivingTickEvent.Pre fireLivingTickPre(LivingEntity entity) {
+        return NeoForge.EVENT_BUS.post(new LivingTickEvent.Pre(entity));
+    }
+
+    /**
+     * Fires {@link LivingTickEvent.Post}. Called from the tail of {@link LivingEntity#tick()}.
+     * 
+     * @param entity The entity being ticked
+     */
+    public static void fireLivingTickPost(LivingEntity entity) {
+        NeoForge.EVENT_BUS.post(new LivingTickEvent.Post(entity));
     }
 
     public static boolean onLivingAttack(LivingEntity entity, DamageSource src, float amount) {
