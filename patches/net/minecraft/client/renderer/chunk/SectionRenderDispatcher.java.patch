@@ -33,7 +33,7 @@
 +            }
 +
 +            public RebuildTask(double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
-                 super(RenderSection.this, p_294400_, p_295207_);
+                 super(p_294400_, p_295207_);
                  this.region = p_294382_;
 +                var manager = p_294382_ != null ? p_294382_.getModelDataManager() : null;
 +                this.modelData = manager != null ? manager : net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot.EMPTY;
@@ -41,7 +41,7 @@
              }
  
              @Override
-@@ -608,7 +_,11 @@
+@@ -606,7 +_,11 @@
                          }
  
                          if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
@@ -54,7 +54,7 @@
                              BufferBuilder bufferbuilder2 = p_294319_.builder(rendertype2);
                              if (set.add(rendertype2)) {
                                  RenderSection.this.beginLayer(bufferbuilder2);
-@@ -616,10 +_,20 @@
+@@ -614,10 +_,20 @@
  
                              posestack.pushPose();
                              posestack.translate((float)(blockpos2.getX() & 15), (float)(blockpos2.getY() & 15), (float)(blockpos2.getZ() & 15));
@@ -76,7 +76,7 @@
  
                      if (set.contains(RenderType.translucent())) {
                          BufferBuilder bufferbuilder1 = p_294319_.builder(RenderType.translucent());
-@@ -650,9 +_,10 @@
+@@ -648,9 +_,10 @@
              private <E extends BlockEntity> void handleBlockEntity(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults p_294198_, E p_296214_) {
                  BlockEntityRenderer<E> blockentityrenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(p_296214_);
                  if (blockentityrenderer != null) {

@@ -27,11 +27,10 @@
      private final List<ItemStack> itemIcons;
  
      private RecipeBookCategories(ItemStack... p_92267_) {
-@@ -60,11 +_,15 @@
+@@ -60,10 +_,15 @@
              case FURNACE -> FURNACE_CATEGORIES;
              case BLAST_FURNACE -> BLAST_FURNACE_CATEGORIES;
              case SMOKER -> SMOKER_CATEGORIES;
--            default -> throw new MatchException(null, null);
 +            default -> net.neoforged.neoforge.client.RecipeBookManager.getCustomCategoriesOrEmpty(p_92270_);
          };
      }
