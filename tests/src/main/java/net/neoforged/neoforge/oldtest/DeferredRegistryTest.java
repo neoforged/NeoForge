@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -13,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
@@ -25,6 +27,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredDataComponentType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -38,6 +41,7 @@ public class DeferredRegistryTest {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    private static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final ResourceKey<Registry<Custom>> CUSTOM_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "test_registry"));
     private static final DeferredRegister<Custom> CUSTOMS = DeferredRegister.create(CUSTOM_REGISTRY_KEY, MODID);
@@ -47,7 +51,9 @@ public class DeferredRegistryTest {
     private static final DeferredRegister<PosRuleTestType<?>> POS_RULE_TEST_TYPES = DeferredRegister.create(Registries.POS_RULE_TEST, MODID);
 
     private static final DeferredBlock<Block> BLOCK = BLOCKS.register("test", () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredDataComponentType<Integer> COMPONENT_TYPE = COMPONENTS.registerBuilder("test", builder -> builder.persistent(Codec.INT));
     private static final DeferredItem<BlockItem> ITEM = ITEMS.registerSimpleBlockItem(BLOCK);
+    private static final DeferredItem<Item> ITEM_WITH_COMPONENT = ITEMS.registerItem("test_with_component", properties -> new Item(properties.component(COMPONENT_TYPE, 3)));
     private static final DeferredHolder<Custom, Custom> CUSTOM = CUSTOMS.register("test", () -> new Custom() {});
     // Should never be created as the registry doesn't exist - this should silently fail and remain empty
     private static final DeferredHolder<Object, Object> DOESNT_EXIST = DOESNT_EXIST_REG.register("test", Object::new);
@@ -60,6 +66,7 @@ public class DeferredRegistryTest {
     public DeferredRegistryTest(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
+        COMPONENTS.register(modBus);
         CUSTOMS.register(modBus);
         RECIPE_TYPES.register(modBus);
         POS_RULE_TEST_TYPES.register(modBus);
@@ -78,6 +85,7 @@ public class DeferredRegistryTest {
         // Validate all the RegistryObjects are filled / not filled
         BLOCK.get();
         ITEM.get();
+        COMPONENT_TYPE.get();
         CUSTOM.get();
         if (DOESNT_EXIST.isBound())
             throw new IllegalStateException("DeferredRegistryTest#DOESNT_EXIST should not be present!");

@@ -16,8 +16,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -152,6 +154,19 @@ public class DeferredRegister<T> {
      */
     public static DeferredRegister.Blocks createBlocks(String modid) {
         return new Blocks(modid);
+    }
+
+    /**
+     * Factory for a specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
+     *
+     * @param modid The namespace for all objects registered to this DeferredRegister
+     * @see #create(Registry, String)
+     * @see #create(ResourceKey, String)
+     * @see #create(ResourceLocation, String)
+     * @see #createItems(String)
+     */
+    public static DataComponents createDataComponents(String modid) {
+        return new DataComponents(modid);
     }
 
     private final ResourceKey<? extends Registry<T>> registryKey;
@@ -577,6 +592,29 @@ public class DeferredRegister<T> {
         @Override
         protected <I extends Item> DeferredItem<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, ResourceLocation key) {
             return DeferredItem.createItem(ResourceKey.create(registryKey, key));
+        }
+    }
+
+    public static class DataComponents extends DeferredRegister<DataComponentType<?>> {
+        protected DataComponents(String namespace) {
+            super(Registries.DATA_COMPONENT_TYPE, namespace);
+        }
+
+        /**
+         * Convenience method that constructs a builder for use in the operator. Use this to avoid inference issues.
+         * 
+         * @param name    The name for this data component type. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param builder The unary operator, which is passed a new builder for user operations, then builds it when registered.
+         * @return A {@link DeferredDataComponentType} that will track updates from the registry for this type.
+         */
+        public <D> DeferredDataComponentType<D> registerBuilder(String name, UnaryOperator<DataComponentType.Builder<D>> builder) {
+            return (DeferredDataComponentType<D>) this.register(name, () -> builder.apply(DataComponentType.builder()).build());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected <I extends DataComponentType<?>> DeferredHolder<DataComponentType<?>, I> createHolder(ResourceKey<? extends Registry<DataComponentType<?>>> registryKey, ResourceLocation key) {
+            return (DeferredHolder<DataComponentType<?>, I>) DeferredDataComponentType.createType(ResourceKey.create(registryKey, key));
         }
     }
 
