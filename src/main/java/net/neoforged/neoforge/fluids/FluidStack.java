@@ -37,7 +37,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.common.MutableComponentHolder;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -48,7 +48,7 @@ import org.slf4j.Logger;
  *
  * <p>Most methods in this class are adapted from {@link ItemStack}.
  */
-public final class FluidStack implements MutableComponentHolder {
+public final class FluidStack implements MutableDataComponentHolder {
     private static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = BuiltInRegistries.FLUID.holderByNameCodec().validate(holder -> {
         return holder.is(Fluids.EMPTY.builtInRegistryHolder()) ? DataResult.error(() -> {
             return "Fluid must not be minecraft:empty";

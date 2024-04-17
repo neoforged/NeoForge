@@ -11,7 +11,7 @@ import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentType;
 import org.jetbrains.annotations.Nullable;
 
-public interface MutableComponentHolder extends DataComponentHolder {
+public interface MutableDataComponentHolder extends DataComponentHolder {
     /**
      * Sets a data component.
      */
@@ -43,14 +43,14 @@ public interface MutableComponentHolder extends DataComponentHolder {
     /**
      * Copies a data component into the {@code target} component holder.
      */
-    default <T> void copyInto(MutableComponentHolder target, DataComponentType<T> componentType) {
+    default <T> void copyInto(MutableDataComponentHolder target, DataComponentType<T> componentType) {
         copyInto(this, target, componentType);
     }
 
     /**
      * Copes a data component from {@code src} into {@code target}
      */
-    static <T> void copyInto(DataComponentHolder src, MutableComponentHolder target, DataComponentType<T> componentType) {
+    static <T> void copyInto(DataComponentHolder src, MutableDataComponentHolder target, DataComponentType<T> componentType) {
         target.set(componentType, src.get(componentType));
     }
 }
