@@ -212,13 +212,15 @@
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
-@@ -1518,4 +_,6 @@
+@@ -1518,6 +_,8 @@
                  set.add("vanilla");
              }
  
-+            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, p_248920_.getEnabled(), p_248681_);
++            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, datapackconfig.getEnabled(), p_248681_);
 +
              return configureRepositoryWithSelection(p_248681_, set, featureflagset, true);
+         }
+     }
 @@ -1688,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);
