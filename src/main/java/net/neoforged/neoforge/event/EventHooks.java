@@ -81,6 +81,7 @@ import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -99,6 +100,7 @@ import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
+import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
@@ -619,18 +621,16 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerBrewedPotionEvent(player, stack));
     }
 
-    public static boolean fireSleepingLocationCheck(LivingEntity player, BlockPos sleepingLocation) {
-        SleepingLocationCheckEvent evt = new SleepingLocationCheckEvent(player, sleepingLocation);
-        NeoForge.EVENT_BUS.post(evt);
-
-        Result canContinueSleep = evt.getResult();
-        if (canContinueSleep == Result.DEFAULT) {
-            return player.getSleepingPos().map(pos -> {
-                BlockState state = player.level().getBlockState(pos);
-                return state.getBlock().isBed(state, player.level(), pos, player);
-            }).orElse(false);
-        } else
-            return canContinueSleep == Result.ALLOW;
+    /**
+     * Checks if a sleeping entity can continue sleeping. In vanilla this is only allowed if
+     * the entity's {@link LivingEntity#getSleepingPos()} is the position of a {@link BedBlock}.
+     * 
+     * @param sleeper The sleeping entity
+     * @param hasBed  If there {@linkplain IBlockStateExtension#isBed is a bed} at the entity's sleeping pos.
+     * @return true if the entity may continue sleeping
+     */
+    public static boolean canEntityContinueSleeping(LivingEntity sleeper, boolean hasBed) {
+        return NeoForge.EVENT_BUS.post(new SleepingLocationCheckEvent(sleeper, hasBed)).mayContinueSleeping();
     }
 
     public static boolean fireSleepingTimeCheck(Player player, Optional<BlockPos> sleepingLocation) {

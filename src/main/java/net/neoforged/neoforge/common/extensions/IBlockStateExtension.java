@@ -30,6 +30,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
@@ -153,16 +154,17 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Determines if this block is classified as a Bed, Allowing
-     * players to sleep in it, though the block has to specifically
-     * perform the sleeping functionality in it's activated event.
+     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
+     * <p>
+     * If true, players may sleep in it, though the block must manually put the player to sleep
+     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
      *
      * @param level   The current level
      * @param pos     Block position in level
-     * @param sleeper The sleeper or camera entity, null in some cases.
+     * @param sleeper The sleeping entity
      * @return True to treat this as a bed
      */
-    default boolean isBed(BlockGetter level, BlockPos pos, @Nullable LivingEntity sleeper) {
+    default boolean isBed(BlockGetter level, BlockPos pos, LivingEntity sleeper) {
         return self().getBlock().isBed(self(), level, pos, sleeper);
     }
 

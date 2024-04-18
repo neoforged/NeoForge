@@ -5,34 +5,64 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.bus.api.Event.HasResult;
+import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 /**
- * This event is fired when game checks, if sleeping player should be still considered "in bed".<br>
- * Failing this check will cause player to wake up.<br>
- *
- * This event has a result. {@link HasResult}<br>
- *
- * setResult(ALLOW) informs game that player is still "in bed"<br>
- * setResult(DEFAULT) causes game to check {@link Block#isBed(BlockState, BlockGetter, BlockPos, Entity)} instead
+ * This event is fired when the game checks if a sleeping entity may continue sleeping.
+ * <p>
+ * It can be used to overwrite the vanilla check, forcing the entity to continue or stop sleeping.
+ * <p>
+ * This event is only fired on the logical server.
  */
-@HasResult
 public class SleepingLocationCheckEvent extends LivingEvent {
-    private final BlockPos sleepingLocation;
+    protected final boolean hasBed;
+    protected boolean mayContinueSleeping;
 
-    public SleepingLocationCheckEvent(LivingEntity player, BlockPos sleepingLocation) {
-        super(player);
-        this.sleepingLocation = sleepingLocation;
+    /**
+     * Fire via {@link EventHooks#canEntityContinueSleeping}
+     */
+    public SleepingLocationCheckEvent(LivingEntity sleeper, boolean hasBed) {
+        super(sleeper);
+        this.hasBed = hasBed;
+        this.mayContinueSleeping = hasBed;
     }
 
-    public BlockPos getSleepingLocation() {
-        return sleepingLocation;
+    /**
+     * {@return the sleeping entity}
+     */
+    @Override
+    public LivingEntity getEntity() {
+        return super.getEntity();
+    }
+
+    /**
+     * Returns if the sleeping entity has a bed. The entity is considered to have a bed if:
+     * 
+     * <ol>
+     * <li>The entity has a valid {@link LivingEntity#getSleepingPos() sleeping position}.</li>
+     * <li>The block at the sleeping position {@link IBlockStateExtension#isBed is a bed}.</li>
+     * </ol>
+     * 
+     * If the entity has a bed, the default state of {@link #mayContinueSleeping()} is true.
+     */
+    public boolean hasBed() {
+        return this.hasBed;
+    }
+
+    /**
+     * {@return if the sleeping entity may continue sleeping}
+     */
+    public boolean mayContinueSleeping() {
+        return this.mayContinueSleeping;
+    }
+
+    /**
+     * Sets if the sleeping entity may continue sleeping
+     */
+    public void setContinueSleeping(boolean sleeping) {
+        this.mayContinueSleeping = sleeping;
     }
 }
