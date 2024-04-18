@@ -608,16 +608,10 @@ public class DeferredRegister<T> {
          * 
          * @param name    The name for this data component type. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param builder The unary operator, which is passed a new builder for user operations, then builds it upon registration.
-         * @return A {@link DeferredDataComponentType} which reflects the data that will be registered.
+         * @return A {@link DeferredHolder} which reflects the data that will be registered.
          */
-        public <D> DeferredDataComponentType<D> registerComponent(String name, UnaryOperator<DataComponentType.Builder<D>> builder) {
-            return (DeferredDataComponentType<D>) this.register(name, () -> builder.apply(DataComponentType.builder()).build());
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected <I extends DataComponentType<?>> DeferredHolder<DataComponentType<?>, I> createHolder(ResourceKey<? extends Registry<DataComponentType<?>>> registryKey, ResourceLocation key) {
-            return (DeferredHolder<DataComponentType<?>, I>) DeferredDataComponentType.createType(ResourceKey.create(registryKey, key));
+        public <D> DeferredHolder<DataComponentType<?>, DataComponentType<D>> registerComponentType(String name, UnaryOperator<DataComponentType.Builder<D>> builder) {
+            return this.register(name, () -> builder.apply(DataComponentType.builder()).build());
         }
     }
 
