@@ -45,7 +45,7 @@ public class FluidTemplatesTests {
     public static void testFluidHandlerItemStack(ExtendedGameTestHelper helper) {
         ItemStack stack = Items.APPLE.getDefaultInstance();
         int capacity = 2 * FluidType.BUCKET_VOLUME;
-        var fluidHandler = new FluidHandlerItemStack(SIMPLE_FLUID_CONTENT.get(), stack, capacity);
+        var fluidHandler = new FluidHandlerItemStack(SIMPLE_FLUID_CONTENT, stack, capacity);
 
         if (fluidHandler.getTanks() != 1) {
             helper.fail("Expected a single tank");
@@ -56,7 +56,7 @@ public class FluidTemplatesTests {
         if (fluidHandler.getFluidInTank(0).getAmount() != 0) {
             helper.fail("Expected empty tank");
         }
-        if (stack.has(SIMPLE_FLUID_CONTENT.get())) {
+        if (stack.has(SIMPLE_FLUID_CONTENT)) {
             helper.fail("Expected no fluid stack component");
         }
 
@@ -64,7 +64,7 @@ public class FluidTemplatesTests {
         if (fluidHandler.fill(waterStack, IFluidHandler.FluidAction.EXECUTE) != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected to be able to fill a bucket of water");
         }
-        if (!stack.has(SIMPLE_FLUID_CONTENT.get())) {
+        if (!stack.has(SIMPLE_FLUID_CONTENT)) {
             helper.fail("Expected fluid stack component");
         }
         if (fluidHandler.getFluidInTank(0).getAmount() != FluidType.BUCKET_VOLUME) {
@@ -78,7 +78,7 @@ public class FluidTemplatesTests {
         if (fluidHandler.getFluidInTank(0).getAmount() != 0) {
             helper.fail("Expected empty tank");
         }
-        if (stack.has(SIMPLE_FLUID_CONTENT.get())) {
+        if (stack.has(SIMPLE_FLUID_CONTENT)) {
             helper.fail("Expected no fluid stack component");
         }
 

@@ -38,11 +38,11 @@ public class ItemComponentTests {
             ItemStack stack = Items.DIAMOND.getDefaultInstance();
 
             ItemStack stack1 = stack.copy();
-            stack1.set(blockHolderComponent.get(), Blocks.DIAMOND_BLOCK.builtInRegistryHolder());
+            stack1.set(blockHolderComponent, Blocks.DIAMOND_BLOCK.builtInRegistryHolder());
 
             ItemStack stack2 = stack.copy();
             var diamondDh = DeferredBlock.createBlock(BuiltInRegistries.BLOCK.getKey(Blocks.DIAMOND_BLOCK));
-            stack2.set(blockHolderComponent.get(), diamondDh);
+            stack2.set(blockHolderComponent, diamondDh);
 
             if (!ItemStack.matches(stack1, stack2)) {
                 helper.fail("Expected the same item stacks");
