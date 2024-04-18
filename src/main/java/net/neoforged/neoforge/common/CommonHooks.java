@@ -45,11 +45,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -136,6 +138,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -505,17 +508,14 @@ public class CommonHooks {
         if (player != null && !player.getAbilities().mayBuild) {
             AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_PLACE_ON);
             if (adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, context.getClickedPos(), false))) {
-                return net.minecraft.world.InteractionResult.PASS;
+                return InteractionResult.PASS;
             }
         }
 
         // handle all placement events here
         Item item = itemstack.getItem();
         int size = itemstack.getCount();
-        // Porting 1.20.5 redo this for components?
-        //CompoundTag nbt = null;
-        //if (itemstack.getTag() != null)
-        //    nbt = itemstack.getTag().copy();
+        DataComponentMap components = itemstack.getComponents();
 
         if (!(itemstack.getItem() instanceof BucketItem)) // if not bucket
             level.captureBlockSnapshots = true;
@@ -530,17 +530,14 @@ public class CommonHooks {
         if (ret.consumesAction()) {
             // save new item data
             int newSize = itemstack.getCount();
-            //CompoundTag newNBT = null;
-            //if (itemstack.getTag() != null) {
-            //    newNBT = itemstack.getTag().copy();
-            //}
+            DataComponentMap newComponents = itemstack.getComponents();
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>) level.capturedBlockSnapshots.clone();
             level.capturedBlockSnapshots.clear();
 
             // make sure to set pre-placement item data for event
             itemstack.setCount(size);
-            //itemstack.setTag(nbt);
+            itemstack.applyComponents(components);
             //TODO: Set pre-placement item attachments?
 
             Direction side = context.getClickedFace();
@@ -563,7 +560,7 @@ public class CommonHooks {
             } else {
                 // Change the stack to its new content
                 itemstack.setCount(newSize);
-                //itemstack.setTag(newNBT);
+                itemstack.applyComponents(newComponents);
 
                 for (BlockSnapshot snap : blockSnapshots) {
                     int updateFlag = snap.getFlag();
@@ -805,7 +802,7 @@ public class CommonHooks {
     public static boolean onCropsGrowPre(Level level, BlockPos pos, BlockState state, boolean def) {
         BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
         NeoForge.EVENT_BUS.post(ev);
-        return (ev.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (ev.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT && def));
+        return (ev.getResult() == Event.Result.ALLOW || (ev.getResult() == Event.Result.DEFAULT && def));
     }
 
     public static void onCropsGrowPost(Level level, BlockPos pos, BlockState state) {
@@ -816,7 +813,7 @@ public class CommonHooks {
     public static CriticalHitEvent getCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
         CriticalHitEvent hitResult = new CriticalHitEvent(player, target, damageModifier, vanillaCritical);
         NeoForge.EVENT_BUS.post(hitResult);
-        if (hitResult.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT)) {
+        if (hitResult.getResult() == Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == Event.Result.DEFAULT)) {
             return hitResult;
         }
         return null;
@@ -1042,7 +1039,7 @@ public class CommonHooks {
     public static void readAdditionalLevelSaveData(CompoundTag rootTag, LevelStorageSource.LevelDirectory levelDirectory) {
         CompoundTag tag = rootTag.getCompound("fml");
         if (tag.contains("LoadingModList")) {
-            ListTag modList = tag.getList("LoadingModList", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            ListTag modList = tag.getList("LoadingModList", Tag.TAG_COMPOUND);
             Map<String, ArtifactVersion> mismatchedVersions = new HashMap<>(modList.size());
             Map<String, ArtifactVersion> missingVersions = new HashMap<>(modList.size());
             for (int i = 0; i < modList.size(); i++) {
