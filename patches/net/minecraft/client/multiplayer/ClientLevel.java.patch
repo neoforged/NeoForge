@@ -13,7 +13,7 @@
      private final BlockStatePredictionHandler blockStatePredictionHandler = new BlockStatePredictionHandler();
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
 +    private final it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> partEntities = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>();
-+    private final net.neoforged.neoforge.client.model.data.ModelDataManager.Active modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager.Active(this);
++    private final net.neoforged.neoforge.client.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager(this);
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
@@ -79,7 +79,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1069,14 +_,46 @@
+@@ -1069,14 +_,51 @@
              if (p_171712_ instanceof AbstractClientPlayer) {
                  ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
              }
@@ -114,8 +114,13 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager.Active getModelDataManager() {
++    public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
 +        return modelDataManager;
++    }
++
++    @Override
++    public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
++        return modelDataManager.getAt(pos);
 +    }
 +
 +    @Override

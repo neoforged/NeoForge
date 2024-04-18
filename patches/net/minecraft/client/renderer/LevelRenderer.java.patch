@@ -101,7 +101,7 @@
                      VertexConsumer vertexconsumer1 = new SheetedDecalTextureGenerator(
                          this.renderBuffers.crumblingBufferSource().getBuffer(ModelBakery.DESTROY_TYPES.get(k)), posestack$pose1, 1.0F
                      );
-+                    net.neoforged.neoforge.client.model.data.ModelData modelData = level.getModelDataManager().getAtOrEmpty(blockpos2);
++                    net.neoforged.neoforge.client.model.data.ModelData modelData = level.getModelData(blockpos2);
                      this.minecraft
                          .getBlockRenderer()
 -                        .renderBreakingTexture(this.level.getBlockState(blockpos2), blockpos2, this.level, posestack, vertexconsumer1);
