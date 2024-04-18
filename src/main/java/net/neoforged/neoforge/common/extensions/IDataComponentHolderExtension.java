@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.extensions;
 import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentType;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import org.jetbrains.annotations.Nullable;
 
 public interface IDataComponentHolderExtension {
@@ -27,5 +28,19 @@ public interface IDataComponentHolderExtension {
 
     default boolean has(Supplier<? extends DataComponentType<?>> type) {
         return self().has(type.get());
+    }
+
+    /**
+     * Copies a data component from {@code this} component holder into the {@code target} component holder.
+     */
+    default <T> void copyFrom(MutableDataComponentHolder target, DataComponentType<T> componentType) {
+        MutableDataComponentHolder.copyFrom(self(), target, componentType);
+    }
+
+    /**
+     * Copies a data component from {@code this} component holder into the {@code target} component holder.
+     */
+    default <T> void copyFrom(MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
+        MutableDataComponentHolder.copyFrom(self(), target, componentType);
     }
 }

@@ -74,20 +74,6 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     }
 
     /**
-     * Copies a data component from {@code this} component holder into the {@code target} component holder.
-     */
-    default <T> void copyFrom(MutableDataComponentHolder target, DataComponentType<T> componentType) {
-        copyFrom(this, target, componentType);
-    }
-
-    /**
-     * Copies a data component from {@code this} component holder into the {@code target} component holder.
-     */
-    default <T> void copyFrom(MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
-        copyFrom(this, target, componentType);
-    }
-
-    /**
      * Copes a data component from {@code src} into {@code target}
      */
     static <T> void copyFrom(DataComponentHolder src, MutableDataComponentHolder target, DataComponentType<T> componentType) {
