@@ -5,11 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
@@ -510,37 +506,5 @@ public interface IItemStackExtension {
     @Nullable
     default <T> T getCapability(ItemCapability<T, Void> capability) {
         return capability.getCapability(self(), null);
-    }
-
-    /**
-     * Sets a data component.
-     */
-    @Nullable
-    default <T> T set(Supplier<? extends DataComponentType<T>> type, @Nullable T component) {
-        return self().set(type.get(), component);
-    }
-
-    /**
-     * Updates a data component if it exists, using an additional {@code updateContext}.
-     */
-    @Nullable
-    default <T, U> T update(Supplier<? extends DataComponentType<T>> type, T component, U updateContext, BiFunction<T, U, T> updater) {
-        return self().update(type.get(), component, updateContext, updater);
-    }
-
-    /**
-     * Updates a data component if it exists.
-     */
-    @Nullable
-    default <T> T update(Supplier<? extends DataComponentType<T>> type, T component, UnaryOperator<T> updater) {
-        return self().update(type.get(), component, updater);
-    }
-
-    /**
-     * Removes a data component.
-     */
-    @Nullable
-    default <T> T remove(Supplier<? extends DataComponentType<? extends T>> type) {
-        return self().remove(type.get());
     }
 }
