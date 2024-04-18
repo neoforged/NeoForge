@@ -24,17 +24,17 @@
          this.minecraft.player.setId(p_105030_.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
-@@ -823,7 +_,8 @@
-                         this.serverData,
+@@ -824,7 +_,8 @@
                          this.postDisconnectScreen,
                          this.serverCookies,
--                        chatcomponent$state
-+                        chatcomponent$state,
+                         chatcomponent$state,
+-                        this.strictErrorHandling
++                        this.strictErrorHandling,
 +                        this.connectionType
                      )
                  )
              );
-@@ -1158,6 +_,7 @@
+@@ -1159,6 +_,7 @@
          }
  
          localplayer1.resetPos();
@@ -42,7 +42,7 @@
          this.level.addEntity(localplayer1);
          localplayer1.setYRot(-180.0F);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
-@@ -1299,10 +_,7 @@
+@@ -1300,10 +_,7 @@
          PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
          BlockPos blockpos = p_104976_.getPos();
          this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
@@ -54,7 +54,7 @@
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1469,7 +_,9 @@
+@@ -1470,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -65,7 +65,7 @@
      }
  
      @Override
-@@ -1491,6 +_,7 @@
+@@ -1492,6 +_,7 @@
          ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
          clientrecipebook.setupCollections(this.recipeManager.getOrderedRecipes(), this.minecraft.level.registryAccess());
          this.minecraft.populateSearchTree(SearchRegistry.RECIPE_COLLECTIONS, clientrecipebook.getCollections());
@@ -73,7 +73,7 @@
      }
  
      @Override
-@@ -1922,7 +_,21 @@
+@@ -1923,7 +_,21 @@
      }
  
      @Override
@@ -96,7 +96,7 @@
          if (p_295851_ instanceof PathfindingDebugPayload pathfindingdebugpayload) {
              this.minecraft
                  .debugRenderer
-@@ -2405,6 +_,8 @@
+@@ -2406,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -105,7 +105,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2414,6 +_,7 @@
+@@ -2415,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -113,7 +113,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2488,6 +_,10 @@
+@@ -2489,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;
