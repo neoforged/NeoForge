@@ -20,6 +20,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -32,6 +38,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -47,8 +54,10 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
 public class ResourcePackLoader {
     public static final String MOD_DATA_ID = "mod_data";
@@ -205,6 +214,57 @@ public class ResourcePackLoader {
         return ids;
     }
 
+    /*
+     To work with the new KnownPack system, a PackRepository should be able to construct a set of specific packs
+     given a list of names, and be guaranteed that the final list contains all of those name. At the same time, any
+     child packs detected at the root level, while their parent pack is also being added, ought to be included only
+     as a child of the parent. This method implements this filtering in an efficient manner.
+     */
+    @ApiStatus.Internal
+    public static List<Pack> expandAndRemoveRootChildren(Stream<Pack> packs, Collection<Pack> availablePacks) {
+        List<String> hiddenRootPacks = new ArrayList<>();
+        IntList hiddenRootPackIndexes = new IntArrayList();
+        Set<String> hiddenSubPacks = Sets.newHashSet();
+        for (var pack : availablePacks) {
+            if (pack.isRequired()) {
+                // Remove all children of required packs -- as these will always be present but may not be added till after this method is called
+                pack.getChildren().forEach(p -> hiddenSubPacks.add(p.getId()));
+            }
+        }
+        ArrayList<Pack> outPacks = new ArrayList<>();
+        var iterator = packs.iterator();
+        // We iterate the root packs
+        while (iterator.hasNext()) {
+            var rootPack = iterator.next();
+            if (rootPack.isHidden()) {
+                // If we've already found this as a child, remove it
+                if (hiddenSubPacks.contains(rootPack.getId())) {
+                    continue;
+                }
+                hiddenRootPacks.add(rootPack.getId());
+                hiddenRootPackIndexes.add(outPacks.size());
+            }
+            // Now we actually add the pack and its children, noting what the children are as we go
+            outPacks.add(rootPack);
+            for (var pack : rootPack.getChildren()) {
+                if (pack.isHidden()) {
+                    hiddenSubPacks.add(pack.getId());
+                }
+                outPacks.add(pack);
+            }
+        }
+
+        // Then we remove by index, from end to start, any root-level hidden packs that were later found to actually be children
+        for (int i = hiddenRootPackIndexes.size() - 1; i >= 0; i--) {
+            if (hiddenSubPacks.contains(hiddenRootPacks.get(i))) {
+                int index = hiddenRootPackIndexes.getInt(i);
+                outPacks.remove(index);
+            }
+        }
+        return outPacks;
+    }
+
+    @ApiStatus.Internal
     public static void reorderNewlyDiscoveredPacks(Collection<String> set, Collection<String> old, PackRepository packRepository) {
         Set<String> added = Sets.newLinkedHashSet(set);
         Set<String> oldSet = Sets.newLinkedHashSet(old);

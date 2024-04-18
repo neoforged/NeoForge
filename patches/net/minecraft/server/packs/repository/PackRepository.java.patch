@@ -30,7 +30,7 @@
  
      public List<Pack> rebuildSelected(Collection<String> p_10518_) {
 -        List<Pack> list = this.getAvailablePacks(p_10518_).collect(Util.toMutableList());
-+        List<Pack> list = this.getAvailablePacks(p_10518_).filter(p -> !p.isHidden()).flatMap(Pack::streamSelfAndChildren).collect(Util.toMutableList());
++        List<Pack> list = net.neoforged.neoforge.resource.ResourcePackLoader.expandAndRemoveRootChildren(this.getAvailablePacks(p_10518_), this.available.values());
  
          for (Pack pack : this.available.values()) {
              if (pack.isRequired() && !list.contains(pack)) {
