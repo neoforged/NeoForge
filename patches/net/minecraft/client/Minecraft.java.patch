@@ -83,7 +83,7 @@
 +                        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
                              this.selfTest();
                          }
-         
+ 
                          this.reloadStateTracker.finishReload();
                          this.onResourceLoadFinished(minecraft$gameloadcookie);
 +
