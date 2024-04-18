@@ -66,14 +66,18 @@
                          iterator.remove();
                          this.onEffectRemoved(mobeffectinstance);
                      }
-@@ -861,6 +_,7 @@
-             .filter(MobEffectInstance::isVisible)
-             .map(MobEffectInstance::getParticleOptions)
+@@ -858,8 +_,9 @@
+         List<ParticleOptions> list = this.activeEffects
+             .values()
+             .stream()
+-            .filter(MobEffectInstance::isVisible)
+-            .map(MobEffectInstance::getParticleOptions)
++            .map(effect -> net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.EffectParticleModificationEvent(this, effect)))
++            .filter(net.neoforged.neoforge.event.entity.living.EffectParticleModificationEvent::isVisible)
++            .map(net.neoforged.neoforge.event.entity.living.EffectParticleModificationEvent::getParticleOptions)
              .toList();
-+        // Porting 1.20.5 re-add or remove PotionColorCalculationEvent
          this.entityData.set(DATA_EFFECT_PARTICLES, list);
          this.entityData.set(DATA_EFFECT_AMBIENCE_ID, areAllEffectsAmbient(this.activeEffects.values()));
-     }
 @@ -899,6 +_,7 @@
              }
          }
