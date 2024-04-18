@@ -798,14 +798,16 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new BlockEvent.CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
     }
 
-    @Nullable
-    public static CriticalHitEvent getCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
-        CriticalHitEvent hitResult = new CriticalHitEvent(player, target, damageModifier, vanillaCritical);
-        NeoForge.EVENT_BUS.post(hitResult);
-        if (hitResult.getResult() == Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == Event.Result.DEFAULT)) {
-            return hitResult;
-        }
-        return null;
+    /**
+     * Fires the {@link CriticalHitEvent} and returns the resulting event.
+     * 
+     * @param player          The attacking player
+     * @param target          The attack target
+     * @param vanillaCritical If the attack would have been a critical hit by vanilla's rules in {@link Player#attack(Entity)}.
+     * @param damageModifier  The base damage modifier. Vanilla critical hits have a damage modifier of 1.5.
+     */
+    public static CriticalHitEvent fireCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
+        return NeoForge.EVENT_BUS.post(new CriticalHitEvent(player, target, damageModifier, vanillaCritical));
     }
 
     /**

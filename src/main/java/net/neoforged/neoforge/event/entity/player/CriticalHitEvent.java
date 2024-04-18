@@ -7,72 +7,96 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.Event.HasResult;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.CommonHooks;
 
 /**
- * This event is fired whenever a player attacks an Entity in
- * EntityPlayer#attackTargetEntityWithCurrentItem(Entity).<br>
- * <br>
- * This event is not {@link ICancellableEvent}.<br>
- * <br>
- * This event has a result. {@link HasResult}<br>
- * DEFAULT: means the vanilla logic will determine if this a critical hit.<br>
- * DENY: it will not be a critical hit but the player still will attack<br>
- * ALLOW: this attack is forced to be critical
- * <br>
- * This event is fired on the {@link NeoForge#EVENT_BUS}.
+ * This event is fired when a player attacks an entity in {@link Player#attack(Entity)}.
+ * It can be used to change the critical hit status and damage modifier
+ * <p>
+ * In the event the attack was not a critical hit, the event will still be fired, but it will be preemptively cancelled.
  **/
-@HasResult
 public class CriticalHitEvent extends PlayerEvent {
-    private float damageModifier;
-    private final float oldDamageModifier;
     private final Entity target;
-    private final boolean vanillaCritical;
+    private final float vanillaDmgMultiplier;
+    private final boolean isVanillaCritical;
 
-    public CriticalHitEvent(Player player, Entity target, float damageModifier, boolean vanillaCritical) {
+    private float dmgMultiplier;
+    private boolean isCriticalHit;
+
+    /**
+     * Fire via {@link CommonHooks#fireCriticalHit(Player, Entity, boolean, float)}
+     */
+    public CriticalHitEvent(Player player, Entity target, float dmgMultiplier, boolean isCriticalHit) {
         super(player);
         this.target = target;
-        this.damageModifier = damageModifier;
-        this.oldDamageModifier = damageModifier;
-        this.vanillaCritical = vanillaCritical;
+        this.dmgMultiplier = this.vanillaDmgMultiplier = dmgMultiplier;
+        this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
     }
 
     /**
-     * The Entity that was damaged by the player.
+     * {@return the entity that was attacked by the player}
      */
     public Entity getTarget() {
-        return target;
+        return this.target;
     }
 
     /**
-     * This set the damage multiplier for the hit.
-     * If you set it to 0, then the particles are still generated but damage is not done.
+     * The damage multiplier is applied to the base attack's damage if the attack {@linkplain #isCriticalHit() critically hits}.
+     * <p>
+     * A damage multiplier of 1.0 will not change the damage, a value of 1.5 will increase the damage by 50%, and so on.
+     * 
+     * @param modifier The new damage modifier.
      */
-    public void setDamageModifier(float mod) {
-        this.damageModifier = mod;
+    public float getDmgMultiplier() {
+        return this.dmgMultiplier;
     }
 
     /**
-     * The damage modifier for the hit.<br>
-     * This is by default 1.5F for ciritcal hits and 1F for normal hits .
+     * Sets the damage multiplier for the critical hit. Not used if {@link #isCriticalHit()} is false.
+     * <p>
+     * Changing the damage modifier to zero does not guarantee that the attack does zero damage.
+     * 
+     * @param modifier The new damage modifier. Must not be negative.
+     * @see #getDmgMultiplier()
      */
-    public float getDamageModifier() {
-        return this.damageModifier;
+    public void setDmgMultiplier(float dmgMultiplier) {
+        if (dmgMultiplier < 0) {
+            throw new UnsupportedOperationException("Attempted to set a negative damage multiplier: " + dmgMultiplier);
+        }
+        this.dmgMultiplier = dmgMultiplier;
     }
 
     /**
-     * The orignal damage modifier for the hit wthout any changes.<br>
-     * This is 1.5F for ciritcal hits and 1F for normal hits .
+     * {@return if the attack will critically hit}
      */
-    public float getOldDamageModifier() {
-        return this.oldDamageModifier;
+    public boolean isCriticalHit() {
+        return this.isCriticalHit;
     }
 
     /**
-     * Returns true if this hit was critical by vanilla
+     * Changes the critical hit state.
+     * 
+     * @param isCriticalHit true if the attack should critically hit
+     */
+    public void setCriticalHit(boolean isCriticalHit) {
+        this.isCriticalHit = isCriticalHit;
+    }
+
+    /**
+     * Gets the original damage multiplier set by vanilla.
+     * <p>
+     * If the event {@link #isVanillaCritical()}, the damage multiplier will be 1.5, otherwise it will be 1.0
+     * 
+     * @see #getDmgMultiplier()
+     */
+    public float getVanillaDmgMultiplier() {
+        return this.vanillaDmgMultiplier;
+    }
+
+    /**
+     * {@return true if the attack was considered a critical hit by vanilla}
      */
     public boolean isVanillaCritical() {
-        return vanillaCritical;
+        return this.isVanillaCritical;
     }
 }

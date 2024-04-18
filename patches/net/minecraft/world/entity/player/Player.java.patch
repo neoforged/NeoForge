@@ -241,15 +241,17 @@
                          i += EnchantmentHelper.getKnockbackBonus(this);
                          if (this.isSprinting() && flag) {
                              this.level()
-@@ -1162,8 +_,10 @@
+@@ -1162,8 +_,12 @@
                              && !this.isPassenger()
                              && p_36347_ instanceof LivingEntity
                              && !this.isSprinting();
-+                        net.neoforged.neoforge.event.entity.player.CriticalHitEvent hitResult = net.neoforged.neoforge.common.CommonHooks.getCriticalHit(this, p_36347_, flag2, flag2 ? 1.5F : 1.0F);
-+                        flag2 = hitResult != null;
++                        // Neo: Fire the critical hit event and override the critical hit status and damage multiplier based on the event.
++                        // The boolean local above (flag2) is the vanilla critical hit result.
++                        var critEvent = net.neoforged.neoforge.common.CommonHooks.fireCriticalHit(this, p_36347_, flag2, flag2 ? 1.5F : 1.0F);
++                        flag2 = critEvent.isCriticalHit();
                          if (flag2) {
 -                            f *= 1.5F;
-+                            f *= hitResult.getDamageModifier();
++                            f *= critEvent.getDmgMultiplier();
                          }
  
                          f += f1;
