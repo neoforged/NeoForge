@@ -940,7 +940,7 @@ public class EventHooks {
             entries.put(stack, vis);
         });
 
-        ModLoader.get().postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
+        ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
 
         for (var entry : entries)
             output.accept(entry.getKey(), entry.getValue());

@@ -14,12 +14,13 @@ import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
+import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerModLoader {
+public class ServerModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean hasErrors = false;
 
@@ -29,9 +30,9 @@ public class ServerModLoader {
         });
         LanguageHook.loadBuiltinLanguages();
         try {
-            ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
-            ModLoader.get().loadMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
-            ModLoader.get().finishMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
+            begin(() -> {});
+            load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
+            finish(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
         } catch (LoadingFailedException error) {
             ServerModLoader.hasErrors = true;
             // In case its not loaded properly
@@ -39,7 +40,7 @@ public class ServerModLoader {
             CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error, new File("."));
             throw error;
         }
-        List<ModLoadingWarning> warnings = ModLoader.get().getWarnings();
+        List<ModLoadingWarning> warnings = ModLoader.getWarnings();
         if (!warnings.isEmpty()) {
             LOGGER.warn(Logging.LOADING, "Mods loaded with {} warnings", warnings.size());
             warnings.forEach(warning -> LOGGER.warn(Logging.LOADING, warning.formatToString()));

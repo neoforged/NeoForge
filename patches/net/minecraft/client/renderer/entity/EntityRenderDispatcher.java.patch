@@ -30,6 +30,6 @@
          );
          this.renderers = EntityRenderers.createEntityRenderers(entityrendererprovider$context);
          this.playerRenderers = EntityRenderers.createPlayerRenderers(entityrendererprovider$context);
-+        net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers(renderers, playerRenderers, entityrendererprovider$context));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers(renderers, playerRenderers, entityrendererprovider$context));
      }
  }

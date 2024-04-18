@@ -26,10 +26,10 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.Mth;
-import net.neoforged.fml.StartupMessageManager;
 import net.neoforged.fml.earlydisplay.ColourScheme;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30C;
 
@@ -57,7 +57,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
         displayWindow.addMojangTexture(mc.getTextureManager().getTexture(new ResourceLocation("textures/gui/title/mojangstudios.png")).getId());
-        this.progressMeter = StartupMessageManager.prependProgressBar("Minecraft Progress", 1000);
+        this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
     }
 
     public static Supplier<LoadingOverlay> newInstance(Supplier<Minecraft> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> handler, DisplayWindow window) {
