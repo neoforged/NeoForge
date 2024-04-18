@@ -14,7 +14,10 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -390,12 +393,33 @@ public final class FluidStack implements MutableDataComponentHolder {
         return this.components.set(type, component);
     }
 
+    @Nullable
+    public <T> T set(Supplier<? extends DataComponentType<T>> type, @Nullable T value) {
+        return set(type.get(), value);
+    }
+
     /**
      * Removes a data component.
      */
     @Nullable
     public <T> T remove(DataComponentType<? extends T> type) {
         return this.components.remove(type);
+    }
+
+    /**
+     * Updates a data component if it exists, using an additional {@code updateContext}.
+     */
+    @Nullable
+    public <T, U> T update(Supplier<? extends DataComponentType<T>> type, T component, U updateContext, BiFunction<T, U, T> updater) {
+        return update(type.get(), component, updateContext, updater);
+    }
+
+    /**
+     * Removes a data component.
+     */
+    @Nullable
+    public <T> T remove(Supplier<? extends DataComponentType<? extends T>> type) {
+        return remove(type.get());
     }
 
     /**
@@ -410,6 +434,14 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     public void applyComponents(DataComponentMap components) {
         this.components.setAll(components);
+    }
+
+    /**
+     * Updates a data component if it exists.
+     */
+    @Nullable
+    public <T> T update(Supplier<? extends DataComponentType<T>> type, T component, UnaryOperator<T> updater) {
+        return update(type.get(), component, updater);
     }
 
     /**
