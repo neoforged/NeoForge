@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 public final class TagConventionLogWarning {
     private TagConventionLogWarning() {}
 
-    protected enum LOG_WARNING_MODES {
+    protected enum LogWarningModes {
         SILENCED,
         DEV_SHORT,
         DEV_VERBOSE,
@@ -454,10 +454,10 @@ public final class TagConventionLogWarning {
         // Log tags that are still using legacy 'forge' namespace
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            LOG_WARNING_MODES legacyTagWarningMode = NeoForgeConfig.COMMON.logLegacyTagWarnings.get();
-            if (legacyTagWarningMode != LOG_WARNING_MODES.SILENCED) {
-                boolean isConfigSetToDev = legacyTagWarningMode == LOG_WARNING_MODES.DEV_SHORT ||
-                        legacyTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE;
+            LogWarningModes legacyTagWarningMode = NeoForgeConfig.COMMON.logLegacyTagWarnings.get();
+            if (legacyTagWarningMode != LogWarningModes.SILENCED) {
+                boolean isConfigSetToDev = legacyTagWarningMode == LogWarningModes.DEV_SHORT ||
+                        legacyTagWarningMode == LogWarningModes.DEV_VERBOSE;
 
                 if (!FMLLoader.isProduction() == isConfigSetToDev) {
                     List<TagKey<?>> legacyTags = new ObjectArrayList<>();
@@ -485,8 +485,8 @@ public final class TagConventionLogWarning {
                                 """);
 
                         // Print out all legacy tags when desired.
-                        boolean isConfigSetToVerbose = legacyTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE ||
-                                legacyTagWarningMode == LOG_WARNING_MODES.PROD_VERBOSE;
+                        boolean isConfigSetToVerbose = legacyTagWarningMode == LogWarningModes.DEV_VERBOSE ||
+                                legacyTagWarningMode == LogWarningModes.PROD_VERBOSE;
 
                         if (isConfigSetToVerbose) {
                             stringBuilder.append("\nLegacy tags:");
