@@ -56,11 +56,7 @@ public abstract class CommonModLoader {
     }
 
     protected static void load(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {}; // the server doesn't it, and minecraft has already opened its loading screen
-
-        if (!ModLoader.isLoadingStateValid()) {
-            return;
-        }
+        Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
 
         ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
             if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -77,11 +73,7 @@ public abstract class CommonModLoader {
     }
 
     protected static void finish(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {};  // the server doesn't it, and minecraft has already opened its loading screen
-
-        if (!ModLoader.isLoadingStateValid()) {
-            return;
-        }
+        Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
 
         ModLoader.dispatchParallelEvent("Enqueue IMC", syncExecutor, parallelExecutor, periodicTask, InterModEnqueueEvent::new);
         ModLoader.dispatchParallelEvent("Process IMC", syncExecutor, parallelExecutor, periodicTask, InterModProcessEvent::new);
