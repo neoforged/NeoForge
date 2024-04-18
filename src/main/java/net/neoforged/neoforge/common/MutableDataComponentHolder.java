@@ -74,30 +74,30 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     }
 
     /**
-     * Copies a data component into the {@code target} component holder.
+     * Copies a data component from {@code this} component holder into the {@code target} component holder.
      */
-    default <T> void copyInto(MutableDataComponentHolder target, DataComponentType<T> componentType) {
-        copyInto(this, target, componentType);
+    default <T> void copyFrom(MutableDataComponentHolder target, DataComponentType<T> componentType) {
+        copyFrom(this, target, componentType);
     }
 
     /**
-     * Copies a data component into the {@code target} component holder.
+     * Copies a data component from {@code this} component holder into the {@code target} component holder.
      */
-    default <T> void copyInto(MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
-        copyInto(this, target, componentType);
+    default <T> void copyFrom(MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
+        copyFrom(this, target, componentType);
     }
 
     /**
      * Copes a data component from {@code src} into {@code target}
      */
-    static <T> void copyInto(DataComponentHolder src, MutableDataComponentHolder target, DataComponentType<T> componentType) {
+    static <T> void copyFrom(DataComponentHolder src, MutableDataComponentHolder target, DataComponentType<T> componentType) {
         target.set(componentType, src.get(componentType));
     }
 
     /**
      * Copes a data component from {@code src} into {@code target}
      */
-    static <T> void copyInto(DataComponentHolder src, MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
-        copyInto(src, target, componentType.get());
+    static <T> void copyFrom(DataComponentHolder src, MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
+        copyFrom(src, target, componentType.get());
     }
 }
