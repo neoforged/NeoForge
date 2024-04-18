@@ -25,7 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.StartupMessageManager;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.NeoForge;
@@ -84,9 +84,9 @@ public class GameData {
                 Registry<?> registry = Objects.requireNonNull(BuiltInRegistries.REGISTRY.get(rootRegistryName));
                 RegisterEvent registerEvent = new RegisterEvent(registryKey, registry);
 
-                StartupMessageManager.modLoaderConsumer().ifPresent(s -> s.accept("REGISTERING " + registryKey.location()));
+                StartupNotificationManager.modLoaderMessage("REGISTERING " + registryKey.location());
 
-                ModLoader.get().postEventWrapContainerInModOrder(registerEvent);
+                ModLoader.postEventWrapContainerInModOrder(registerEvent);
             } catch (Throwable t) {
                 aggregate.addSuppressed(t);
             }

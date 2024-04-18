@@ -1018,9 +1018,9 @@ public class CommonHooks {
     /** FOR INTERNAL USE ONLY, DO NOT CALL DIRECTLY */
     @Deprecated
     public static void modifyAttributes() {
-        ModLoader.get().postEvent(new EntityAttributeCreationEvent(FORGE_ATTRIBUTES));
+        ModLoader.postEvent(new EntityAttributeCreationEvent(FORGE_ATTRIBUTES));
         Map<EntityType<? extends LivingEntity>, AttributeSupplier.Builder> finalMap = new HashMap<>();
-        ModLoader.get().postEvent(new EntityAttributeModificationEvent(finalMap));
+        ModLoader.postEvent(new EntityAttributeModificationEvent(finalMap));
 
         finalMap.forEach((k, v) -> {
             AttributeSupplier supplier = DefaultAttributes.getSupplier(k);
@@ -1092,7 +1092,7 @@ public class CommonHooks {
             }
 
             final var mismatchEvent = new ModMismatchEvent(levelDirectory, mismatchedVersions, missingVersions);
-            ModLoader.get().postEvent(mismatchEvent);
+            ModLoader.postEvent(mismatchEvent);
 
             StringBuilder resolved = new StringBuilder("The following mods have version differences that were marked resolved:");
             StringBuilder unresolved = new StringBuilder("The following mods have version differences that were not resolved:");
