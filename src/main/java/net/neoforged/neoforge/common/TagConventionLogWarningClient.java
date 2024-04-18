@@ -37,10 +37,10 @@ public final class TagConventionLogWarningClient {
         // Log missing item tag translations only in integrated server so we can safely get translations.
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            TagConventionLogWarning.LogWarningModes untranslatedTagWarningMode = NeoForgeConfig.COMMON.logUntranslatedItemTagWarnings.get();
-            if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != TagConventionLogWarning.LogWarningModes.SILENCED) {
-                boolean isConfigSetToDev = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningModes.DEV_SHORT ||
-                        untranslatedTagWarningMode == TagConventionLogWarning.LogWarningModes.DEV_VERBOSE;
+            TagConventionLogWarning.LogWarningMode untranslatedTagWarningMode = NeoForgeConfig.COMMON.logUntranslatedItemTagWarnings.get();
+            if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != TagConventionLogWarning.LogWarningMode.SILENCED) {
+                boolean isConfigSetToDev = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_SHORT ||
+                        untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE;
 
                 if (!FMLLoader.isProduction() == isConfigSetToDev) {
                     Registry<Item> itemRegistry = serverStartingEvent.getServer().registryAccess().registryOrThrow(Registries.ITEM);
@@ -68,8 +68,8 @@ public final class TagConventionLogWarningClient {
                                 """);
 
                         // Print out all untranslated tags when desired.
-                        boolean isConfigSetToVerbose = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningModes.DEV_VERBOSE ||
-                                untranslatedTagWarningMode == TagConventionLogWarning.LogWarningModes.PROD_VERBOSE;
+                        boolean isConfigSetToVerbose = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE ||
+                                untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.PROD_VERBOSE;
 
                         if (isConfigSetToVerbose) {
                             stringBuilder.append("\nUntranslated item tags:");
