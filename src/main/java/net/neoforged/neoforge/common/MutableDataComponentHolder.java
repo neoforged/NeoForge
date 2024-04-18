@@ -78,7 +78,7 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
      * 
      * @implNote This will clear the current component value if the requested {@code src} holder does not contain a matching {@code componentType} value.
      */
-    default <T> void copyFrom(DataComponentHolder src, DataComponentType<T> componentType) {
+    default <T> void copyFrom(DataComponentType<T> componentType, DataComponentHolder src) {
         set(componentType, src.get(componentType));
     }
 
@@ -87,7 +87,7 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
      * 
      * @implNote This will clear the current component value if the requested {@code src} holder does not contain a matching {@code componentType} value.
      */
-    default <T> void copyFrom(DataComponentHolder src, Supplier<? extends DataComponentType<T>> componentType) {
-        copyFrom(src, componentType.get());
+    default <T> void copyFrom(Supplier<? extends DataComponentType<T>> componentType, DataComponentHolder src) {
+        copyFrom(componentType.get(), src);
     }
 }
