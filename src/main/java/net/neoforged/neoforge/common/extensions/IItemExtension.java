@@ -705,17 +705,6 @@ public interface IItemExtension {
     }
 
     /**
-     * Get the tooltip parts that should be hidden by default on the given stack if the {@code HideFlags} tag is not set.
-     * 
-     * @see ItemStack.TooltipPart
-     * @param stack the stack
-     * @return the default hide flags
-     */
-    default int getDefaultTooltipHideFlags(ItemStack stack) {
-        return 0;
-    }
-
-    /**
      * Get the food properties for this item.
      * Use this instead of the {@link Item#getFoodProperties()} method, for ItemStack sensitivity.
      *
