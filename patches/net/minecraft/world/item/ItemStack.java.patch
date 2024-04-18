@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public final class ItemStack implements DataComponentHolder {
-+public final class ItemStack implements DataComponentHolder, net.neoforged.neoforge.common.extensions.IItemStackExtension {
++public final class ItemStack implements DataComponentHolder, net.neoforged.neoforge.common.extensions.IItemStackExtension, net.neoforged.neoforge.common.MutableDataComponentHolder {
      public static final Codec<Holder<Item>> ITEM_NON_AIR_CODEC = BuiltInRegistries.ITEM
          .holderByNameCodec()
          .validate(
