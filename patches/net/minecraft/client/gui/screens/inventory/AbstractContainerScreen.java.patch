@@ -74,14 +74,14 @@
                  p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
              }
  
-+            renderSlotContents(p_281607_, itemstack, p_282613_, i, j, s);
++            renderSlotContents(p_281607_, itemstack, p_282613_, s);
 +        }
 +
 +        p_281607_.pose().popPose();
 +    }
 +
-+    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, int x, int y, @Nullable String countString) {
-+            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString; int i = x; int j = y;
++    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, @Nullable String countString) {
++            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString; int i = slot.x; int j = slot.y;
              int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
              if (p_282613_.isFake()) {
                  p_281607_.renderFakeItem(itemstack, i, j, j1);
