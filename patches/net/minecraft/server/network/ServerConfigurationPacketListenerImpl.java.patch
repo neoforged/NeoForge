@@ -22,14 +22,12 @@
          this.synchronizeRegistriesTask = new SynchronizeRegistriesTask(list, layeredregistryaccess);
          this.configurationTasks.add(this.synchronizeRegistriesTask);
          this.addOptionalTasks();
-@@ -87,6 +_,35 @@
+@@ -87,6 +_,33 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
-+
-+        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted(this));
-+        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.get().postEventWithReturn(new net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent(this)).getConfigurationTasks());
-+        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted(this));
++        // Neo: Gather modded configuration tasks and schedule them for execution
++        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent(this)).getConfigurationTasks());
 +    }
 +
 +    @Override
@@ -80,17 +78,3 @@
          } catch (Exception exception) {
              LOGGER.error("Couldn't place player in world", (Throwable)exception);
              this.connection.send(new ClientboundDisconnectPacket(DISCONNECT_REASON_INVALID_DATA));
-@@ -166,5 +_,13 @@
-             this.currentTask = null;
-             this.startNextTask();
-         }
-+    }
-+
-+    public void onModdedConfigurationPhaseStarted() {
-+        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted.TYPE);
-+    }
-+
-+    public void onModdedConfigurationPhaseEnded() {
-+        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted.TYPE);
-     }
- }

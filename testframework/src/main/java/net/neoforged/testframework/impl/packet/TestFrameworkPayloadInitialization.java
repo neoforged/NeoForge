@@ -5,14 +5,13 @@
 
 package net.neoforged.testframework.impl.packet;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.testframework.impl.MutableTestFramework;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record TestFrameworkPayloadInitialization(MutableTestFramework framework) {

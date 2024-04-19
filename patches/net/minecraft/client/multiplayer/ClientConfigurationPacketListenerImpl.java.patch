@@ -22,12 +22,12 @@
      }
  
      @Override
-@@ -134,10 +_,17 @@
-                         this.serverData,
+@@ -135,10 +_,17 @@
                          this.postDisconnectScreen,
                          this.serverCookies,
--                        this.chatState
-+                        this.chatState,
+                         this.chatState,
+-                        this.strictErrorHandling
++                        this.strictErrorHandling,
 +                        this.connectionType
                      )
                  )
@@ -41,7 +41,7 @@
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
          this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)));
      }
-@@ -151,5 +_,51 @@
+@@ -152,5 +_,51 @@
      public void onDisconnect(Component p_314649_) {
          super.onDisconnect(p_314649_);
          this.minecraft.clearDownloadedResourcePacks();

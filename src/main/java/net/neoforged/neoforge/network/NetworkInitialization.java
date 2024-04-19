@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.network;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -28,6 +26,7 @@ import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.ClientRegistryManager;
 import net.neoforged.neoforge.registries.RegistryManager;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)

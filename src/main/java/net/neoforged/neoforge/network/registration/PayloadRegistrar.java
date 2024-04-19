@@ -7,14 +7,12 @@ package net.neoforged.neoforge.network.registration;
 
 import java.util.List;
 import java.util.Optional;
-
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent.HandlerThread;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
@@ -27,7 +25,6 @@ import net.neoforged.neoforge.network.handling.MainThreadPayloadHandler;
  * @see Method-level documentation on {@link RegisterPayloadHandlersEvent#register} for parameter information.
  */
 public class PayloadRegistrar {
-
     private String version;
     private boolean optional = false;
     private HandlerThread thread = HandlerThread.MAIN;

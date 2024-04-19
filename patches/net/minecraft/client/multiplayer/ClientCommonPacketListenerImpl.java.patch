@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -72,6 +_,10 @@
-     protected boolean isTransferring;
+@@ -76,6 +_,10 @@
+     protected final boolean strictErrorHandling;
      private final List<ClientCommonPacketListenerImpl.DeferredPacket> deferredPackets = new ArrayList<>();
      protected final Map<ResourceLocation, byte[]> serverCookies;
 +    /**
@@ -11,16 +11,16 @@
  
      protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
          this.minecraft = p_295454_;
-@@ -81,6 +_,8 @@
-         this.telemetryManager = p_294647_.telemetryManager();
+@@ -86,6 +_,8 @@
          this.postDisconnectScreen = p_294647_.postDisconnectScreen();
          this.serverCookies = p_294647_.serverCookies();
+         this.strictErrorHandling = p_294647_.strictErrorHandling();
 +        // Neo: Set the connection type based on the cookie from the previous phase.
 +        this.connectionType = p_294647_.connectionType();
      }
  
      @Override
-@@ -110,6 +_,25 @@
+@@ -116,6 +_,25 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
@@ -46,7 +46,7 @@
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
              PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-@@ -222,6 +_,8 @@
+@@ -228,6 +_,8 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -55,7 +55,7 @@
          this.connection.send(p_295097_);
      }
  
-@@ -229,6 +_,9 @@
+@@ -235,6 +_,9 @@
      public void onDisconnect(Component p_295485_) {
          this.telemetryManager.onDisconnect();
          this.minecraft.disconnect(this.createDisconnectScreen(p_295485_), this.isTransferring);
@@ -65,7 +65,34 @@
          LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
      }
  
-@@ -348,5 +_,15 @@
+@@ -302,7 +_,7 @@
+                         if (ClientCommonPacketListenerImpl.this.serverData != null) {
+                             ClientCommonPacketListenerImpl.this.serverData.setResourcePackStatus(ServerData.ServerPackStatus.ENABLED);
+                         }
+-
++
+                         downloadedpacksource.allowServerPacks();
+                     } else {
+                         downloadedpacksource.rejectServerPacks();
+@@ -312,7 +_,7 @@
+                             ClientCommonPacketListenerImpl.this.serverData.setResourcePackStatus(ServerData.ServerPackStatus.DISABLED);
+                         }
+                     }
+-
++
+                     for (ClientCommonPacketListenerImpl.PackConfirmScreen.PendingRequest clientcommonpacketlistenerimpl$packconfirmscreen$pendingrequest : p_314994_) {
+                         downloadedpacksource.pushPack(
+                             clientcommonpacketlistenerimpl$packconfirmscreen$pendingrequest.id,
+@@ -320,7 +_,7 @@
+                             clientcommonpacketlistenerimpl$packconfirmscreen$pendingrequest.hash
+                         );
+                     }
+-
++
+                     if (ClientCommonPacketListenerImpl.this.serverData != null) {
+                         ServerList.saveSingleServer(ClientCommonPacketListenerImpl.this.serverData);
+                     }
+@@ -354,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }

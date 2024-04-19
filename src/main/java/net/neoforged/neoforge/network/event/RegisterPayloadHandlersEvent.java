@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.network.event;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,6 +12,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Event fired when the {@link NetworkRegistry} is being set up.
@@ -30,7 +29,6 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
  * <ul>
  */
 public class RegisterPayloadHandlersEvent extends Event implements IModBusEvent {
-
     @ApiStatus.Internal
     public RegisterPayloadHandlersEvent() {}
 
