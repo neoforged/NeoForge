@@ -61,7 +61,7 @@ public final class PacketDistributor {
      */
     public static void sendToPlayersNear(TargetPoint target, CustomPacketPayload... payloads) {
         Packet<?> packet = makeClientboundPacket(payloads);
-        getServer().getPlayerList().broadcast(target.excluded, target.x, target.y, target.z, target.r2, target.dim, packet);
+        getServer().getPlayerList().broadcast(target.excluded, target.x, target.y, target.z, target.r, target.dim, packet);
     }
 
     /**
@@ -109,45 +109,28 @@ public final class PacketDistributor {
         }
     }
 
-    public static final class TargetPoint {
-        @Nullable
-        private final ServerPlayer excluded;
-        private final double x;
-        private final double y;
-        private final double z;
-        private final double r2;
-        private final ResourceKey<Level> dim;
-
-        /**
-         * A target point with excluded entity
-         *
-         * @param excluded Entity to exclude
-         * @param x        X
-         * @param y        Y
-         * @param z        Z
-         * @param r2       Radius
-         * @param dim      DimensionType
-         */
-        public TargetPoint(@Nullable ServerPlayer excluded, double x, double y, double z, double r2, ResourceKey<Level> dim) {
-            this.excluded = excluded;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.r2 = r2;
-            this.dim = dim;
-        }
-
+    /**
+     * A target point with excluded entity
+     *
+     * @param excluded Entity to exclude
+     * @param x        X coordinate
+     * @param y        Y coordinate
+     * @param z        Z coordinate
+     * @param r        Radius
+     * @param dim      Target dimension
+     */
+    public record TargetPoint(@Nullable ServerPlayer excluded, double x, double y, double z, double r, ResourceKey<Level> dim) {
         /**
          * A target point without excluded entity
-         * 
-         * @param x   X
-         * @param y   Y
-         * @param z   Z
-         * @param r2  Radius
-         * @param dim DimensionType
+         *
+         * @param x   X coordinate
+         * @param y   Y coordinate
+         * @param z   Z coordinate
+         * @param r   Radius
+         * @param dim Target dimension
          */
-        public TargetPoint(double x, double y, double z, double r2, ResourceKey<Level> dim) {
-            this(null, x, y, z, r2, dim);
+        public TargetPoint(double x, double y, double z, double r, ResourceKey<Level> dim) {
+            this(null, x, y, z, r , dim);
         }
     }
 
