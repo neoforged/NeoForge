@@ -28,7 +28,7 @@ import net.minecraft.world.level.material.Fluid;
 
 public class Tags {
     public static class Blocks {
-        // `neoforge` tags for functional behavior provided by Neoforge
+        // `neoforge` tags for functional behavior provided by NeoForge
         /**
          * Controls what blocks Endermen cannot place blocks onto.
          * <p></p>
@@ -252,7 +252,7 @@ public class Tags {
     }
 
     public static class Items {
-        // `neoforge` tags for functional behavior provided by Neoforge
+        // `neoforge` tags for functional behavior provided by NeoForge
         /**
          * Controls what items can be consumed for enchanting such as Enchanting Tables.
          * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server

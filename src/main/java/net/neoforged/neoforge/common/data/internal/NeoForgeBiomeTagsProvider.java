@@ -260,6 +260,6 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
     @Override
     public String getName() {
-        return "Neoforge Biome Tags";
+        return "NeoForge Biome Tags";
     }
 }

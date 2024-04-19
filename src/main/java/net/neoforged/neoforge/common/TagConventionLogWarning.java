@@ -478,10 +478,10 @@ public final class TagConventionLogWarning {
                     if (!legacyTags.isEmpty()) {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("""
-                                \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'c' namespace! See net.neoforged.neoforge.common.Tags.java for all tags.
+                                \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to the 'c' namespace! See net.neoforged.neoforge.common.Tags.java for all tags.
                                    NOTE: Many tags have been moved around or renamed. Some new ones were added so please review the new tags.
                                     And make sure you follow tag conventions for new tags! The convention is `c` with nouns generally being plural and adjectives being singular.
-                                   You can disable this message in Neoforge's common config by setting logLegacyTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
+                                   You can disable this message in NeoForge's common config by setting `logLegacyTagWarnings` to "SILENCED" or see individual tags with "DEV_VERBOSE".
                                 """);
 
                         // Print out all legacy tags when desired.
@@ -495,7 +495,7 @@ public final class TagConventionLogWarning {
                                     TagKey<?> replacementTagkey = LEGACY_FORGE_TAGS.get(tagKey);
                                     stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append(replacementTagkey);
                                 } else {
-                                    stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append("See similar `c` tags in Neoforge's Tags class");
+                                    stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append("See similar `c` tags in NeoForge's Tags class");
                                 }
                             }
                         }

@@ -391,6 +391,6 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
 
     @Override
     public String getName() {
-        return "Neoforge Item Tags";
+        return "NeoForge Item Tags";
     }
 }

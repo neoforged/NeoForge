@@ -90,7 +90,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
@@ -603,10 +602,12 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(this::registerPermissionNodes);
 
         UsernameCache.load();
-        if (dist.isClient()) ClientCommandHandler.init();
+        if (dist.isClient()) {
+            ClientCommandHandler.init();
+            TagConventionLogWarningClient.init();
+        }
         DualStackUtils.initialise();
         TagConventionLogWarning.init();
-        if (FMLEnvironment.dist == Dist.CLIENT) TagConventionLogWarningClient.init();
 
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);
