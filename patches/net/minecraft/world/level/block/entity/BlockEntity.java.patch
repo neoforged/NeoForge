@@ -52,12 +52,10 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -228,6 +_,27 @@
- 
-     public BlockEntityType<?> getType() {
+@@ -230,6 +_,27 @@
          return this.type;
-+    }
-+
+     }
+ 
 +    @Override
 +    public CompoundTag getPersistentData() {
 +        if (this.customPersistentData == null)
@@ -77,6 +75,24 @@
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
 +        setChanged();
 +        return super.removeData(type);
-     }
- 
++    }
++
      @Deprecated
+     public void setBlockState(BlockState p_155251_) {
+         this.blockState = p_155251_;
+@@ -298,5 +_,15 @@
+         <T> T get(DataComponentType<T> p_338658_);
+ 
+         <T> T getOrDefault(DataComponentType<? extends T> p_338573_, T p_338734_);
++
++        // Neo: Utility for modded component types, to remove the need to invoke '.value()'
++        @Nullable
++        default <T> T get(java.util.function.Supplier<? extends DataComponentType<T>> componentType) {
++            return get(componentType.get());
++        }
++
++        default <T> T getOrDefault(java.util.function.Supplier<? extends DataComponentType<T>> componentType, T value) {
++            return getOrDefault(componentType.get(), value);
++        }
+     }
+ }

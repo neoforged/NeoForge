@@ -125,10 +125,11 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -335,6 +_,32 @@
+@@ -335,13 +_,40 @@
          return this.requiredFeatures;
      }
  
+-    public static class Properties {
 +    // NEO START
 +    private Object renderProperties;
 +
@@ -155,10 +156,10 @@
 +    }
 +    // END NEO
 +
-     public static class Properties {
++    public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
          private static final Interner<DataComponentMap> COMPONENT_INTERNER = Interners.newStrongInterner();
          @Nullable
-@@ -342,6 +_,7 @@
+         private DataComponentMap.Builder components;
          @Nullable
          Item craftingRemainingItem;
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;

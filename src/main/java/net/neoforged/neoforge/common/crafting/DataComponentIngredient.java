@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
@@ -108,6 +109,13 @@ public class DataComponentIngredient extends Ingredient {
      */
     public static <T> DataComponentIngredient of(boolean strict, DataComponentType<? super T> type, T value, ItemLike... items) {
         return of(strict, DataComponentPredicate.builder().expect(type, value).build(), items);
+    }
+
+    /**
+     * Creates a new ingredient matching any item from the list, containing the given components
+     */
+    public static <T> DataComponentIngredient of(boolean strict, Supplier<? extends DataComponentType<? super T>> type, T value, ItemLike... items) {
+        return of(strict, type.get(), value, items);
     }
 
     /**
