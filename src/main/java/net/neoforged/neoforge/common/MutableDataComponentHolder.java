@@ -76,29 +76,11 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     }
 
     /**
-     * Copies a data component from {@code src}
-     * 
-     * @implNote This will clear the current component value if the requested {@code src} holder does not contain a matching {@code componentType} value.
-     */
-    default <T> void copyFrom(DataComponentType<T> componentType, DataComponentHolder src) {
-        set(componentType, src.get(componentType));
-    }
-
-    /**
-     * Copies a data component from {@code src}
-     * 
-     * @implNote This will clear the current component value if the requested {@code src} holder does not contain a matching {@code componentType} value.
-     */
-    default <T> void copyFrom(Supplier<? extends DataComponentType<T>> componentType, DataComponentHolder src) {
-        copyFrom(componentType.get(), src);
-    }
-
-    /**
      * Copies all data components from {@code src}
      *
-     * @see #copyFrom(DataComponentType, DataComponentHolder)
+     * @implNote This will clear any components if the requested {@code src} holder does not contain a matching value.
      */
-    default void copyAll(DataComponentHolder src, DataComponentType<?>... componentTypes) {
+    default void copyFrom(DataComponentHolder src, DataComponentType<?>... componentTypes) {
         for (var componentType : componentTypes) {
             copyFrom(componentType, src);
         }
@@ -107,9 +89,9 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     /**
      * Copies all data components from {@code src}
      *
-     * @see #copyFrom(DataComponentType, DataComponentHolder)
+     * @implNote This will clear any components if the requested {@code src} holder does not contain a matching value.
      */
-    default void copyAll(DataComponentHolder src, Supplier<? extends DataComponentType<?>>... componentTypes) {
+    default void copyFrom(DataComponentHolder src, Supplier<? extends DataComponentType<?>>... componentTypes) {
         for (var componentType : componentTypes) {
             copyFrom(componentType.get(), src);
         }
@@ -124,4 +106,8 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
      * Applies a set of component changes to this stack.
      */
     void applyComponents(DataComponentMap components);
+
+    private <T> void copyFrom(DataComponentType<T> componentType, DataComponentHolder src) {
+        set(componentType, src.get(componentType));
+    }
 }
