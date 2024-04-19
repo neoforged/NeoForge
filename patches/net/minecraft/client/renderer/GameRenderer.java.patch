@@ -13,7 +13,7 @@
                  )
              );
              this.loadBlurEffect(p_250719_);
-+            net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.RegisterShadersEvent(p_250719_, list1));
++            net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterShadersEvent(p_250719_, list1));
          } catch (IOException ioexception) {
              list1.forEach(p_172729_ -> p_172729_.getFirst().close());
              throw new RuntimeException("could not reload shaders", ioexception);

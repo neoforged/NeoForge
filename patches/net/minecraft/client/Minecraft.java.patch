@@ -47,7 +47,7 @@
          this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.resourceManager, this.renderBuffers);
          this.resourceManager.registerReloadListener(this.gameRenderer.createReloadListener());
          this.levelRenderer = new LevelRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.renderBuffers);
-+        net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.RegisterStageEvent());
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.RegisterStageEvent());
          this.resourceManager.registerReloadListener(this.levelRenderer);
 -        this.createSearchTrees();
 +        // Forge: We delay this to allow registration of modded creative mode tabs
@@ -83,7 +83,7 @@
 +                        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
                              this.selfTest();
                          }
-         
+ 
                          this.reloadStateTracker.finishReload();
                          this.onResourceLoadFinished(minecraft$gameloadcookie);
 +

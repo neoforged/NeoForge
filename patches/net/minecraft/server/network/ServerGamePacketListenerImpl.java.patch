@@ -104,7 +104,7 @@
                      this.broadcastChatMessage(playerchatmessage1);
                  });
 @@ -1541,7 +_,11 @@
-     
+ 
                          @Override
                          public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
 -                            this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> p_143687_.interactAt(p_143686_, p_143683_, p_143688_));
@@ -114,7 +114,7 @@
 +                                return p_143687_.interactAt(p_143686_, p_143683_, p_143688_);
 +                            });
                          }
-     
+ 
                          @Override
 @@ -1733,7 +_,7 @@
      @Override

@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public class LoadingErrorScreen extends ErrorScreen {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -36,12 +37,13 @@ public class LoadingErrorScreen extends ErrorScreen {
     private final Path logFile;
     private final List<ModLoadingException> modLoadErrors;
     private final List<ModLoadingWarning> modLoadWarnings;
+    @Nullable
     private final Path dumpedLocation;
     private LoadingEntryList entryList;
     private Component errorHeader;
     private Component warningHeader;
 
-    public LoadingErrorScreen(LoadingFailedException loadingException, List<ModLoadingWarning> warnings, final File dumpedLocation) {
+    public LoadingErrorScreen(@Nullable LoadingFailedException loadingException, List<ModLoadingWarning> warnings, @Nullable File dumpedLocation) {
         super(Component.literal("Loading Error"), null);
         this.modLoadWarnings = warnings;
         this.modLoadErrors = loadingException == null ? Collections.emptyList() : loadingException.getErrors();

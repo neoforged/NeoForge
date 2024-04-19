@@ -65,7 +65,7 @@
   "fml.modloading.failedtoloadmod":"{0,modinfo,name} ({0,modinfo,id}) has failed to load correctly\n\u00a77{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name} ({0,modinfo,id}) is missing a feature it requires to run\n§7It requires {3,featurebound} but {4} is available",
   "fml.modloading.uncaughterror":"An uncaught parallel processing error has occurred.\n\u00a77{2,exc,msg}",
-  "fml.modloading.errorduringevent":"{0,modinfo,name} ({0,modinfo,id}) encountered an error during the {1,lower} event phase\n\u00a77{2,exc,msg}",
+  "fml.modloading.errorduringevent":"{0,modinfo,name} ({0,modinfo,id}) encountered an error while dispatching the {3} event\n\u00a77{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "Failed to load NeoForge",
 
   "fml.modloading.missingdependency": "Mod \u00a7e{4}\u00a7r requires \u00a76{3}\u00a7r \u00a7o{5,vr}\u00a7r\n\u00a77Currently, \u00a76{3}\u00a7r\u00a77 is \u00a7o{6,i18n,fml.messages.artifactversion.ornotinstalled}§r\n{7,optional,§7Reason for the dependency: §r}",

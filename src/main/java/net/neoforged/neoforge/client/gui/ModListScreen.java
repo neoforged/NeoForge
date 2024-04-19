@@ -40,7 +40,6 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.FMLPaths;
@@ -402,7 +401,7 @@ public class ModListScreen extends Screen {
 
         lines.add(I18nExtension.getDisplayName(selectedMod));
         lines.add(I18nExtension.parseMessage("fml.menu.mods.info.version", MavenVersionStringHelper.artifactVersionToString(selectedMod.getVersion())));
-        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), ModList.get().getModContainerById(selectedMod.getModId()).map(ModContainer::getCurrentState).map(Object::toString).orElse("NONE")));
+        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
         selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(I18nExtension.parseMessage("fml.menu.mods.info.credits", credits)));
         selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(I18nExtension.parseMessage("fml.menu.mods.info.authors", authors)));

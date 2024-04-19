@@ -80,13 +80,13 @@ public class RegistryManager {
         DataPackRegistryEvent.NewRegistry dataPackEvent = new DataPackRegistryEvent.NewRegistry();
         vanillaRegistryKeys = Set.copyOf(BuiltInRegistries.REGISTRY.keySet());
 
-        ModLoader.get().postEventWrapContainerInModOrder(event);
-        ModLoader.get().postEventWrapContainerInModOrder(dataPackEvent);
+        ModLoader.postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(dataPackEvent);
 
         event.fill();
         dataPackEvent.process();
 
-        ModLoader.get().postEvent(new ModifyRegistriesEvent());
+        ModLoader.postEvent(new ModifyRegistriesEvent());
 
         pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
         if (!pendingModdedRegistries.isEmpty()) {
@@ -98,7 +98,7 @@ public class RegistryManager {
 
     public static void initDataMaps() {
         final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> dataMapTypes = new HashMap<>();
-        ModLoader.get().postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
+        ModLoader.postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
         dataMaps = new IdentityHashMap<>();
         dataMapTypes.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));
         dataMaps = Collections.unmodifiableMap(dataMapTypes);

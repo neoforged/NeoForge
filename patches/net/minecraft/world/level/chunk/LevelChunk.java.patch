@@ -156,15 +156,3 @@
                          throw new ReportedException(crashreport);
                      }
                  }
-@@ -709,6 +_,11 @@
-         IMMEDIATE,
-         QUEUED,
-         CHECK;
-+    }
-+
-+    @Override
-+    public Level getWorldForge() {
-+        return getLevel();
-     }
- 
-     @FunctionalInterface

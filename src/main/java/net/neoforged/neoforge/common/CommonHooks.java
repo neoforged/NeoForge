@@ -673,23 +673,27 @@ public class CommonHooks {
         return !event.isCanceled();
     }
 
+    @Nullable
     public static InteractionResult onInteractEntityAt(Player player, Entity entity, HitResult ray, InteractionHand hand) {
         Vec3 vec3d = ray.getLocation().subtract(entity.position());
         return onInteractEntityAt(player, entity, vec3d, hand);
     }
 
+    @Nullable
     public static InteractionResult onInteractEntityAt(Player player, Entity entity, Vec3 vec3d, InteractionHand hand) {
         PlayerInteractEvent.EntityInteractSpecific evt = new PlayerInteractEvent.EntityInteractSpecific(player, hand, entity, vec3d);
         NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
+    @Nullable
     public static InteractionResult onInteractEntity(Player player, Entity entity, InteractionHand hand) {
         PlayerInteractEvent.EntityInteract evt = new PlayerInteractEvent.EntityInteract(player, hand, entity);
         NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
+    @Nullable
     public static InteractionResult onItemRightClick(Player player, InteractionHand hand) {
         PlayerInteractEvent.RightClickItem evt = new PlayerInteractEvent.RightClickItem(player, hand);
         NeoForge.EVENT_BUS.post(evt);
@@ -1014,9 +1018,9 @@ public class CommonHooks {
     /** FOR INTERNAL USE ONLY, DO NOT CALL DIRECTLY */
     @Deprecated
     public static void modifyAttributes() {
-        ModLoader.get().postEvent(new EntityAttributeCreationEvent(FORGE_ATTRIBUTES));
+        ModLoader.postEvent(new EntityAttributeCreationEvent(FORGE_ATTRIBUTES));
         Map<EntityType<? extends LivingEntity>, AttributeSupplier.Builder> finalMap = new HashMap<>();
-        ModLoader.get().postEvent(new EntityAttributeModificationEvent(finalMap));
+        ModLoader.postEvent(new EntityAttributeModificationEvent(finalMap));
 
         finalMap.forEach((k, v) -> {
             AttributeSupplier supplier = DefaultAttributes.getSupplier(k);
@@ -1088,7 +1092,7 @@ public class CommonHooks {
             }
 
             final var mismatchEvent = new ModMismatchEvent(levelDirectory, mismatchedVersions, missingVersions);
-            ModLoader.get().postEvent(mismatchEvent);
+            ModLoader.postEvent(mismatchEvent);
 
             StringBuilder resolved = new StringBuilder("The following mods have version differences that were marked resolved:");
             StringBuilder unresolved = new StringBuilder("The following mods have version differences that were not resolved:");

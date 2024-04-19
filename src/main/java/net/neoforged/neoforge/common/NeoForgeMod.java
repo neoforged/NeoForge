@@ -84,15 +84,14 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingStage;
 import net.neoforged.fml.ModLoadingWarning;
-import net.neoforged.fml.StartupMessageManager;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -597,7 +596,7 @@ public class NeoForgeMod {
         container.registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
         modEventBus.register(NeoForgeConfig.class);
         NeoForgeRegistriesSetup.setup(modEventBus);
-        StartupMessageManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
+        StartupNotificationManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 
         NeoForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
         NeoForge.EVENT_BUS.register(new NeoForgeEventHandler());
@@ -620,9 +619,8 @@ public class NeoForgeMod {
 
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;
-            ModLoader.get().addWarning(new ModLoadingWarning(
-                    container.getModInfo(), ModLoadingStage.CONSTRUCT,
-                    "loadwarning.neoforge.prbuild"));
+            ModLoader.addWarning(new ModLoadingWarning(
+                    container.getModInfo(), "loadwarning.neoforge.prbuild"));
         }
     }
 
