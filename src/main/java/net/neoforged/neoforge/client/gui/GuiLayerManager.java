@@ -80,6 +80,6 @@ public class GuiLayerManager {
             throw new IllegalStateException("Duplicate initialization of NamedLayeredDraw");
         }
         initialized = true;
-        ModLoader.get().postEvent(new RegisterGuiLayersEvent(this.layers));
+        ModLoader.postEvent(new RegisterGuiLayersEvent(this.layers));
     }
 }

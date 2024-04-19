@@ -42,7 +42,7 @@ public final class GeometryLoaderManager {
     public static void init() {
         var loaders = new HashMap<ResourceLocation, IGeometryLoader<?>>();
         var event = new ModelEvent.RegisterGeometryLoaders(loaders);
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(event);
         LOADERS = ImmutableMap.copyOf(loaders);
         LOADER_LIST = loaders.keySet().stream().map(ResourceLocation::toString).collect(Collectors.joining(", "));
     }

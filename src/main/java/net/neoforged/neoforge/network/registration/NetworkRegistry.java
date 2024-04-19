@@ -126,7 +126,7 @@ public class NetworkRegistry {
         setup = true;
 
         final Map<String, ModdedPacketRegistrar> registrarsByNamespace = Collections.synchronizedMap(new HashMap<>());
-        ModLoader.get().postEvent(new RegisterPayloadHandlerEvent(namespace -> registrarsByNamespace.computeIfAbsent(namespace, ModdedPacketRegistrar::new)));
+        ModLoader.postEvent(new RegisterPayloadHandlerEvent(namespace -> registrarsByNamespace.computeIfAbsent(namespace, ModdedPacketRegistrar::new)));
         registrarsByNamespace.values().forEach(ModdedPacketRegistrar::invalidate);
 
         final ImmutableMap.Builder<ResourceLocation, ConfigurationRegistration<?>> configurationBuilder = ImmutableMap.builder();

@@ -71,7 +71,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelDataManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
@@ -851,8 +850,8 @@ public interface IBlockExtension {
      * <b>Note that this method may be called on any of the client's meshing threads.</b><br/>
      * As such, if you need any data from your {@link BlockEntity}, you should put it in {@link ModelData} to guarantee
      * safe concurrent access to it on the client.<br/>
-     * {@link ModelDataManager#getAt(BlockPos)} will return the {@link ModelData} for the queried block,
-     * or {@code null} if none is present.
+     * {@link IBlockGetterExtension#getModelData(BlockPos)} will return the {@link ModelData} for the queried block,
+     * or {@link ModelData#EMPTY} if none is present.
      *
      * @param level         The world
      * @param pos           The blocks position in the world
@@ -932,9 +931,9 @@ public interface IBlockExtension {
      * <b>Note that this method may be called on the server, or on any of the client's meshing threads.</b><br/>
      * As such, if you need any data from your {@link BlockEntity}, you should put it in {@link ModelData} to guarantee
      * safe concurrent access to it on the client.<br/>
-     * Calling {@link BlockGetter#getModelDataManager()} will return {@code null} if in a server context, where it is
-     * safe to query your {@link BlockEntity} directly. Otherwise, {@link ModelDataManager#getAt(BlockPos)} will return
-     * the {@link ModelData} for the queried block, or {@code null} if none is present.
+     * Calling {@link ILevelExtension#getModelDataManager()} will return {@code null} if in a server context, where it is
+     * safe to query your {@link BlockEntity} directly. Otherwise, {@link IBlockGetterExtension#getModelData(BlockPos)} will return
+     * the {@link ModelData} for the queried block, or {@link ModelData#EMPTY} if none is present.
      *
      * @param state      The state of this block
      * @param level      The level this block is in
