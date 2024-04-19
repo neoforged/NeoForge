@@ -386,6 +386,7 @@ public final class FluidStack implements MutableDataComponentHolder {
      * Sets a data component.
      */
     @Nullable
+    @Override
     public <T> T set(DataComponentType<? super T> type, @Nullable T component) {
         return this.components.set(type, component);
     }
@@ -394,6 +395,7 @@ public final class FluidStack implements MutableDataComponentHolder {
      * Removes a data component.
      */
     @Nullable
+    @Override
     public <T> T remove(DataComponentType<? extends T> type) {
         return this.components.remove(type);
     }
