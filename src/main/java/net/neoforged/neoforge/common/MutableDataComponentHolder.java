@@ -9,6 +9,8 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.component.DataComponentHolder;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,4 +92,14 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     default <T> void copyFrom(Supplier<? extends DataComponentType<T>> componentType, DataComponentHolder src) {
         copyFrom(componentType.get(), src);
     }
+
+    /**
+     * Applies a set of component changes to this stack.
+     */
+    void applyComponents(DataComponentPatch patch);
+
+    /**
+     * Applies a set of component changes to this stack.
+     */
+    void applyComponents(DataComponentMap components);
 }
