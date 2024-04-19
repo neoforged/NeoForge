@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
+import org.jetbrains.annotations.Nullable;
 
 public interface IDataComponentMapBuilderExtensions {
     private DataComponentMap.Builder self() {
