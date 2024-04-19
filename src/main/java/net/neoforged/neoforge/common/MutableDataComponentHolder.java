@@ -9,6 +9,8 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.component.DataComponentHolder;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,16 +76,38 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     }
 
     /**
-     * Copes a data component from {@code src} into {@code target}
+     * Copies all data components from {@code src}
+     *
+     * @implNote This will clear any components if the requested {@code src} holder does not contain a matching value.
      */
-    static <T> void copyFrom(DataComponentHolder src, MutableDataComponentHolder target, DataComponentType<T> componentType) {
-        target.set(componentType, src.get(componentType));
+    default void copyFrom(DataComponentHolder src, DataComponentType<?>... componentTypes) {
+        for (var componentType : componentTypes) {
+            copyFrom(componentType, src);
+        }
     }
 
     /**
-     * Copes a data component from {@code src} into {@code target}
+     * Copies all data components from {@code src}
+     *
+     * @implNote This will clear any components if the requested {@code src} holder does not contain a matching value.
      */
-    static <T> void copyFrom(DataComponentHolder src, MutableDataComponentHolder target, Supplier<? extends DataComponentType<T>> componentType) {
-        copyFrom(src, target, componentType.get());
+    default void copyFrom(DataComponentHolder src, Supplier<? extends DataComponentType<?>>... componentTypes) {
+        for (var componentType : componentTypes) {
+            copyFrom(componentType.get(), src);
+        }
+    }
+
+    /**
+     * Applies a set of component changes to this stack.
+     */
+    void applyComponents(DataComponentPatch patch);
+
+    /**
+     * Applies a set of component changes to this stack.
+     */
+    void applyComponents(DataComponentMap components);
+
+    private <T> void copyFrom(DataComponentType<T> componentType, DataComponentHolder src) {
+        set(componentType, src.get(componentType));
     }
 }
