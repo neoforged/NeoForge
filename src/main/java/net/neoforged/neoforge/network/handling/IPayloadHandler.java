@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.network.handling;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent.HandlerThread;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /**
  * Callback for handling custom packets.
@@ -15,10 +18,11 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 @FunctionalInterface
 public interface IPayloadHandler<T extends CustomPacketPayload> {
     /**
-     * Invoked to handle the given payload in the given context.
-     *
-     * @param payload The payload.
-     * @param context The context.
+     * Handles the payload with the supplied context.
+     * <p>
+     * When using {@link PayloadRegistrar} to register payloads, the executing thread defaults to the main thread. See {@link PayloadRegistrar#executesOn}.
+     * <p>
+     * When using {@link RegisterPayloadHandlersEvent#register}, the executing thread is always {@link HandlerThread#NETWORK}.
      */
     void handle(T payload, IPayloadContext context);
 }

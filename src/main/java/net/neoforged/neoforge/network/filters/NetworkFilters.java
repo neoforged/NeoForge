@@ -22,6 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 public class NetworkFilters {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    // TODO: Expose custom packet filters to mods
     private static final Map<String, Function<ConnectionType, DynamicChannelHandler>> instances = ImmutableMap.of(
             "neoforge:vanilla_filter", VanillaConnectionNetworkFilter::new,
             GenericPacketSplitter.CHANNEL_HANDLER_NAME, connectionType -> new GenericPacketSplitter());

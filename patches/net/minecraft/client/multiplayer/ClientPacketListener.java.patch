@@ -24,17 +24,17 @@
          this.minecraft.player.setId(p_105030_.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
-@@ -824,7 +_,8 @@
+@@ -823,7 +_,8 @@
+                         this.serverData,
                          this.postDisconnectScreen,
                          this.serverCookies,
-                         chatcomponent$state,
--                        this.strictErrorHandling
-+                        this.strictErrorHandling,
+-                        chatcomponent$state
++                        chatcomponent$state,
 +                        this.connectionType
                      )
                  )
              );
-@@ -1159,6 +_,7 @@
+@@ -1158,6 +_,7 @@
          }
  
          localplayer1.resetPos();
@@ -42,7 +42,7 @@
          this.level.addEntity(localplayer1);
          localplayer1.setYRot(-180.0F);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
-@@ -1300,10 +_,7 @@
+@@ -1299,10 +_,7 @@
          PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
          BlockPos blockpos = p_104976_.getPos();
          this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
@@ -54,7 +54,7 @@
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1470,7 +_,9 @@
+@@ -1469,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -65,7 +65,7 @@
      }
  
      @Override
-@@ -1492,6 +_,7 @@
+@@ -1491,6 +_,7 @@
          ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
          clientrecipebook.setupCollections(this.recipeManager.getOrderedRecipes(), this.minecraft.level.registryAccess());
          this.minecraft.populateSearchTree(SearchRegistry.RECIPE_COLLECTIONS, clientrecipebook.getCollections());
@@ -73,30 +73,7 @@
      }
  
      @Override
-@@ -1923,7 +_,21 @@
-     }
- 
-     @Override
--    public void handleCustomPayload(CustomPacketPayload p_295851_) {
-+    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295851_) {
-+        if (p_295851_ instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
-+            return;
-+        }
-+        if (p_295851_  instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
-+            return;
-+        }
-+        if (this.connectionType.isNotVanilla() && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
-+            return;
-+        }
-+        PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
-         if (p_295851_ instanceof PathfindingDebugPayload pathfindingdebugpayload) {
-             this.minecraft
-                 .debugRenderer
-@@ -2406,6 +_,8 @@
+@@ -2405,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -105,7 +82,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2415,6 +_,7 @@
+@@ -2414,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -113,7 +90,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2489,6 +_,10 @@
+@@ -2488,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

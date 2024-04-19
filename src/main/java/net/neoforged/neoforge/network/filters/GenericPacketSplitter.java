@@ -11,8 +11,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.network.CompressionDecoder;
 import net.minecraft.network.Connection;
+import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.HandlerNames;
 import net.minecraft.network.PacketEncoder;
@@ -25,9 +27,7 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.connection.ChannelAwareFriendlyByteBuf;
-import net.neoforged.neoforge.network.connection.ConnectionPhase;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.SplitPacketPayload;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
@@ -38,8 +38,8 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A generic packet splitter that can be used to split packets that are too large to be sent in one go.
  */
-@Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
+@Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -60,21 +60,19 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     public static final String CHANNEL_HANDLER_NAME = "neoforge:splitter";
 
     @SubscribeEvent
-    private static void register(final RegisterPayloadHandlerEvent event) {
-        event.registrar(NeoForgeVersion.MOD_ID)
-                .versioned(NeoForgeVersion.getSpec())
+    private static void register(final RegisterPayloadHandlersEvent event) {
+        event.registrar("1")
                 .optional()
-                .common(
-                        SplitPacketPayload.TYPE,
-                        SplitPacketPayload.STREAM_CODEC,
-                        (payload, context) -> {
-                            if (context.channelHandlerContext().pipeline().get(CHANNEL_HANDLER_NAME) instanceof GenericPacketSplitter splitter) {
-                                splitter.receivedPacket(payload, context);
-                            } else {
-                                LOGGER.error("Received split packet without a splitter");
-                                context.replyHandler().disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
-                            }
-                        });
+                .commonBidirectional(SplitPacketPayload.TYPE, SplitPacketPayload.STREAM_CODEC, GenericPacketSplitter::handle);
+    }
+
+    private static void handle(SplitPacketPayload payload, IPayloadContext context) {
+        if (context.channelHandlerContext().pipeline().get(CHANNEL_HANDLER_NAME) instanceof GenericPacketSplitter splitter) {
+            splitter.receivedPacket(payload, context);
+        } else {
+            LOGGER.error("Received split packet without a splitter");
+            context.disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
+        }
     }
 
     @Override
@@ -101,10 +99,10 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         // If there IS a compressor, use the NON-compressed limit since the compressor will compress after us!
         var sizeLimits = hasCompressor ? uncompressedSizeLimits : compressedSizeLimits;
 
-        FriendlyByteBuf buf = new ChannelAwareFriendlyByteBuf(Unpooled.buffer(), ctx);
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
-            @SuppressWarnings("unchecked")
-            var codec = (StreamCodec<ByteBuf, Packet<?>>) encoder.getProtocolInfo().codec();
+            @SuppressWarnings({ "unchecked", "rawtypes" }) // Eclipse requires the extra rawtype cast first.
+            var codec = (StreamCodec<ByteBuf, Packet<?>>) (StreamCodec) encoder.getProtocolInfo().codec();
             codec.encode(buf, packet);
             if (buf.readableBytes() <= sizeLimits.packet()) {
                 out.add(packet);
@@ -151,17 +149,11 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
 
         if (state == STATE_LAST) {
             final byte[][] buffers = receivedBuffers.toArray(new byte[0][]);
-            FriendlyByteBuf full = new ChannelAwareFriendlyByteBuf(Unpooled.wrappedBuffer(buffers), context.channelHandlerContext());
+            FriendlyByteBuf full = new FriendlyByteBuf(Unpooled.wrappedBuffer(buffers));
 
             try {
                 Packet<?> packet = context.protocolInfo().codec().decode(full);
-
-                context.workHandler()
-                        .submitAsync(() -> context.packetHandler().handle(packet))
-                        .exceptionally(throwable -> {
-                            LOGGER.error("Error handling packet", throwable);
-                            return null;
-                        });
+                context.enqueueWork(() -> context.handle(packet));
             } finally {
                 receivedBuffers.clear();
                 full.release();
@@ -187,7 +179,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     }
 
     public static RemoteCompatibility getRemoteCompatibility(Connection manager) {
-        return NetworkRegistry.getInstance().isConnected(manager, ConnectionPhase.ANY, SplitPacketPayload.TYPE.id()) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
+        return NetworkRegistry.hasChannel(manager, null, SplitPacketPayload.TYPE.id()) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
     }
 
     public static boolean isRemoteCompatible(Connection manager) {

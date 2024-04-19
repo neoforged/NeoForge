@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 public record AdvancedAddEntityPayload(int entityId, byte[] customPayload) implements CustomPacketPayload {
 
     public static final Type<AdvancedAddEntityPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_add_entity"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedAddEntityPayload> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<FriendlyByteBuf, AdvancedAddEntityPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             AdvancedAddEntityPayload::entityId,
             NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,

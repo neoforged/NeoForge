@@ -23,7 +23,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -46,8 +46,8 @@ public class EntityTests {
         final var simpleSpawn = reg.entityTypes().registerType("simple_spawn", () -> EntityType.Builder.of(SimpleEntity::new, MobCategory.AMBIENT)
                 .sized(1, 1)).withLang("Simple spawn egg").withRenderer(() -> NoopRenderer::new);
 
-        reg.eventListeners().accept((Consumer<RegisterPayloadHandlerEvent>) event -> event.registrar("test")
-                .play(EntityTests.CustomSyncPayload.TYPE, CustomSyncPayload.STREAM_CODEC, (payload, context) -> {}));
+        reg.eventListeners().accept((Consumer<RegisterPayloadHandlersEvent>) event -> event.registrar("1")
+                .playToClient(EntityTests.CustomSyncPayload.TYPE, CustomSyncPayload.STREAM_CODEC, (payload, context) -> {}));
 
         test.onGameTest(helper -> {
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))

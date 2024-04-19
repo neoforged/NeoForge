@@ -1,21 +1,11 @@
 --- a/net/minecraft/network/PacketEncoder.java
 +++ b/net/minecraft/network/PacketEncoder.java
-@@ -21,6 +_,8 @@
-         PacketType<? extends Packet<? super T>> packettype = p_130546_.type();
- 
-         try {
-+            // Neo: Wrap buffer with ChannelHandlerContext
-+            p_130547_ = new net.neoforged.neoforge.network.connection.ChannelAwareFriendlyByteBuf(p_130547_, p_130545_);
-             this.protocolInfo.codec().encode(p_130547_, p_130546_);
-             int i = p_130547_.readableBytes();
-             if (LOGGER.isDebugEnabled()) {
-@@ -40,5 +_,9 @@
-         } finally {
+@@ -41,4 +_,8 @@
              ProtocolSwapHandler.handleOutboundTerminalPacket(p_130545_, p_130546_);
          }
-+    }
+     }
 +
 +    public ProtocolInfo<T> getProtocolInfo() {
 +        return protocolInfo;
-     }
++    }
  }
