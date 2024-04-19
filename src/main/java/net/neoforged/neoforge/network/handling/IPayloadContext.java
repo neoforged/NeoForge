@@ -18,10 +18,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Common context interface for payload handlers.
  */
+@ApiStatus.NonExtendable
 public interface IPayloadContext {
     /**
      * Sends the given payload back to the sender.
