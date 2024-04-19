@@ -46,7 +46,7 @@ public class GameTestHooks {
             Set<Method> gameTestMethods = new HashSet<>();
             RegisterGameTestsEvent event = new RegisterGameTestsEvent(gameTestMethods);
 
-            ModLoader.get().postEvent(event);
+            ModLoader.postEvent(event);
 
             ModList.get().getAllScanData().stream()
                     .map(ModFileScanData::getAnnotations)

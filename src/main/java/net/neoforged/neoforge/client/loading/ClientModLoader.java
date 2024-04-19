@@ -31,18 +31,21 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.internal.BrandingControl;
+import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientModLoader {
+public class ClientModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean loading;
     private static Minecraft mc;
     private static boolean loadingComplete;
+    @Nullable
     private static LoadingFailedException error;
 
     public static void begin(final Minecraft minecraft, final PackRepository defaultResourcePacks, final ReloadableResourceManager mcResourceManager) {
@@ -53,7 +56,11 @@ public class ClientModLoader {
         ClientModLoader.mc = minecraft;
         LogicalSidedProvider.setClient(() -> minecraft);
         LanguageHook.loadBuiltinLanguages();
-        createRunnableWithCatch(() -> ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ImmediateWindowHandler::renderTick)).run();
+        try {
+            begin(ImmediateWindowHandler::renderTick);
+        } catch (LoadingFailedException e) {
+            error = e;
+        }
         if (error == null) {
             ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES);
             DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames(PackType.SERVER_DATA));
@@ -63,28 +70,30 @@ public class ClientModLoader {
     }
 
     private static CompletableFuture<Void> onResourceReload(final PreparableReloadListener.PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller prepareProfiler, final ProfilerFiller executeProfiler, final Executor asyncExecutor, final Executor syncExecutor) {
-        return CompletableFuture.runAsync(createRunnableWithCatch(() -> startModLoading(ModWorkManager.wrappedExecutor(syncExecutor), asyncExecutor)), ModWorkManager.parallelExecutor())
+        return CompletableFuture.runAsync(() -> startModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor())
                 .thenCompose(stage::wait)
-                .thenRunAsync(() -> finishModLoading(ModWorkManager.wrappedExecutor(syncExecutor), asyncExecutor), ModWorkManager.parallelExecutor());
+                .thenRunAsync(() -> finishModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor());
     }
 
-    private static Runnable createRunnableWithCatch(Runnable r) {
-        return () -> {
-            if (loadingComplete) return;
-            try {
-                r.run();
-            } catch (LoadingFailedException e) {
-                if (error == null) error = e;
-            }
-        };
+    private static void catchLoadingException(Runnable r) {
+        // Don't load again on subsequent reloads
+        if (loadingComplete) return;
+        // If the mod loading state is invalid, skip further mod initialization
+        if (!ModLoader.isLoadingStateValid()) return;
+
+        try {
+            r.run();
+        } catch (LoadingFailedException e) {
+            if (error == null) error = e;
+        }
     }
 
-    private static void startModLoading(ModWorkManager.DrivenExecutor syncExecutor, Executor parallelExecutor) {
-        createRunnableWithCatch(() -> ModLoader.get().loadMods(syncExecutor, parallelExecutor, ImmediateWindowHandler::renderTick)).run();
+    private static void startModLoading(Executor syncExecutor, Executor parallelExecutor) {
+        catchLoadingException(() -> load(syncExecutor, parallelExecutor));
     }
 
-    private static void finishModLoading(ModWorkManager.DrivenExecutor syncExecutor, Executor parallelExecutor) {
-        createRunnableWithCatch(() -> ModLoader.get().finishMods(syncExecutor, parallelExecutor, ImmediateWindowHandler::renderTick)).run();
+    private static void finishModLoading(Executor syncExecutor, Executor parallelExecutor) {
+        catchLoadingException(() -> finish(syncExecutor, parallelExecutor));
         loading = false;
         loadingComplete = true;
         // reload game settings on main thread
@@ -100,7 +109,7 @@ public class ClientModLoader {
     }
 
     public static boolean completeModLoading() {
-        var warnings = ModLoader.get().getWarnings();
+        var warnings = ModLoader.getWarnings();
         boolean showWarnings = true;
         try {
             showWarnings = NeoForgeConfig.CLIENT.showLoadWarnings.get();

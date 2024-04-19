@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.client.model.data.ModelDataManager;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +44,17 @@ public interface ILevelExtension {
      */
     public default Collection<PartEntity<?>> getPartEntities() {
         return Collections.emptyList();
+    }
+
+    /**
+     * Retrieves the model data manager for the given level. May be null on a server level.
+     *
+     * <p>For model data retrieval, prefer calling {@link IBlockGetterExtension#getModelData(BlockPos)} rather than this method,
+     * as it works on more than just a level.
+     */
+    @Nullable
+    default ModelDataManager getModelDataManager() {
+        return null;
     }
 
     /**

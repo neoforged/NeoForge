@@ -26,7 +26,7 @@ public abstract class ChunkEvent extends LevelEvent {
     private final ChunkAccess chunk;
 
     public ChunkEvent(ChunkAccess chunk) {
-        super(chunk.getWorldForge());
+        super(chunk.getLevel());
         this.chunk = chunk;
     }
 

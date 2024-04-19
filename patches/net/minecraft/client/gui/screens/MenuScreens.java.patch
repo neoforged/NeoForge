@@ -40,7 +40,7 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void init() {
 +        var event = new net.neoforged.neoforge.client.event.RegisterMenuScreensEvent(SCREENS);
-+        net.neoforged.fml.ModLoader.get().postEvent(event);
++        net.neoforged.fml.ModLoader.postEvent(event);
      }
  
      public static boolean selfTest() {

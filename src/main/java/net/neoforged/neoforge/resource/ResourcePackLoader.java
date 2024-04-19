@@ -44,7 +44,6 @@ import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingStage;
 import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
@@ -70,7 +69,7 @@ public class ResourcePackLoader {
         // First add the mod's builtin packs
         resourcePacks.addPackFinder(buildPackFinder(modResourcePacks, packType));
         // Then fire the event to add more packs
-        ModLoader.get().postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder));
+        ModLoader.postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder));
     }
 
     private synchronized static void findResourcePacks() {
@@ -114,7 +113,7 @@ public class ResourcePackLoader {
                             MOD_PACK_SELECTION_CONFIG);
 
                     if (modPack == null) {
-                        ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
+                        ModLoader.addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
                         continue;
                     }
                 } else {
@@ -132,7 +131,7 @@ public class ResourcePackLoader {
                 }
             } catch (IOException exception) {
                 LOGGER.error("Failed to read pack.mcmeta file of mod {}", mod.getModId(), exception);
-                ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
+                ModLoader.addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
             }
         }
 
