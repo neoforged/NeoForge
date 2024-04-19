@@ -22,20 +22,10 @@
              .orElse(Collections.emptyList());
      }
  
-@@ -41,6 +_,21 @@
+@@ -41,6 +_,11 @@
      }
  
      @Override
-+    public boolean useAmbientOcclusion(BlockState state) {
-+        return this.wrapped.useAmbientOcclusion(state);
-+    }
-+
-+    @Override
-+    public boolean useAmbientOcclusion(BlockState state, net.minecraft.client.renderer.RenderType renderType) {
-+        return this.wrapped.useAmbientOcclusion(state, renderType);
-+    }
-+
-+    @Override
 +    public net.neoforged.neoforge.common.util.TriState useAmbientOcclusion(BlockState state, net.neoforged.neoforge.client.model.data.ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
 +        return this.wrapped.useAmbientOcclusion(state, modelData, renderType);
 +    }
