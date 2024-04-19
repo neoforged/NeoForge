@@ -1,14 +1,11 @@
 --- a/net/minecraft/core/component/DataComponentMap.java
 +++ b/net/minecraft/core/component/DataComponentMap.java
-@@ -137,6 +_,11 @@
-             return this;
-         }
+@@ -126,7 +_,7 @@
+         };
+     }
  
-+        // Neo: Utility for modded component types, to remove the need to invoke '.value()' (mostly for BlockEntity#collectImplicitComponents)
-+        public <T> DataComponentMap.Builder set(java.util.function.Supplier<? extends DataComponentType<T>> componentType, @Nullable T value) {
-+            return set(componentType.get(), value);
-+        }
-+
-         <T> void setUnchecked(DataComponentType<T> p_338736_, @Nullable Object p_338594_) {
-             if (p_338594_ != null) {
-                 this.map.put(p_338736_, p_338594_);
+-    public static class Builder {
++    public static class Builder implements net.neoforged.neoforge.common.extensions.IDataComponentMapBuilderExtensions {
+         private final Reference2ObjectMap<DataComponentType<?>, Object> map = new Reference2ObjectArrayMap<>();
+ 
+         Builder() {
