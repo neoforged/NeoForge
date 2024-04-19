@@ -115,7 +115,7 @@ public class DataComponentIngredient extends Ingredient {
      * Creates a new ingredient matching any item from the list, containing the given components
      */
     public static <T> DataComponentIngredient of(boolean strict, Supplier<? extends DataComponentType<? super T>> type, T value, ItemLike... items) {
-        return of(strict, DataComponentPredicate.builder().expect(type, value).build(), items);
+        return of(strict, type.get(), value, items);
     }
 
     /**
