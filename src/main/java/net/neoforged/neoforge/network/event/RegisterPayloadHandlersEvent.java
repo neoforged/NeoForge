@@ -40,20 +40,4 @@ public class RegisterPayloadHandlersEvent extends Event implements IModBusEvent 
     public PayloadRegistrar registrar(String version) {
         return new PayloadRegistrar(version);
     }
-
-    public static enum HandlerThread {
-        /**
-         * The main thread of the receiving side.
-         * <p>
-         * On the logical client, this is the Render Thread.
-         * <p>
-         * On the logical server, this is the Server Thread.
-         */
-        MAIN,
-
-        /**
-         * The network thread, which executes concurrently to the main thread.
-         */
-        NETWORK;
-    }
 }

@@ -7,7 +7,7 @@ package net.neoforged.neoforge.network.handling;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent.HandlerThread;
+import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /**
