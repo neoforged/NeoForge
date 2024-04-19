@@ -115,6 +115,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
+        add(Tags.Blocks.VILLAGER_JOB_SITES, "Villager Job Sites");
 
         // Items
         add(Tags.Items.BARRELS, "Barrels");
@@ -148,6 +149,23 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.DUSTS_REDSTONE, "Redstone Dusts");
         add(Tags.Items.DYED, "Dyed Items");
         addColored(Tags.Items.DYED, "{color} Dyed Items");
+        add(Tags.Items.DYES, "Dyes");
+        add(Tags.Items.DYES_BLACK, "Black Dyes");
+        add(Tags.Items.DYES_RED, "Red Dyes");
+        add(Tags.Items.DYES_GREEN, "Green Dyes");
+        add(Tags.Items.DYES_BROWN, "Brown Dyes");
+        add(Tags.Items.DYES_BLUE, "Blue Dyes");
+        add(Tags.Items.DYES_PURPLE, "Purple Dyes");
+        add(Tags.Items.DYES_CYAN, "Cyan Dyes");
+        add(Tags.Items.DYES_LIGHT_GRAY, "Light Gray Dyes");
+        add(Tags.Items.DYES_GRAY, "Gray Dyes");
+        add(Tags.Items.DYES_PINK, "Pink Dyes");
+        add(Tags.Items.DYES_LIME, "Lime Dyes");
+        add(Tags.Items.DYES_YELLOW, "Yellow Dyes");
+        add(Tags.Items.DYES_LIGHT_BLUE, "Light Blue Dyes");
+        add(Tags.Items.DYES_MAGENTA, "Magenta Dyes");
+        add(Tags.Items.DYES_ORANGE, "Orange Dyes");
+        add(Tags.Items.DYES_WHITE, "White Dyes");
         add(Tags.Items.EGGS, "Eggs");
         add(Tags.Items.ENCHANTING_FUELS, "Enchanting Fuels");
         add(Tags.Items.END_STONES, "End Stones");
@@ -273,6 +291,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Items.STRINGS, "Strings");
+        add(Tags.Items.VILLAGER_JOB_SITES, "Villager Job Sites");
         add(Tags.Items.TOOLS_SHEARS, "Shears");
         add(Tags.Items.TOOLS_SHIELDS, "Shields");
         add(Tags.Items.TOOLS_BOWS, "Bows");
