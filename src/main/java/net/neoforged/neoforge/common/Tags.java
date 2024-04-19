@@ -1032,7 +1032,7 @@ public class Tags {
         ResourceLocation registryIdentifier = tagKey.registry().location();
         ResourceLocation tagIdentifier = tagKey.location();
 
-        if (registryIdentifier.getNamespace().equals("minecraft")) {
+        if (!registryIdentifier.getNamespace().equals("minecraft")) {
             stringBuilder.append(registryIdentifier.getNamespace())
                     .append(".");
         }

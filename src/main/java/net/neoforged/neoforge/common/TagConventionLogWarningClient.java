@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -43,21 +44,11 @@ public final class TagConventionLogWarningClient {
                         untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE;
 
                 if (!FMLLoader.isProduction() == isConfigSetToDev) {
-                    Registry<Item> itemRegistry = serverStartingEvent.getServer().registryAccess().registryOrThrow(Registries.ITEM);
-                    List<TagKey<Item>> untranslatedItemTags = new ObjectArrayList<>();
-                    itemRegistry.getTagNames().forEach(itemTagKey -> {
-                        // We do not translate vanilla's tags at this moment.
-                        if (itemTagKey.location().getNamespace().equals("minecraft")) {
-                            return;
-                        }
+                    List<TagKey<?>> untranslatedTags = new ObjectArrayList<>();
+                    RegistryAccess.Frozen registryAccess = serverStartingEvent.getServer().registryAccess();
+                    extractUnregisteredModdedTags(registryAccess.registryOrThrow(Registries.ITEM), untranslatedTags);
 
-                        String translationKey = Tags.getTagTranslationKey(itemTagKey);
-                        if (!I18n.exists(translationKey)) {
-                            untranslatedItemTags.add(itemTagKey);
-                        }
-                    });
-
-                    if (!untranslatedItemTags.isEmpty()) {
+                    if (!untranslatedTags.isEmpty()) {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("""
                                 \n	Dev warning - Untranslated Item Tags detected. Please translate your item tags so other mods such as recipe viewers can properly display your tag's name.
@@ -73,7 +64,7 @@ public final class TagConventionLogWarningClient {
 
                         if (isConfigSetToVerbose) {
                             stringBuilder.append("\nUntranslated item tags:");
-                            for (TagKey<Item> tagKey : untranslatedItemTags) {
+                            for (TagKey<?> tagKey : untranslatedTags) {
                                 stringBuilder.append("\n     ").append(tagKey.location());
                             }
                         }
@@ -81,6 +72,20 @@ public final class TagConventionLogWarningClient {
                         LOGGER.warn(stringBuilder);
                     }
                 }
+            }
+        });
+    }
+
+    private static void extractUnregisteredModdedTags(Registry<?> registry, List<TagKey<?>> untranslatedTags) {
+        registry.getTagNames().forEach(itemTagKey -> {
+            // We do not translate vanilla's tags at this moment.
+            if (itemTagKey.location().getNamespace().equals("minecraft")) {
+                return;
+            }
+
+            String translationKey = Tags.getTagTranslationKey(itemTagKey);
+            if (!I18n.exists(translationKey)) {
+                untranslatedTags.add(itemTagKey);
             }
         });
     }
