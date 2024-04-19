@@ -1,0 +1,14 @@
+--- a/net/minecraft/core/component/DataComponentPredicate.java
++++ b/net/minecraft/core/component/DataComponentPredicate.java
+@@ -104,6 +_,11 @@
+             return this;
+         }
+ 
++        // Neo: Utility for modded component types, to remove the need to invoke '.value()'
++        public <T> DataComponentPredicate.Builder expect(java.util.function.Supplier<? extends DataComponentType<? super T>> componentType, T value) {
++            return expect(componentType.get(), value);
++        }
++
+         public DataComponentPredicate build() {
+             return new DataComponentPredicate(List.copyOf(this.expectedComponents));
+         }

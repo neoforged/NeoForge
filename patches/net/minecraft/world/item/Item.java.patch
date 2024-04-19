@@ -166,7 +166,7 @@
  
          public Item.Properties food(FoodProperties p_41490_) {
              return this.component(DataComponents.FOOD, p_41490_);
-@@ -371,12 +_,18 @@
+@@ -371,18 +_,29 @@
              return this.component(DataComponents.FIRE_RESISTANT, Unit.INSTANCE);
          }
  
@@ -185,3 +185,14 @@
              if (this.components == null) {
                  this.components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
              }
+ 
+             this.components.set(p_330871_, p_330323_);
+             return this;
++        }
++
++        // Neo: Utility for modded component types, to remove the need to invoke '.value()'
++        public <T> Item.Properties component(java.util.function.Supplier<? extends DataComponentType<T>> componentType, T value) {
++            return component(componentType.get(), value);
+         }
+ 
+         public Item.Properties attributes(ItemAttributeModifiers p_331533_) {

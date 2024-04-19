@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/level/storage/loot/functions/CopyComponentsFunction.java
++++ b/net/minecraft/world/level/storage/loot/functions/CopyComponentsFunction.java
+@@ -102,6 +_,15 @@
+             return this;
+         }
+ 
++        // Neo: Utility for modded component types, to remove the need to invoke '.value()'
++        public CopyComponentsFunction.Builder include(java.util.function.Supplier<? extends DataComponentType<?>> componentType) {
++            return include(componentType.get());
++        }
++
++        public CopyComponentsFunction.Builder exclude(java.util.function.Supplier<? extends DataComponentType<?>> componentType) {
++            return exclude(componentType.get());
++        }
++
+         protected CopyComponentsFunction.Builder getThis() {
+             return this;
+         }
