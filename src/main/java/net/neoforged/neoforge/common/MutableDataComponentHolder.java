@@ -94,6 +94,28 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
     }
 
     /**
+     * Copies all data components from {@code src}
+     *
+     * @see #copyFrom(DataComponentType, DataComponentHolder)
+     */
+    default void copyAll(DataComponentHolder src, DataComponentType<?>... componentTypes) {
+        for (var componentType : componentTypes) {
+            copyFrom(componentType, src);
+        }
+    }
+
+    /**
+     * Copies all data components from {@code src}
+     *
+     * @see #copyFrom(DataComponentType, DataComponentHolder)
+     */
+    default void copyAll(DataComponentHolder src, Supplier<? extends DataComponentType<?>>... componentTypes) {
+        for (var componentType : componentTypes) {
+            copyFrom(componentType.get(), src);
+        }
+    }
+
+    /**
      * Applies a set of component changes to this stack.
      */
     void applyComponents(DataComponentPatch patch);
