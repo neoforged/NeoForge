@@ -10,6 +10,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.DamageTypeTagsProvider;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -78,6 +79,17 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         tag(DamageTypes.GENERIC_KILL, Tags.DamageTypes.IS_TECHNICAL);
         tag(DamageTypes.OUTSIDE_BORDER, Tags.DamageTypes.IS_TECHNICAL);
         tag(DamageTypes.FELL_OUT_OF_WORLD, Tags.DamageTypes.IS_TECHNICAL);
+        tag(Tags.DamageTypes.NO_FLINCH);
+
+        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
+        // TODO: Remove backwards compat tag entries in 1.22
+        tagWithOptionalLegacy(Tags.DamageTypes.IS_POISON);
+        tagWithOptionalLegacy(Tags.DamageTypes.IS_WITHER);
+        tagWithOptionalLegacy(Tags.DamageTypes.IS_MAGIC);
+        tagWithOptionalLegacy(Tags.DamageTypes.IS_ENVIRONMENT);
+        tagWithOptionalLegacy(Tags.DamageTypes.IS_PHYSICAL);
+        tagWithOptionalLegacy(Tags.DamageTypes.IS_TECHNICAL);
+        tagWithOptionalLegacy(Tags.DamageTypes.NO_FLINCH);
     }
 
     @SafeVarargs
@@ -85,6 +97,12 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         for (TagKey<DamageType> key : tags) {
             tag(key).add(type);
         }
+    }
+
+    private TagAppender<DamageType> tagWithOptionalLegacy(TagKey<DamageType> tag) {
+        TagAppender<DamageType> tagAppender = tag(tag);
+        tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+        return tagAppender;
     }
 
     @Override

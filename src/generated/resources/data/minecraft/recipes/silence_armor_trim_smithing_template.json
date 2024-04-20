@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "C": {
-      "tag": "forge:cobblestone/deepslate"
+      "tag": "c:cobblestones/deepslate"
     },
     "S": {
       "item": "minecraft:silence_armor_trim_smithing_template"
