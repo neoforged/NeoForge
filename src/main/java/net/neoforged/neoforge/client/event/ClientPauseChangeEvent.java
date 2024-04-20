@@ -54,7 +54,12 @@ public abstract class ClientPauseChangeEvent extends Event {
     }
 
     /**
-     * {@return game is paused}
+     * <p>On {@linkplain ClientPauseChangeEvent.Pre Pre} it returns what is the upcoming pause state.</p>
+     * Cancelling will not modify this value.
+     *
+     * <p>On {@linkplain ClientPauseChangeEvent.Post Post} it returns the updated pause state</p>
+     *
+     * {@return the pause state}
      */
     public boolean isPaused() {
         return pause;
