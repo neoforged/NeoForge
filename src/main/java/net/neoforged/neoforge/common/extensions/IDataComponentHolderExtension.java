@@ -20,7 +20,6 @@ public interface IDataComponentHolderExtension {
         return self().get(type.get());
     }
 
-    @Nullable
     default <T> T getOrDefault(Supplier<? extends DataComponentType<? extends T>> type, T defaultValue) {
         return self().getOrDefault(type.get(), defaultValue);
     }
