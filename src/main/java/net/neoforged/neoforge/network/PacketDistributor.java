@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.network;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,14 +16,13 @@ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +36,7 @@ public final class PacketDistributor {
      * Send the given payload(s) to the server
      */
     public static void sendToServer(CustomPacketPayload... payloads) {
+        Preconditions.checkState(FMLEnvironment.dist.isClient(), "Cannot send serverbound payloads on the server");
         ClientPacketListener listener = Objects.requireNonNull(Minecraft.getInstance().getConnection());
         for (CustomPacketPayload payload : payloads) {
             listener.send(payload);
@@ -52,37 +53,54 @@ public final class PacketDistributor {
     /**
      * Send the given payload(s) to all players in the given dimension
      */
-    public static void sendToPlayersInDimension(ResourceKey<Level> dimension, CustomPacketPayload... payloads) {
-        getServer().getPlayerList().broadcastAll(makeClientboundPacket(payloads), dimension);
+    public static void sendToPlayersInDimension(ServerLevel level, CustomPacketPayload... payloads) {
+        level.getServer().getPlayerList().broadcastAll(makeClientboundPacket(payloads), level.dimension());
     }
 
     /**
-     * Send the given payload(s) to all players near the given {@link TargetPoint}
+     * Send the given payload(s) to all players in the area covered by the given radius around the given coordinates
+     * in the given dimension, except the given excluded player if present
      */
-    public static void sendToPlayersNear(TargetPoint target, CustomPacketPayload... payloads) {
+    public static void sendToPlayersNear(
+            ServerLevel level,
+            @Nullable ServerPlayer excluded,
+            double x,
+            double y,
+            double z,
+            double radius,
+            CustomPacketPayload... payloads) {
         Packet<?> packet = makeClientboundPacket(payloads);
-        getServer().getPlayerList().broadcast(target.excluded, target.x, target.y, target.z, target.r, target.dim, packet);
+        level.getServer().getPlayerList().broadcast(excluded, x, y, z, radius, level.dimension(), packet);
     }
 
     /**
      * Send the given payload(s) to all players on the server
      */
     public static void sendToAllPlayers(CustomPacketPayload... payloads) {
-        getServer().getPlayerList().broadcastAll(makeClientboundPacket(payloads));
+        MinecraftServer server = Objects.requireNonNull(getServer(), "Cannot send clientbound payloads on the client");
+        server.getPlayerList().broadcastAll(makeClientboundPacket(payloads));
     }
 
     /**
      * Send the given payload(s) to all players tracking the given entity
      */
     public static void sendToPlayersTrackingEntity(Entity entity, CustomPacketPayload... payloads) {
-        ((ServerChunkCache) entity.level().getChunkSource()).broadcast(entity, makeClientboundPacket(payloads));
+        if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
+            chunkCache.broadcast(entity, makeClientboundPacket(payloads));
+        } else {
+            throw new IllegalStateException("Cannot send clientbound payloads on the client");
+        }
     }
 
     /**
      * Send the given payload(s) to all players tracking the given entity and the entity itself if it is a player
      */
     public static void sendToPlayersTrackingEntityAndSelf(Entity entity, CustomPacketPayload... payloads) {
-        ((ServerChunkCache) entity.level().getChunkSource()).broadcastAndSend(entity, makeClientboundPacket(payloads));
+        if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
+            chunkCache.broadcastAndSend(entity, makeClientboundPacket(payloads));
+        } else {
+            throw new IllegalStateException("Cannot send clientbound payloads on the client");
+        }
     }
 
     /**
@@ -106,31 +124,6 @@ public final class PacketDistributor {
             return new ClientboundCustomPayloadPacket(payloads[0]);
         } else {
             throw new IllegalArgumentException("Must provide at least one payload");
-        }
-    }
-
-    /**
-     * A target point with excluded entity
-     *
-     * @param excluded Entity to exclude
-     * @param x        X coordinate
-     * @param y        Y coordinate
-     * @param z        Z coordinate
-     * @param r        Radius
-     * @param dim      Target dimension
-     */
-    public record TargetPoint(@Nullable ServerPlayer excluded, double x, double y, double z, double r, ResourceKey<Level> dim) {
-        /**
-         * A target point without excluded entity
-         *
-         * @param x   X coordinate
-         * @param y   Y coordinate
-         * @param z   Z coordinate
-         * @param r   Radius
-         * @param dim Target dimension
-         */
-        public TargetPoint(double x, double y, double z, double r, ResourceKey<Level> dim) {
-            this(null, x, y, z, r , dim);
         }
     }
 
