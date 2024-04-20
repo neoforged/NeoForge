@@ -20,12 +20,16 @@
      }
  
      public TextureAtlasSprite getSprite() {
-@@ -43,5 +_,9 @@
+@@ -43,5 +_,13 @@
  
      public boolean isShade() {
          return this.shade;
 +    }
 +
++    /**
++     * {@return false to force-disable AO for this quad or true to use the behavior dictated by
++     * {@link net.neoforged.neoforge.client.extensions.IBakedModelExtension#useAmbientOcclusion(net.minecraft.world.level.block.state.BlockState, net.neoforged.neoforge.client.model.data.ModelData, net.minecraft.client.renderer.RenderType)}}
++     */
 +    public boolean hasAmbientOcclusion() {
 +        return this.hasAmbientOcclusion;
      }

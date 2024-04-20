@@ -68,6 +68,15 @@
                      this.setSprinting(false);
                  }
              } else if (flag8) {
+@@ -736,7 +_,7 @@
+         }
+ 
+         boolean flag9 = false;
+-        if (this.getAbilities().mayfly) {
++        if (this.mayFly()) {
+             if (this.minecraft.gameMode.isAlwaysFlying()) {
+                 if (!this.getAbilities().flying) {
+                     this.getAbilities().flying = true;
 @@ -757,14 +_,15 @@
  
          if (this.input.jumping && !flag9 && !flag && !this.getAbilities().flying && !this.isPassenger() && !this.onClimbable()) {
@@ -95,3 +104,12 @@
          this.handsBusy = false;
          Entity entity = this.getControlledVehicle();
          if (entity instanceof Boat boat) {
+@@ -1053,7 +_,7 @@
+     }
+ 
+     private boolean hasEnoughFoodToStartSprinting() {
+-        return this.isPassenger() || (float)this.getFoodData().getFoodLevel() > 6.0F || this.getAbilities().mayfly;
++        return this.isPassenger() || (float)this.getFoodData().getFoodLevel() > 6.0F || this.mayFly();
+     }
+ 
+     public float getWaterVision() {

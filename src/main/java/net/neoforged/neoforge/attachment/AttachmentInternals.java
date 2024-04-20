@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.attachment;
 
-import java.util.function.Predicate;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
@@ -75,45 +74,14 @@ public final class AttachmentInternals {
         return tag;
     }
 
-    /**
-     * Copy some attachments to another holder.
-     */
-    private static <H extends AttachmentHolder> void copyAttachments(H from, H to, Predicate<AttachmentType<?>> filter) {
-        if (from.attachments == null) {
-            return;
-        }
-        for (var entry : from.attachments.entrySet()) {
-            AttachmentType<?> type = entry.getKey();
-            if (type.serializer == null) {
-                continue;
-            }
-            @SuppressWarnings("unchecked")
-            var copyHandler = (IAttachmentCopyHandler<Object>) type.copyHandler;
-            if (filter.test(type)) {
-                Object copy = copyHandler.copy(to.getExposedHolder(), entry.getValue());
-                if (copy != null) {
-                    to.getAttachmentMap().put(type, copy);
-                }
-            }
-        }
-    }
-
-    public static void copyStackAttachments(ItemStack from, ItemStack to) {
-        copyAttachments(from, to, type -> true);
-    }
-
-    public static void copyChunkAttachmentsOnPromotion(AttachmentHolder.AsField from, AttachmentHolder.AsField to) {
-        copyAttachments(from, to, type -> true);
-    }
-
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        copyAttachments(event.getOriginal(), event.getEntity(), event.isWasDeath() ? type -> type.copyOnDeath : type -> true);
+        AttachmentUtils.copyAttachments(event.getOriginal(), event.getEntity(), event.isWasDeath() ? type -> type.copyOnDeath : type -> true);
     }
 
     @SubscribeEvent
     public static void onLivingConvert(LivingConversionEvent.Post event) {
-        copyAttachments(event.getEntity(), event.getOutcome(), type -> type.copyOnDeath);
+        AttachmentUtils.copyAttachments(event.getEntity(), event.getOutcome(), type -> type.copyOnDeath);
     }
 
     private AttachmentInternals() {}

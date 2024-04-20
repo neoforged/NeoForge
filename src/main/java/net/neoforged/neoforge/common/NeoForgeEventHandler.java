@@ -109,13 +109,16 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void onDpSync(final OnDatapackSyncEvent event) {
-        final List<ServerPlayer> players = event.getPlayer() == null ? event.getPlayerList().getPlayers() : List.of(event.getPlayer());
         RegistryManager.getDataMaps().forEach((registry, values) -> {
             final var regOpt = event.getPlayerList().getServer().overworld().registryAccess()
                     .registry(registry);
             if (regOpt.isEmpty()) return;
-            players.forEach(player -> {
+            event.getRelevantPlayers().forEach(player -> {
                 if (!player.connection.isConnected(RegistryDataMapSyncPayload.ID)) {
+                    return;
+                }
+                if (player.connection.getConnection().isMemoryConnection()) {
+                    // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
                     return;
                 }
                 final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();

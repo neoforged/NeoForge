@@ -32,6 +32,7 @@ import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -105,18 +106,31 @@ public interface IBlockExtension {
     }
 
     /**
+     * Whether this block has dynamic light emission which is not solely based on the {@link BlockState} and instead
+     * uses the {@link BlockPos}, the {@link AuxiliaryLightManager} or another external data source to determine its
+     * light value in {@link #getLightEmission(BlockState, BlockGetter, BlockPos)}
+     *
+     * @param state the block state being checked
+     * @return true if this block cannot determine its light emission solely based on the block state, false otherwise
+     */
+    default boolean hasDynamicLightEmission(BlockState state) {
+        return false;
+    }
+
+    /**
      * Get a light value for this block, taking into account the given state and coordinates, normal ranges are between 0 and 15
      *
      * @param state The state of this block
-     * @param level The level this block is in
-     * @param pos   The position of this block in the level, will be {@link BlockPos#ZERO} when the chunk being loaded or
-     *              generated calls this to check whether it contains any light sources
+     * @param level The level this block is in, may be {@link EmptyBlockGetter#INSTANCE}, see implementation notes
+     * @param pos   The position of this block in the level, may be {@link BlockPos#ZERO}, see implementation notes
      * @return The light value
      * @implNote <ul>
      *           <li>
      *           If the given state of this block may emit light but requires position context to determine the light
-     *           value, then it must return a non-zero light value if {@code (pos == BlockPos.ZERO)} in order for the
-     *           chunk calling this to be considered as containing light sources.
+     *           value, then it must return {@code true} from {@link #hasDynamicLightEmission(BlockState)}, otherwise
+     *           this method will be called with {@link EmptyBlockGetter#INSTANCE} and {@link BlockPos#ZERO} during
+     *           chunk generation or loading to determine whether a chunk may contain a light-emitting block,
+     *           resulting in erroneous data if it's determined with the given level and/or the given position.
      *           </li>
      *           <li>
      *           The given {@link BlockGetter} may be a chunk. Block, fluid or block entity accesses outside of its bounds

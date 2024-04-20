@@ -210,6 +210,25 @@ public class NeoForgeMod {
     public static final Holder<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("neoforge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
+     * Grants the player the ability to use creative flight when not in creative mode.
+     * Anything above zero allows flight.
+     * <p>
+     * For this attribute, you should only use the following modifier values:
+     * <ul>
+     * <li>A value of 1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#ADDITION} to enable the effect.</li>
+     * <li>A value of -1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#MULTIPLY_TOTAL} to forcibly disable the effect.</li>
+     * </ul>
+     * This behavior allows for multiple enables to coexist, not removing the effect unless all enabling modifiers are removed.
+     * <p>
+     * Additionally, it permits forcibly disabling the attribute through multiply total.
+     * <p>
+     * To determine if a player has flight access via game mode or attribute, use {@link net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly}
+     * <p>
+     * Game mode flight cannot be disabled via this attribute.
+     */
+    public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new RangedAttribute("neoforge.creative_flight", 0D, 0D, Double.MAX_VALUE).setSyncable(true));
+
+    /**
      * Attack Range represents the distance at which a player may attack an entity. The default is 3 blocks. Players in creative mode have an additional 2 blocks of entity reach.
      * The default of 3.0 is technically considered a bug by Mojang - see MC-172289 and MC-92484. However, updating this value would allow for longer-range attacks on vanilla servers, which makes some people mad.
      * 
@@ -596,6 +615,7 @@ public class NeoForgeMod {
         ITEM_PREDICATE_CODECS.register(modEventBus);
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
+        GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);

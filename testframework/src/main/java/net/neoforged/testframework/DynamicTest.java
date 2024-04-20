@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -51,7 +52,7 @@ public interface DynamicTest extends Test {
      * Marks this test as {@linkplain Result#PASSED passed}.
      */
     default void pass() {
-        updateStatus(new Status(Result.PASSED, ""), null);
+        updateStatus(Status.passed(), null);
     }
 
     /**
@@ -60,7 +61,7 @@ public interface DynamicTest extends Test {
      * @param message additional information explaining why the test failed
      */
     default void fail(String message) {
-        updateStatus(new Status(Result.FAILED, message), null);
+        updateStatus(Status.failed(message), null);
     }
 
     /**
@@ -89,7 +90,17 @@ public interface DynamicTest extends Test {
      *
      * @param consumer the listener
      */
-    void onGameTest(final Consumer<ExtendedGameTestHelper> consumer);
+    default void onGameTest(final Consumer<ExtendedGameTestHelper> consumer) {
+        onGameTest(ExtendedGameTestHelper.class, consumer);
+    }
+
+    /**
+     * Registers a listener to run when the GameTest version of this test is run.
+     *
+     * @param helperType the type to use for the helper
+     * @param consumer   the listener
+     */
+    <T extends GameTestHelper> void onGameTest(Class<T> helperType, final Consumer<T> consumer);
 
     /**
      * Register the template for this game test.
