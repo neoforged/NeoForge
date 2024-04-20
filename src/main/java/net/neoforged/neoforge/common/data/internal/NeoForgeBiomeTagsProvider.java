@@ -10,6 +10,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
@@ -24,71 +25,226 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider lookupProvider) {
-        tag(Biomes.PLAINS, Tags.Biomes.IS_PLAINS);
-        tag(Biomes.DESERT, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_DRY_OVERWORLD, Tags.Biomes.IS_SANDY, Tags.Biomes.IS_DESERT);
-        tag(Biomes.TAIGA, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_CONIFEROUS);
-        tag(Biomes.SWAMP, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_SWAMP);
-        tag(Biomes.NETHER_WASTES, Tags.Biomes.IS_HOT_NETHER, Tags.Biomes.IS_DRY_NETHER);
-        tag(Biomes.THE_END, Tags.Biomes.IS_COLD_END, Tags.Biomes.IS_DRY_END);
-        tag(Biomes.FROZEN_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY);
-        tag(Biomes.FROZEN_RIVER, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY);
-        tag(Biomes.SNOWY_PLAINS, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_WASTELAND, Tags.Biomes.IS_PLAINS);
-        tag(Biomes.MUSHROOM_FIELDS, Tags.Biomes.IS_MUSHROOM, Tags.Biomes.IS_RARE);
-        tag(Biomes.JUNGLE, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_DENSE_OVERWORLD);
-        tag(Biomes.SPARSE_JUNGLE, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_RARE);
-        tag(Biomes.BEACH, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_SANDY);
-        tag(Biomes.SNOWY_BEACH, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY);
-        tag(Biomes.DARK_FOREST, Tags.Biomes.IS_SPOOKY, Tags.Biomes.IS_DENSE_OVERWORLD);
-        tag(Biomes.SNOWY_TAIGA, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_CONIFEROUS, Tags.Biomes.IS_SNOWY);
-        tag(Biomes.OLD_GROWTH_PINE_TAIGA, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_CONIFEROUS);
-        tag(Biomes.WINDSWEPT_FOREST, Tags.Biomes.IS_SPARSE_OVERWORLD);
-        tag(Biomes.SAVANNA, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD);
-        tag(Biomes.SAVANNA_PLATEAU, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_RARE, Tags.Biomes.IS_SLOPE, Tags.Biomes.IS_PLATEAU);
-        tag(Biomes.BADLANDS, Tags.Biomes.IS_SANDY, Tags.Biomes.IS_DRY_OVERWORLD);
-        tag(Biomes.WOODED_BADLANDS, Tags.Biomes.IS_SANDY, Tags.Biomes.IS_DRY_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_SLOPE, Tags.Biomes.IS_PLATEAU);
-        tag(Biomes.MEADOW, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_PLATEAU, Tags.Biomes.IS_SLOPE);
-        tag(Biomes.GROVE, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_CONIFEROUS, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_SLOPE);
-        tag(Biomes.SNOWY_SLOPES, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_SLOPE);
-        tag(Biomes.JAGGED_PEAKS, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_PEAK);
-        tag(Biomes.FROZEN_PEAKS, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_PEAK);
-        tag(Biomes.STONY_PEAKS, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_PEAK);
-        tag(Biomes.SMALL_END_ISLANDS, Tags.Biomes.IS_COLD_END, Tags.Biomes.IS_DRY_END);
-        tag(Biomes.END_MIDLANDS, Tags.Biomes.IS_COLD_END, Tags.Biomes.IS_DRY_END);
-        tag(Biomes.END_HIGHLANDS, Tags.Biomes.IS_COLD_END, Tags.Biomes.IS_DRY_END);
-        tag(Biomes.END_BARRENS, Tags.Biomes.IS_COLD_END, Tags.Biomes.IS_DRY_END);
-        tag(Biomes.WARM_OCEAN, Tags.Biomes.IS_HOT_OVERWORLD);
-        tag(Biomes.COLD_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
-        tag(Biomes.DEEP_COLD_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
-        tag(Biomes.DEEP_FROZEN_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
-        tag(Biomes.THE_VOID, Tags.Biomes.IS_VOID);
-        tag(Biomes.SUNFLOWER_PLAINS, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_RARE);
-        tag(Biomes.WINDSWEPT_GRAVELLY_HILLS, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_RARE);
-        tag(Biomes.FLOWER_FOREST, Tags.Biomes.IS_RARE);
-        tag(Biomes.ICE_SPIKES, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_RARE);
-        tag(Biomes.OLD_GROWTH_BIRCH_FOREST, Tags.Biomes.IS_DENSE_OVERWORLD, Tags.Biomes.IS_RARE);
-        tag(Biomes.OLD_GROWTH_SPRUCE_TAIGA, Tags.Biomes.IS_DENSE_OVERWORLD, Tags.Biomes.IS_RARE);
-        tag(Biomes.WINDSWEPT_SAVANNA, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_DRY_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_RARE);
-        tag(Biomes.ERODED_BADLANDS, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_DRY_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_RARE);
-        tag(Biomes.BAMBOO_JUNGLE, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_RARE);
-        tag(Biomes.LUSH_CAVES, Tags.Biomes.IS_CAVE, Tags.Biomes.IS_LUSH, Tags.Biomes.IS_WET_OVERWORLD);
-        tag(Biomes.DRIPSTONE_CAVES, Tags.Biomes.IS_CAVE, Tags.Biomes.IS_SPARSE_OVERWORLD);
-        tag(Biomes.SOUL_SAND_VALLEY, Tags.Biomes.IS_HOT_NETHER, Tags.Biomes.IS_DRY_NETHER);
-        tag(Biomes.CRIMSON_FOREST, Tags.Biomes.IS_HOT_NETHER, Tags.Biomes.IS_DRY_NETHER);
-        tag(Biomes.WARPED_FOREST, Tags.Biomes.IS_HOT_NETHER, Tags.Biomes.IS_DRY_NETHER);
-        tag(Biomes.BASALT_DELTAS, Tags.Biomes.IS_HOT_NETHER, Tags.Biomes.IS_DRY_NETHER);
-        tag(Biomes.MANGROVE_SWAMP, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_SWAMP);
-        tag(Biomes.DEEP_DARK, Tags.Biomes.IS_CAVE, Tags.Biomes.IS_RARE, Tags.Biomes.IS_SPOOKY);
+        tag(Tags.Biomes.NO_DEFAULT_MONSTERS).add(Biomes.MUSHROOM_FIELDS).add(Biomes.DEEP_DARK);
+        tag(Tags.Biomes.HIDDEN_FROM_LOCATOR_SELECTION); // Create tag file for visibility
 
+        tag(Tags.Biomes.IS_VOID).add(Biomes.THE_VOID);
+
+        tag(Tags.Biomes.IS_END).addTags(BiomeTags.IS_END);
+        tag(Tags.Biomes.IS_NETHER).addTags(BiomeTags.IS_NETHER);
+        tag(Tags.Biomes.IS_OVERWORLD).addTags(BiomeTags.IS_OVERWORLD);
+
+        tag(Tags.Biomes.IS_HOT_OVERWORLD)
+                .add(Biomes.SWAMP)
+                .add(Biomes.MANGROVE_SWAMP)
+                .add(Biomes.JUNGLE)
+                .add(Biomes.BAMBOO_JUNGLE)
+                .add(Biomes.SPARSE_JUNGLE)
+                .add(Biomes.DESERT)
+                .add(Biomes.ERODED_BADLANDS)
+                .add(Biomes.SAVANNA)
+                .add(Biomes.SAVANNA_PLATEAU)
+                .add(Biomes.WINDSWEPT_SAVANNA)
+                .add(Biomes.STONY_PEAKS)
+                .add(Biomes.WARM_OCEAN);
+        tag(Tags.Biomes.IS_HOT_NETHER)
+                .add(Biomes.NETHER_WASTES)
+                .add(Biomes.CRIMSON_FOREST)
+                .add(Biomes.WARPED_FOREST)
+                .add(Biomes.SOUL_SAND_VALLEY)
+                .add(Biomes.BASALT_DELTAS);
+        tag(Tags.Biomes.IS_HOT_END);
         tag(Tags.Biomes.IS_HOT).addTag(Tags.Biomes.IS_HOT_OVERWORLD).addTag(Tags.Biomes.IS_HOT_NETHER).addOptionalTag(Tags.Biomes.IS_HOT_END.location());
+
+        tag(Tags.Biomes.IS_COLD_OVERWORLD)
+                .add(Biomes.TAIGA)
+                .add(Biomes.OLD_GROWTH_PINE_TAIGA)
+                .add(Biomes.SNOWY_PLAINS)
+                .add(Biomes.ICE_SPIKES)
+                .add(Biomes.GROVE)
+                .add(Biomes.SNOWY_SLOPES)
+                .add(Biomes.JAGGED_PEAKS)
+                .add(Biomes.FROZEN_PEAKS)
+                .add(Biomes.SNOWY_BEACH)
+                .add(Biomes.SNOWY_TAIGA)
+                .add(Biomes.FROZEN_RIVER)
+                .add(Biomes.COLD_OCEAN)
+                .add(Biomes.FROZEN_OCEAN)
+                .add(Biomes.DEEP_COLD_OCEAN)
+                .add(Biomes.DEEP_FROZEN_OCEAN);
+        tag(Tags.Biomes.IS_COLD_NETHER);
+        tag(Tags.Biomes.IS_COLD_END)
+                .add(Biomes.THE_END)
+                .add(Biomes.SMALL_END_ISLANDS)
+                .add(Biomes.END_MIDLANDS)
+                .add(Biomes.END_HIGHLANDS)
+                .add(Biomes.END_BARRENS);
         tag(Tags.Biomes.IS_COLD).addTag(Tags.Biomes.IS_COLD_OVERWORLD).addOptionalTag(Tags.Biomes.IS_COLD_NETHER.location()).addTag(Tags.Biomes.IS_COLD_END);
-        tag(Tags.Biomes.IS_SPARSE).addTag(Tags.Biomes.IS_SPARSE_OVERWORLD).addOptionalTag(Tags.Biomes.IS_SPARSE_NETHER.location()).addOptionalTag(Tags.Biomes.IS_SPARSE_END.location());
-        tag(Tags.Biomes.IS_DENSE).addTag(Tags.Biomes.IS_DENSE_OVERWORLD).addOptionalTag(Tags.Biomes.IS_DENSE_NETHER.location()).addOptionalTag(Tags.Biomes.IS_DENSE_END.location());
+
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD)
+                .add(Biomes.WOODED_BADLANDS)
+                .add(Biomes.ERODED_BADLANDS)
+                .add(Biomes.SAVANNA)
+                .add(Biomes.SAVANNA_PLATEAU)
+                .add(Biomes.WINDSWEPT_SAVANNA)
+                .add(Biomes.WINDSWEPT_FOREST)
+                .add(Biomes.WINDSWEPT_HILLS)
+                .add(Biomes.WINDSWEPT_GRAVELLY_HILLS)
+                .add(Biomes.SNOWY_SLOPES)
+                .add(Biomes.JAGGED_PEAKS)
+                .add(Biomes.FROZEN_PEAKS);
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER);
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_END);
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION).addTag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD).addOptionalTag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER.location()).addOptionalTag(Tags.Biomes.IS_SPARSE_VEGETATION_END.location());
+
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD)
+                .add(Biomes.DARK_FOREST)
+                .add(Biomes.OLD_GROWTH_BIRCH_FOREST)
+                .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA)
+                .add(Biomes.JUNGLE);
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER);
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_END);
+        tag(Tags.Biomes.IS_DENSE_VEGETATION).addTag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER.location()).addOptionalTag(Tags.Biomes.IS_DENSE_VEGETATION_END.location());
+
+        tag(Tags.Biomes.IS_WET_OVERWORLD)
+                .add(Biomes.SWAMP)
+                .add(Biomes.MANGROVE_SWAMP)
+                .add(Biomes.JUNGLE)
+                .add(Biomes.BAMBOO_JUNGLE)
+                .add(Biomes.SPARSE_JUNGLE)
+                .add(Biomes.BEACH)
+                .add(Biomes.LUSH_CAVES)
+                .add(Biomes.DRIPSTONE_CAVES);
+        tag(Tags.Biomes.IS_WET_NETHER);
+        tag(Tags.Biomes.IS_WET_END);
         tag(Tags.Biomes.IS_WET).addTag(Tags.Biomes.IS_WET_OVERWORLD).addOptionalTag(Tags.Biomes.IS_WET_NETHER.location()).addOptionalTag(Tags.Biomes.IS_WET_END.location());
+
+        tag(Tags.Biomes.IS_DRY_OVERWORLD)
+                .add(Biomes.DESERT)
+                .add(Biomes.BADLANDS)
+                .add(Biomes.WOODED_BADLANDS)
+                .add(Biomes.ERODED_BADLANDS)
+                .add(Biomes.SAVANNA)
+                .add(Biomes.SAVANNA_PLATEAU)
+                .add(Biomes.WINDSWEPT_SAVANNA);
+        tag(Tags.Biomes.IS_DRY_NETHER)
+                .add(Biomes.NETHER_WASTES)
+                .add(Biomes.CRIMSON_FOREST)
+                .add(Biomes.WARPED_FOREST)
+                .add(Biomes.SOUL_SAND_VALLEY)
+                .add(Biomes.BASALT_DELTAS);
+        tag(Tags.Biomes.IS_DRY_END)
+                .add(Biomes.THE_END)
+                .add(Biomes.SMALL_END_ISLANDS)
+                .add(Biomes.END_MIDLANDS)
+                .add(Biomes.END_HIGHLANDS)
+                .add(Biomes.END_BARRENS);
         tag(Tags.Biomes.IS_DRY).addTag(Tags.Biomes.IS_DRY_OVERWORLD).addTag(Tags.Biomes.IS_DRY_NETHER).addTag(Tags.Biomes.IS_DRY_END);
 
-        tag(Tags.Biomes.IS_WATER).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
-        tag(Tags.Biomes.IS_MOUNTAIN).addTag(Tags.Biomes.IS_PEAK).addTag(Tags.Biomes.IS_SLOPE);
+        tag(Tags.Biomes.IS_CONIFEROUS_TREE).addTags(Tags.Biomes.IS_TAIGA).add(Biomes.GROVE);
+        tag(Tags.Biomes.IS_SAVANNA_TREE).addTags(Tags.Biomes.IS_SAVANNA);
+        tag(Tags.Biomes.IS_JUNGLE_TREE).addTags(Tags.Biomes.IS_JUNGLE);
+        tag(Tags.Biomes.IS_DECIDUOUS_TREE).add(Biomes.FOREST).add(Biomes.FLOWER_FOREST).add(Biomes.BIRCH_FOREST).add(Biomes.DARK_FOREST).add(Biomes.OLD_GROWTH_BIRCH_FOREST).add(Biomes.WINDSWEPT_FOREST);
+
+        tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).add(Biomes.SNOWY_SLOPES).add(Biomes.MEADOW).add(Biomes.GROVE).add(Biomes.CHERRY_GROVE);
+        tag(Tags.Biomes.IS_MOUNTAIN_PEAK).add(Biomes.JAGGED_PEAKS).add(Biomes.FROZEN_PEAKS).add(Biomes.STONY_PEAKS);
+        tag(Tags.Biomes.IS_MOUNTAIN).addTag(BiomeTags.IS_MOUNTAIN).addTag(Tags.Biomes.IS_MOUNTAIN_PEAK).addTag(Tags.Biomes.IS_MOUNTAIN_SLOPE);
+
+        tag(Tags.Biomes.IS_FOREST).addTags(BiomeTags.IS_FOREST);
+        tag(Tags.Biomes.IS_BIRCH_FOREST).add(Biomes.BIRCH_FOREST).add(Biomes.OLD_GROWTH_BIRCH_FOREST);
+        tag(Tags.Biomes.IS_FLOWER_FOREST).add(Biomes.FLOWER_FOREST);
+        tag(Tags.Biomes.IS_FLORAL).addTags(Tags.Biomes.IS_FLOWER_FOREST).add(Biomes.SUNFLOWER_PLAINS).add(Biomes.CHERRY_GROVE).add(Biomes.MEADOW);
+        tag(Tags.Biomes.IS_BEACH).addTags(BiomeTags.IS_BEACH);
+        tag(Tags.Biomes.IS_STONY_SHORES).add(Biomes.STONY_SHORE);
+        tag(Tags.Biomes.IS_DESERT).add(Biomes.DESERT);
+        tag(Tags.Biomes.IS_BADLANDS).addTags(BiomeTags.IS_BADLANDS);
+        tag(Tags.Biomes.IS_PLAINS).add(Biomes.PLAINS).add(Biomes.SUNFLOWER_PLAINS);
+        tag(Tags.Biomes.IS_SNOWY_PLAINS).add(Biomes.SNOWY_PLAINS);
+        tag(Tags.Biomes.IS_TAIGA).addTags(BiomeTags.IS_TAIGA);
+        tag(Tags.Biomes.IS_HILL).addTags(BiomeTags.IS_HILL);
+        tag(Tags.Biomes.IS_WINDSWEPT).add(Biomes.WINDSWEPT_HILLS).add(Biomes.WINDSWEPT_GRAVELLY_HILLS).add(Biomes.WINDSWEPT_FOREST).add(Biomes.WINDSWEPT_SAVANNA);
+        tag(Tags.Biomes.IS_SAVANNA).addTags(BiomeTags.IS_SAVANNA);
+        tag(Tags.Biomes.IS_JUNGLE).addTags(BiomeTags.IS_JUNGLE);
+        tag(Tags.Biomes.IS_SNOWY).add(Biomes.SNOWY_BEACH).add(Biomes.SNOWY_PLAINS).add(Biomes.ICE_SPIKES).add(Biomes.SNOWY_TAIGA).add(Biomes.GROVE).add(Biomes.SNOWY_SLOPES).add(Biomes.JAGGED_PEAKS).add(Biomes.FROZEN_PEAKS);
+        tag(Tags.Biomes.IS_ICY).add(Biomes.ICE_SPIKES).add(Biomes.FROZEN_PEAKS);
+        tag(Tags.Biomes.IS_SWAMP).add(Biomes.SWAMP).add(Biomes.MANGROVE_SWAMP);
+        tag(Tags.Biomes.IS_OLD_GROWTH).add(Biomes.OLD_GROWTH_BIRCH_FOREST).add(Biomes.OLD_GROWTH_PINE_TAIGA).add(Biomes.OLD_GROWTH_SPRUCE_TAIGA);
+        tag(Tags.Biomes.IS_LUSH).add(Biomes.LUSH_CAVES);
+        tag(Tags.Biomes.IS_SANDY).add(Biomes.DESERT).add(Biomes.BADLANDS).add(Biomes.WOODED_BADLANDS).add(Biomes.ERODED_BADLANDS).add(Biomes.BEACH);
+        tag(Tags.Biomes.IS_MUSHROOM).add(Biomes.MUSHROOM_FIELDS);
+        tag(Tags.Biomes.IS_PLATEAU).add(Biomes.WOODED_BADLANDS).add(Biomes.SAVANNA_PLATEAU).add(Biomes.CHERRY_GROVE).add(Biomes.MEADOW);
+        tag(Tags.Biomes.IS_SPOOKY).add(Biomes.DARK_FOREST).add(Biomes.DEEP_DARK);
+        tag(Tags.Biomes.IS_WASTELAND);
+        tag(Tags.Biomes.IS_RARE).add(Biomes.SUNFLOWER_PLAINS).add(Biomes.FLOWER_FOREST).add(Biomes.OLD_GROWTH_BIRCH_FOREST).add(Biomes.OLD_GROWTH_SPRUCE_TAIGA).add(Biomes.BAMBOO_JUNGLE).add(Biomes.SPARSE_JUNGLE).add(Biomes.ERODED_BADLANDS).add(Biomes.SAVANNA_PLATEAU).add(Biomes.WINDSWEPT_SAVANNA).add(Biomes.ICE_SPIKES).add(Biomes.WINDSWEPT_GRAVELLY_HILLS).add(Biomes.MUSHROOM_FIELDS).add(Biomes.DEEP_DARK);
+
+        tag(Tags.Biomes.IS_RIVER).addTags(BiomeTags.IS_RIVER);
+        tag(Tags.Biomes.IS_SHALLOW_OCEAN).add(Biomes.OCEAN).add(Biomes.LUKEWARM_OCEAN).add(Biomes.WARM_OCEAN).add(Biomes.COLD_OCEAN).add(Biomes.FROZEN_OCEAN);
+        tag(Tags.Biomes.IS_DEEP_OCEAN).addTags(BiomeTags.IS_DEEP_OCEAN);
+        tag(Tags.Biomes.IS_OCEAN).addTags(BiomeTags.IS_OCEAN).addTags(Tags.Biomes.IS_SHALLOW_OCEAN).addTags(Tags.Biomes.IS_DEEP_OCEAN);
+        tag(Tags.Biomes.IS_AQUATIC_ICY).add(Biomes.FROZEN_RIVER).add(Biomes.DEEP_FROZEN_OCEAN).add(Biomes.FROZEN_OCEAN);
+        tag(Tags.Biomes.IS_AQUATIC).addTag(Tags.Biomes.IS_OCEAN).addTag(Tags.Biomes.IS_RIVER);
+
+        tag(Tags.Biomes.IS_CAVE).add(Biomes.LUSH_CAVES).add(Biomes.DRIPSTONE_CAVES).add(Biomes.DEEP_DARK);
         tag(Tags.Biomes.IS_UNDERGROUND).addTag(Tags.Biomes.IS_CAVE);
+
+        tag(Tags.Biomes.IS_NETHER_FOREST).add(Biomes.CRIMSON_FOREST).add(Biomes.WARPED_FOREST);
+        tag(Tags.Biomes.IS_OUTER_END_ISLAND).add(Biomes.END_HIGHLANDS).add(Biomes.END_MIDLANDS).add(Biomes.END_BARRENS);
+
+        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
+        // TODO: Remove backwards compat tag entries in 1.22
+        tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).addOptionalTag(new ResourceLocation("forge", "is_slope"));
+        tag(Tags.Biomes.IS_MOUNTAIN_PEAK).addOptionalTag(new ResourceLocation("forge", "is_peak"));
+        tagWithOptionalLegacy(Tags.Biomes.IS_MOUNTAIN);
+        tagWithOptionalLegacy(Tags.Biomes.IS_HOT_OVERWORLD);
+        tagWithOptionalLegacy(Tags.Biomes.IS_HOT_NETHER);
+        tagWithOptionalLegacy(Tags.Biomes.IS_HOT_END);
+        tagWithOptionalLegacy(Tags.Biomes.IS_HOT);
+        tagWithOptionalLegacy(Tags.Biomes.IS_COLD_OVERWORLD);
+        tagWithOptionalLegacy(Tags.Biomes.IS_COLD_NETHER);
+        tagWithOptionalLegacy(Tags.Biomes.IS_COLD_END);
+        tagWithOptionalLegacy(Tags.Biomes.IS_COLD);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_END);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION);
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD).addOptionalTag(new ResourceLocation("forge", "is_sparse/overworld"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER).addOptionalTag(new ResourceLocation("forge", "is_sparse/nether"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_END).addOptionalTag(new ResourceLocation("forge", "is_sparse/end"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION).addOptionalTag(new ResourceLocation("forge", "is_sparse"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(new ResourceLocation("forge", "is_dense/overworld"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER).addOptionalTag(new ResourceLocation("forge", "is_dense/nether"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_END).addOptionalTag(new ResourceLocation("forge", "is_dense/end"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION).addOptionalTag(new ResourceLocation("forge", "is_dense"));
+        tagWithOptionalLegacy(Tags.Biomes.IS_WET_OVERWORLD);
+        tagWithOptionalLegacy(Tags.Biomes.IS_WET_NETHER);
+        tagWithOptionalLegacy(Tags.Biomes.IS_WET_END);
+        tagWithOptionalLegacy(Tags.Biomes.IS_WET);
+        tagWithOptionalLegacy(Tags.Biomes.IS_DRY_OVERWORLD);
+        tagWithOptionalLegacy(Tags.Biomes.IS_DRY_NETHER);
+        tagWithOptionalLegacy(Tags.Biomes.IS_DRY_END);
+        tagWithOptionalLegacy(Tags.Biomes.IS_DRY);
+        tagWithOptionalLegacy(Tags.Biomes.IS_CONIFEROUS_TREE);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SPOOKY);
+        tagWithOptionalLegacy(Tags.Biomes.IS_DEAD);
+        tagWithOptionalLegacy(Tags.Biomes.IS_LUSH);
+        tagWithOptionalLegacy(Tags.Biomes.IS_MUSHROOM);
+        tagWithOptionalLegacy(Tags.Biomes.IS_MAGICAL);
+        tagWithOptionalLegacy(Tags.Biomes.IS_RARE);
+        tagWithOptionalLegacy(Tags.Biomes.IS_PLATEAU);
+        tagWithOptionalLegacy(Tags.Biomes.IS_MODIFIED);
+        tagWithOptionalLegacy(Tags.Biomes.IS_FLORAL);
+        tag(Tags.Biomes.IS_AQUATIC).addOptionalTag(new ResourceLocation("forge", "is_water"));
+        tagWithOptionalLegacy(Tags.Biomes.IS_DESERT);
+        tagWithOptionalLegacy(Tags.Biomes.IS_PLAINS);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SWAMP);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SANDY);
+        tagWithOptionalLegacy(Tags.Biomes.IS_SNOWY);
+        tagWithOptionalLegacy(Tags.Biomes.IS_WASTELAND);
+        tagWithOptionalLegacy(Tags.Biomes.IS_VOID);
+        tagWithOptionalLegacy(Tags.Biomes.IS_CAVE);
+        tagWithOptionalLegacy(Tags.Biomes.IS_END);
+        tagWithOptionalLegacy(Tags.Biomes.IS_NETHER);
+        tagWithOptionalLegacy(Tags.Biomes.IS_OVERWORLD);
     }
 
     @SafeVarargs
@@ -96,5 +252,14 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         for (TagKey<Biome> key : tags) {
             tag(key).add(biome);
         }
+    }
+
+    private TagAppender<Biome> tagWithOptionalLegacy(TagKey<Biome> tag) {
+        return tag(tag).addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+    }
+
+    @Override
+    public String getName() {
+        return "NeoForge Biome Tags";
     }
 }

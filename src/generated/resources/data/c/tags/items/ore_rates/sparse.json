@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:nether_gold_ore",
+    {
+      "id": "#forge:ore_rates/sparse",
+      "required": false
+    }
+  ]
+}
