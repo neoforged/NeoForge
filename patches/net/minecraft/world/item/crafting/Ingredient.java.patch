@@ -160,7 +160,7 @@
          return fromValues(Stream.of(new Ingredient.TagValue(p_204133_)));
      }
  
-+    @Deprecated // Neo: We take over the codec creation entirely to support custom ingredients
++    @Deprecated // Neo: We take over the codec creation entirely to support custom ingredients - see CraftingHelper
      private static Codec<Ingredient> codec(boolean p_301074_) {
          Codec<Ingredient.Value[]> codec = Codec.list(Ingredient.Value.CODEC)
              .comapFlatMap(

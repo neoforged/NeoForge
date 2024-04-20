@@ -21,7 +21,10 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Standard implementation for an ingredient and a count. {@link Ingredient} does not perform count checks, so this class is used to wrap an ingredient with a count, and provide a standard serialization format.
+ * Standard implementation for an ingredient and a count.
+ *
+ * <p>{@link Ingredient} does not perform count checks, so this class is used to wrap an ingredient with a count,
+ * and provide a standard serialization format.
  */
 public final class SizedIngredient {
     /**
