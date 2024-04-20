@@ -77,7 +77,7 @@ public final class PacketDistributor {
      * Send the given payload(s) to all players on the server
      */
     public static void sendToAllPlayers(CustomPacketPayload... payloads) {
-        MinecraftServer server = Objects.requireNonNull(getServer(), "Cannot send clientbound payloads on the client");
+        MinecraftServer server = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer(), "Cannot send clientbound payloads on the client");
         server.getPlayerList().broadcastAll(makeClientboundPacket(payloads));
     }
 
@@ -125,9 +125,5 @@ public final class PacketDistributor {
         } else {
             throw new IllegalArgumentException("Must provide at least one payload");
         }
-    }
-
-    private static MinecraftServer getServer() {
-        return ServerLifecycleHooks.getCurrentServer();
     }
 }
