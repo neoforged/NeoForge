@@ -16,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.TickEvent;
 
@@ -26,7 +27,7 @@ public class CustomParticleTypeTest {
 
     public CustomParticleTypeTest() {}
 
-    @Mod.EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
     public static class ClientEvents {
         private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType() {
             @Override

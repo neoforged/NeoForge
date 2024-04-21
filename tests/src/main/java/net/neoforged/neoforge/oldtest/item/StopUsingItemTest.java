@@ -18,9 +18,9 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -125,7 +125,7 @@ public class StopUsingItemTest {
         }
     }
 
-    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Bus.FORGE)
+    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Bus.GAME)
     public static class ClientEvents {
         @SubscribeEvent
         static void computeFovModifier(ComputeFovModifierEvent event) {

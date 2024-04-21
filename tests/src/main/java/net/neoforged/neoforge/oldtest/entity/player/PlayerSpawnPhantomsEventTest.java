@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.entity.player;
 
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 
@@ -17,7 +18,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
  * Vanilla has a minimum of 3 days since last sleep before a maximum of 4 (on hard mode) phantoms can spawn
  */
 @Mod("player_spawn_phantoms_event_test")
-@Mod.EventBusSubscriber()
+@EventBusSubscriber
 public class PlayerSpawnPhantomsEventTest {
     private static final boolean ENABLE = false;
 
