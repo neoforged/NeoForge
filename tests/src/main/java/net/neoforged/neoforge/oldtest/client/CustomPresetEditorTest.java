@@ -37,9 +37,8 @@ import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -49,7 +48,7 @@ public class CustomPresetEditorTest {
     public static final String MODID = "custom_preset_editor_test";
     public static final ResourceKey<WorldPreset> WORLD_PRESET_KEY = ResourceKey.create(Registries.WORLD_PRESET, new ResourceLocation(MODID, MODID));
 
-    @EventBusSubscriber(modid = MODID, bus = Bus.MOD)
+    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     public static class CommonModEvents {
         @SubscribeEvent
         public static void onGatherData(GatherDataEvent event) {
@@ -82,7 +81,7 @@ public class CustomPresetEditorTest {
         }
     }
 
-    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Bus.MOD)
+    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onRegisterPresetEditors(RegisterPresetEditorsEvent event) {

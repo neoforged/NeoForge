@@ -15,7 +15,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.testframework.Test;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -23,18 +23,18 @@ import org.jetbrains.annotations.ApiStatus;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class EventListenerGroupImpl implements Test.EventListenerGroup {
-    private final Map<Mod.EventBusSubscriber.Bus, EventListenerCollectorImpl> collectors = new HashMap<>();
+    private final Map<EventBusSubscriber.Bus, EventListenerCollectorImpl> collectors = new HashMap<>();
 
     @Override
-    public EventListenerCollectorImpl getFor(Mod.EventBusSubscriber.Bus bus) {
+    public EventListenerCollectorImpl getFor(EventBusSubscriber.Bus bus) {
         return collectors.computeIfAbsent(bus, it -> new EventListenerCollectorImpl());
     }
 
-    public void unregister(Map<Mod.EventBusSubscriber.Bus, IEventBus> buses) {
+    public void unregister(Map<EventBusSubscriber.Bus, IEventBus> buses) {
         collectors.forEach((bus, col) -> col.unregisterAll(buses.get(bus)));
     }
 
-    public void register(Map<Mod.EventBusSubscriber.Bus, IEventBus> buses) {
+    public void register(Map<EventBusSubscriber.Bus, IEventBus> buses) {
         collectors.forEach((bus, col) -> col.registerAll(buses.get(bus)));
     }
 

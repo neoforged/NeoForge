@@ -22,7 +22,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -72,7 +72,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
         return stack;
     };
 
-    @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
     private static class CommonHandler {
         @SubscribeEvent
         public static void onCommonSetup(FMLCommonSetupEvent event) {
@@ -89,7 +89,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
         }
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
     private static class ColorRegisterHandler {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event) {

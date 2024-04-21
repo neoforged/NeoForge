@@ -38,7 +38,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -216,7 +216,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 .onInitMethodsWithAnnotation(container);
 
         this.modBus = modBus;
-        tests.buses = Map.of(Mod.EventBusSubscriber.Bus.FORGE, NeoForge.EVENT_BUS, Mod.EventBusSubscriber.Bus.MOD, modBus);
+        tests.buses = Map.of(EventBusSubscriber.Bus.GAME, NeoForge.EVENT_BUS, EventBusSubscriber.Bus.MOD, modBus);
 
         byStage.get(OnInit.Stage.BEFORE_SETUP).forEach(cons -> cons.accept(this));
 
@@ -356,7 +356,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         private final Map<String, EventListenerGroupImpl> collectors = new HashMap<>();
         private final Set<String> enabled = Collections.synchronizedSet(new LinkedHashSet<>());
         private final Map<String, Test.Status> statuses = new ConcurrentHashMap<>();
-        private Map<Mod.EventBusSubscriber.Bus, IEventBus> buses = Map.of();
+        private Map<EventBusSubscriber.Bus, IEventBus> buses = Map.of();
 
         private final Set<TestListener> globalListeners = new HashSet<>();
 

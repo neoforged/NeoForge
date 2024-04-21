@@ -12,11 +12,12 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 
 @Mod(NameplateRenderingEventTest.MODID)
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@EventBusSubscriber(value = Dist.CLIENT)
 public class NameplateRenderingEventTest {
     public static final String MODID = "nameplate_render_test";
     static final boolean ENABLED = false;
