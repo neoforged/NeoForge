@@ -1,9 +1,9 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1277,12 +_,37 @@
-         Schema schema198 = p_14514_.addSchema(3799, V3799::new);
-         p_14514_.addFixer(new AddNewChoices(schema198, "Added Armadillo", References.ENTITY));
+@@ -1280,10 +_,35 @@
          Schema schema199 = p_14514_.addSchema(3800, SAME_NAMESPACED);
+         UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
+         p_14514_.addFixer(ItemRenameFix.create(schema199, "Rename scute item to turtle_scute", unaryoperator2));
 +
 +        // Neo: Remove step height attribute, which cannot be sanely updated
 +        // Happens in 23w51a
@@ -16,8 +16,6 @@
 +                )
 +        ));
 +
-         UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
-         p_14514_.addFixer(ItemRenameFix.create(schema199, "Rename scute item to turtle_scute", unaryoperator2));
          Schema schema200 = p_14514_.addSchema(3803, SAME_NAMESPACED);
          p_14514_.addFixer(
              new RenameEnchantmentsFix(schema200, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge"))
@@ -25,7 +23,7 @@
 +
 +        // Neo: rename neo attributes to new MC attributes
 +        // Happens in 24w03a
-+        Schema neoSchema3804 = p_14514_.addSchema(3801, SAME_NAMESPACED);
++        Schema neoSchema3804 = p_14514_.addSchema(3804, SAME_NAMESPACED);
 +        p_14514_.addFixer(new AttributesRename(
 +                neoSchema3804,
 +                "(Neo) Rename reach attributes to vanilla",
@@ -38,7 +36,7 @@
          Schema schema201 = p_14514_.addSchema(3807, V3807::new);
          p_14514_.addFixer(new AddNewChoices(schema201, "Added Vault", References.BLOCK_ENTITY));
          Schema schema202 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1301,6 +_,18 @@
+@@ -1302,6 +_,18 @@
          p_14514_.addFixer(
              new AttributesRename(schema208, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
          );
