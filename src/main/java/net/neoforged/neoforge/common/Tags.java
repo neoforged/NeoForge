@@ -268,6 +268,19 @@ public class Tags {
         public static final TagKey<Item> BRICKS_NORMAL = tag("bricks/normal");
         public static final TagKey<Item> BRICKS_NETHER = tag("bricks/nether");
         public static final TagKey<Item> BUCKETS = tag("buckets");
+        public static final TagKey<Item> BUCKETS_EMPTY = tag("buckets/empty");
+        /**
+         * Does not include entity water buckets.
+         * If checking for the fluid this bucket holds in code, please use {@link net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper#getFluid} instead.
+         */
+        public static final TagKey<Item> BUCKETS_WATER = tag("buckets/water");
+        /**
+         * If checking for the fluid this bucket holds in code, please use {@link net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper#getFluid} instead.
+         */
+        public static final TagKey<Item> BUCKETS_LAVA = tag("buckets/lava");
+        public static final TagKey<Item> BUCKETS_MILK = tag("buckets/milk");
+        public static final TagKey<Item> BUCKETS_POWDER_SNOW = tag("buckets/powder_snow");
+        public static final TagKey<Item> BUCKETS_ENTITY_WATER = tag("buckets/entity_water");
         /**
          * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
          */

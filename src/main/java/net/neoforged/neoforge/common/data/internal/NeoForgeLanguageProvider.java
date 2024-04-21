@@ -126,6 +126,12 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.BRICKS_NORMAL, "Normal Bricks");
         add(Tags.Items.BRICKS_NETHER, "Nether Bricks");
         add(Tags.Items.BUCKETS, "Buckets");
+        add(Tags.Items.BUCKETS_EMPTY, "Empty Buckets");
+        add(Tags.Items.BUCKETS_WATER, "Water Buckets");
+        add(Tags.Items.BUCKETS_LAVA, "Lava Buckets");
+        add(Tags.Items.BUCKETS_MILK, "Milk Buckets");
+        add(Tags.Items.BUCKETS_POWDER_SNOW, "Powder Snow Buckets");
+        add(Tags.Items.BUCKETS_ENTITY_WATER, "Water Entity Buckets");
         add(Tags.Items.BUDDING_BLOCKS, "Budding Blocks");
         add(Tags.Items.BUDS, "Buds");
         add(Tags.Items.CHAINS, "Chains");
