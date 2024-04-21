@@ -46,6 +46,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
@@ -74,7 +75,7 @@ import org.jetbrains.annotations.Nullable;
 public class CustomItemDisplayContextTest {
     public static final String MODID = "custom_transformtype_test";
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     private static class RendererEvents {
         public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", new ResourceLocation("custom_transformtype_test", "hanging"), null);
 

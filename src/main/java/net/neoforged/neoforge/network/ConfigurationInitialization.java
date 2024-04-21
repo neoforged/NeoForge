@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.configuration.ServerConfigurationPacketLis
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.config.SynchronizeRegistriesTask;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
 public class ConfigurationInitialization {
     /**
      * Method called to add configuration tasks that should run before all others,

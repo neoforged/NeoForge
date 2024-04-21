@@ -17,7 +17,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.group.Groupable;
 import org.jetbrains.annotations.Nullable;
@@ -104,7 +104,7 @@ public interface Test extends Groupable {
     }
 
     /**
-     * A group of collectors by {@link Mod.EventBusSubscriber.Bus bus}.
+     * A group of collectors by {@link EventBusSubscriber.Bus bus}.
      */
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
@@ -115,14 +115,14 @@ public interface Test extends Groupable {
          * @param bus the bus to get the collector for
          * @return the collector associated with the bus
          */
-        EventListenerCollector getFor(Mod.EventBusSubscriber.Bus bus);
+        EventListenerCollector getFor(EventBusSubscriber.Bus bus);
 
         default EventListenerCollector mod() {
-            return getFor(Mod.EventBusSubscriber.Bus.MOD);
+            return getFor(EventBusSubscriber.Bus.MOD);
         }
 
         default EventListenerCollector forge() {
-            return getFor(Mod.EventBusSubscriber.Bus.FORGE);
+            return getFor(EventBusSubscriber.Bus.GAME);
         }
 
         /**

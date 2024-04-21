@@ -20,8 +20,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.UnmodifiableView;
  * Users should not instantiate this unless they know what they are doing. The manager is also not thread-safe,
  * it should only be interacted with on the main client thread.
  */
-@EventBusSubscriber(modid = "neoforge", bus = Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = "neoforge", bus = Bus.GAME, value = Dist.CLIENT)
 public class ModelDataManager {
     private final Thread owningThread = Thread.currentThread();
     private final Level level;

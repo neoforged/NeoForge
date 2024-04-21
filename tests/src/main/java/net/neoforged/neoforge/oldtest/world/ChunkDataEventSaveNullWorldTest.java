@@ -6,13 +6,14 @@
 package net.neoforged.neoforge.oldtest.world;
 
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(ChunkDataEventSaveNullWorldTest.MODID)
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class ChunkDataEventSaveNullWorldTest {
     static final String MODID = "chunk_data_event_save_null_world_test";
     private static final Logger LOGGER = LogManager.getLogger(MODID);
