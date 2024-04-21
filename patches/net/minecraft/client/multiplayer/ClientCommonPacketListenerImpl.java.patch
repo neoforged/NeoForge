@@ -65,33 +65,6 @@
          LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
      }
  
-@@ -302,7 +_,7 @@
-                         if (ClientCommonPacketListenerImpl.this.serverData != null) {
-                             ClientCommonPacketListenerImpl.this.serverData.setResourcePackStatus(ServerData.ServerPackStatus.ENABLED);
-                         }
--
-+
-                         downloadedpacksource.allowServerPacks();
-                     } else {
-                         downloadedpacksource.rejectServerPacks();
-@@ -312,7 +_,7 @@
-                             ClientCommonPacketListenerImpl.this.serverData.setResourcePackStatus(ServerData.ServerPackStatus.DISABLED);
-                         }
-                     }
--
-+
-                     for (ClientCommonPacketListenerImpl.PackConfirmScreen.PendingRequest clientcommonpacketlistenerimpl$packconfirmscreen$pendingrequest : p_314994_) {
-                         downloadedpacksource.pushPack(
-                             clientcommonpacketlistenerimpl$packconfirmscreen$pendingrequest.id,
-@@ -320,7 +_,7 @@
-                             clientcommonpacketlistenerimpl$packconfirmscreen$pendingrequest.hash
-                         );
-                     }
--
-+
-                     if (ClientCommonPacketListenerImpl.this.serverData != null) {
-                         ServerList.saveSingleServer(ClientCommonPacketListenerImpl.this.serverData);
-                     }
 @@ -354,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
