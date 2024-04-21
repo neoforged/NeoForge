@@ -122,7 +122,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
             if (type.serializer != null) {
-                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(provider, entry.getValue());
+                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
                 if (serialized != null) {
                     if (tag == null)
                         tag = new CompoundTag();
@@ -152,49 +152,11 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             }
 
             try {
-                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(provider, getExposedHolder(), tag.get(key)));
+                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key), provider));
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }
         }
-    }
-
-    /**
-     * Checks if two attachment holders have compatible attachments,
-     * i.e. if they have the same serialized form.
-     *
-     * <p>Same as calling {@code Objects.equals(first.serializeAttachments(), second.serializeAttachments())},
-     * but implemented more efficiently.
-     *
-     * @return {@code true} if the attachments are compatible, {@code false} otherwise
-     */
-    public static <H extends AttachmentHolder> boolean areAttachmentsCompatible(HolderLookup.Provider provider, H first, H second) {
-        Map<AttachmentType<?>, Object> firstAttachments = first.attachments != null ? first.attachments : Map.of();
-        Map<AttachmentType<?>, Object> secondAttachments = second.attachments != null ? second.attachments : Map.of();
-
-        for (var entry : firstAttachments.entrySet()) {
-            AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
-            if (type.serializer != null) {
-                var otherData = secondAttachments.get(type);
-                if (otherData == null)
-                    // TODO: cache serialization of default value?
-                    otherData = type.defaultValueSupplier.apply(second.getExposedHolder());
-                if (!type.comparator.areCompatible(provider, entry.getValue(), otherData))
-                    return false;
-            }
-        }
-        for (var entry : secondAttachments.entrySet()) {
-            AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
-            if (type.serializer != null) {
-                var data = firstAttachments.get(type);
-                if (data != null)
-                    continue; // already checked in the first loop
-                data = type.defaultValueSupplier.apply(first.getExposedHolder());
-                if (!type.comparator.areCompatible(provider, entry.getValue(), data))
-                    return false;
-            }
-        }
-        return true;
     }
 
     /**

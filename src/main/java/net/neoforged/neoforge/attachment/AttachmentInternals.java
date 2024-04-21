@@ -34,7 +34,7 @@ public final class AttachmentInternals {
             @SuppressWarnings("unchecked")
             var copyHandler = (IAttachmentCopyHandler<Object>) type.copyHandler;
             if (filter.test(type)) {
-                Object copy = copyHandler.copy(provider, to.getExposedHolder(), entry.getValue());
+                Object copy = copyHandler.copy(entry.getValue(), to.getExposedHolder(), provider);
                 if (copy != null) {
                     to.getAttachmentMap().put(type, copy);
                 }
