@@ -34,49 +34,52 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
  */
 public class PacketDistributor<T> {
     /**
-     * Send to the player specified
+     * Sends a client-bound payload to the specified player.
      * <br/>
      * {@link #with(Object)} Player
      */
     public static final PacketDistributor<ServerPlayer> PLAYER = new PacketDistributor<>(PacketDistributor::playerConsumer, PacketFlow.CLIENTBOUND);
+
     /**
-     * Send to everyone in the dimension specified
+     * Sends a client-bound payload to everyone in the specified dimension.
      * <br/>
      * {@link #with(Object)} DimensionType
      */
     public static final PacketDistributor<ResourceKey<Level>> DIMENSION = new PacketDistributor<>(PacketDistributor::playerListDimConsumer, PacketFlow.CLIENTBOUND);
+
     /**
-     * Send to everyone near the {@link TargetPoint} specified
+     * Sends a client-bound payload to everyone near the specified {@link TargetPoint}.
      * <br/>
      * {@link #with(Object)} TargetPoint
      */
     public static final PacketDistributor<TargetPoint> NEAR = new PacketDistributor<>(PacketDistributor::playerListPointConsumer, PacketFlow.CLIENTBOUND);
+
     /**
-     * Send to everyone
-     * <br/>
-     * {@link #noArg()}
+     * Sends a client-bound payload to all players connected to the server.
      */
-    public static final PacketDistributor<Void> ALL = new PacketDistributor<>(PacketDistributor::playerListAll, PacketFlow.CLIENTBOUND);
+    public static final NoArgDistributor ALL = new NoArgDistributor(PacketDistributor::playerListAll, PacketFlow.CLIENTBOUND);
+
     /**
-     * Send to the server (CLIENT to SERVER)
-     * <br/>
-     * {@link #noArg()}
+     * Sends a server-bound payload to the server.
      */
-    public static final PacketDistributor<Void> SERVER = new PacketDistributor<>(PacketDistributor::clientToServer, PacketFlow.SERVERBOUND);
+    public static final NoArgDistributor SERVER = new NoArgDistributor(PacketDistributor::clientToServer, PacketFlow.SERVERBOUND);
+
     /**
-     * Send to all tracking the Entity
+     * Sends a client-bound payload to all players tracking the entity.
      * <br/>
      * {@link #with(Object)} Entity
      */
     public static final PacketDistributor<Entity> TRACKING_ENTITY = new PacketDistributor<>(PacketDistributor::trackingEntity, PacketFlow.CLIENTBOUND);
+
     /**
-     * Send to all tracking the Entity and Player
+     * Sends a client-bound payload to all players tracking the entity, and the entity if it is a player.
      * <br/>
      * {@link #with(Object)} Entity
      */
     public static final PacketDistributor<Entity> TRACKING_ENTITY_AND_SELF = new PacketDistributor<>(PacketDistributor::trackingEntityAndSelf, PacketFlow.CLIENTBOUND);
+
     /**
-     * Send to all tracking the Chunk
+     * Sends a client-bound payload to all players tracking the chunk
      * <br/>
      * {@link #with(Object)} Chunk
      */
@@ -251,6 +254,7 @@ public class PacketDistributor<T> {
         };
     }
 
+    @SuppressWarnings("resource")
     private Consumer<Packet<?>> trackingChunk(final LevelChunk chunkPos) {
         return p -> {
             ((ServerChunkCache) chunkPos.getLevel().getChunkSource()).chunkMap.getPlayers(chunkPos.getPos(), false).forEach(e -> e.connection.send(p));
@@ -259,5 +263,19 @@ public class PacketDistributor<T> {
 
     private MinecraftServer getServer() {
         return ServerLifecycleHooks.getCurrentServer();
+    }
+
+    public static class NoArgDistributor extends PacketDistributor<Void> {
+        public NoArgDistributor(Function<PacketDistributor<Void>, Consumer<Packet<?>>> functor, PacketFlow flow) {
+            super(functor, flow);
+        }
+
+        public void send(Packet<?> packet) {
+            noArg().send(packet);
+        }
+
+        public void send(CustomPacketPayload... payloads) {
+            noArg().send(payloads);
+        }
     }
 }

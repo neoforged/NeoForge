@@ -1,21 +1,5 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -234,6 +_,7 @@
-     private final MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
-     private final FutureChain chatMessageChain;
-     private boolean waitingForSwitchToConfig;
-+    private net.neoforged.neoforge.network.connection.ConnectionType connectionType;
- 
-     public ServerGamePacketListenerImpl(MinecraftServer p_9770_, Connection p_9771_, ServerPlayer p_9772_, CommonListenerCookie p_301978_) {
-         super(p_9770_, p_9771_, p_301978_);
-@@ -243,6 +_,7 @@
-         p_9772_.getTextFilter().join();
-         this.signedMessageDecoder = SignedMessageChain.Decoder.unsigned(p_9772_.getUUID(), p_9770_::enforceSecureProfile);
-         this.chatMessageChain = new FutureChain(p_9770_);
-+        this.connectionType = p_301978_.connectionType();
-     }
- 
-     @Override
 @@ -438,9 +_,11 @@
                  }
  
@@ -134,42 +118,11 @@
                  );
          }
      }
-@@ -1826,7 +_,27 @@
+@@ -1827,6 +_,7 @@
+ 
+     @Override
+     public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {
++        super.handleCustomPayload(p_333887_); // Neo: Call super to invoke modded payload handling.
      }
  
      @Override
--    public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {
-+    public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
-+        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
-+            return;
-+        }
-+
-+        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
-+            return;
-+        }
-+
-+        if (this.connectionType.isVanilla()) {
-+            super.handleCustomPayload(p_294276_);
-+            return;
-+        }
-+
-+        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
-+                this, p_294276_
-+        );
-     }
- 
-     @Override
-@@ -1837,5 +_,9 @@
-     @FunctionalInterface
-     interface EntityInteraction {
-         InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
-+    }
-+
-+    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
-+        return connectionType;
-     }
- }

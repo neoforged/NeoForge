@@ -14,31 +14,31 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
-import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import org.jetbrains.annotations.ApiStatus;
 
-@Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
+@Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ConfigurationInitialization {
     /**
      * Method called to add configuration tasks that should run before all others,
      * and most importantly before vanilla's own {@link SynchronizeRegistriesTask}.
      */
     public static void configureEarlyTasks(ServerConfigurationPacketListener listener, Consumer<ConfigurationTask> tasks) {
-        if (listener.isConnected(FrozenRegistrySyncStartPayload.TYPE) &&
-                listener.isConnected(FrozenRegistryPayload.TYPE) &&
-                listener.isConnected(FrozenRegistrySyncCompletedPayload.TYPE)) {
+        if (listener.hasChannel(FrozenRegistrySyncStartPayload.TYPE) &&
+                listener.hasChannel(FrozenRegistryPayload.TYPE) &&
+                listener.hasChannel(FrozenRegistrySyncCompletedPayload.TYPE)) {
             tasks.accept(new SyncRegistries());
         }
     }
 
     @SubscribeEvent
-    private static void configureModdedClient(OnGameConfigurationEvent event) {
-        if (event.getListener().isConnected(ConfigFilePayload.TYPE)) {
+    private static void configureModdedClient(RegisterConfigurationTasksEvent event) {
+        if (event.getListener().hasChannel(ConfigFilePayload.TYPE)) {
             event.register(new SyncConfig(event.getListener()));
         }
 

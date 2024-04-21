@@ -14,10 +14,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A filter for vanilla impl packets.
+ * 
+ * TODO: Make non-internal when mods are able to register custom filters.
  */
+@ApiStatus.Internal
 public abstract class VanillaPacketFilter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
     protected final Map<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> handlers;
 

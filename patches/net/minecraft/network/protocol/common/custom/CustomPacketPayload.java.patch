@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
 +++ b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
-@@ -22,10 +_,11 @@
+@@ -22,20 +_,25 @@
      }
  
      static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
@@ -9,16 +9,16 @@
      ) {
          final Map<ResourceLocation, StreamCodec<? super B, ? extends CustomPacketPayload>> map = p_320495_.stream()
              .collect(Collectors.toUnmodifiableMap(p_320895_ -> p_320895_.type().id(), CustomPacketPayload.TypeAndCodec::codec));
-+        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().storeVanillaCustomPayloads(protocol, packetFlow, map.keySet());
          return new StreamCodec<B, CustomPacketPayload>() {
              private StreamCodec<? super B, ? extends CustomPacketPayload> findCodec(ResourceLocation p_320938_) {
                  StreamCodec<? super B, ? extends CustomPacketPayload> streamcodec = map.get(p_320938_);
-@@ -34,8 +_,12 @@
++                if (streamcodec == null) streamcodec = net.neoforged.neoforge.network.registration.NetworkRegistry.getCodec(p_320938_, protocol, packetFlow);
+                 return streamcodec != null ? streamcodec : p_319839_.create(p_320938_);
+             }
  
              private <T extends CustomPacketPayload> void writeCap(B p_320565_, CustomPacketPayload.Type<T> p_320917_, CustomPacketPayload p_320112_) {
                  p_320565_.writeResourceLocation(p_320917_.id());
--                StreamCodec<B, T> streamcodec = (StreamCodec<B, T>)this.findCodec(p_320917_.id);
-+                StreamCodec<B, T> streamcodec = (StreamCodec<B, T>)net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getCodec(p_320917_.id(), p_320565_, protocol, map, true);
+                 StreamCodec<B, T> streamcodec = (StreamCodec<B, T>)this.findCodec(p_320917_.id);
 +                try {
                  streamcodec.encode(p_320565_, (T)p_320112_);
 +                } catch (RuntimeException e) {
@@ -27,14 +27,13 @@
              }
  
              public void encode(B p_320490_, CustomPacketPayload p_319776_) {
-@@ -44,7 +_,12 @@
+@@ -44,7 +_,11 @@
  
              public CustomPacketPayload decode(B p_320227_) {
                  ResourceLocation resourcelocation = p_320227_.readResourceLocation();
 -                return (CustomPacketPayload)this.findCodec(resourcelocation).decode(p_320227_);
-+                var codec = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getCodec(resourcelocation, p_320227_, protocol, map, false);
 +                try {
-+                return codec != null ? codec.decode(p_320227_) : p_319839_.create(resourcelocation).decode(p_320227_);
++                    return (CustomPacketPayload)this.findCodec(resourcelocation).decode(p_320227_);
 +                } catch (RuntimeException e) {
 +                    throw new RuntimeException("Failed decoding custom payload " + resourcelocation + ": " + e, e); // Make it easier to debug which mod payload failed to be decoded
 +                }

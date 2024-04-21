@@ -79,6 +79,6 @@ public abstract class CommonModLoader {
         ModLoader.dispatchParallelEvent("Process IMC", syncExecutor, parallelExecutor, periodicTask, InterModProcessEvent::new);
         ModLoader.dispatchParallelEvent("Complete loading of %d mods".formatted(ModList.get().size()), syncExecutor, parallelExecutor, periodicTask, FMLLoadCompleteEvent::new);
 
-        ModLoader.runInitTask("Network registry lock", syncExecutor, periodicTask, NetworkRegistry.getInstance()::setup);
+        ModLoader.runInitTask("Network registry lock", syncExecutor, periodicTask, NetworkRegistry::setup);
     }
 }
