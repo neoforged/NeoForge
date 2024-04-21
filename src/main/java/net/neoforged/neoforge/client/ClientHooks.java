@@ -280,15 +280,15 @@ public class ClientHooks {
     }
 
     public static void onTextureAtlasStitched(TextureAtlas atlas) {
-        ModLoader.get().postEvent(new TextureAtlasStitchedEvent(atlas));
+        ModLoader.postEvent(new TextureAtlasStitchedEvent(atlas));
     }
 
     public static void onBlockColorsInit(BlockColors blockColors) {
-        ModLoader.get().postEvent(new RegisterColorHandlersEvent.Block(blockColors));
+        ModLoader.postEvent(new RegisterColorHandlersEvent.Block(blockColors));
     }
 
     public static void onItemColorsInit(ItemColors itemColors, BlockColors blockColors) {
-        ModLoader.get().postEvent(new RegisterColorHandlersEvent.Item(itemColors, blockColors));
+        ModLoader.postEvent(new RegisterColorHandlersEvent.Item(itemColors, blockColors));
     }
 
     public static Model getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot slot, HumanoidModel<?> _default) {
@@ -439,11 +439,11 @@ public class ClientHooks {
             LOGGER.warn("Failed to retrieve texture '{}' from atlas '{}'", material.texture(), material.atlasLocation(), new Throwable());
             return stitchResult.missing();
         };
-        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, textureGetter, modelBakery));
+        ModLoader.postEvent(new ModelEvent.ModifyBakingResult(models, textureGetter, modelBakery));
     }
 
     public static void onModelBake(ModelManager modelManager, Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
-        ModLoader.get().postEvent(new ModelEvent.BakingCompleted(modelManager, Collections.unmodifiableMap(models), modelBakery));
+        ModLoader.postEvent(new ModelEvent.BakingCompleted(modelManager, Collections.unmodifiableMap(models), modelBakery));
     }
 
     public static BakedModel handleCameraTransforms(PoseStack poseStack, BakedModel model, ItemDisplayContext cameraTransformType, boolean applyLeftHandTransform) {
@@ -703,15 +703,15 @@ public class ClientHooks {
     }
 
     public static void onRegisterParticleProviders(ParticleEngine particleEngine) {
-        ModLoader.get().postEvent(new RegisterParticleProvidersEvent(particleEngine));
+        ModLoader.postEvent(new RegisterParticleProvidersEvent(particleEngine));
     }
 
     public static void onRegisterKeyMappings(Options options) {
-        ModLoader.get().postEvent(new RegisterKeyMappingsEvent(options));
+        ModLoader.postEvent(new RegisterKeyMappingsEvent(options));
     }
 
     public static void onRegisterAdditionalModels(Set<ResourceLocation> additionalModels) {
-        ModLoader.get().postEvent(new ModelEvent.RegisterAdditional(additionalModels));
+        ModLoader.postEvent(new ModelEvent.RegisterAdditional(additionalModels));
     }
 
     @Nullable
@@ -906,7 +906,7 @@ public class ClientHooks {
 
     @ApiStatus.Internal
     public static void registerSpriteSourceTypes() {
-        ModLoader.get().postEvent(new RegisterSpriteSourceTypesEvent(SPRITE_SOURCE_TYPES_MAP));
+        ModLoader.postEvent(new RegisterSpriteSourceTypesEvent(SPRITE_SOURCE_TYPES_MAP));
     }
 
     @ApiStatus.Internal
@@ -989,9 +989,9 @@ public class ClientHooks {
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
-        ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
-        ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
-        ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());
+        ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
+        ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
+        ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         ClientHooks.onRegisterKeyMappings(mc.options);

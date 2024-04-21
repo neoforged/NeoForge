@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:ender_chest",
+    {
+      "id": "#forge:chests/ender",
+      "required": false
+    }
+  ]
+}

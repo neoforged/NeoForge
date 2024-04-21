@@ -62,7 +62,7 @@ public class CustomFluidContainerTest {
     }
 
     private void registerCaps(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidHandlerItemStackSimple(SIMPLE_FLUID_CONTENT.get(), stack, FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidHandlerItemStackSimple(SIMPLE_FLUID_CONTENT, stack, FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
     }
 
     /**

@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:melon_seeds",
+    {
+      "id": "#forge:seeds/melon",
+      "required": false
+    }
+  ]
+}

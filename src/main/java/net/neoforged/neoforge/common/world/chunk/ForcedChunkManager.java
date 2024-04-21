@@ -53,7 +53,7 @@ public class ForcedChunkManager {
         initialised = true;
 
         final Map<ResourceLocation, TicketController> controllers = new HashMap<>();
-        ModLoader.get().postEvent(new RegisterTicketControllersEvent(controller -> {
+        ModLoader.postEvent(new RegisterTicketControllersEvent(controller -> {
             if (controllers.containsKey(controller.id())) {
                 throw new IllegalArgumentException("Attempted to register two controllers with the same ID " + controller.id());
             }

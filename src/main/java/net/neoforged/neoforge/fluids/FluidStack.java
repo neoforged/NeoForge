@@ -14,14 +14,11 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -40,6 +37,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -50,7 +48,7 @@ import org.slf4j.Logger;
  *
  * <p>Most methods in this class are adapted from {@link ItemStack}.
  */
-public final class FluidStack implements DataComponentHolder {
+public final class FluidStack implements MutableDataComponentHolder {
     private static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = BuiltInRegistries.FLUID.holderByNameCodec().validate(holder -> {
         return holder.is(Fluids.EMPTY.builtInRegistryHolder()) ? DataResult.error(() -> {
             return "Fluid must not be minecraft:empty";
@@ -388,31 +386,16 @@ public final class FluidStack implements DataComponentHolder {
      * Sets a data component.
      */
     @Nullable
+    @Override
     public <T> T set(DataComponentType<? super T> type, @Nullable T component) {
         return this.components.set(type, component);
-    }
-
-    /**
-     * Updates a data component if it exists, using an additional {@code updateContext}.
-     */
-    @Nullable
-    public <T, U> T update(DataComponentType<T> type, T component, U updateContext, BiFunction<T, U, T> updater) {
-        return this.set(type, updater.apply(this.getOrDefault(type, component), updateContext));
-    }
-
-    /**
-     * Updates a data component if it exists.
-     */
-    @Nullable
-    public <T> T update(DataComponentType<T> type, T component, UnaryOperator<T> updater) {
-        T t = this.getOrDefault(type, component);
-        return this.set(type, updater.apply(t));
     }
 
     /**
      * Removes a data component.
      */
     @Nullable
+    @Override
     public <T> T remove(DataComponentType<? extends T> type) {
         return this.components.remove(type);
     }
@@ -420,6 +403,7 @@ public final class FluidStack implements DataComponentHolder {
     /**
      * Applies a set of component changes to this stack.
      */
+    @Override
     public void applyComponents(DataComponentPatch patch) {
         this.components.applyPatch(patch);
     }
@@ -427,6 +411,7 @@ public final class FluidStack implements DataComponentHolder {
     /**
      * Applies a set of component changes to this stack.
      */
+    @Override
     public void applyComponents(DataComponentMap components) {
         this.components.setAll(components);
     }

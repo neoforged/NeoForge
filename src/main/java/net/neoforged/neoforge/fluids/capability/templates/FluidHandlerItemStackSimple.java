@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
+import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -18,7 +19,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
  * <p>This implementation only allows item containers to be fully filled or emptied, similar to vanilla buckets.
  */
 public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
-    protected final DataComponentType<SimpleFluidContent> componentType;
+    protected final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected ItemStack container;
     protected int capacity;
 
@@ -27,7 +28,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
      * @param container     The container itemStack, data is stored on it directly as NBT.
      * @param capacity      The maximum capacity of this fluid tank.
      */
-    public FluidHandlerItemStackSimple(DataComponentType<SimpleFluidContent> componentType, ItemStack container, int capacity) {
+    public FluidHandlerItemStackSimple(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity) {
         this.componentType = componentType;
         this.container = container;
         this.capacity = capacity;
@@ -141,7 +142,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
      * Destroys the container item when it's emptied.
      */
     public static class Consumable extends FluidHandlerItemStackSimple {
-        public Consumable(DataComponentType<SimpleFluidContent> componentType, ItemStack container, int capacity) {
+        public Consumable(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity) {
             super(componentType, container, capacity);
         }
 
@@ -158,7 +159,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
     public static class SwapEmpty extends FluidHandlerItemStackSimple {
         protected final ItemStack emptyContainer;
 
-        public SwapEmpty(DataComponentType<SimpleFluidContent> componentType, ItemStack container, ItemStack emptyContainer, int capacity) {
+        public SwapEmpty(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, ItemStack emptyContainer, int capacity) {
             super(componentType, container, capacity);
             this.emptyContainer = emptyContainer;
         }
