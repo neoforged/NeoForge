@@ -11,11 +11,13 @@ import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
 /**
  * Protocol utilities for communicating over Dinnerbone's protocol.
  */
+@ApiStatus.Internal
 public final class DinnerboneProtocolUtils {
     public static final Logger LOGGER = LogUtils.getLogger();
 

@@ -6,21 +6,15 @@
 package net.neoforged.neoforge.network.handlers;
 
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class ServerPayloadHandler {
-    private static final ServerPayloadHandler INSTANCE = new ServerPayloadHandler();
-
-    public static ServerPayloadHandler getInstance() {
-        return INSTANCE;
-    }
-
+public final class ServerPayloadHandler {
     private ServerPayloadHandler() {}
 
-    public void handle(FrozenRegistrySyncCompletedPayload payload, ConfigurationPayloadContext context) {
-        context.taskCompletedHandler().onTaskCompleted(SyncRegistries.TYPE);
+    public static void handle(FrozenRegistrySyncCompletedPayload payload, IPayloadContext context) {
+        context.finishCurrentTask(SyncRegistries.TYPE);
     }
 }

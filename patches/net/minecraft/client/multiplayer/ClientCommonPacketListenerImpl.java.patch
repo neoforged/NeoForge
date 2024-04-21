@@ -1,34 +1,57 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -118,17 +_,17 @@
-     public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
-         CustomPacketPayload custompacketpayload = p_295727_.payload();
-         if (!(custompacketpayload instanceof DiscardedPayload)) {
--            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-             if (custompacketpayload instanceof BrandPayload brandpayload) {
-+                PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-                 this.serverBrand = brandpayload.brand();
-                 this.telemetryManager.onServerBrandReceived(brandpayload.brand());
-             } else {
--                this.handleCustomPayload(custompacketpayload);
-+                this.handleCustomPayload(p_295727_, custompacketpayload);
-             }
-         }
-     }
+@@ -76,6 +_,10 @@
+     protected final boolean strictErrorHandling;
+     private final List<ClientCommonPacketListenerImpl.DeferredPacket> deferredPackets = new ArrayList<>();
+     protected final Map<ResourceLocation, byte[]> serverCookies;
++    /**
++     * Holds the current connection type, based on the types of payloads that have been received so far.
++     */
++    protected net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.VANILLA;
  
--    protected abstract void handleCustomPayload(CustomPacketPayload p_295776_);
-+    protected abstract void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295776_);
+     protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
+         this.minecraft = p_295454_;
+@@ -86,6 +_,8 @@
+         this.postDisconnectScreen = p_294647_.postDisconnectScreen();
+         this.serverCookies = p_294647_.serverCookies();
+         this.strictErrorHandling = p_294647_.strictErrorHandling();
++        // Neo: Set the connection type based on the cookie from the previous phase.
++        this.connectionType = p_294647_.connectionType();
+     }
  
      @Override
-     public void handleResourcePackPush(ClientboundResourcePackPushPacket p_314606_) {
-@@ -228,6 +_,10 @@
-     }
+@@ -116,6 +_,25 @@
  
-     public void send(Packet<?> p_295097_) {
-+        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295097_, this)) {
+     @Override
+     public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
++        // Neo: Unconditionally handle register/unregister payloads and update the connection type accordingly.
++        if (p_295727_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this.getConnection(), minecraftRegisterPayload.newChannels());
 +            return;
 +        }
 +
++        if (p_295727_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this.getConnection(), minecraftUnregisterPayload.forgottenChannels());
++            return;
++        }
++
++        // Neo: Handle modded payloads on modded connections. Vanilla payloads do not get sent to the modded handling pass.
++        if (this.connectionType.isNotVanilla() && !"minecraft".equals(p_295727_.payload().type().id().getNamespace())) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.handleModdedPayload(this, p_295727_);
++            return;
++        }
++
+         CustomPacketPayload custompacketpayload = p_295727_.payload();
+         if (!(custompacketpayload instanceof DiscardedPayload)) {
+             PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
+@@ -228,6 +_,8 @@
+     }
+ 
+     public void send(Packet<?> p_295097_) {
++        // Neo: Validate modded payloads before sending.
++        net.neoforged.neoforge.network.registration.NetworkRegistry.checkPacket(p_295097_, this);
          this.connection.send(p_295097_);
      }
  

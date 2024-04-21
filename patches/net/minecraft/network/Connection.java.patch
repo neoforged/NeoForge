@@ -46,14 +46,16 @@
              this.packetListener = p_320940_;
              this.disconnectListener = null;
              UnconfiguredPipelineHandler.InboundConfigurationTask unconfiguredpipelinehandler$inboundconfigurationtask = UnconfiguredPipelineHandler.setupInboundProtocol(
-@@ -246,7 +_,10 @@
+@@ -246,7 +_,12 @@
              if (bundlerinfo != null) {
                  PacketBundleUnpacker packetbundleunpacker = new PacketBundleUnpacker(bundlerinfo);
                  unconfiguredpipelinehandler$outboundconfigurationtask = unconfiguredpipelinehandler$outboundconfigurationtask.andThen(
 -                    p_319516_ -> p_319516_.pipeline().addAfter("encoder", "unbundler", packetbundleunpacker)
 +                    p_319516_ -> {
 +                        p_319516_.pipeline().addAfter("encoder", "unbundler", packetbundleunpacker);
-+                        net.neoforged.neoforge.network.filters.NetworkFilters.injectIfNecessary(this); // Neo: our handlers must be between the encoder and the unbundler, so re-inject them
++                        // Neo: our handlers must be between the encoder and the unbundler, so re-inject them
++                        // Note, this call must be inside the .andThen lambda, or it will actually run before the unbundler gets added.
++                        net.neoforged.neoforge.network.filters.NetworkFilters.injectIfNecessary(this);
 +                    }
                  );
              }

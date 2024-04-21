@@ -84,40 +84,27 @@ public interface IServerCommonPacketListenerExtension {
     ReentrantBlockableEventLoop<?> getMainThreadEventLoop();
 
     /**
-     * {@return true if the connection is to a vanilla client}
-     * 
-     * @deprecated Use {@link #getConnectionType()} instead
-     */
-    @Deprecated(forRemoval = true)
-    default boolean isVanillaConnection() {
-        return getConnectionType().isVanilla();
-    }
-
-    /**
-     * {@return true if the custom payload type with the given id is usable by this connection}
+     * Checks if the connection has negotiated and opened a channel for the payload.
      *
      * @param payloadId The payload id to check
+     * @returns true if a payload with this id may be sent over this connection.
      */
-    default boolean isConnected(final ResourceLocation payloadId) {
-        return NetworkRegistry.getInstance().isConnected(self(), payloadId);
+    default boolean hasChannel(final ResourceLocation payloadId) {
+        return NetworkRegistry.hasChannel(self(), payloadId);
     }
 
     /**
-     * {@return true if the custom payload type is usable by this connection}
-     *
-     * @param type The payload to check
+     * @see {@link #hasChannel(ResourceLocation)}
      */
-    default boolean isConnected(final CustomPacketPayload.Type<?> type) {
-        return isConnected(type.id());
+    default boolean hasChannel(final CustomPacketPayload.Type<?> type) {
+        return hasChannel(type.id());
     }
 
     /**
-     * {@return true if the custom payload is usable by this connection}
-     *
-     * @param payload The payload to check
+     * @see {@link #hasChannel(ResourceLocation)}
      */
-    default boolean isConnected(final CustomPacketPayload payload) {
-        return isConnected(payload.type());
+    default boolean hasChannel(final CustomPacketPayload payload) {
+        return hasChannel(payload.type());
     }
 
     /**

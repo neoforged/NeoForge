@@ -17,7 +17,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public record KnownRegistryDataMapsReplyPayload(
         Map<ResourceKey<? extends Registry<?>>, Collection<ResourceLocation>> dataMaps) implements CustomPacketPayload {
     public static final Type<KnownRegistryDataMapsReplyPayload> TYPE = new Type<>(new ResourceLocation("neoforge:known_registry_data_maps_reply"));

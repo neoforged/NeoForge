@@ -1,19 +1,62 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -140,7 +_,12 @@
+@@ -41,6 +_,10 @@
+     private boolean closed = false;
+     private int latency;
+     private volatile boolean suspendFlushingOnServerThread = false;
++    /**
++     * Holds the current connection type, based on the types of payloads that have been received so far.
++     */
++    protected net.neoforged.neoforge.network.connection.ConnectionType connectionType;
+ 
+     public ServerCommonPacketListenerImpl(MinecraftServer p_295057_, Connection p_294822_, CommonListenerCookie p_301980_) {
+         this.server = p_295057_;
+@@ -48,6 +_,8 @@
+         this.keepAliveTime = Util.getMillis();
+         this.latency = p_301980_.latency();
+         this.transferred = p_301980_.transferred();
++        // Neo: Set the connection type based on the cookie from the previous phase.
++        this.connectionType = p_301980_.connectionType();
+     }
+ 
+     private void close() {
+@@ -82,6 +_,24 @@
+ 
+     @Override
+     public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
++        // Neo: Unconditionally handle register/unregister payloads and update the connection type accordingly.
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this.getConnection(), minecraftRegisterPayload.newChannels());
++            return;
++        }
++
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this.getConnection(), minecraftUnregisterPayload.forgottenChannels());
++            return;
++        }
++
++        // Neo: Handle modded payloads on modded connections. Vanilla payloads do not get sent to the modded handling pass.
++        if (this.connectionType.isNotVanilla() && !"minecraft".equals(p_294276_.payload().type().id().getNamespace())) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.handleModdedPayload(this, p_294276_);
++            return;
++        }
+     }
+ 
+     @Override
+@@ -140,7 +_,10 @@
          this.send(p_294278_, null);
      }
  
 +    @Override
      public void send(Packet<?> p_295099_, @Nullable PacketSendListener p_296321_) {
-+        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295099_, this)) {
-+            return;
-+        }
++        net.neoforged.neoforge.network.registration.NetworkRegistry.checkPacket(p_295099_, this);
 +
          if (p_295099_.isTerminal()) {
              this.close();
          }
-@@ -178,7 +_,36 @@
+@@ -178,7 +_,41 @@
          return this.latency;
      }
  
@@ -48,5 +91,10 @@
 +    @Override
 +    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
 +        return server;
++    }
++
++    @Override
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return connectionType;
      }
  }
