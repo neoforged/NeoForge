@@ -42,7 +42,7 @@ import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingWarning;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -116,7 +116,7 @@ public class ResourcePackLoader {
                             MOD_PACK_SELECTION_CONFIG);
 
                     if (modPack == null) {
-                        ModLoader.addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
+                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedMod(mod));
                         continue;
                     }
                 } else {
@@ -134,7 +134,7 @@ public class ResourcePackLoader {
                 }
             } catch (IOException exception) {
                 LOGGER.error("Failed to read pack.mcmeta file of mod {}", mod.getModId(), exception);
-                ModLoader.addWarning(new ModLoadingWarning(mod, "fml.modloading.brokenresources", e.getKey()));
+                ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedMod(mod).withCause(exception));
             }
         }
 
