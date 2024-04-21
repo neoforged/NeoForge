@@ -125,6 +125,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.BRICKS, "Bricks");
         add(Tags.Items.BRICKS_NORMAL, "Normal Bricks");
         add(Tags.Items.BRICKS_NETHER, "Nether Bricks");
+        add(Tags.Items.BUCKETS, "Buckets");
         add(Tags.Items.BUDDING_BLOCKS, "Budding Blocks");
         add(Tags.Items.BUDS, "Buds");
         add(Tags.Items.CHAINS, "Chains");

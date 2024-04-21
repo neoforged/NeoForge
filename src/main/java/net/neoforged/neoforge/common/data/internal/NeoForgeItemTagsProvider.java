@@ -38,6 +38,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.BRICKS).addTags(Tags.Items.BRICKS_NORMAL, Tags.Items.BRICKS_NETHER);
         tag(Tags.Items.BRICKS_NORMAL).add(Items.BRICK);
         tag(Tags.Items.BRICKS_NETHER).add(Items.NETHER_BRICK);
+        tag(Tags.Items.BUCKETS).add(Items.BUCKET, Items.WATER_BUCKET, Items.LAVA_BUCKET, Items.MILK_BUCKET, Items.POWDER_SNOW_BUCKET, Items.AXOLOTL_BUCKET, Items.COD_BUCKET, Items.PUFFERFISH_BUCKET, Items.TADPOLE_BUCKET, Items.TROPICAL_FISH_BUCKET, Items.SALMON_BUCKET);
         copy(Tags.Blocks.BUDDING_BLOCKS, Tags.Items.BUDDING_BLOCKS);
         copy(Tags.Blocks.BUDS, Tags.Items.BUDS);
         copy(Tags.Blocks.CHAINS, Tags.Items.CHAINS);
@@ -90,9 +91,9 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.FOODS_BERRIES).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
         tag(Tags.Items.FOODS_BREADS).add(Items.BREAD);
         tag(Tags.Items.FOODS_COOKIES).add(Items.COOKIE);
-        tag(Tags.Items.FOODS_RAW_MEATS).add(Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
+        tag(Tags.Items.FOODS_RAW_MEATS).add(Items.BEEF, Items.PORKCHOP, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
         tag(Tags.Items.FOODS_RAW_FISHES).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
-        tag(Tags.Items.FOODS_COOKED_MEATS).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
+        tag(Tags.Items.FOODS_COOKED_MEATS).add(Items.COOKED_BEEF, Items.COOKED_PORKCHOP, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
         tag(Tags.Items.FOODS_COOKED_FISHES).add(Items.COOKED_COD, Items.COOKED_SALMON);
         tag(Tags.Items.FOODS_SOUPS).add(Items.BEETROOT_SOUP, Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.SUSPICIOUS_STEW);
         tag(Tags.Items.FOODS_CANDIES);

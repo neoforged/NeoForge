@@ -267,6 +267,7 @@ public class Tags {
         public static final TagKey<Item> BRICKS = tag("bricks");
         public static final TagKey<Item> BRICKS_NORMAL = tag("bricks/normal");
         public static final TagKey<Item> BRICKS_NETHER = tag("bricks/nether");
+        public static final TagKey<Item> BUCKETS = tag("buckets");
         /**
          * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
          */
