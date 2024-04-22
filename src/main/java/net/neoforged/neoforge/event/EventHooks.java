@@ -160,6 +160,7 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -812,6 +813,25 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
     }
 
+    /**
+     * Fires {@link EntityTickEvent.Pre}. Called from the head of {@link LivingEntity#tick()}.
+     * 
+     * @param entity The entity being ticked
+     * @return The event
+     */
+    public static EntityTickEvent.Pre fireEntityTickPre(Entity entity) {
+        return NeoForge.EVENT_BUS.post(new EntityTickEvent.Pre(entity));
+    }
+
+    /**
+     * Fires {@link EntityTickEvent.Post}. Called from the tail of {@link LivingEntity#tick()}.
+     * 
+     * @param entity The entity being ticked
+     */
+    public static void fireEntityTickPost(Entity entity) {
+        NeoForge.EVENT_BUS.post(new EntityTickEvent.Post(entity));
+    }
+    
     /**
      * Fires {@link PlayerTickEvent.Pre}. Called from the head of {@link Player#tick()}.
      * 

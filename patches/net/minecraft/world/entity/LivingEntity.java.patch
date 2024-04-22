@@ -430,14 +430,6 @@
                  d2 = 0.0;
              }
  
-@@ -2334,6 +_,7 @@
- 
-     @Override
-     public void tick() {
-+        if (net.neoforged.neoforge.common.CommonHooks.onLivingTick(this)) return;
-         super.tick();
-         this.updatingUsingItem();
-         this.updateSwimAmount();
 @@ -2483,6 +_,7 @@
              };
              ItemStack itemstack1 = this.getItemBySlot(equipmentslot);
