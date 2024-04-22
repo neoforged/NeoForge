@@ -35,26 +35,27 @@ public final class PacketDistributor {
     /**
      * Send the given payload(s) to the server
      */
-    public static void sendToServer(CustomPacketPayload... payloads) {
+    public static void sendToServer(CustomPacketPayload payload, CustomPacketPayload... payloads) {
         Preconditions.checkState(FMLEnvironment.dist.isClient(), "Cannot send serverbound payloads on the server");
         ClientPacketListener listener = Objects.requireNonNull(Minecraft.getInstance().getConnection());
-        for (CustomPacketPayload payload : payloads) {
-            listener.send(payload);
+        listener.send(payload);
+        for (CustomPacketPayload otherPayload : payloads) {
+            listener.send(otherPayload);
         }
     }
 
     /**
      * Send the given payload(s) to the given player
      */
-    public static void sendToPlayer(ServerPlayer player, CustomPacketPayload... payloads) {
-        player.connection.send(makeClientboundPacket(payloads));
+    public static void sendToPlayer(ServerPlayer player, CustomPacketPayload payload, CustomPacketPayload... payloads) {
+        player.connection.send(makeClientboundPacket(payload, payloads));
     }
 
     /**
      * Send the given payload(s) to all players in the given dimension
      */
-    public static void sendToPlayersInDimension(ServerLevel level, CustomPacketPayload... payloads) {
-        level.getServer().getPlayerList().broadcastAll(makeClientboundPacket(payloads), level.dimension());
+    public static void sendToPlayersInDimension(ServerLevel level, CustomPacketPayload payload, CustomPacketPayload... payloads) {
+        level.getServer().getPlayerList().broadcastAll(makeClientboundPacket(payload, payloads), level.dimension());
     }
 
     /**
@@ -68,25 +69,26 @@ public final class PacketDistributor {
             double y,
             double z,
             double radius,
+            CustomPacketPayload payload,
             CustomPacketPayload... payloads) {
-        Packet<?> packet = makeClientboundPacket(payloads);
+        Packet<?> packet = makeClientboundPacket(payload, payloads);
         level.getServer().getPlayerList().broadcast(excluded, x, y, z, radius, level.dimension(), packet);
     }
 
     /**
      * Send the given payload(s) to all players on the server
      */
-    public static void sendToAllPlayers(CustomPacketPayload... payloads) {
+    public static void sendToAllPlayers(CustomPacketPayload payload, CustomPacketPayload... payloads) {
         MinecraftServer server = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer(), "Cannot send clientbound payloads on the client");
-        server.getPlayerList().broadcastAll(makeClientboundPacket(payloads));
+        server.getPlayerList().broadcastAll(makeClientboundPacket(payload, payloads));
     }
 
     /**
      * Send the given payload(s) to all players tracking the given entity
      */
-    public static void sendToPlayersTrackingEntity(Entity entity, CustomPacketPayload... payloads) {
+    public static void sendToPlayersTrackingEntity(Entity entity, CustomPacketPayload payload, CustomPacketPayload... payloads) {
         if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
-            chunkCache.broadcast(entity, makeClientboundPacket(payloads));
+            chunkCache.broadcast(entity, makeClientboundPacket(payload, payloads));
         } else {
             throw new IllegalStateException("Cannot send clientbound payloads on the client");
         }
@@ -95,9 +97,9 @@ public final class PacketDistributor {
     /**
      * Send the given payload(s) to all players tracking the given entity and the entity itself if it is a player
      */
-    public static void sendToPlayersTrackingEntityAndSelf(Entity entity, CustomPacketPayload... payloads) {
+    public static void sendToPlayersTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload, CustomPacketPayload... payloads) {
         if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
-            chunkCache.broadcastAndSend(entity, makeClientboundPacket(payloads));
+            chunkCache.broadcastAndSend(entity, makeClientboundPacket(payload, payloads));
         } else {
             throw new IllegalStateException("Cannot send clientbound payloads on the client");
         }
@@ -106,24 +108,23 @@ public final class PacketDistributor {
     /**
      * Send the given payload(s) to all players tracking the chunk at the given position in the given level
      */
-    public static void sendToPlayersTrackingChunk(ServerLevel level, ChunkPos chunkPos, CustomPacketPayload... payloads) {
-        Packet<?> packet = makeClientboundPacket(payloads);
+    public static void sendToPlayersTrackingChunk(ServerLevel level, ChunkPos chunkPos, CustomPacketPayload payload, CustomPacketPayload... payloads) {
+        Packet<?> packet = makeClientboundPacket(payload, payloads);
         for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(chunkPos, false)) {
             player.connection.send(packet);
         }
     }
 
-    private static Packet<?> makeClientboundPacket(CustomPacketPayload... payloads) {
-        if (payloads.length > 1) {
+    private static Packet<?> makeClientboundPacket(CustomPacketPayload payload, CustomPacketPayload... payloads) {
+        if (payloads.length > 0) {
             final List<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>();
-            for (CustomPacketPayload payload : payloads) {
-                packets.add(new ClientboundCustomPayloadPacket(payload));
+            packets.add(new ClientboundCustomPayloadPacket(payload));
+            for (CustomPacketPayload otherPayload : payloads) {
+                packets.add(new ClientboundCustomPayloadPacket(otherPayload));
             }
             return new ClientboundBundlePacket(packets);
-        } else if (payloads.length == 1) {
-            return new ClientboundCustomPayloadPacket(payloads[0]);
         } else {
-            throw new IllegalArgumentException("Must provide at least one payload");
+            return new ClientboundCustomPayloadPacket(payload);
         }
     }
 }
