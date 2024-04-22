@@ -80,7 +80,7 @@ public class ClientModLoader extends CommonModLoader {
         // Don't load again on subsequent reloads
         if (loadingComplete) return;
         // If the mod loading state is invalid, skip further mod initialization
-        if (!ModLoader.isLoadingStateValid()) return;
+        if (ModLoader.hasErrors()) return;
 
         try {
             r.run();
