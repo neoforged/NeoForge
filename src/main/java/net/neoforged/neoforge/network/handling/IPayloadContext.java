@@ -10,7 +10,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
@@ -18,6 +17,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -26,34 +27,45 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface IPayloadContext {
     /**
+     * Retrieves the packet listener associated with this context.
+     * <p>
+     * For usability, this is typed to {@link ICommonPacketListener}, but can be downcast to the vanilla packet listeners if necessary.
+     */
+    ICommonPacketListener listener();
+
+    /**
+     * {@return the connection}
+     */
+    default Connection connection() {
+        return this.listener().getConnection();
+    }
+
+    /**
+     * Retrieves the player relevant to this payload, which has a different meaning based on the protocol and flow.
+     * <p>
+     * For server-bound play payloads, retrieves the sending player. This case can safely be cast to {@link ServerPlayer}.
+     * <p>
+     * For client-bound payloads, retrieves the client player.
+     * 
+     * @throws UnsupportedOperationException when called on the server during the configuration phase.
+     */
+    Player player();
+
+    /**
      * Sends the given payload back to the sender.
      *
      * @param payload The payload to send.
      */
-    void reply(CustomPacketPayload payload);
+    default void reply(CustomPacketPayload payload) {
+        this.listener().send(payload);
+    }
 
     /**
      * Disconnects the player from the network.
      */
-    void disconnect(Component reason);
-
-    /**
-     * Handles a packet using the current context.
-     * <p>
-     * Used to trigger vanilla handling when custom payloads may be transformed into a vanilla packet.
-     *
-     * @param packet The packet.
-     */
-    void handle(Packet<?> packet);
-
-    /**
-     * Handles a payload using the current context.
-     * <p>
-     * Used to handle sub-payloads if necessary.
-     *
-     * @param payload The payload.
-     */
-    void handle(CustomPacketPayload payload);
+    default void disconnect(Component reason) {
+        this.listener().disconnect(reason);
+    }
 
     /**
      * For handlers running on the network thread, submits the given task to be run on the main thread of the game.
@@ -73,6 +85,38 @@ public interface IPayloadContext {
     <T> CompletableFuture<T> enqueueWork(Supplier<T> task);
 
     /**
+     * {@return the flow of the received payload}
+     */
+    PacketFlow flow();
+
+    /**
+     * {@return the protocol of the connection}
+     */
+    default ConnectionProtocol protocol() {
+        return this.listener().protocol();
+    }
+
+    /**
+     * Handles a packet using the current context.
+     * <p>
+     * Used to trigger vanilla handling when custom payloads may be transformed into a vanilla packet.
+     *
+     * @param packet The packet.
+     */
+    default void handle(Packet<?> packet) {
+        NetworkRegistry.handlePacketUnchecked(packet, this.listener());
+    }
+
+    /**
+     * Handles a payload using the current context.
+     * <p>
+     * Used to handle sub-payloads if necessary.
+     *
+     * @param payload The payload.
+     */
+    void handle(CustomPacketPayload payload);
+
+    /**
      * Marks a {@link ConfigurationTask} as completed.
      *
      * @param type The type of task that was completed.
@@ -81,42 +125,9 @@ public interface IPayloadContext {
     void finishCurrentTask(ConfigurationTask.Type type);
 
     /**
-     * {@return the current inbound protocol info of the connection}
-     */
-    ProtocolInfo<?> protocolInfo();
-
-    /**
-     * {@return the flow of the packet}
-     */
-    default PacketFlow flow() {
-        return protocolInfo().flow();
-    }
-
-    /**
-     * {@return the protocol of the connection}
-     */
-    default ConnectionProtocol protocol() {
-        return protocolInfo().id();
-    }
-
-    /**
      * {@return the channel handler context}
      */
-    ChannelHandlerContext channelHandlerContext();
-
-    /**
-     * Retrieves the player relevant to this payload, which has a different meaning based on the protocol and flow.
-     * <p>
-     * For server-bound play payloads, retrieves the sending player. This case can safely be cast to {@link ServerPlayer}.
-     * <p>
-     * For client-bound payloads, retrieves the client player.
-     * 
-     * @throws UnsupportedOperationException when called on the server during the configuration phase.
-     */
-    Player player();
-
-    /**
-     * {@return the connection}
-     */
-    Connection connection();
+    default ChannelHandlerContext channelHandlerContext() {
+        return this.connection().channel().pipeline().lastContext();
+    }
 }

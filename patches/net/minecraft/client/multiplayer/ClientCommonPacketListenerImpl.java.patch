@@ -65,7 +65,7 @@
          LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
      }
  
-@@ -354,5 +_,15 @@
+@@ -354,5 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }
@@ -74,10 +74,5 @@
 +    @Override
 +    public Connection getConnection() {
 +        return connection;
-+    }
-+
-+    @Override
-+    public Minecraft getMinecraft() {
-+        return minecraft;
      }
  }
