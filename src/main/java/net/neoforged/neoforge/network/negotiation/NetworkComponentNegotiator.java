@@ -160,16 +160,9 @@ public class NetworkComponentNegotiator {
             }
         }
 
-        //If either side has no version set, fail
-        if (left.version().isEmpty() && right.version().isPresent()) {
-            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.%s.missing".formatted(requestingSide), right.version().get())));
-        }
-
-        //Check if both sides have the same version, or none set.
-        if (left.version().isPresent() && right.version().isPresent()) {
-            if (!left.version().get().equals(right.version().get())) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", left.version().get(), right.version().get())));
-            }
+        //Check if both sides have the same version.
+        if (!left.version().equals(right.version())) {
+            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", left.version(), right.version())));
         }
 
         //This happens when both the ranges are empty.

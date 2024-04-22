@@ -8,7 +8,7 @@
 +            public void unbundlePacket(Packet<?> bundlePacket, Consumer<Packet<?>> packetSender, io.netty.channel.ChannelHandlerContext context) {
 +                if (bundlePacket.type() == p_320816_) {
 +                    P p = (P)bundlePacket;
-+                    java.util.List<Packet<?>> packets = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().filterGameBundlePackets(context, p.subPackets());
++                    java.util.List<Packet<?>> packets = net.neoforged.neoforge.network.registration.NetworkRegistry.filterGameBundlePackets(context, p.subPackets());
 +                    if (packets.isEmpty()) {
 +                        return;
 +                    }

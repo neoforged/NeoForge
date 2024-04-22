@@ -104,7 +104,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ArmorMaterial;
@@ -126,7 +125,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -661,10 +660,8 @@ public class ClientHooks {
 
     public static boolean isNameplateInRenderDistance(Entity entity, double squareDistance) {
         if (entity instanceof LivingEntity) {
-            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
-            if (attribute != null) {
-                return !(squareDistance > (attribute.getValue() * attribute.getValue()));
-            }
+            double value = ((LivingEntity) entity).getAttributeValue(NeoForgeMod.NAMETAG_DISTANCE);
+            return !(squareDistance > value * value);
         }
         return !(squareDistance > 4096.0f);
     }
@@ -748,7 +745,7 @@ public class ClientHooks {
         return RenderTypeHelper.getEntityRenderType(chunkRenderType, cull);
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
     public static class ClientEvents {
         @Nullable
         private static ShaderInstance rendertypeEntityTranslucentUnlitShader;
