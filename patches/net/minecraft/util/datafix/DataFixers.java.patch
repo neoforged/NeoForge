@@ -1,0 +1,57 @@
+--- a/net/minecraft/util/datafix/DataFixers.java
++++ b/net/minecraft/util/datafix/DataFixers.java
+@@ -1280,10 +_,35 @@
+         Schema schema199 = p_14514_.addSchema(3800, SAME_NAMESPACED);
+         UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
+         p_14514_.addFixer(ItemRenameFix.create(schema199, "Rename scute item to turtle_scute", unaryoperator2));
++
++        // Neo: Remove step height attribute, which cannot be sanely updated
++        // Happens in 23w51a
++        Schema neoSchema3801 = p_14514_.addSchema(3801, SAME_NAMESPACED);
++        p_14514_.addFixer(new net.neoforged.neoforge.common.data.fixes.NeoForgeEntityLegacyAttributesFix(
++                "(Neo) Remove step height attribute",
++                neoSchema3801,
++                java.util.List.of(
++                        "neoforge:step_height"
++                )
++        ));
++
+         Schema schema200 = p_14514_.addSchema(3803, SAME_NAMESPACED);
+         p_14514_.addFixer(
+             new RenameEnchantmentsFix(schema200, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge"))
+         );
++
++        // Neo: rename neo attributes to new MC attributes
++        // Happens in 24w03a
++        Schema neoSchema3804 = p_14514_.addSchema(3804, SAME_NAMESPACED);
++        p_14514_.addFixer(new AttributesRename(
++                neoSchema3804,
++                "(Neo) Rename reach attributes to vanilla",
++                createRenamer(ImmutableMap.of(
++                        "neoforge:entity_reach", "minecraft:player.entity_interaction_range",
++                        "neoforge:block_reach", "minecraft:player.block_interaction_range"
++                ))
++        ));
++
+         Schema schema201 = p_14514_.addSchema(3807, V3807::new);
+         p_14514_.addFixer(new AddNewChoices(schema201, "Added Vault", References.BLOCK_ENTITY));
+         Schema schema202 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
+@@ -1302,6 +_,18 @@
+         p_14514_.addFixer(
+             new AttributesRename(schema208, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
+         );
++
++        // Neo: rename neo attributes to new MC attributes
++        // Happens in 24w06a
++        Schema neoSchema3815 = p_14514_.addSchema(3815, SAME_NAMESPACED);
++        p_14514_.addFixer(new AttributesRename(
++                neoSchema3815,
++                "(Neo) Rename gravity attribute to vanilla",
++                createRenamer(
++                        "neoforge:entity_gravity", "minecraft:generic.gravity"
++                )
++        ));
++
+         Schema schema209 = p_14514_.addSchema(3816, V3816::new);
+         p_14514_.addFixer(new AddNewChoices(schema209, "Added Bogged", References.ENTITY));
+         Schema schema210 = p_14514_.addSchema(3818, V3818::new);
