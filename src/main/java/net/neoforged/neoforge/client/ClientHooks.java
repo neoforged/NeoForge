@@ -104,7 +104,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ArmorMaterial;
@@ -661,10 +660,8 @@ public class ClientHooks {
 
     public static boolean isNameplateInRenderDistance(Entity entity, double squareDistance) {
         if (entity instanceof LivingEntity) {
-            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
-            if (attribute != null) {
-                return !(squareDistance > (attribute.getValue() * attribute.getValue()));
-            }
+            double value = ((LivingEntity) entity).getAttributeValue(NeoForgeMod.NAMETAG_DISTANCE);
+            return !(squareDistance > value * value);
         }
         return !(squareDistance > 4096.0f);
     }
