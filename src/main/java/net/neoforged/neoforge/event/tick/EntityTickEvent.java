@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.event.tick;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Base class of the two entity tick events.

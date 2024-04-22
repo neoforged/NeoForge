@@ -831,7 +831,7 @@ public class EventHooks {
     public static void fireEntityTickPost(Entity entity) {
         NeoForge.EVENT_BUS.post(new EntityTickEvent.Post(entity));
     }
-    
+
     /**
      * Fires {@link PlayerTickEvent.Pre}. Called from the head of {@link Player#tick()}.
      * 

@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.event.tick;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Base class of the two player tick events.
