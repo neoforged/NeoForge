@@ -166,6 +166,7 @@ public final class TagConventionLogWarning {
             createMapEntry(Registries.ITEM, "barrels/wooden", Tags.Items.BARRELS_WOODEN),
             createMapEntry(Registries.ITEM, "bones", Tags.Items.BONES),
             createMapEntry(Registries.ITEM, "bookshelves", Tags.Items.BOOKSHELVES),
+            createMapEntry(Registries.ITEM, "bucket", Tags.Items.BUCKETS),
             createMapEntry(Registries.ITEM, "chests", Tags.Items.CHESTS),
             createMapEntry(Registries.ITEM, "chests/ender", Tags.Items.CHESTS_ENDER),
             createMapEntry(Registries.ITEM, "chests/trapped", Tags.Items.CHESTS_TRAPPED),
