@@ -9,11 +9,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.Objects;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import org.joml.Vector3f;
@@ -44,6 +42,10 @@ public abstract class QuadLighter {
     private final float[][] positions = new float[4][3];
     private final byte[][] normals = new byte[4][3];
     private final int[] packedLightmaps = new int[4];
+    private final float[] adjustedPosition = new float[3];
+    private final Vector3f a = new Vector3f();
+    private final Vector3f ab = new Vector3f();
+    private final Vector3f ac = new Vector3f();
 
     protected QuadLighter(BlockColors colors) {
         this.colors = colors;
@@ -55,6 +57,13 @@ public abstract class QuadLighter {
 
     protected abstract int calculateLightmap(float[] position, byte[] normal);
 
+    /**
+     * Set up this lighter to light quads of the given block.
+     * 
+     * @param level the region containing this block
+     * @param pos   the position of the block in the given region
+     * @param state the block state at this position
+     */
     public final void setup(BlockAndTintGetter level, BlockPos pos, BlockState state) {
         var hash = Objects.hash(level, pos, state);
         if (this.level != null && this.currentHash == hash) {
@@ -68,11 +77,20 @@ public abstract class QuadLighter {
         computeLightingAt(level, pos, state);
     }
 
+    /**
+     * Invalidate and reset any cached state of this lighter.
+     */
     public final void reset() {
         this.level = null; // Invalidates part of the state to force a re-computation
     }
 
-    public final void process(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad, int overlay) {
+    /**
+     * Compute the brightness and lightmap values for each vertex of this quad. After a call to this method, the
+     * values may be accessed using {@link QuadLighter#getComputedBrightness()} and {@link QuadLighter#getComputedLightmap()}.
+     * 
+     * @param quad the quad to compute lightmap values for
+     */
+    public final void computeLightingForQuad(BakedQuad quad) {
         var vertices = quad.getVertices();
         for (int i = 0; i < 4; i++) {
             int offset = i * IQuadTransformer.STRIDE;
@@ -86,9 +104,9 @@ public abstract class QuadLighter {
             packedLightmaps[i] = vertices[offset + IQuadTransformer.UV2];
         }
         if (normals[0][0] == 0 && normals[0][1] == 0 && normals[0][2] == 0) {
-            Vector3f a = new Vector3f(positions[0]);
-            Vector3f ab = new Vector3f(positions[1]);
-            Vector3f ac = new Vector3f(positions[2]);
+            a.set(positions[0]);
+            ab.set(positions[1]);
+            ac.set(positions[2]);
             ac.sub(a);
             ab.sub(a);
             ab.cross(ac);
@@ -105,11 +123,9 @@ public abstract class QuadLighter {
             var normal = normals[i];
             int packedLightmap = packedLightmaps[i];
 
-            var adjustedPosition = new float[] {
-                    position[0] - 0.5f + ((normal[0] / 127f) * 0.5f),
-                    position[1] - 0.5f + ((normal[1] / 127f) * 0.5f),
-                    position[2] - 0.5f + ((normal[2] / 127f) * 0.5f)
-            };
+            adjustedPosition[0] = position[0] - 0.5f + ((normal[0] / 127f) * 0.5f);
+            adjustedPosition[1] = position[1] - 0.5f + ((normal[1] / 127f) * 0.5f);
+            adjustedPosition[2] = position[2] - 0.5f + ((normal[2] / 127f) * 0.5f);
 
             var shade = level.getShade(normals[i][0] / 127f, normals[i][1] / 127f, normals[i][2] / 127f, quad.isShade());
             brightness[i] = calculateBrightness(adjustedPosition) * shade;
@@ -117,6 +133,28 @@ public abstract class QuadLighter {
             lightmap[i] = Math.max(packedLightmap & 0xFFFF, newLightmap & 0xFFFF) |
                     (Math.max((packedLightmap >> 16) & 0xFFFF, (newLightmap >> 16) & 0xFFFF) << 16);
         }
+    }
+
+    /**
+     * Returns the computed brightness for each vertex of this quad.
+     * <p>
+     * The returned array is only valid until this lighter is asked to light another quad.
+     */
+    public final float[] getComputedBrightness() {
+        return this.brightness;
+    }
+
+    /**
+     * Returns the computed lightmap for each vertex of this quad.
+     * <p>
+     * The returned array is only valid until this lighter is asked to light another quad.
+     */
+    public final int[] getComputedLightmap() {
+        return this.lightmap;
+    }
+
+    public final void process(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad, int overlay) {
+        computeLightingForQuad(quad);
 
         var color = quad.isTinted() ? getColorFast(quad.getTintIndex()) : WHITE;
         consumer.putBulkData(pose, quad, brightness, color[0], color[1], color[2], 1.0f, lightmap, overlay, true);
@@ -136,20 +174,5 @@ public abstract class QuadLighter {
     public static float calculateShade(float normalX, float normalY, float normalZ, boolean constantAmbientLight) {
         float yFactor = constantAmbientLight ? 0.9F : ((3.0F + normalY) / 4.0F);
         return Math.min(normalX * normalX * 0.6F + normalY * normalY * yFactor + normalZ * normalZ * 0.8F, 1.0F);
-    }
-
-    /**
-     * Note: This method is subtly different than {@link net.minecraft.client.renderer.LevelRenderer#getLightColor(BlockAndTintGetter, BlockState, BlockPos)}
-     * as it only uses the state for querying if the state has emissive rendering but instead looks up the state at the given position for checking the
-     * light emission.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.1")
-    protected static int getLightColor(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        if (state.emissiveRendering(level, pos)) {
-            return LightTexture.FULL_BRIGHT;
-        }
-        int skyLight = level.getBrightness(LightLayer.SKY, pos);
-        int blockLight = Math.max(level.getBrightness(LightLayer.BLOCK, pos), level.getBlockState(pos).getLightEmission(level, pos));
-        return skyLight << 20 | blockLight << 4;
     }
 }
