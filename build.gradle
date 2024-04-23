@@ -27,7 +27,7 @@ if (isPreReleaseVersion) {
     }
 
     changelog {
-        from '20.4'
+        from '20.5'
         disableAutomaticPublicationRegistration()
     }
 
