@@ -27,11 +27,11 @@ if (isPreReleaseVersion) {
     }
 
     changelog {
-        from '20.4'
+        from '20.5'
         disableAutomaticPublicationRegistration()
     }
 
-    project.version = gradleutils.getTagOffsetVersion()
+    project.version = gradleutils.version.toString()
 }
 
 // Print version, generally useful to know - also appears on CI

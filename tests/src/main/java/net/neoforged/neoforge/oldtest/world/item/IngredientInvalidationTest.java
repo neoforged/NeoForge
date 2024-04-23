@@ -5,9 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.world.item;
 
-import java.util.stream.Stream;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
@@ -27,15 +24,15 @@ public class IngredientInvalidationTest {
     private static boolean invalidateExpected = false;
     private static boolean gotInvalidate = false;
 
-    private static final Ingredient TEST_INGREDIENT = new Ingredient(Stream.of(new Ingredient.ItemValue(new ItemStack(Items.WHEAT)))) {
-        // TODO: 
-        /*@Override
-        protected void invalidate()
-        {
-            super.invalidate();
-            gotInvalidate = true;
-        }*/
-    };
+//    private static final Ingredient TEST_INGREDIENT = new Ingredient(Stream.of(new Ingredient.ItemValue(new ItemStack(Items.WHEAT)))) {
+//        // TODO:
+//        /*@Override
+//        protected void invalidate()
+//        {
+//            super.invalidate();
+//            gotInvalidate = true;
+//        }*/
+//    };
 
     public IngredientInvalidationTest() {
         if (!ENABLED)
