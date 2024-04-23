@@ -100,7 +100,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.Tiers;
@@ -108,7 +107,6 @@ import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -895,18 +893,6 @@ public class CommonHooks {
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return -1;
         return event.getVanillaNoteId();
-    }
-
-    public static boolean hasNoElements(Ingredient ingredient) {
-        ItemStack[] items = ingredient.getItems();
-        if (items.length == 0)
-            return true;
-        if (items.length == 1) {
-            // If we potentially added a barrier due to the ingredient being an empty tag, try and check if it is the stack we added
-            ItemStack item = items[0];
-            return item.getItem() == Items.BARRIER && item.getHoverName() instanceof MutableComponent hoverName && hoverName.getString().startsWith("Empty Tag: ");
-        }
-        return false;
     }
 
     @Deprecated(forRemoval = true, since = "1.20.1") // Tags use a codec now This was never used in 1.20
