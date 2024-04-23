@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -69,7 +68,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
@@ -691,14 +689,6 @@ public class CommonHooks {
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
-    /**
-     * @deprecated Use {@link #onLeftClickBlock(Player, BlockPos, Direction, ServerboundPlayerActionPacket.Action)} instead
-     */
-    @Deprecated(since = "1.20.1", forRemoval = true)
-    public static PlayerInteractEvent.LeftClickBlock onLeftClickBlock(Player player, BlockPos pos, Direction face) {
-        return onLeftClickBlock(player, pos, face, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
-    }
-
     public static PlayerInteractEvent.LeftClickBlock onLeftClickBlock(Player player, BlockPos pos, Direction face, ServerboundPlayerActionPacket.Action action) {
         PlayerInteractEvent.LeftClickBlock evt = new PlayerInteractEvent.LeftClickBlock(player, pos, face, PlayerInteractEvent.LeftClickBlock.Action.convert(action));
         NeoForge.EVENT_BUS.post(evt);
@@ -887,9 +877,6 @@ public class CommonHooks {
             return -1;
         return event.getVanillaNoteId();
     }
-
-    @Deprecated(forRemoval = true, since = "1.20.1") // Tags use a codec now This was never used in 1.20
-    public static <T> void deserializeTagAdditions(List<TagEntry> list, JsonObject json, List<TagEntry> allList) {}
 
     public static final int VANILLA_SERIALIZER_LIMIT = 256;
 
