@@ -60,36 +60,25 @@ public final class AttachmentType<T> {
     @Nullable
     final IAttachmentSerializer<?, T> serializer;
     final boolean copyOnDeath;
-    final IAttachmentComparator<T> comparator;
     final IAttachmentCopyHandler<T> copyHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
         this.copyOnDeath = builder.copyOnDeath;
-        this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
         this.copyHandler = builder.copyHandler != null ? builder.copyHandler : defaultCopyHandler(serializer);
-    }
-
-    private static <T> IAttachmentComparator<T> defaultComparator(@Nullable IAttachmentSerializer<?, T> serializer) {
-        if (serializer == null) {
-            return (provider, first, second) -> {
-                throw new UnsupportedOperationException("Cannot compare non-serializable attachments");
-            };
-        }
-        return (provider, first, second) -> Objects.equals(serializer.write(provider, first), serializer.write(provider, second));
     }
 
     private static <T, H extends Tag> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<H, T> serializer) {
         if (serializer == null) {
-            return (provider, holder, attachment) -> {
+            return (attachment, holder, provider) -> {
                 throw new UnsupportedOperationException("Cannot copy non-serializable attachments");
             };
         }
-        return (provider, holder, attachment) -> {
-            H serialized = serializer.write(provider, attachment);
+        return (attachment, holder, provider) -> {
+            H serialized = serializer.write(attachment, provider);
             if (serialized != null) {
-                return serializer.read(provider, holder, serialized);
+                return serializer.read(holder, serialized, provider);
             }
             return null;
         };
@@ -142,7 +131,7 @@ public final class AttachmentType<T> {
     public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
         return builder(defaultValueConstructor).serialize(new IAttachmentSerializer<S, T>() {
             @Override
-            public T read(HolderLookup.Provider provider, IAttachmentHolder holder, S tag) {
+            public T read(IAttachmentHolder holder, S tag, HolderLookup.Provider provider) {
                 var ret = defaultValueConstructor.apply(holder);
                 ret.deserializeNBT(provider, tag);
                 return ret;
@@ -150,7 +139,7 @@ public final class AttachmentType<T> {
 
             @Nullable
             @Override
-            public S write(HolderLookup.Provider provider, T attachment) {
+            public S write(T attachment, HolderLookup.Provider provider) {
                 return attachment.serializeNBT(provider);
             }
         });
@@ -161,8 +150,6 @@ public final class AttachmentType<T> {
         @Nullable
         private IAttachmentSerializer<?, T> serializer;
         private boolean copyOnDeath;
-        @Nullable
-        private IAttachmentComparator<T> comparator;
         @Nullable
         private IAttachmentCopyHandler<T> copyHandler;
 
@@ -214,13 +201,13 @@ public final class AttachmentType<T> {
             // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
                 @Override
-                public T read(HolderLookup.Provider provider, IAttachmentHolder holder, Tag tag) {
+                public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
                     return codec.parse(NbtOps.INSTANCE, tag).result().get();
                 }
 
                 @Nullable
                 @Override
-                public Tag write(HolderLookup.Provider provider, T attachment) {
+                public Tag write(T attachment, HolderLookup.Provider provider) {
                     return shouldSerialize.test(attachment) ? codec.encodeStart(NbtOps.INSTANCE, attachment).result().get() : null;
                 }
             });
@@ -233,23 +220,6 @@ public final class AttachmentType<T> {
             if (this.serializer == null)
                 throw new IllegalStateException("copyOnDeath requires a serializer");
             this.copyOnDeath = true;
-            return this;
-        }
-
-        /**
-         * Overrides the comparator for this attachment type.
-         *
-         * <p>The default comparator checks for equality of the serialized NBT tag:
-         * {@code Objects.equals(serializer.write(first), serializer.write(second))}.
-         *
-         * <p>A comparator can only be provided for serializable attachments.
-         */
-        public Builder<T> comparator(IAttachmentComparator<T> comparator) {
-            Objects.requireNonNull(comparator);
-            // Check for serializer because only serializable attachments can be compared.
-            if (this.serializer == null)
-                throw new IllegalStateException("comparator requires a serializer");
-            this.comparator = comparator;
             return this;
         }
 
