@@ -40,16 +40,16 @@ public class CustomPlantTypeTest {
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {
         event.register(Registries.BLOCK, helper -> {
-            helper.register(CUSTOM_SOIL_BLOCK, new CustomBlock());
-            helper.register(CUSTOM_PLANT_BLOCK, new CustomPlantBlock());
+            helper.register(CUSTOM_SOIL.getId(), new CustomBlock());
+            helper.register(CUSTOM_PLANT.getId(), new CustomPlantBlock());
         });
     }
 
     @SubscribeEvent
     public static void registerItems(RegisterEvent event) {
         event.register(Registries.ITEM, helper -> {
-            helper.register(CUSTOM_SOIL_BLOCK, new BlockItem(CUSTOM_SOIL.get(), new Item.Properties()));
-            helper.register(CUSTOM_PLANT_BLOCK, new BlockItem(CUSTOM_PLANT.get(), new Item.Properties()));
+            helper.register(CUSTOM_SOIL.getId(), new BlockItem(CUSTOM_SOIL.get(), new Item.Properties()));
+            helper.register(CUSTOM_PLANT.getId(), new BlockItem(CUSTOM_PLANT.get(), new Item.Properties()));
         });
     }
 
