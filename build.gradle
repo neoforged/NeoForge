@@ -31,7 +31,7 @@ if (isPreReleaseVersion) {
         disableAutomaticPublicationRegistration()
     }
 
-    project.version = gradleutils.getTagOffsetVersion()
+    project.version = gradleutils.version.toString()
 }
 
 // Print version, generally useful to know - also appears on CI
