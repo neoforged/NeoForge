@@ -169,6 +169,7 @@ public class IngredientTests {
         // Make sure that [] deserializes to an empty ingredient
         var result = Ingredient.CODEC.parse(JsonOps.INSTANCE, new JsonArray());
         var ingredient = result.resultOrPartial(error -> helper.fail("Failed to deserialize empty ingredient: " + error)).orElseThrow();
+        helper.assertTrue(ingredient.isEmpty(), "empty ingredient should return true from isEmpty()");
         helper.assertValueEqual(Ingredient.EMPTY, ingredient, "empty ingredient");
         helper.assertTrue(Ingredient.EMPTY == ingredient, "Reference equality with Ingredient.EMPTY");
 
