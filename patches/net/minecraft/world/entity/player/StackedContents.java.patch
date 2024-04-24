@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/player/StackedContents.java
++++ b/net/minecraft/world/entity/player/StackedContents.java
+@@ -99,7 +_,7 @@
+         public RecipePicker(Recipe<?> p_36508_) {
+             this.recipe = p_36508_;
+             this.ingredients.addAll(p_36508_.getIngredients());
+-            this.ingredients.removeIf(Ingredient::isEmpty);
++            this.ingredients.removeIf(Ingredient::hasNoItems);
+             this.ingredientCount = this.ingredients.size();
+             this.items = this.getUniqueAvailableIngredientItems();
+             this.itemCount = this.items.length;
