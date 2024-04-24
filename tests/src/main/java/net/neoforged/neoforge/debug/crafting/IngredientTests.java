@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -53,6 +55,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.condition.TestEnabledIngredient;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,6 +155,18 @@ public class IngredientTests {
                 .thenExecuteAfter(7, () -> helper.assertContainerContains(1, 2, 1, Items.ACACIA_BOAT))
 
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Serialization tests for empty ingredients")
+    static void emptyIngredientSerialization(ExtendedGameTestHelper helper) {
+        // Make sure that empty ingredients serialize to []
+        var emptyResult = Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, Ingredient.EMPTY);
+        var result = emptyResult.resultOrPartial(error -> helper.fail("Failed to serialize empty ingredient: " + error)).orElseThrow();
+        helper.assertValueEqual("[]", result.toString(), "empty ingredient");
+
+        helper.succeed();
     }
 
     private static final RegistrationHelper REG_HELPER = RegistrationHelper.create("neotests_ingredients");

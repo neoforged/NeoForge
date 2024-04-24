@@ -37,7 +37,8 @@ public class CraftingHelper {
     private static Ingredient convertToCompoundIngredient(Ingredient ingredient) {
         if (!ingredient.isCustom() && ingredient.getValues().length != 1) {
             // Convert vanilla ingredient to custom CompoundIngredient
-            return CompoundIngredient.of(Stream.of(ingredient.getValues()).map(v -> Ingredient.fromValues(Stream.of(v))).toArray(Ingredient[]::new));
+            // Do not use CompoundIngredient.of(...) as it will convert empty ingredients back to Ingredient.EMPTY
+            return new CompoundIngredient(Stream.of(ingredient.getValues()).map(v -> Ingredient.fromValues(Stream.of(v))).toList()).toVanilla();
         }
         return ingredient;
     }
