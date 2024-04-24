@@ -35,18 +35,3 @@
                  crashreportcategory.setDetail("Item ID", Item.getId(p_36042_.getItem()));
                  crashreportcategory.setDetail("Item data", p_36042_.getDamageValue());
                  crashreportcategory.setDetail("Item name", () -> p_36042_.getHoverName().getString());
-@@ -497,12 +_,12 @@
-             if (p_150074_ < 1.0F) {
-                 p_150074_ = 1.0F;
-             }
--
-+            net.neoforged.neoforge.common.CommonHooks.onArmorHurt(p_150073_, this.armor, p_150074_, this.player); p_150075_ = new int[0];
-             for(int i : p_150075_) {
-                 ItemStack itemstack = this.armor.get(i);
-                 if ((!p_150073_.is(DamageTypeTags.IS_FIRE) || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
-                     itemstack.hurtAndBreak(
--                        (int)p_150074_, this.player, p_35997_ -> p_35997_.broadcastBreakEvent(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, i))
-+                            (int)p_150074_, this.player, p_35997_ -> p_35997_.broadcastBreakEvent(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, i))
-                     );
-                 }
-             }

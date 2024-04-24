@@ -9,23 +9,21 @@ import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Fired when a {@link Player}'s armor is dealt damage in {@link Player#actuallyHurt(DamageSource, float) actuallyHurt}.
+ * Fired when a {@link LivingEntity}'s armor is dealt damage in {@link LivingEntity#doHurtEquipment(DamageSource, float, EquipmentSlot...) doHurtEquipment}.
  * <p>
- * This event is {@link ICancellableEvent cancelable}. Cancelling this event will ignore all damage modifications
- * and result in the original damage being applied to the armor item.
+ * This event is {@link ICancellableEvent cancelable}. Cancelling this event will prevent all damage to armor.
  * <p>
  * This event does not have a result.
  * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}
  */
-public class ArmorHurtEvent extends PlayerEvent implements ICancellableEvent {
+public class ArmorHurtEvent extends LivingEvent implements ICancellableEvent {
     public static class ArmorEntry {
         public ItemStack armorItemStack;
         public final float originalDamage;
@@ -41,7 +39,7 @@ public class ArmorHurtEvent extends PlayerEvent implements ICancellableEvent {
     private final EnumMap<EquipmentSlot, ArmorEntry> armorEntries;
 
     @ApiStatus.Internal
-    public ArmorHurtEvent(EnumMap<EquipmentSlot, ArmorEntry> armorMap, Player player) {
+    public ArmorHurtEvent(EnumMap<EquipmentSlot, ArmorEntry> armorMap, LivingEntity player) {
         super(player);
         this.armorEntries = armorMap;
     }

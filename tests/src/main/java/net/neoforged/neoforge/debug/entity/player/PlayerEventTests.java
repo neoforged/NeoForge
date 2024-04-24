@@ -18,14 +18,12 @@ import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,15 +32,12 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -133,11 +128,11 @@ public class PlayerEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ItemPickupEvent fires")
     public static void itemPickupEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((ItemEntityPickupEvent.Post event) -> {
-            if (event.getOriginalStack().is(Items.MELON_SEEDS)) {
+        test.eventListeners().forge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
+            if (event.getStack().is(Items.MELON_SEEDS)) {
                 // If the event is fired and detects pickup of melon seeds, the test will be considered pass
                 // and the player will get pumpkin seeds too
-                event.getPlayer().addItem(new ItemStack(Items.PUMPKIN_SEEDS));
+                event.getEntity().addItem(new ItemStack(Items.PUMPKIN_SEEDS));
                 test.pass();
             }
         });
@@ -241,63 +236,22 @@ public class PlayerEventTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests if the PlayerRespawnPositionEvent fires correctly and can change where the player respawns")
-    static void playerRespawnPositionEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((final PlayerRespawnPositionEvent event) -> {
-            // Only affect the players with a custom name to not interfere with other tests
-            if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("respawn-position-test"))) {
-                return;
-            }
-
-            var oldTransition = event.getDimensionTransition();
-            var newTransition = new DimensionTransition(oldTransition.newLevel(),
-                    event.getEntity().position().relative(Direction.SOUTH, 1),
-                    oldTransition.speed(),
-                    oldTransition.xRot(),
-                    oldTransition.yRot(),
-                    oldTransition.missingRespawnBlock(),
-                    oldTransition.postDimensionTransition());
-            event.setDimensionTransition(newTransition);
-        });
-
-        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(player -> player.setCustomName(Component.literal("respawn-position-test")))
-                .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 0)), 0, false, true))
-                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
-                .thenExecute(() -> helper.assertEntityPresent(EntityType.PLAYER, new BlockPos(0, 1, 1)))
-                .thenSucceed());
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Tests if the PlayerRespawnEvent fires correctly and can modify the player after respawning")
-    static void playerRespawnEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((final PlayerEvent.PlayerRespawnEvent event) -> {
-            event.getEntity().setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.APPLE));
-        });
-
-        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 1)), 0, true, true))
-                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
-                .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityType.PLAYER, Items.APPLE))
-                .thenSucceed());
-    }
-    @GameTest
-    @EmptyTemplate
     @TestHolder(description = "Tests if ArmorHurtEvent fires and prevents armor damage.")
     static void armorHurtEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final ArmorHurtEvent event) -> {
-            if (event.getEntity() instanceof GameTestPlayer player && player.getItemBySlot(EquipmentSlot.HEAD).getItem().equals(Items.DIAMOND_HELMET))
-                event.setNewDamage(EquipmentSlot.HEAD, 5);
+            if (event.getEntity() instanceof Player player && player.getItemBySlot(EquipmentSlot.CHEST).getItem().equals(Items.DIAMOND_CHESTPLATE))
+                event.setNewDamage(EquipmentSlot.CHEST, 5);
         });
 
         test.onGameTest(helper -> {
             DamageSource source = new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.MOB_ATTACK));
-            helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
-                    .thenExecute(player -> player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET)))
-                    .thenExecute(player -> player.getInventory().hurtArmor(source, 100, Inventory.ALL_ARMOR_SLOTS))
-                    .thenWaitUntil(player -> helper.assertTrue(player.getItemBySlot(EquipmentSlot.HEAD).getDamageValue() == 5,
-                            "Armor hurt not applied. %s actual but expected 5f".formatted(player.getItemBySlot(EquipmentSlot.HEAD).getDamageValue())))
+            helper.startSequence(() -> helper.makeMockPlayer(GameType.SURVIVAL))
+                    .thenExecute(player -> player.invulnerableTime = 0)
+                    .thenExecute(player -> player.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE)))
+                    .thenExecute(player -> player.hurt(source, 10F))
+                    .thenWaitUntil(player -> helper.assertTrue(player.getItemBySlot(EquipmentSlot.CHEST).getItem().equals(Items.DIAMOND_CHESTPLATE)
+                            && player.getItemBySlot(EquipmentSlot.CHEST).getDamageValue() == 5,
+                            "Armor hurt not applied. %s actual but expected 5f".formatted(player.getItemBySlot(EquipmentSlot.CHEST).getDamageValue())))
                     .thenSucceed();
         });
     }
