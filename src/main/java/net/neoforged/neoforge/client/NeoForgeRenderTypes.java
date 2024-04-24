@@ -158,185 +158,180 @@ public enum NeoForgeRenderTypes {
         return renderTypeSupplier.get();
     }
 
-    private static class Internal extends RenderType {
-        private static final ShaderStateShard RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER = new ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);
-
-        private Internal(String name, VertexFormat fmt, VertexFormat.Mode glMode, int size, boolean doCrumbling, boolean depthSorting, Runnable onEnable, Runnable onDisable) {
-            super(name, fmt, glMode, size, doCrumbling, depthSorting, onEnable, onDisable);
-            throw new IllegalStateException("This class must not be instantiated");
-        }
+    private static class Internal {
+        private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER = new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);
 
         public static Function<ResourceLocation, RenderType> UNSORTED_TRANSLUCENT = Util.memoize(Internal::unsortedTranslucent);
 
         private static RenderType unsortedTranslucent(ResourceLocation textureLocation) {
             final boolean sortingEnabled = false;
-            CompositeState renderState = CompositeState.builder()
+            var renderState = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                     .setTextureState(new TextureStateShard(textureLocation, false, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(RenderType.NO_CULL)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
-            return create("neoforge_entity_unsorted_translucent", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, sortingEnabled, renderState);
+            return RenderType.create("neoforge_entity_unsorted_translucent", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, sortingEnabled, renderState);
         }
 
         public static Function<ResourceLocation, RenderType> UNLIT_TRANSLUCENT_SORTED = Util.memoize(tex -> Internal.unlitTranslucent(tex, true));
         public static Function<ResourceLocation, RenderType> UNLIT_TRANSLUCENT_UNSORTED = Util.memoize(tex -> Internal.unlitTranslucent(tex, false));
 
         private static RenderType unlitTranslucent(ResourceLocation textureLocation, boolean sortingEnabled) {
-            CompositeState renderState = CompositeState.builder()
+            var renderState = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER)
                     .setTextureState(new TextureStateShard(textureLocation, false, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(RenderType.NO_CULL)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
-            return create("neoforge_entity_unlit_translucent", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, sortingEnabled, renderState);
+            return RenderType.create("neoforge_entity_unlit_translucent", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, sortingEnabled, renderState);
         }
 
         public static Function<ResourceLocation, RenderType> LAYERED_ITEM_SOLID = Util.memoize(Internal::layeredItemSolid);
 
         private static RenderType layeredItemSolid(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+            var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_SOLID_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                    .setTransparencyState(NO_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
+                    .setTransparencyState(RenderType.NO_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
-            return create("neoforge_item_entity_solid", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, rendertype$state);
+            return RenderType.create("neoforge_item_entity_solid", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> LAYERED_ITEM_CUTOUT = Util.memoize(Internal::layeredItemCutout);
 
         private static RenderType layeredItemCutout(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+            var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_CUTOUT_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                    .setTransparencyState(NO_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
+                    .setTransparencyState(RenderType.NO_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
-            return create("neoforge_item_entity_cutout", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, rendertype$state);
+            return RenderType.create("neoforge_item_entity_cutout", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> LAYERED_ITEM_CUTOUT_MIPPED = Util.memoize(Internal::layeredItemCutoutMipped);
 
         private static RenderType layeredItemCutoutMipped(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+            var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_SMOOTH_CUTOUT_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, true))
-                    .setTransparencyState(NO_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
+                    .setTransparencyState(RenderType.NO_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
-            return create("neoforge_item_entity_cutout_mipped", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, rendertype$state);
+            return RenderType.create("neoforge_item_entity_cutout_mipped", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> LAYERED_ITEM_TRANSLUCENT = Util.memoize(Internal::layeredItemTranslucent);
 
         private static RenderType layeredItemTranslucent(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+            var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
-            return create("neoforge_item_entity_translucent_cull", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
+            return RenderType.create("neoforge_item_entity_translucent_cull", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> TEXT = Util.memoize(Internal::getText);
 
         private static RenderType getText(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TEXT_SHADER)
+            var rendertype$state = RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_TEXT_SHADER)
                     .setTextureState(new CustomizableTextureState(locationIn, () -> NeoForgeRenderTypes.enableTextTextureLinearFiltering, () -> false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
-            return create("neoforge_text", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
+            return RenderType.create("neoforge_text", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> TEXT_INTENSITY = Util.memoize(Internal::getTextIntensity);
 
         private static RenderType getTextIntensity(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TEXT_INTENSITY_SHADER)
+            var rendertype$state = RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_TEXT_INTENSITY_SHADER)
                     .setTextureState(new CustomizableTextureState(locationIn, () -> NeoForgeRenderTypes.enableTextTextureLinearFiltering, () -> false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
-            return create("neoforge_text_intensity", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
+            return RenderType.create("neoforge_text_intensity", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> TEXT_POLYGON_OFFSET = Util.memoize(Internal::getTextPolygonOffset);
 
         private static RenderType getTextPolygonOffset(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TEXT_SHADER)
+            var rendertype$state = RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_TEXT_SHADER)
                     .setTextureState(new CustomizableTextureState(locationIn, () -> NeoForgeRenderTypes.enableTextTextureLinearFiltering, () -> false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setLayeringState(POLYGON_OFFSET_LAYERING)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setLayeringState(RenderType.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(false);
-            return create("neoforge_text_polygon_offset", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
+            return RenderType.create("neoforge_text_polygon_offset", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> TEXT_INTENSITY_POLYGON_OFFSET = Util.memoize(Internal::getTextIntensityPolygonOffset);
 
         private static RenderType getTextIntensityPolygonOffset(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TEXT_INTENSITY_SHADER)
+            var rendertype$state = RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_TEXT_INTENSITY_SHADER)
                     .setTextureState(new CustomizableTextureState(locationIn, () -> NeoForgeRenderTypes.enableTextTextureLinearFiltering, () -> false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setLayeringState(POLYGON_OFFSET_LAYERING)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setLayeringState(RenderType.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(false);
-            return create("neoforge_text_intensity_polygon_offset", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
+            return RenderType.create("neoforge_text_intensity_polygon_offset", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> TEXT_SEETHROUGH = Util.memoize(Internal::getTextSeeThrough);
 
         private static RenderType getTextSeeThrough(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TEXT_SEE_THROUGH_SHADER)
+            var rendertype$state = RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_TEXT_SEE_THROUGH_SHADER)
                     .setTextureState(new CustomizableTextureState(locationIn, () -> NeoForgeRenderTypes.enableTextTextureLinearFiltering, () -> false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setDepthTestState(NO_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_WRITE)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setDepthTestState(RenderType.NO_DEPTH_TEST)
+                    .setWriteMaskState(RenderType.COLOR_WRITE)
                     .createCompositeState(false);
-            return create("neoforge_text_see_through", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
+            return RenderType.create("neoforge_text_see_through", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> TEXT_INTENSITY_SEETHROUGH = Util.memoize(Internal::getTextIntensitySeeThrough);
 
         private static RenderType getTextIntensitySeeThrough(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TEXT_INTENSITY_SEE_THROUGH_SHADER)
+            var rendertype$state = RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_TEXT_INTENSITY_SEE_THROUGH_SHADER)
                     .setTextureState(new CustomizableTextureState(locationIn, () -> NeoForgeRenderTypes.enableTextTextureLinearFiltering, () -> false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setDepthTestState(NO_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_WRITE)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setDepthTestState(RenderType.NO_DEPTH_TEST)
+                    .setWriteMaskState(RenderType.COLOR_WRITE)
                     .createCompositeState(false);
-            return create("neoforge_text_see_through", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
+            return RenderType.create("neoforge_text_see_through", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
         }
 
         public static Function<ResourceLocation, RenderType> TRANSLUCENT_PARTICLES_TARGET = Util.memoize(Internal::getTranslucentParticlesTarget);
 
         private static RenderType getTranslucentParticlesTarget(ResourceLocation locationIn) {
-            RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TRANSLUCENT_SHADER)
+            var rendertype$state = RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_TRANSLUCENT_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, true))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setOutputState(PARTICLES_TARGET)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(RenderType.LIGHTMAP)
+                    .setOutputState(RenderType.PARTICLES_TARGET)
                     .createCompositeState(true);
-            return create("neoforge_translucent_particles_target", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, true, rendertype$state);
+            return RenderType.create("neoforge_translucent_particles_target", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, true, rendertype$state);
         }
     }
 
