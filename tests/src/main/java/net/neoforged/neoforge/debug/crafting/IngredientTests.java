@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.crafting;
 
+import com.google.gson.JsonArray;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -25,7 +26,6 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -163,8 +163,14 @@ public class IngredientTests {
     static void emptyIngredientSerialization(ExtendedGameTestHelper helper) {
         // Make sure that empty ingredients serialize to []
         var emptyResult = Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, Ingredient.EMPTY);
-        var result = emptyResult.resultOrPartial(error -> helper.fail("Failed to serialize empty ingredient: " + error)).orElseThrow();
-        helper.assertValueEqual("[]", result.toString(), "empty ingredient");
+        var emptyJson = emptyResult.resultOrPartial(error -> helper.fail("Failed to serialize empty ingredient: " + error)).orElseThrow();
+        helper.assertValueEqual("[]", emptyJson.toString(), "empty ingredient");
+
+        // Make sure that [] deserializes to an empty ingredient
+        var result = Ingredient.CODEC.parse(JsonOps.INSTANCE, new JsonArray());
+        var ingredient = result.resultOrPartial(error -> helper.fail("Failed to deserialize empty ingredient: " + error)).orElseThrow();
+        helper.assertValueEqual(Ingredient.EMPTY, ingredient, "empty ingredient");
+        helper.assertTrue(Ingredient.EMPTY == ingredient, "Reference equality with Ingredient.EMPTY");
 
         helper.succeed();
     }

@@ -20,7 +20,14 @@ public class CraftingHelper {
     public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty) {
         var compoundIngredientCodec = Codec.lazyInitialized(() -> allowEmpty ? CompoundIngredient.DIRECT_CODEC : CompoundIngredient.DIRECT_CODEC_NONEMPTY);
         return Codec.either(compoundIngredientCodec, makeIngredientMapCodec().codec())
-                .xmap(either -> either.map(ICustomIngredient::toVanilla, i -> i), ingredient -> {
+                .xmap(either -> either.map(custom -> {
+                    // Convert empty compound ingredients back to Ingredient.EMPTY, for the isEmpty() check to return true.
+                    if (custom instanceof CompoundIngredient compound && compound.children().isEmpty()) {
+                        return Ingredient.EMPTY;
+                    } else {
+                        return custom.toVanilla();
+                    }
+                }, i -> i), ingredient -> {
                     if (convertToCompoundIngredient(ingredient).getCustomIngredient() instanceof CompoundIngredient compound) {
                         // Use [] syntax for vanilla array ingredients and CompoundIngredients.
                         return Either.left(compound);
