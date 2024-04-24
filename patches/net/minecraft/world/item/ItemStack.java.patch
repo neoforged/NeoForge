@@ -140,24 +140,15 @@
              return list;
          }
      }
-@@ -901,11 +_,15 @@
- 
-     public void forEachModifier(EquipmentSlot p_332001_, BiConsumer<Holder<Attribute>, AttributeModifier> p_330882_) {
-         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-+        com.google.common.collect.Multimap<Holder<Attribute>, AttributeModifier> multimap;
-+        multimap = com.google.common.collect.LinkedHashMultimap.create();
-         if (!itemattributemodifiers.modifiers().isEmpty()) {
--            itemattributemodifiers.forEach(p_332001_, p_330882_);
-+            itemattributemodifiers.forEach(p_332001_, multimap::put);
-         } else {
--            this.getItem().getDefaultAttributeModifiers().forEach(p_332001_, p_330882_);
-+            this.getItem().getAttributeModifiers(this).forEach(p_332001_, multimap::put);
-         }
-+        multimap = net.neoforged.neoforge.common.CommonHooks.getAttributeModifiers(this, p_332001_, multimap);
-+        multimap.forEach(p_330882_);
+@@ -900,6 +_,8 @@
      }
  
-     public Component getDisplayName() {
+     public void forEachModifier(EquipmentSlot p_332001_, BiConsumer<Holder<Attribute>, AttributeModifier> p_330882_) {
++        this.getAttributeModifiers(p_332001_).forEach(p_330882_);
++        if (true) return;
+         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+         if (!itemattributemodifiers.modifiers().isEmpty()) {
+             itemattributemodifiers.forEach(p_332001_, p_330882_);
 @@ -916,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
