@@ -74,7 +74,7 @@ public class I18nExtension {
         if (Objects.equals(formatString, "id")) {
             stringBuffer.append(info.getModId());
         } else if (Objects.equals(formatString, "name")) {
-            stringBuffer.append(getDisplayName(info));
+            stringBuffer.append(info.getDisplayName());
         }
     }
 
@@ -108,10 +108,6 @@ public class I18nExtension {
     public static String parseFormat(final String format, final Object... args) {
         final ExtendedMessageFormat extendedMessageFormat = new ExtendedMessageFormat(format, customFactories);
         return extendedMessageFormat.format(args);
-    }
-
-    public static String getDisplayName(final IModInfo modInfo) {
-        return parseMessageWithFallback("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo::getDisplayName);
     }
 
     public static String getDescription(final IModInfo modInfo) {
