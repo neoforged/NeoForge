@@ -44,7 +44,7 @@
              }
  
 -            if (!this.level().isClientSide && this.level().isDay()) {
-+            if (!this.level().isClientSide && !net.neoforged.neoforge.event.EventHooks.fireSleepingTimeCheck(this, getSleepingPos())) {
++            if (!this.level().isClientSide && !net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, this.level().isDay() ? BedSleepingProblem.NOT_POSSIBLE_NOW : null)) {
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {

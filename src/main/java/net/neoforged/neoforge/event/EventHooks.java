@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
@@ -38,6 +39,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stat;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Unit;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.Container;
 import net.minecraft.world.DifficultyInstance;
@@ -60,6 +62,7 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Player.BedSleepingProblem;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
@@ -81,7 +84,6 @@ import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -135,6 +137,8 @@ import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementPr
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.entity.player.BonemealEvent;
+import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
+import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
 import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
 import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -144,11 +148,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
-import net.neoforged.neoforge.event.entity.player.SleepingLocationCheckEvent;
-import net.neoforged.neoforge.event.entity.player.SleepingTimeCheckEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider;
@@ -544,10 +545,10 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new AnimalTameEvent(animal, tamer)).isCanceled();
     }
 
-    public static Player.BedSleepingProblem onPlayerSleepInBed(Player player, Optional<BlockPos> pos) {
-        PlayerSleepInBedEvent event = new PlayerSleepInBedEvent(player, pos);
+    public static Either<BedSleepingProblem, Unit> canPlayerStartSleeping(ServerPlayer player, BlockPos pos, Either<BedSleepingProblem, Unit> vanillaResult) {
+        CanPlayerSleepEvent event = new CanPlayerSleepEvent(player, pos, vanillaResult.left().orElse(null));
         NeoForge.EVENT_BUS.post(event);
-        return event.getResultStatus();
+        return event.getProblem() != null ? Either.left(event.getProblem()) : Either.right(Unit.INSTANCE);
     }
 
     public static void onPlayerWakeup(Player player, boolean wakeImmediately, boolean updateLevel) {
@@ -622,26 +623,12 @@ public class EventHooks {
     }
 
     /**
-     * Checks if a sleeping entity can continue sleeping. In vanilla this is only allowed if
-     * the entity's {@link LivingEntity#getSleepingPos()} is the position of a {@link BedBlock}.
+     * Checks if a sleeping entity can continue sleeping with the given sleeping problem.
      * 
-     * @param sleeper The sleeping entity
-     * @param hasBed  If there {@linkplain IBlockStateExtension#isBed is a bed} at the entity's sleeping pos.
      * @return true if the entity may continue sleeping
      */
-    public static boolean canEntityContinueSleeping(LivingEntity sleeper, boolean hasBed) {
-        return NeoForge.EVENT_BUS.post(new SleepingLocationCheckEvent(sleeper, hasBed)).mayContinueSleeping();
-    }
-
-    public static boolean fireSleepingTimeCheck(Player player, Optional<BlockPos> sleepingLocation) {
-        SleepingTimeCheckEvent evt = new SleepingTimeCheckEvent(player, sleepingLocation);
-        NeoForge.EVENT_BUS.post(evt);
-
-        Result canContinueSleep = evt.getResult();
-        if (canContinueSleep == Result.DEFAULT)
-            return !player.level().isDay();
-        else
-            return canContinueSleep == Result.ALLOW;
+    public static boolean canEntityContinueSleeping(LivingEntity sleeper, @Nullable BedSleepingProblem problem) {
+        return NeoForge.EVENT_BUS.post(new CanContinueSleepingEvent(sleeper, problem)).mayContinueSleeping();
     }
 
     public static InteractionResultHolder<ItemStack> onArrowNock(ItemStack item, Level level, Player player, InteractionHand hand, boolean hasAmmo) {

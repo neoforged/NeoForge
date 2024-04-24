@@ -581,7 +581,7 @@
 -        return this.getSleepingPos().map(p_337701_ -> this.level().getBlockState(p_337701_).getBlock() instanceof BedBlock).orElse(false);
 +        // Neo: Overwrite the vanilla instanceof BedBlock check with isBed and fire the sleeping location check event.
 +        boolean hasBed = this.getSleepingPos().map(pos -> this.level().getBlockState(pos).isBed(this.level(), pos, this)).orElse(false);
-+        return net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, hasBed);
++        return net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, hasBed ? null : Player.BedSleepingProblem.NOT_POSSIBLE_HERE);
      }
  
      public void stopSleeping() {
