@@ -171,4 +171,3 @@
 +        this.spawnCancelled = cancel;
      }
  }
- 
