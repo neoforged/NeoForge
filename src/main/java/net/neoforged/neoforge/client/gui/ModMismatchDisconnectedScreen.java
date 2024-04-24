@@ -95,10 +95,9 @@ public class ModMismatchDisconnectedScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 4, 0xAAAAAA);
         this.message.renderCentered(guiGraphics, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 2);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     class MismatchInfoPanel extends ScrollPanel {
