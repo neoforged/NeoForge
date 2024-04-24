@@ -1,0 +1,15 @@
+--- a/net/minecraft/tags/TagKey.java
++++ b/net/minecraft/tags/TagKey.java
+@@ -12,6 +_,12 @@
+ public record TagKey<T>(ResourceKey<? extends Registry<T>> f_203867_, ResourceLocation f_203868_) {
+    private static final Interner<TagKey<?>> f_203869_ = Interners.newWeakInterner();
+ 
++   /**
++    * @deprecated Forge: Use {@link TagKey#create} instead.
++    */
++   @Deprecated
++   public TagKey {}
++
+    public static <T> Codec<TagKey<T>> m_203877_(ResourceKey<? extends Registry<T>> p_203878_) {
+       return ResourceLocation.f_135803_.xmap((p_203893_) -> {
+          return m_203882_(p_203878_, p_203893_);
