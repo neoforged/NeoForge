@@ -18,36 +18,24 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class CraftingHelper {
     public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty) {
-        var compoundIngredientCodec = Codec.lazyInitialized(() -> allowEmpty ? CompoundIngredient.DIRECT_CODEC : CompoundIngredient.DIRECT_CODEC_NONEMPTY);
-        return Codec.either(compoundIngredientCodec, makeIngredientMapCodec().codec())
-                .xmap(either -> either.map(custom -> {
-                    // Convert empty compound ingredients back to Ingredient.EMPTY, for the isEmpty() check to return true.
-                    if (custom instanceof CompoundIngredient compound && compound.children().isEmpty()) {
-                        return Ingredient.EMPTY;
-                    } else {
-                        return custom.toVanilla();
-                    }
+        var listCodec = Codec.lazyInitialized(() -> allowEmpty ? Ingredient.LIST_CODEC : Ingredient.LIST_CODEC_NONEMPTY);
+        return Codec.either(listCodec, makeIngredientMapCodec().codec())
+                .xmap(either -> either.map(list -> {
+                    // Use CompoundIngredient.of(...) to convert empty ingredients to Ingredient.EMPTY
+                    return CompoundIngredient.of(list.toArray(Ingredient[]::new));
                 }, i -> i), ingredient -> {
-                    if (convertToCompoundIngredient(ingredient).getCustomIngredient() instanceof CompoundIngredient compound) {
-                        // Use [] syntax for vanilla array ingredients and CompoundIngredients.
-                        return Either.left(compound);
-                    } else {
-                        // Else use {} syntax.
-                        return Either.right(ingredient);
+                    if (ingredient.isCustom()) {
+                        if (ingredient.getCustomIngredient() instanceof CompoundIngredient compound) {
+                            // Use [] syntax for CompoundIngredients.
+                            return Either.left(compound.children());
+                        }
+                    } else if (ingredient.getValues().length != 1) {
+                        // Use [] syntax for vanilla ingredients that either 0 or 2+ values.
+                        return Either.left(Stream.of(ingredient.getValues()).map(v -> Ingredient.fromValues(Stream.of(v))).toList());
                     }
+                    // Else use {} syntax.
+                    return Either.right(ingredient);
                 });
-    }
-
-    /**
-     * Converts vanilla "array ingredients" to {@link CompoundIngredient}s.
-     */
-    private static Ingredient convertToCompoundIngredient(Ingredient ingredient) {
-        if (!ingredient.isCustom() && ingredient.getValues().length != 1) {
-            // Convert vanilla ingredient to custom CompoundIngredient
-            // Do not use CompoundIngredient.of(...) as it will convert empty ingredients back to Ingredient.EMPTY
-            return new CompoundIngredient(Stream.of(ingredient.getValues()).map(v -> Ingredient.fromValues(Stream.of(v))).toList()).toVanilla();
-        }
-        return ingredient;
     }
 
     public static MapCodec<Ingredient> makeIngredientMapCodec() {
@@ -58,12 +46,15 @@ public class CraftingHelper {
                 IngredientType::codec,
                 Ingredient.Value.MAP_CODEC)
                 .xmap(either -> either.map(ICustomIngredient::toVanilla, v -> Ingredient.fromValues(Stream.of(v))), ingredient -> {
-                    var customIngredient = convertToCompoundIngredient(ingredient).getCustomIngredient();
-                    if (customIngredient == null) {
-                        return Either.right(ingredient.getValues()[0]);
-                    } else {
-                        return Either.left(customIngredient);
+                    if (!ingredient.isCustom()) {
+                        var values = ingredient.getValues();
+                        if (values.length == 1) {
+                            return Either.right(values[0]);
+                        }
+                        // Convert vanilla ingredients with 2+ values to a CompoundIngredient. Empty ingredients are not allowed here.
+                        return Either.left(new CompoundIngredient(Stream.of(ingredient.getValues()).map(v -> Ingredient.fromValues(Stream.of(v))).toList()));
                     }
+                    return Either.left(ingredient.getCustomIngredient());
                 })
                 .validate(ingredient -> {
                     if (!ingredient.isCustom() && ingredient.getValues().length == 0) {
