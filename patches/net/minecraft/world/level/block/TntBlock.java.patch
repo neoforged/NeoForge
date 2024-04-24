@@ -8,7 +8,7 @@
 +        explode(world, pos, igniter);
 +    }
 +
-     public void onPlace(BlockState p_57466_, Level p_57467_, BlockPos p_57468_, BlockState p_57469_, boolean p_57470_) {
+     protected void onPlace(BlockState p_57466_, Level p_57467_, BlockPos p_57468_, BlockState p_57469_, boolean p_57470_) {
          if (!p_57469_.is(p_57466_.getBlock())) {
              if (p_57467_.hasNeighborSignal(p_57468_)) {
 -                explode(p_57467_, p_57468_);
@@ -18,7 +18,7 @@
          }
 @@ -53,7 +_,7 @@
      @Override
-     public void neighborChanged(BlockState p_57457_, Level p_57458_, BlockPos p_57459_, Block p_57460_, BlockPos p_57461_, boolean p_57462_) {
+     protected void neighborChanged(BlockState p_57457_, Level p_57458_, BlockPos p_57459_, Block p_57460_, BlockPos p_57461_, boolean p_57462_) {
          if (p_57458_.hasNeighborSignal(p_57459_)) {
 -            explode(p_57458_, p_57459_);
 +            onCaughtFire(p_57457_, p_57458_, p_57459_, null, null);
@@ -47,16 +47,16 @@
      private static void explode(Level p_57437_, BlockPos p_57438_, @Nullable LivingEntity p_57439_) {
          if (!p_57437_.isClientSide) {
              PrimedTnt primedtnt = new PrimedTnt(p_57437_, (double)p_57438_.getX() + 0.5, (double)p_57438_.getY(), (double)p_57438_.getZ() + 0.5, p_57439_);
-@@ -98,7 +_,7 @@
-         if (!itemstack.is(Items.FLINT_AND_STEEL) && !itemstack.is(Items.FIRE_CHARGE)) {
-             return super.use(p_57450_, p_57451_, p_57452_, p_57453_, p_57454_, p_57455_);
+@@ -99,7 +_,7 @@
+         if (!p_316149_.is(Items.FLINT_AND_STEEL) && !p_316149_.is(Items.FIRE_CHARGE)) {
+             return super.useItemOn(p_316149_, p_316217_, p_316520_, p_316601_, p_316770_, p_316393_, p_316532_);
          } else {
--            explode(p_57451_, p_57452_, p_57453_);
-+            onCaughtFire(p_57450_, p_57451_, p_57452_, p_57455_.getDirection(), p_57453_);
-             p_57451_.setBlock(p_57452_, Blocks.AIR.defaultBlockState(), 11);
-             Item item = itemstack.getItem();
-             if (!p_57453_.isCreative()) {
-@@ -120,7 +_,7 @@
+-            explode(p_316520_, p_316601_, p_316770_);
++            onCaughtFire(p_316217_, p_316520_, p_316601_, p_316532_.getDirection(), p_316770_);
+             p_316520_.setBlock(p_316601_, Blocks.AIR.defaultBlockState(), 11);
+             Item item = p_316149_.getItem();
+             if (!p_316770_.isCreative()) {
+@@ -121,7 +_,7 @@
              BlockPos blockpos = p_57431_.getBlockPos();
              Entity entity = p_57432_.getOwner();
              if (p_57432_.isOnFire() && p_57432_.mayInteract(p_57429_, blockpos)) {

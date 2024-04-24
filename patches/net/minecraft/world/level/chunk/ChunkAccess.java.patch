@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -54,7 +_,7 @@
+@@ -57,7 +_,7 @@
  import net.minecraft.world.ticks.TickContainerAccess;
  import org.slf4j.Logger;
  
@@ -9,40 +9,40 @@
      public static final int NO_FILLED_SECTION = -1;
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
-@@ -308,23 +_,28 @@
+@@ -311,10 +_,19 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
 -        this.findBlocks(p_284897_ -> p_284897_.getLightEmission() != 0, p_285269_);
-+        this.findBlocks((p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, p_285269_);
++        this.findBlocks(p_284897_ -> p_284897_.hasDynamicLightEmission() || p_284897_.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, p_285269_);
      }
  
      public void findBlocks(Predicate<BlockState> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
-+        findBlocks((state, pos) -> p_285343_.test(state), p_285030_);
++        findBlocks(p_285343_, (state, pos) -> p_285343_.test(state), p_285030_);
 +    }
 +
++    @Deprecated(forRemoval = true)
 +    public void findBlocks(java.util.function.BiPredicate<BlockState, BlockPos> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
++        findBlocks(state -> p_285343_.test(state, BlockPos.ZERO), p_285343_, p_285030_);
++    }
++
++    public void findBlocks(Predicate<BlockState> p_285343_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-         for(int i = this.getMinSection(); i < this.getMaxSection(); ++i) {
-             LevelChunkSection levelchunksection = this.getSection(this.getSectionIndexFromSectionY(i));
--            if (levelchunksection.maybeHas(p_285343_)) {
-+            if (levelchunksection.maybeHas((state) -> p_285343_.test(state, BlockPos.ZERO))) {
-                 BlockPos blockpos = SectionPos.of(this.chunkPos, i).origin();
- 
-                 for(int j = 0; j < 16; ++j) {
-                     for(int k = 0; k < 16; ++k) {
-                         for(int l = 0; l < 16; ++l) {
+         for (int i = this.getMinSection(); i < this.getMaxSection(); i++) {
+@@ -326,8 +_,9 @@
+                     for (int k = 0; k < 16; k++) {
+                         for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
 -                            if (p_285343_.test(blockstate)) {
 -                                p_285030_.accept(blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k), blockstate);
 +                            blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k);
-+                            if (p_285343_.test(blockstate, blockpos$mutableblockpos.immutable())) {
++                            if (fineFilter.test(blockstate, blockpos$mutableblockpos)) {
 +                                p_285030_.accept(blockpos$mutableblockpos, blockstate);
                              }
                          }
                      }
-@@ -469,4 +_,70 @@
+@@ -472,4 +_,70 @@
  
      public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
      }
@@ -91,8 +91,8 @@
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    @Nullable
-+    public final CompoundTag writeAttachmentsToNBT() {
-+        return getAttachmentHolder().serializeAttachments();
++    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
++        return getAttachmentHolder().serializeAttachments(provider);
 +    }
 +
 +    /**
@@ -102,8 +102,8 @@
 +     *
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final void readAttachmentsFromNBT(CompoundTag tag) {
-+        getAttachmentHolder().deserializeInternal(tag);
++    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
++        getAttachmentHolder().deserializeInternal(provider, tag);
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
@@ -111,5 +111,5 @@
 +        return attachmentHolder;
 +    }
 +    @Nullable
-+    public net.minecraft.world.level.LevelAccessor getWorldForge() { return null; }
++    public net.minecraft.world.level.Level getLevel() { return null; }
  }

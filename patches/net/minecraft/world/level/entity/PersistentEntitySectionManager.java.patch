@@ -21,7 +21,7 @@
      }
  
      public void addLegacyChunkEntities(Stream<T> p_157553_) {
--        p_157553_.forEach(p_157607_ -> this.addEntity(p_157607_, true));
+-        p_157553_.forEach(p_157607_ -> this.addEntity((T)p_157607_, true));
 +        p_157553_.forEach(p_157607_ -> {
 +            this.addEntity(p_157607_, true);
 +            if (p_157607_ instanceof Entity entity) entity.onAddedToWorld();
@@ -29,7 +29,7 @@
      }
  
      public void addWorldGenChunkEntities(Stream<T> p_157560_) {
--        p_157560_.forEach(p_157605_ -> this.addEntity(p_157605_, false));
+-        p_157560_.forEach(p_157605_ -> this.addEntity((T)p_157605_, false));
 +        p_157560_.forEach(p_157605_ -> {
 +            this.addEntity(p_157605_, false);
 +            if (p_157605_ instanceof Entity entity) entity.onAddedToWorld();
@@ -40,8 +40,8 @@
 @@ -228,7 +_,10 @@
      private void processPendingLoads() {
          ChunkEntities<T> chunkentities;
-         while((chunkentities = this.loadingInbox.poll()) != null) {
--            chunkentities.getEntities().forEach(p_157593_ -> this.addEntity(p_157593_, true));
+         while ((chunkentities = this.loadingInbox.poll()) != null) {
+-            chunkentities.getEntities().forEach(p_157593_ -> this.addEntity((T)p_157593_, true));
 +            chunkentities.getEntities().forEach(p_157593_ -> {
 +                this.addEntity(p_157593_, true);
 +                if (p_157593_ instanceof Entity entity) entity.onAddedToWorld();

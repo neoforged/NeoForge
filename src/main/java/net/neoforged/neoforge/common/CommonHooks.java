@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -33,16 +35,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.ChatDecorator;
@@ -90,23 +94,24 @@ import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -120,6 +125,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
@@ -133,6 +139,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
+import net.neoforged.neoforge.common.extensions.IItemStackExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -180,7 +187,6 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
@@ -343,7 +349,7 @@ public class CommonHooks {
         return event.getEntity();
     }
 
-    public static boolean onVanillaGameEvent(Level level, GameEvent vanillaEvent, Vec3 pos, GameEvent.Context context) {
+    public static boolean onVanillaGameEvent(Level level, Holder<GameEvent> vanillaEvent, Vec3 pos, GameEvent.Context context) {
         return !NeoForge.EVENT_BUS.post(new VanillaGameEvent(level, vanillaEvent, pos, context)).isCanceled();
     }
 
@@ -440,7 +446,7 @@ public class CommonHooks {
     }
 
     public static void dropXpForBlock(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack) {
-        int fortuneLevel = stack.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE);
+        int fortuneLevel = stack.getEnchantmentLevel(Enchantments.FORTUNE);
         int silkTouchLevel = stack.getEnchantmentLevel(Enchantments.SILK_TOUCH);
         int exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
         if (exp > 0)
@@ -460,8 +466,10 @@ public class CommonHooks {
                 preCancelEvent = true;
 
             if (!entityPlayer.mayBuild()) {
-                if (itemstack.isEmpty() || !itemstack.hasAdventureModeBreakTagForBlock(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, pos, false)))
+                AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_BREAK);
+                if (itemstack.isEmpty() || adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, pos, false))) {
                     preCancelEvent = true;
+                }
             }
         }
 
@@ -498,15 +506,20 @@ public class CommonHooks {
         Level level = context.getLevel();
 
         Player player = context.getPlayer();
-        if (player != null && !player.getAbilities().mayBuild && !itemstack.hasAdventureModePlaceTagForBlock(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, context.getClickedPos(), false)))
-            return InteractionResult.PASS;
+        if (player != null && !player.getAbilities().mayBuild) {
+            AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_PLACE_ON);
+            if (adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, context.getClickedPos(), false))) {
+                return net.minecraft.world.InteractionResult.PASS;
+            }
+        }
 
         // handle all placement events here
         Item item = itemstack.getItem();
         int size = itemstack.getCount();
-        CompoundTag nbt = null;
-        if (itemstack.getTag() != null)
-            nbt = itemstack.getTag().copy();
+        // Porting 1.20.5 redo this for components?
+        //CompoundTag nbt = null;
+        //if (itemstack.getTag() != null)
+        //    nbt = itemstack.getTag().copy();
 
         if (!(itemstack.getItem() instanceof BucketItem)) // if not bucket
             level.captureBlockSnapshots = true;
@@ -521,17 +534,17 @@ public class CommonHooks {
         if (ret.consumesAction()) {
             // save new item data
             int newSize = itemstack.getCount();
-            CompoundTag newNBT = null;
-            if (itemstack.getTag() != null) {
-                newNBT = itemstack.getTag().copy();
-            }
+            //CompoundTag newNBT = null;
+            //if (itemstack.getTag() != null) {
+            //    newNBT = itemstack.getTag().copy();
+            //}
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>) level.capturedBlockSnapshots.clone();
             level.capturedBlockSnapshots.clear();
 
             // make sure to set pre-placement item data for event
             itemstack.setCount(size);
-            itemstack.setTag(nbt);
+            //itemstack.setTag(nbt);
             //TODO: Set pre-placement item attachments?
 
             Direction side = context.getClickedFace();
@@ -554,7 +567,7 @@ public class CommonHooks {
             } else {
                 // Change the stack to its new content
                 itemstack.setCount(newSize);
-                itemstack.setTag(newNBT);
+                //itemstack.setTag(newNBT);
 
                 for (BlockSnapshot snap : blockSnapshots) {
                     int updateFlag = snap.getFlag();
@@ -573,7 +586,7 @@ public class CommonHooks {
         return ret;
     }
 
-    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, int baseCost, Player player) {
+    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
         if (NeoForge.EVENT_BUS.post(e).isCanceled())
             return false;
@@ -658,23 +671,27 @@ public class CommonHooks {
         return !event.isCanceled();
     }
 
+    @Nullable
     public static InteractionResult onInteractEntityAt(Player player, Entity entity, HitResult ray, InteractionHand hand) {
         Vec3 vec3d = ray.getLocation().subtract(entity.position());
         return onInteractEntityAt(player, entity, vec3d, hand);
     }
 
+    @Nullable
     public static InteractionResult onInteractEntityAt(Player player, Entity entity, Vec3 vec3d, InteractionHand hand) {
         PlayerInteractEvent.EntityInteractSpecific evt = new PlayerInteractEvent.EntityInteractSpecific(player, hand, entity, vec3d);
         NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
+    @Nullable
     public static InteractionResult onInteractEntity(Player player, Entity entity, InteractionHand hand) {
         PlayerInteractEvent.EntityInteract evt = new PlayerInteractEvent.EntityInteract(player, hand, entity);
         NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
+    @Nullable
     public static InteractionResult onItemRightClick(Player player, InteractionHand hand) {
         PlayerInteractEvent.RightClickItem evt = new PlayerInteractEvent.RightClickItem(player, hand);
         NeoForge.EVENT_BUS.post(evt);
@@ -810,9 +827,9 @@ public class CommonHooks {
     }
 
     /**
-     * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#getAttributeModifiers(EquipmentSlot)} instead.
+     * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#forEachModifier(EquipmentSlot, BiConsumer)} instead.
      */
-    public static Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Attribute, AttributeModifier> attributes) {
+    public static Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Holder<Attribute>, AttributeModifier> attributes) {
         ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, equipmentSlot, attributes);
         NeoForge.EVENT_BUS.post(event);
         return event.getModifiers();
@@ -837,24 +854,25 @@ public class CommonHooks {
         String modId = registryName == null ? null : registryName.getNamespace();
         if ("minecraft".equals(modId)) {
             if (item instanceof EnchantedBookItem) {
-                ListTag enchantmentsNbt = EnchantedBookItem.getEnchantments(itemStack);
-                if (enchantmentsNbt.size() == 1) {
-                    CompoundTag nbttagcompound = enchantmentsNbt.getCompound(0);
-                    ResourceLocation resourceLocation = ResourceLocation.tryParse(nbttagcompound.getString("id"));
-                    if (resourceLocation != null && BuiltInRegistries.ENCHANTMENT.containsKey(resourceLocation)) {
-                        return resourceLocation.getNamespace();
+                Set<Holder<Enchantment>> enchantments = itemStack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY).keySet();
+                if (enchantments.size() == 1) {
+                    Holder<Enchantment> enchantmentHolder = enchantments.iterator().next();
+                    Optional<ResourceKey<Enchantment>> key = enchantmentHolder.unwrapKey();
+                    if (key.isPresent()) {
+                        return key.get().location().getNamespace();
                     }
                 }
             } else if (item instanceof PotionItem || item instanceof TippedArrowItem) {
-                Potion potionType = PotionUtils.getPotion(itemStack);
-                ResourceLocation resourceLocation = BuiltInRegistries.POTION.getKey(potionType);
-                if (resourceLocation != null) {
-                    return resourceLocation.getNamespace();
+                PotionContents potionContents = itemStack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                Optional<Holder<Potion>> potionType = potionContents.potion();
+                Optional<ResourceKey<Potion>> key = potionType.flatMap(Holder::unwrapKey);
+                if (key.isPresent()) {
+                    return key.get().location().getNamespace();
                 }
-            } else if (item instanceof SpawnEggItem) {
-                ResourceLocation resourceLocation = BuiltInRegistries.ENTITY_TYPE.getKey(((SpawnEggItem) item).getType(null));
-                if (resourceLocation != null) {
-                    return resourceLocation.getNamespace();
+            } else if (item instanceof SpawnEggItem spawnEggItem) {
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
+                if (key.isPresent()) {
+                    return key.get().location().getNamespace();
                 }
             }
         }
@@ -875,18 +893,6 @@ public class CommonHooks {
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return -1;
         return event.getVanillaNoteId();
-    }
-
-    public static boolean hasNoElements(Ingredient ingredient) {
-        ItemStack[] items = ingredient.getItems();
-        if (items.length == 0)
-            return true;
-        if (items.length == 1) {
-            // If we potentially added a barrier due to the ingredient being an empty tag, try and check if it is the stack we added
-            ItemStack item = items[0];
-            return item.getItem() == Items.BARRIER && item.getHoverName() instanceof MutableComponent hoverName && hoverName.getString().startsWith("Empty Tag: ");
-        }
-        return false;
     }
 
     @Deprecated(forRemoval = true, since = "1.20.1") // Tags use a codec now This was never used in 1.20
@@ -922,19 +928,13 @@ public class CommonHooks {
     }
 
     /**
-     * Gets the burn time of this itemstack.
+     * Gets the burn time of this item stack.
+     * 
+     * @deprecated Use {@link IItemStackExtension#getBurnTime(RecipeType)} instead.
      */
+    @Deprecated(forRemoval = true, since = "1.20.5")
     public static int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
-        if (stack.isEmpty()) {
-            return 0;
-        } else {
-            int ret = stack.getBurnTime(recipeType);
-            if (ret == -1) {
-                var fuel = stack.getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-                ret = fuel == null ? 0 : fuel.burnTime();
-            }
-            return EventHooks.getItemBurnTime(stack, ret, recipeType);
-        }
+        return stack.getBurnTime(recipeType);
     }
 
     /**
@@ -1004,9 +1004,9 @@ public class CommonHooks {
     /** FOR INTERNAL USE ONLY, DO NOT CALL DIRECTLY */
     @Deprecated
     public static void modifyAttributes() {
-        ModLoader.get().postEvent(new EntityAttributeCreationEvent(FORGE_ATTRIBUTES));
+        ModLoader.postEvent(new EntityAttributeCreationEvent(FORGE_ATTRIBUTES));
         Map<EntityType<? extends LivingEntity>, AttributeSupplier.Builder> finalMap = new HashMap<>();
-        ModLoader.get().postEvent(new EntityAttributeModificationEvent(finalMap));
+        ModLoader.postEvent(new EntityAttributeModificationEvent(finalMap));
 
         finalMap.forEach((k, v) -> {
             AttributeSupplier supplier = DefaultAttributes.getSupplier(k);
@@ -1078,7 +1078,7 @@ public class CommonHooks {
             }
 
             final var mismatchEvent = new ModMismatchEvent(levelDirectory, mismatchedVersions, missingVersions);
-            ModLoader.get().postEvent(mismatchEvent);
+            ModLoader.postEvent(mismatchEvent);
 
             StringBuilder resolved = new StringBuilder("The following mods have version differences that were marked resolved:");
             StringBuilder unresolved = new StringBuilder("The following mods have version differences that were not resolved:");
@@ -1225,7 +1225,7 @@ public class CommonHooks {
     public static <T> HolderLookup.RegistryLookup<T> wrapRegistryLookup(final HolderLookup.RegistryLookup<T> lookup) {
         return new HolderLookup.RegistryLookup.Delegate<>() {
             @Override
-            protected RegistryLookup<T> parent() {
+            public RegistryLookup<T> parent() {
                 return lookup;
             }
 
@@ -1286,6 +1286,74 @@ public class CommonHooks {
 
         if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
             entity.stopRiding();
+        }
+    }
+
+    private static final Set<Class<?>> checkedComponentClasses = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Marks a class as being safe to use as a {@link DataComponents data component}.
+     * Keep in mind that data components are compared with {@link Object#equals(Object)}
+     * and hashed with {@link Object#hashCode()}.
+     * <b>They must also be immutable.</b>
+     *
+     * <p>Only call this method if the default implementations of {@link Object#equals(Object)}
+     * and {@link Object#hashCode()} are suitable for this class,
+     * and if instances of this class are immutable.
+     * Typically, this is only the case for singletons such as {@link Block} instances.
+     */
+    public static void markComponentClassAsValid(Class<?> clazz) {
+        if (clazz.isRecord() || clazz.isEnum()) {
+            throw new IllegalArgumentException("Records and enums are always valid components");
+        }
+
+        if (overridesEqualsAndHashCode(clazz)) {
+            throw new IllegalArgumentException("Class " + clazz + " already overrides equals and hashCode");
+        }
+
+        checkedComponentClasses.add(clazz);
+    }
+
+    static {
+        // Mark common singletons as valid
+        markComponentClassAsValid(Block.class);
+        markComponentClassAsValid(BlockState.class);
+        markComponentClassAsValid(Fluid.class);
+        markComponentClassAsValid(FluidState.class);
+        markComponentClassAsValid(Item.class);
+    }
+
+    /**
+     * Checks that all data components override equals and hashCode.
+     */
+    @ApiStatus.Internal
+    public static void validateComponent(@Nullable Object dataComponent) {
+        if (!SharedConstants.IS_RUNNING_IN_IDE || dataComponent == null) {
+            return;
+        }
+
+        Class<?> clazz = dataComponent.getClass();
+        if (!checkedComponentClasses.contains(clazz)) {
+            if (clazz.isRecord() || clazz.isEnum()) {
+                checkedComponentClasses.add(clazz);
+                return; // records and enums are always ok
+            }
+
+            if (overridesEqualsAndHashCode(clazz)) {
+                checkedComponentClasses.add(clazz);
+            } else {
+                throw new IllegalArgumentException("Data components must implement equals and hashCode. Keep in mind they must also be immutable. Problematic class: " + clazz);
+            }
+        }
+    }
+
+    private static boolean overridesEqualsAndHashCode(Class<?> clazz) {
+        try {
+            Method equals = clazz.getMethod("equals", Object.class);
+            Method hashCode = clazz.getMethod("hashCode");
+            return equals.getDeclaringClass() != Object.class && hashCode.getDeclaringClass() != Object.class;
+        } catch (ReflectiveOperationException exception) {
+            throw new RuntimeException("Failed to check for component equals and hashCode", exception);
         }
     }
 }

@@ -7,7 +7,7 @@
       "item": "minecraft:magenta_wool"
     },
     "|": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "pattern": [
@@ -16,6 +16,7 @@
     " | "
   ],
   "result": {
-    "item": "minecraft:magenta_banner"
+    "count": 1,
+    "id": "minecraft:magenta_banner"
   }
 }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/core/component/DataComponentHolder.java
++++ b/net/minecraft/core/component/DataComponentHolder.java
+@@ -2,7 +_,7 @@
+ 
+ import javax.annotation.Nullable;
+ 
+-public interface DataComponentHolder {
++public interface DataComponentHolder extends net.neoforged.neoforge.common.extensions.IDataComponentHolderExtension {
+     DataComponentMap getComponents();
+ 
+     @Nullable

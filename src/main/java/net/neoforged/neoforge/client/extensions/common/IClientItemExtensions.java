@@ -148,6 +148,24 @@ public interface IClientItemExtensions {
         return Minecraft.getInstance().getItemRenderer().getBlockEntityRenderer();
     }
 
+    /**
+     * {@return Whether the item should bob when rendered in the world as an entity}
+     *
+     * @param stack The stack being rendered
+     */
+    default boolean shouldBobAsEntity(ItemStack stack) {
+        return true;
+    }
+
+    /**
+     * {@return Whether the item should be spread out when rendered in the world as an entity}
+     *
+     * @param stack The stack being rendered
+     */
+    default boolean shouldSpreadAsEntity(ItemStack stack) {
+        return true;
+    }
+
     enum FontContext {
         /**
          * Used to display the amount of items in the {@link ItemStack}.

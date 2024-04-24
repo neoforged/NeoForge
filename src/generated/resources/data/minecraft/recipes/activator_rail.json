@@ -6,10 +6,10 @@
       "item": "minecraft:redstone_torch"
     },
     "S": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 6,
-    "item": "minecraft:activator_rail"
+    "id": "minecraft:activator_rail"
   }
 }

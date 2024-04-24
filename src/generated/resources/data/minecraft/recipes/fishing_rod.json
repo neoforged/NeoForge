@@ -3,10 +3,10 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
-      "tag": "forge:string"
+      "tag": "c:strings"
     }
   },
   "pattern": [
@@ -15,6 +15,7 @@
     "# X"
   ],
   "result": {
-    "item": "minecraft:fishing_rod"
+    "count": 1,
+    "id": "minecraft:fishing_rod"
   }
 }

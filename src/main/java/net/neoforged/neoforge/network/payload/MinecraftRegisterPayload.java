@@ -7,24 +7,19 @@ package net.neoforged.neoforge.network.payload;
 
 import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public record MinecraftRegisterPayload(Set<ResourceLocation> newChannels) implements CustomPacketPayload {
     public static final ResourceLocation ID = new ResourceLocation("register");
-    public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = MinecraftRegisterPayload::new;
-
-    public MinecraftRegisterPayload(FriendlyByteBuf buf) {
-        this(DinnerboneProtocolUtils.readChannels(buf));
-    }
+    public static final Type<MinecraftRegisterPayload> TYPE = new Type<>(ID);
+    public static final StreamCodec<FriendlyByteBuf, MinecraftRegisterPayload> STREAM_CODEC = DinnerboneProtocolUtils.CHANNELS_CODEC.map(MinecraftRegisterPayload::new, MinecraftRegisterPayload::newChannels);
 
     @Override
-    public void write(FriendlyByteBuf buf) {
-        DinnerboneProtocolUtils.writeChannels(buf, newChannels);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<MinecraftRegisterPayload> type() {
+        return TYPE;
     }
 }

@@ -5,7 +5,7 @@
              boolean flag = hasTransparentPixel(anativeimage[0]);
  
 +            int maxMipmapLevel = net.neoforged.neoforge.client.ClientHooks.getMaxMipmapLevel(anativeimage[0].getWidth(), anativeimage[0].getHeight());
-             for(int i = 1; i <= p_252326_; ++i) {
+             for (int i = 1; i <= p_252326_; i++) {
                  if (i < p_251300_.length) {
                      anativeimage[i] = p_251300_[i];
                  } else {

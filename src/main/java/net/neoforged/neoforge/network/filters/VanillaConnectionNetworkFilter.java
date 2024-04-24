@@ -34,12 +34,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.registries.RegistryManager;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
 /**
  * A filter for impl packets, used to filter/modify parts of vanilla impl messages that
  * will cause errors or warnings on vanilla clients, for example entity attributes that are added by Forge or mods.
  */
+@ApiStatus.Internal
 @ChannelHandler.Sharable
 public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -70,7 +72,7 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
         ClientboundUpdateAttributesPacket newPacket = new ClientboundUpdateAttributesPacket(msg.getEntityId(), Collections.emptyList());
         msg.getValues().stream()
                 .filter(snapshot -> {
-                    ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(snapshot.getAttribute());
+                    ResourceLocation key = snapshot.attribute().unwrapKey().map(ResourceKey::location).orElse(null);
                     return key != null && key.getNamespace().equals("minecraft");
                 })
                 .forEach(snapshot -> newPacket.getValues().add(snapshot));

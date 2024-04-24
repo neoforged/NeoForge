@@ -11,7 +11,7 @@
          .thenComparing(p_247945_ -> p_247945_.entry.name());
 @@ -48,6 +_,14 @@
  
-         for(Stitcher.Holder<T> holder : list) {
+         for (Stitcher.Holder<T> holder : list) {
              if (!this.addToStorage(holder)) {
 +                if (LOGGER.isInfoEnabled()) {
 +                    StringBuilder sb = new StringBuilder();

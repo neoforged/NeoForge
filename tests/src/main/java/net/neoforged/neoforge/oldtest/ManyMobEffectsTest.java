@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
+import java.util.Optional;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -18,9 +20,8 @@ import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SuspiciousStewItem;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.level.block.SuspiciousEffectHolder;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
@@ -59,10 +60,11 @@ public class ManyMobEffectsTest {
             final var index = i;
             effect = MOB_EFFECTS.register("effect_" + i, () -> new MobEffect(MobEffectCategory.NEUTRAL, 0xFF0000) {
                 @Override
-                public void applyEffectTick(LivingEntity entity, int amplifier) {
+                public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     if (entity.level().isClientSide) {
                         LOGGER.info("Effect Tick for {} on the client", index);
                     }
+                    return super.applyEffectTick(entity, amplifier);
                 }
 
                 @Override
@@ -82,11 +84,11 @@ public class ManyMobEffectsTest {
                 .icon(() -> new ItemStack(Items.POTION))
                 .displayItems((params, output) -> {
                     var stack = new ItemStack(Items.POTION);
-                    PotionUtils.setCustomEffects(stack, List.of(new MobEffectInstance(LAST_EFFECT.get(), 1000)));
+                    stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), List.of(new MobEffectInstance(LAST_EFFECT, 1000))));
                     output.accept(stack);
 
                     stack = new ItemStack(Items.SUSPICIOUS_STEW);
-                    SuspiciousStewItem.saveMobEffects(stack, List.of(new SuspiciousEffectHolder.EffectEntry(LAST_EFFECT.get(), 1000)));
+                    stack.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, new SuspiciousStewEffects(List.of(new SuspiciousStewEffects.Entry(LAST_EFFECT, 1000))));
                     output.accept(stack);
                 })
                 .build())));
@@ -96,10 +98,11 @@ public class ManyMobEffectsTest {
         if (!event.getTarget().level().isClientSide() && event.getTarget() instanceof MushroomCow cow) {
             var heldItem = event.getEntity().getItemInHand(event.getHand());
             if (heldItem.is(Items.POTION)) {
-                var effects = PotionUtils.getMobEffects(heldItem);
-                if (!effects.isEmpty()) {
-                    ObfuscationReflectionHelper.setPrivateValue(MushroomCow.class, cow, effects.get(0).getEffect(), "effect");
-                    ObfuscationReflectionHelper.setPrivateValue(MushroomCow.class, cow, effects.get(0).getDuration(), "effectDuration");
+                var effects = heldItem.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getAllEffects().iterator();
+                if (effects.hasNext()) {
+                    MobEffectInstance effect = effects.next();
+                    ObfuscationReflectionHelper.setPrivateValue(MushroomCow.class, cow, effect.getEffect(), "effect");
+                    ObfuscationReflectionHelper.setPrivateValue(MushroomCow.class, cow, effect.getDuration(), "effectDuration");
                 }
             } else if (heldItem.isEmpty()) {
                 var effect = ((MobEffect) ObfuscationReflectionHelper.getPrivateValue(MushroomCow.class, cow, "effect"));

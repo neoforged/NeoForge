@@ -35,7 +35,7 @@ public class ModDatapackTest {
                     .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(
                             new InventoryChangeTrigger.TriggerInstance(
                                     Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
-                                            ItemPredicate.Builder.item().of(Items.SCUTE).build()))))
+                                            ItemPredicate.Builder.item().of(Items.TURTLE_SCUTE).build()))))
                     .rewards(AdvancementRewards.Builder.recipe(new ResourceLocation("minecraft:turtle_helmet")))
                     .save(saver, testAdvancement, existingFileHelper));
             return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper(), generators);

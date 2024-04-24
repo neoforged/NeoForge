@@ -3,10 +3,10 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     }
   },
   "pattern": [
@@ -15,6 +15,7 @@
     " # "
   ],
   "result": {
-    "item": "minecraft:diamond_pickaxe"
+    "count": 1,
+    "id": "minecraft:diamond_pickaxe"
   }
 }

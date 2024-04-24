@@ -12,15 +12,15 @@
          this.addSlot(new Slot(this.repairSlots, 0, 49, 19) {
              @Override
              public boolean mayPlace(ItemStack p_39607_) {
--                return p_39607_.isDamageableItem() || p_39607_.is(Items.ENCHANTED_BOOK) || p_39607_.isEnchanted();
-+                return p_39607_.isDamageableItem() || p_39607_.is(Items.ENCHANTED_BOOK) || p_39607_.isEnchanted() || p_39607_.canGrindstoneRepair();
+-                return p_39607_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39607_);
++                return p_39607_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39607_) || p_39607_.canGrindstoneRepair();
              }
          });
          this.addSlot(new Slot(this.repairSlots, 1, 49, 40) {
              @Override
              public boolean mayPlace(ItemStack p_39616_) {
--                return p_39616_.isDamageableItem() || p_39616_.is(Items.ENCHANTED_BOOK) || p_39616_.isEnchanted();
-+                return p_39616_.isDamageableItem() || p_39616_.is(Items.ENCHANTED_BOOK) || p_39616_.isEnchanted() || p_39616_.canGrindstoneRepair();
+-                return p_39616_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39616_);
++                return p_39616_.isDamageableItem() || EnchantmentHelper.hasAnyEnchantments(p_39616_) || p_39616_.canGrindstoneRepair();
              }
          });
          this.addSlot(new Slot(this.resultSlots, 2, 129, 34) {
@@ -40,51 +40,29 @@
                  int l = 0;
                  l += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(0));
                  l += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(1));
-@@ -128,6 +_,8 @@
-         ItemStack itemstack1 = this.repairSlots.getItem(1);
-         boolean flag = !itemstack.isEmpty() || !itemstack1.isEmpty();
-         boolean flag1 = !itemstack.isEmpty() && !itemstack1.isEmpty();
-+        this.xp = net.neoforged.neoforge.common.CommonHooks.onGrindstoneChange(itemstack, itemstack1, this.resultSlots, -1);
-+        if (this.xp == Integer.MIN_VALUE)
+@@ -130,6 +_,8 @@
+ 
+     private ItemStack computeResult(ItemStack p_332654_, ItemStack p_332736_) {
+         boolean flag = !p_332654_.isEmpty() || !p_332736_.isEmpty();
++        this.xp = net.neoforged.neoforge.common.CommonHooks.onGrindstoneChange(p_332654_, p_332736_, this.resultSlots, -1);
++        if (this.xp != Integer.MIN_VALUE) return ItemStack.EMPTY; // Porting 1.20.5 check if this is correct
          if (!flag) {
-             this.resultSlots.setItem(0, ItemStack.EMPTY);
-         } else {
-@@ -150,12 +_,13 @@
+             return ItemStack.EMPTY;
+         } else if (p_332654_.getCount() <= 1 && p_332736_.getCount() <= 1) {
+@@ -154,7 +_,7 @@
+             int k = p_332686_.getMaxDamage() - p_332686_.getDamageValue();
+             int l = j + k + i * 5 / 100;
+             int i1 = 1;
+-            if (!p_332723_.isDamageableItem()) {
++            if (!p_332723_.isDamageableItem() || !p_332723_.isRepairable()) {
+                 if (p_332723_.getMaxStackSize() < 2 || !ItemStack.matches(p_332723_, p_332686_)) {
+                     return ItemStack.EMPTY;
                  }
- 
-                 Item item = itemstack.getItem();
--                int k = item.getMaxDamage() - itemstack.getDamageValue();
--                int l = item.getMaxDamage() - itemstack1.getDamageValue();
--                int i1 = k + l + item.getMaxDamage() * 5 / 100;
--                i = Math.max(item.getMaxDamage() - i1, 0);
-+                int k = itemstack.getMaxDamage() - itemstack.getDamageValue();
-+                int l = itemstack.getMaxDamage() - itemstack1.getDamageValue();
-+                int i1 = k + l + itemstack.getMaxDamage() * 5 / 100;
-+                i = Math.max(itemstack.getMaxDamage() - i1, 0);
-                 itemstack2 = this.mergeEnchants(itemstack, itemstack1);
--                if (!itemstack2.isDamageableItem()) {
-+                if (!itemstack2.isRepairable()) i = itemstack.getDamageValue();
-+                if (!itemstack2.isDamageableItem() || !itemstack2.isRepairable()) {
-                     if (!ItemStack.matches(itemstack, itemstack1)) {
-                         this.resultSlots.setItem(0, ItemStack.EMPTY);
-                         this.broadcastChanges();
-@@ -170,6 +_,10 @@
-                 itemstack2 = flag3 ? itemstack : itemstack1;
+@@ -166,6 +_,7 @@
+             if (itemstack.isDamageableItem()) {
+                 itemstack.set(DataComponents.MAX_DAMAGE, i);
+                 itemstack.setDamageValue(Math.max(i - l, 0));
++                if (!p_332686_.isRepairable()) itemstack.setDamageValue(p_332723_.getDamageValue());
              }
  
-+            // Forge: Skip the repair if the result would give an item stack with a count not normally obtainable
-+            if (j > itemstack2.getMaxStackSize())
-+                this.resultSlots.setItem(0, ItemStack.EMPTY);
-+            else
-             this.resultSlots.setItem(0, this.removeNonCurses(itemstack2, i, j));
-         }
- 
-@@ -182,7 +_,7 @@
- 
-         for(Entry<Enchantment, Integer> entry : map.entrySet()) {
-             Enchantment enchantment = entry.getKey();
--            if (!enchantment.isCurse() || EnchantmentHelper.getItemEnchantmentLevel(enchantment, itemstack) == 0) {
-+            if (!enchantment.isCurse() || EnchantmentHelper.getTagEnchantmentLevel(enchantment, itemstack) == 0) {
-                 itemstack.enchant(enchantment, entry.getValue());
-             }
-         }
+             this.mergeEnchantsFrom(itemstack, p_332686_);

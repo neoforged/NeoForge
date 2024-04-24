@@ -6,18 +6,18 @@
          FluidState fluidstate1 = p_62995_.getFluidState();
 -        if (!blockstate.isAir()) {
 +        if (!blockstate.isEmpty()) { // Neo: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
-             --this.nonEmptyBlockCount;
+             this.nonEmptyBlockCount--;
              if (blockstate.isRandomlyTicking()) {
-                 --this.tickingBlockCount;
+                 this.tickingBlockCount--;
 @@ -76,7 +_,7 @@
-             --this.tickingFluidCount;
+             this.tickingFluidCount--;
          }
  
 -        if (!p_62995_.isAir()) {
 +        if (!p_62995_.isEmpty()) { // Neo: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
-             ++this.nonEmptyBlockCount;
+             this.nonEmptyBlockCount++;
              if (p_62995_.isRandomlyTicking()) {
-                 ++this.tickingBlockCount;
+                 this.tickingBlockCount++;
 @@ -114,7 +_,7 @@
  
              public void accept(BlockState p_204444_, int p_204445_) {

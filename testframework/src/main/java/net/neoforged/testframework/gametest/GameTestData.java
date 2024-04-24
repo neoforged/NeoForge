@@ -17,4 +17,4 @@ import net.minecraft.world.level.block.Rotation;
 public record GameTestData(
         @Nullable String batchName, String structureName, boolean required, int maxAttempts,
         int requiredSuccesses, Consumer<GameTestHelper> function, int maxTicks,
-        long setupTicks, Rotation rotation) {}
+        long setupTicks, Rotation rotation, boolean skyAccess) {}

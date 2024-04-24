@@ -127,8 +127,10 @@ public class RenderableTest {
                 xOffset = 5;
 
             Vec3 cam = event.getCamera().getPosition();
-            if (xOffset > -1)
-                render(stage, event.getPoseStack(), event.getRenderTick(), event.getPartialTick(), cam.x, cam.y, cam.z, xOffset);
+            if (xOffset > -1) {
+                PoseStack poseStack = event.getPoseStack();
+                render(stage, poseStack, event.getRenderTick(), event.getPartialTick(), cam.x, cam.y, cam.z, xOffset);
+            }
         }
 
         private static void render(Stage stage, PoseStack poseStack, int renderTick, float partialTick, double camX, double camY, double camZ, int xOffset) {

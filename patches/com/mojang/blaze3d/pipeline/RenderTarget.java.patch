@@ -10,7 +10,7 @@
 +                GlStateManager._texImage2D(3553, 0, org.lwjgl.opengl.GL30.GL_DEPTH32F_STENCIL8, this.width, this.height, 0, org.lwjgl.opengl.GL30.GL_DEPTH_STENCIL, org.lwjgl.opengl.GL30.GL_FLOAT_32_UNSIGNED_INT_24_8_REV, null);
              }
  
-             this.setFilterMode(9728);
+             this.setFilterMode(9728, true);
 @@ -117,7 +_,14 @@
              GlStateManager._glBindFramebuffer(36160, this.frameBufferId);
              GlStateManager._glFramebufferTexture2D(36160, 36064, 3553, this.colorTextureId, 0);
@@ -26,7 +26,7 @@
              }
  
              this.checkStatus();
-@@ -275,4 +_,27 @@
+@@ -281,4 +_,27 @@
      public int getDepthTextureId() {
          return this.depthBufferId;
      }

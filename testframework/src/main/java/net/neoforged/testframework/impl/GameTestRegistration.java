@@ -5,7 +5,6 @@
 
 package net.neoforged.testframework.impl;
 
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.TestFunction;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
@@ -22,7 +22,15 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public final class GameTestRegistration {
-    public static final Method REGISTER_METHOD = LamdbaExceptionUtils.uncheck(() -> GameTestRegistration.class.getDeclaredMethod("register"));
+    public static final Method REGISTER_METHOD;
+
+    static {
+        try {
+            REGISTER_METHOD = GameTestRegistration.class.getDeclaredMethod("register");
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @GameTestGenerator
     public static List<TestFunction> register() {
@@ -37,15 +45,21 @@ public final class GameTestRegistration {
                     tests.add(new TestFunction(
                             data.batchName() == null ? batchName : data.batchName(),
                             test.id(), data.structureName(),
-                            data.rotation(), data.maxTicks(), data.setupTicks(),
-                            data.required(), data.requiredSuccesses(), data.maxAttempts(),
+                            data.rotation(),
+                            data.maxTicks(),
+                            data.setupTicks(),
+                            data.required(),
+                            false, // TODO: MATY fix this
+                            data.maxAttempts(),
+                            data.requiredSuccesses(),
+                            data.skyAccess(),
                             rethrow(helper -> {
                                 ReflectionUtils.addListener(helper, new GameTestListener() {
                                     @Override
                                     public void testStructureLoaded(GameTestInfo info) {}
 
                                     @Override
-                                    public void testPassed(GameTestInfo info) {
+                                    public void testPassed(GameTestInfo info, GameTestRunner runner) {
                                         if (framework.tests().getStatus(test.id()).result() == Test.Result.NOT_PROCESSED) {
                                             framework.changeStatus(test, Test.Status.passed("GameTest passed"), null);
                                         }
@@ -53,10 +67,13 @@ public final class GameTestRegistration {
                                     }
 
                                     @Override
-                                    public void testFailed(GameTestInfo info) {
+                                    public void testFailed(GameTestInfo info, GameTestRunner runner) {
                                         framework.changeStatus(test, Test.Status.failed("GameTest fail: " + info.getError().getMessage()), null);
                                         disable();
                                     }
+
+                                    @Override
+                                    public void testAddedForRerun(GameTestInfo p_320937_, GameTestInfo p_320294_, GameTestRunner p_320147_) {}
 
                                     private void disable() {
                                         framework.setEnabled(test, false, null);

@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -11,6 +11,7 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:minecart"
+    "count": 1,
+    "id": "minecraft:minecart"
   }
 }

@@ -37,7 +37,7 @@
 +    private static org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> getOverlayBlock(Player p_110717_) {
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-         for(int i = 0; i < 8; ++i) {
+         for (int i = 0; i < 8; i++) {
 @@ -58,7 +_,7 @@
              blockpos$mutableblockpos.set(d0, d1, d2);
              BlockState blockstate = p_110717_.level().getBlockState(blockpos$mutableblockpos);

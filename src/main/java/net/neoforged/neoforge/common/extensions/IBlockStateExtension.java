@@ -16,7 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SpawnPlacements.Type;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
@@ -35,13 +34,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +66,17 @@ public interface IBlockStateExtension {
      */
     default float getFriction(LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return self().getBlock().getFriction(self(), level, pos, entity);
+    }
+
+    /**
+     * Whether this block state has dynamic light emission which is not solely based on its underlying block or its
+     * state properties and instead uses the {@link BlockPos}, the {@link AuxiliaryLightManager} or another external
+     * data source to determine its light value in {@link #getLightEmission(BlockGetter, BlockPos)}
+     *
+     * @return true if this block state cannot determine its light emission solely based on its properties, false otherwise
+     */
+    default boolean hasDynamicLightEmission() {
+        return self().getBlock().hasDynamicLightEmission(self());
     }
 
     /**
@@ -152,19 +163,6 @@ public interface IBlockStateExtension {
      */
     default boolean isBed(BlockGetter level, BlockPos pos, @Nullable LivingEntity sleeper) {
         return self().getBlock().isBed(self(), level, pos, sleeper);
-    }
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @param type  The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    default boolean isValidSpawn(LevelReader level, BlockPos pos, Type type, EntityType<?> entityType) {
-        return self().getBlock().isValidSpawn(self(), level, pos, type, entityType);
     }
 
     /**
@@ -564,7 +562,7 @@ public interface IBlockStateExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+    default PathType getBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob) {
         return self().getBlock().getBlockPathType(self(), level, pos, mob);
     }
 
@@ -581,7 +579,7 @@ public interface IBlockStateExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getAdjacentBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType) {
+    default PathType getAdjacentBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, PathType originalType) {
         return self().getBlock().getAdjacentBlockPathType(self(), level, pos, mob, originalType);
     }
 

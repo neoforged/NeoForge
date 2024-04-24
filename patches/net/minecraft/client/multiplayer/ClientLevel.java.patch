@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -120,6 +_,7 @@
+@@ -121,6 +_,7 @@
              p_194170_.put(
                  BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(p_194168_ -> this.calculateBlockTint(p_194168_, BiomeColors.WATER_COLOR_RESOLVER))
              );
@@ -8,16 +8,16 @@
          }
      );
      private final ClientChunkCache chunkSource;
-@@ -127,6 +_,8 @@
+@@ -128,6 +_,8 @@
      private int serverSimulationDistance;
      private final BlockStatePredictionHandler blockStatePredictionHandler = new BlockStatePredictionHandler();
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
 +    private final it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> partEntities = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>();
-+    private final net.neoforged.neoforge.client.model.data.ModelDataManager.Active modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager.Active(this);
++    private final net.neoforged.neoforge.client.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager(this);
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
-@@ -191,6 +_,7 @@
+@@ -192,6 +_,7 @@
          this.serverSimulationDistance = p_205510_;
          this.updateSkyBrightness();
          this.prepareWeather();
@@ -25,15 +25,15 @@
      }
  
      public void queueLightUpdate(Runnable p_194172_) {
-@@ -281,6 +_,7 @@
+@@ -282,6 +_,7 @@
          p_104640_.setOldPosAndRot();
-         ++p_104640_.tickCount;
+         p_104640_.tickCount++;
          this.getProfiler().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
 +        if (p_104640_.canUpdate())
          p_104640_.tick();
          this.getProfiler().pop();
  
-@@ -329,8 +_,10 @@
+@@ -330,8 +_,10 @@
      }
  
      public void addEntity(Entity p_104741_) {
@@ -44,7 +44,7 @@
      }
  
      public void removeEntity(int p_171643_, Entity.RemovalReason p_171644_) {
-@@ -501,6 +_,13 @@
+@@ -502,6 +_,13 @@
          float p_263349_,
          long p_263408_
      ) {
@@ -58,7 +58,7 @@
          if (p_263381_ == this.minecraft.player) {
              this.playSound(p_263372_, p_263404_, p_263365_, p_263335_.value(), p_263417_, p_263416_, p_263349_, false, p_263408_);
          }
-@@ -510,6 +_,12 @@
+@@ -511,6 +_,12 @@
      public void playSeededSound(
          @Nullable Player p_263514_, Entity p_263536_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
      ) {
@@ -71,7 +71,7 @@
          if (p_263514_ == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(p_263518_.value(), p_263487_, p_263538_, p_263524_, p_263536_, p_263509_));
          }
-@@ -1054,6 +_,7 @@
+@@ -1033,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty p_104852_) {
@@ -79,7 +79,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1090,14 +_,46 @@
+@@ -1069,14 +_,51 @@
              if (p_171712_ instanceof AbstractClientPlayer) {
                  ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
              }
@@ -114,8 +114,13 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager.Active getModelDataManager() {
++    public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
 +        return modelDataManager;
++    }
++
++    @Override
++    public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
++        return modelDataManager.getAt(pos);
 +    }
 +
 +    @Override

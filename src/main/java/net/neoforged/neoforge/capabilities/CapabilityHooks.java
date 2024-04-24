@@ -45,7 +45,7 @@ public class CapabilityHooks {
         initialized = true;
 
         var event = new RegisterCapabilitiesEvent();
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(event);
 
         initFinished = true;
     }
@@ -95,7 +95,8 @@ public class CapabilityHooks {
                 BlockEntityType.CHISELED_BOOKSHELF,
                 BlockEntityType.DISPENSER,
                 BlockEntityType.DROPPER,
-                BlockEntityType.JUKEBOX);
+                BlockEntityType.JUKEBOX,
+                BlockEntityType.CRAFTER);
         for (var type : nonSidedVanillaContainers) {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new InvWrapper(container));
         }

@@ -8,7 +8,7 @@
 +        if (!this.canCatchFire(p_53471_, blockpos, Direction.UP) && !blockstate.isFaceSturdy(p_53471_, blockpos, Direction.UP)) {
              BlockState blockstate1 = this.defaultBlockState();
  
-             for(Direction direction : Direction.values()) {
+             for (Direction direction : Direction.values()) {
                  BooleanProperty booleanproperty = PROPERTY_BY_DIRECTION.get(direction);
                  if (booleanproperty != null) {
 -                    blockstate1 = blockstate1.setValue(booleanproperty, Boolean.valueOf(this.canBurn(p_53471_.getBlockState(p_53472_.relative(direction)))));
@@ -52,7 +52,7 @@
 +                this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i, Direction.NORTH);
                  BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-                 for(int l = -1; l <= 1; ++l) {
+                 for (int l = -1; l <= 1; l++) {
 @@ -240,33 +_,32 @@
              || p_53429_.isRainingAt(p_53430_.south());
      }
@@ -96,7 +96,7 @@
 @@ -277,7 +_,7 @@
  
      private boolean isValidFireLocation(BlockGetter p_53486_, BlockPos p_53487_) {
-         for(Direction direction : Direction.values()) {
+         for (Direction direction : Direction.values()) {
 -            if (this.canBurn(p_53486_.getBlockState(p_53487_.relative(direction)))) {
 +            if (this.canCatchFire(p_53486_, p_53487_.relative(direction), direction.getOpposite())) {
                  return true;
@@ -104,7 +104,7 @@
          }
 @@ -293,7 +_,7 @@
  
-             for(Direction direction : Direction.values()) {
+             for (Direction direction : Direction.values()) {
                  BlockState blockstate = p_221157_.getBlockState(p_221158_.relative(direction));
 -                i = Math.max(this.getIgniteOdds(blockstate), i);
 +                i = Math.max(blockstate.getFireSpreadSpeed(p_221157_, p_221158_.relative(direction), direction.getOpposite()), i);

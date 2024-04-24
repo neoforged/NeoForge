@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.collect.BiMap;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
@@ -35,12 +35,12 @@ public class RegisterSpriteSourceTypesEvent extends Event implements IModBusEven
     }
 
     /**
-     * Registers the given {@link Codec} as SpriteSourceType under the given id.
+     * Registers the given {@link MapCodec} as SpriteSourceType under the given id.
      *
      * @param id    The id to register the {@link SpriteSourceType} under
      * @param codec The codec for the {@link SpriteSourceType} to register
      */
-    public SpriteSourceType register(ResourceLocation id, Codec<? extends SpriteSource> codec) {
+    public SpriteSourceType register(ResourceLocation id, MapCodec<? extends SpriteSource> codec) {
         if (this.types.containsKey(id)) {
             throw new IllegalStateException("Duplicate sprite source type registration " + id);
         }

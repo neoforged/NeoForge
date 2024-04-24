@@ -42,22 +42,6 @@ public interface IBakedModelExtension {
     }
 
     /**
-     * @deprecated Use {@link #useAmbientOcclusion(BlockState, ModelData, RenderType)} instead
-     */
-    @Deprecated(forRemoval = true, since = "1.20.4")
-    default boolean useAmbientOcclusion(BlockState state) {
-        return self().useAmbientOcclusion();
-    }
-
-    /**
-     * @deprecated Use {@link #useAmbientOcclusion(BlockState, ModelData, RenderType)} instead
-     */
-    @Deprecated(forRemoval = true, since = "1.20.4")
-    default boolean useAmbientOcclusion(BlockState state, RenderType renderType) {
-        return self().useAmbientOcclusion(state);
-    }
-
-    /**
      * Controls the AO behavior for all quads of this model. The default behavior is to use AO unless the block emits light,
      * {@link TriState#TRUE} and {@link TriState#FALSE} force AO to be enabled and disabled respectively, regardless of
      * the block emitting light or not. {@link BakedQuad#hasAmbientOcclusion()} can be used to disable AO for a specific
@@ -71,7 +55,7 @@ public interface IBakedModelExtension {
      * @return {@link TriState#TRUE} to force-enable AO, {@link TriState#FALSE} to force-disable AO or {@link TriState#DEFAULT} to use vanilla AO behavior
      */
     default TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
-        return useAmbientOcclusion(state, renderType) ? TriState.DEFAULT : TriState.FALSE;
+        return self().useAmbientOcclusion() ? TriState.DEFAULT : TriState.FALSE;
     }
 
     /**

@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.world;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.core.Holder;
@@ -91,7 +91,7 @@ public final class StructureModifiers {
         }
 
         @Override
-        public Codec<? extends StructureModifier> codec() {
+        public MapCodec<? extends StructureModifier> codec() {
             return NeoForgeMod.ADD_SPAWNS_STRUCTURE_MODIFIER_TYPE.get();
         }
     }
@@ -133,7 +133,7 @@ public final class StructureModifiers {
         }
 
         @Override
-        public Codec<? extends StructureModifier> codec() {
+        public MapCodec<? extends StructureModifier> codec() {
             return NeoForgeMod.REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE.get();
         }
     }
@@ -169,7 +169,7 @@ public final class StructureModifiers {
         }
 
         @Override
-        public Codec<? extends StructureModifier> codec() {
+        public MapCodec<? extends StructureModifier> codec() {
             return NeoForgeMod.CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE.get();
         }
     }

@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     "S": {
       "item": "minecraft:chiseled_stone_bricks"
@@ -15,6 +15,7 @@
     "SSS"
   ],
   "result": {
-    "item": "minecraft:lodestone"
+    "count": 1,
+    "id": "minecraft:lodestone"
   }
 }

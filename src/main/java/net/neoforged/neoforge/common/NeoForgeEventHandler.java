@@ -109,13 +109,12 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void onDpSync(final OnDatapackSyncEvent event) {
-        final List<ServerPlayer> players = event.getPlayer() == null ? event.getPlayerList().getPlayers() : List.of(event.getPlayer());
         RegistryManager.getDataMaps().forEach((registry, values) -> {
             final var regOpt = event.getPlayerList().getServer().overworld().registryAccess()
                     .registry(registry);
             if (regOpt.isEmpty()) return;
-            players.forEach(player -> {
-                if (!player.connection.isConnected(RegistryDataMapSyncPayload.ID)) {
+            event.getRelevantPlayers().forEach(player -> {
+                if (!player.connection.hasChannel(RegistryDataMapSyncPayload.TYPE)) {
                     return;
                 }
                 if (player.connection.getConnection().isMemoryConnection()) {
@@ -138,7 +137,7 @@ public class NeoForgeEventHandler {
             att.put(key, registry.getDataMap(attach));
         });
         if (!att.isEmpty()) {
-            PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
+            PacketDistributor.sendToPlayer(player, new RegistryDataMapSyncPayload<>(registry.key(), att));
         }
     }
 
@@ -166,7 +165,6 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(TierSortingRegistry.getReloadListener());
         event.addListener(CreativeModeTabRegistry.getReloadListener());
     }
 

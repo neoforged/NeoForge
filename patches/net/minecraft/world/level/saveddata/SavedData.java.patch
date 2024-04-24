@@ -1,13 +1,13 @@
 --- a/net/minecraft/world/level/saveddata/SavedData.java
 +++ b/net/minecraft/world/level/saveddata/SavedData.java
-@@ -45,6 +_,10 @@
-         }
+@@ -47,7 +_,10 @@
      }
  
--    public static record Factory<T extends SavedData>(Supplier<T> constructor, Function<CompoundTag, T> deserializer, DataFixTypes type) {
-+    public static record Factory<T extends SavedData>(Supplier<T> constructor, Function<CompoundTag, T> deserializer, @javax.annotation.Nullable DataFixTypes type) { // Neo: We do not have update logic compatible with DFU, several downstream patches from this record are made to support a nullable type.
-+
-+        public Factory(Supplier<T> constructor, Function<CompoundTag, T> deserializer) {
+     public static record Factory<T extends SavedData>(
+-        Supplier<T> constructor, BiFunction<CompoundTag, HolderLookup.Provider, T> deserializer, DataFixTypes type
++        Supplier<T> constructor, BiFunction<CompoundTag, HolderLookup.Provider, T> deserializer, @javax.annotation.Nullable DataFixTypes type // Neo: We do not have update logic compatible with DFU, several downstream patches from this record are made to support a nullable type.
+     ) {
++        public Factory(Supplier<T> constructor, BiFunction<CompoundTag, HolderLookup.Provider, T> deserializer) {
 +            this(constructor, deserializer, null);
 +        }
      }

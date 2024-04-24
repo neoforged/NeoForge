@@ -26,10 +26,10 @@
              boolean flag = true;
 -            RailShape railshape = p_55222_.getValue(SHAPE);
 +            RailShape railshape = p_55222_.getValue(getShapeProperty());
-             switch(railshape) {
+             switch (railshape) {
                  case NORTH_SOUTH:
                      if (p_55223_) {
-@@ -112,18 +_,18 @@
+@@ -110,18 +_,18 @@
  
      protected boolean isSameRailWithPower(Level p_55226_, BlockPos p_55227_, boolean p_55228_, int p_55229_, RailShape p_55230_) {
          BlockState blockstate = p_55226_.getBlockState(p_55227_);
@@ -52,7 +52,7 @@
                      }
                  } else {
                      return false;
-@@ -143,7 +_,7 @@
+@@ -141,7 +_,7 @@
          if (flag1 != flag) {
              p_55233_.setBlock(p_55234_, p_55232_.setValue(POWERED, Boolean.valueOf(flag1)), 3);
              p_55233_.updateNeighborsAt(p_55234_.below(), this);
@@ -61,7 +61,7 @@
                  p_55233_.updateNeighborsAt(p_55234_.above(), this);
              }
          }
-@@ -175,6 +_,9 @@
+@@ -173,6 +_,9 @@
                          return p_55240_.setValue(SHAPE, RailShape.SOUTH_EAST);
                      case NORTH_EAST:
                          return p_55240_.setValue(SHAPE, RailShape.SOUTH_WEST);
@@ -70,8 +70,8 @@
 +                        return p_55240_;
                  }
              case COUNTERCLOCKWISE_90:
-                 switch((RailShape)p_55240_.getValue(SHAPE)) {
-@@ -274,6 +_,10 @@
+                 switch ((RailShape)p_55240_.getValue(SHAPE)) {
+@@ -272,6 +_,10 @@
  
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_55243_) {

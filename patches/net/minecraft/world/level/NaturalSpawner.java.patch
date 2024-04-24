@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -47,6 +_,7 @@
+@@ -45,6 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import org.slf4j.Logger;
  
@@ -8,7 +8,7 @@
  public final class NaturalSpawner {
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int MIN_SPAWN_DISTANCE = 24;
-@@ -71,7 +_,7 @@
+@@ -69,7 +_,7 @@
                  continue;
              }
  
@@ -17,8 +17,8 @@
              if (mobcategory != MobCategory.MISC) {
                  BlockPos blockpos = entity.blockPosition();
                  p_186527_.query(
-@@ -201,7 +_,7 @@
-                                     ++l1;
+@@ -199,7 +_,7 @@
+                                     l1++;
                                      p_47040_.addFreshEntityWithPassengers(mob);
                                      p_47044_.run(mob, p_47041_);
 -                                    if (j >= mob.getMaxSpawnClusterSize()) {
@@ -26,16 +26,16 @@
                                          return;
                                      }
  
-@@ -278,7 +_,7 @@
-             && p_46993_.removeWhenFarAway(p_46994_)) {
-             return false;
-         } else {
--            return p_46993_.checkSpawnRules(p_46992_, MobSpawnType.NATURAL) && p_46993_.checkSpawnObstruction(p_46992_);
-+            return net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(p_46993_, p_46992_, MobSpawnType.NATURAL);
-         }
+@@ -272,7 +_,7 @@
+         return p_46994_ > (double)(p_46993_.getType().getCategory().getDespawnDistance() * p_46993_.getType().getCategory().getDespawnDistance())
+                 && p_46993_.removeWhenFarAway(p_46994_)
+             ? false
+-            : p_46993_.checkSpawnRules(p_46992_, MobSpawnType.NATURAL) && p_46993_.checkSpawnObstruction(p_46992_);
++            : net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(p_46993_, p_46992_, MobSpawnType.NATURAL);
      }
  
-@@ -310,9 +_,14 @@
+     private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAt(
+@@ -303,9 +_,14 @@
          BlockPos p_220448_,
          @Nullable Holder<Biome> p_220449_
      ) {
@@ -53,38 +53,7 @@
      }
  
      public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {
-@@ -351,6 +_,13 @@
-         if (p_47052_ == SpawnPlacements.Type.NO_RESTRICTIONS) {
-             return true;
-         } else if (p_47055_ != null && p_47053_.getWorldBorder().isWithinBounds(p_47054_)) {
-+            return p_47052_.canSpawnAt(p_47053_, p_47054_, p_47055_);
-+        }
-+        return false;
-+    }
-+
-+    public static boolean canSpawnAtBody(SpawnPlacements.Type p_47052_, LevelReader p_47053_, BlockPos p_47054_, @Nullable EntityType<?> p_47055_) {
-+        {
-             BlockState blockstate = p_47053_.getBlockState(p_47054_);
-             FluidState fluidstate = p_47053_.getFluidState(p_47054_);
-             BlockPos blockpos = p_47054_.above();
-@@ -363,15 +_,13 @@
-                 case ON_GROUND:
-                 default:
-                     BlockState blockstate1 = p_47053_.getBlockState(blockpos1);
--                    if (!blockstate1.isValidSpawn(p_47053_, blockpos1, p_47055_)) {
-+                    if (!blockstate1.isValidSpawn(p_47053_, blockpos1, p_47052_, p_47055_)) {
-                         return false;
-                     } else {
-                         return isValidEmptySpawnBlock(p_47053_, p_47054_, blockstate, fluidstate, p_47055_)
-                             && isValidEmptySpawnBlock(p_47053_, blockpos, p_47053_.getBlockState(blockpos), p_47053_.getFluidState(blockpos), p_47055_);
-                     }
-             }
--        } else {
--            return false;
-         }
-     }
- 
-@@ -431,8 +_,7 @@
+@@ -392,8 +_,7 @@
  
                                  entity.moveTo(d0, (double)blockpos.getY(), d1, p_220454_.nextFloat() * 360.0F, 0.0F);
                                  if (entity instanceof Mob mob
@@ -92,5 +61,5 @@
 -                                    && mob.checkSpawnObstruction(p_220451_)) {
 +                                    && net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(mob, p_220451_, MobSpawnType.CHUNK_GENERATION)) {
                                      spawngroupdata = mob.finalizeSpawn(
-                                         p_220451_, p_220451_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata, null
+                                         p_220451_, p_220451_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata
                                      );

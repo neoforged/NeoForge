@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Items.java
 +++ b/net/minecraft/world/item/Items.java
-@@ -1685,11 +_,23 @@
+@@ -2089,11 +_,23 @@
      }
  
      public static Item registerBlock(Block p_252092_, Block... p_248886_) {
@@ -14,7 +14,7 @@
 +                }
 +            }
  
--        for(Block block : p_248886_) {
+-        for (Block block : p_248886_) {
 -            Item.BY_BLOCK.put(block, blockitem);
 -        }
 +            @Override

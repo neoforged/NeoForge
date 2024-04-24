@@ -23,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.entity.PartEntity;
@@ -50,7 +51,7 @@ public class PartEntityTest {
         event.put(TEST_ENTITY.get(), Pig.createAttributes().build());
     }
 
-    @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     private static class ClientEvents {
         @SubscribeEvent
         public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
@@ -139,32 +140,41 @@ public class PartEntityTest {
             this.parent = parent;
         }
 
-        protected void defineSynchedData() {}
+        @Override
+        protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder p_326003_) {}
 
+        @Override
         protected void readAdditionalSaveData(CompoundTag nbt) {}
 
+        @Override
         protected void addAdditionalSaveData(CompoundTag nbt) {}
 
+        @Override
         public boolean isPickable() {
             return true;
         }
 
+        @Override
         public boolean hurt(DamageSource source, float amount) {
             return !this.isInvulnerableTo(source) && this.parent.hurt(source, amount);
         }
 
+        @Override
         public boolean is(Entity entity) {
             return this == entity || this.parent == entity;
         }
 
+        @Override
         public Packet<ClientGamePacketListener> getAddEntityPacket() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public EntityDimensions getDimensions(Pose matrix) {
             return this.size;
         }
 
+        @Override
         public boolean shouldBeSaved() {
             return false;
         }

@@ -3,7 +3,7 @@
 @@ -64,10 +_,11 @@
  
      @Override
-     public void randomTick(BlockState p_221000_, ServerLevel p_221001_, BlockPos p_221002_, RandomSource p_221003_) {
+     protected void randomTick(BlockState p_221000_, ServerLevel p_221001_, BlockPos p_221002_, RandomSource p_221003_) {
 -        if (p_221001_.random.nextInt(5) == 0) {
 +        if (true) {
              int i = p_221000_.getValue(AGE);

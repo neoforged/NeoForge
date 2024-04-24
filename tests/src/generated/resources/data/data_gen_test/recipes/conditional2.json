@@ -37,6 +37,6 @@
   ],
   "result": {
     "count": 64,
-    "item": "minecraft:diamond_block"
+    "id": "minecraft:diamond_block"
   }
 }

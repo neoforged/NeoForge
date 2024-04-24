@@ -11,12 +11,14 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
@@ -26,6 +28,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.Pack;
@@ -64,7 +68,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private interface DataGenProvider<T extends DataProvider> {
-        T create(PackOutput output, DataGenerator generator, ExistingFileHelper existingFileHelper, String modId, List<Consumer<T>> consumers);
+        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DataGenerator generator, ExistingFileHelper existingFileHelper, String modId, List<Consumer<T>> consumers);
     }
 
     private static final Map<Class<?>, DataGenProvider<?>> PROVIDERS;
@@ -77,26 +81,26 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         }
         final var reg = new ProviderRegistrar();
 
-        reg.register(LanguageProvider.class, (output, generator, existingFileHelper, modId, consumers) -> new LanguageProvider(output, modId, "en_us") {
+        reg.register(LanguageProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new LanguageProvider(output, modId, "en_us") {
             @Override
             protected void addTranslations() {
                 consumers.forEach(c -> c.accept(this));
             }
         });
-        reg.register(BlockStateProvider.class, (output, generator, existingFileHelper, modId, consumers) -> new BlockStateProvider(output, modId, existingFileHelper) {
+        reg.register(BlockStateProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new BlockStateProvider(output, modId, existingFileHelper) {
             @Override
             protected void registerStatesAndModels() {
                 existingFileHelper.trackGenerated(new ResourceLocation("testframework:block/white"), ModelProvider.TEXTURE);
                 consumers.forEach(c -> c.accept(this));
             }
         });
-        reg.register(ItemModelProvider.class, (output, generator, existingFileHelper, modId, consumers) -> new ItemModelProvider(output, modId, existingFileHelper) {
+        reg.register(ItemModelProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new ItemModelProvider(output, modId, existingFileHelper) {
             @Override
             protected void registerModels() {
                 consumers.forEach(c -> c.accept(this));
             }
         });
-        reg.register(GlobalLootModifierProvider.class, (output, generator, existingFileHelper, modId, consumers) -> new GlobalLootModifierProvider(output, modId) {
+        reg.register(GlobalLootModifierProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new GlobalLootModifierProvider(output, registries, modId) {
             @Override
             protected void start() {
                 consumers.forEach(c -> c.accept(this));
@@ -174,23 +178,18 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         eventListeners().accept((final AddPackFindersEvent event) -> {
             if (event.getPackType() == PackType.SERVER_DATA) {
                 event.addRepositorySource(acceptor -> acceptor.accept(
-                        Pack.create(
-                                newName,
-                                Component.literal(newName),
-                                true,
+                        new Pack(
+                                new PackLocationInfo(newName, Component.literal(newName), PackSource.BUILT_IN, Optional.empty()),
                                 new PathPackResources.PathResourcesSupplier(
                                         owner.getModInfo().getOwningFile()
-                                                .getFile().findResource(newName),
-                                        true),
-                                new Pack.Info(
+                                                .getFile().findResource(newName)),
+                                new Pack.Metadata(
                                         Component.empty(),
                                         PackCompatibility.COMPATIBLE,
                                         FeatureFlags.DEFAULT_FLAGS,
                                         List.of(),
                                         true),
-                                Pack.Position.BOTTOM,
-                                true,
-                                PackSource.SERVER)));
+                                new PackSelectionConfig(true, Pack.Position.BOTTOM, true))));
             }
         });
         return newName;
@@ -225,7 +224,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
 
     private void gather(final GatherDataEvent event) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
-                event.getGenerator().getPackOutput(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
+                event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
 
         directProviders.forEach(func -> event.getGenerator().addProvider(true, new DataProvider() {
             final DataProvider p = func.apply(event);

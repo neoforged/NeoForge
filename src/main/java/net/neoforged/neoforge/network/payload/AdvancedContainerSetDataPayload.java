@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -20,23 +22,20 @@ import org.jetbrains.annotations.ApiStatus;
  * @param value       The value of the dataslot.
  */
 @ApiStatus.Internal
-public record AdvancedContainerSetDataPayload(int containerId, int dataId, int value) implements CustomPacketPayload {
+public record AdvancedContainerSetDataPayload(byte containerId, short dataId, int value) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_container_set_data");
-    public AdvancedContainerSetDataPayload(FriendlyByteBuf buffer) {
-        this(buffer.readByte(), buffer.readShort(), buffer.readVarInt());
-    }
-
+    public static final Type<AdvancedContainerSetDataPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_container_set_data"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedContainerSetDataPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.BYTE,
+            AdvancedContainerSetDataPayload::containerId,
+            ByteBufCodecs.SHORT,
+            AdvancedContainerSetDataPayload::dataId,
+            ByteBufCodecs.VAR_INT,
+            AdvancedContainerSetDataPayload::value,
+            AdvancedContainerSetDataPayload::new);
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeByte(containerId);
-        buffer.writeShort(dataId);
-        buffer.writeVarInt(value);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<AdvancedContainerSetDataPayload> type() {
+        return TYPE;
     }
 
     public ClientboundContainerSetDataPacket toVanillaPacket() {

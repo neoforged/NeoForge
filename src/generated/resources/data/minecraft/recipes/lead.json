@@ -6,7 +6,7 @@
       "item": "minecraft:slime_ball"
     },
     "~": {
-      "tag": "forge:string"
+      "tag": "c:strings"
     }
   },
   "pattern": [
@@ -16,6 +16,6 @@
   ],
   "result": {
     "count": 2,
-    "item": "minecraft:lead"
+    "id": "minecraft:lead"
   }
 }

@@ -14,13 +14,16 @@
          RenderSystem.disableDepthTest();
          p_283479_.pose().pushPose();
          p_283479_.pose().translate((float)i, (float)j, 0.0F);
-@@ -108,12 +_,13 @@
-                 int l = slot.x;
-                 int i1 = slot.y;
-                 if (this.hoveredSlot.isHighlightable()) {
+@@ -105,15 +_,12 @@
+ 
+             if (this.isHovering(slot, (double)p_283661_, (double)p_281248_) && slot.isActive()) {
+                 this.hoveredSlot = slot;
+-                int l = slot.x;
+-                int i1 = slot.y;
+-                if (this.hoveredSlot.isHighlightable()) {
 -                    renderSlotHighlight(p_283479_, l, i1, 0);
-+                    renderSlotHighlight(p_283479_, l, i1, 0, getSlotColor(k));
-                 }
+-                }
++                this.renderSlotHighlight(p_283479_, slot, p_283661_, p_281248_, p_281886_);
              }
          }
  
@@ -29,7 +32,7 @@
          ItemStack itemstack = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
          if (!itemstack.isEmpty()) {
              int l1 = 8;
-@@ -156,13 +_,16 @@
+@@ -156,13 +_,25 @@
      }
  
      public static void renderSlotHighlight(GuiGraphics p_283692_, int p_281453_, int p_281915_, int p_283504_) {
@@ -38,6 +41,15 @@
 +    }
 +    public static void renderSlotHighlight(GuiGraphics p_283692_, int p_281453_, int p_281915_, int p_283504_, int color) {
 +        p_283692_.fillGradient(RenderType.guiOverlay(), p_281453_, p_281915_, p_281453_ + 16, p_281915_ + 16, color, color, p_283504_);
++    }
++
++    /**
++     * Renders a highlight for the given slot to indicate the mouse is currently hovering over it.
++     */
++    protected void renderSlotHighlight(GuiGraphics guiGraphics, Slot slot, int mouseX, int mouseY, float partialTick) {
++        if (slot.isHighlightable()) {
++            renderSlotHighlight(guiGraphics, slot.x, slot.y, 0, getSlotColor(slot.index));
++        }
      }
  
      protected void renderTooltip(GuiGraphics p_283594_, int p_282171_, int p_281909_) {
@@ -62,14 +74,14 @@
                  p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
              }
  
-+            renderSlotContents(p_281607_, itemstack, p_282613_, i, j, s);
++            renderSlotContents(p_281607_, itemstack, p_282613_, s);
 +        }
 +
 +        p_281607_.pose().popPose();
 +    }
 +
-+    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, int i, int j, @Nullable String countString) {
-+            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString;
++    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, @Nullable String countString) {
++            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString; int i = slot.x; int j = slot.y;
              int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
              if (p_282613_.isFake()) {
                  p_281607_.renderFakeItem(itemstack, i, j, j1);
@@ -192,7 +204,7 @@
                  return true;
              }
  
-             for(int i = 0; i < 9; ++i) {
+             for (int i = 0; i < 9; i++) {
 -                if (this.minecraft.options.keyHotbarSlots[i].matches(p_97806_, p_97807_)) {
 +                if (this.minecraft.options.keyHotbarSlots[i].isActiveAndMatches(InputConstants.getKey(p_97806_, p_97807_))) {
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ClickType.SWAP);

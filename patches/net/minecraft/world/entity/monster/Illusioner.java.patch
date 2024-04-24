@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Illusioner.java
 +++ b/net/minecraft/world/entity/monster/Illusioner.java
-@@ -194,8 +_,10 @@
+@@ -173,8 +_,10 @@
  
      @Override
      public void performRangedAttack(LivingEntity p_32918_, float p_32919_) {

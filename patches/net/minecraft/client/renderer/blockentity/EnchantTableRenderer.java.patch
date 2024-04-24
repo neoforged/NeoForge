@@ -6,7 +6,7 @@
      }
 +
 +    @Override
-+    public net.minecraft.world.phys.AABB getRenderBoundingBox(EnchantmentTableBlockEntity blockEntity) {
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(EnchantingTableBlockEntity blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
 +        return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1., pos.getY() + 1.5, pos.getZ() + 1.);
 +    }

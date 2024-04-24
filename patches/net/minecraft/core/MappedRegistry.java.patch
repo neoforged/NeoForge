@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
-@@ -32,7 +_,7 @@
- import org.apache.commons.lang3.Validate;
+@@ -31,7 +_,7 @@
+ import net.minecraft.util.RandomSource;
  import org.slf4j.Logger;
  
 -public class MappedRegistry<T> implements WritableRegistry<T> {
@@ -9,7 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
-@@ -79,6 +_,12 @@
+@@ -75,6 +_,12 @@
          public Stream<HolderSet.Named<T>> listTags() {
              return MappedRegistry.this.getTags().map(Pair::getSecond);
          }
@@ -20,43 +20,47 @@
 +            return MappedRegistry.this.getData(type, key);
 +        }
      };
+     private final Object tagAdditionLock = new Object();
  
-     public MappedRegistry(ResourceKey<? extends Registry<T>> p_249899_, Lifecycle p_252249_) {
-@@ -127,6 +_,9 @@
-         this.validateWrite(p_256594_);
-         Validate.notNull(p_256594_);
-         Validate.notNull(p_256374_);
-+        if (p_256563_ > this.getMaxId())
-+            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", p_256563_, this.getMaxId()));
+@@ -114,9 +_,17 @@
+ 
+     @Override
+     public Holder.Reference<T> register(ResourceKey<T> p_256252_, T p_256591_, RegistrationInfo p_326235_) {
++        return register(this.byId.size(), p_256252_, p_256591_, p_326235_);
++    }
 +
-         if (this.byLocation.containsKey(p_256594_.location())) {
-             Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256594_ + "' to registry"));
++    public Holder.Reference<T> register(int id, ResourceKey<T> p_256252_, T p_256591_, RegistrationInfo p_326235_) {
+         this.validateWrite(p_256252_);
+         Objects.requireNonNull(p_256252_);
+         Objects.requireNonNull(p_256591_);
++        int i = id;
++        if (i > this.getMaxId())
++            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", i, this.getMaxId()));
++
+         if (this.byLocation.containsKey(p_256252_.location())) {
+             Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry"));
          }
-@@ -145,12 +_,14 @@
-             reference.bindKey(p_256594_);
+@@ -135,16 +_,18 @@
+             reference.bindKey(p_256252_);
          } else {
-             reference = this.byKey.computeIfAbsent(p_256594_, p_258168_ -> Holder.Reference.createStandAlone(this.holderOwner(), p_258168_));
+             reference = this.byKey.computeIfAbsent(p_256252_, p_258168_ -> Holder.Reference.createStandAlone(this.holderOwner(), (ResourceKey<T>)p_258168_));
 +            // Forge: Bind the value immediately so it can be queried while the registry is not frozen
-+            reference.bindValue(p_256374_);
++            reference.bindValue(p_256591_);
          }
  
-         this.byKey.put(p_256594_, reference);
-         this.byLocation.put(p_256594_.location(), reference);
-         this.byValue.put(p_256374_, reference);
--        this.byId.size(Math.max(this.byId.size(), p_256563_ + 1));
-+        while (this.byId.size() < (p_256563_ + 1)) this.byId.add(null);
-         this.byId.set(p_256563_, reference);
-         this.toId.put(p_256374_, p_256563_);
-         if (this.nextId <= p_256563_) {
-@@ -160,6 +_,7 @@
-         this.lifecycles.put(p_256374_, p_256469_);
-         this.registryLifecycle = this.registryLifecycle.add(p_256469_);
-         this.holdersInOrder = null;
-+        this.addCallbacks.forEach(addCallback -> addCallback.onAdd(this, p_256563_, p_256594_, p_256374_));
+         this.byKey.put(p_256252_, reference);
+         this.byLocation.put(p_256252_.location(), reference);
+         this.byValue.put(p_256591_, reference);
+-        int i = this.byId.size();
+         this.byId.add(reference);
+         this.toId.put(p_256591_, i);
+         this.registrationInfos.put(p_256252_, p_326235_);
+         this.registryLifecycle = this.registryLifecycle.add(p_326235_.lifecycle());
++        this.addCallbacks.forEach(addCallback -> addCallback.onAdd(this, i, p_256252_, p_256591_));
          return reference;
      }
  
-@@ -188,7 +_,7 @@
+@@ -168,7 +_,7 @@
      @Nullable
      @Override
      public T get(@Nullable ResourceKey<T> p_122714_) {
@@ -65,7 +69,7 @@
      }
  
      @Nullable
-@@ -204,7 +_,7 @@
+@@ -189,7 +_,7 @@
  
      @Override
      public Optional<Holder.Reference<T>> getHolder(ResourceKey<T> p_205905_) {
@@ -74,7 +78,7 @@
      }
  
      @Override
-@@ -214,7 +_,7 @@
+@@ -199,7 +_,7 @@
      }
  
      Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> p_248831_) {
@@ -83,7 +87,7 @@
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
              } else {
-@@ -247,7 +_,7 @@
+@@ -232,7 +_,7 @@
      @Nullable
      @Override
      public T get(@Nullable ResourceLocation p_122739_) {
@@ -92,7 +96,7 @@
          return getValueFromNullable(reference);
      }
  
-@@ -323,13 +_,18 @@
+@@ -316,13 +_,18 @@
          return this.byKey.containsKey(p_175392_);
      }
  
@@ -108,11 +112,11 @@
              return this;
          } else {
              this.frozen = true;
--            this.byValue.forEach((p_247989_, p_247990_) -> p_247990_.bindValue(p_247989_));
+-            this.byValue.forEach((p_247989_, p_247990_) -> p_247990_.bindValue((T)p_247989_));
              List<ResourceLocation> list = this.byKey
                  .entrySet()
                  .stream()
-@@ -345,8 +_,10 @@
+@@ -338,8 +_,10 @@
                          throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                      }
  
@@ -124,7 +128,7 @@
  
                  return this;
              }
-@@ -441,5 +_,59 @@
+@@ -435,5 +_,53 @@
      @Override
      public HolderLookup.RegistryLookup<T> asLookup() {
          return this.lookup;
@@ -137,14 +141,11 @@
 +        super.clear(full);
 +        this.byId.clear();
 +        this.toId.clear();
-+        nextId = 0;
-+        if (holdersInOrder != null) holdersInOrder = null;
 +        if (full) {
 +            this.byLocation.clear();
 +            this.byKey.clear();
 +            this.byValue.clear();
 +            this.tags.clear();
-+            this.lifecycles.clear();
 +            if (unregisteredIntrusiveHolders != null) {
 +                unregisteredIntrusiveHolders.clear();
 +                unregisteredIntrusiveHolders = null;
@@ -159,9 +160,6 @@
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", id, this.getMaxId()));
 +        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) { // Don't use byId() method, it will return the default value if the entry is absent
 +            throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId.get(id).value()));
-+        }
-+        if (this.nextId <= id) {
-+            this.nextId = id + 1;
 +        }
 +        var holder = byKey.get(key);
 +        while (this.byId.size() < (id + 1)) this.byId.add(null);

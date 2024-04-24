@@ -1,35 +1,6 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -187,6 +_,12 @@
-     ServerPlayerConnection,
-     TickablePacketListener {
-     static final Logger LOGGER = LogUtils.getLogger();
-+    /**
-+     * Forge: Deprecated in favor of range/reach attributes.
-+     * @see net.neoforged.neoforge.common.NeoForgeMod#BLOCK_REACH
-+     * @see net.neoforged.neoforge.common.NeoForgeMod#ENTITY_REACH
-+     */
-+    @Deprecated
-     public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0);
-     private static final int NO_BLOCK_UPDATES_TO_ACK = -1;
-     private static final int TRACKED_MESSAGE_DISCONNECT_THRESHOLD = 4096;
-@@ -228,6 +_,7 @@
-     private final MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
-     private final FutureChain chatMessageChain;
-     private boolean waitingForSwitchToConfig;
-+    private net.neoforged.neoforge.network.connection.ConnectionType connectionType;
- 
-     public ServerGamePacketListenerImpl(MinecraftServer p_9770_, Connection p_9771_, ServerPlayer p_9772_, CommonListenerCookie p_301978_) {
-         super(p_9770_, p_9771_, p_301978_);
-@@ -238,6 +_,7 @@
-         p_9772_.getTextFilter().join();
-         this.signedMessageDecoder = SignedMessageChain.Decoder.unsigned(p_9772_.getUUID(), p_9770_::enforceSecureProfile);
-         this.chatMessageChain = new FutureChain(p_9770_);
-+        this.connectionType = p_301978_.connectionType();
-     }
- 
-     @Override
-@@ -424,9 +_,11 @@
+@@ -438,9 +_,11 @@
                  }
  
                  entity.absMoveTo(d3, d4, d5, f, f1);
@@ -41,7 +12,7 @@
                      this.send(new ClientboundMoveVehiclePacket(entity));
                      return;
                  }
-@@ -445,6 +_,23 @@
+@@ -459,6 +_,23 @@
          }
      }
  
@@ -65,24 +36,16 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -770,6 +_,7 @@
-             if (compoundtag != null) {
-                 itemstack1.setTag(compoundtag.copy());
-             }
-+            net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(itemstack, itemstack1);
- 
-             itemstack1.addTagElement("author", StringTag.valueOf(this.player.getName().getString()));
-             if (this.player.isTextFilteringEnabled()) {
-@@ -952,7 +_,7 @@
-                                     && !flag
+@@ -936,7 +_,7 @@
+                                     && !flag1
                                      && this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR
                                      && !this.server.isFlightAllowed()
 -                                    && !this.player.getAbilities().mayfly
 +                                    && !this.player.mayFly()
                                      && !this.player.hasEffect(MobEffects.LEVITATION)
-                                     && !this.player.isFallFlying()
-                                     && !this.player.isAutoSpinAttack()
-@@ -1028,8 +_,10 @@
+                                     && !flag
+                                     && !flag3
+@@ -1019,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {
                      ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
@@ -95,7 +58,7 @@
                      this.player.stopUsingItem();
                  }
  
-@@ -1057,7 +_,7 @@
+@@ -1048,7 +_,7 @@
                      .handleBlockBreakAction(
                          blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
                      );
@@ -104,7 +67,7 @@
                  return;
              default:
                  throw new IllegalArgumentException("Invalid player action");
-@@ -1076,7 +_,7 @@
+@@ -1067,7 +_,7 @@
      @Override
      public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
          PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
@@ -113,37 +76,19 @@
          ServerLevel serverlevel = this.player.serverLevel();
          InteractionHand interactionhand = p_9930_.getHand();
          ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1085,7 +_,7 @@
-             Vec3 vec3 = blockhitresult.getLocation();
-             BlockPos blockpos = blockhitresult.getBlockPos();
-             Vec3 vec31 = Vec3.atCenterOf(blockpos);
--            if (!(this.player.getEyePosition().distanceToSqr(vec31) > MAX_INTERACTION_DISTANCE)) {
-+            if (this.player.canReach(blockpos, 1.5)) { // Vanilla uses eye-to-center distance < 6, which implies a padding of 1.5
-                 Vec3 vec32 = vec3.subtract(vec31);
-                 double d0 = 1.0000001;
-                 if (Math.abs(vec32.x()) < 1.0000001 && Math.abs(vec32.y()) < 1.0000001 && Math.abs(vec32.z()) < 1.0000001) {
-@@ -1225,8 +_,9 @@
-                     }
+@@ -1213,8 +_,9 @@
+                 }
  
-                     CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
--                    Component component = this.server.getChatDecorator().decorate(this.player, playerchatmessage.decoratedContent());
-+                    Component component = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent());
-                     this.chatMessageChain.append(completablefuture, p_300785_ -> {
-+                        if (component == null) return; // Forge: ServerChatEvent was canceled if this is null.
-                         PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
-                         this.broadcastChatMessage(playerchatmessage1);
-                     });
-@@ -1478,7 +_,7 @@
-             }
+                 CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
+-                Component component = this.server.getChatDecorator().decorate(this.player, playerchatmessage.decoratedContent());
++                Component component = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent());
+                 this.chatMessageChain.append(completablefuture, p_300785_ -> {
++                    if (component == null) return; // Forge: ServerChatEvent was canceled if this is null.
+                     PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
+                     this.broadcastChatMessage(playerchatmessage1);
+                 });
+@@ -1541,7 +_,11 @@
  
-             AABB aabb = entity.getBoundingBox();
--            if (aabb.distanceToSqr(this.player.getEyePosition()) < MAX_INTERACTION_DISTANCE) {
-+            if (this.player.canReach(entity, 3)) { // Vanilla padding is 3.0 (distSq < 6.0 * 6.0)
-                 p_9866_.dispatch(
-                     new ServerboundInteractPacket.Handler() {
-                         private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {
-@@ -1502,7 +_,11 @@
-     
                          @Override
                          public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
 -                            this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> p_143687_.interactAt(p_143686_, p_143683_, p_143688_));
@@ -153,9 +98,9 @@
 +                                return p_143687_.interactAt(p_143686_, p_143683_, p_143688_);
 +                            });
                          }
-     
+ 
                          @Override
-@@ -1688,7 +_,7 @@
+@@ -1733,7 +_,7 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
          PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
@@ -164,46 +109,20 @@
      }
  
      @Override
-@@ -1745,7 +_,7 @@
-             throw new IllegalStateException("Client acknowledged config, but none was requested");
-         } else {
+@@ -1792,7 +_,7 @@
              this.connection
--                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())));
-+                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.connectionType)));
+                 .setupInboundProtocol(
+                     ConfigurationProtocols.SERVERBOUND,
+-                    new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation()))
++                    new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.connectionType))
+                 );
          }
      }
+@@ -1827,6 +_,7 @@
  
-@@ -1779,5 +_,33 @@
-     @FunctionalInterface
-     interface EntityInteraction {
-         InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
-+    }
-+
-+    @Override
-+    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
-+        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
-+            return;
-+        }
-+
-+        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
-+            return;
-+        }
-+
-+        if (this.connectionType.isVanilla()) {
-+            super.handleCustomPayload(p_294276_);
-+            return;
-+        }
-+
-+        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
-+                this, p_294276_
-+        );
-+    }
-+
-+    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
-+        return connectionType;
+     @Override
+     public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {
++        super.handleCustomPayload(p_333887_); // Neo: Call super to invoke modded payload handling.
      }
- }
+ 
+     @Override

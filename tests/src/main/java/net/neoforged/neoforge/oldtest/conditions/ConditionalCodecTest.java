@@ -234,7 +234,7 @@ public class ConditionalCodecTest {
     }
 
     private static <T> String write(Codec<T> codec, T input) {
-        return GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, input).get().left().get());
+        return GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow());
     }
 
     /**

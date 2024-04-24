@@ -78,7 +78,7 @@
 +    public void renderSingleBlock(BlockState p_110913_, PoseStack p_110914_, MultiBufferSource p_110915_, int p_110916_, int p_110917_, net.neoforged.neoforge.client.model.data.ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
          RenderShape rendershape = p_110913_.getRenderShape();
          if (rendershape != RenderShape.INVISIBLE) {
-             switch(rendershape) {
+             switch (rendershape) {
 @@ -117,22 +_,25 @@
                      float f = (float)(i >> 16 & 0xFF) / 255.0F;
                      float f1 = (float)(i >> 8 & 0xFF) / 255.0F;

@@ -4,13 +4,14 @@
   "group": "chest_boat",
   "ingredients": [
     {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     {
       "item": "minecraft:bamboo_raft"
     }
   ],
   "result": {
-    "item": "minecraft:bamboo_chest_raft"
+    "count": 1,
+    "id": "minecraft:bamboo_chest_raft"
   }
 }

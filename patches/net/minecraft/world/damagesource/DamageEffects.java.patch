@@ -14,7 +14,7 @@
      FREEZING("freezing", SoundEvents.PLAYER_HURT_FREEZE);
  
 -    public static final Codec<DamageEffects> CODEC = StringRepresentable.fromEnum(DamageEffects::values);
-+    public static final Codec<DamageEffects> CODEC = net.minecraft.util.ExtraCodecs.lazyInitializedCodec(() -> StringRepresentable.fromEnum(DamageEffects::values));
++    public static final Codec<DamageEffects> CODEC = Codec.lazyInitialized(() -> StringRepresentable.fromEnum(DamageEffects::values));
      private final String id;
 +    @Deprecated // Neo: Always set to null. Use the getter.
      private final SoundEvent sound;

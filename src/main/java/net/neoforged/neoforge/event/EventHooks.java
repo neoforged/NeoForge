@@ -9,9 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import java.io.File;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -25,7 +23,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -66,12 +63,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
@@ -256,7 +255,7 @@ public class EventHooks {
      * 
      * <pre>
      * var zombie = new Zombie(level);
-     * zombie.finalizeSpawn(level, difficulty, spawnType, spawnData, spawnTag);
+     * zombie.finalizeSpawn(level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
      * if (zombie.isAddedToWorld()) {
      *     // Do stuff with your new zombie
@@ -269,7 +268,7 @@ public class EventHooks {
      * 
      * <pre>
      * var zombie = new Zombie(level);
-     * EventHook.onFinalizeSpawn(zombie, level, difficulty, spawnType, spawnData, spawnTag);
+     * EventHook.onFinalizeSpawn(zombie, level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
      * if (zombie.isAddedToWorld()) {
      *     // Do stuff with your new zombie
@@ -281,18 +280,18 @@ public class EventHooks {
      * 
      * @return The SpawnGroupData from this event, or null if it was canceled. The return value of this method has no bearing on if the entity will be spawned.
      * @see MobSpawnEvent.FinalizeSpawn
-     * @see Mob#finalizeSpawn(ServerLevelAccessor, DifficultyInstance, MobSpawnType, SpawnGroupData, CompoundTag)
+     * @see Mob#finalizeSpawn(ServerLevelAccessor, DifficultyInstance, MobSpawnType, SpawnGroupData)
      * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
      * @implNote Changes to the signature of this method must be reflected in the method redirector coremod.
      */
     @Nullable
     @SuppressWarnings("deprecation") // Call to deprecated Mob#finalizeSpawn is expected.
-    public static SpawnGroupData onFinalizeSpawn(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag) {
-        var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, spawnTag, null);
+    public static SpawnGroupData onFinalizeSpawn(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData) {
+        var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, null);
         boolean cancel = NeoForge.EVENT_BUS.post(event).isCanceled();
 
         if (!cancel) {
-            mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData(), event.getSpawnTag());
+            mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
         }
 
         return cancel ? null : event.getSpawnData();
@@ -306,8 +305,8 @@ public class EventHooks {
      * @see #onFinalizeSpawn
      */
     @Nullable
-    public static MobSpawnEvent.FinalizeSpawn onFinalizeSpawnSpawner(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag, BaseSpawner spawner) {
-        var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, MobSpawnType.SPAWNER, spawnData, spawnTag, spawner);
+    public static MobSpawnEvent.FinalizeSpawn onFinalizeSpawnSpawner(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, @Nullable SpawnGroupData spawnData, BaseSpawner spawner) {
+        var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, MobSpawnType.SPAWNER, spawnData, spawner);
         boolean cancel = NeoForge.EVENT_BUS.post(event).isCanceled();
         return cancel ? null : event;
     }
@@ -362,8 +361,8 @@ public class EventHooks {
         return event.getNewState();
     }
 
-    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags) {
-        ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags);
+    public static ItemTooltipEvent onItemTooltip(ItemStack itemStack, @Nullable Player entityPlayer, List<Component> list, TooltipFlag flags, Item.TooltipContext context) {
+        ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
@@ -415,7 +414,7 @@ public class EventHooks {
     }
 
     public static void firePlayerLoadingEvent(Player player, PlayerDataStorage playerFileData, String uuidString) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.LoadFromFile(player, playerFileData.getPlayerDataFolder(), uuidString));
+        NeoForge.EVENT_BUS.post(new PlayerEvent.LoadFromFile(player, playerFileData.getPlayerDir(), uuidString));
     }
 
     @Nullable
@@ -877,7 +876,7 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new AdvancementProgressEvent(player, progressed, advancementProgress, criterion, progressType));
     }
 
-    public static boolean onEffectRemoved(LivingEntity entity, MobEffect effect, @Nullable EffectCure cure) {
+    public static boolean onEffectRemoved(LivingEntity entity, Holder<MobEffect> effect, @Nullable EffectCure cure) {
         return NeoForge.EVENT_BUS.post(new MobEffectEvent.Remove(entity, effect, cure)).isCanceled();
     }
 
@@ -894,11 +893,11 @@ public class EventHooks {
      * @return The new level of the enchantment.
      */
     public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Enchantment ench) {
-        Map<Enchantment, Integer> map = new HashMap<>();
-        map.put(ench, level);
-        var event = new GetEnchantmentLevelEvent(stack, map, ench);
+        var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        enchantments.set(ench, level);
+        var event = new GetEnchantmentLevelEvent(stack, enchantments, ench);
         NeoForge.EVENT_BUS.post(event);
-        return event.getEnchantments().getOrDefault(ench, 0);
+        return enchantments.getLevel(ench);
     }
 
     /**
@@ -908,11 +907,11 @@ public class EventHooks {
      * @param stack        The stack being queried against.
      * @return The new enchantment map.
      */
-    public static Map<Enchantment, Integer> getEnchantmentLevel(Map<Enchantment, Integer> enchantments, ItemStack stack) {
-        enchantments = new HashMap<>(enchantments);
-        var event = new GetEnchantmentLevelEvent(stack, enchantments, null);
+    public static ItemEnchantments getEnchantmentLevel(ItemEnchantments enchantments, ItemStack stack) {
+        var mutableEnchantments = new ItemEnchantments.Mutable(enchantments);
+        var event = new GetEnchantmentLevelEvent(stack, mutableEnchantments, null);
         NeoForge.EVENT_BUS.post(event);
-        return enchantments;
+        return mutableEnchantments.toImmutable();
     }
 
     /**
@@ -941,7 +940,7 @@ public class EventHooks {
             entries.put(stack, vis);
         });
 
-        ModLoader.get().postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
+        ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
 
         for (var entry : entries)
             output.accept(entry.getKey(), entry.getValue());

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/net/minecraft/world/level/block/ComposterBlock.java
-@@ -47,6 +_,8 @@
+@@ -48,6 +_,8 @@
      public static final int MIN_LEVEL = 0;
      public static final int MAX_LEVEL = 7;
      public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_COMPOSTER;
@@ -9,7 +9,7 @@
      public static final Object2FloatMap<ItemLike> COMPOSTABLES = new Object2FloatOpenHashMap<>();
      private static final int AABB_SIDE_THICKNESS = 2;
      private static final VoxelShape OUTER_SHAPE = Shapes.block();
-@@ -226,13 +_,22 @@
+@@ -227,6 +_,15 @@
          if (p_51978_.getValue(LEVEL) == 7) {
              p_51979_.scheduleTick(p_51980_, p_51978_.getBlock(), 20);
          }
@@ -18,22 +18,23 @@
 +    }
 +
 +    @Override
-+    public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
++    protected void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
 +        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
 +        // Neo: Invalidate composter capabilities when a composter is removed
 +        if (!p_60515_.is(p_60518_.getBlock())) p_60516_.invalidateCapabilities(p_60517_);
      }
  
      @Override
-     public InteractionResult use(BlockState p_51949_, Level p_51950_, BlockPos p_51951_, Player p_51952_, InteractionHand p_51953_, BlockHitResult p_51954_) {
-         int i = p_51949_.getValue(LEVEL);
-         ItemStack itemstack = p_51952_.getItemInHand(p_51953_);
--        if (i < 8 && COMPOSTABLES.containsKey(itemstack.getItem())) {
-+        if (i < 8 && getValue(itemstack) > 0) {
-             if (i < 7 && !p_51950_.isClientSide) {
-                 BlockState blockstate = addItem(p_51952_, p_51949_, p_51950_, p_51951_, itemstack);
-                 p_51950_.levelEvent(1500, p_51951_, p_51949_ != blockstate ? 1 : 0);
-@@ -253,7 +_,7 @@
+@@ -234,7 +_,7 @@
+         ItemStack p_316332_, BlockState p_316118_, Level p_316624_, BlockPos p_316660_, Player p_316715_, InteractionHand p_316472_, BlockHitResult p_316606_
+     ) {
+         int i = p_316118_.getValue(LEVEL);
+-        if (i < 8 && COMPOSTABLES.containsKey(p_316332_.getItem())) {
++        if (i < 8 && getValue(p_316332_) > 0) {
+             if (i < 7 && !p_316624_.isClientSide) {
+                 BlockState blockstate = addItem(p_316715_, p_316118_, p_316624_, p_316660_, p_316332_);
+                 p_316624_.levelEvent(1500, p_316660_, p_316118_ != blockstate ? 1 : 0);
+@@ -261,7 +_,7 @@
  
      public static BlockState insertItem(Entity p_270919_, BlockState p_270087_, ServerLevel p_270284_, ItemStack p_270253_, BlockPos p_270678_) {
          int i = p_270087_.getValue(LEVEL);
@@ -42,7 +43,7 @@
              BlockState blockstate = addItem(p_270919_, p_270087_, p_270284_, p_270678_, p_270253_);
              p_270253_.shrink(1);
              return blockstate;
-@@ -284,7 +_,7 @@
+@@ -292,7 +_,7 @@
  
      static BlockState addItem(@Nullable Entity p_270464_, BlockState p_270603_, LevelAccessor p_270151_, BlockPos p_270547_, ItemStack p_270354_) {
          int i = p_270603_.getValue(LEVEL);
@@ -51,7 +52,7 @@
          if ((i != 0 || !(f > 0.0F)) && !(p_270151_.getRandom().nextDouble() < (double)f)) {
              return p_270603_;
          } else {
-@@ -384,7 +_,7 @@
+@@ -392,7 +_,7 @@
  
          @Override
          public boolean canPlaceItemThroughFace(int p_52028_, ItemStack p_52029_, @Nullable Direction p_52030_) {
@@ -60,7 +61,7 @@
          }
  
          @Override
-@@ -442,5 +_,11 @@
+@@ -450,5 +_,11 @@
              ComposterBlock.empty(null, this.state, this.level, this.pos);
              this.changed = true;
          }

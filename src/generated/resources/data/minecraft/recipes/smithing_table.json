@@ -6,7 +6,7 @@
       "tag": "minecraft:planks"
     },
     "@": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -15,6 +15,7 @@
     "##"
   ],
   "result": {
-    "item": "minecraft:smithing_table"
+    "count": 1,
+    "id": "minecraft:smithing_table"
   }
 }
