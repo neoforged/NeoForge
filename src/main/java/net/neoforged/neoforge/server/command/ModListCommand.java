@@ -22,7 +22,7 @@ class ModListCommand {
                             ModList.get().applyForEachModFile(modFile ->
                     // locator - filename : firstmod (version) - numberofmods\n
                     String.format(Locale.ROOT, "%s %s : %s (%s) - %d",
-                            modFile.getSource().toString(),
+                            modFile.getDiscoveryAttributes(),
                             modFile.getFileName(),
                             modFile.getModInfos().get(0).getModId(),
                             modFile.getModInfos().get(0).getVersion(),
