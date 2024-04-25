@@ -40,6 +40,15 @@
          this.renderSectionLayer(RenderType.cutout(), d0, d1, d2, p_254120_, p_323920_);
          if (this.level.effects().constantAmbientLight()) {
              Lighting.setupNetherLevel();
+@@ -1020,7 +_,7 @@
+                             || p_109604_.isDetached()
+                             || p_109604_.getEntity() instanceof LivingEntity && ((LivingEntity)p_109604_.getEntity()).isSleeping()
+                     )
+-                    && (!(entity instanceof LocalPlayer) || p_109604_.getEntity() == entity)) {
++                    && (!(entity instanceof LocalPlayer) || p_109604_.getEntity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { //FORGE: render local player entity when it is not the renderViewEntity
+                     this.renderedEntities++;
+                     if (entity.tickCount == 0) {
+                         entity.xOld = entity.getX();
 @@ -1036,6 +_,9 @@
                          int i = entity.getTeamColor();
                          outlinebuffersource.setColor(FastColor.ARGB32.red(i), FastColor.ARGB32.green(i), FastColor.ARGB32.blue(i), 255);
