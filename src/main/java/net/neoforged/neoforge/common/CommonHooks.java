@@ -192,6 +192,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
+import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -788,14 +789,23 @@ public class CommonHooks {
         Biome apply(final Biome.ClimateSettings climate, final BiomeSpecialEffects effects, final BiomeGenerationSettings gen, final MobSpawnSettings spawns);
     }
 
-    public static boolean onCropsGrowPre(Level level, BlockPos pos, BlockState state, boolean def) {
-        BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
+    /**
+     * Checks if a crop can grow by firing {@link CropGrowEvent.Pre}.
+     * 
+     * @param level The level the crop is in
+     * @param pos   The position of the crop
+     * @param state The state of the crop
+     * @param def   The result of the default checks performed by the crop.
+     * @return true if the crop can grow
+     */
+    public static boolean canCropGrow(Level level, BlockPos pos, BlockState state, boolean def) {
+        var ev = new CropGrowEvent.Pre(level, pos, state);
         NeoForge.EVENT_BUS.post(ev);
-        return (ev.getResult() == Event.Result.ALLOW || (ev.getResult() == Event.Result.DEFAULT && def));
+        return (ev.getResult() == CropGrowEvent.Pre.Result.GROW || (ev.getResult() == CropGrowEvent.Pre.Result.DEFAULT && def));
     }
 
-    public static void onCropsGrowPost(Level level, BlockPos pos, BlockState state) {
-        NeoForge.EVENT_BUS.post(new BlockEvent.CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
+    public static void fireCropGrowPost(Level level, BlockPos pos, BlockState state) {
+        NeoForge.EVENT_BUS.post(new CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
     }
 
     /**

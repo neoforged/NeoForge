@@ -250,56 +250,6 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Fired when a crop block grows. See subevents.
-     *
-     */
-    public static abstract class CropGrowEvent extends BlockEvent {
-        public CropGrowEvent(Level level, BlockPos pos, BlockState state) {
-            super(level, pos, state);
-        }
-
-        /**
-         * Fired when any "growing age" blocks (for example cacti, chorus plants, or crops
-         * in vanilla) attempt to advance to the next growth age state during a random tick.<br>
-         * <br>
-         * {@link Result#DEFAULT} will pass on to the vanilla growth mechanics.<br>
-         * {@link Result#ALLOW} will force the plant to advance a growth stage.<br>
-         * {@link Result#DENY} will prevent the plant from advancing a growth stage.<br>
-         * <br>
-         * This event is not {@link ICancellableEvent}.<br>
-         * <br>
-         */
-        @HasResult
-        public static class Pre extends CropGrowEvent {
-            public Pre(Level level, BlockPos pos, BlockState state) {
-                super(level, pos, state);
-            }
-        }
-
-        /**
-         * Fired when "growing age" blocks (for example cacti, chorus plants, or crops
-         * in vanilla) have successfully grown. The block's original state is available,
-         * in addition to its new state.<br>
-         * <br>
-         * This event is not {@link ICancellableEvent}.<br>
-         * <br>
-         * This event does not have a result. {@link HasResult}<br>
-         */
-        public static class Post extends CropGrowEvent {
-            private final BlockState originalState;
-
-            public Post(Level level, BlockPos pos, BlockState original, BlockState state) {
-                super(level, pos, state);
-                originalState = original;
-            }
-
-            public BlockState getOriginalState() {
-                return originalState;
-            }
-        }
-    }
-
-    /**
      * Fired when when farmland gets trampled
      * This event is {@link ICancellableEvent}
      */
