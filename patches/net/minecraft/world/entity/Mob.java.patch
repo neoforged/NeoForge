@@ -65,7 +65,7 @@
              && this.isAlive()
              && !this.dead
 -            && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
++            && net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), this)) {
              Vec3i vec3i = this.getPickupReach();
  
              for (ItemEntity itementity : this.level()

@@ -221,7 +221,7 @@
              boolean flag = false;
              if (p_21269_ instanceof WitherBoss) {
 -                if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+                if (net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), p_21269_)) {
++                if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), p_21269_)) {
                      BlockPos blockpos = this.blockPosition();
                      BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
                      if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {

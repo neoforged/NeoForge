@@ -905,7 +905,7 @@ public class CommonHooks {
         if (!level.isLoaded(pos))
             return false;
         BlockState state = level.getBlockState(pos);
-        return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
+        return EventHooks.canEntityGrief(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
     }
 
     /**

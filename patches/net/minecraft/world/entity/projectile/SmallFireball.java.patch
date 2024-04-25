@@ -5,7 +5,7 @@
          if (!this.level().isClientSide) {
              Entity entity = this.getOwner();
 -            if (!(entity instanceof Mob) || this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            if (!(entity instanceof Mob) || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), entity)) {
++            if (!(entity instanceof Mob) || net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), entity)) {
                  BlockPos blockpos = p_37384_.getBlockPos().relative(p_37384_.getDirection());
                  if (this.level().isEmptyBlock(blockpos)) {
                      this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));

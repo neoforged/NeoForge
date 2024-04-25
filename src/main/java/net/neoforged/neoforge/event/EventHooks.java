@@ -681,15 +681,21 @@ public class EventHooks {
         return !NeoForge.EVENT_BUS.post(new LivingDestroyBlockEvent(entity, pos, state)).isCanceled();
     }
 
-    public static boolean getMobGriefingEvent(Level level, @Nullable Entity entity) {
+    /**
+     * Checks if an entity can perform a griefing action.
+     * <p>
+     * If an entity is provided, this method fires {@link EntityMobGriefingEvent}.
+     * If an entity is not provided, this method returns the value of {@link GameRules#RULE_MOBGRIEFING}.
+     * 
+     * @param level  The level of the action
+     * @param entity The entity performing the action, or null if unknown.
+     * @return
+     */
+    public static boolean canEntityGrief(Level level, @Nullable Entity entity) {
         if (entity == null)
             return level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 
-        EntityMobGriefingEvent event = new EntityMobGriefingEvent(entity);
-        NeoForge.EVENT_BUS.post(event);
-
-        Result result = event.getResult();
-        return result == Result.DEFAULT ? level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) : result == Result.ALLOW;
+        return NeoForge.EVENT_BUS.post(new EntityMobGriefingEvent(level, entity)).canGrief();
     }
 
     public static SaplingGrowTreeEvent blockGrowFeature(LevelAccessor level, RandomSource randomSource, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> holder) {
