@@ -65,7 +65,7 @@
   "fml.modloading.failedtoloadmod": "{0,modinfo,name}（{0,modinfo,id}）未能正确加载\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name}（{0,modinfo,id}）缺少运行所需的一个功能\n§7需要 {3,featurebound} 但 {4} 可用",
   "fml.modloading.uncaughterror": "发生了一个未捕获的并行处理错误。\n§7{2,exc,msg}",
-  "fml.modloading.errorduringevent": "{0,modinfo,name} ({0,modinfo,id}) encountered an error while dispatching the {3} event\n§7{2,exc,msg}",
+  "fml.modloading.errorduringevent": "{0,modinfo,name}（{0,modinfo,id}）在 {3} 事件调度时发生错误\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "加载 NeoForge 失败",
   "fml.modloading.missingdependency": "模组 §e{4}§r 需要 §6{3}§r §o{5,vr}§r\n§7目前 §6{3}§r§7 是 §o{6,i18n,fml.messages.artifactversion.ornotinstalled}}\n{7,optional,§7使用此依赖的原因：§r}",
   "fml.modloading.missingdependency.optional": "模组 §e{4}§r 只支持 §3{3}§r §o{5,vr}§r\n§7目前，§3{3}§r§7 是 §o{6}",
