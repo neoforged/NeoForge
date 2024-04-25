@@ -73,7 +73,7 @@
 +        if (!this.connectionType.isNeoForge() && packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {
 +            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNonModdedConnection(this);
-+            return;
++            // Continue processing the brand payload
 +        }
 +
 +        // Fallback to super for un/register, modded, and vanilla payloads.

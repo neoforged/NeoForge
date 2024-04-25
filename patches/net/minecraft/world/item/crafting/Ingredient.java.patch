@@ -97,9 +97,10 @@
 +     * Returns {@code true} if this ingredient is explicitly chosen to be empty, i.e. using {@code []}.
 +     */
      public boolean isEmpty() {
-         return this.values.length == 0;
-     }
- 
+-        return this.values.length == 0;
++        return this.values.length == 0 && !isCustom();
++    }
++
 +    /**
 +     * Returns {@code true} if this ingredient has an empty stack list.
 +     * Unlike {@link #isEmpty()}, this will catch "accidentally empty" ingredients,
@@ -115,8 +116,8 @@
 +            return item.getItem() == net.minecraft.world.item.Items.BARRIER && item.getHoverName() instanceof net.minecraft.network.chat.MutableComponent hoverName && hoverName.getString().startsWith("Empty Tag: ");
 +        }
 +        return false;
-+    }
-+
+     }
+ 
      @Override
      public boolean equals(Object p_301003_) {
 -        return p_301003_ instanceof Ingredient ingredient ? Arrays.equals((Object[])this.values, (Object[])ingredient.values) : false;

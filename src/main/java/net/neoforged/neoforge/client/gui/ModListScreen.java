@@ -88,8 +88,8 @@ public class ModListScreen extends Screen {
 
         @Override
         public int compare(IModInfo o1, IModInfo o2) {
-            String name1 = StringUtils.toLowerCase(stripControlCodes(I18nExtension.getDisplayName(o1)));
-            String name2 = StringUtils.toLowerCase(stripControlCodes(I18nExtension.getDisplayName(o2)));
+            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getDisplayName()));
+            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getDisplayName()));
             return compare(name1, name2);
         }
 
@@ -248,7 +248,7 @@ public class ModListScreen extends Screen {
     @Override
     public void init() {
         for (IModInfo mod : mods) {
-            listWidth = Math.max(listWidth, getFontRenderer().width(I18nExtension.getDisplayName(mod)) + 10);
+            listWidth = Math.max(listWidth, getFontRenderer().width(mod.getDisplayName()) + 10);
             listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionStringHelper.artifactVersionToString(mod.getVersion())) + 5);
         }
         listWidth = Math.max(Math.min(listWidth, width / 3), 100);
@@ -327,7 +327,7 @@ public class ModListScreen extends Screen {
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(I18nExtension.getDisplayName(mi))).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
+        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
         lastFilterText = search.getValue();
     }
 
@@ -399,7 +399,7 @@ public class ModListScreen extends Screen {
             return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
         }).orElse(Pair.of(null, new Size2i(0, 0)));
 
-        lines.add(I18nExtension.getDisplayName(selectedMod));
+        lines.add(selectedMod.getDisplayName());
         lines.add(I18nExtension.parseMessage("fml.menu.mods.info.version", MavenVersionStringHelper.artifactVersionToString(selectedMod.getVersion())));
         lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
@@ -409,7 +409,7 @@ public class ModListScreen extends Screen {
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
             lines.add(I18nExtension.parseMessage("fml.menu.mods.info.nochildmods"));
         else
-            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(I18nExtension::getDisplayName).collect(Collectors.joining(","))));
+            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
             lines.add(I18nExtension.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
