@@ -103,6 +103,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
+import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
@@ -155,7 +156,6 @@ import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
-import net.neoforged.neoforge.event.level.BlockEvent.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityMultiPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.NeighborNotifyEvent;
@@ -170,6 +170,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -658,12 +659,12 @@ public class EventHooks {
         return event.getTable();
     }
 
-    public static boolean canCreateFluidSource(Level level, BlockPos pos, BlockState state, boolean def) {
-        CreateFluidSourceEvent evt = new CreateFluidSourceEvent(level, pos, state);
-        NeoForge.EVENT_BUS.post(evt);
-
-        Result result = evt.getResult();
-        return result == Result.DEFAULT ? def : result == Result.ALLOW;
+    /**
+     * Checks if a fluid is allowed to create a fluid source. This fires the {@link CreateFluidSourceEvent}.
+     * By default, a fluid can create a source if it returns true to {@link IFluidStateExtension#canConvertToSource(Level, BlockPos)}
+     */
+    public static boolean canCreateFluidSource(Level level, BlockPos pos, BlockState state) {
+        return NeoForge.EVENT_BUS.post(new CreateFluidSourceEvent(level, pos, state)).canConvert();
     }
 
     public static Optional<PortalShape> onTrySpawnPortal(LevelAccessor level, BlockPos pos, Optional<PortalShape> size) {

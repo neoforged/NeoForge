@@ -204,37 +204,6 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Fired to check whether a non-source block can turn into a source block.
-     * A result of ALLOW causes a source block to be created even if the liquid
-     * usually doesn't do that (like lava), and a result of DENY prevents creation
-     * even if the liquid usually does do that (like water).
-     */
-    @HasResult
-    public static class CreateFluidSourceEvent extends Event {
-        private final Level level;
-        private final BlockPos pos;
-        private final BlockState state;
-
-        public CreateFluidSourceEvent(Level level, BlockPos pos, BlockState state) {
-            this.level = level;
-            this.pos = pos;
-            this.state = state;
-        }
-
-        public Level getLevel() {
-            return level;
-        }
-
-        public BlockPos getPos() {
-            return pos;
-        }
-
-        public BlockState getState() {
-            return state;
-        }
-    }
-
-    /**
      * Fired when a liquid places a block. Use {@link #setNewState(BlockState)} to change the result of
      * a cobblestone generator or add variants of obsidian. Alternatively, you could execute
      * arbitrary code when lava sets blocks on fire, even preventing it.
