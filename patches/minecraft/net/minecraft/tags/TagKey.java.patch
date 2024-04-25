@@ -5,7 +5,7 @@
     private static final Interner<TagKey<?>> f_203869_ = Interners.newWeakInterner();
  
 +   /**
-+    * @deprecated Forge: Use {@link TagKey#create} instead.
++    * @deprecated Neo: Use {@link TagKey#create} instead.
 +    */
 +   @Deprecated
 +   public TagKey {}
