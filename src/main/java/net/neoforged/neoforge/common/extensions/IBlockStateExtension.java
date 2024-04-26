@@ -176,11 +176,10 @@ public interface IBlockStateExtension {
      * @param level       The current level
      * @param pos         Block position in level
      * @param orientation The angle the entity had when setting the respawn point
-     * @param entity      The entity respawning, often null
      * @return The spawn position or the empty optional if respawning here is not possible
      */
-    default Optional<Vec3> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
-        return self().getBlock().getRespawnPosition(self(), type, level, pos, orientation, entity);
+    default Optional<Vec3> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation) {
+        return self().getBlock().getRespawnPosition(self(), type, level, pos, orientation);
     }
 
     /**

@@ -328,7 +328,7 @@
              return BedBlock.findStandUpPosition(EntityType.PLAYER, p_36131_, p_36132_, blockstate.getValue(BedBlock.FACING), p_36133_);
          } else if (!p_36134_) {
 -            return Optional.empty();
-+            return blockstate.getRespawnPosition(EntityType.PLAYER, p_36131_, p_36132_, p_36133_, null);
++            return blockstate.getRespawnPosition(EntityType.PLAYER, p_36131_, p_36132_, p_36133_);
          } else {
              boolean flag = block.isPossibleToRespawnInThis(blockstate);
              BlockState blockstate1 = p_36131_.getBlockState(p_36132_.above());
