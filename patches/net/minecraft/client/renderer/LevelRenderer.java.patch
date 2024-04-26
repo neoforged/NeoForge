@@ -45,7 +45,7 @@
                              || p_109604_.getEntity() instanceof LivingEntity && ((LivingEntity)p_109604_.getEntity()).isSleeping()
                      )
 -                    && (!(entity instanceof LocalPlayer) || p_109604_.getEntity() == entity)) {
-+                    && (!(entity instanceof LocalPlayer) || p_109604_.getEntity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { //FORGE: render local player entity when it is not the renderViewEntity
++                    && (!(entity instanceof LocalPlayer) || p_109604_.getEntity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { // NEO: render local player entity when it is not the camera entity
                      ++this.renderedEntities;
                      if (entity.tickCount == 0) {
                          entity.xOld = entity.getX();
