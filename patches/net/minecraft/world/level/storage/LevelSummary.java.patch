@@ -5,7 +5,7 @@
      }
  
 +    public boolean isLifecycleExperimental() {
-+        return this.settings.getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental());
++        return this.settings != null && this.settings.getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental());
 +    }
 +
      public static class SymlinkLevelSummary extends LevelSummary {
