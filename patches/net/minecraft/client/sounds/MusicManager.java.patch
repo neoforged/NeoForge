@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/sounds/MusicManager.java
++++ b/net/minecraft/client/sounds/MusicManager.java
+@@ -25,6 +_,11 @@
+ 
+     public void tick() {
+         Music music = this.minecraft.getSituationalMusic();
++
++        if (music == null) {
++            return;
++        }
++
+         if (this.currentMusic != null) {
+             if (!music.getEvent().value().getLocation().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
+                 this.minecraft.getSoundManager().stop(this.currentMusic);
