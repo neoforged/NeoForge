@@ -9,20 +9,22 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -216,46 +218,32 @@ public class ResourcePackLoader {
      */
     @ApiStatus.Internal
     public static List<Pack> expandAndRemoveRootChildren(Stream<Pack> packs, Collection<Pack> availablePacks) {
-        List<String> hiddenRootPacks = new ArrayList<>();
-        IntList hiddenRootPackIndexes = new IntArrayList();
-        Set<String> hiddenSubPacks = Sets.newHashSet();
+        Set<Pack> hiddenSubPacks = Sets.newHashSet();
         for (var pack : availablePacks) {
             if (pack.isRequired()) {
                 // Remove all children of required packs -- as these will always be present but may not be added till after this method is called
-                pack.getChildren().forEach(p -> hiddenSubPacks.add(p.getId()));
+                hiddenSubPacks.addAll(pack.getChildren());
             }
         }
-        ArrayList<Pack> outPacks = new ArrayList<>();
+        SequencedSet<Pack> orderedPackSet = new LinkedHashSet<>();
         var iterator = packs.iterator();
         // We iterate the root packs
         while (iterator.hasNext()) {
             var rootPack = iterator.next();
             if (rootPack.isHidden()) {
                 // If we've already found this as a child, remove it
-                if (hiddenSubPacks.contains(rootPack.getId())) {
+                if (orderedPackSet.contains(rootPack) || hiddenSubPacks.contains(rootPack)) {
                     continue;
                 }
-                hiddenRootPacks.add(rootPack.getId());
-                hiddenRootPackIndexes.add(outPacks.size());
             }
-            // Now we actually add the pack and its children, noting what the children are as we go
-            outPacks.add(rootPack);
+            // Now we actually add the pack and its children, moving them to the end of the ordering so that if a hidden pack was added earlier, it is moved
+            orderedPackSet.addLast(rootPack);
             for (var pack : rootPack.getChildren()) {
-                if (pack.isHidden()) {
-                    hiddenSubPacks.add(pack.getId());
-                }
-                outPacks.add(pack);
+                orderedPackSet.addLast(pack);
             }
         }
 
-        // Then we remove by index, from end to start, any root-level hidden packs that were later found to actually be children
-        for (int i = hiddenRootPackIndexes.size() - 1; i >= 0; i--) {
-            if (hiddenSubPacks.contains(hiddenRootPacks.get(i))) {
-                int index = hiddenRootPackIndexes.getInt(i);
-                outPacks.remove(index);
-            }
-        }
-        return outPacks;
+        return new ArrayList<>(orderedPackSet);
     }
 
     @ApiStatus.Internal
