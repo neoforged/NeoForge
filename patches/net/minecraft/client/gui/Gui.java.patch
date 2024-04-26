@@ -242,7 +242,7 @@
  
      private void renderDemoOverlay(GuiGraphics p_281825_, float p_316211_) {
 -        if (this.minecraft.isDemo()) {
-+        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // NEO: Hide demo timer when F3 debug overlay is open
++        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // NEO: Hide demo timer when F3 debug overlay is open; fixes MC-271166
              this.minecraft.getProfiler().push("demo");
              Component component;
              if (this.minecraft.level.getGameTime() >= 120500L) {
