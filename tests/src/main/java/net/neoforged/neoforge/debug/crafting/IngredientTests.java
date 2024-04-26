@@ -177,6 +177,8 @@ public class IngredientTests {
         helper.assertTrue(ingredient.isEmpty(), "empty ingredient should return true from isEmpty()");
         helper.assertValueEqual(Ingredient.EMPTY, ingredient, "empty ingredient");
         helper.assertTrue(Ingredient.EMPTY == ingredient, "Reference equality with Ingredient.EMPTY");
+
+        helper.succeed();
     }
 
     @GameTest
