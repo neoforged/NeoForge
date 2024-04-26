@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -93,7 +94,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
     private static class ColorRegisterHandler {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event) {
-            MOD_EGGS.forEach(egg -> event.register((stack, layer) -> egg.getColor(layer), egg));
+            MOD_EGGS.forEach(egg -> event.register((stack, layer) -> FastColor.ARGB32.opaque(egg.getColor(layer)), egg));
         }
     }
 }
