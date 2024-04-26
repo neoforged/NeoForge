@@ -475,15 +475,18 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getFinalState();
     }
 
-    public static int onApplyBonemeal(Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        BonemealEvent event = new BonemealEvent(player, level, pos, state, stack);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
-        if (event.getResult() == Result.ALLOW) {
-            if (!level.isClientSide)
-                stack.shrink(1);
-            return 1;
-        }
-        return 0;
+    /**
+     * Called when bone meal (or equivalent) is used on a block. Fires the {@link BonemealEvent} and returns the event.
+     * 
+     * @param player The player who used the item, if any
+     * @param level  The level
+     * @param pos    The position of the target block
+     * @param state  The state of the target block
+     * @param stack  The bone meal item stack
+     * @return The event
+     */
+    public static BonemealEvent fireBonemealEvent(@Nullable Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
+        return NeoForge.EVENT_BUS.post(new BonemealEvent(player, level, pos, state, stack));
     }
 
     @Nullable
