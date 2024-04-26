@@ -392,10 +392,11 @@ public class ClientHooks {
         return e.getSound();
     }
 
-    public static SelectMusicEvent selectMusic(Music music) {
+    @Nullable
+    public static Music selectMusic(Music music) {
         SelectMusicEvent e = new SelectMusicEvent(music);
         NeoForge.EVENT_BUS.post(e);
-        return e;
+        return e.getMusic();
     }
 
     public static void drawScreen(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
