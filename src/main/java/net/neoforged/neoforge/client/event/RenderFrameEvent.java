@@ -13,8 +13,8 @@ import net.neoforged.bus.api.Event;
  * <p>
  * These events can be used to setup and teardown global render state that must persist for the current frame.
  * 
- * @see Pre
- * @see Post
+ * @see RenderFrameEvent.Pre
+ * @see RenderFrameEvent.Post
  */
 public abstract class RenderFrameEvent extends Event {
     protected final float partialTick;

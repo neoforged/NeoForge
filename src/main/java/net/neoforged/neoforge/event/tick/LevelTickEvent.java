@@ -10,13 +10,12 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Base class of the two level tick events.
  * 
- * @see Pre
- * @see Post
+ * @see LevelTickEvent.Pre
+ * @see LevelTickEvent.Post
  */
 public abstract class LevelTickEvent extends Event {
     private final BooleanSupplier hasTime;
@@ -50,7 +49,6 @@ public abstract class LevelTickEvent extends Event {
      * This event fires on both the logical client and logical server, for {@link ClientLevel} and {@link ServerLevel} respectively.
      */
     public static class Pre extends LevelTickEvent {
-        @ApiStatus.Internal
         public Pre(BooleanSupplier haveTime, Level level) {
             super(haveTime, level);
         }
@@ -62,7 +60,6 @@ public abstract class LevelTickEvent extends Event {
      * This event fires on both the logical client and logical server, for {@link ClientLevel} and {@link ServerLevel} respectively.
      */
     public static class Post extends LevelTickEvent {
-        @ApiStatus.Internal
         public Post(BooleanSupplier haveTime, Level level) {
             super(haveTime, level);
         }

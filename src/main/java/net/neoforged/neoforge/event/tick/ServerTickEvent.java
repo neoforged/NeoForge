@@ -8,13 +8,12 @@ package net.neoforged.neoforge.event.tick;
 import java.util.function.BooleanSupplier;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.Event;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Base class of the two server tick events.
  * 
- * @see Pre
- * @see Post
+ * @see ServerTickEvent.Pre
+ * @see ServerTickEvent.Post
  */
 public abstract class ServerTickEvent extends Event {
     private final BooleanSupplier hasTime;
@@ -47,7 +46,6 @@ public abstract class ServerTickEvent extends Event {
      * This event only fires on the logical server.
      */
     public static class Pre extends ServerTickEvent {
-        @ApiStatus.Internal
         public Pre(BooleanSupplier haveTime, MinecraftServer server) {
             super(haveTime, server);
         }
@@ -59,7 +57,6 @@ public abstract class ServerTickEvent extends Event {
      * This event only fires on the logical server.
      */
     public static class Post extends ServerTickEvent {
-        @ApiStatus.Internal
         public Post(BooleanSupplier haveTime, MinecraftServer server) {
             super(haveTime, server);
         }

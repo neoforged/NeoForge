@@ -10,12 +10,10 @@ import net.neoforged.bus.api.Event;
 /**
  * Base class of the two client tick events.
  * 
- * @see Pre
- * @see Post
+ * @see ClientTickEvent.Pre
+ * @see ClientTickEvent.Post
  */
 public abstract class ClientTickEvent extends Event {
-    public ClientTickEvent() {}
-
     /**
      * {@link ClientTickEvent.Pre} is fired once per client tick, before the client performs work for the current tick.
      * <p>

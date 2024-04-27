@@ -8,17 +8,15 @@ package net.neoforged.neoforge.event.tick;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Base class of the two entity tick events.
  * 
- * @see Pre
- * @see Post
+ * @see EntityTickEvent.Pre
+ * @see EntityTickEvent.Post
  */
 public abstract class EntityTickEvent extends EntityEvent {
-    @ApiStatus.Internal
-    public EntityTickEvent(Entity entity) {
+    protected EntityTickEvent(Entity entity) {
         super(entity);
     }
 

@@ -11,7 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Base class of the two player tick events.
@@ -22,8 +21,8 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * Use of these events should only be necessary if you rely on this specific timing.
  * 
- * @see Pre
- * @see Post
+ * @see PlayerTickEvent.Pre
+ * @see PlayerTickEvent.Post
  */
 public abstract class PlayerTickEvent extends PlayerEvent {
     protected PlayerTickEvent(Player player) {
@@ -38,7 +37,6 @@ public abstract class PlayerTickEvent extends PlayerEvent {
      * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
     public static class Pre extends PlayerTickEvent {
-        @ApiStatus.Internal
         public Pre(Player player) {
             super(player);
         }
@@ -52,7 +50,6 @@ public abstract class PlayerTickEvent extends PlayerEvent {
      * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
     public static class Post extends PlayerTickEvent {
-        @ApiStatus.Internal
         public Post(Player player) {
             super(player);
         }
