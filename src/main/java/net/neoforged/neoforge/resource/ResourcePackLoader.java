@@ -58,7 +58,7 @@ public class ResourcePackLoader {
     public static final String MOD_RESOURCES_ID = "mod_resources";
     private static Map<IModFile, Pack.ResourcesSupplier> modResourcePacks;
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final PackSelectionConfig MOD_PACK_SELECTION_CONFIG = new PackSelectionConfig(false, Pack.Position.BOTTOM, false);
+    private static final PackSelectionConfig MOD_PACK_SELECTION_CONFIG = new PackSelectionConfig(false, Pack.Position.TOP, false);
 
     public static Optional<Pack.ResourcesSupplier> getPackFor(String modId) {
         return Optional.ofNullable(ModList.get().getModFileById(modId)).map(IModFileInfo::getFile).map(mf -> modResourcePacks.get(mf));
@@ -190,7 +190,7 @@ public class ResourcePackLoader {
                 new EmptyPackResources.EmptyResourcesSupplier(new PackMetadataSection(Component.translatable(descriptionKey, hiddenPacks.size()),
                         SharedConstants.getCurrentVersion().getPackVersion(packType))),
                 packType,
-                new PackSelectionConfig(true, Pack.Position.BOTTOM, false)).withChildren(hiddenPacks);
+                new PackSelectionConfig(true, Pack.Position.TOP, false)).withChildren(hiddenPacks);
     }
 
     public static Pack.ResourcesSupplier createPackForMod(IModFileInfo mf) {
