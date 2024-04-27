@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.Music;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
@@ -23,11 +22,11 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Somewhat counterintuitively, you should listen with a *lower* {@link EventPriority} for music tracks you want to have higher priority.</p>
  * This is because higher event priorities will fire before lower ones, meaning that the *lower* priority listeners end up setting the value <i>later,</i>
- *  therefore making the last listener to set the music the one that gets used.</p>
+ * therefore making the last listener to set the music the one that gets used.</p>
  *
  * <p>Generally, you should listen with lower event priorities if you want your music to take priority over others. For instance, high priority might be used for biome or dimension-based music,
  * whereas normal might be used for structures, and low might be used for combat or boss battles. This may of course vary based on use case.</p>
-
+ * 
  * <p>Note as well that if you want your music track to <i>instantly</i> start and cancel any other playing music, it should be {@linkplain Music#replaceCurrentMusic() set up to do so.}</p>
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
