@@ -33,7 +33,7 @@
          this.entityData = synchedentitydata$builder.build();
          this.setPos(0.0, 0.0, 0.0);
 -        this.eyeHeight = this.dimensions.eyeHeight();
-+        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING));
++        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.dimensions.eyeHeight());
 +        this.dimensions = sizeEvent.getNewSize();
 +        this.eyeHeight = sizeEvent.getNewEyeHeight();
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
