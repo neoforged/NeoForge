@@ -235,10 +235,6 @@ public class CommonHooks {
         return event;
     }
 
-    public static boolean onLivingTick(LivingEntity entity) {
-        return NeoForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent(entity)).isCanceled();
-    }
-
     public static boolean onLivingAttack(LivingEntity entity, DamageSource src, float amount) {
         return entity instanceof Player || !NeoForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
     }

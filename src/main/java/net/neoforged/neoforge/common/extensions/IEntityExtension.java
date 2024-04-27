@@ -54,10 +54,6 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         return self().saveWithoutId(ret);
     }
 
-    boolean canUpdate();
-
-    void canUpdate(boolean value);
-
     @Nullable
     Collection<ItemEntity> captureDrops();
 
