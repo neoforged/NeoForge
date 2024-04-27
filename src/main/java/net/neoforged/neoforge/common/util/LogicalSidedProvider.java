@@ -14,6 +14,7 @@ import net.minecraft.server.TickTask;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.LogicalSide;
+import org.jetbrains.annotations.Nullable;
 
 public class LogicalSidedProvider<T> {
     public static final LogicalSidedProvider<BlockableEventLoop<? super TickTask>> WORKQUEUE = new LogicalSidedProvider<>(Supplier::get, Supplier::get);
