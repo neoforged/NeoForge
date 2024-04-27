@@ -61,7 +61,7 @@
   "fml.language.missingversion": "MODファイル{5}のロードには言語プロバイダ{3}:{4,vr}が必要です。\n§7{6,i18n,fml.messages.artifactversion}が見つかりました。",
   "fml.modloading.missingclasses": "Mod ファイル {3} は Mod が見つかりません",
   "fml.modloading.missingmetadata": "modid {3} のメタデータが見つかりません",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} にはクラス読み込みエラー\n§7{2,exc,msg} があります",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) has class loading errors\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name}({0,modinfo,id})が正しくロードされませんでした。\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name}({0,modinfo,id})には実行に必要な機能がありません。\n§7 {3,featurebound}が必要ですが、{4}は利用できます。",
   "fml.modloading.uncaughterror": "§7{2,exc,msg} の処理エラーが発生しました。",
