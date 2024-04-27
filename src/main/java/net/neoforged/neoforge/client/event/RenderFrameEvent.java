@@ -12,6 +12,8 @@ import net.neoforged.bus.api.Event;
  * Base class of the two render frame events.
  * <p>
  * These events can be used to setup and teardown global render state that must persist for the current frame.
+ * <p>
+ * For the event that fires once per client tick (instead of per frame), see {@link ClientTickEvent}.
  * 
  * @see RenderFrameEvent.Pre
  * @see RenderFrameEvent.Post

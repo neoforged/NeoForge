@@ -9,6 +9,8 @@ import net.neoforged.bus.api.Event;
 
 /**
  * Base class of the two client tick events.
+ * <p>
+ * For the event that fires once per frame (instead of per tick), see {@link RenderFrameEvent}.
  * 
  * @see ClientTickEvent.Pre
  * @see ClientTickEvent.Post
