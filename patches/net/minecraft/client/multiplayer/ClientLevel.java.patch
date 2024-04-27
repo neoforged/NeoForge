@@ -31,7 +31,7 @@
          this.getProfiler().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
 -        p_104640_.tick();
 +        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
-+        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(p_104640_).isCanceled()) {
++        if (!net.neoforged.neoforge.common.CommonHooks.fireEntityTickPre(p_104640_).isCanceled()) {
 +            p_104640_.tick();
 +        }
          this.getProfiler().pop();
@@ -52,7 +52,7 @@
          float p_263349_,
          long p_263408_
      ) {
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtPosition(this, p_263372_, p_263404_, p_263365_, p_263335_, p_263417_, p_263416_, p_263349_);
++        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.common.CommonHooks.onPlaySoundAtPosition(this, p_263372_, p_263404_, p_263365_, p_263335_, p_263417_, p_263416_, p_263349_);
 +        if (event.isCanceled() || event.getSound() == null) return;
 +        p_263335_ = event.getSound();
 +        p_263417_ = event.getSource();
@@ -66,7 +66,7 @@
      public void playSeededSound(
          @Nullable Player p_263514_, Entity p_263536_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
      ) {
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(p_263536_, p_263518_, p_263487_, p_263538_, p_263524_);
++        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.common.CommonHooks.onPlaySoundAtEntity(p_263536_, p_263518_, p_263487_, p_263538_, p_263524_);
 +        if (event.isCanceled() || event.getSound() == null) return;
 +        p_263518_ = event.getSound();
 +        p_263487_ = event.getSource();

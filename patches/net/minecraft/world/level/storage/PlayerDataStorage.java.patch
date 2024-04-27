@@ -4,7 +4,7 @@
              Path path2 = path.resolve(p_78434_.getStringUUID() + ".dat");
              Path path3 = path.resolve(p_78434_.getStringUUID() + ".dat_old");
              Util.safeReplaceFile(path2, path1, path3);
-+            net.neoforged.neoforge.event.EventHooks.firePlayerSavingEvent(p_78434_, playerDir, p_78434_.getStringUUID());
++            net.neoforged.neoforge.common.CommonHooks.firePlayerSavingEvent(p_78434_, playerDir, p_78434_.getStringUUID());
          } catch (Exception exception) {
              LOGGER.warn("Failed to save player data for {}", p_78434_.getName().getString());
          }
@@ -12,7 +12,7 @@
              int i = NbtUtils.getDataVersion(p_316252_, -1);
              p_316252_ = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_316252_, i);
              p_78436_.load(p_316252_);
-+            net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
++            net.neoforged.neoforge.common.CommonHooks.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
              return p_316252_;
          });
 +    }

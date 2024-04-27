@@ -8,12 +8,12 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 
 /**
  * This event is fired when an {@link Animal} is tamed. <br>
- * It is fired via {@link EventHooks#onAnimalTame(Animal, Player)}.
+ * It is fired via {@link CommonHooks#onAnimalTame(Animal, Player)}.
  * Forge fires this event for applicable vanilla animals, mods need to fire it themselves.
  * This event is {@link net.neoforged.bus.api.ICancellableEvent}. If canceled, taming the animal will fail.
  * This event is fired on the {@link NeoForge#EVENT_BUS}.

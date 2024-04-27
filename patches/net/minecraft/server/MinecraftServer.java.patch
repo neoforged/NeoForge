@@ -29,7 +29,7 @@
              p_177898_.setSpawn(BlockPos.ZERO.above(80), 0.0F);
          } else {
              ServerChunkCache serverchunkcache = p_177897_.getChunkSource();
-+            if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(p_177897_, p_177898_)) return;
++            if (net.neoforged.neoforge.common.CommonHooks.onCreateWorldSpawn(p_177897_, p_177898_)) return;
              ChunkPos chunkpos = new ChunkPos(serverchunkcache.randomState().sampler().findSpawnPosition());
              int i = serverchunkcache.getGenerator().getSpawnHeight(p_177897_);
              if (i < p_177897_.getMinBuildHeight()) {
@@ -90,7 +90,7 @@
      public void tickServer(BooleanSupplier p_129871_) {
          long i = Util.getNanos();
          this.tickCount++;
-+        net.neoforged.neoforge.event.EventHooks.fireServerTickPre(p_129871_, this);
++        net.neoforged.neoforge.common.CommonHooks.fireServerTickPre(p_129871_, this);
          this.tickRateManager.tick();
          this.tickChildren(p_129871_);
          if (i - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) {
@@ -104,7 +104,7 @@
          this.smoothedTickTimeMillis = this.smoothedTickTimeMillis * 0.8F + (float)j / (float)TimeUtil.NANOSECONDS_PER_MILLISECOND * 0.19999999F;
          this.logTickMethodTime(i);
          this.profiler.pop();
-+        net.neoforged.neoforge.event.EventHooks.fireServerTickPost(p_129871_, this);
++        net.neoforged.neoforge.common.CommonHooks.fireServerTickPost(p_129871_, this);
      }
  
      private void logTickMethodTime(long p_321837_) {
@@ -149,7 +149,7 @@
              }
  
              this.profiler.push("tick");
-+            net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(serverlevel, p_129954_);
++            net.neoforged.neoforge.common.CommonHooks.fireLevelTickPre(serverlevel, p_129954_);
  
              try {
                  serverlevel.tick(p_129954_);
@@ -157,7 +157,7 @@
                  serverlevel.fillReportDetails(crashreport);
                  throw new ReportedException(crashreport);
              }
-+            net.neoforged.neoforge.event.EventHooks.fireLevelTickPost(serverlevel, p_129954_);
++            net.neoforged.neoforge.common.CommonHooks.fireLevelTickPost(serverlevel, p_129954_);
  
              this.profiler.pop();
              this.profiler.pop();

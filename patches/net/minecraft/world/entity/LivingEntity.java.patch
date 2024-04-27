@@ -88,7 +88,7 @@
              for (flag = false; iterator.hasNext(); flag = true) {
 -                this.onEffectRemoved(iterator.next());
 +                MobEffectInstance effect = iterator.next();
-+                if(net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, effect, null)) continue;
++                if(net.neoforged.neoforge.common.CommonHooks.onEffectRemoved(this, effect, null)) continue;
 +                this.onEffectRemoved(effect);
                  iterator.remove();
              }
@@ -115,7 +115,7 @@
      }
  
      public boolean removeEffect(Holder<MobEffect> p_316570_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, p_316570_, null)) return false;
++        if (net.neoforged.neoforge.common.CommonHooks.onEffectRemoved(this, p_316570_, null)) return false;
          MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(p_316570_);
          if (mobeffectinstance != null) {
              this.onEffectRemoved(mobeffectinstance);
@@ -123,7 +123,7 @@
      }
  
      public void heal(float p_21116_) {
-+        p_21116_ = net.neoforged.neoforge.event.EventHooks.onLivingHeal(this, p_21116_);
++        p_21116_ = net.neoforged.neoforge.common.CommonHooks.onLivingHeal(this, p_21116_);
 +        if (p_21116_ <= 0) return;
          float f = this.getHealth();
          if (f > 0.0F) {
@@ -217,7 +217,7 @@
              boolean flag = false;
              if (p_21269_ instanceof WitherBoss) {
 -                if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+                if (net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), p_21269_)) {
++                if (net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(this.level(), p_21269_)) {
                      BlockPos blockpos = this.blockPosition();
                      BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
                      if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {
@@ -253,7 +253,7 @@
                      || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)
              )) {
 -            ExperienceOrb.award((ServerLevel)this.level(), this.position(), this.getExperienceReward());
-+            int reward = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, this.lastHurtByPlayer, this.getExperienceReward());
++            int reward = net.neoforged.neoforge.common.CommonHooks.getExperienceDrop(this, this.lastHurtByPlayer, this.getExperienceReward());
 +            ExperienceOrb.award((ServerLevel) this.level(), this.position(), reward);
          }
      }
@@ -496,7 +496,7 @@
  
      protected void updateUsingItem(ItemStack p_147201_) {
 +        if (!p_147201_.isEmpty())
-+            this.useItemRemaining = net.neoforged.neoforge.event.EventHooks.onItemUseTick(this, p_147201_, this.getUseItemRemainingTicks());
++            this.useItemRemaining = net.neoforged.neoforge.common.CommonHooks.onItemUseTick(this, p_147201_, this.getUseItemRemainingTicks());
 +        if (this.getUseItemRemainingTicks() > 0)
          p_147201_.onUseTick(this.level(), this, this.getUseItemRemainingTicks());
          if (this.shouldTriggerItemUseEffects()) {
@@ -512,7 +512,7 @@
      public void startUsingItem(InteractionHand p_21159_) {
          ItemStack itemstack = this.getItemInHand(p_21159_);
          if (!itemstack.isEmpty() && !this.isUsingItem()) {
-+            int duration = net.neoforged.neoforge.event.EventHooks.onItemUseStart(this, itemstack, itemstack.getUseDuration());
++            int duration = net.neoforged.neoforge.common.CommonHooks.onItemUseStart(this, itemstack, itemstack.getUseDuration());
 +            if (duration < 0) return; // Neo: Early return for negative values, as that indicates event cancellation.
              this.useItem = itemstack;
 -            this.useItemRemaining = itemstack.getUseDuration();
@@ -526,7 +526,7 @@
                      this.triggerItemUseEffects(this.useItem, 16);
 -                    ItemStack itemstack = this.useItem.finishUsingItem(this.level(), this);
 +                    ItemStack copy = this.useItem.copy();
-+                    ItemStack itemstack = net.neoforged.neoforge.event.EventHooks.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
++                    ItemStack itemstack = net.neoforged.neoforge.common.CommonHooks.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
                      if (itemstack != this.useItem) {
                          this.setItemInHand(interactionhand, itemstack);
                      }
@@ -534,10 +534,10 @@
  
      public void releaseUsingItem() {
          if (!this.useItem.isEmpty()) {
-+            if (!net.neoforged.neoforge.event.EventHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {
++            if (!net.neoforged.neoforge.common.CommonHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {
 +                ItemStack copy = this instanceof Player ? useItem.copy() : null;
              this.useItem.releaseUsing(this.level(), this, this.getUseItemRemainingTicks());
-+              if (copy != null && useItem.isEmpty()) net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem((Player)this, copy, getUsedItemHand());
++              if (copy != null && useItem.isEmpty()) net.neoforged.neoforge.common.CommonHooks.onPlayerDestroyItem((Player)this, copy, getUsedItemHand());
 +            }
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
@@ -576,7 +576,7 @@
      private boolean checkBedExists() {
 -        return this.getSleepingPos().map(p_337701_ -> this.level().getBlockState(p_337701_).getBlock() instanceof BedBlock).orElse(false);
 +        return this.getSleepingPos().map((p_289310_) -> {
-+            return net.neoforged.neoforge.event.EventHooks.fireSleepingLocationCheck(this, p_289310_);
++            return net.neoforged.neoforge.common.CommonHooks.fireSleepingLocationCheck(this, p_289310_);
 +        }).orElse(false);
      }
  
@@ -632,7 +632,7 @@
 +        Iterator<MobEffectInstance> itr = this.activeEffects.values().iterator();
 +        while (itr.hasNext()) {
 +            MobEffectInstance effect = itr.next();
-+            if (effect.getCures().contains(cure) && !net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, effect, cure)) {
++            if (effect.getCures().contains(cure) && !net.neoforged.neoforge.common.CommonHooks.onEffectRemoved(this, effect, cure)) {
 +                this.onEffectRemoved(effect);
 +                itr.remove();
 +                ret = true;

@@ -5,7 +5,7 @@
          return entity instanceof Player
              ? entity.mayInteract(p_150167_, p_150168_)
 -            : entity == null || p_150167_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-+            : entity == null || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(p_150167_, entity);
++            : entity == null || net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(p_150167_, entity);
      }
  
      public boolean mayBreak(Level p_307481_) {

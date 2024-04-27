@@ -33,7 +33,7 @@
                          if (this.costs[k] < k + 1) {
                              this.costs[k] = 0;
                          }
-+                        this.costs[k] = net.neoforged.neoforge.event.EventHooks.onEnchantmentLevelSet(p_337902_, p_337903_, k, (int)j, itemstack, costs[k]);
++                        this.costs[k] = net.neoforged.neoforge.common.CommonHooks.onEnchantmentLevelSet(p_337902_, p_337903_, k, (int)j, itemstack, costs[k]);
                      }
  
                      for (int l = 0; l < 3; l++) {

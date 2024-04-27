@@ -33,7 +33,7 @@
      @Override
      protected void entityInside(BlockState p_52277_, Level p_52278_, BlockPos p_52279_, Entity p_52280_) {
 -        if (p_52280_ instanceof Ravager && p_52278_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+        if (p_52280_ instanceof Ravager && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(p_52278_, p_52280_)) {
++        if (p_52280_ instanceof Ravager && net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(p_52278_, p_52280_)) {
              p_52278_.destroyBlock(p_52279_, true, p_52280_);
          }
  

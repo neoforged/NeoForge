@@ -38,11 +38,11 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 public interface IBlockStateExtension {
@@ -636,7 +636,7 @@ public interface IBlockStateExtension {
      */
     @Nullable
     default BlockState getToolModifiedState(UseOnContext context, ToolAction toolAction, boolean simulate) {
-        BlockState eventState = EventHooks.onToolUse(self(), context, toolAction, simulate);
+        BlockState eventState = CommonHooks.onToolUse(self(), context, toolAction, simulate);
         return eventState != self() ? eventState : self().getBlock().getToolModifiedState(self(), context, toolAction, simulate);
     }
 

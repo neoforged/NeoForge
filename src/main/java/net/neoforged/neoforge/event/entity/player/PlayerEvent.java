@@ -21,8 +21,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +51,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * This event is fired whenever a player attempts to harvest a block in
      * {@link Player#hasCorrectToolForDrops(BlockState)}.<br>
      * <br>
-     * This event is fired via the {@link EventHooks#doPlayerHarvestCheck(Player, BlockState, boolean)}.<br>
+     * This event is fired via the {@link CommonHooks#doPlayerHarvestCheck(Player, BlockState, boolean)}.<br>
      * <br>
      * {@link #state} contains the {@link BlockState} that is being checked for harvesting. <br>
      * {@link #success} contains the boolean value for whether the Block will be successfully harvested. <br>
@@ -90,7 +90,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * This event is fired whenever a player attempts to harvest a block in
      * {@link Player#getDigSpeed(BlockState, BlockPos)}.<br>
      * <br>
-     * This event is fired via the {@link EventHooks#getBreakSpeed(Player, BlockState, float, BlockPos)}.<br>
+     * This event is fired via the {@link CommonHooks#getBreakSpeed(Player, BlockState, float, BlockPos)}.<br>
      * <br>
      * {@link #state} contains the block being broken. <br>
      * {@link #originalSpeed} contains the original speed at which the player broke the block. <br>
@@ -145,7 +145,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * This event is fired whenever a player's name is retrieved in
      * {@link Player#getDisplayName()} or {@link Player#refreshDisplayName()}.<br>
      * <br>
-     * This event is fired via the {@link EventHooks#getPlayerDisplayName(Player, Component)}.<br>
+     * This event is fired via the {@link CommonHooks#getPlayerDisplayName(Player, Component)}.<br>
      * <br>
      * {@link #username} contains the username of the player.
      * {@link #displayname} contains the display name of the player.
@@ -184,7 +184,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * This event is fired whenever a player's display name for the tablist is retrieved in
      * {@link ServerPlayer#getTabListDisplayName()} or {@link ServerPlayer#refreshTabListName()}.<br>
      * <br>
-     * This event is fired via the {@link EventHooks#getPlayerTabListDisplayName(Player)}.<br>
+     * This event is fired via the {@link CommonHooks#getPlayerTabListDisplayName(Player)}.<br>
      * <br>
      * {@link #getDisplayName()} contains the display name of the player or null if the client should determine the display name itself.
      * <br>

@@ -83,7 +83,7 @@
                  this.lastSentExp = -1;
                  this.lastSentHealth = -1.0F;
                  this.lastSentFood = -1;
-+                net.neoforged.neoforge.event.EventHooks.firePlayerChangedDimensionEvent(this, resourcekey, p_9180_.dimension());
++                net.neoforged.neoforge.common.CommonHooks.firePlayerChangedDimensionEvent(this, resourcekey, p_9180_.dimension());
              }
  
              return this;
@@ -92,7 +92,7 @@
      @Override
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_9115_) {
 +        java.util.Optional<BlockPos> optAt = java.util.Optional.of(p_9115_);
-+        Player.BedSleepingProblem ret = net.neoforged.neoforge.event.EventHooks.onPlayerSleepInBed(this, optAt);
++        Player.BedSleepingProblem ret = net.neoforged.neoforge.common.CommonHooks.onPlayerSleepInBed(this, optAt);
 +        if (ret != null) return Either.left(ret);
          Direction direction = this.level().getBlockState(p_9115_).getValue(HorizontalDirectionalBlock.FACING);
          if (this.isSleeping() || !this.isAlive()) {
@@ -102,7 +102,7 @@
          } else {
              this.setRespawnPosition(this.level().dimension(), p_9115_, this.getYRot(), false, true);
 -            if (this.level().isDay()) {
-+            if (!net.neoforged.neoforge.event.EventHooks.fireSleepingTimeCheck(this, optAt)) {
++            if (!net.neoforged.neoforge.common.CommonHooks.fireSleepingTimeCheck(this, optAt)) {
                  return Either.left(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
              } else {
                  if (!this.isCreative()) {
@@ -177,7 +177,7 @@
 +        CompoundTag old = p_9016_.getPersistentData();
 +        if (old.contains(PERSISTED_NBT_TAG))
 +             getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
-+        net.neoforged.neoforge.event.EventHooks.onPlayerClone(this, p_9016_, !p_9017_);
++        net.neoforged.neoforge.common.CommonHooks.onPlayerClone(this, p_9016_, !p_9017_);
 +        this.tabListHeader = p_9016_.tabListHeader;
 +        this.tabListFooter = p_9016_.tabListFooter;
      }
@@ -206,7 +206,7 @@
      public Component getTabListDisplayName() {
 -        return null;
 +        if (!this.hasTabListName) {
-+            this.tabListDisplayName = net.neoforged.neoforge.event.EventHooks.getPlayerTabListDisplayName(this);
++            this.tabListDisplayName = net.neoforged.neoforge.common.CommonHooks.getPlayerTabListDisplayName(this);
 +            this.hasTabListName = true;
 +        }
 +        return this.tabListDisplayName;
@@ -235,7 +235,7 @@
 +            this.gameMode.setLevel(p_9000_);
              this.server.getPlayerList().sendLevelInfo(this, p_9000_);
              this.server.getPlayerList().sendAllPlayerInfo(this);
-+            net.neoforged.neoforge.event.EventHooks.firePlayerChangedDimensionEvent(this, serverlevel.dimension(), p_9000_.dimension());
++            net.neoforged.neoforge.common.CommonHooks.firePlayerChangedDimensionEvent(this, serverlevel.dimension(), p_9000_.dimension());
          }
      }
  
@@ -243,7 +243,7 @@
      }
  
      public void setRespawnPosition(ResourceKey<Level> p_9159_, @Nullable BlockPos p_9160_, float p_9161_, boolean p_9162_, boolean p_9163_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPlayerSpawnSet(this, p_9160_ == null ? Level.OVERWORLD : p_9159_, p_9160_, p_9162_)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onPlayerSpawnSet(this, p_9160_ == null ? Level.OVERWORLD : p_9159_, p_9160_, p_9162_)) return;
          if (p_9160_ != null) {
              boolean flag = p_9160_.equals(this.respawnPosition) && p_9159_.equals(this.respawnDimension);
              if (p_9163_ && !flag) {
@@ -323,7 +323,7 @@
 +     */
 +    public void refreshTabListName() {
 +        Component oldName = this.tabListDisplayName;
-+        this.tabListDisplayName = net.neoforged.neoforge.event.EventHooks.getPlayerTabListDisplayName(this);
++        this.tabListDisplayName = net.neoforged.neoforge.common.CommonHooks.getPlayerTabListDisplayName(this);
 +        if (!java.util.Objects.equals(oldName, this.tabListDisplayName)) {
 +            this.getServer().getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket(net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this));
 +        }

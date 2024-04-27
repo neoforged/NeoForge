@@ -8,13 +8,13 @@ package net.neoforged.neoforge.event.entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 
 /**
  * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
  * This event is fired when a projectile entity impacts something.<br>
- * This event is fired via {@link EventHooks#onProjectileImpact(Projectile, HitResult)}
+ * This event is fired via {@link CommonHooks#onProjectileImpact(Projectile, HitResult)}
  * This event is fired for all vanilla projectiles by Forge,
  * custom projectiles should fire this event and check the result in a similar fashion.
  * This event is cancelable. When canceled, the impact will not be processed and the projectile will continue flying.

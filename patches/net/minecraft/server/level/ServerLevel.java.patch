@@ -23,7 +23,7 @@
              if (this.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
                  long j = this.levelData.getDayTime() + 24000L;
 -                this.setDayTime(j - j % 24000L);
-+                this.setDayTime(net.neoforged.neoforge.event.EventHooks.onSleepFinished(this, j - j % 24000L, this.getDayTime()));
++                this.setDayTime(net.neoforged.neoforge.common.CommonHooks.onSleepFinished(this, j - j % 24000L, this.getDayTime()));
              }
  
              this.wakeUpAllPlayers();
@@ -85,7 +85,7 @@
          profilerfiller.incrementCounter("tickNonPassenger");
 -        p_8648_.tick();
 +        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
-+        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(p_8648_).isCanceled()) {
++        if (!net.neoforged.neoforge.common.CommonHooks.fireEntityTickPre(p_8648_).isCanceled()) {
 +            p_8648_.tick();
 +        }
          this.getProfiler().pop();
@@ -135,7 +135,7 @@
          float p_263390_,
          long p_263403_
      ) {
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtPosition(this, p_263393_, p_263369_, p_263354_, p_263412_, p_263338_, p_263352_, p_263390_);
++        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.common.CommonHooks.onPlaySoundAtPosition(this, p_263393_, p_263369_, p_263354_, p_263412_, p_263338_, p_263352_, p_263390_);
 +        if (event.isCanceled() || event.getSound() == null) return;
 +        p_263412_ = event.getSound();
 +        p_263338_ = event.getSource();
@@ -148,7 +148,7 @@
      public void playSeededSound(
          @Nullable Player p_263545_, Entity p_263544_, Holder<SoundEvent> p_263491_, SoundSource p_263542_, float p_263530_, float p_263520_, long p_263490_
      ) {
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(p_263544_, p_263491_, p_263542_, p_263530_, p_263520_);
++        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.common.CommonHooks.onPlaySoundAtEntity(p_263544_, p_263491_, p_263542_, p_263530_, p_263520_);
 +        if (event.isCanceled() || event.getSound() == null) return;
 +        p_263491_ = event.getSound();
 +        p_263542_ = event.getSource();
@@ -169,7 +169,7 @@
  
      @Override
      public void updateNeighborsAt(BlockPos p_215045_, Block p_215046_) {
-+        net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, p_215045_, this.getBlockState(p_215045_), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
++        net.neoforged.neoforge.common.CommonHooks.onNeighborNotify(this, p_215045_, this.getBlockState(p_215045_), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215045_, p_215046_, null);
      }
  
@@ -177,7 +177,7 @@
      public void updateNeighborsAtExceptFromFacing(BlockPos p_215052_, Block p_215053_, Direction p_215054_) {
 +        java.util.EnumSet<Direction> directions = java.util.EnumSet.allOf(Direction.class);
 +        directions.remove(p_215054_);
-+        if (net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, p_215052_, this.getBlockState(p_215052_), directions, false).isCanceled())
++        if (net.neoforged.neoforge.common.CommonHooks.onNeighborNotify(this, p_215052_, this.getBlockState(p_215052_), directions, false).isCanceled())
 +            return;
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
      }

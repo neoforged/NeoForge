@@ -12,7 +12,7 @@
 -                Set.of(),
 -                entity.getYRot(),
 -                entity.getXRot()
-+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity,
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.common.CommonHooks.onEntityTeleportSpreadPlayersCommand(entity,
 +                      (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
 +                      spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
 +                      (double)Mth.floor(spreadplayerscommand$position.z) + 0.5

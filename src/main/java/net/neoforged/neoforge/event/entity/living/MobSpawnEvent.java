@@ -20,9 +20,9 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeEventHandler;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -252,7 +252,7 @@ public abstract class MobSpawnEvent extends EntityEvent {
      * <p>
      * This event is fired on {@link NeoForge#EVENT_BUS}, and is only fired on the logical server.
      * 
-     * @see EventHooks#onFinalizeSpawn
+     * @see CommonHooks#onFinalizeSpawn
      * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
      */
     public static class FinalizeSpawn extends MobSpawnEvent implements ICancellableEvent {
@@ -265,7 +265,7 @@ public abstract class MobSpawnEvent extends EntityEvent {
         private SpawnGroupData spawnData;
 
         /**
-         * @apiNote Do not construct directly. Access via {@link EventHooks#onFinalizeSpawn} / {@link EventHooks#onFinalizeSpawnSpawner}.
+         * @apiNote Do not construct directly. Access via {@link CommonHooks#onFinalizeSpawn} / {@link CommonHooks#onFinalizeSpawnSpawner}.
          */
         @ApiStatus.Internal
         public FinalizeSpawn(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable BaseSpawner spawner) {

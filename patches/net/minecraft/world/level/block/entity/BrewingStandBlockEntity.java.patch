@@ -4,7 +4,7 @@
      }
  
      private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(p_155293_)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onPotionAttemptBrew(p_155293_)) return;
          ItemStack itemstack = p_155293_.get(3);
          PotionBrewing potionbrewing = p_155291_.potionBrewing();
  
@@ -15,7 +15,7 @@
 -        itemstack.shrink(1);
 -        if (itemstack.getItem().hasCraftingRemainingItem()) {
 -            ItemStack itemstack1 = new ItemStack(itemstack.getItem().getCraftingRemainingItem());
-+        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(p_155293_);
++        net.neoforged.neoforge.common.CommonHooks.onPotionBrewed(p_155293_);
 +        if (itemstack.hasCraftingRemainingItem()) {
 +            ItemStack itemstack1 = itemstack.getCraftingRemainingItem();
 +            itemstack.shrink(1);

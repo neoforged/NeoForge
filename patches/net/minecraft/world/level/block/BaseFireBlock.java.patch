@@ -4,7 +4,7 @@
          if (!p_49282_.is(p_49279_.getBlock())) {
              if (inPortalDimension(p_49280_)) {
                  Optional<PortalShape> optional = PortalShape.findEmptyPortalShape(p_49280_, p_49281_, Direction.Axis.X);
-+                optional = net.neoforged.neoforge.event.EventHooks.onTrySpawnPortal(p_49280_, p_49281_, optional);
++                optional = net.neoforged.neoforge.common.CommonHooks.onTrySpawnPortal(p_49280_, p_49281_, optional);
                  if (optional.isPresent()) {
                      optional.get().createPortalBlocks();
                      return;

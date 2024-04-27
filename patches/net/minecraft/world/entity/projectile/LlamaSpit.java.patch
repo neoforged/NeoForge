@@ -4,7 +4,7 @@
          super.tick();
          Vec3 vec3 = this.getDeltaMovement();
          HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-+        if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult))
++        if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.common.CommonHooks.onProjectileImpact(this, hitresult))
          this.hitTargetOrDeflectSelf(hitresult);
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;

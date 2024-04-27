@@ -4,7 +4,7 @@
          BlockHitResult blockhitresult = getPlayerPOVHitResult(
              p_40703_, p_40704_, this.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE
          );
-+        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onBucketUse(p_40704_, p_40703_, itemstack, blockhitresult);
++        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.common.CommonHooks.onBucketUse(p_40704_, p_40703_, itemstack, blockhitresult);
 +        if (ret != null) return ret;
          if (blockhitresult.getType() == HitResult.Type.MISS) {
              return InteractionResultHolder.pass(itemstack);

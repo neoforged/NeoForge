@@ -5,7 +5,7 @@
          }
  
 -        if (hitresult.getType() != HitResult.Type.MISS && !flag) {
-+        if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
++        if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.neoforge.common.CommonHooks.onProjectileImpact(this, hitresult)) {
              this.hitTargetOrDeflectSelf(hitresult);
          }
  

@@ -8,7 +8,7 @@
              && this.inventory.canAddItem(p_218387_)
 -            && this.allayConsidersItemEqual(itemstack, p_218387_);
 +            && this.allayConsidersItemEqual(itemstack, p_218387_)
-+            && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this);
++            && net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(this.level(), this);
      }
  
      private boolean allayConsidersItemEqual(ItemStack p_252278_, ItemStack p_250405_) {

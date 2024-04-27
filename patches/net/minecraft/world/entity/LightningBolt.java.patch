@@ -27,7 +27,7 @@
                      );
  
                  for (Entity entity : list1) {
-+                    if (!net.neoforged.neoforge.event.EventHooks.onEntityStruckByLightning(entity, this))
++                    if (!net.neoforged.neoforge.common.CommonHooks.onEntityStruckByLightning(entity, this))
                      entity.thunderHit((ServerLevel)this.level(), this);
                  }
  

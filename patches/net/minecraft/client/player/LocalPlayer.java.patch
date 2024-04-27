@@ -22,7 +22,7 @@
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
 -        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), p_108651_, this.getSoundSource(), p_108652_, p_108653_, false);
 +        net.minecraft.core.Holder<SoundEvent> holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(p_108651_);
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(this, holder, this.getSoundSource(), p_108652_, p_108653_);
++        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.common.CommonHooks.onPlaySoundAtEntity(this, holder, this.getSoundSource(), p_108652_, p_108653_);
 +        if (event.isCanceled() || event.getSound() == null) return;
 +        p_108651_ = event.getSound().value();
 +        SoundSource source = event.getSource();

@@ -29,7 +29,7 @@
          boolean flag = blockstate.blocksMotion();
          boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
          if (flag && !flag1) {
-+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, p_32544_, p_32545_, p_32546_);
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.common.CommonHooks.onEnderTeleport(this, p_32544_, p_32545_, p_32546_);
 +            if (event.isCanceled()) return false;
              Vec3 vec3 = this.position();
 -            boolean flag2 = this.randomTeleport(p_32544_, p_32545_, p_32546_, true);
@@ -42,7 +42,7 @@
                  return false;
              } else {
 -                return !this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+                return !net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)
++                return !net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
              }
@@ -51,7 +51,7 @@
              if (blockstate2 != null) {
                  blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.enderman.level(), blockpos);
 -                if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1)) {
-+                if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1) && !net.neoforged.neoforge.event.EventHooks.onBlockPlace(enderman, net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, blockpos1), net.minecraft.core.Direction.UP)) {
++                if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1) && !net.neoforged.neoforge.common.CommonHooks.onBlockPlace(enderman, net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, blockpos1), net.minecraft.core.Direction.UP)) {
                      level.setBlock(blockpos, blockstate2, 3);
                      level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.enderman, blockstate2));
                      this.enderman.setCarriedBlock(null);
@@ -68,7 +68,7 @@
                  return false;
              } else {
 -                return !this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+                return !net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)
++                return !net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
              }

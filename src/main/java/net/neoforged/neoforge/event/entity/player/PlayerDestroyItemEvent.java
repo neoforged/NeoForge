@@ -18,7 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -42,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired from {@link EventHooks#onPlayerDestroyItem(Player, ItemStack, InteractionHand)}.<br>
+ * This event is fired from {@link CommonHooks#onPlayerDestroyItem(Player, ItemStack, InteractionHand)}.<br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class PlayerDestroyItemEvent extends PlayerEvent {

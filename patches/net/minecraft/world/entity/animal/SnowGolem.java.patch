@@ -5,7 +5,7 @@
              }
  
 -            if (!this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
++            if (!net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(this.level(), this)) {
                  return;
              }
  

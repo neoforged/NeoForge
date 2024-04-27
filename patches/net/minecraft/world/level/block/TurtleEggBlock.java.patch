@@ -5,7 +5,7 @@
              return false;
          } else {
 -            return !(p_57769_ instanceof LivingEntity) ? false : p_57769_ instanceof Player || p_57768_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-+            return !(p_57769_ instanceof LivingEntity) ? false : p_57769_ instanceof Player || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(p_57768_, p_57769_);
++            return !(p_57769_ instanceof LivingEntity) ? false : p_57769_ instanceof Player || net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(p_57768_, p_57769_);
          }
      }
  }

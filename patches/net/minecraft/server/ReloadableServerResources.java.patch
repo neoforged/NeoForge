@@ -39,7 +39,7 @@
                          p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
                      );
 +                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-+                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
++                    listeners.addAll(net.neoforged.neoforge.common.CommonHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
 +                    listeners.forEach(rl -> {
 +                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryLookup);
 +                    });
