@@ -1358,8 +1358,6 @@ public class CommonHooks {
     private static boolean isPotentialRegistryObject(Object value) {
         for (Registry registry : BuiltInRegistries.REGISTRY) {
             if (registry.containsValue(value)) {
-                LOGGER.info("Whitelisting {} as component type, since {} is contained in registry {}",
-                        value.getClass(), value, registry.key().location());
                 return true;
             }
         }
