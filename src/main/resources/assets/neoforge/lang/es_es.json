@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Error al hacer copia de seguridad",
   "fml.menu.backupfailed.message": "Hubo un error al guardar el archivo {0}\nPor favor, soluciona el problema e inténtalo de nuevo",
   "fml.button.open.file": "Abrir {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Abrir carpeta de mods",
   "fml.button.continue.launch": "Ir al menú principal",
   "fml.loadingerrorscreen.errorheader": "Error al cargar mods\n{0,choice,1#Se ha producido 1 error|1<Se han producido {0} errores} durante la carga",
