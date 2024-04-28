@@ -19,19 +19,19 @@
      }
  
      @Nullable
-@@ -54,6 +_,11 @@
+@@ -54,13 +_,23 @@
          return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(p_96200_);
      }
  
+-    private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
 +    /**
-+     @deprecated Use {@link net.neoforged.neoforge.client.event.RegisterMenuScreensEvent} to register menu screens
-+     + TODO 1.20.5: remove AT related to this
++     * @deprecated use {@link net.neoforged.neoforge.client.event.RegisterMenuScreensEvent} instead
 +     */
 +    @Deprecated
-     public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
++    public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
          MenuType<? extends M> p_96207_, MenuScreens.ScreenConstructor<M, U> p_96208_
      ) {
-@@ -61,6 +_,12 @@
+         MenuScreens.ScreenConstructor<?, ?> screenconstructor = SCREENS.put(p_96207_, p_96208_);
          if (screenconstructor != null) {
              throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(p_96207_));
          }
