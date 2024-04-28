@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Backup fehlgeschlagen",
   "fml.menu.backupfailed.message": "Fehler beim Speichern des Archivs {0}\nBitte beheben und erneut versuchen",
   "fml.button.open.file": "Öffne {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Mods-Ordner öffnen",
   "fml.button.continue.launch": "Weiter zum Hauptmenü",
   "fml.loadingerrorscreen.errorheader": "Fehler beim Laden von Mods\n{0,choice,1#1 Fehler|1<{0} Fehler sind} beim Laden aufgetreten",
