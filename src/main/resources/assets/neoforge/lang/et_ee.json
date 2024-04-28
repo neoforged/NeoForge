@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Varundus ebaõnnestus",
   "fml.menu.backupfailed.message": "Arhiivi {0} salvestamisel esines tõrge\nPalun paranda see probleem ja proovi uuesti",
   "fml.button.open.file": "Ava {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Ava modide kaust",
   "fml.button.continue.launch": "Edasi peamenüüsse",
   "fml.loadingerrorscreen.errorheader": "Modide laadimisel esines viga\nLaadimisel esines {0,choice,1#1 viga|1<{0} viga}",
