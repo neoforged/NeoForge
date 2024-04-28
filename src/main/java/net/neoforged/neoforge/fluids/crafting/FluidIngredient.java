@@ -9,6 +9,11 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,12 +24,6 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public abstract class FluidIngredient implements Predicate<FluidStack> {
     private static final MapCodec<FluidIngredient> SINGLE_OR_TAG_CODEC = singleOrTagCodec();
@@ -47,8 +46,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
                 .dispatch(FluidIngredient::getType, FluidIngredientType::streamCodec);
 
         private static final StreamCodec<RegistryFriendlyByteBuf, List<FluidStack>> FLUID_LIST_CODEC = FluidStack.STREAM_CODEC.apply(
-                ByteBufCodecs.collection(NonNullList::createWithCapacity)
-        );
+                ByteBufCodecs.collection(NonNullList::createWithCapacity));
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, FluidIngredient ingredient) {
@@ -70,8 +68,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
             return CompoundFluidIngredient.of(
                     Stream.generate(() -> FluidStack.STREAM_CODEC.decode(buf))
                             .limit(size)
-                            .map(FluidIngredient::single)
-            );
+                            .map(FluidIngredient::single));
         }
     };
 
@@ -111,13 +108,13 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
         return NeoForgeExtraCodecs.xor(
                 SingleFluidIngredient.CODEC,
                 TagFluidIngredient.CODEC).xmap(either -> either.map(id -> id, id -> id), ingredient -> {
-            if (ingredient instanceof SingleFluidIngredient fluid) {
-                return Either.left(fluid);
-            } else if (ingredient instanceof TagFluidIngredient tag) {
-                return Either.right(tag);
-            }
-            throw new IllegalStateException("Basic fluid ingredient should be either a fluid or a tag!");
-        });
+                    if (ingredient instanceof SingleFluidIngredient fluid) {
+                        return Either.left(fluid);
+                    } else if (ingredient instanceof TagFluidIngredient tag) {
+                        return Either.right(tag);
+                    }
+                    throw new IllegalStateException("Basic fluid ingredient should be either a fluid or a tag!");
+                });
     }
 
     private static MapCodec<FluidIngredient> makeMapCodec() {
@@ -126,12 +123,12 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
                 FluidIngredient::getType,
                 FluidIngredientType::codec,
                 FluidIngredient.SINGLE_OR_TAG_CODEC).xmap(either -> either.map(id -> id, id -> id), ingredient -> {
-            if (ingredient instanceof SingleFluidIngredient || ingredient instanceof TagFluidIngredient) {
-                return Either.right(ingredient);
-            }
+                    if (ingredient instanceof SingleFluidIngredient || ingredient instanceof TagFluidIngredient) {
+                        return Either.right(ingredient);
+                    }
 
-            return Either.left(ingredient);
-        });
+                    return Either.left(ingredient);
+                });
     }
 
     private static Codec<FluidIngredient> codec(boolean allowEmpty) {

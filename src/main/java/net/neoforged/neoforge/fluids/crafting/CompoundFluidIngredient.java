@@ -6,12 +6,11 @@
 package net.neoforged.neoforge.fluids.crafting;
 
 import com.mojang.serialization.MapCodec;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.fluids.FluidStack;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public final class CompoundFluidIngredient extends FluidIngredient {
     public static final MapCodec<CompoundFluidIngredient> CODEC = null;

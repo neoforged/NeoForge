@@ -1,12 +1,13 @@
-package net.neoforged.neoforge.fluids.crafting;
-
 /*
  * Copyright (c) NeoForged and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
+package net.neoforged.neoforge.fluids.crafting;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.stream.Stream;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,8 +18,6 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.stream.Stream;
 
 /**
  * Standard implementation for a FluidIngredient with an amount.
@@ -41,6 +40,7 @@ public final class SizedFluidIngredient {
      *     "amount": 250
      * }
      * }</pre>
+     * 
      * <p>
      * <p>
      * Compound fluid ingredients are always serialized using the map codec, i.e.
@@ -55,11 +55,12 @@ public final class SizedFluidIngredient {
      *     "amount": 500
      * }
      * }</pre>
+     * 
      * <p>
      */
     public static final Codec<SizedFluidIngredient> FLAT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    FluidIngredient.MAP_CODEC.forGetter(SizedFluidIngredient::ingredient),
-                    NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
+            FluidIngredient.MAP_CODEC.forGetter(SizedFluidIngredient::ingredient),
+            NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
             .apply(instance, SizedFluidIngredient::new));
 
     /**
@@ -77,8 +78,8 @@ public final class SizedFluidIngredient {
      * }</pre>
      */
     public static final Codec<SizedFluidIngredient> NESTED_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    FluidIngredient.CODEC.fieldOf("ingredient").forGetter(SizedFluidIngredient::ingredient),
-                    NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
+            FluidIngredient.CODEC.fieldOf("ingredient").forGetter(SizedFluidIngredient::ingredient),
+            NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
             .apply(instance, SizedFluidIngredient::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SizedFluidIngredient> STREAM_CODEC = StreamCodec.composite(
@@ -86,8 +87,7 @@ public final class SizedFluidIngredient {
             SizedFluidIngredient::ingredient,
             ByteBufCodecs.VAR_INT,
             SizedFluidIngredient::amount,
-            SizedFluidIngredient::new
-    );
+            SizedFluidIngredient::new);
 
     public static SizedFluidIngredient of(Fluid fluid, int amount) {
         return new SizedFluidIngredient(FluidIngredient.of(fluid), amount);
@@ -157,4 +157,3 @@ public final class SizedFluidIngredient {
         return amount + "x " + ingredient;
     }
 }
-
