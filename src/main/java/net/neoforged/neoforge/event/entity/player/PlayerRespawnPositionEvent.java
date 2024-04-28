@@ -5,8 +5,9 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import java.util.Objects;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,9 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-
-import javax.annotation.Nullable;
-import java.util.Objects;
 
 /**
  * Fired by {@link PlayerList#respawn(ServerPlayer, boolean)} when the server respawns a player.
@@ -58,6 +56,7 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
 
     /**
      * Set the level the player will respawn into.
+     * 
      * @param respawnLevel The new level.
      */
     public void setRespawnLevel(ServerLevel respawnLevel) {
@@ -66,6 +65,7 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
 
     /**
      * Set the level the player will respawn into using a {@link ResourceKey}.
+     * 
      * @param respawnLevelResourceKey The {@link ResourceKey} of the level to respawn into.
      */
     public void setRespawnLevel(ResourceKey<Level> respawnLevelResourceKey) {
@@ -89,7 +89,8 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
 
     /**
      * Set the player's respawn position within the respawn level. The server automatically adjusts this position
-     *  to not be inside blocks. If {@code null}, the server will use the default spawn position for the level.
+     * to not be inside blocks. If {@code null}, the server will use the default spawn position for the level.
+     * 
      * @param respawnPosition
      */
     public void setRespawnPosition(@Nullable Vec3 respawnPosition) {
@@ -114,6 +115,7 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
     /**
      * Set the angle the player will face when they respawn. The server may adjust the angle, for example to face
      * a bed if the player respawns there.
+     * 
      * @param respawnAngle The angle the player will face when they respawn.
      */
     public void setRespawnAngle(float respawnAngle) {
@@ -138,6 +140,7 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
     /**
      * Set whether the respawn position will be used as the player's spawn position from then on.
      * Defaults to {@code true}. {@link PlayerSetSpawnEvent} will be fired if this is {@code true}.
+     * 
      * @param changePlayerSpawnPosition Whether to set the player's spawn position.
      */
     public void setChangePlayerSpawnPosition(boolean changePlayerSpawnPosition) {
