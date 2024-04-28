@@ -6,22 +6,23 @@
 package net.neoforged.neoforge.fluids.crafting;
 
 import com.mojang.serialization.MapCodec;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.fluids.FluidStack;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 public final class CompoundFluidIngredient extends FluidIngredient {
     public static final MapCodec<CompoundFluidIngredient> CODEC = null;
 
     private final List<FluidIngredient> children;
 
-    public CompoundFluidIngredient(List<FluidIngredient> children) {
+    public CompoundFluidIngredient(List<? extends FluidIngredient> children) {
         if (children.isEmpty()) {
             throw new IllegalArgumentException("Compound fluid ingredient must have at least one child");
         }
-        this.children = children;
+        this.children = List.copyOf(children);
     }
 
     /**
@@ -46,6 +47,10 @@ public final class CompoundFluidIngredient extends FluidIngredient {
             return children.getFirst();
 
         return new CompoundFluidIngredient(children);
+    }
+
+    public static FluidIngredient of(Stream<FluidIngredient> stream) {
+        return of(stream.toList());
     }
 
     @Override
