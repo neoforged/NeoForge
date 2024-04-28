@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "A Biztonsági Mentés Nem Sikerült",
   "fml.menu.backupfailed.message": "Hiba történt a(z) {0} archívum mentése során\nKérjük, javítsa a problémát, és próbálja meg újra",
   "fml.button.open.file": "Nyissa meg a következőt: {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Nyissa Meg a Mod Mappát",
   "fml.button.continue.launch": "Tovább a főmenühöz",
   "fml.loadingerrorscreen.errorheader": "Error loading mods\n{0,choice,1#1 error has|1<{0} errors have} occurred during loading",
