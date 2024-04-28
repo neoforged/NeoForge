@@ -84,15 +84,12 @@
              if (entity != null) {
                  double d0 = entity.distanceToSqr(this);
                  int i = this.getType().getCategory().getDespawnDistance();
-@@ -1135,6 +_,14 @@
+@@ -1135,6 +_,11 @@
          }
      }
  
 +    /**
-+     * Forge: Override-Only, call via EventHooks.onFinalizeSpawn.<br>
-+     * Overrides are allowed. Do not wrap super calls within override (as that will cause stack overflows).<br>
-+     * Vanilla calls are replaced with a transformer, and are not visible in source.<br>
-+     * <p>
++     * @deprecated Override-Only. External callers should call via {@link net.neoforged.neoforge.event.EventHooks#finalizeMobSpawn}.
 +     */
 +    @Deprecated
 +    @org.jetbrains.annotations.ApiStatus.OverrideOnly
