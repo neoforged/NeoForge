@@ -32,7 +32,7 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
     private final @Nullable Vec3 originalRespawnPosition;
     private final float originalRespawnAngle;
     private final boolean fromEndFight;
-    private boolean changePlayerSpawnPosition = false;
+    private boolean changePlayerSpawnPosition = true;
 
     public PlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
         super(player);
