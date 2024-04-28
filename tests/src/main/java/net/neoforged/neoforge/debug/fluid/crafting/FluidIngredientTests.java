@@ -9,8 +9,12 @@ import com.google.gson.JsonArray;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
@@ -137,6 +141,80 @@ public class FluidIngredientTests {
 
         helper.assertValueEqual(CompoundFluidIngredient.of(new FluidIngredient[0]), FluidIngredient.empty(), "calling CompoundFluidIngredient.of with no children to yield FluidIngredient.empty()");
         helper.assertValueEqual(SingleFluidIngredient.of(FluidStack.EMPTY), FluidIngredient.empty(), "calling SingleFluidIngredient.of with empty stack to yield FluidIngredient.empty()");
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that partial data matches work correctly on fluid ingredients")
+    static void fluidIngredientDataPartialMatchWorks(final GameTestHelper helper) {
+        var ingredient = DataComponentFluidIngredient.of(false, DataComponents.RARITY, Rarity.EPIC, Fluids.WATER);
+        var stack = new FluidStack(Fluids.WATER, 1000);
+
+        helper.assertFalse(ingredient.test(stack), "Fluid without custom data should not match DataComponentFluidIngredient!");
+
+        stack.applyComponents(DataComponentPatch.builder()
+                .set(DataComponents.RARITY, Rarity.UNCOMMON)
+                .build());
+
+        helper.assertFalse(ingredient.test(stack), "Fluid with incorrect data should not match DataComponentFluidIngredient!");
+
+        stack.applyComponents(DataComponentPatch.builder()
+                .set(DataComponents.RARITY, Rarity.EPIC)
+                .build());
+
+        helper.assertTrue(ingredient.test(stack), "Fluid with correct data should match DataComponentFluidIngredient!");
+
+        var data = CustomData.EMPTY.update(tag -> tag.putFloat("abcd", helper.getLevel().random.nextFloat()));
+        stack.applyComponents(DataComponentPatch.builder()
+                .set(DataComponents.CUSTOM_DATA, data)
+                .build());
+
+        helper.assertTrue(ingredient.test(stack), "Fluid with correct data should match partial DataComponentFluidIngredient regardless of extra data!");
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that strict data matches work correctly on fluid ingredients")
+    static void fluidIngredientDataStrictMatchWorks(final GameTestHelper helper) {
+        var ingredient = DataComponentFluidIngredient.of(true, DataComponents.RARITY, Rarity.EPIC, Fluids.WATER);
+        var stack = new FluidStack(Fluids.WATER, 1000);
+
+        helper.assertFalse(ingredient.test(stack), "Fluid without custom data should not match DataComponentFluidIngredient!");
+
+        stack.applyComponents(DataComponentPatch.builder()
+                .set(DataComponents.RARITY, Rarity.UNCOMMON)
+                .build());
+
+        helper.assertFalse(ingredient.test(stack), "Fluid with incorrect data should not match DataComponentFluidIngredient!");
+
+        stack.applyComponents(DataComponentPatch.builder()
+                .set(DataComponents.RARITY, Rarity.EPIC)
+                .build());
+
+        helper.assertTrue(ingredient.test(stack), "Fluid with correct data should match DataComponentFluidIngredient!");
+
+        var data = CustomData.EMPTY.update(tag -> tag.putFloat("abcd", helper.getLevel().random.nextFloat()));
+        stack.applyComponents(DataComponentPatch.builder()
+                .set(DataComponents.CUSTOM_DATA, data)
+                .build());
+
+        helper.assertFalse(ingredient.test(stack), "Fluid with extra unspecified data should not match strict DataComponentFluidIngredient!");
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that size and data components do not matter when matching fluid ingredients")
+    static void singleFluidIngredientIgnoresSizeAndData(final GameTestHelper helper) {
+        var ingredient = FluidIngredient.of(Fluids.WATER);
+
+        helper.assertTrue(ingredient.test(new FluidStack(Fluids.WATER, 1234)), "Single fluid ingredient should match regardless of fluid amount!");
+        helper.assertTrue(ingredient.test(new FluidStack(Fluids.WATER.builtInRegistryHolder(), 1234, DataComponentPatch.builder().set(DataComponents.RARITY, Rarity.COMMON).build())), "Single fluid ingredient should match regardless of fluid data!");
 
         helper.succeed();
     }
