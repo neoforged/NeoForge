@@ -5,24 +5,24 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.common.NeoForge;
+
+import javax.annotation.Nullable;
 
 /**
- * Fired by {@link net.minecraft.server.players.PlayerList#respawn(ServerPlayer, boolean)} when the server respawns a player.
+ * Fired by {@link PlayerList#respawn(ServerPlayer, boolean)} when the server respawns a player.
  * This may be used to change the {@link ServerLevel} the player respawns in, as well as their respawn position.
- * This event is fired after {@link net.minecraft.world.level.block.state.BlockState#getRespawnPosition(EntityType, LevelReader, BlockPos, float, LivingEntity)} is called.
+ * This event is fired after {@link BlockState#getRespawnPosition(EntityType, LevelReader, BlockPos, float, LivingEntity)} is called.
  * <p>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main NeoForge event bus},
- * only on the {@linkplain LogicalSide#SERVER logical server}.
+ * This event is only fired on the logical server.
  */
 public class PlayerRespawnPositionEvent extends PlayerEvent {
     private ServerLevel respawnLevel;
@@ -46,61 +46,88 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
     }
 
     /**
-     * The level the player will respawn into
+     * @return The level the player will respawn into.
      */
     public ServerLevel getRespawnLevel() {
         return respawnLevel;
     }
 
+    /**
+     * Set the level the player will respawn into.
+     * @param respawnLevel The new level.
+     */
     public void setRespawnLevel(ServerLevel respawnLevel) {
         this.respawnLevel = respawnLevel;
     }
 
+    /**
+     * @return The level the server originally intended to respawn the player into.
+     */
     public ServerLevel getOriginalRespawnLevel() {
         return originalRespawnLevel;
     }
 
     /**
-     * @return The position in the target level where the player will respawn. The server automatically adjusts this position
-     *         to not be inside blocks. If {@code null}, the server will use the default spawn for the level.
+     * @return The position in the target level where the player will respawn, before any adjustments by the server.
      */
     @Nullable
     public Vec3 getRespawnPosition() {
         return respawnPosition;
     }
 
+    /**
+     * Set the player's respawn position within the respawn level. The server automatically adjusts this position
+     *  to not be inside blocks. If {@code null}, the server will use the default spawn position for the level.
+     * @param respawnPosition
+     */
     public void setRespawnPosition(@Nullable Vec3 respawnPosition) {
         this.respawnPosition = respawnPosition;
     }
 
+    /**
+     * @return The original position the server intended to respawn the player at.
+     */
     @Nullable
     public Vec3 getOriginalRespawnPosition() {
         return originalRespawnPosition;
     }
 
     /**
-     * @return The angle the player will face when they respawn.
+     * @return The angle the player will face when they respawn, before any modifications made by the server.
      */
     public float getRespawnAngle() {
         return respawnAngle;
     }
 
+    /**
+     * Set the angle the player will face when they respawn. The server may adjust the angle, for example to face
+     * a bed if the player respawns there.
+     * @param respawnAngle The angle the player will face when they respawn.
+     */
     public void setRespawnAngle(float respawnAngle) {
         this.respawnAngle = respawnAngle;
     }
 
+    /**
+     * @return The original angle the server intended for the player to face when they respawn.
+     */
     public float getOriginalRespawnAngle() {
         return originalRespawnAngle;
     }
 
     /**
-     * @return Whether the player's spawn will be changed to the respawn position.
+     * @return Whether the respawn position will be used as the player's spawn position from then on. Defaults to {@code true}.
      *         {@link PlayerSetSpawnEvent} will be fired if this is {@code true}.
      */
     public boolean isChangePlayerSpawnPosition() {
         return changePlayerSpawnPosition;
     }
 
+    /**
+     * Set whether the respawn position will be used as the player's spawn position from then on.
+     * Defaults to {@code true}. {@link PlayerSetSpawnEvent} will be fired if this is {@code true}.
+     * @param changePlayerSpawnPosition Whether to set the player's spawn position.
+     */
     public void setChangePlayerSpawnPosition(boolean changePlayerSpawnPosition) {
         this.changePlayerSpawnPosition = changePlayerSpawnPosition;
     }
