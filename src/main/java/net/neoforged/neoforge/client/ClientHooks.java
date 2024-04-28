@@ -100,6 +100,7 @@ import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.sounds.Music;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -159,6 +160,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenshotEvent;
+import net.neoforged.neoforge.client.event.SelectMusicEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.event.ToastAddEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
@@ -381,6 +383,13 @@ public class ClientHooks {
         PlaySoundEvent e = new PlaySoundEvent(manager, sound);
         NeoForge.EVENT_BUS.post(e);
         return e.getSound();
+    }
+
+    @Nullable
+    public static Music selectMusic(Music music) {
+        SelectMusicEvent e = new SelectMusicEvent(music);
+        NeoForge.EVENT_BUS.post(e);
+        return e.getMusic();
     }
 
     public static void drawScreen(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
