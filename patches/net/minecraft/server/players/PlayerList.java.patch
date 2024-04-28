@@ -48,22 +48,17 @@
          ServerLevel serverlevel = p_11287_.serverLevel();
          p_11287_.awardStat(Stats.LEAVE_GAME);
          this.save(p_11287_);
-@@ -453,7 +_,14 @@
-         } else {
-             optional = Optional.empty();
+@@ -455,6 +_,10 @@
          }
--
-+        @Nullable
-+        net.neoforged.neoforge.event.entity.player.PlayerRespawnEvent event = null;
-+        if (serverlevel != null) {
-+            event = net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(p_11237_, serverlevel, f, optional.orElse(null), p_11238_);
-+            serverlevel = event.getRespawnLevel();
-+            optional = Optional.ofNullable(event.getRespawnPosition());
-+            f = event.getRespawnAngle();
-+        }
+ 
          ServerLevel serverlevel1 = serverlevel != null && optional.isPresent() ? serverlevel : this.server.overworld();
++        var event = net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(p_11237_, serverlevel1, f, optional.orElse(null), p_11238_);
++        serverlevel1 = event.getRespawnLevel();
++        optional = Optional.ofNullable(event.getRespawnPosition());
++        f = event.getRespawnAngle();
          ServerPlayer serverplayer = new ServerPlayer(this.server, serverlevel1, p_11237_.getGameProfile(), p_11237_.clientInformation());
          serverplayer.connection = p_11237_.connection;
+         serverplayer.restoreFrom(p_11237_, p_11238_);
 @@ -479,7 +_,9 @@
              }
  
