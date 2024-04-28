@@ -48,11 +48,38 @@
          ServerLevel serverlevel = p_11287_.serverLevel();
          p_11287_.awardStat(Stats.LEAVE_GAME);
          this.save(p_11287_);
+@@ -453,7 +_,14 @@
+         } else {
+             optional = Optional.empty();
+         }
+-
++        @Nullable
++        net.neoforged.neoforge.event.entity.player.PlayerRespawnEvent event = null;
++        if (serverlevel != null) {
++            event = net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(p_11237_, serverlevel, f, optional.orElse(null), p_11238_);
++            serverlevel = event.getRespawnLevel();
++            optional = Optional.ofNullable(event.getRespawnPosition());
++            f = event.getRespawnAngle();
++        }
+         ServerLevel serverlevel1 = serverlevel != null && optional.isPresent() ? serverlevel : this.server.overworld();
+         ServerPlayer serverplayer = new ServerPlayer(this.server, serverlevel1, p_11237_.getGameProfile(), p_11237_.clientInformation());
+         serverplayer.connection = p_11237_.connection;
+@@ -479,7 +_,9 @@
+             }
+ 
+             serverplayer.moveTo(vec3.x, vec3.y, vec3.z, f1, 0.0F);
+-            serverplayer.setRespawnPosition(serverlevel1.dimension(), blockpos, f, flag, false);
++            if (event.isChangePlayerSpawnPosition())  {
++                serverplayer.setRespawnPosition(serverlevel1.dimension(), blockpos, f, flag, false);
++            }
+             flag2 = !p_11238_ && flag1;
+         } else if (blockpos != null) {
+             serverplayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.NO_RESPAWN_BLOCK_AVAILABLE, 0.0F));
 @@ -505,6 +_,7 @@
          this.playersByUUID.put(serverplayer.getUUID(), serverplayer);
          serverplayer.initInventoryMenu();
          serverplayer.setHealth(serverplayer.getHealth());
-+        net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(serverplayer, p_11238_);
++
          if (flag2) {
              serverplayer.connection
                  .send(
