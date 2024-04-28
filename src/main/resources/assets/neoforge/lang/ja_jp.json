@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "バックアップに失敗しました",
   "fml.menu.backupfailed.message": "アーカイブ {0}\nを保存する際にエラーが発生しました。問題を解決してもう一度やり直してください。",
   "fml.button.open.file": "{0} を開く",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Modフォルダを開く",
   "fml.button.continue.launch": "メインメニューに進む",
   "fml.loadingerrorscreen.errorheader": "Modのロード中にエラー {0,choice,1#1 error has|1<{0} errors have} が発生しました",
