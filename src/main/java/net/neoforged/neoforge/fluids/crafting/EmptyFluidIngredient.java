@@ -38,6 +38,11 @@ public class EmptyFluidIngredient extends FluidIngredient {
     }
 
     @Override
+    public boolean hasNoFluids() {
+        return true;
+    }
+
+    @Override
     public int hashCode() {
         return 0;
     }

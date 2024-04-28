@@ -88,6 +88,11 @@ public final class CompoundFluidIngredient extends FluidIngredient {
     }
 
     @Override
+    public boolean hasNoFluids() {
+        return children.isEmpty() || children.stream().allMatch(FluidIngredient::hasNoFluids);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         return obj instanceof CompoundFluidIngredient other && other.children.equals(this.children);

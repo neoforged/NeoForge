@@ -141,6 +141,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      * <li>These stacks are generally used for display purposes, and need not be exhaustive or perfectly accurate.</li>
      * <li>An exception is ingredients that {@linkplain #isSimple() are simple},
      * for which it is important that the returned stacks correspond exactly to all the accepted {@link Fluid}s.</li>
+     * <li>At least one stack should always be returned, otherwise the ingredient may be considered {@linkplain #hasNoFluids() accidentally empty}.</li>
      * <li>The ingredient should try to return at least one stack with each accepted {@link Fluid}.
      * This allows mods that inspect the ingredient to figure out which stacks it might accept.</li>
      * </ul>
@@ -177,7 +178,26 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
         return this == empty();
     }
 
-    // TODO: add empty check that includes accidentally empty ingredients
+    /**
+     * Checks if this ingredient matches no fluids, i.e. either:
+     * <ul>
+     * <li>is equal to {@link #empty()},</li>
+     * <li>resolves to an empty list of fluids</li>
+     * </ul>
+     * <p>
+     * Note that this method explicitly has the potential to <b>resolve</b>
+     * the ingredient; if this is not desired, you will need to check for
+     * emptiness another way!
+     *
+     * @return {@code true} if this ingredient matches no fluids, {@code false} otherwise
+     * @implNote If it is possible for your ingredient to return a "hint" on
+     *           whether it is empty without resolving, you should override this method
+     *           with a custom implementation.
+     * @see #isEmpty()
+     */
+    public boolean hasNoFluids() {
+        return isEmpty() || getStacks().length == 0;
+    }
 
     @Override
     public abstract int hashCode();
