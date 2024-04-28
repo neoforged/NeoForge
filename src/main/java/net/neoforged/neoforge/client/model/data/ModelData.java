@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.client.model.data;
 
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
-import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +45,9 @@ public final class ModelData {
         this.properties = properties;
     }
 
+    /**
+     * {@return an unmodifiable set of properties contained in this model data container}
+     */
     public Set<ModelProperty<?>> getProperties() {
         var view = propertySetView;
         if (view == null) {
@@ -53,19 +56,50 @@ public final class ModelData {
         return view;
     }
 
+    /**
+     * {@return true if this model data container has a value for the given property}
+     */
     public boolean has(ModelProperty<?> property) {
         return properties.containsKey(property);
     }
 
+    /**
+     * {@return the value associated with the given property, or null if none exists}
+     */
     @Nullable
     public <T> T get(ModelProperty<T> property) {
         return (T) properties.get(property);
     }
 
+    /**
+     * {@return the value for a given property, or the provided default value if none exists}
+     */
+    public <T> T getOrDefault(ModelProperty<T> property, T defaultValue) {
+        return (T) properties.getOrDefault(property, defaultValue);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return properties.equals(((ModelData) o).properties);
+    }
+
+    @Override
+    public int hashCode() {
+        return properties.hashCode();
+    }
+
+    /**
+     * {@return a {@link ModelData.Builder} initially containing all property-value pairs in this container}
+     */
     public Builder derive() {
         return new Builder(this);
     }
 
+    /**
+     * {@return a {@link ModelData.Builder} initially containing no properties}
+     */
     public static Builder builder() {
         return new Builder(null);
     }
@@ -85,12 +119,12 @@ public final class ModelData {
         private Builder(@Nullable ModelData parent) {
             if (parent != null) {
                 // When cloning the map, use the expected type based on size
-                properties = parent.properties.size() >= HASH_THRESHOLD ? new Reference2ReferenceOpenHashMap<>(parent.properties) : new Reference2ReferenceArrayMap<>(parent.properties);
+                properties = parent.properties.size() >= HASH_THRESHOLD ? new Reference2ObjectOpenHashMap<>(parent.properties) : new Reference2ObjectArrayMap<>(parent.properties);
             } else {
                 // Allocate the maximum number of entries we'd ever put into the map.
                 // We convert to a hash map *after* insertion of the HASH_THRESHOLD
                 // entry, so we need at least that many spots.
-                properties = new Reference2ReferenceArrayMap<>(HASH_THRESHOLD);
+                properties = new Reference2ObjectOpenHashMap<>(HASH_THRESHOLD);
             }
         }
 
@@ -99,8 +133,8 @@ public final class ModelData {
             Preconditions.checkState(property.test(value), "The provided value is invalid for this property.");
             properties.put(property, value);
             // Convert to a hash map if needed
-            if (properties.size() == HASH_THRESHOLD && properties instanceof Reference2ReferenceArrayMap<ModelProperty<?>, Object>) {
-                properties = new Reference2ReferenceOpenHashMap<>(properties);
+            if (properties.size() == HASH_THRESHOLD && properties instanceof Reference2ObjectArrayMap<ModelProperty<?>, Object>) {
+                properties = new Reference2ObjectOpenHashMap<>(properties);
             }
             return this;
         }
