@@ -18,6 +18,9 @@ public class SingleFluidIngredient extends FluidIngredient {
     private final FluidStack stack;
 
     public SingleFluidIngredient(FluidStack stack) {
+        if (stack.isEmpty()) {
+            throw new IllegalStateException("SingleFluidIngredient should not be constructed with an empty stack, use FluidIngredient.empty() instead!");
+        }
         this.stack = stack;
     }
 
