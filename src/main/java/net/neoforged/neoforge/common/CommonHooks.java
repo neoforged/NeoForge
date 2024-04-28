@@ -44,6 +44,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -232,10 +233,6 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(event);
 
         return event;
-    }
-
-    public static boolean onLivingTick(LivingEntity entity) {
-        return NeoForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent(entity)).isCanceled();
     }
 
     public static boolean onLivingAttack(LivingEntity entity, DamageSource src, float amount) {
@@ -1316,11 +1313,9 @@ public class CommonHooks {
 
     static {
         // Mark common singletons as valid
-        markComponentClassAsValid(Block.class);
         markComponentClassAsValid(BlockState.class);
-        markComponentClassAsValid(Fluid.class);
         markComponentClassAsValid(FluidState.class);
-        markComponentClassAsValid(Item.class);
+        // Block, Fluid, Item, etc. are handled via the registry check further down
     }
 
     /**
@@ -1341,10 +1336,28 @@ public class CommonHooks {
 
             if (overridesEqualsAndHashCode(clazz)) {
                 checkedComponentClasses.add(clazz);
-            } else {
-                throw new IllegalArgumentException("Data components must implement equals and hashCode. Keep in mind they must also be immutable. Problematic class: " + clazz);
+                return;
+            }
+
+            // By far the slowest check: Is this a registry object?
+            // If it is, we assume it must be usable as a singleton...
+            if (isPotentialRegistryObject(dataComponent)) {
+                checkedComponentClasses.add(clazz);
+                return;
+            }
+
+            throw new IllegalArgumentException("Data components must implement equals and hashCode. Keep in mind they must also be immutable. Problematic class: " + clazz);
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static boolean isPotentialRegistryObject(Object value) {
+        for (Registry registry : BuiltInRegistries.REGISTRY) {
+            if (registry.containsValue(value)) {
+                return true;
             }
         }
+        return false;
     }
 
     private static boolean overridesEqualsAndHashCode(Class<?> clazz) {
