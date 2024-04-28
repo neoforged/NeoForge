@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Backup Failed",
   "fml.menu.backupfailed.message": "There was an error saving the archive {0}\nPlease fix the problem and try again",
   "fml.button.open.file": "Open {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Open Mods Folder",
   "fml.button.continue.launch": "Proceed to main menu",
   "fml.loadingerrorscreen.errorheader": "Error loading mods\n{0,choice,1#1 error has|1<{0} errors have} occurred during loading",
