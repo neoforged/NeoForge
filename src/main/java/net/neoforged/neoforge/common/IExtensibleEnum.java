@@ -65,6 +65,6 @@ public interface IExtensibleEnum {
      * Use this instead of {@link ByteBufCodecs#idMapper(IntFunction, ToIntFunction)} for extensible enums because this not cache the enum values on construction
      */
     static <E extends Enum<E> & StringRepresentable> StreamCodec<ByteBuf, E> createStreamCodecForExtensibleEnum(Supplier<E[]> valuesSupplier) {
-        return ByteBufCodecs.INT.map(i -> valuesSupplier.get()[i], Enum::ordinal);
+        return ByteBufCodecs.VAR_INT.map(i -> valuesSupplier.get()[i], Enum::ordinal);
     }
 }
