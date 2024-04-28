@@ -54,7 +54,7 @@ public class SingleFluidIngredient extends FluidIngredient {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof SingleFluidIngredient other && other.stack.equals(this.stack);
+        return obj instanceof SingleFluidIngredient other && FluidStack.matches(other.stack, this.stack);
     }
 
     public FluidStack stack() {
