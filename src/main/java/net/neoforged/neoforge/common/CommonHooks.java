@@ -1316,6 +1316,9 @@ public class CommonHooks {
         markComponentClassAsValid(BlockState.class);
         markComponentClassAsValid(FluidState.class);
         // Block, Fluid, Item, etc. are handled via the registry check further down
+
+        // Mark common interned classes as valid
+        markComponentClassAsValid(ResourceKey.class);
     }
 
     /**
