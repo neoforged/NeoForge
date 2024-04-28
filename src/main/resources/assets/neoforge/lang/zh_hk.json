@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "備份失敗",
   "fml.menu.backupfailed.message": "儲存存檔 {0} 時出現錯誤\n請修復問題並重試",
   "fml.button.open.file": "開啟 {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "開啟模組資料夾",
   "fml.button.continue.launch": "繼續前往標題畫面",
   "fml.loadingerrorscreen.errorheader": "載入模組發生錯誤\n載入時發生了 {0,choice,1#1 個錯誤|1<{0} 個錯誤}",
