@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Yedekleme Başarısız",
   "fml.menu.backupfailed.message": "Arşivi kaydederken bir hata oluştu {0}\nLütfen problemi çözün ve tekrar deneyin",
   "fml.button.open.file": "Open {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Mods Klasörünü Aç",
   "fml.button.continue.launch": "Ana menüye devam edin",
   "fml.loadingerrorscreen.errorheader": "Error loading mods\n{0,choice,1#1 error has|1<{0} errors have} occurred during loading",
