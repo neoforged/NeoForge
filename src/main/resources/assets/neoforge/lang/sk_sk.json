@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Zálohovanie Zlyhalo",
   "fml.menu.backupfailed.message": "Chyba pri ukladaní archívu {0}\nProsím opravte problém a skúste to znova",
   "fml.button.open.file": "Otvoriť {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Otvoriť priečinok pre módy",
   "fml.button.continue.launch": "Pokračovať na hlavné menu",
   "fml.loadingerrorscreen.errorheader": "Chyba načítavania módov\n{0,choice,1#1 error has|1<{0} errors have} nastala počas načítavania",
