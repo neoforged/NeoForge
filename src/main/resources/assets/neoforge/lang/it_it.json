@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Backup Fallito",
   "fml.menu.backupfailed.message": "Si è verificato un errore durante il salvataggio dell'archivio {0}\nSi prega di risolvere il problema e riprovare",
   "fml.button.open.file": "Apri {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Apri Cartella Mods",
   "fml.button.continue.launch": "Procedi al menu principale",
   "fml.loadingerrorscreen.errorheader": "Si è verificato {0,choice,1#1 errore|1<{0} errori} durante il caricamento delle mod",
