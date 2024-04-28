@@ -1,15 +1,14 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
-@@ -245,6 +_,18 @@
+@@ -245,6 +_,17 @@
          return Optional.empty();
      }
  
 +    /**
-+     * Forge added method that controls if a particle should be culled to it's bounding box.
-+     * Default behaviour is culling enabled
++     * Returns the bounding box that should be used for particle culling.
 +     */
-+    public boolean shouldCull() {
-+        return true;
++    public AABB getRenderBoundingBox(float partialTicks) {
++        return getBoundingBox().inflate(1.0);
 +    }
 +
 +    public Vec3 getPos() {
