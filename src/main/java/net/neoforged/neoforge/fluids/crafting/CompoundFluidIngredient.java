@@ -83,11 +83,6 @@ public final class CompoundFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean isEmpty() {
-        return children.isEmpty() || children.stream().allMatch(FluidIngredient::isEmpty);
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash(children);
     }

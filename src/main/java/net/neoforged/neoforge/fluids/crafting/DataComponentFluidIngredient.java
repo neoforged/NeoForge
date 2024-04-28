@@ -74,11 +74,6 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean isEmpty() {
-        return stacks.length == 0;
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash(fluids, components, strict);
     }

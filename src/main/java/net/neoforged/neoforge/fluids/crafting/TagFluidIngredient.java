@@ -50,13 +50,6 @@ public class TagFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean isEmpty() {
-        var opt = BuiltInRegistries.FLUID.getTag(tag);
-
-        return opt.map(holders -> holders.size() == 0).orElse(true);
-    }
-
-    @Override
     public int hashCode() {
         return tag.hashCode();
     }

@@ -19,14 +19,30 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public abstract class FluidIngredient implements Predicate<FluidStack> {
+    /**
+     * This is a codec that is used to represent basic "single fluid" or "tag"
+     * fluid ingredients directly, similar to {@link Ingredient.Value#CODEC},
+     * except not using value subclasses and instead directly providing
+     * the corresponding {@link FluidIngredient}.
+     */
     private static final MapCodec<FluidIngredient> SINGLE_OR_TAG_CODEC = singleOrTagCodec();
+
+    /**
+     * This is a codec that represents a single {@code FluidIngredient} in map form;
+     * either dispatched by type or falling back to {@link #SINGLE_OR_TAG_CODEC}
+     * if no type is specified.
+     *
+     * @see Ingredient#MAP_CODEC_NONEMPTY
+     */
     public static final MapCodec<FluidIngredient> MAP_CODEC = makeMapCodec();
     private static final Codec<FluidIngredient> MAP_CODEC_CODEC = MAP_CODEC.codec();
 
@@ -38,7 +54,22 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
         return DataResult.success(list);
     });
 
+    /**
+     * Full codec representing a fluid ingredient in all possible forms.
+     * <p>
+     * Allows for arrays of fluid ingredients to be read as a {@link CompoundFluidIngredient},
+     * as well as for the {@code type} field to be left out in case of a single fluid or tag ingredient.
+     *
+     * @see #codec(boolean)
+     * @see #MAP_CODEC
+     */
     public static final Codec<FluidIngredient> CODEC = codec(true);
+    /**
+     * Same as {@link #CODEC}, except not allowing for empty ingredients ({@code []})
+     * to be specified.
+     *
+     * @see #codec(boolean)
+     */
     public static final Codec<FluidIngredient> CODEC_NON_EMPTY = codec(false);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidIngredient> STREAM_CODEC = new StreamCodec<>() {
@@ -75,6 +106,14 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     @Nullable
     private FluidStack[] stacks;
 
+    /**
+     * {@return an array of fluid stacks this ingredient accepts}
+     * <p>
+     * This implementation simply caches the results of dissolving the ingredient using
+     * {@link #generateStacks()}, and should <i>not</i> be overridden unless you have good reason to.
+     *
+     * @see #generateStacks()
+     */
     public FluidStack[] getStacks() {
         if (stacks == null) {
             stacks = generateStacks().toArray(FluidStack[]::new);
@@ -83,19 +122,62 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
         return stacks;
     }
 
+    /**
+     * Checks if a given fluid stack matches this ingredient.
+     * The stack <b>must not</b> be modified in any way.
+     *
+     * @param fluidStack the stack to test
+     * @return {@code true} if the stack matches, {@code false} otherwise
+     */
     @Override
     public abstract boolean test(FluidStack fluidStack);
 
+    /**
+     * Generates a stream of all fluid stacks this ingredient matches against.
+     * <p>
+     * For compatibility reasons, implementations should follow the same guidelines
+     * as for custom item ingredients, i.e.:
+     * <ul>
+     * <li>These stacks are generally used for display purposes, and need not be exhaustive or perfectly accurate.</li>
+     * <li>An exception is ingredients that {@linkplain #isSimple() are simple},
+     * for which it is important that the returned stacks correspond exactly to all the accepted {@link Fluid}s.</li>
+     * <li>The ingredient should try to return at least one stack with each accepted {@link Fluid}.
+     * This allows mods that inspect the ingredient to figure out which stacks it might accept.</li>
+     * </ul>
+     *
+     * @return a stream of all fluid stacks this ingredient accepts.
+     *         <p>
+     *         Note: No guarantees are made as to the amount of the fluid,
+     *         as FluidIngredients are generally not meant to match by amount
+     *         and these stacks are mostly used for display.
+     *         <p>
+     * @see ICustomIngredient#getItems()
+     */
     protected abstract Stream<FluidStack> generateStacks();
 
     public abstract boolean isSimple();
 
+    /**
+     * {@return The type of this fluid ingredient.}
+     *
+     * <p>The type <b>must</b> be registered to {@link NeoForgeRegistries#FLUID_INGREDIENT_TYPES}.
+     */
     public abstract FluidIngredientType<?> getType();
 
+    /**
+     * Checks if this ingredient is <b>explicitly empty</b>, i.e.
+     * equal to {@link EmptyFluidIngredient#INSTANCE}.
+     * <p> Note: This does <i>not</i> return true for "accidentally empty" ingredients,
+     * including compound ingredients that are explicitly constructed with no children
+     * or intersection / difference ingredients that resolve to an empty set.
+     *
+     * @return {@code true} if this ingredient is {@link #empty()}, {@code false} otherwise
+     */
     public boolean isEmpty() {
-        // TODO: this resolves the ingredient by default, which i'm not sure is desirable?
-        return getStacks().length == 0;
+        return this == empty();
     }
+
+    // TODO: add empty check that includes accidentally empty ingredients
 
     @Override
     public abstract int hashCode();
@@ -123,6 +205,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
                 FluidIngredient::getType,
                 FluidIngredientType::codec,
                 FluidIngredient.SINGLE_OR_TAG_CODEC).xmap(either -> either.map(id -> id, id -> id), ingredient -> {
+                    // prefer serializing without a type field, if possible
                     if (ingredient instanceof SingleFluidIngredient || ingredient instanceof TagFluidIngredient) {
                         return Either.right(ingredient);
                     }
@@ -134,11 +217,14 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     private static Codec<FluidIngredient> codec(boolean allowEmpty) {
         var listCodec = Codec.lazyInitialized(() -> allowEmpty ? LIST_CODEC : LIST_CODEC_NON_EMPTY);
         return Codec.either(listCodec, MAP_CODEC_CODEC)
+                // [{...}, {...}] is turned into a CompoundIngredient instance
                 .xmap(either -> either.map(CompoundFluidIngredient::of, i -> i),
                         ingredient -> {
+                            // serialize CompoundIngredient instances as an array over their children
                             if (ingredient instanceof CompoundFluidIngredient compound) {
                                 return Either.left(compound.children());
                             } else if (ingredient.isEmpty()) {
+                                // serialize empty ingredients as []
                                 return Either.left(List.of());
                             }
 
@@ -169,7 +255,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     }
 
     public static FluidIngredient single(FluidStack stack) {
-        return stack.isEmpty() ? empty() : new SingleFluidIngredient(stack);
+        return SingleFluidIngredient.of(stack);
     }
 
     public static FluidIngredient tag(TagKey<Fluid> tag) {

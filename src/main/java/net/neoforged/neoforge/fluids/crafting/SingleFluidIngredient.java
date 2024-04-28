@@ -18,6 +18,9 @@ public class SingleFluidIngredient extends FluidIngredient {
     private final FluidStack stack;
 
     public SingleFluidIngredient(FluidStack stack) {
+        if (stack.isEmpty()) {
+            throw new IllegalStateException("SingleFluidIngredient should not be constructed with an empty stack, use FluidIngredient.empty() instead!");
+        }
         this.stack = stack;
     }
 
@@ -42,12 +45,6 @@ public class SingleFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean isEmpty() {
-        // TODO: should we even allow constructing this with an empty stack?
-        return stack.isEmpty();
-    }
-
-    @Override
     public int hashCode() {
         return FluidStack.hashFluidAndComponents(stack);
     }
@@ -60,5 +57,9 @@ public class SingleFluidIngredient extends FluidIngredient {
 
     public FluidStack stack() {
         return stack;
+    }
+
+    public static FluidIngredient of(FluidStack stack) {
+        return stack.isEmpty() ? empty() : new SingleFluidIngredient(stack);
     }
 }
