@@ -146,6 +146,14 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.DifferenceFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.EmptyFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
+import net.neoforged.neoforge.fluids.crafting.IntersectionFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SingleFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.TagFluidIngredient;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
@@ -371,6 +379,16 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC));
 
+    private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
+    // TODO: implement
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SingleFluidIngredient>> SINGLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("single", () -> new FluidIngredientType<>(SingleFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<TagFluidIngredient>> TAG_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("tag", () -> new FluidIngredientType<>(TagFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<EmptyFluidIngredient>> EMPTY_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("empty", () -> new FluidIngredientType<>(EmptyFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CompoundFluidIngredient>> COMPOUND_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("compound", () -> new FluidIngredientType<>(CompoundFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DataComponentFluidIngredient>> DATA_COMPONENT_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("components", () -> new FluidIngredientType<>(DataComponentFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DifferenceFluidIngredient>> DIFFERENCE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("difference", () -> new FluidIngredientType<>(DifferenceFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<IntersectionFluidIngredient>> INTERSECTION_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("intersection", () -> new FluidIngredientType<>(IntersectionFluidIngredient.CODEC));
+
     private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
@@ -535,7 +553,7 @@ public class NeoForgeMod {
      * Used in place of {@link DamageSources#magic()} for damage dealt by {@link MobEffects#POISON}.
      * <p>
      * May also be used by mods providing poison-like effects.
-     * 
+     *
      * @see {@link Tags.DamageTypes#IS_POISON}
      */
     public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(NeoForgeVersion.MOD_ID, "poison"));
