@@ -444,24 +444,6 @@ public abstract class PlayerEvent extends LivingEvent {
         }
     }
 
-    public static class PlayerRespawnEvent extends PlayerEvent {
-        private final boolean endConquered;
-
-        public PlayerRespawnEvent(Player player, boolean endConquered) {
-            super(player);
-            this.endConquered = endConquered;
-        }
-
-        /**
-         * Did this respawn event come from the player conquering the end?
-         * 
-         * @return if this respawn was because the player conquered the end
-         */
-        public boolean isEndConquered() {
-            return this.endConquered;
-        }
-    }
-
     public static class PlayerChangedDimensionEvent extends PlayerEvent {
         private final ResourceKey<Level> fromDim;
         private final ResourceKey<Level> toDim;

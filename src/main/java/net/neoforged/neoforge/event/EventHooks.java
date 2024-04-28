@@ -125,25 +125,10 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType;
-import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
-import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
-import net.neoforged.neoforge.event.entity.player.BonemealEvent;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
-import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
-import net.neoforged.neoforge.event.entity.player.SleepingLocationCheckEvent;
-import net.neoforged.neoforge.event.entity.player.SleepingTimeCheckEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider;
@@ -793,8 +778,8 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player));
     }
 
-    public static void firePlayerRespawnEvent(Player player, boolean endConquered) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, endConquered));
+    public static PlayerRespawnEvent firePlayerRespawnEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
+        return NeoForge.EVENT_BUS.post(new PlayerRespawnEvent(player, respawnLevel, respawnAngle, respawnPosition, fromEndFight));
     }
 
     public static void firePlayerItemPickupEvent(Player player, ItemEntity item, ItemStack clone) {
