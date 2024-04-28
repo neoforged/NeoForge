@@ -32,6 +32,7 @@ import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerRespawnEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -226,5 +227,26 @@ public class PlayerEventTests {
             if (stats.getValue(Stats.CUSTOM.get(Stats.BELL_RING)) == 100 && stats.getValue(Stats.CUSTOM.get(Stats.ANIMALS_BRED)) == 10)
                 helper.succeed();
         });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the PlayerRespawnEvent fires correctly and can change where the player respawns")
+    static void playerRespawnEvent(final DynamicTest test, final RegistrationHelper reg) {
+        test.eventListeners().forge().addListener((final PlayerRespawnEvent event) -> {
+            // Only affect the players with a custom name to not interfere with other tests
+            if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("respawn-test"))) {
+                return;
+            }
+
+            event.setRespawnPosition(event.getEntity().position().relative(Direction.SOUTH, 1));
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+                .thenExecute(player -> player.setCustomName(Component.literal("respawn-test")))
+                .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 1)), 0, false, true))
+                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false))
+                .thenExecute(() -> helper.assertEntityPresent(EntityType.PLAYER, new BlockPos(0, 1, 1)))
+                .thenSucceed());
     }
 }
