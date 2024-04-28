@@ -10,8 +10,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+/**
+ * Fluid ingredient that matches if any of the child ingredients match.
+ * This type additionally represents the array notation used in
+ * {@linkplain FluidIngredient#CODEC} internally.
+ *
+ * @see CompoundIngredient CompoundIngredient, its item equivalent
+ */
 public final class CompoundFluidIngredient extends FluidIngredient {
     public static final MapCodec<CompoundFluidIngredient> CODEC = null;
 

@@ -10,6 +10,16 @@ import java.util.stream.Stream;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+/**
+ * Singleton that represents an empty fluid ingredient.
+ * <p>
+ * This is the only instance of an <b>explicitly</b> empty ingredient,
+ * and may be used as a fallback in FluidIngredient convenience methods
+ * (such as when trying to create an ingredient from an empty list).
+ *
+ * @see FluidIngredient#empty()
+ * @see FluidIngredient#isEmpty()
+ */
 public class EmptyFluidIngredient extends FluidIngredient {
     public static final EmptyFluidIngredient INSTANCE = new EmptyFluidIngredient();
 

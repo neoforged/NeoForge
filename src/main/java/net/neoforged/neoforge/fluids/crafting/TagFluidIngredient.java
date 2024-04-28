@@ -16,6 +16,12 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 
+/**
+ * Fluid ingredient that matches all fluids within the given tag.
+ * <p>
+ * Unlike with ingredients, this is an explicit "type" of fluid ingredient,
+ * though it may still be written without a type field, see {@link FluidIngredient#MAP_CODEC}
+ */
 public class TagFluidIngredient extends FluidIngredient {
     public static final MapCodec<TagFluidIngredient> CODEC = TagKey.codec(Registries.FLUID)
             .xmap(TagFluidIngredient::new, TagFluidIngredient::tag).fieldOf("tag");

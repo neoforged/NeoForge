@@ -11,6 +11,12 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 
+/**
+ * Fluid ingredient that only matches the fluid of the given stack.
+ * <p>
+ * Unlike with ingredients, this is an explicit "type" of fluid ingredient,
+ * though it may still be written without a type field, see {@link FluidIngredient#MAP_CODEC}
+ */
 public class SingleFluidIngredient extends FluidIngredient {
     public static final MapCodec<SingleFluidIngredient> CODEC = FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME)
             .xmap(SingleFluidIngredient::new, SingleFluidIngredient::stack).fieldOf("fluid");

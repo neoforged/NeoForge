@@ -22,8 +22,18 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+/**
+ * Fluid ingredient that matches the given set of fluids, additionally performing either a
+ * {@link DataComponentFluidIngredient#isStrict() strict} or partial test on the FluidStack's components.
+ * <p>
+ * Strict ingredients will only match fluid stacks that have <b>exactly</b> the provided components, while partial ones will
+ * match if the stack's components contain all required components for the {@linkplain #components input predicate}.
+ * 
+ * @see DataComponentIngredient DataComponentIngredient, its item equivalent
+ */
 public class DataComponentFluidIngredient extends FluidIngredient {
     public static final MapCodec<DataComponentFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder

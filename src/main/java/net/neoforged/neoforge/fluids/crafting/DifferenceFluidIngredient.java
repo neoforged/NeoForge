@@ -10,8 +10,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import java.util.stream.Stream;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+/**
+ * Fluid ingredient that matches the difference of two provided fluid ingredients, i.e.
+ * anything contained in {@code base} that is not in {@code subtracted}.
+ *
+ * @see DifferenceIngredient DifferenceIngredient, its item equivalent
+ */
 public final class DifferenceFluidIngredient extends FluidIngredient {
     public static final MapCodec<DifferenceFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
