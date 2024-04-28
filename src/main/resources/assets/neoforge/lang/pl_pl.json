@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Kopia zapasowa nie powiodła się",
   "fml.menu.backupfailed.message": "Wystąpił błąd podczas zapisywania archiwum {0}\nProszę rozwiązać problem i spróbować ponownie",
   "fml.button.open.file": "Otwórz {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Otwórz folder modyfikacji",
   "fml.button.continue.launch": "Przejdź do menu głównego",
   "fml.loadingerrorscreen.errorheader": "Błąd ładowania modyfikacji\n{0,choice,1#wystąpił 1 błąd|1<wystąpiły {0} błędy} podczas ładowania",
