@@ -6,16 +6,20 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Fired by {@link PlayerList#respawn(ServerPlayer, boolean)} when the server respawns a player.
@@ -58,6 +62,14 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
      */
     public void setRespawnLevel(ServerLevel respawnLevel) {
         this.respawnLevel = respawnLevel;
+    }
+
+    /**
+     * Set the level the player will respawn into using a {@link ResourceKey}.
+     * @param respawnLevelResourceKey The {@link ResourceKey} of the level to respawn into.
+     */
+    public void setRespawnLevel(ResourceKey<Level> respawnLevelResourceKey) {
+        setRespawnLevel(Objects.requireNonNull(Objects.requireNonNull(getEntity().getServer()).getLevel(respawnLevelResourceKey)));
     }
 
     /**
