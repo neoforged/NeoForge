@@ -24,7 +24,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is fired on the {@linkplain NeoForge#EVENT_BUS main NeoForge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  */
-public class PlayerRespawnEvent extends PlayerEvent {
+public class PlayerRespawnPositionEvent extends PlayerEvent {
     private ServerLevel respawnLevel;
     private @Nullable Vec3 respawnPosition;
     private float respawnAngle;
@@ -34,7 +34,7 @@ public class PlayerRespawnEvent extends PlayerEvent {
     private final boolean fromEndFight;
     private boolean changePlayerSpawnPosition = false;
 
-    public PlayerRespawnEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
+    public PlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
         super(player);
         this.respawnLevel = respawnLevel;
         this.respawnPosition = respawnPosition;

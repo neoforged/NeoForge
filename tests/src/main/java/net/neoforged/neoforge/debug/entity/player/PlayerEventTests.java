@@ -32,7 +32,7 @@ import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerRespawnEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -233,7 +233,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerRespawnEvent fires correctly and can change where the player respawns")
     static void playerRespawnEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((final PlayerRespawnEvent event) -> {
+        test.eventListeners().forge().addListener((final PlayerRespawnPositionEvent event) -> {
             // Only affect the players with a custom name to not interfere with other tests
             if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("respawn-test"))) {
                 return;

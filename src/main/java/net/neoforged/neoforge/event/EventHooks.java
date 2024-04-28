@@ -138,7 +138,7 @@ import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerRespawnEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
@@ -798,8 +798,12 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player));
     }
 
-    public static PlayerRespawnEvent firePlayerRespawnEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
-        return NeoForge.EVENT_BUS.post(new PlayerRespawnEvent(player, respawnLevel, respawnAngle, respawnPosition, fromEndFight));
+    public static PlayerRespawnPositionEvent firePlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
+        return NeoForge.EVENT_BUS.post(new PlayerRespawnPositionEvent(player, respawnLevel, respawnAngle, respawnPosition, fromEndFight));
+    }
+
+    public static void firePlayerRespawnEvent(ServerPlayer player, boolean fromEndFight) {
+        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
     }
 
     public static void firePlayerItemPickupEvent(Player player, ItemEntity item, ItemStack clone) {
