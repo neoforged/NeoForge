@@ -43,6 +43,8 @@
   "fml.menu.backupfailed.title": "Échec de la sauvegarde",
   "fml.menu.backupfailed.message": "Une erreur s'est produite lors de la sauvegarde de l'archive {0}\nVeuillez résoudre le problème et réessayer",
   "fml.button.open.file": "Ouvrir {0}",
+  "fml.button.open.log": "Open log file",
+  "fml.button.open.crashreport": "Open crash report",
   "fml.button.open.mods.folder": "Ouvrir le dossier Mods",
   "fml.button.continue.launch": "Continuer vers le menu principal",
   "fml.loadingerrorscreen.errorheader": "Erreur lors du chargement des mods\n{0,choice,1#1 erreur est survenue|1<{0} des erreurs se sont produites} pendant le chargement",
