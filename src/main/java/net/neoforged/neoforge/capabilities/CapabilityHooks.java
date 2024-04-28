@@ -20,8 +20,8 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.items.VanillaHopperItemHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
@@ -152,20 +152,20 @@ public class CapabilityHooks {
     }
 
     public static void invalidateCapsOnChunkLoad(ChunkEvent.Load event) {
-        if (!event.getLevel().isClientSide()) {
-            ((ServerLevel) event.getLevel()).invalidateCapabilities(event.getChunk().getPos());
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.invalidateCapabilities(event.getChunk().getPos());
         }
     }
 
     public static void invalidateCapsOnChunkUnload(ChunkEvent.Unload event) {
-        if (!event.getLevel().isClientSide()) {
-            ((ServerLevel) event.getLevel()).invalidateCapabilities(event.getChunk().getPos());
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.invalidateCapabilities(event.getChunk().getPos());
         }
     }
 
-    public static void cleanCapabilityListenerReferencesOnTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && event.side.isServer()) {
-            ((ServerLevel) event.level).cleanCapabilityListenerReferences();
+    public static void cleanCapabilityListenerReferencesOnTick(LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.cleanCapabilityListenerReferences();
         }
     }
 }

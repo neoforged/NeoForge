@@ -1,30 +1,5 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -29,11 +_,24 @@
- import net.minecraft.world.phys.HitResult;
- 
- public class BucketItem extends Item implements DispensibleContainerItem {
-+    /** Neo: Field accesses are redirected to {@link #getFluid()} with a coremod. */
-     private final Fluid content;
- 
-+    // Forge: Use the other constructor that takes a Supplier
-+    @Deprecated
-     public BucketItem(Fluid p_40689_, Item.Properties p_40690_) {
-         super(p_40690_);
-         this.content = p_40689_;
-+        this.fluidSupplier = () -> p_40689_;
-+    }
-+
-+    /**
-+     * @param supplier A fluid supplier such as {@link net.neoforged.neoforge.registries.DeferredHolder}
-+     */
-+    public BucketItem(java.util.function.Supplier<? extends Fluid> supplier, Item.Properties builder) {
-+        super(builder);
-+        this.content = null;
-+        this.fluidSupplier = supplier;
-     }
- 
-     @Override
 @@ -42,6 +_,8 @@
          BlockHitResult blockhitresult = getPlayerPOVHitResult(
              p_40703_, p_40704_, this.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE
@@ -89,7 +64,7 @@
                      liquidblockcontainer1.placeLiquid(p_150717_, p_150718_, blockstate, flowingfluid.getSource(false));
                      this.playEmptySound(p_150716_, p_150717_, p_150718_);
                      return true;
-@@ -168,8 +_,17 @@
+@@ -168,8 +_,18 @@
      }
  
      protected void playEmptySound(@Nullable Player p_40696_, LevelAccessor p_40697_, BlockPos p_40698_) {
@@ -100,11 +75,12 @@
          p_40697_.gameEvent(p_40696_, GameEvent.FLUID_PLACE, p_40698_);
 +    }
 +
-+    private final java.util.function.Supplier<? extends Fluid> fluidSupplier;
-+    public Fluid getFluid() { return fluidSupplier.get(); }
-+
 +    protected boolean canBlockContainFluid(@Nullable Player player, Level worldIn, BlockPos posIn, BlockState blockstate)
 +    {
 +        return blockstate.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer)blockstate.getBlock()).canPlaceLiquid(player, worldIn, posIn, blockstate, this.content);
++    }
++
++    public Fluid getFluid() {
++        return this.content;
      }
  }

@@ -18,7 +18,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 @Mod(CustomParticleTypeTest.MOD_ID)
 public class CustomParticleTypeTest {
@@ -77,8 +77,8 @@ public class CustomParticleTypeTest {
         }
 
         @SubscribeEvent
-        public static void onClientTick(final TickEvent.ClientTickEvent event) {
-            if (!ENABLED || event.phase != TickEvent.Phase.START) {
+        public static void onClientTick(ClientTickEvent.Pre event) {
+            if (!ENABLED) {
                 return;
             }
 
