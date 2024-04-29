@@ -6,11 +6,13 @@
 package net.neoforged.neoforge.client.gui;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Streams;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -21,6 +23,7 @@ import net.minecraft.client.gui.screens.ErrorScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModLoadingIssue;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.common.I18nExtension;
@@ -61,7 +64,7 @@ public class LoadingErrorScreen extends ErrorScreen {
         this.clearWidgets();
 
         this.errorHeader = Component.literal(ChatFormatting.RED + I18nExtension.parseMessage("fml.loadingerrorscreen.errorheader", this.modLoadErrors.size()) + ChatFormatting.RESET);
-        this.warningHeader = Component.literal(ChatFormatting.YELLOW + I18nExtension.parseMessage("fml.loadingerrorscreen.warningheader", this.modLoadErrors.size()) + ChatFormatting.RESET);
+        this.warningHeader = Component.literal(ChatFormatting.YELLOW + I18nExtension.parseMessage("fml.loadingerrorscreen.warningheader", this.modLoadWarnings.size()) + ChatFormatting.RESET);
 
         int yOffset = 46;
         this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), b -> Util.getPlatform().openFile(modsDir.toFile())));
@@ -160,12 +163,34 @@ public class LoadingErrorScreen extends ErrorScreen {
     private record FormattedIssue(Component text, ModLoadingIssue issue) {
         public static FormattedIssue of(ModLoadingIssue issue) {
             return new FormattedIssue(
-                    Component.translatable(issue.translationKey(), formatArgs(issue.translationArgs())),
+                    Component.translatable(issue.translationKey(), formatArgs(issue)),
                     issue);
         }
 
-        private static Object formatArgs(List<Object> objects) {
-            return null;
+        private static Object[] formatArgs(ModLoadingIssue issue) {
+            var modInfo = issue.affectedMod();
+            if (modInfo == null && issue.affectedModFile() != null) {
+                if (!issue.affectedModFile().getModInfos().isEmpty()) {
+                    modInfo = issue.affectedModFile().getModInfos().getFirst();
+                }
+            }
+
+            return Streams.concat(Stream.of(modInfo, null), issue.translationArgs().stream())
+                    .map(FormattedIssue::formatArg)
+                    .toArray();
+        }
+
+        private static Object formatArg(Object arg) {
+            if (arg instanceof Path path) {
+                var gameDir = FMLLoader.getGamePath();
+                if (path.startsWith(gameDir)) {
+                    return gameDir.relativize(path).toString();
+                } else {
+                    return path.toString();
+                }
+            } else {
+                return arg;
+            }
         }
     }
 }
