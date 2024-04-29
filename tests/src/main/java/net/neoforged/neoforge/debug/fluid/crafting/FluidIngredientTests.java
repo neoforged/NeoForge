@@ -24,6 +24,7 @@ import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.DifferenceFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.IntersectionFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -213,6 +214,43 @@ public class FluidIngredientTests {
 
         helper.assertTrue(ingredient.test(new FluidStack(Fluids.WATER, 1234)), "Single fluid ingredient should match regardless of fluid amount!");
         helper.assertTrue(ingredient.test(new FluidStack(Fluids.WATER.builtInRegistryHolder(), 1234, DataComponentPatch.builder().set(DataComponents.RARITY, Rarity.COMMON).build())), "Single fluid ingredient should match regardless of fluid data!");
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests serialization format of sized fluid ingredients")
+    static void sizedFluidIngredientSerialization(final GameTestHelper helper) {
+        var sized = SizedFluidIngredient.of(Fluids.WATER, 1000);
+
+        var flatResult = SizedFluidIngredient.FLAT_CODEC.encodeStart(JsonOps.INSTANCE, sized);
+        var flatJson = flatResult.resultOrPartial((error) -> helper.fail("(flat) Error while encoding SizedFluidIngredient: " + error)).orElseThrow();
+
+        helper.assertValueEqual(flatJson.toString(), "{\"fluid\":\"minecraft:water\",\"amount\":1000}", "(flat) serialized SizedFluidIngredient");
+
+        var nestedResult = SizedFluidIngredient.NESTED_CODEC.encodeStart(JsonOps.INSTANCE, sized);
+        var nestedJson = nestedResult.resultOrPartial((error) -> helper.fail("(nested) Error while encoding SizedFluidIngredient: " + error)).orElseThrow();
+
+        helper.assertValueEqual(nestedJson.toString(), "{\"ingredient\":{\"fluid\":\"minecraft:water\"},\"amount\":1000}", "(nested) serialized SizedFluidIngredient");
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests matching of sized fluid ingredients")
+    static void sizedFluidIngredientMatching(final GameTestHelper helper) {
+        var sized = SizedFluidIngredient.of(Fluids.WATER, 2);
+
+        helper.assertFalse(sized.test(new FluidStack(Fluids.LAVA, 1000)), "SizedFluidIngredient should not match incorrect fluid!");
+
+        helper.assertFalse(sized.test(new FluidStack(Fluids.WATER, 1)), "SizedFluidIngredient should not match fluid with less than required amount!");
+        helper.assertTrue(sized.test(new FluidStack(Fluids.WATER, 2)), "SizedFluidIngredient should match fluid with required amount!");
+        helper.assertTrue(sized.test(new FluidStack(Fluids.WATER, 3)), "SizedFluidIngredient should  match fluid with more than required amount!");
+
+        var matches = sized.getFluids();
+        helper.assertTrue(matches.length == 1 && (FluidStack.matches(matches[0], new FluidStack(Fluids.WATER, 2))), "SizedFluidIngredient matches should return all matched fluids with the correct amount!");
 
         helper.succeed();
     }
