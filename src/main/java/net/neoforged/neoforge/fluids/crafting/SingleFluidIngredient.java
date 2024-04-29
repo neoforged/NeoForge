@@ -7,6 +7,10 @@ package net.neoforged.neoforge.fluids.crafting;
 
 import com.mojang.serialization.MapCodec;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -18,26 +22,26 @@ import net.neoforged.neoforge.fluids.FluidType;
  * though it may still be written without a type field, see {@link FluidIngredient#MAP_CODEC}
  */
 public class SingleFluidIngredient extends FluidIngredient {
-    public static final MapCodec<SingleFluidIngredient> CODEC = FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME)
-            .xmap(SingleFluidIngredient::new, SingleFluidIngredient::stack).fieldOf("fluid");
+    public static final MapCodec<SingleFluidIngredient> CODEC = BuiltInRegistries.FLUID.holderByNameCodec()
+            .xmap(SingleFluidIngredient::new, SingleFluidIngredient::fluid).fieldOf("fluid");
 
-    private final FluidStack stack;
+    private final Holder<Fluid> fluid;
 
-    public SingleFluidIngredient(FluidStack stack) {
-        if (stack.isEmpty()) {
-            throw new IllegalStateException("SingleFluidIngredient should not be constructed with an empty stack, use FluidIngredient.empty() instead!");
+    public SingleFluidIngredient(Holder<Fluid> fluid) {
+        if (fluid.is(Fluids.EMPTY.builtInRegistryHolder())) {
+            throw new IllegalStateException("SingleFluidIngredient must not be constructed with minecraft:empty, use FluidIngredient.empty() instead!");
         }
-        this.stack = stack;
+        this.fluid = fluid;
     }
 
     @Override
     public boolean test(FluidStack fluidStack) {
-        return FluidStack.isSameFluid(this.stack, fluidStack);
+        return fluidStack.is(fluid);
     }
 
     @Override
     protected Stream<FluidStack> generateStacks() {
-        return Stream.of(stack);
+        return Stream.of(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
     }
 
     @Override
@@ -52,25 +56,21 @@ public class SingleFluidIngredient extends FluidIngredient {
 
     @Override
     public boolean hasNoFluids() {
-        return stack.isEmpty();
+        return fluid.value().isSame(Fluids.EMPTY);
     }
 
     @Override
     public int hashCode() {
-        return FluidStack.hashFluidAndComponents(stack);
+        return this.fluid().value().hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof SingleFluidIngredient other && FluidStack.matches(other.stack, this.stack);
+        return obj instanceof SingleFluidIngredient other && other.fluid.is(this.fluid);
     }
 
-    public FluidStack stack() {
-        return stack;
-    }
-
-    public static FluidIngredient of(FluidStack stack) {
-        return stack.isEmpty() ? empty() : new SingleFluidIngredient(stack);
+    public Holder<Fluid> fluid() {
+        return fluid;
     }
 }

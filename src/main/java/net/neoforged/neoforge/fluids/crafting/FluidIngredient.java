@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,7 +25,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public abstract class FluidIngredient implements Predicate<FluidStack> {
@@ -262,20 +262,28 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
         return empty();
     }
 
-    public static FluidIngredient of(Fluid... fluids) {
-        return of(Arrays.stream(fluids).map(fluid -> new FluidStack(fluid, FluidType.BUCKET_VOLUME)));
+    public static FluidIngredient of(FluidStack... fluids) {
+        return of(Arrays.stream(fluids).map(FluidStack::getFluid));
     }
 
-    public static FluidIngredient of(FluidStack... fluids) {
+    public static FluidIngredient of(Fluid... fluids) {
         return of(Arrays.stream(fluids));
     }
 
-    private static FluidIngredient of(Stream<FluidStack> fluids) {
+    private static FluidIngredient of(Stream<Fluid> fluids) {
         return CompoundFluidIngredient.of(fluids.map(FluidIngredient::single));
     }
 
     public static FluidIngredient single(FluidStack stack) {
-        return SingleFluidIngredient.of(stack);
+        return single(stack.getFluid());
+    }
+
+    public static FluidIngredient single(Fluid fluid) {
+        return single(fluid.builtInRegistryHolder());
+    }
+
+    public static FluidIngredient single(Holder<Fluid> holder) {
+        return new SingleFluidIngredient(holder);
     }
 
     public static FluidIngredient tag(TagKey<Fluid> tag) {

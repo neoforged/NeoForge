@@ -24,7 +24,6 @@ import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.DifferenceFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.IntersectionFluidIngredient;
-import net.neoforged.neoforge.fluids.crafting.SingleFluidIngredient;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -72,7 +71,7 @@ public class FluidIngredientTests {
         helper.assertFalse(singleJson.getAsJsonObject().has("type"), "single fluid ingredient should serialize without a 'type' field");
         helper.assertFalse(tagJson.getAsJsonObject().has("type"), "tag fluid ingredient should serialize without a 'type' field");
 
-        helper.assertValueEqual(singleJson.toString(), "{\"fluid\":{\"id\":\"minecraft:water\"}}", "serialized single fluid ingredient to match expected format!");
+        helper.assertValueEqual(singleJson.toString(), "{\"fluid\":\"minecraft:water\"}", "serialized single fluid ingredient to match expected format!");
         helper.assertValueEqual(tagJson.toString(), "{\"tag\":\"c:water\"}", "serialized tag fluid ingredient to match expected format!");
 
         // tests that deserializing simple ingredients is reproducible and produces the desired ingredients
@@ -133,14 +132,13 @@ public class FluidIngredientTests {
 
         var emptySingleFailed = false;
         try {
-            FluidIngredient compoundIngredient = new SingleFluidIngredient(FluidStack.EMPTY);
+            FluidIngredient compoundIngredient = FluidIngredient.single(Fluids.EMPTY);
         } catch (Exception ignored) {
             emptySingleFailed = true;
         }
         helper.assertTrue(emptySingleFailed, "Empty SingleFluidIngredient should not have been able to be constructed!");
 
         helper.assertValueEqual(CompoundFluidIngredient.of(new FluidIngredient[0]), FluidIngredient.empty(), "calling CompoundFluidIngredient.of with no children to yield FluidIngredient.empty()");
-        helper.assertValueEqual(SingleFluidIngredient.of(FluidStack.EMPTY), FluidIngredient.empty(), "calling SingleFluidIngredient.of with empty stack to yield FluidIngredient.empty()");
 
         helper.succeed();
     }
