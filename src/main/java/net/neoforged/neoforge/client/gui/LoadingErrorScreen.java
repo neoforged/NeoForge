@@ -64,7 +64,7 @@ public class LoadingErrorScreen extends ErrorScreen {
         this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), b -> Util.getPlatform().openFile(modsDir.toFile())));
         this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
         if (this.modLoadErrors.isEmpty()) {
-            this.addRenderableWidget(new ExtendedButton(this.width / 4, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.continue.launch")), b -> {
+            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.continue.launch")), b -> {
                 this.minecraft.setScreen(null);
             }));
         } else {
