@@ -62,6 +62,6 @@ public record ServerPayloadContext(ServerCommonPacketListener listener, Resource
         if (this.listener instanceof ServerPlayerConnection spc) {
             return spc.getPlayer();
         }
-        throw new UnsupportedOperationException("Cannot retrieve a sending player during the configuration phase.");
+        throw new UnsupportedOperationException("Cannot retrieve the sending player during the configuration phase.");
     }
 }

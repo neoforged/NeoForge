@@ -8,6 +8,7 @@ package net.neoforged.neoforge.network.handling;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
@@ -41,11 +42,11 @@ public interface IPayloadContext {
     }
 
     /**
-     * Retrieves the player relevant to this payload, which has a different meaning based on the protocol and flow.
+     * Retrieves the player relevant to this payload. Players are only available in the {@link ConnectionProtocol#CONFIGURATION} phase.
      * <p>
-     * For server-bound play payloads, retrieves the sending player. This case can safely be cast to {@link ServerPlayer}.
+     * For server-bound payloads, retrieves the sending {@link ServerPlayer}.
      * <p>
-     * For client-bound payloads, retrieves the client player.
+     * For client-bound payloads, retrieves the receiving {@link LocalPlayer}.
      * 
      * @throws UnsupportedOperationException when called on the server during the configuration phase.
      */

@@ -55,6 +55,9 @@ public record ClientPayloadContext(ClientCommonPacketListener listener, Resource
     @Override
     @SuppressWarnings("resource")
     public Player player() {
-        return Minecraft.getInstance().player;
+        if (Minecraft.getInstance().player != null) {
+            return Minecraft.getInstance().player;
+        }
+        throw new UnsupportedOperationException("Cannot retrieve the client player during the configuration phase.");
     }
 }
