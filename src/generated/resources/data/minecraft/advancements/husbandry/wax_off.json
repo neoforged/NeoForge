@@ -52,8 +52,9 @@
           {
             "condition": "minecraft:match_tool",
             "predicate": {
-              "type": "neoforge:tool_action",
-              "value": "axe_wax_off"
+              "predicates": {
+                "neoforge:tool_action": "axe_wax_off"
+              }
             }
           }
         ]
@@ -66,8 +67,8 @@
       "translate": "advancements.husbandry.wax_off.description"
     },
     "icon": {
-      "item": "minecraft:stone_axe",
-      "nbt": "{Damage:0}"
+      "count": 1,
+      "id": "minecraft:stone_axe"
     },
     "title": {
       "translate": "advancements.husbandry.wax_off.title"

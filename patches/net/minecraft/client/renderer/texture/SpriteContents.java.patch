@@ -14,7 +14,7 @@
 @@ -120,6 +_,10 @@
  
      void upload(int p_248895_, int p_250245_, int p_250458_, int p_251337_, NativeImage[] p_248825_) {
-         for(int i = 0; i < this.byMipLevel.length; ++i) {
+         for (int i = 0; i < this.byMipLevel.length; i++) {
 +            // Forge: Skip uploading if the texture would be made invalid by mip level
 +            if ((this.width >> i) <= 0 || (this.height >> i) <= 0)
 +                break;
@@ -23,7 +23,7 @@
                  .upload(i, p_248895_ >> i, p_250245_ >> i, p_250458_ >> i, p_251337_ >> i, this.width >> i, this.height >> i, this.byMipLevel.length > 1, false);
          }
 @@ -242,7 +_,8 @@
-             for(int i = 0; i < this.activeFrame.length; ++i) {
+             for (int i = 0; i < this.activeFrame.length; i++) {
                  int j = SpriteContents.this.width >> i;
                  int k = SpriteContents.this.height >> i;
 -                this.activeFrame[i] = new NativeImage(j, k, false);
@@ -33,12 +33,12 @@
          }
  
 @@ -257,6 +_,9 @@
-                 for(int k = 0; k < this.activeFrame.length; ++k) {
+                 for (int k = 0; k < this.activeFrame.length; k++) {
                      int l = SpriteContents.this.width >> k;
                      int i1 = SpriteContents.this.height >> k;
 +                    // Forge: Guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
 +                    if (l < 1 || i1 < 1)
 +                        continue;
  
-                     for(int j1 = 0; j1 < i1; ++j1) {
-                         for(int k1 = 0; k1 < l; ++k1) {
+                     for (int j1 = 0; j1 < i1; j1++) {
+                         for (int k1 = 0; k1 < l; k1++) {

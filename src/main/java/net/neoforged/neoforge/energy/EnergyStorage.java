@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.energy;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -83,12 +84,12 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     }
 
     @Override
-    public Tag serializeNBT() {
+    public Tag serializeNBT(HolderLookup.Provider provider) {
         return IntTag.valueOf(this.getEnergyStored());
     }
 
     @Override
-    public void deserializeNBT(Tag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, Tag nbt) {
         if (!(nbt instanceof IntTag intNbt))
             throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
         this.energy = intNbt.getAsInt();

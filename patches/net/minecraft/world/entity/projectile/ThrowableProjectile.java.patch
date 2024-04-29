@@ -6,6 +6,6 @@
  
 -        if (hitresult.getType() != HitResult.Type.MISS && !flag) {
 +        if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
-             this.onHit(hitresult);
+             this.hitTargetOrDeflectSelf(hitresult);
          }
  

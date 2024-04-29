@@ -59,7 +59,7 @@ public class FluidBlockWrapper implements IFluidHandler {
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (!resource.isEmpty() && fluidBlock.canDrain(world, blockPos) && resource.is(fluidBlock.getFluid())) {
             FluidStack simulatedDrained = fluidBlock.drain(world, blockPos, FluidAction.SIMULATE);
-            if (simulatedDrained.getAmount() <= resource.getAmount() && resource.isFluidEqual(simulatedDrained)) {
+            if (simulatedDrained.getAmount() <= resource.getAmount() && FluidStack.isSameFluidSameComponents(resource, simulatedDrained)) {
                 if (action.execute()) {
                     return fluidBlock.drain(world, blockPos, FluidAction.EXECUTE).copy();
                 }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/Sheets.java
 +++ b/net/minecraft/client/renderer/Sheets.java
-@@ -172,11 +_,13 @@
+@@ -145,11 +_,13 @@
      }
  
      private static Material createSignMaterial(WoodType p_173386_) {
@@ -16,7 +16,7 @@
      }
  
      public static Material getSignMaterial(WoodType p_173382_) {
-@@ -237,6 +_,23 @@
+@@ -208,6 +_,23 @@
              case SINGLE:
              default:
                  return p_110773_;
@@ -32,7 +32,7 @@
 +    }
 +
 +    static {
-+        if (net.neoforged.fml.ModLoader.isLoadingStateValid() && !net.neoforged.fml.ModLoader.get().hasCompletedState("LOAD_REGISTRIES")) {
++        if (net.neoforged.fml.ModLoader.isLoadingStateValid() && !net.neoforged.neoforge.internal.CommonModLoader.areRegistriesLoaded()) {
 +            com.mojang.logging.LogUtils.getLogger().error(
 +                      "net.minecraft.client.renderer.Sheets loaded too early, modded registry-based materials may not work correctly",
 +                      new IllegalStateException("net.minecraft.client.renderer.Sheets loaded too early")

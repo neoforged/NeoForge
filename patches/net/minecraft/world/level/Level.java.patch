@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -73,7 +_,7 @@
+@@ -75,7 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.Scoreboard;
  
@@ -9,7 +9,7 @@
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("the_nether"));
-@@ -112,6 +_,11 @@
+@@ -113,6 +_,11 @@
      private final RegistryAccess registryAccess;
      private final DamageSources damageSources;
      private long subTickCount;
@@ -129,7 +129,7 @@
      }
  
 @@ -656,7 +_,7 @@
-         Explosion.BlockInteraction explosion$blockinteraction = switch(p_312265_) {
+         Explosion.BlockInteraction explosion$blockinteraction = switch (p_312265_) {
              case NONE -> Explosion.BlockInteraction.KEEP;
              case BLOCK -> this.getDestroyType(GameRules.RULE_BLOCK_EXPLOSION_DROP_DECAY);
 -            case MOB -> this.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
@@ -139,7 +139,7 @@
              case TNT -> this.getDestroyType(GameRules.RULE_TNT_EXPLOSION_DROP_DECAY);
 @@ -677,6 +_,7 @@
              p_312060_,
-             p_311784_
+             p_320283_
          );
 +        if (net.neoforged.neoforge.event.EventHooks.onExplosionStart(this, explosion)) return explosion;
          explosion.explode();
@@ -159,7 +159,7 @@
  
 +            if (false)
              if (p_151522_ instanceof EnderDragon) {
-                 for(EnderDragonPart enderdragonpart : ((EnderDragon)p_151522_).getSubEntities()) {
+                 for (EnderDragonPart enderdragonpart : ((EnderDragon)p_151522_).getSubEntities()) {
                      if (p_151522_ != p_46536_ && p_46538_.test(enderdragonpart)) {
 @@ -797,6 +_,11 @@
                  }
@@ -180,7 +180,7 @@
 +
 +            if (false)
              if (p_261454_ instanceof EnderDragon enderdragon) {
-                 for(EnderDragonPart enderdragonpart : enderdragon.getSubEntities()) {
+                 for (EnderDragonPart enderdragonpart : enderdragon.getSubEntities()) {
                      T t = p_261885_.tryCast(enderdragonpart);
 @@ -837,6 +_,15 @@
  
@@ -198,11 +198,11 @@
      }
  
      @Nullable
-@@ -969,16 +_,15 @@
+@@ -965,16 +_,15 @@
      public abstract Scoreboard getScoreboard();
  
      public void updateNeighbourForOutputSignal(BlockPos p_46718_, Block p_46719_) {
--        for(Direction direction : Direction.Plane.HORIZONTAL) {
+-        for (Direction direction : Direction.Plane.HORIZONTAL) {
 +        for(Direction direction : Direction.values()) {
              BlockPos blockpos = p_46718_.relative(direction);
              if (this.hasChunkAt(blockpos)) {
@@ -219,7 +219,7 @@
                          this.neighborChanged(blockstate, blockpos, p_46719_, p_46718_, false);
                      }
                  }
-@@ -1070,6 +_,24 @@
+@@ -1062,6 +_,18 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;
@@ -235,12 +235,6 @@
 +        if (value > maxEntityRadius)
 +            maxEntityRadius = value;
 +        return maxEntityRadius;
-+    }
-+
-+    @Override
-+    @Nullable
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager.Active getModelDataManager() {
-+        return null;
      }
  
      public final boolean isDebug() {

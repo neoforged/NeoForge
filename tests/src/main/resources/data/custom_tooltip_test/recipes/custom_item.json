@@ -9,6 +9,6 @@
     }
   },
   "result": {
-    "item": "custom_tooltip_test:test_item"
+    "id": "custom_tooltip_test:test_item"
   }
 }

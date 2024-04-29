@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -131,7 +_,7 @@
+@@ -133,7 +_,7 @@
              if (!this.level().isClientSide) {
                  BlockPos blockpos = this.blockPosition();
                  boolean flag = this.blockState.getBlock() instanceof ConcretePowderBlock;
@@ -9,7 +9,7 @@
                  double d0 = this.getDeltaMovement().lengthSqr();
                  if (flag && d0 > 1.0) {
                      BlockHitResult blockhitresult = this.level()
-@@ -140,7 +_,7 @@
+@@ -142,7 +_,7 @@
                                  new Vec3(this.xo, this.yo, this.zo), this.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this
                              )
                          );

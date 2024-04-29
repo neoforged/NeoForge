@@ -6,7 +6,7 @@
       "tag": "minecraft:planks"
     },
     "@": {
-      "tag": "forge:string"
+      "tag": "c:strings"
     }
   },
   "pattern": [
@@ -14,6 +14,7 @@
     "##"
   ],
   "result": {
-    "item": "minecraft:loom"
+    "count": 1,
+    "id": "minecraft:loom"
   }
 }

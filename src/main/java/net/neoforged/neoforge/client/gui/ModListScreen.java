@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,17 +34,17 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.StringUtils;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
-import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -87,8 +88,8 @@ public class ModListScreen extends Screen {
 
         @Override
         public int compare(IModInfo o1, IModInfo o2) {
-            String name1 = StringUtils.toLowerCase(stripControlCodes(I18nExtension.getDisplayName(o1)));
-            String name2 = StringUtils.toLowerCase(stripControlCodes(I18nExtension.getDisplayName(o2)));
+            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getDisplayName()));
+            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getDisplayName()));
             return compare(name1, name2);
         }
 
@@ -247,7 +248,7 @@ public class ModListScreen extends Screen {
     @Override
     public void init() {
         for (IModInfo mod : mods) {
-            listWidth = Math.max(listWidth, getFontRenderer().width(I18nExtension.getDisplayName(mod)) + 10);
+            listWidth = Math.max(listWidth, getFontRenderer().width(mod.getDisplayName()) + 10);
             listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionStringHelper.artifactVersionToString(mod.getVersion())) + 5);
         }
         listWidth = Math.max(Math.min(listWidth, width / 3), 100);
@@ -294,7 +295,7 @@ public class ModListScreen extends Screen {
     private void displayModConfig() {
         if (selected == null) return;
         try {
-            ConfigScreenHandler.getScreenFactoryFor(selected.getInfo()).map(f -> f.apply(this.minecraft, this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
+            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(this.minecraft, this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
         } catch (final Exception e) {
             LOGGER.error("There was a critical issue trying to build the config GUI for {}", selected.getInfo().getModId(), e);
         }
@@ -326,7 +327,7 @@ public class ModListScreen extends Screen {
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(I18nExtension.getDisplayName(mi))).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
+        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
         lastFilterText = search.getValue();
     }
 
@@ -342,14 +343,9 @@ public class ModListScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.modList.render(guiGraphics, mouseX, mouseY, partialTick);
-        if (this.modInfo != null)
-            this.modInfo.render(guiGraphics, mouseX, mouseY, partialTick);
-
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
         Component text = Component.translatable("fml.menu.mods.search");
         int x = modList.getX() + ((modList.getRight() - modList.getX()) / 2) - (getFontRenderer().width(text) / 2);
-        this.search.render(guiGraphics, mouseX, mouseY, partialTick);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.drawString(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFF, false);
     }
 
@@ -373,7 +369,7 @@ public class ModListScreen extends Screen {
             return;
         }
         IModInfo selectedMod = selected.getInfo();
-        this.configButton.active = ConfigScreenHandler.getScreenFactoryFor(selectedMod).isPresent();
+        this.configButton.active = IConfigScreenFactory.getForMod(selectedMod).isPresent();
         List<String> lines = new ArrayList<>();
         VersionChecker.CheckResult vercheck = VersionChecker.getResult(selectedMod);
 
@@ -382,7 +378,7 @@ public class ModListScreen extends Screen {
             TextureManager tm = this.minecraft.getTextureManager();
             final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
                     .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
-            try (PackResources packResources = resourcePack.openPrimary("mod:" + selectedMod.getModId())) {
+            try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod:" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
                 NativeImage logo = null;
                 IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
                 if (logoResource != null)
@@ -403,9 +399,9 @@ public class ModListScreen extends Screen {
             return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
         }).orElse(Pair.of(null, new Size2i(0, 0)));
 
-        lines.add(I18nExtension.getDisplayName(selectedMod));
+        lines.add(selectedMod.getDisplayName());
         lines.add(I18nExtension.parseMessage("fml.menu.mods.info.version", MavenVersionStringHelper.artifactVersionToString(selectedMod.getVersion())));
-        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), ModList.get().getModContainerById(selectedMod.getModId()).map(ModContainer::getCurrentState).map(Object::toString).orElse("NONE")));
+        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
         selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(I18nExtension.parseMessage("fml.menu.mods.info.credits", credits)));
         selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(I18nExtension.parseMessage("fml.menu.mods.info.authors", authors)));
@@ -413,7 +409,7 @@ public class ModListScreen extends Screen {
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
             lines.add(I18nExtension.parseMessage("fml.menu.mods.info.nochildmods"));
         else
-            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(I18nExtension::getDisplayName).collect(Collectors.joining(","))));
+            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
             lines.add(I18nExtension.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));

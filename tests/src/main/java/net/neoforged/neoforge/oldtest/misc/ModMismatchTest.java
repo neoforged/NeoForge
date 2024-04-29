@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.misc;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -14,9 +15,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
-import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
 
 /**
  * This test mod provides a way to register a {@link CustomPacketPayload} with a different protocol version on the client and the server to cause a mod channel mismatch.
@@ -30,7 +31,7 @@ import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
  * </p>
  */
 @Mod(ModMismatchTest.MOD_ID)
-public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatchTest.ModMismatchPayload> {
+public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMismatchPayload> {
     public static final String MOD_ID = "mod_mismatch_test";
 
     private static final boolean ENABLED = false;
@@ -45,40 +46,33 @@ public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatch
 
     public ModMismatchTest(IEventBus modBus) {
         if (ENABLED) {
-            modBus.addListener(RegisterPayloadHandlerEvent.class, this::onRegisterPacketHandler);
+            modBus.addListener(RegisterPayloadHandlersEvent.class, this::onRegisterPacketHandler);
         }
     }
 
-    private void onRegisterPacketHandler(RegisterPayloadHandlerEvent event) {
+    private void onRegisterPacketHandler(RegisterPayloadHandlersEvent event) {
         if ((FMLEnvironment.dist == Dist.DEDICATED_SERVER && REGISTER_FOR_SERVER) || (FMLEnvironment.dist == Dist.CLIENT && REGISTER_FOR_CLIENT)) {
             event
-                    .registrar(MOD_ID)
-                    .versioned(CHANNEL_PROTOCOL_VERSION)
-                    .configuration(
-                            ModMismatchPayload.ID,
-                            ModMismatchPayload::new,
+                    .registrar(CHANNEL_PROTOCOL_VERSION)
+                    .configurationBidirectional(
+                            ModMismatchPayload.TYPE,
+                            ModMismatchPayload.STREAM_CODEC,
                             this);
         }
     }
 
     @Override
-    public void handle(ModMismatchPayload payload, ConfigurationPayloadContext context) {
+    public void handle(ModMismatchPayload payload, IPayloadContext context) {
         //Noop
     }
 
     public record ModMismatchPayload() implements CustomPacketPayload {
-        private static final ResourceLocation ID = new ResourceLocation(MOD_ID, "mod_mismatch");
-
-        public ModMismatchPayload(FriendlyByteBuf buf) {
-            this();
-        }
+        private static final CustomPacketPayload.Type<ModMismatchPayload> TYPE = new Type<>(new ResourceLocation(MOD_ID, "mod_mismatch"));
+        private static final StreamCodec<FriendlyByteBuf, ModMismatchPayload> STREAM_CODEC = StreamCodec.unit(new ModMismatchTest.ModMismatchPayload());
 
         @Override
-        public void write(FriendlyByteBuf p_294947_) {}
-
-        @Override
-        public ResourceLocation id() {
-            return ID;
+        public CustomPacketPayload.Type<ModMismatchPayload> type() {
+            return TYPE;
         }
     }
 }

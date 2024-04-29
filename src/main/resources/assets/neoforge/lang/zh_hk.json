@@ -61,7 +61,7 @@
   "fml.language.missingversion": "模組檔案 {5} 需要語言提供模組 {3}:{4,vr} 才能載入\n§7我們找到 {6,i18n,fml.messages.artifactversion}",
   "fml.modloading.missingclasses": "模組檔案 {3} 有要求的但找不到的模組",
   "fml.modloading.missingmetadata": "mods.toml 缺少模組 id {3} 的後設資料",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} 有類別載入錯誤\n§7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) 有類別載入錯誤\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name}（{0,modinfo,id}）無法正確載入\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name}（{0,modinfo,id}）缺少執行所需的功能\n§7它需要 {3,featurebound}，但 {4} 可用",
   "fml.modloading.uncaughterror": "發生未捕獲的平行處理錯誤。\n§7{2,exc,msg}",

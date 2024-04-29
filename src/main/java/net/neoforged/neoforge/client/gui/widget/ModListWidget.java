@@ -15,7 +15,6 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.neoforge.client.gui.ModListScreen;
-import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -34,7 +33,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         super(parent.getMinecraftInstance(), listWidth, bottom - top, top, parent.getFontRenderer().lineHeight * 2 + 8);
         this.parent = parent;
         this.listWidth = listWidth;
-        this.setRenderBackground(false);
+        //this.setRenderBackground(false); // Porting 1.20.5 still needed?
         this.refreshList();
     }
 
@@ -53,12 +52,6 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         parent.buildModList(this::addEntry, mod -> new ModEntry(mod, this.parent));
     }
 
-    @Override
-    public void renderWidget(GuiGraphics p_282708_, int p_283242_, int p_282891_, float p_283683_) {
-        this.parent.renderBackground(p_282708_, p_283242_, p_282891_, p_283683_);
-        super.renderWidget(p_282708_, p_283242_, p_282891_, p_283683_);
-    }
-
     public class ModEntry extends ObjectSelectionList.Entry<ModEntry> {
         private final IModInfo modInfo;
         private final ModListScreen parent;
@@ -70,12 +63,12 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public Component getNarration() {
-            return Component.translatable("narrator.select", I18nExtension.getDisplayName(modInfo));
+            return Component.translatable("narrator.select", modInfo.getDisplayName());
         }
 
         @Override
         public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            Component name = Component.literal(stripControlCodes(I18nExtension.getDisplayName(modInfo)));
+            Component name = Component.literal(stripControlCodes(modInfo.getDisplayName()));
             Component version = Component.literal(stripControlCodes(MavenVersionStringHelper.artifactVersionToString(modInfo.getVersion())));
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(modInfo);
             Font font = this.parent.getFontRenderer();

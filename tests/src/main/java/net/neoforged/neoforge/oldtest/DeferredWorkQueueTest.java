@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest;
 
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import org.slf4j.Logger;
  * forwards any exceptions thrown by those tasks
  */
 @Mod(DeferredWorkQueueTest.MOD_ID)
-@Mod.EventBusSubscriber(modid = DeferredWorkQueueTest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = DeferredWorkQueueTest.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class DeferredWorkQueueTest {
     public static final String MOD_ID = "deferred_work_queue_test";
     private static final boolean ENABLE = false;

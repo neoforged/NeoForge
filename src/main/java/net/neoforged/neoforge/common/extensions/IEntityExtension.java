@@ -9,14 +9,13 @@ import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +24,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.attachment.AttachmentInternals;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -39,11 +39,13 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         return (Entity) this;
     }
 
-    default void deserializeNBT(CompoundTag nbt) {
+    @Override
+    default void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         self().load(nbt);
     }
 
-    default CompoundTag serializeNBT() {
+    @Override
+    default CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag ret = new CompoundTag();
         String id = self().getEncodeId();
         if (id != null) {
@@ -51,10 +53,6 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         }
         return self().saveWithoutId(ret);
     }
-
-    boolean canUpdate();
-
-    void canUpdate(boolean value);
 
     @Nullable
     Collection<ItemEntity> captureDrops();
@@ -190,23 +188,6 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     @Nullable
     default PartEntity<?>[] getParts() {
         return null;
-    }
-
-    /**
-     * @return Return the height in blocks the Entity can step up without needing to jump
-     *         This is the sum of vanilla's {@link Entity#maxUpStep()} method and the current value
-     *         of the {@link NeoForgeMod#STEP_HEIGHT} attribute
-     *         (if this Entity is a {@link LivingEntity} and has the attribute), clamped at 0.
-     */
-    default float getStepHeight() {
-        float vanillaStep = self().maxUpStep();
-        if (self() instanceof LivingEntity living) {
-            AttributeInstance stepHeightAttribute = living.getAttribute(NeoForgeMod.STEP_HEIGHT.value());
-            if (stepHeightAttribute != null) {
-                return (float) Math.max(0, vanillaStep + stepHeightAttribute.getValue());
-            }
-        }
-        return vanillaStep;
     }
 
     /**
@@ -410,5 +391,16 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         if (this instanceof IEntityWithComplexSpawn) {
             bundleBuilder.accept(new AdvancedAddEntityPayload(self()));
         }
+    }
+
+    /**
+     * Copies the serialized attachments from another entity to this entity.
+     *
+     * @param other   the entity that attachments should be copied from
+     * @param isDeath if {@code true}, only attachments with {@link AttachmentType.Builder#copyOnDeath()} set are copied;
+     *                if {@code false}, all serializable attachments are copied.
+     */
+    default void copyAttachmentsFrom(Entity other, boolean isDeath) {
+        AttachmentInternals.copyEntityAttachments(self(), other, isDeath);
     }
 }

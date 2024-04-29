@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public class LoadingErrorScreen extends ErrorScreen {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -36,12 +37,13 @@ public class LoadingErrorScreen extends ErrorScreen {
     private final Path logFile;
     private final List<ModLoadingException> modLoadErrors;
     private final List<ModLoadingWarning> modLoadWarnings;
+    @Nullable
     private final Path dumpedLocation;
     private LoadingEntryList entryList;
     private Component errorHeader;
     private Component warningHeader;
 
-    public LoadingErrorScreen(LoadingFailedException loadingException, List<ModLoadingWarning> warnings, final File dumpedLocation) {
+    public LoadingErrorScreen(@Nullable LoadingFailedException loadingException, List<ModLoadingWarning> warnings, @Nullable File dumpedLocation) {
         super(Component.literal("Loading Error"), null);
         this.modLoadWarnings = warnings;
         this.modLoadErrors = loadingException == null ? Collections.emptyList() : loadingException.getErrors();
@@ -60,14 +62,15 @@ public class LoadingErrorScreen extends ErrorScreen {
 
         int yOffset = 46;
         this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), b -> Util.getPlatform().openFile(modsDir.toFile())));
-        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.file", logFile.getFileName())), b -> Util.getPlatform().openFile(logFile.toFile())));
+        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
         if (this.modLoadErrors.isEmpty()) {
-            this.addRenderableWidget(new ExtendedButton(this.width / 4, this.height - 24, this.width / 2, 20, Component.literal(I18nExtension.parseMessage("fml.button.continue.launch")), b -> {
+            this.addRenderableWidget(new ExtendedButton(this.width / 4, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.continue.launch")), b -> {
                 this.minecraft.setScreen(null);
             }));
         } else {
-            this.addRenderableWidget(new ExtendedButton(this.width / 4, this.height - 24, this.width / 2, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.file", dumpedLocation.getFileName())), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
+            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.crashreport")), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
         }
+        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - 24, this.width / 2 - 55, 20, Component.translatable("menu.quit"), b -> this.minecraft.stop()));
 
         this.entryList = new LoadingEntryList(this, this.modLoadErrors, this.modLoadWarnings);
         this.addWidget(this.entryList);
@@ -91,7 +94,7 @@ public class LoadingErrorScreen extends ErrorScreen {
 
     public static class LoadingEntryList extends ObjectSelectionList<LoadingEntryList.LoadingMessageEntry> {
         LoadingEntryList(final LoadingErrorScreen parent, final List<ModLoadingException> errors, final List<ModLoadingWarning> warnings) {
-            super(Objects.requireNonNull(parent.minecraft), parent.width, parent.height - 50, 35,
+            super(Objects.requireNonNull(parent.minecraft), parent.width, parent.height - 85, 35,
                     Math.max(
                             errors.stream().mapToInt(error -> parent.font.split(Component.literal(error.getMessage() != null ? error.getMessage() : ""), parent.width - 20).size()).max().orElse(0),
                             warnings.stream().mapToInt(warning -> parent.font.split(Component.literal(warning.formatToString() != null ? warning.formatToString() : ""), parent.width - 20).size()).max().orElse(0)) * parent.minecraft.font.lineHeight + 8);

@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
@@ -43,8 +44,8 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
     private final Set<ResourceLocation> excludes = new HashSet<>();
 
-    public NeoForgeRecipeProvider(PackOutput packOutput) {
-        super(packOutput);
+    public NeoForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> provider) {
+        super(packOutput, provider);
     }
 
     private void exclude(ItemLike item) {
@@ -72,10 +73,10 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.DIAMOND, Tags.Items.GEMS_DIAMOND);
         replace(Items.EMERALD, Tags.Items.GEMS_EMERALD);
         replace(Items.CHEST, Tags.Items.CHESTS_WOODEN);
-        replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONE_NORMAL);
-        replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONE_DEEPSLATE);
+        replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONES_NORMAL);
+        replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
 
-        replace(Items.STRING, Tags.Items.STRING);
+        replace(Items.STRING, Tags.Items.STRINGS);
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
 
         exclude(Blocks.GOLD_BLOCK);
@@ -134,7 +135,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     @Override
-    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, AdvancementHolder p_301116_) {
+    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_) {
         // NOOP - We don't replace any of the advancement things yet...
         return CompletableFuture.allOf();
     }

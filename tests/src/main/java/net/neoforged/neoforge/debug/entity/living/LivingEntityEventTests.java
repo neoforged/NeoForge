@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
@@ -130,7 +131,7 @@ public class LivingEntityEventTests {
         test.eventListeners().forge().addListener((final LivingGetProjectileEvent event) -> {
             if (event.getEntity().getData(shootsFireRes)) {
                 event.setProjectileItemStack(new ItemStack(Items.TIPPED_ARROW));
-                PotionUtils.setPotion(event.getProjectileItemStack(), Potions.FIRE_RESISTANCE);
+                event.getProjectileItemStack().set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.FIRE_RESISTANCE));
             }
         });
 

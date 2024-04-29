@@ -4,13 +4,14 @@
   "group": "mossy_cobblestone",
   "ingredients": [
     {
-      "tag": "forge:cobblestone/normal"
+      "tag": "c:cobblestones/normal"
     },
     {
       "item": "minecraft:moss_block"
     }
   ],
   "result": {
-    "item": "minecraft:mossy_cobblestone"
+    "count": 1,
+    "id": "minecraft:mossy_cobblestone"
   }
 }

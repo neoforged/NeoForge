@@ -5,40 +5,28 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if all child ingredients match */
-public class IntersectionIngredient extends ChildBasedIngredient {
-    public static final Codec<IntersectionIngredient> CODEC = RecordCodecBuilder.create(
-            builder -> builder
-                    .group(
-                            Ingredient.LIST_CODEC.fieldOf("children").forGetter(ChildBasedIngredient::getChildren))
-                    .apply(builder, IntersectionIngredient::new));
-
-    public static final Codec<IntersectionIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
-            builder -> builder
-                    .group(
-                            Ingredient.LIST_CODEC_NONEMPTY.fieldOf("children").forGetter(ChildBasedIngredient::getChildren))
-                    .apply(builder, IntersectionIngredient::new));
-
-    protected IntersectionIngredient(List<Ingredient> children) {
-        super(children.stream().flatMap(ingredient -> Arrays.stream(ingredient.getValues()).map(value -> {
-            final List<Ingredient> matchers = new ArrayList<>(children);
-            matchers.remove(ingredient);
-
-            return new IntersectionValue(value, matchers);
-        })), NeoForgeMod.INTERSECTION_INGREDIENT_TYPE, children);
+public record IntersectionIngredient(List<Ingredient> children) implements ICustomIngredient {
+    public IntersectionIngredient {
+        if (children.isEmpty()) {
+            throw new IllegalArgumentException("Cannot create an IntersectionIngredient with no children, use Ingredient.of() to create an empty ingredient");
+        }
     }
+
+    public static final MapCodec<IntersectionIngredient> CODEC = RecordCodecBuilder.mapCodec(
+            builder -> builder
+                    .group(
+                            Ingredient.LIST_CODEC_NONEMPTY.fieldOf("children").forGetter(IntersectionIngredient::children))
+                    .apply(builder, IntersectionIngredient::new));
 
     /**
      * Gets an intersection ingredient
@@ -52,27 +40,38 @@ public class IntersectionIngredient extends ChildBasedIngredient {
         if (ingredients.length == 1)
             return ingredients[0];
 
-        return new IntersectionIngredient(Arrays.asList(ingredients));
+        return new IntersectionIngredient(Arrays.asList(ingredients)).toVanilla();
     }
 
     @Override
-    protected Stream<ItemStack> generateMatchingStacks() {
+    public boolean test(ItemStack stack) {
+        for (var child : children) {
+            if (!child.test(stack)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Stream<ItemStack> getItems() {
         return children.stream()
                 .flatMap(child -> Arrays.stream(child.getItems()))
-                .filter(this::testComplex);
+                .filter(this::test);
     }
 
     @Override
-    protected boolean testComplex(@Nullable ItemStack stack) {
-        return children.stream().allMatch(c -> c.test(stack));
+    public boolean isSimple() {
+        for (var child : children) {
+            if (!child.isSimple()) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public record IntersectionValue(Value inner, List<Ingredient> other) implements Ingredient.Value {
-        @Override
-        public Collection<ItemStack> getItems() {
-            return inner().getItems().stream()
-                    .filter(stack -> other().stream().allMatch(ingredient -> ingredient.test(stack)))
-                    .toList();
-        }
+    @Override
+    public IngredientType<?> getType() {
+        return NeoForgeMod.INTERSECTION_INGREDIENT_TYPE.get();
     }
 }

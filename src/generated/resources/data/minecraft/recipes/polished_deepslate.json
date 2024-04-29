@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "S": {
-      "tag": "forge:cobblestone/deepslate"
+      "tag": "c:cobblestones/deepslate"
     }
   },
   "pattern": [
@@ -12,6 +12,6 @@
   ],
   "result": {
     "count": 4,
-    "item": "minecraft:polished_deepslate"
+    "id": "minecraft:polished_deepslate"
   }
 }

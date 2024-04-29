@@ -36,7 +36,7 @@ public class ItemUseAnimationTest {
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredItem<Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEat().build())));
+    private static final DeferredItem<Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEdible().build())));
 
     public ItemUseAnimationTest(IEventBus modBus) {
         ITEMS.register(modBus);

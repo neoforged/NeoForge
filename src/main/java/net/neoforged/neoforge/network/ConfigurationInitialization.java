@@ -5,36 +5,44 @@
 
 package net.neoforged.neoforge.network;
 
+import java.util.function.Consumer;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
+import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.server.network.config.SynchronizeRegistriesTask;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
-import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
-import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import org.jetbrains.annotations.ApiStatus;
 
-@Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
+@EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
 public class ConfigurationInitialization {
-    @SubscribeEvent
-    private static void configureModdedClient(OnGameConfigurationEvent event) {
-        if (event.getListener().isConnected(FrozenRegistrySyncStartPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistryPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistrySyncCompletedPayload.ID)) {
-            event.register(new SyncRegistries());
+    /**
+     * Method called to add configuration tasks that should run before all others,
+     * and most importantly before vanilla's own {@link SynchronizeRegistriesTask}.
+     */
+    public static void configureEarlyTasks(ServerConfigurationPacketListener listener, Consumer<ConfigurationTask> tasks) {
+        if (listener.hasChannel(FrozenRegistrySyncStartPayload.TYPE) &&
+                listener.hasChannel(FrozenRegistryPayload.TYPE) &&
+                listener.hasChannel(FrozenRegistrySyncCompletedPayload.TYPE)) {
+            tasks.accept(new SyncRegistries());
         }
+    }
 
-        if (event.getListener().isConnected(ConfigFilePayload.ID)) {
+    @SubscribeEvent
+    private static void configureModdedClient(RegisterConfigurationTasksEvent event) {
+        if (event.getListener().hasChannel(ConfigFilePayload.TYPE)) {
             event.register(new SyncConfig(event.getListener()));
         }
 
         //These two can always be registered they detect the listener connection type internally and will skip themselves.
-        event.register(new SyncTierSortingRegistry(event.getListener()));
         event.register(new RegistryDataMapNegotiation(event.getListener()));
     }
 }

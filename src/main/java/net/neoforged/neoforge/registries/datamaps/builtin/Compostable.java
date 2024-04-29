@@ -7,7 +7,6 @@ package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.ExtraCodecs;
 
 /**
  * Data map value for {@linkplain NeoForgeDataMaps#COMPOSTABLES compostables}.
@@ -17,7 +16,7 @@ import net.minecraft.util.ExtraCodecs;
 public record Compostable(float chance) {
     public static final Codec<Compostable> CHANCE_CODEC = Codec.floatRange(0f, 1f)
             .xmap(Compostable::new, Compostable::chance);
-    public static final Codec<Compostable> CODEC = ExtraCodecs.withAlternative(
+    public static final Codec<Compostable> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(in -> in.group(
                     Codec.floatRange(0f, 1f).fieldOf("chance").forGetter(Compostable::chance)).apply(in, Compostable::new)),
             CHANCE_CODEC);

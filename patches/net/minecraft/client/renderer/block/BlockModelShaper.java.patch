@@ -11,7 +11,7 @@
 +    }
 +
 +    public TextureAtlasSprite getTexture(BlockState p_110883_, net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
-+        var data = level.getModelDataManager().getAtOrEmpty(pos);
++        var data = level.getModelData(pos);
 +        BakedModel model = this.getBlockModel(p_110883_);
 +        return model.getParticleIcon(model.getModelData(level, pos, p_110883_, data));
      }

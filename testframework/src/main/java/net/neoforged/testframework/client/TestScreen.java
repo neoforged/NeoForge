@@ -65,7 +65,7 @@ public class TestScreen extends AbstractTestScreen {
         };
 
         groupableList.resetRows("");
-        this.addWidget(groupableList);
+        this.addRenderableWidget(groupableList);
 
         this.searchTextField = new EditBox(this.font, this.width / 2 - 110, 22, 220, 20, Component.literal("Search"));
         this.searchTextField.setResponder(s -> {
@@ -103,7 +103,6 @@ public class TestScreen extends AbstractTestScreen {
             filterMode.active = true;
         }
 
-        groupableList.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         searchTextField.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
 

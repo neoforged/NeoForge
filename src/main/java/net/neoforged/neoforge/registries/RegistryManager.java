@@ -19,13 +19,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -36,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+@ApiStatus.Internal
 public class RegistryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Marker REGISTRIES = MarkerFactory.getMarker("REGISTRIES");
@@ -78,13 +80,13 @@ public class RegistryManager {
         DataPackRegistryEvent.NewRegistry dataPackEvent = new DataPackRegistryEvent.NewRegistry();
         vanillaRegistryKeys = Set.copyOf(BuiltInRegistries.REGISTRY.keySet());
 
-        ModLoader.get().postEventWrapContainerInModOrder(event);
-        ModLoader.get().postEventWrapContainerInModOrder(dataPackEvent);
+        ModLoader.postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(dataPackEvent);
 
         event.fill();
         dataPackEvent.process();
 
-        ModLoader.get().postEvent(new ModifyRegistriesEvent());
+        ModLoader.postEvent(new ModifyRegistriesEvent());
 
         pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
         if (!pendingModdedRegistries.isEmpty()) {
@@ -94,10 +96,9 @@ public class RegistryManager {
         pendingModdedRegistries = null;
     }
 
-    @ApiStatus.Internal
     public static void initDataMaps() {
         final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> dataMapTypes = new HashMap<>();
-        ModLoader.get().postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
+        ModLoader.postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
         dataMaps = new IdentityHashMap<>();
         dataMapTypes.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));
         dataMaps = Collections.unmodifiableMap(dataMapTypes);
@@ -201,7 +202,7 @@ public class RegistryManager {
             for (var entry : backup.entrySet()) {
                 ResourceKey<T> key = entry.getKey();
                 T value = entry.getValue();
-                registry.registerMapping(backup.getId(key), key, value, backup.lifecycle(value));
+                registry.register(backup.getId(key), key, value, backup.registrationInfo(key).orElse(RegistrationInfo.BUILT_IN));
             }
         }
 
@@ -268,11 +269,18 @@ public class RegistryManager {
         FULL
     }
 
-    public static final AttributeKey<Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");
+    public static final AttributeKey<Map<ResourceKey<? extends Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");
 
     @ApiStatus.Internal
-    public static void handleKnownDataMapsReply(final KnownRegistryDataMapsReplyPayload payload, final ConfigurationPayloadContext context) {
+    public static void handleKnownDataMapsReply(final KnownRegistryDataMapsReplyPayload payload, final IPayloadContext context) {
         context.channelHandlerContext().attr(ATTRIBUTE_KNOWN_DATA_MAPS).set(payload.dataMaps());
-        context.taskCompletedHandler().onTaskCompleted(RegistryDataMapNegotiation.TYPE);
+        context.finishCurrentTask(RegistryDataMapNegotiation.TYPE);
+    }
+
+    public static boolean isNonSyncedBuiltInRegistry(Registry<?> registry) {
+        if (!BuiltInRegistries.REGISTRY.containsKey((ResourceKey) registry.key())) {
+            return false; // Dynamic registry
+        }
+        return !registry.doesSync();
     }
 }

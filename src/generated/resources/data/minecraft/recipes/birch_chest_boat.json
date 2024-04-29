@@ -4,13 +4,14 @@
   "group": "chest_boat",
   "ingredients": [
     {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     {
       "item": "minecraft:birch_boat"
     }
   ],
   "result": {
-    "item": "minecraft:birch_chest_boat"
+    "count": 1,
+    "id": "minecraft:birch_chest_boat"
   }
 }

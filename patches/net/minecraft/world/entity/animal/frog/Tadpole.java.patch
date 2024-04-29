@@ -1,13 +1,13 @@
 --- a/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
-@@ -226,8 +_,10 @@
+@@ -225,8 +_,10 @@
+ 
      private void ageUp() {
-         Level $$1 = this.level();
-         if ($$1 instanceof ServerLevel serverlevel) {
+         if (this.level() instanceof ServerLevel serverlevel) {
 +            if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.FROG, (timer) -> {})) return;
              Frog frog = EntityType.FROG.create(this.level());
              if (frog != null) {
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, frog);
                  frog.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
-                 frog.finalizeSpawn(serverlevel, this.level().getCurrentDifficultyAt(frog.blockPosition()), MobSpawnType.CONVERSION, null, null);
+                 frog.finalizeSpawn(serverlevel, this.level().getCurrentDifficultyAt(frog.blockPosition()), MobSpawnType.CONVERSION, null);
                  frog.setNoAi(this.isNoAi());

@@ -22,7 +22,7 @@ public interface IClientMobEffectExtensions {
     IClientMobEffectExtensions DEFAULT = new IClientMobEffectExtensions() {};
 
     static IClientMobEffectExtensions of(MobEffectInstance instance) {
-        return of(instance.getEffect());
+        return of(instance.getEffect().value());
     }
 
     static IClientMobEffectExtensions of(MobEffect effect) {

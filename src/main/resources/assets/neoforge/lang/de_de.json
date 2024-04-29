@@ -61,7 +61,7 @@
   "fml.language.missingversion": "Mod-Datei {5} benötigt Sprachanbieter {3}:{4,vr} zum Laden\n§7Wir haben {6,i18n,fml.messages.artifactversion} gefunden",
   "fml.modloading.missingclasses": "Die Mod-Datei {3} hat Mods, die nicht gefunden wurden",
   "fml.modloading.missingmetadata": "mods.toml fehlen Metadaten für modid {3}",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} hat Fehler beim Laden der Klasse\n§7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) hat Fehler beim Laden der Klasse\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name} ({0,modinfo,id}) konnte nicht korrekt geladen werden\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name}({0,modinfo,id}) fehlt ein Feature das es zum Funktionieren benötigt \n§7Es benötigt {3,featurebound} aber {4} ist verfügbar",
   "fml.modloading.uncaughterror": "Ein nicht abgefangener paralleler Verarbeitungsfehler ist aufgetreten.\n§7{2,exc,msg}",

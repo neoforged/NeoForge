@@ -11,7 +11,7 @@
      INTENTIONAL_GAME_DESIGN("intentional_game_design");
  
 -    public static final Codec<DeathMessageType> CODEC = StringRepresentable.fromEnum(DeathMessageType::values);
-+    public static final Codec<DeathMessageType> CODEC = net.minecraft.util.ExtraCodecs.lazyInitializedCodec(() -> StringRepresentable.fromEnum(DeathMessageType::values));
++    public static final Codec<DeathMessageType> CODEC = Codec.lazyInitialized(() -> StringRepresentable.fromEnum(DeathMessageType::values));
      private final String id;
  
      private DeathMessageType(String p_270201_) {

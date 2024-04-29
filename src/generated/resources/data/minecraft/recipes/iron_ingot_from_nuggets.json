@@ -4,7 +4,7 @@
   "group": "iron_ingot",
   "key": {
     "#": {
-      "tag": "forge:nuggets/iron"
+      "tag": "c:nuggets/iron"
     }
   },
   "pattern": [
@@ -13,6 +13,7 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:iron_ingot"
+    "count": 1,
+    "id": "minecraft:iron_ingot"
   }
 }

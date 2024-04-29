@@ -38,7 +38,7 @@
   },
   "pack": {
     "description": "NeoForge tests resource pack",
-    "pack_format": 22,
+    "pack_format": 32,
     "supported_formats": [
       0,
       2147483647

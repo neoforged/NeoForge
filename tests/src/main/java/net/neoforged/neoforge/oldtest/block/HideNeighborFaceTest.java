@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -77,7 +78,7 @@ public class HideNeighborFaceTest {
         }
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onClientSetup(final FMLClientSetupEvent event) {

@@ -1,11 +1,11 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
-@@ -139,6 +_,11 @@
-                 }
+@@ -140,6 +_,11 @@
+                 j = l;
              }
  
 +            if (j == 0) {
-+                // Forge has some special formatting handlers defined in ForgeI18n, use those if no %s replacements present.
++                // Neo has some special formatting handlers defined in I18nExtension, use those if no %s replacements present.
 +                j = net.neoforged.neoforge.internal.TextComponentMessageFormatHandler.handle(this, p_237517_, this.args, p_237516_);
 +            }
 +

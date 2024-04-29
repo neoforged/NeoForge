@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "X": {
       "item": "minecraft:redstone"
@@ -15,6 +15,7 @@
     " # "
   ],
   "result": {
-    "item": "minecraft:compass"
+    "count": 1,
+    "id": "minecraft:compass"
   }
 }

@@ -26,7 +26,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla cloud rendering
      */
-    default boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix) {
+    default boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
         return false;
     }
 
@@ -35,7 +35,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla sky rendering
      */
-    default boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+    default boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
         return false;
     }
 

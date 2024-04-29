@@ -1,19 +1,11 @@
 --- a/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
 +++ b/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
-@@ -36,6 +_,7 @@
-         if (compoundtag != null) {
-             itemstack.setTag(compoundtag.copy());
-         }
-+        net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(p_267036_.getItem(1), itemstack);
- 
-         return itemstack;
-     }
-@@ -67,7 +_,7 @@
+@@ -63,7 +_,7 @@
  
      @Override
      public boolean isIncomplete() {
 -        return Stream.of(this.template, this.base, this.addition).anyMatch(Ingredient::isEmpty);
-+        return Stream.of(this.template, this.base, this.addition).anyMatch(net.neoforged.neoforge.common.CommonHooks::hasNoElements);
++        return Stream.of(this.template, this.base, this.addition).anyMatch(Ingredient::hasNoItems);
      }
  
      public static class Serializer implements RecipeSerializer<SmithingTransformRecipe> {

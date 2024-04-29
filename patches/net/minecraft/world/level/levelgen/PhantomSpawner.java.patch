@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
 @@ -42,13 +_,15 @@
-                     for(ServerPlayer serverplayer : p_64576_.players()) {
+                     for (ServerPlayer serverplayer : p_64576_.players()) {
                          if (!serverplayer.isSpectator()) {
                              BlockPos blockpos = serverplayer.blockPosition();
 -                            if (!p_64576_.dimensionType().hasSkyLight() || blockpos.getY() >= p_64576_.getSeaLevel() && p_64576_.canSeeSky(blockpos)) {
@@ -26,5 +26,5 @@
 -                                            int l = 1 + randomsource.nextInt(difficultyinstance.getDifficulty().getId() + 1);
 +                                            int l = event.getPhantomsToSpawn();
  
-                                             for(int i1 = 0; i1 < l; ++i1) {
+                                             for (int i1 = 0; i1 < l; i1++) {
                                                  Phantom phantom = EntityType.PHANTOM.create(p_64576_);

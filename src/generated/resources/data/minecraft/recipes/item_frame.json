@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
       "item": "minecraft:leather"
@@ -15,6 +15,7 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:item_frame"
+    "count": 1,
+    "id": "minecraft:item_frame"
   }
 }

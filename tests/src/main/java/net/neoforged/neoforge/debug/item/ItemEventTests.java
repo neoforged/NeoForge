@@ -26,7 +26,7 @@ public class ItemEventTests {
     static void itemAttributeModifier(final DynamicTest test) {
         test.eventListeners().forge().addListener((final ItemAttributeModifierEvent event) -> {
             if (event.getSlotType() == EquipmentSlot.MAINHAND && event.getItemStack().getItem() == Items.APPLE) {
-                event.addModifier(Attributes.ARMOR, new AttributeModifier(test.createModId(), 10f, AttributeModifier.Operation.ADDITION));
+                event.addModifier(Attributes.ARMOR, new AttributeModifier(test.createModId(), 10f, AttributeModifier.Operation.ADD_VALUE));
             } else if (event.getSlotType() == EquipmentSlot.CHEST && event.getItemStack().is(Items.GOLDEN_CHESTPLATE)) {
                 event.clearModifiers();
             }

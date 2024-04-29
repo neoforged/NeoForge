@@ -30,11 +30,11 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
@@ -70,14 +70,13 @@ public class NeoForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        WorldWorkerManager.tick(event.phase == TickEvent.Phase.START);
+    public void preServerTick(ServerTickEvent.Pre event) {
+        WorldWorkerManager.tick(true);
     }
 
     @SubscribeEvent
-    public void checkSettings(TickEvent.ClientTickEvent event) {
-        //if (event.phase == Phase.END)
-        //    CloudRenderer.updateCloudSettings();
+    public void postServerTick(ServerTickEvent.Post event) {
+        WorldWorkerManager.tick(false);
     }
 
     @SubscribeEvent
@@ -114,7 +113,7 @@ public class NeoForgeEventHandler {
                     .registry(registry);
             if (regOpt.isEmpty()) return;
             event.getRelevantPlayers().forEach(player -> {
-                if (!player.connection.isConnected(RegistryDataMapSyncPayload.ID)) {
+                if (!player.connection.hasChannel(RegistryDataMapSyncPayload.TYPE)) {
                     return;
                 }
                 if (player.connection.getConnection().isMemoryConnection()) {
@@ -137,7 +136,7 @@ public class NeoForgeEventHandler {
             att.put(key, registry.getDataMap(attach));
         });
         if (!att.isEmpty()) {
-            PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
+            PacketDistributor.sendToPlayer(player, new RegistryDataMapSyncPayload<>(registry.key(), att));
         }
     }
 
@@ -165,7 +164,6 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(TierSortingRegistry.getReloadListener());
         event.addListener(CreativeModeTabRegistry.getReloadListener());
     }
 

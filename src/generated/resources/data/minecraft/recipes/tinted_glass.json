@@ -6,7 +6,7 @@
       "item": "minecraft:glass"
     },
     "S": {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     }
   },
   "pattern": [
@@ -16,6 +16,6 @@
   ],
   "result": {
     "count": 2,
-    "item": "minecraft:tinted_glass"
+    "id": "minecraft:tinted_glass"
   }
 }

@@ -15,6 +15,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired when a chat message is received on the client.
@@ -30,11 +31,12 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class ClientChatReceivedEvent extends Event implements ICancellableEvent {
     private Component message;
+    @Nullable
     private final ChatType.Bound boundChatType;
     private final UUID sender;
 
     @ApiStatus.Internal
-    public ClientChatReceivedEvent(ChatType.Bound boundChatType, Component message, UUID sender) {
+    public ClientChatReceivedEvent(@Nullable ChatType.Bound boundChatType, Component message, UUID sender) {
         this.boundChatType = boundChatType;
         this.message = message;
         this.sender = sender;
@@ -59,7 +61,10 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent 
     /**
      * {@return the bound chat type of the chat message}.
      * This contains the chat type, display name of the sender, and nullable target name depending on the chat type.
+     * <p>
+     * This may be {@code null} when the message doesn't have a specific source (i.e. for system messages).
      */
+    @Nullable
     public ChatType.Bound getBoundChatType() {
         return this.boundChatType;
     }
@@ -121,8 +126,8 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent 
         private final boolean overlay;
 
         @ApiStatus.Internal
-        public System(ChatType.Bound boundChatType, Component message, boolean overlay) {
-            super(boundChatType, message, Util.NIL_UUID);
+        public System(Component message, boolean overlay) {
+            super(null, message, Util.NIL_UUID);
             this.overlay = overlay;
         }
 

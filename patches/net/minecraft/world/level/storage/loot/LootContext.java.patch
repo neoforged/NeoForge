@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -86,15 +_,43 @@
+@@ -87,15 +_,43 @@
          return new LootContext.VisitedEntry<>(LootDataType.MODIFIER, p_279163_);
      }
  
@@ -11,7 +11,7 @@
 +
 +    private ResourceLocation queriedLootTableId;
 +
-+    private LootContext(LootParams p_287722_, RandomSource p_287702_, LootDataResolver p_287619_, ResourceLocation queriedLootTableId) {
++    private LootContext(LootParams p_287722_, RandomSource p_287702_, HolderGetter.Provider p_287619_, ResourceLocation queriedLootTableId) {
 +        this(p_287722_, p_287702_, p_287619_);
 +        this.queriedLootTableId = queriedLootTableId;
 +    }
@@ -44,7 +44,7 @@
          public LootContext.Builder withOptionalRandomSeed(long p_78966_) {
              if (p_78966_ != 0L) {
                  this.random = RandomSource.create(p_78966_);
-@@ -103,6 +_,11 @@
+@@ -104,6 +_,11 @@
              return this;
          }
  
@@ -56,16 +56,16 @@
          public ServerLevel getLevel() {
              return this.params.getLevel();
          }
-@@ -113,7 +_,7 @@
+@@ -114,7 +_,7 @@
              RandomSource randomsource = Optional.ofNullable(this.random)
                  .or(() -> p_298622_.map(serverlevel::getRandomSequence))
                  .orElseGet(serverlevel::getRandom);
--            return new LootContext(this.params, randomsource, minecraftserver.getLootData());
-+            return new LootContext(this.params, randomsource, minecraftserver.getLootData(), queriedLootTableId);
+-            return new LootContext(this.params, randomsource, minecraftserver.reloadableRegistries().lookup());
++            return new LootContext(this.params, randomsource, minecraftserver.reloadableRegistries().lookup(), queriedLootTableId);
          }
      }
  
-@@ -134,6 +_,11 @@
+@@ -135,6 +_,11 @@
  
          public LootContextParam<? extends Entity> getParam() {
              return this.param;

@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.network.registration;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -25,5 +26,5 @@ import org.jetbrains.annotations.ApiStatus;
 public record ModdedPlayPayloadRegistration<T extends CustomPacketPayload>(
         ResourceLocation id,
         Class<T> type,
-        IPlayPayloadHandler<T> handler,
-        FriendlyByteBuf.Reader<T> reader) {}
+        IPayloadHandler<T> handler,
+        StreamCodec<RegistryFriendlyByteBuf, T> reader) {}

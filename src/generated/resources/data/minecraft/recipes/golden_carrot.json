@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     },
     "X": {
       "item": "minecraft:carrot"
@@ -15,6 +15,7 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:golden_carrot"
+    "count": 1,
+    "id": "minecraft:golden_carrot"
   }
 }

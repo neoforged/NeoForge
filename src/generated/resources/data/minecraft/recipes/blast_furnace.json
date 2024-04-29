@@ -6,7 +6,7 @@
       "item": "minecraft:smooth_stone"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "X": {
       "item": "minecraft:furnace"
@@ -18,6 +18,7 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:blast_furnace"
+    "count": 1,
+    "id": "minecraft:blast_furnace"
   }
 }

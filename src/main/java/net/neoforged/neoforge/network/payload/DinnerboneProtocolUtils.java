@@ -9,18 +9,25 @@ import com.mojang.logging.LogUtils;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
 /**
  * Protocol utilities for communicating over Dinnerbone's protocol.
  */
-public class DinnerboneProtocolUtils {
+@ApiStatus.Internal
+public final class DinnerboneProtocolUtils {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     private DinnerboneProtocolUtils() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
+
+    public static final StreamCodec<FriendlyByteBuf, Set<ResourceLocation>> CHANNELS_CODEC = StreamCodec.of(
+            DinnerboneProtocolUtils::writeChannels,
+            DinnerboneProtocolUtils::readChannels);
 
     /**
      * Reads a set of channels from the buffer.
@@ -30,7 +37,7 @@ public class DinnerboneProtocolUtils {
      * @param buf the buffer
      * @return the channels
      */
-    static Set<ResourceLocation> readChannels(FriendlyByteBuf buf) {
+    private static Set<ResourceLocation> readChannels(FriendlyByteBuf buf) {
         final StringBuilder builder = new StringBuilder();
         final Set<ResourceLocation> channels = new HashSet<>();
 
@@ -70,7 +77,7 @@ public class DinnerboneProtocolUtils {
      * @param buf      the buffer
      * @param channels the channels
      */
-    static void writeChannels(FriendlyByteBuf buf, Set<ResourceLocation> channels) {
+    private static void writeChannels(FriendlyByteBuf buf, Set<ResourceLocation> channels) {
         for (ResourceLocation channel : channels) {
             for (char c : channel.toString().toCharArray()) {
                 buf.writeByte(c);

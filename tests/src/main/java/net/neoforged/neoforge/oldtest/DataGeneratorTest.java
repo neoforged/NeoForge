@@ -62,7 +62,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -104,8 +104,9 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
@@ -120,7 +121,6 @@ import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
@@ -137,7 +137,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(DataGeneratorTest.MODID)
-@Mod.EventBusSubscriber(bus = Bus.MOD)
+@EventBusSubscriber(bus = Bus.MOD)
 public class DataGeneratorTest {
     static final String MODID = "data_gen_test";
 
@@ -179,13 +179,13 @@ public class DataGeneratorTest {
         gen.addProvider(event.includeClient(), new SoundDefinitions(packOutput, event.getExistingFileHelper()));
         gen.addProvider(event.includeClient(), new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
 
-        gen.addProvider(event.includeServer(), new Recipes(packOutput));
+        gen.addProvider(event.includeServer(), new Recipes(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
         gen.addProvider(event.includeServer(), new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
         gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
     }
 
-    public static void levelStem(BootstapContext<LevelStem> context) {
+    public static void levelStem(BootstrapContext<LevelStem> context) {
         HolderGetter<DimensionType> dimensionTypes = context.lookup(Registries.DIMENSION_TYPE);
         HolderGetter<NoiseGeneratorSettings> noiseGeneratorSettings = context.lookup(Registries.NOISE_SETTINGS);
         HolderGetter<Biome> biomes = context.lookup(Registries.BIOME);
@@ -196,8 +196,8 @@ public class DataGeneratorTest {
     }
 
     public static class Recipes extends RecipeProvider implements IConditionBuilder {
-        public Recipes(PackOutput gen) {
-            super(gen);
+        public Recipes(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+            super(gen, lookupProvider);
         }
 
         @Override
@@ -286,7 +286,7 @@ public class DataGeneratorTest {
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.GOLD_BLOCK)
                     .pattern("#")
                     .pattern("#")
-                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), NBTIngredient.of(true, Util.make(() -> {
+                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, Util.make(() -> {
                         ItemStack stack = new ItemStack(Items.STONE_PICKAXE);
                         stack.setDamageValue(3);
                         return stack;
@@ -499,7 +499,7 @@ public class DataGeneratorTest {
             tag(BlockTags.create(new ResourceLocation(MODID, "test")))
                     .add(Blocks.DIAMOND_BLOCK)
                     .addTag(BlockTags.STONE_BRICKS)
-                    .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONE)
+                    .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
                     .addOptional(new ResourceLocation("chisel", "marble/raw"))
                     .addOptionalTag(new ResourceLocation("neoforge", "storage_blocks/ruby"));
 
@@ -528,7 +528,7 @@ public class DataGeneratorTest {
             add(Blocks.STONE, "Stone");
             add(Items.DIAMOND, "Diamond");
             //add(Biomes.BEACH, "Beach");
-            add(MobEffects.POISON, "Poison");
+            add(MobEffects.POISON.value(), "Poison");
             add(Enchantments.SHARPNESS, "Sharpness");
             add(EntityType.CAT, "Cat");
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");

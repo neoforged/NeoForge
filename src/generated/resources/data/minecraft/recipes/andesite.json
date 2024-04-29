@@ -6,11 +6,11 @@
       "item": "minecraft:diorite"
     },
     {
-      "tag": "forge:cobblestone/normal"
+      "tag": "c:cobblestones/normal"
     }
   ],
   "result": {
     "count": 2,
-    "item": "minecraft:andesite"
+    "id": "minecraft:andesite"
   }
 }

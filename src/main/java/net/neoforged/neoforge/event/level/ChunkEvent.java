@@ -7,8 +7,8 @@ package net.neoforged.neoforge.event.level;
 
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
@@ -26,7 +26,7 @@ public abstract class ChunkEvent extends LevelEvent {
     private final ChunkAccess chunk;
 
     public ChunkEvent(ChunkAccess chunk) {
-        super(chunk.getWorldForge());
+        super(chunk.getLevel());
         this.chunk = chunk;
     }
 

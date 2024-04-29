@@ -8,6 +8,7 @@ package net.neoforged.neoforge.oldtest.recipebook;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,8 +18,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -27,7 +28,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.CommonHooks;
 
 public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.RecipeBookTestContainer> {
     public final Ingredients ingredients;
@@ -85,7 +85,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
     }
 
     @Override
-    public ItemStack assemble(RecipeBookExtensionTest.RecipeBookTestContainer p_44001_, RegistryAccess registryAccess) {
+    public ItemStack assemble(RecipeBookExtensionTest.RecipeBookTestContainer p_44001_, HolderLookup.Provider registryAccess) {
         return this.getResultItem(registryAccess).copy();
     }
 
@@ -95,7 +95,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
         return this.ingredients.result();
     }
 
@@ -124,7 +124,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
         return this.getIngredients().isEmpty() ||
                 this.getIngredients().stream()
                         .filter((ingredient) -> !ingredient.isEmpty())
-                        .anyMatch(CommonHooks::hasNoElements);
+                        .anyMatch(Ingredient::hasNoItems);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
         };
         private static final Function<String, DataResult<String>> VERIFY_LENGTH_1 = s -> s.length() == 1 ? DataResult.success(s) : DataResult.error(() -> "Key must be a single character!");
 
-        public static final Codec<Ingredients> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+        public static final MapCodec<Ingredients> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Codec.STRING.fieldOf("group").forGetter(Ingredients::group),
                 Codec.STRING.flatXmap(VERIFY_LENGTH_2, VERIFY_LENGTH_2).listOf().flatXmap(VERIFY_SIZE, VERIFY_SIZE).fieldOf("pattern").forGetter(Ingredients::pattern),
                 Codec.unboundedMap(Codec.STRING.flatXmap(VERIFY_LENGTH_1, VERIFY_LENGTH_1), Ingredient.CODEC).fieldOf("key").forGetter(Ingredients::recipe),

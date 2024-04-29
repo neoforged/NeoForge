@@ -3,10 +3,10 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     "X": {
-      "tag": "forge:ingots/copper"
+      "tag": "c:ingots/copper"
     }
   },
   "pattern": [
@@ -15,6 +15,7 @@
     " X "
   ],
   "result": {
-    "item": "minecraft:spyglass"
+    "count": 1,
+    "id": "minecraft:spyglass"
   }
 }
