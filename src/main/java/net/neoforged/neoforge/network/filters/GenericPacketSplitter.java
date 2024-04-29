@@ -150,7 +150,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
             FriendlyByteBuf full = new FriendlyByteBuf(Unpooled.wrappedBuffer(buffers));
 
             try {
-                Packet<?> packet = context.protocolInfo().codec().decode(full);
+                Packet<?> packet = context.connection().getInboundProtocol().codec().decode(full);
                 context.enqueueWork(() -> context.handle(packet));
             } finally {
                 receivedBuffers.clear();
