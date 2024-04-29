@@ -48,7 +48,7 @@ public interface IPayloadContext {
      * <p>
      * For client-bound payloads, retrieves the receiving {@link LocalPlayer}.
      * 
-     * @throws UnsupportedOperationException when called on the server during the configuration phase.
+     * @throws UnsupportedOperationException when called during the configuration phase.
      */
     Player player();
 
