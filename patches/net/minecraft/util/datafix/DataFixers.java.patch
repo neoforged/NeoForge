@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1280,10 +_,35 @@
+@@ -1281,10 +_,35 @@
          Schema schema199 = p_14514_.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
          p_14514_.addFixer(ItemRenameFix.create(schema199, "Rename scute item to turtle_scute", unaryoperator2));
@@ -36,9 +36,9 @@
          Schema schema201 = p_14514_.addSchema(3807, V3807::new);
          p_14514_.addFixer(new AddNewChoices(schema201, "Added Vault", References.BLOCK_ENTITY));
          Schema schema202 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1302,6 +_,18 @@
+@@ -1305,6 +_,18 @@
          p_14514_.addFixer(
-             new AttributesRename(schema208, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
+             new AttributesRename(schema209, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
          );
 +
 +        // Neo: rename neo attributes to new MC attributes
@@ -52,6 +52,6 @@
 +                )
 +        ));
 +
-         Schema schema209 = p_14514_.addSchema(3816, V3816::new);
-         p_14514_.addFixer(new AddNewChoices(schema209, "Added Bogged", References.ENTITY));
-         Schema schema210 = p_14514_.addSchema(3818, V3818::new);
+         Schema schema210 = p_14514_.addSchema(3816, V3816::new);
+         p_14514_.addFixer(new AddNewChoices(schema210, "Added Bogged", References.ENTITY));
+         Schema schema211 = p_14514_.addSchema(3818, V3818::new);
