@@ -61,7 +61,7 @@
   "fml.language.missingversion": "Файл мода {5} требует языковой провайдер {3}:{4,vr}, чтобы загрузиться\n§7Мы обнаружили {6,i18n,fml.messages.artifactversion}",
   "fml.modloading.missingclasses": "Файл мода {3} содержит моды, которые не были найдены",
   "fml.modloading.missingmetadata": "В mods.toml отсутствуют метаданные для modid {3}",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} содержит ошибки при загрузке классов\n§7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) содержит ошибки при загрузке классов\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name} ({0,modinfo,id}) не удалось правильно загрузить\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "В {0,modinfo,name} ({0,modinfo,id}) отсутствует функция, необходимая для запуска\n§7Для запуска требуется {3,featurebound}, а {4} доступен",
   "fml.modloading.uncaughterror": "Произошла неперехваченная ошибка параллельной обработки.\n§7{2,exc,msg}",

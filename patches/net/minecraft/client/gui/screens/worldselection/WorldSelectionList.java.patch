@@ -32,7 +32,7 @@
 +
 +        // FORGE: Patch in experimental warning icon for worlds in the world selection screen
 +        private void renderExperimentalWarning(GuiGraphics guiGraphics, int mouseX, int mouseY, int top, int left) {
-+            if (this.summary.isLifecycleExperimental()) {
++            if (this.summary.getSettings() != null && this.summary.getSettings().getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental())) {
 +                int leftStart = left + WorldSelectionList.this.getRowWidth();
 +                guiGraphics.blit(WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON, leftStart - 36, top, 0.0F, 0.0F, 32, 32, 32, 32);
 +                if (WorldSelectionList.this.getEntryAtPosition(mouseX, mouseY) == this && mouseX > leftStart - 36 && mouseX < leftStart) {

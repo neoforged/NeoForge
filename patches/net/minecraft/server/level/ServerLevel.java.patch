@@ -79,14 +79,18 @@
          }
      }
  
-@@ -774,6 +_,7 @@
-             ProfilerFiller profilerfiller = this.getProfiler();
-             profilerfiller.push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_8664_.getType()).toString());
-             profilerfiller.incrementCounter("tickPassenger");
-+                if (p_8664_.canUpdate())
-             p_8664_.rideTick();
-             profilerfiller.pop();
+@@ -757,7 +_,10 @@
+         p_8648_.tickCount++;
+         this.getProfiler().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_8648_.getType()).toString());
+         profilerfiller.incrementCounter("tickNonPassenger");
+-        p_8648_.tick();
++        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
++        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(p_8648_).isCanceled()) {
++            p_8648_.tick();
++        }
+         this.getProfiler().pop();
  
+         for (Entity entity : p_8648_.getPassengers()) {
 @@ -806,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();

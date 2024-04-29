@@ -33,7 +33,7 @@
          this.entityData = synchedentitydata$builder.build();
          this.setPos(0.0, 0.0, 0.0);
 -        this.eyeHeight = this.dimensions.eyeHeight();
-+        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING));
++        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.dimensions.eyeHeight());
 +        this.dimensions = sizeEvent.getNewSize();
 +        this.eyeHeight = sizeEvent.getNewEyeHeight();
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
@@ -198,15 +198,6 @@
      }
  
      public void moveRelative(float p_19921_, Vec3 p_19922_) {
-@@ -1645,6 +_,8 @@
-                 p_20241_.putBoolean("HasVisualFire", this.hasVisualFire);
-             }
- 
-+            p_20241_.putBoolean("CanUpdate", canUpdate);
-+
-             if (!this.tags.isEmpty()) {
-                 ListTag listtag = new ListTag();
- 
 @@ -1655,6 +_,10 @@
                  p_20241_.put("Tags", listtag);
              }
@@ -218,12 +209,11 @@
              this.addAdditionalSaveData(p_20241_);
              if (this.isVehicle()) {
                  ListTag listtag1 = new ListTag();
-@@ -1735,6 +_,9 @@
+@@ -1735,6 +_,8 @@
                  this.setGlowingTag(p_20259_.getBoolean("Glowing"));
                  this.setTicksFrozen(p_20259_.getInt("TicksFrozen"));
                  this.hasVisualFire = p_20259_.getBoolean("HasVisualFire");
 +                if (p_20259_.contains("NeoForgeData", 10)) persistentData = p_20259_.getCompound("NeoForgeData");
-+                if (p_20259_.contains("CanUpdate", 99)) this.canUpdate(p_20259_.getBoolean("CanUpdate"));
 +                if (p_20259_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(registryAccess(), p_20259_.getCompound(ATTACHMENTS_NBT_KEY));
                  if (p_20259_.contains("Tags", 9)) {
                      this.tags.clear();
@@ -237,14 +227,18 @@
              this.level().addFreshEntity(itementity);
              return itementity;
          }
-@@ -1865,6 +_,7 @@
+@@ -1865,7 +_,10 @@
  
      public void rideTick() {
          this.setDeltaMovement(Vec3.ZERO);
-+        if (canUpdate())
-         this.tick();
+-        this.tick();
++        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
++        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(this).isCanceled()) {
++            this.tick();
++        }
          if (this.isPassenger()) {
              this.getVehicle().positionRider(this);
+         }
 @@ -1923,6 +_,7 @@
                  }
              }
@@ -495,22 +489,13 @@
      }
  
      public void checkDespawn() {
-@@ -3424,6 +_,126 @@
+@@ -3424,6 +_,117 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }
 +
 +    /* ================================== Forge Start =====================================*/
 +
-+    private boolean canUpdate = true;
-+    @Override
-+    public void canUpdate(boolean value) {
-+        this.canUpdate = value;
-+    }
-+    @Override
-+    public boolean canUpdate() {
-+        return this.canUpdate;
-+    }
 +    @Nullable
 +    private java.util.Collection<ItemEntity> captureDrops = null;
 +    @Override

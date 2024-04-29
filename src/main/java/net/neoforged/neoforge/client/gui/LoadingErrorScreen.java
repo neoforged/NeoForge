@@ -65,14 +65,15 @@ public class LoadingErrorScreen extends ErrorScreen {
 
         int yOffset = 46;
         this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), b -> Util.getPlatform().openFile(modsDir.toFile())));
-        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.file", logFile.getFileName())), b -> Util.getPlatform().openFile(logFile.toFile())));
+        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
         if (this.modLoadErrors.isEmpty()) {
-            this.addRenderableWidget(new ExtendedButton(this.width / 4, this.height - 24, this.width / 2, 20, Component.literal(I18nExtension.parseMessage("fml.button.continue.launch")), b -> {
+            this.addRenderableWidget(new ExtendedButton(this.width / 4, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.continue.launch")), b -> {
                 this.minecraft.setScreen(null);
             }));
         } else {
-            this.addRenderableWidget(new ExtendedButton(this.width / 4, this.height - 24, this.width / 2, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.file", dumpedLocation.getFileName())), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
+            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.crashreport")), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
         }
+        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - 24, this.width / 2 - 55, 20, Component.translatable("menu.quit"), b -> this.minecraft.stop()));
 
         this.entryList = new LoadingEntryList(this, this.modLoadErrors, this.modLoadWarnings);
         this.addWidget(this.entryList);
@@ -96,7 +97,7 @@ public class LoadingErrorScreen extends ErrorScreen {
 
     public static class LoadingEntryList extends ObjectSelectionList<LoadingEntryList.LoadingMessageEntry> {
         LoadingEntryList(final LoadingErrorScreen parent, final List<FormattedIssue> errors, final List<FormattedIssue> warnings) {
-            super(Objects.requireNonNull(parent.minecraft), parent.width, parent.height - 50, 35,
+            super(Objects.requireNonNull(parent.minecraft), parent.width, parent.height - 85, 35,
                     Math.max(
                             errors.stream().mapToInt(error -> parent.font.split(error.text, parent.width - 20).size()).max().orElse(0),
                             warnings.stream().mapToInt(warning -> parent.font.split(warning.text, parent.width - 20).size()).max().orElse(0)) * parent.minecraft.font.lineHeight + 8);

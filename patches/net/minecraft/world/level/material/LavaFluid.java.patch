@@ -5,7 +5,7 @@
                      if (blockstate.isAir()) {
                          if (this.hasFlammableNeighbours(p_230572_, blockpos)) {
 -                            p_230572_.setBlockAndUpdate(blockpos, BaseFireBlock.getState(p_230572_, blockpos));
-+                            p_230572_.setBlockAndUpdate(blockpos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(p_230572_, blockpos, p_230573_, Blocks.FIRE.defaultBlockState()));
++                            p_230572_.setBlockAndUpdate(blockpos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(p_230572_, blockpos, p_230573_, BaseFireBlock.getState(p_230572_, blockpos)));
                              return;
                          }
                      } else if (blockstate.blocksMotion()) {
@@ -16,7 +16,7 @@
 -                    if (p_230572_.isEmptyBlock(blockpos1.above()) && this.isFlammable(p_230572_, blockpos1)) {
 -                        p_230572_.setBlockAndUpdate(blockpos1.above(), BaseFireBlock.getState(p_230572_, blockpos1));
 +                    if (p_230572_.isEmptyBlock(blockpos1.above()) && this.isFlammable(p_230572_, blockpos1, Direction.UP)) {
-+                        p_230572_.setBlockAndUpdate(blockpos1.above(), net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(p_230572_, blockpos1.above(), p_230573_, Blocks.FIRE.defaultBlockState()));
++                        p_230572_.setBlockAndUpdate(blockpos1.above(), net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(p_230572_, blockpos1.above(), p_230573_, BaseFireBlock.getState(p_230572_, blockpos1)));
                      }
                  }
              }
