@@ -42,7 +42,7 @@ public interface IPayloadContext {
     }
 
     /**
-     * Retrieves the player relevant to this payload. Players are only available in the {@link ConnectionProtocol#CONFIGURATION} phase.
+     * Retrieves the player relevant to this payload. Players are only available in the {@link ConnectionProtocol#PLAY} phase.
      * <p>
      * For server-bound payloads, retrieves the sending {@link ServerPlayer}.
      * <p>
