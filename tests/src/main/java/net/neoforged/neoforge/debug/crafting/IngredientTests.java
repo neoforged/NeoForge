@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.debug.crafting;
 
+import com.google.gson.JsonArray;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
@@ -58,6 +60,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.condition.TestEnabledIngredient;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -157,6 +160,25 @@ public class IngredientTests {
                 .thenExecuteAfter(7, () -> helper.assertContainerContains(1, 2, 1, Items.ACACIA_BOAT))
 
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Serialization tests for empty ingredients")
+    static void emptyIngredientSerialization(ExtendedGameTestHelper helper) {
+        // Make sure that empty ingredients serialize to []
+        var emptyResult = Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, Ingredient.EMPTY);
+        var emptyJson = emptyResult.resultOrPartial(error -> helper.fail("Failed to serialize empty ingredient: " + error)).orElseThrow();
+        helper.assertValueEqual("[]", emptyJson.toString(), "empty ingredient");
+
+        // Make sure that [] deserializes to an empty ingredient
+        var result = Ingredient.CODEC.parse(JsonOps.INSTANCE, new JsonArray());
+        var ingredient = result.resultOrPartial(error -> helper.fail("Failed to deserialize empty ingredient: " + error)).orElseThrow();
+        helper.assertTrue(ingredient.isEmpty(), "empty ingredient should return true from isEmpty()");
+        helper.assertValueEqual(Ingredient.EMPTY, ingredient, "empty ingredient");
+        helper.assertTrue(Ingredient.EMPTY == ingredient, "Reference equality with Ingredient.EMPTY");
+
+        helper.succeed();
     }
 
     @GameTest

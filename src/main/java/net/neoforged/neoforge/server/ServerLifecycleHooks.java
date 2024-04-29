@@ -39,12 +39,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.Nullable;
 
 public class ServerLifecycleHooks {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker SERVERHOOKS = MarkerManager.getMarker("SERVERHOOKS");
     private static final LevelResource SERVERCONFIG = new LevelResource("serverconfig");
+    @Nullable
     private static volatile CountDownLatch exitLatch = null;
+    @Nullable
     private static MinecraftServer currentServer;
 
     private static Path getServerConfigPath(final MinecraftServer server) {
@@ -117,6 +120,7 @@ public class ServerLifecycleHooks {
         ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
     }
 
+    @Nullable
     public static MinecraftServer getCurrentServer() {
         return currentServer;
     }

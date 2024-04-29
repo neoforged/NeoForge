@@ -209,11 +209,11 @@
          this.profiler.pop();
          if (!this.noRender) {
 +            this.realPartialTick = this.pause ? this.pausePartialTick : this.timer.partialTick; // Cache this since pause is volatile
-+            net.neoforged.neoforge.event.EventHooks.onRenderTickStart(this.realPartialTick);
++            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePre(this.realPartialTick);
              this.profiler.popPush("gameRenderer");
              this.gameRenderer.render(this.pause ? this.pausePartialTick : this.timer.partialTick, i, p_91384_);
              this.profiler.pop();
-+            net.neoforged.neoforge.event.EventHooks.onRenderTickEnd(this.realPartialTick);
++            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePost(this.realPartialTick);
          }
  
          if (this.fpsPieResults != null) {
@@ -326,20 +326,20 @@
                      if (!itemstack.isEmpty()) {
                          InteractionResult interactionresult2 = this.gameMode.useItem(this.player, interactionhand);
                          if (interactionresult2.consumesAction()) {
-@@ -1808,6 +_,8 @@
-             this.rightClickDelay--;
-         }
+@@ -1800,6 +_,8 @@
  
-+        net.neoforged.neoforge.event.EventHooks.onPreClientTick();
+     public void tick() {
+         this.clientTickCount++;
++        net.neoforged.neoforge.client.ClientHooks.fireClientTickPre();
 +
-         this.profiler.push("gui");
-         this.chatListener.tick();
-         this.gui.tick(this.pause);
+         if (this.level != null && !this.pause) {
+             this.level.tickRateManager().tick();
+         }
 @@ -1892,6 +_,7 @@
  
                  this.tutorial.tick();
  
-+                net.neoforged.neoforge.event.EventHooks.onPreLevelTick(this.level, () -> true);
++                net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(this.level, () -> true);
                  try {
                      this.level.tick(() -> true);
                  } catch (Throwable throwable) {
@@ -347,7 +347,7 @@
  
                      throw new ReportedException(crashreport);
                  }
-+                net.neoforged.neoforge.event.EventHooks.onPostLevelTick(this.level, () -> true);
++                net.neoforged.neoforge.event.EventHooks.fireLevelTickPost(this.level, () -> true);
              }
  
              this.profiler.popPush("animateTick");
@@ -356,7 +356,7 @@
          this.keyboardHandler.tick();
          this.profiler.pop();
 +
-+        net.neoforged.neoforge.event.EventHooks.onPostClientTick();
++        net.neoforged.neoforge.client.ClientHooks.fireClientTickPost();
      }
  
      private boolean isMultiplayerServer() {
