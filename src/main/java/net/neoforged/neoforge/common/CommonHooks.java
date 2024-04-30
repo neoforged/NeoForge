@@ -243,10 +243,6 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(new EntityInvulnerablityCheckEvent(entity, source, isInvul)).isInvulnerable();
     }
 
-    public static boolean onLivingTick(LivingEntity entity) {
-        return NeoForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent(entity)).isCanceled();
-    }
-
     public static boolean onEntityPreDamage(LivingEntity entity, DamageContainer container) {
         return entity instanceof Player || !NeoForge.EVENT_BUS.post(new EntityPreDamageEvent(entity, container)).isCanceled();
     }
