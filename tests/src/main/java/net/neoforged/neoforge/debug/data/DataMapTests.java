@@ -341,7 +341,7 @@ public class DataMapTests {
         test.onGameTest(helper -> {
             helper.assertTrue(new HashSet<>(entries.get()).equals(Set.of(
                     WeightedEntry.wrap(Items.BLUE_ORCHID, 5),
-                    WeightedEntry.wrap(Items.OMINOUS_TRIAL_KEY, 10)).iterator()),
+                    WeightedEntry.wrap(Items.OMINOUS_TRIAL_KEY, 10))),
                     "Cached entries are not as expected");
             helper.succeed();
         });
