@@ -64,7 +64,7 @@
                      liquidblockcontainer1.placeLiquid(p_150717_, p_150718_, blockstate, flowingfluid.getSource(false));
                      this.playEmptySound(p_150716_, p_150717_, p_150718_);
                      return true;
-@@ -168,8 +_,18 @@
+@@ -168,8 +_,14 @@
      }
  
      protected void playEmptySound(@Nullable Player p_40696_, LevelAccessor p_40697_, BlockPos p_40698_) {
@@ -78,9 +78,5 @@
 +    protected boolean canBlockContainFluid(@Nullable Player player, Level worldIn, BlockPos posIn, BlockState blockstate)
 +    {
 +        return blockstate.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer)blockstate.getBlock()).canPlaceLiquid(player, worldIn, posIn, blockstate, this.content);
-+    }
-+
-+    public Fluid getFluid() {
-+        return this.content;
      }
  }
