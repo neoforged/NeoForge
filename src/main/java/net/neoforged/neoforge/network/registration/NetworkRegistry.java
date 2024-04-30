@@ -329,7 +329,7 @@ public class NetworkRegistry {
      * @param configuration The configuration channels that the client has available.
      * @param play          The play channels that the client has available.
      */
-    public static void initializeNeoforgeConnection(ServerConfigurationPacketListener listener, Map<ConnectionProtocol, Set<ModdedNetworkQueryComponent>> clientChannels) {
+    public static void initializeNeoForgeConnection(ServerConfigurationPacketListener listener, Map<ConnectionProtocol, Set<ModdedNetworkQueryComponent>> clientChannels) {
         listener.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(listener.getConnectionType());
         listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
         listener.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
@@ -503,7 +503,7 @@ public class NetworkRegistry {
      * @param configuration The configuration channels that were negotiated.
      * @param play          The play channels that were negotiated.
      */
-    public static void initializeNeoforgeConnection(ClientConfigurationPacketListener listener, NetworkPayloadSetup setup) {
+    public static void initializeNeoForgeConnection(ClientConfigurationPacketListener listener, NetworkPayloadSetup setup) {
         listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
         listener.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(listener.getConnectionType());
         listener.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.CLIENTBOUND);
@@ -691,7 +691,7 @@ public class NetworkRegistry {
     /**
      * {@return the initial channels for the configuration phase.}
      */
-    private static Set<ResourceLocation> getInitialListeningChannels(PacketFlow flow) {
+    public static Set<ResourceLocation> getInitialListeningChannels(PacketFlow flow) {
         // TODO: Separate builtins by flow and return them appropriately here.
         return BUILTIN_PAYLOADS.keySet();
     }

@@ -6,7 +6,7 @@
      public void startConfiguration() {
 +        // Neo: Before starting vanilla configuration, reset ad-hoc channels and run modded channel negotiation.
 +        this.send(new net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInitialServerUnregisterChannels()));
-+        this.send(new net.neoforged.neoforge.network.payload.MinecraftRegisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInitialServerListeningChannels()));
++        this.send(new net.neoforged.neoforge.network.payload.MinecraftRegisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInitialListeningChannels(this.flow())));
 +        this.send(new net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload(java.util.Map.of()));
 +        this.send(new net.minecraft.network.protocol.common.ClientboundPingPacket(0));
 +    }
@@ -35,7 +35,7 @@
 +        // Neo: Perform modded network initialization when the client sends their channel list.
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
 +            this.connectionType = net.neoforged.neoforge.network.connection.ConnectionType.NEOFORGE;
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoforgeConnection(this, moddedEnvironmentPayload.queries());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoForgeConnection(this, moddedEnvironmentPayload.queries());
 +            return;
 +        }
 +
@@ -63,7 +63,7 @@
 +        // Packets can only be sent after the outbound protocol is set up again
 +        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
 +            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoforgeConnection(this, java.util.Map.of());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoForgeConnection(this, java.util.Map.of());
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
  

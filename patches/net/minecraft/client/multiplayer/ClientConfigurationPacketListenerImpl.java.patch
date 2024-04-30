@@ -59,7 +59,7 @@
 +        // Receiving a modded network payload implies a successful negotiation by the server.
 +        if (packet.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkPayload moddedNetworkPayload) {
 +            this.initializedConnection = true;
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoforgeConnection(this, moddedNetworkPayload.setup());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoForgeConnection(this, moddedNetworkPayload.setup());
 +            return;
 +        }
 +
