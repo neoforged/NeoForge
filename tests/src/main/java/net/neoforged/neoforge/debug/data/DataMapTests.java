@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.data;
 
+import com.google.common.collect.Iterators;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -23,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -31,7 +34,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.DataMapProvider;
+import net.neoforged.neoforge.debug.EventTests;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
@@ -39,6 +44,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover.Default;
+import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
@@ -256,12 +262,10 @@ public class DataMapTests {
             static final Codec<ExperienceGrant> CODEC = Codec.INT.xmap(ExperienceGrant::new, ExperienceGrant::amount);
         }
 
-        final DataMapType<DamageType, ExperienceGrant> xpGrant = DataMapType.builder(
+        final DataMapType<DamageType, ExperienceGrant> xpGrant = reg.registerDataMap(DataMapType.builder(
                 new ResourceLocation(reg.modId(), "xp_grant"),
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
-                .build();
-
-        test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(xpGrant));
+                .build());
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
@@ -303,6 +307,44 @@ public class DataMapTests {
                         new BlockPos(1, 1, 1), player, Items.COMPASS.getDefaultInstance()))
                 .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 1))
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the data map update event works", groups = EventTests.GROUP)
+    static void dataMapUpdateEventTest(final DynamicTest test, final RegistrationHelper reg) {
+        final DataMapType<Item, Integer> dataMap = reg.registerDataMap(DataMapType.builder(
+                new ResourceLocation(reg.modId(), "weight"),
+                Registries.ITEM, Codec.INT)
+                .build());
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(dataMap)
+                        .add(Items.BLUE_ORCHID.builtInRegistryHolder(), 5, false)
+                        .add(Items.OMINOUS_TRIAL_KEY.builtInRegistryHolder(), 10, false);
+            }
+        });
+
+        final AtomicReference<List<WeightedEntry.Wrapper<Item>>> entries = new AtomicReference<>();
+        NeoForge.EVENT_BUS.addListener((final DataMapsUpdatedEvent event) -> {
+            if (event.getCause() == DataMapsUpdatedEvent.UpdateCause.SERVER_RELOAD) {
+                event.ifRegistry(Registries.ITEM, items -> {
+                    entries.set(items.getDataMap(dataMap).entrySet().stream()
+                            .map(entry -> WeightedEntry.wrap(items.get(entry.getKey()), entry.getValue()))
+                            .toList());
+                });
+            }
+        });
+
+        test.onGameTest(helper -> {
+            helper.assertTrue(Iterators.elementsEqual(
+                    entries.get().iterator(), List.of(
+                            WeightedEntry.wrap(Items.BLUE_ORCHID, 5),
+                            WeightedEntry.wrap(Items.OMINOUS_TRIAL_KEY, 10)).iterator()),
+                    "Cached entries are not as expected");
+            helper.succeed();
+        });
     }
 
     public record SomeObject(
