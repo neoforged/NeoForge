@@ -34,8 +34,8 @@
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        // Neo: Perform modded network initialization when the client sends their channel list.
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
-+            this.connectionType = this.connectionType.withNeoForgeQueryPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeModdedConnection(this, moddedEnvironmentPayload.queries());
++            this.connectionType = net.neoforged.neoforge.network.connection.ConnectionType.NEOFORGE;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoforgeConnection(this, moddedEnvironmentPayload.queries());
 +            return;
 +        }
 +
@@ -47,7 +47,7 @@
 +        super.handlePong(p_295142_);
 +        // During startConfiguration() we send a ping with id 0, if we get a pong back, we initiate the connection.
 +        if (p_295142_.getId() == 0) {
-+            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNonModdedConnection(this)) {
++            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.initializeOtherConnection(this)) {
 +                return;
 +            }
 +
@@ -63,7 +63,7 @@
 +        // Packets can only be sent after the outbound protocol is set up again
 +        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
 +            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeModdedConnection(this, java.util.Map.of());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoforgeConnection(this, java.util.Map.of());
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
  
