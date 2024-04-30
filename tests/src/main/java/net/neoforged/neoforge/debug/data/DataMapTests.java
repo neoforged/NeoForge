@@ -5,15 +5,16 @@
 
 package net.neoforged.neoforge.debug.data;
 
-import com.google.common.collect.Iterators;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -338,10 +339,9 @@ public class DataMapTests {
         });
 
         test.onGameTest(helper -> {
-            helper.assertTrue(Iterators.elementsEqual(
-                    entries.get().iterator(), List.of(
-                            WeightedEntry.wrap(Items.BLUE_ORCHID, 5),
-                            WeightedEntry.wrap(Items.OMINOUS_TRIAL_KEY, 10)).iterator()),
+            helper.assertTrue(new HashSet<>(entries.get()).equals(Set.of(
+                    WeightedEntry.wrap(Items.BLUE_ORCHID, 5),
+                    WeightedEntry.wrap(Items.OMINOUS_TRIAL_KEY, 10)).iterator()),
                     "Cached entries are not as expected");
             helper.succeed();
         });
