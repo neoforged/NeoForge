@@ -19,16 +19,15 @@
      }
  
      @Nullable
-@@ -54,6 +_,11 @@
+@@ -54,6 +_,10 @@
          return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(p_96200_);
      }
  
 +    /**
-+     @deprecated Use {@link net.neoforged.neoforge.client.event.RegisterMenuScreensEvent} to register menu screens
-+     + TODO 1.20.5: remove AT related to this
++     * @deprecated use {@link net.neoforged.neoforge.client.event.RegisterMenuScreensEvent} instead
 +     */
 +    @Deprecated
-     public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
+     private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
          MenuType<? extends M> p_96207_, MenuScreens.ScreenConstructor<M, U> p_96208_
      ) {
 @@ -61,6 +_,12 @@

@@ -29,7 +29,8 @@ public record FrameworkConfiguration(
         int commandRequiredPermission,
         List<String> enabledTests,
         @Nullable Supplier<ClientConfiguration> clientConfiguration,
-        List<SummaryDumper> dumpers) {
+        List<SummaryDumper> dumpers,
+        MissingDescriptionAction onMissingDescription) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
@@ -48,6 +49,7 @@ public record FrameworkConfiguration(
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
         private final List<String> enabledTests = new ArrayList<>();
+        private MissingDescriptionAction onMissingDescription = MissingDescriptionAction.WARNING;
         private final List<SummaryDumper> dumpers = new ArrayList<>();
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;
@@ -97,8 +99,13 @@ public record FrameworkConfiguration(
             return dumpers(dumpers);
         }
 
+        public Builder onMissingDescription(MissingDescriptionAction onMissingDescription) {
+            this.onMissingDescription = onMissingDescription;
+            return this;
+        }
+
         public FrameworkConfiguration build() {
-            return new FrameworkConfiguration(id, features, commandRequiredPermission, enabledTests, clientConfiguration, dumpers);
+            return new FrameworkConfiguration(id, features, commandRequiredPermission, enabledTests, clientConfiguration, dumpers, onMissingDescription);
         }
     }
 }

@@ -74,11 +74,11 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
                 if (action.execute()) {
                     ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                     if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket) {
-                        FluidStack extracted = new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);
+                        FluidStack extracted = new FluidStack(bucket.content, FluidType.BUCKET_VOLUME);
                         if (!FluidStack.isSameFluidSameComponents(resource, extracted)) {
                             //Be loud if something went wrong
                             LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
-                                    BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.getFluid()));
+                                    BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.content));
                             return FluidStack.EMPTY;
                         }
                         return extracted;
@@ -105,7 +105,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
                 }
                 ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                 if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket) {
-                    return new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);
+                    return new FluidStack(bucket.content, FluidType.BUCKET_VOLUME);
                 }
             }
         }
