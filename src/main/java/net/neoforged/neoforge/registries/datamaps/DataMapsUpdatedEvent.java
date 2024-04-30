@@ -11,6 +11,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
@@ -86,7 +87,7 @@ public class DataMapsUpdatedEvent extends Event {
         /**
          * The data maps have been reloaded on the server.
          * 
-         * @implNote Events with this cause are fired during the {@linkplain net.minecraft.server.packs.resources.SimplePreparableReloadListener#apply(Object, ResourceManager, ProfilerFiller) apply phase}
+         * @implNote Events with this cause are fired during the {@linkplain SimplePreparableReloadListener#apply(Object, ResourceManager, ProfilerFiller) apply phase}
          *           of a reload listener, and <strong>not</strong> after the reload is complete.
          */
         SERVER_RELOAD
