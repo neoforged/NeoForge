@@ -325,7 +325,7 @@ public class NetworkRegistry {
      * <p>
      * Invoked on the network thread.
      *
-     * @param listener        The listener which completed the negotiation.
+     * @param listener      The listener which completed the negotiation.
      * @param configuration The configuration channels that the client has available.
      * @param play          The play channels that the client has available.
      */
