@@ -8,6 +8,7 @@ package net.neoforged.neoforge.registries.datamaps;
 import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
@@ -76,6 +77,8 @@ public class DataMapsUpdatedEvent extends Event {
     public enum UpdateCause {
         /**
          * The data maps have been synced to the client.
+         * 
+         * @implNote An event with this cause is <i>not</i> fired for the host of a single-player world, or for any {@linkplain Connection#isMemoryConnection() in-memory} connections.
          */
         CLIENT_SYNC,
         /**
