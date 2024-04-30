@@ -5,7 +5,7 @@
              } else if (Evoker.this.tickCount < this.nextAttackTickCount) {
                  return false;
 -            } else if (!Evoker.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            } else if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(Evoker.this.level(), Evoker.this)) {
++            } else if (!net.neoforged.neoforge.common.CommonHooks.getMobGriefingEvent(Evoker.this.level(), Evoker.this)) {
                  return false;
              } else {
                  List<Sheep> list = Evoker.this.level()

@@ -7,7 +7,7 @@
 +                ItemStack original = itemstack.copy();
                  itemstack.hurtAndBreak(i, p_41291_, LivingEntity.getSlotForHand(p_41292_));
 +                if(itemstack.isEmpty()) {
-+                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(p_41291_, original, p_41292_);
++                    net.neoforged.neoforge.common.CommonHooks.onPlayerDestroyItem(p_41291_, original, p_41292_);
 +                }
              }
  

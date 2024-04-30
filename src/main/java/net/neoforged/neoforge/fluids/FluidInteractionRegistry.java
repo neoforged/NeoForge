@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.EventHooks;
 
 /**
  * A registry which defines the interactions a source fluid can have with its
@@ -129,7 +129,7 @@ public final class FluidInteractionRegistry {
          */
         public InteractionInformation(HasFluidInteraction predicate, Function<FluidState, BlockState> getState) {
             this(predicate, (level, currentPos, relativePos, currentState) -> {
-                level.setBlockAndUpdate(currentPos, EventHooks.fireFluidPlaceBlockEvent(level, currentPos, currentPos, getState.apply(currentState)));
+                level.setBlockAndUpdate(currentPos, CommonHooks.fireFluidPlaceBlockEvent(level, currentPos, currentPos, getState.apply(currentState)));
                 level.levelEvent(1501, currentPos, 0);
             });
         }

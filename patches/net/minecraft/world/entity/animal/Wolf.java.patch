@@ -19,7 +19,7 @@
  
      private void tryToTame(Player p_333736_) {
 -        if (this.random.nextInt(3) == 0) {
-+        if (this.random.nextInt(3) == 0  && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_333736_)) {
++        if (this.random.nextInt(3) == 0  && !net.neoforged.neoforge.common.CommonHooks.onAnimalTame(this, p_333736_)) {
              this.tame(p_333736_);
              this.navigation.stop();
              this.setTarget(null);

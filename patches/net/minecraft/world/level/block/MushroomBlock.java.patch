@@ -13,7 +13,7 @@
          if (optional.isEmpty()) {
              return false;
          } else {
-+            var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_221774_, p_221777_, p_221775_, optional.get());
++            var event = net.neoforged.neoforge.common.CommonHooks.blockGrowFeature(p_221774_, p_221777_, p_221775_, optional.get());
 +            if (event.getResult().equals(net.neoforged.bus.api.Event.Result.DENY)) return false;
              p_221774_.removeBlock(p_221775_, false);
 -            if (optional.get().value().place(p_221774_, p_221774_.getChunkSource().getGenerator(), p_221777_, p_221775_)) {

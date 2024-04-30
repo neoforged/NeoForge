@@ -4,10 +4,10 @@
  
      private void ageUp() {
          if (this.level() instanceof ServerLevel serverlevel) {
-+            if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.FROG, (timer) -> {})) return;
++            if (!net.neoforged.neoforge.common.CommonHooks.canLivingConvert(this, EntityType.FROG, (timer) -> {})) return;
              Frog frog = EntityType.FROG.create(this.level());
              if (frog != null) {
-+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, frog);
++                net.neoforged.neoforge.common.CommonHooks.onLivingConvert(this, frog);
                  frog.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
                  frog.finalizeSpawn(serverlevel, this.level().getCurrentDifficultyAt(frog.blockPosition()), MobSpawnType.CONVERSION, null);
                  frog.setNoAi(this.isNoAi());

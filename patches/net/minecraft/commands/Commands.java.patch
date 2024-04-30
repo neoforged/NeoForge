@@ -13,7 +13,7 @@
          if (p_230943_.includeIntegrated) {
              PublishCommand.register(this.dispatcher);
          }
-+        net.neoforged.neoforge.event.EventHooks.onCommandRegister(this.dispatcher, p_230943_, p_230944_);
++        net.neoforged.neoforge.common.CommonHooks.onCommandRegister(this.dispatcher, p_230943_, p_230944_);
  
          this.dispatcher.setConsumer(ExecutionCommandSource.resultConsumer());
      }

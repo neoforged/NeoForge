@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * To set the burn time of your own item, use {@link Item#getBurnTime(ItemStack, RecipeType)} instead.<br>
  * <br>
- * This event is fired from {@link EventHooks#getItemBurnTime(ItemStack, int, RecipeType)}.<br>
+ * This event is fired from {@link CommonHooks#getItemBurnTime(ItemStack, int, RecipeType)}.<br>
  * <br>
  * This event is {@link ICancellableEvent} to prevent later handlers from changing the value.<br>
  * <br>

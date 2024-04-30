@@ -4,7 +4,7 @@
      protected void checkTakeAchievements(ItemStack p_40185_) {
          if (this.removeCount > 0) {
              p_40185_.onCraftedBy(this.player.level(), this.player, this.removeCount);
-+            net.neoforged.neoforge.event.EventHooks.firePlayerCraftingEvent(this.player, p_40185_, this.craftSlots);
++            net.neoforged.neoforge.common.CommonHooks.firePlayerCraftingEvent(this.player, p_40185_, this.craftSlots);
          }
  
          if (this.container instanceof RecipeCraftingHolder recipecraftingholder) {

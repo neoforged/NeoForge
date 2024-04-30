@@ -25,7 +25,7 @@
      @Override
      public void thunderHit(ServerLevel p_35409_, LightningBolt p_35410_) {
 -        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL) {
-+        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
++        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.common.CommonHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
              LOGGER.info("Villager {} was struck by lightning {}.", this, p_35410_);
              Witch witch = EntityType.WITCH.create(p_35409_);
              if (witch != null) {
@@ -33,7 +33,7 @@
                  }
  
                  witch.setPersistenceRequired();
-+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, witch);
++                net.neoforged.neoforge.common.CommonHooks.onLivingConvert(this, witch);
                  p_35409_.addFreshEntityWithPassengers(witch);
                  this.releaseAllPois();
                  this.discard();

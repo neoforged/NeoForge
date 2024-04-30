@@ -48,7 +48,7 @@
          public void onTake(Player p_150499_, ItemStack p_150500_) {
              Optional<Holder<Potion>> optional = p_150500_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
              if (optional.isPresent() && p_150499_ instanceof ServerPlayer serverplayer) {
-+                net.neoforged.neoforge.event.EventHooks.onPlayerBrewedPotion(p_150499_, p_150500_);
++                net.neoforged.neoforge.common.CommonHooks.onPlayerBrewedPotion(p_150499_, p_150500_);
                  CriteriaTriggers.BREWED_POTION.trigger(serverplayer, optional.get());
              }
  

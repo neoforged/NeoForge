@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Slime;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -28,7 +28,7 @@ public class MobSplitEvent extends Event implements ICancellableEvent {
     /**
      * @param parent   The parent mob, currently being removed
      * @param children The list of children.
-     * @apiNote Use {@link EventHooks#onMobSplit(Slime, List)} to fire this event.
+     * @apiNote Use {@link CommonHooks#onMobSplit(Slime, List)} to fire this event.
      */
     @ApiStatus.Internal
     public MobSplitEvent(Mob parent, List<Mob> children) {

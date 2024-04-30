@@ -4,7 +4,7 @@
                  this.modified = true;
              }
  
-+            net.neoforged.neoforge.event.EventHooks.fireChunkTicketLevelUpdated(this.level, p_140177_, p_140180_, p_140178_, p_140179_);
++            net.neoforged.neoforge.common.CommonHooks.fireChunkTicketLevelUpdated(this.level, p_140177_, p_140180_, p_140178_, p_140179_);
              return p_140179_;
          }
      }
@@ -51,11 +51,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
-+        net.neoforged.neoforge.event.EventHooks.fireChunkWatch(p_295834_, p_296281_, p_295834_.serverLevel());
++        net.neoforged.neoforge.common.CommonHooks.fireChunkWatch(p_295834_, p_296281_, p_295834_.serverLevel());
      }
  
      private static void dropChunk(ServerPlayer p_294215_, ChunkPos p_294758_) {
-+        net.neoforged.neoforge.event.EventHooks.fireChunkUnWatch(p_294215_, p_294758_, p_294215_.serverLevel());
++        net.neoforged.neoforge.common.CommonHooks.fireChunkUnWatch(p_294215_, p_294758_, p_294215_.serverLevel());
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  

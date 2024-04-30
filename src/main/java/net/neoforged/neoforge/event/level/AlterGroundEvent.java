@@ -37,7 +37,7 @@ public class AlterGroundEvent extends Event {
     private StateProvider provider;
 
     /**
-     * @see {@link EventHooks#alterGround} as the API endpoint for firing this event.
+     * @see {@link CommonHooks#alterGround} as the API endpoint for firing this event.
      */
     @ApiStatus.Internal
     public AlterGroundEvent(TreeDecorator.Context ctx, List<BlockPos> positions, StateProvider provider) {

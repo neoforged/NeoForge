@@ -20,7 +20,7 @@
          }
  
          p_11263_.initInventoryMenu();
-+        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn( p_11263_ );
++        net.neoforged.neoforge.common.CommonHooks.firePlayerLoggedIn( p_11263_ );
      }
  
      protected void updateEntireScoreboard(ServerScoreboard p_11274_, ServerPlayer p_11275_) {
@@ -28,7 +28,7 @@
              optional = Optional.of(compoundtag);
              p_11225_.load(compoundtag);
              LOGGER.debug("loading single player");
-+            net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_11225_, this.playerIo, p_11225_.getUUID().toString());
++            net.neoforged.neoforge.common.CommonHooks.firePlayerLoadingEvent(p_11225_, this.playerIo, p_11225_.getUUID().toString());
          } else {
              optional = this.playerIo.load(p_11225_);
          }
@@ -44,7 +44,7 @@
      }
  
      public void remove(ServerPlayer p_11287_) {
-+        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedOut(p_11287_);
++        net.neoforged.neoforge.common.CommonHooks.firePlayerLoggedOut(p_11287_);
          ServerLevel serverlevel = p_11287_.serverLevel();
          p_11287_.awardStat(Stats.LEAVE_GAME);
          this.save(p_11287_);
@@ -52,7 +52,7 @@
          this.playersByUUID.put(serverplayer.getUUID(), serverplayer);
          serverplayer.initInventoryMenu();
          serverplayer.setHealth(serverplayer.getHealth());
-+        net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(serverplayer, p_11238_);
++        net.neoforged.neoforge.common.CommonHooks.firePlayerRespawnEvent(serverplayer, p_11238_);
          if (flag2) {
              serverplayer.connection
                  .send(
@@ -60,7 +60,7 @@
      }
  
      public void op(GameProfile p_11254_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(p_11254_, this.server.getOperatorUserPermissionLevel(), this)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onPermissionChanged(p_11254_, this.server.getOperatorUserPermissionLevel(), this)) return;
          this.ops.add(new ServerOpListEntry(p_11254_, this.server.getOperatorUserPermissionLevel(), this.ops.canBypassPlayerLimit(p_11254_)));
          ServerPlayer serverplayer = this.getPlayer(p_11254_.getId());
          if (serverplayer != null) {
@@ -68,7 +68,7 @@
      }
  
      public void deop(GameProfile p_11281_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(p_11281_, 0, this)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onPermissionChanged(p_11281_, 0, this)) return;
          this.ops.remove(p_11281_);
          ServerPlayer serverplayer = this.getPlayer(p_11281_.getId());
          if (serverplayer != null) {

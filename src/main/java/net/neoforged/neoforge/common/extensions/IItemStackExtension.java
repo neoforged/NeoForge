@@ -35,9 +35,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.Nullable;
@@ -89,7 +89,7 @@ public interface IItemStackExtension {
             FurnaceFuel fuel = self().getItem().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
             burnTime = fuel != null ? fuel.burnTime() : 0;
         }
-        return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
+        return CommonHooks.getItemBurnTime(self(), burnTime, recipeType);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
@@ -178,7 +178,7 @@ public interface IItemStackExtension {
      */
     default int getEnchantmentLevel(Enchantment enchantment) {
         int level = self().getItem().getEnchantmentLevel(self(), enchantment);
-        return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
+        return CommonHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
     }
 
     /**
@@ -194,7 +194,7 @@ public interface IItemStackExtension {
      */
     default ItemEnchantments getAllEnchantments() {
         var enchantments = self().getItem().getAllEnchantments(self());
-        return EventHooks.getEnchantmentLevel(enchantments, self());
+        return CommonHooks.getEnchantmentLevel(enchantments, self());
     }
 
     /**

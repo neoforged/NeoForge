@@ -35,7 +35,7 @@
  
      @Override
      public void tick() {
-+        net.neoforged.neoforge.event.EventHooks.firePlayerTickPre(this);
++        net.neoforged.neoforge.common.CommonHooks.firePlayerTickPre(this);
          this.noPhysics = this.isSpectator();
          if (this.isSpectator()) {
              this.setOnGround(false);
@@ -44,7 +44,7 @@
              }
  
 -            if (!this.level().isClientSide && this.level().isDay()) {
-+            if (!this.level().isClientSide && !net.neoforged.neoforge.event.EventHooks.fireSleepingTimeCheck(this, getSleepingPos())) {
++            if (!this.level().isClientSide && !net.neoforged.neoforge.common.CommonHooks.fireSleepingTimeCheck(this, getSleepingPos())) {
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
@@ -52,7 +52,7 @@
          this.turtleHelmetTick();
          this.cooldowns.tick();
          this.updatePlayerPose();
-+        net.neoforged.neoforge.event.EventHooks.firePlayerTickPost(this);
++        net.neoforged.neoforge.common.CommonHooks.firePlayerTickPost(this);
      }
  
      @Override
@@ -101,13 +101,13 @@
              f /= 5.0F;
          }
  
-+        f = net.neoforged.neoforge.event.EventHooks.getBreakSpeed(this, p_36282_, f, pos);
++        f = net.neoforged.neoforge.common.CommonHooks.getBreakSpeed(this, p_36282_, f, pos);
          return f;
      }
  
      public boolean hasCorrectToolForDrops(BlockState p_36299_) {
 -        return !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_);
-+        return net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(this, p_36299_, !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_));
++        return net.neoforged.neoforge.common.CommonHooks.doPlayerHarvestCheck(this, p_36299_, !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_));
      }
  
      @Override
@@ -147,7 +147,7 @@
 +                if (!level().isClientSide && !hasInfiniteMaterials()) {
 +                    this.useItem.hurtAndBreak(i, getRandom(), this, () -> {
 +                        broadcastBreakEvent(getSlotForHand(interactionhand));
-+                        net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this, this.useItem, interactionhand);
++                        net.neoforged.neoforge.common.CommonHooks.onPlayerDestroyItem(this, this.useItem, interactionhand);
 +                        stopUsingItem(); // Neo: Fix MC-168573 ("After breaking a shield, the player's off-hand can't finish using some items")
 +                    });
 +                }
@@ -182,7 +182,7 @@
                  }
  
 +                if (!this.abilities.instabuild && itemstack.isEmpty()) {
-+                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this, itemstack1, p_36159_);
++                    net.neoforged.neoforge.common.CommonHooks.onPlayerDestroyItem(this, itemstack1, p_36159_);
 +                }
                  return interactionresult;
              } else {
@@ -191,7 +191,7 @@
                      if (interactionresult1.consumesAction()) {
                          this.level().gameEvent(GameEvent.ENTITY_INTERACT, p_36158_.position(), GameEvent.Context.of(this));
                          if (itemstack.isEmpty() && !this.abilities.instabuild) {
-+                            net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this, itemstack1, p_36159_);
++                            net.neoforged.neoforge.common.CommonHooks.onPlayerDestroyItem(this, itemstack1, p_36159_);
                              this.setItemInHand(p_36159_, ItemStack.EMPTY);
                          }
  
@@ -286,7 +286,7 @@
 +                                ItemStack copy = itemstack1.copy();
                                  itemstack1.hurtEnemy((LivingEntity)entity, this);
                                  if (itemstack1.isEmpty()) {
-+                                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this, copy, InteractionHand.MAIN_HAND);
++                                    net.neoforged.neoforge.common.CommonHooks.onPlayerDestroyItem(this, copy, InteractionHand.MAIN_HAND);
                                      this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                                  }
                              }
@@ -311,7 +311,7 @@
      }
  
      public void stopSleepInBed(boolean p_36226_, boolean p_36227_) {
-+        net.neoforged.neoforge.event.EventHooks.onPlayerWakeup(this, p_36226_, p_36227_);
++        net.neoforged.neoforge.common.CommonHooks.onPlayerWakeup(this, p_36226_, p_36227_);
          super.stopSleeping();
          if (this.level() instanceof ServerLevel && p_36227_) {
              ((ServerLevel)this.level()).updateSleepingPlayerList();
@@ -330,7 +330,7 @@
      public boolean causeFallDamage(float p_150093_, float p_150094_, DamageSource p_150095_) {
 -        if (this.abilities.mayfly) {
 +        if (this.mayFly()) {
-+            net.neoforged.neoforge.event.EventHooks.onPlayerFall(this, p_150093_, p_150093_);
++            net.neoforged.neoforge.common.CommonHooks.onPlayerFall(this, p_150093_, p_150093_);
              return false;
          } else {
              if (p_150093_ >= 2.0F) {
@@ -395,7 +395,7 @@
      @Override
      public Component getDisplayName() {
 -        MutableComponent mutablecomponent = PlayerTeam.formatNameForTeam(this.getTeam(), this.getName());
-+        if (this.displayname == null) this.displayname = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
++        if (this.displayname == null) this.displayname = net.neoforged.neoforge.common.CommonHooks.getPlayerDisplayName(this, this.getName());
 +        MutableComponent mutablecomponent = Component.literal("");
 +        mutablecomponent = prefixes.stream().reduce(mutablecomponent, MutableComponent::append);
 +        mutablecomponent = mutablecomponent.append(PlayerTeam.formatNameForTeam(this.getTeam(), this.displayname));
@@ -453,7 +453,7 @@
 +     * Force the displayed name to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
 +     */
 +    public void refreshDisplayName() {
-+        this.displayname = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
++        this.displayname = net.neoforged.neoforge.common.CommonHooks.getPlayerDisplayName(this, this.getName());
 +    }
 +
 +    /**

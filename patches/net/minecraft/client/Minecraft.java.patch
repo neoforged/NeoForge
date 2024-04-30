@@ -348,7 +348,7 @@
  
                  this.tutorial.tick();
  
-+                net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(this.level, () -> true);
++                net.neoforged.neoforge.common.CommonHooks.fireLevelTickPre(this.level, () -> true);
                  try {
                      this.level.tick(() -> true);
                  } catch (Throwable throwable) {
@@ -356,7 +356,7 @@
  
                      throw new ReportedException(crashreport);
                  }
-+                net.neoforged.neoforge.event.EventHooks.fireLevelTickPost(this.level, () -> true);
++                net.neoforged.neoforge.common.CommonHooks.fireLevelTickPost(this.level, () -> true);
              }
  
              this.profiler.popPush("animateTick");

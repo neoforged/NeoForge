@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 
 /**
@@ -38,7 +38,7 @@ public abstract class ZombieEvent extends EntityEvent {
      * This event is fired whenever a Zombie Entity is summoned in
      * {@code Zombie#actuallyHurt(DamageSource, float)}.
      *
-     * This event is fired via the {@link EventHooks#fireZombieSummonAid(Zombie, Level, int, int, int, LivingEntity, double)}.
+     * This event is fired via the {@link CommonHooks#fireZombieSummonAid(Zombie, Level, int, int, int, LivingEntity, double)}.
      *
      * {@link #getCustomSummonedAid()} remains null, but can be populated with a custom EntityZombie which will be spawned.
      * {@link #getLevel()} contains the world that this summoning is occurring in.

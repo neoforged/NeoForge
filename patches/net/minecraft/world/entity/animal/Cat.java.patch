@@ -17,7 +17,7 @@
  
      private void tryToTame(Player p_333858_) {
 -        if (this.random.nextInt(3) == 0) {
-+        if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_333858_)) {
++        if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.common.CommonHooks.onAnimalTame(this, p_333858_)) {
              this.tame(p_333858_);
              this.setOrderedToSit(true);
              this.level().broadcastEntityEvent(this, (byte)7);

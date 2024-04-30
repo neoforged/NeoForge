@@ -5,7 +5,7 @@
  
              HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
 -            if (hitresult.getType() != HitResult.Type.MISS) {
-+            if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
++            if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.common.CommonHooks.onProjectileImpact(this, hitresult)) {
                  this.hitTargetOrDeflectSelf(hitresult);
              }
  

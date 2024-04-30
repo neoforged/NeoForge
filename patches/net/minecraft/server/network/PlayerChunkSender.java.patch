@@ -10,7 +10,7 @@
 +        ));
          ChunkPos chunkpos = p_295144_.getPos();
          DebugPackets.sendPoiPacketsForChunk(p_294963_, chunkpos);
-+        net.neoforged.neoforge.event.EventHooks.fireChunkSent(p_295237_.player, p_295144_, p_294963_);
++        net.neoforged.neoforge.common.CommonHooks.fireChunkSent(p_295237_.player, p_295144_, p_294963_);
      }
  
      private List<LevelChunk> collectChunksToSend(ChunkMap p_296053_, ChunkPos p_295659_) {

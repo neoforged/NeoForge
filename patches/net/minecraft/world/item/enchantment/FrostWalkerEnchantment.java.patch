@@ -6,7 +6,7 @@
                              && blockstate.canSurvive(p_45020_, blockpos)
 -                            && p_45020_.isUnobstructed(blockstate, blockpos, CollisionContext.empty())) {
 +                            && p_45020_.isUnobstructed(blockstate, blockpos, CollisionContext.empty())
-+                            && !net.neoforged.neoforge.event.EventHooks.onBlockPlace(
++                            && !net.neoforged.neoforge.common.CommonHooks.onBlockPlace(
 +                                    p_45019_,
 +                                    net.neoforged.neoforge.common.util.BlockSnapshot.create(p_45020_.dimension(),
 +                                       p_45020_,

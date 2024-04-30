@@ -28,7 +28,7 @@
                  }
 +            }
 +
-+            if (!net.neoforged.neoforge.event.EventHooks.onMobSplit(this, children).isCanceled()) {
++            if (!net.neoforged.neoforge.common.CommonHooks.onMobSplit(this, children).isCanceled()) {
 +                children.forEach(this.level()::addFreshEntity);
              }
          }
