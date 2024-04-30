@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/commands/ReloadCommand.java
++++ b/net/minecraft/server/commands/ReloadCommand.java
+@@ -35,6 +_,7 @@
+             }
+         }
+ 
++        net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(collection, p_138225_, p_138223_);
+         return collection;
+     }
+ 
