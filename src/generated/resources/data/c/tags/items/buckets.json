@@ -5,6 +5,10 @@
     "#c:buckets/lava",
     "#c:buckets/milk",
     "#c:buckets/powder_snow",
-    "#c:buckets/entity_water"
+    "#c:buckets/entity_water",
+    {
+      "id": "minecraft:potion_bucket",
+      "required": false
+    }
   ]
 }

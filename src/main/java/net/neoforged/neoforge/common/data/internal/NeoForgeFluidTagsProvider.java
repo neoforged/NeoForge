@@ -29,7 +29,7 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.getId()).addOptional(NeoForgeMod.FLOWING_MILK.getId());
         tag(Fluids.GASEOUS);
         tag(Fluids.HONEY);
-        tag(Fluids.POTION);
+        tag(Fluids.POTION).addOptional(NeoForgeMod.POTION.getId());
         tag(Fluids.SUSPICIOUS_STEW);
         tag(Fluids.MUSHROOM_STEW);
         tag(Fluids.RABBIT_STEW);

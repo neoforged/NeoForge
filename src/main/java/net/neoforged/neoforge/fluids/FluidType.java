@@ -68,6 +68,11 @@ public class FluidType {
     public static final int BUCKET_VOLUME = 1000;
 
     /**
+     * The number of fluid units that a bottle represents.
+     */
+    public static final int BOTTLE_VOLUME = BUCKET_VOLUME / 4;
+
+    /**
      * A lazy value which computes the number of fluid types within the
      * registry.
      */

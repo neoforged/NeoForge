@@ -1,6 +1,10 @@
 {
   "values": [
     {
+      "id": "minecraft:potion",
+      "required": false
+    },
+    {
       "id": "#forge:potion",
       "required": false
     }

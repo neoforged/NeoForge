@@ -1,0 +1,6 @@
+{
+  "parent": "neoforge:item/bucket",
+  "apply_tint": true,
+  "fluid": "minecraft:potion",
+  "loader": "neoforge:fluid_container"
+}
