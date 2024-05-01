@@ -45,6 +45,7 @@ import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -83,7 +84,7 @@ public class LoginPacketSplitTest {
         if (ENABLED) {
             bus.addListener((final AddPackFindersEvent event) -> {
                 if (event.getPackType() == PackType.SERVER_DATA) {
-                    PackLocationInfo info = new PackLocationInfo("virtual_bigdata", Component.literal("Pack containing big datapack registries"), PackSource.BUILT_IN, Optional.empty());
+                    PackLocationInfo info = new PackLocationInfo("virtual_bigdata", Component.literal("Pack containing big datapack registries"), PackSource.BUILT_IN, Optional.of(new KnownPack(MOD_ID, "virtual_bigdata", "1.0.0")));
                     final InMemoryResourcePack pack = new InMemoryResourcePack(info);
                     generateEntries(pack);
                     event.addRepositorySource(packs -> packs.accept(Pack.readMetaAndCreate(

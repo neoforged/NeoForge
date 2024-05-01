@@ -1,0 +1,17 @@
+--- a/net/minecraft/server/network/config/SynchronizeRegistriesTask.java
++++ b/net/minecraft/server/network/config/SynchronizeRegistriesTask.java
+@@ -45,11 +_,9 @@
+     }
+ 
+     public void handleResponse(List<KnownPack> p_326076_, Consumer<Packet<?>> p_326167_) {
+-        if (p_326076_.equals(this.requestedPacks)) {
+-            this.sendRegistries(p_326167_, Set.copyOf(this.requestedPacks));
+-        } else {
+-            this.sendRegistries(p_326167_, Set.of());
+-        }
++        Set<KnownPack> requested = new java.util.HashSet<>(this.requestedPacks);
++        requested.retainAll(p_326076_);
++        this.sendRegistries(p_326167_, requested);
+     }
+ 
+     @Override

@@ -35,6 +35,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -64,12 +65,12 @@ public class ResourcePackLoader {
         return Optional.ofNullable(ModList.get().getModFileById(modId)).map(IModFileInfo::getFile).map(mf -> modResourcePacks.get(mf));
     }
 
-    public static void populatePackRepository(PackRepository resourcePacks, PackType packType) {
+    public static void populatePackRepository(PackRepository resourcePacks, PackType packType, boolean trusted) {
         findResourcePacks();
         // First add the mod's builtin packs
         resourcePacks.addPackFinder(buildPackFinder(modResourcePacks, packType));
         // Then fire the event to add more packs
-        ModLoader.postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder));
+        ModLoader.postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder, trusted));
     }
 
     private synchronized static void findResourcePacks() {
@@ -100,7 +101,7 @@ public class ResourcePackLoader {
                         name,
                         Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
                         PackSource.DEFAULT,
-                        Optional.empty());
+                        Optional.of(new KnownPack("neoforge", name, mod.getVersion().toString())));
 
                 final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack());
                 final Pack modPack;

@@ -19,10 +19,12 @@ import net.neoforged.fml.event.IModBusEvent;
 public class AddPackFindersEvent extends Event implements IModBusEvent {
     private final PackType packType;
     private final Consumer<RepositorySource> sources;
+    private final boolean trusted;
 
-    public AddPackFindersEvent(PackType packType, Consumer<RepositorySource> sources) {
+    public AddPackFindersEvent(PackType packType, Consumer<RepositorySource> sources, boolean trusted) {
         this.packType = packType;
         this.sources = sources;
+        this.trusted = trusted;
     }
 
     /**
@@ -43,5 +45,12 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
      */
     public PackType getPackType() {
         return packType;
+    }
+
+    /**
+     * {@return whether or not the pack repository being assembled is "trusted" to provide default KnownPacks}
+     */
+    public boolean isTrusted() {
+        return trusted;
     }
 }
