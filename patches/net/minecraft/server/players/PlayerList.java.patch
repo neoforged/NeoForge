@@ -64,7 +64,7 @@
  
              serverplayer.moveTo(vec3.x, vec3.y, vec3.z, f1, 0.0F);
 -            serverplayer.setRespawnPosition(serverlevel1.dimension(), blockpos, f, flag, false);
-+            if (event.isChangePlayerSpawnPosition())  {
++            if (event.changePlayerSpawnPosition())  {
 +                serverplayer.setRespawnPosition(serverlevel1.dimension(), blockpos, f, flag, false);
 +            }
              flag2 = !p_11238_ && flag1;

@@ -138,7 +138,7 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
      * @return Whether the respawn position will be used as the player's spawn position from then on. Defaults to {@code true}.
      *         {@link PlayerSetSpawnEvent} will be fired if this is {@code true}.
      */
-    public boolean isChangePlayerSpawnPosition() {
+    public boolean changePlayerSpawnPosition() {
         return changePlayerSpawnPosition;
     }
 
