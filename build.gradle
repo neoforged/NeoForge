@@ -42,15 +42,6 @@ allprojects {
     group 'net.neoforged'
     repositories {
         mavenLocal()
-
-        maven {
-            name 'Maven for PR #112' // https://github.com/neoforged/FancyModLoader/pull/112
-            url 'https://prmaven.neoforged.net/FancyModLoader/pr112'
-            content {
-                includeModule('net.neoforged.fancymodloader', 'loader')
-                includeModule('net.neoforged.fancymodloader', 'earlydisplay')
-            }
-        }
     }
 }
 
