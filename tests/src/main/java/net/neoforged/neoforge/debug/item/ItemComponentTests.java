@@ -7,15 +7,20 @@ package net.neoforged.neoforge.debug.item;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.debug.EventTests;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.ModifyDefaultComponentsEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -56,6 +61,26 @@ public class ItemComponentTests {
                 helper.fail("Expected the same hash");
             }
 
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ModifyDefaultComponentsEvent works", groups = EventTests.GROUP)
+    static void testModifyDefaultComponentsEvent(DynamicTest test, RegistrationHelper reg) {
+        final var testItem = reg.items().registerSimpleItem("test_item", new Item.Properties()
+                .component(DataComponents.BASE_COLOR, DyeColor.BLUE))
+                .withLang("Test components item");
+        test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> {
+            event.modify(testItem)
+                    .remove(DataComponents.BASE_COLOR)
+                    .set(DataComponents.MAX_STACK_SIZE, 5);
+        });
+
+        test.onGameTest(helper -> {
+            helper.assertFalse(testItem.asItem().components().has(DataComponents.BASE_COLOR), "Default component was not removed");
+            helper.assertValueEqual(testItem.asItem().getDefaultMaxStackSize(), 5, "max stack size");
             helper.succeed();
         });
     }

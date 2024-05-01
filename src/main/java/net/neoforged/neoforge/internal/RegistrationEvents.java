@@ -16,5 +16,6 @@ class RegistrationEvents {
         CapabilityHooks.init(); // must be after cauldron event
         ForcedChunkManager.init();
         RegistryManager.initDataMaps();
+        RegistryManager.modifyComponents();
     }
 }

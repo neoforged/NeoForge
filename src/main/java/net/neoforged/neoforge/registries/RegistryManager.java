@@ -21,9 +21,11 @@ import java.util.stream.Collectors;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -94,6 +96,17 @@ public class RegistryManager {
                     + pendingModdedRegistries.stream().map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
         }
         pendingModdedRegistries = null;
+    }
+
+    public static void modifyComponents() {
+        final Map<Item, DataComponentPatch.Builder> patches = new IdentityHashMap<>();
+        ModLoader.postEvent(new ModifyDefaultComponentsEvent(patches));
+        patches.forEach((item, builder) -> {
+            var patch = builder.build();
+            if (patch == DataComponentPatch.EMPTY) return;
+
+            item.modifyDefaultComponentsFrom(patch);
+        });
     }
 
     public static void initDataMaps() {
