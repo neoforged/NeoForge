@@ -2,7 +2,7 @@
   "values": [
     "minecraft:gunpowder",
     {
-      "id": "#forge:gunpowder",
+      "id": "#forge:gunpowders",
       "required": false
     }
   ]

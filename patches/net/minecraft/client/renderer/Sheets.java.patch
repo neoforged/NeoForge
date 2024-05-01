@@ -32,7 +32,7 @@
 +    }
 +
 +    static {
-+        if (net.neoforged.fml.ModLoader.isLoadingStateValid() && !net.neoforged.neoforge.internal.CommonModLoader.areRegistriesLoaded()) {
++        if (!net.neoforged.fml.ModLoader.hasErrors() && !net.neoforged.neoforge.internal.CommonModLoader.areRegistriesLoaded()) {
 +            com.mojang.logging.LogUtils.getLogger().error(
 +                      "net.minecraft.client.renderer.Sheets loaded too early, modded registry-based materials may not work correctly",
 +                      new IllegalStateException("net.minecraft.client.renderer.Sheets loaded too early")

@@ -49,6 +49,8 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import net.neoforged.testframework.registration.DeferredAttachmentTypes;
 import net.neoforged.testframework.registration.DeferredBlocks;
 import net.neoforged.testframework.registration.DeferredEntityTypes;
@@ -168,6 +170,12 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     @Override
+    public <M extends DataMapType<?, ?>> M registerDataMap(M map) {
+        eventListeners().accept((final RegisterDataMapTypesEvent event) -> event.register((DataMapType) map));
+        return map;
+    }
+
+    @Override
     public String modId() {
         return modId;
     }
@@ -189,7 +197,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
                                         FeatureFlags.DEFAULT_FLAGS,
                                         List.of(),
                                         true),
-                                new PackSelectionConfig(true, Pack.Position.BOTTOM, true))));
+                                new PackSelectionConfig(true, Pack.Position.TOP, true))));
             }
         });
         return newName;
