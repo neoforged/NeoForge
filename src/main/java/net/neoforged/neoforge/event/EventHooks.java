@@ -798,10 +798,27 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player));
     }
 
+    /**
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} before creating the new {@link ServerPlayer}
+     * to fire the {@link PlayerRespawnPositionEvent}
+     * 
+     * @param player          The old {@link ServerPlayer} that is being respawned
+     * @param respawnLevel    The default level the player will respawn into
+     * @param respawnAngle    The angle the player will face when they respawn
+     * @param respawnPosition The position in the level the player will respawn at
+     * @param fromEndFight    Whether the player is respawning because they jumped through the End return portal
+     * @return The event
+     */
     public static PlayerRespawnPositionEvent firePlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
         return NeoForge.EVENT_BUS.post(new PlayerRespawnPositionEvent(player, respawnLevel, respawnAngle, respawnPosition, fromEndFight));
     }
 
+    /**
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} after creating and initializing the new {@link ServerPlayer}.
+     * 
+     * @param player       The new player instance created by the respawn process
+     * @param fromEndFight Whether the player is respawning because they jumped through the End return portal
+     */
     public static void firePlayerRespawnEvent(ServerPlayer player, boolean fromEndFight) {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
     }
