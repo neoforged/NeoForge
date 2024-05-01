@@ -28,17 +28,14 @@
      }
  
      @Deprecated
-@@ -104,6 +_,14 @@
 @@ -104,6 +_,17 @@
          return this.components;
      }
  
-+    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.registries.ModifyDefaultComponentsEvent the event} instead */
 +    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.event.ModifyDefaultComponentsEvent the event} instead */
 +    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
 +    public void modifyDefaultComponentsFrom(net.minecraft.core.component.DataComponentPatch patch) {
 +        if (!net.neoforged.neoforge.registries.RegistryManager.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
-+        Properties.validateComponents(components);
 +        var builder = DataComponentMap.builder().addAll(components);
 +        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
 +        var built = builder.build();
