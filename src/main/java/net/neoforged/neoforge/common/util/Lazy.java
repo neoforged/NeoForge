@@ -47,6 +47,9 @@ public final class Lazy<T> implements Supplier<T> {
                 ret = cachedValue;
                 if (ret == null) {
                     cachedValue = ret = delegate.get();
+                    if (ret == null) {
+                        throw new IllegalStateException("Lazy value cannot be null, but supplier returned null: " + delegate);
+                    }
                 }
             }
         }
