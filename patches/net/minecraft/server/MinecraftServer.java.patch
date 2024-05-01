@@ -187,7 +187,7 @@
      public CompletableFuture<Void> reloadResources(Collection<String> p_129862_) {
          CompletableFuture<Void> completablefuture = CompletableFuture.<ImmutableList>supplyAsync(
 -                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
-+                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).flatMap(Pack::streamSelfAndChildren).map(Pack::open).collect(ImmutableList.toImmutableList()),
++                () -> this.packRepository.rebuildSelected(p_129862_).stream().map(Pack::open).collect(ImmutableList.toImmutableList()),
                  this
              )
              .thenCompose(
@@ -211,6 +211,15 @@
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
+@@ -1518,6 +_,8 @@
+                 set.add("vanilla");
+             }
+ 
++            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, datapackconfig.getEnabled(), p_248681_);
++
+             return configureRepositoryWithSelection(p_248681_, set, featureflagset, true);
+         }
+     }
 @@ -1688,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);

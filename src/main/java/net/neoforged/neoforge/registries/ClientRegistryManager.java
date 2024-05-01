@@ -22,10 +22,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -36,10 +38,12 @@ public class ClientRegistryManager {
     public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final IPayloadContext context) {
         context.enqueueWork(() -> {
             try {
-                final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) Minecraft.getInstance().level.registryAccess()
+                var regAccess = Minecraft.getInstance().level.registryAccess();
+                final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) regAccess
                         .registryOrThrow(payload.registryKey());
                 registry.dataMaps.clear();
                 payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
+                NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(regAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));
             } catch (Throwable t) {
                 context.disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location(), t.getMessage()));
                 LOGGER.error("Failed to handle registry data map sync: ", t);

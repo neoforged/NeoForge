@@ -227,7 +227,7 @@
              this.level().addFreshEntity(itementity);
              return itementity;
          }
-@@ -1865,7 +_,10 @@
+@@ -1865,7 +_,11 @@
  
      public void rideTick() {
          this.setDeltaMovement(Vec3.ZERO);
@@ -235,6 +235,7 @@
 +        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
 +        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(this).isCanceled()) {
 +            this.tick();
++            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(this);
 +        }
          if (this.isPassenger()) {
              this.getVehicle().positionRider(this);

@@ -64,6 +64,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagEntry;
@@ -974,7 +975,7 @@ public class CommonHooks {
     }
 
     public static List<String> getModDataPacks() {
-        List<String> modpacks = ResourcePackLoader.getDataPackNames();
+        List<String> modpacks = ResourcePackLoader.getPackNames(PackType.SERVER_DATA);
         if (modpacks.isEmpty())
             throw new IllegalStateException("Attempted to retrieve mod packs before they were loaded in!");
         return modpacks;
@@ -1164,7 +1165,7 @@ public class CommonHooks {
         return mask.isEnderMask(player, enderMan) || NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
     }
 
-    private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.concurrentOf(() -> {
+    private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.of(() -> {
         Map<String, StructuresBecomeConfiguredFix.Conversion> map = new HashMap<>();
         NeoForge.EVENT_BUS.post(new RegisterStructureConversionsEvent(map));
         return ImmutableMap.copyOf(map);
