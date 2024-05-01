@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.registries;
 
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -39,11 +38,7 @@ import net.neoforged.fml.event.IModBusEvent;
  * }
  */
 public class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
-    private final Map<Item, DataComponentPatch.Builder> patches;
-
-    ModifyDefaultComponentsEvent(Map<Item, DataComponentPatch.Builder> patches) {
-        this.patches = patches;
-    }
+    ModifyDefaultComponentsEvent() {}
 
     /**
      * Patches the default components of the given {@code item}.
@@ -52,7 +47,12 @@ public class ModifyDefaultComponentsEvent extends Event implements IModBusEvent 
      * @param patch the patch to apply
      */
     public void modify(ItemLike item, Consumer<DataComponentPatch.Builder> patch) {
-        patch.accept(patches.computeIfAbsent(item.asItem(), k -> DataComponentPatch.builder()));
+        var builder = DataComponentPatch.builder();
+        patch.accept(builder);
+        var compPatch = builder.build();
+        if (!compPatch.isEmpty()) {
+            item.asItem().modifyDefaultComponentsFrom(builder.build());
+        }
     }
 
     /**

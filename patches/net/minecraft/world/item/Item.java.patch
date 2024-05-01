@@ -28,19 +28,16 @@
      }
  
      @Deprecated
-@@ -104,6 +_,17 @@
+@@ -104,6 +_,14 @@
          return this.components;
      }
  
-+    private boolean modifiedComponents;
-+
 +    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.registries.ModifyDefaultComponentsEvent the event} instead */
 +    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
 +    public void modifyDefaultComponentsFrom(net.minecraft.core.component.DataComponentPatch patch) {
-+        if (modifiedComponents) throw new IllegalStateException("Default components have been modified already!");
++        if (net.neoforged.neoforge.registries.RegistryManager.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
 +        components = net.minecraft.core.component.PatchedDataComponentMap.fromPatch(components, patch);
 +        Properties.validateComponents(components);
-+        modifiedComponents = true;
 +    }
 +
      public int getDefaultMaxStackSize() {
