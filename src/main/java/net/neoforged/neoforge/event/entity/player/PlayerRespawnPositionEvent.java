@@ -9,6 +9,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -69,7 +70,11 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
      * @param respawnLevelResourceKey The {@link ResourceKey} of the level to respawn into.
      */
     public void setRespawnLevel(ResourceKey<Level> respawnLevelResourceKey) {
-        setRespawnLevel(Objects.requireNonNull(Objects.requireNonNull(getEntity().getServer()).getLevel(respawnLevelResourceKey)));
+        MinecraftServer server = Objects.requireNonNull(
+                getEntity().getServer(), "The player is not in a ServerLevel somehow?");
+        ServerLevel level = Objects.requireNonNull(
+                server.getLevel(respawnLevelResourceKey), "Level " + respawnLevelResourceKey + " does not exist!");
+        setRespawnLevel(level);
     }
 
     /**
