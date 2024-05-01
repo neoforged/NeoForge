@@ -20,7 +20,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -210,8 +209,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
                 Items.BROWN_SHULKER_BOX,
                 Items.GREEN_SHULKER_BOX,
                 Items.RED_SHULKER_BOX,
-                Items.BLACK_SHULKER_BOX
-        );
+                Items.BLACK_SHULKER_BOX);
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
         copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
