@@ -39,9 +39,9 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
 import net.neoforged.neoforge.client.CreativeModeTabSearchRegistry;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -216,7 +216,7 @@ public final class CreativeModeTabRegistry {
 
         recalculateItemCreativeModeTabs();
 
-        if (FMLEnvironment.dist.isClient() && !FMLLoader.getLaunchHandler().isData())
+        if (FMLEnvironment.dist.isClient() && !DatagenModLoader.isRunningDataGen())
             CreativeModeTabSearchRegistry.createSearchTrees();
     }
 

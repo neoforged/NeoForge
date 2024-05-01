@@ -143,7 +143,7 @@
 +
 +    private void initClient() {
 +        // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
-+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.fml.loading.FMLLoader.getLaunchHandler().isData()) {
++                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen()) {
 +                initializeClient(properties -> {
 +                        if (properties == this)
 +                                throw new IllegalStateException("Don't extend IItemRenderProperties in your item, use an anonymous class instead.");
