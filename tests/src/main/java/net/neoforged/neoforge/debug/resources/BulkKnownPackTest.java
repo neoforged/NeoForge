@@ -2,10 +2,10 @@ package net.neoforged.neoforge.debug.resources;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
@@ -27,8 +27,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.annotation.WithListener;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 @ForEachTest(groups = BulkKnownPackTest.GROUP, side = Dist.CLIENT)
 public class BulkKnownPackTest {
     public static final String GROUP = "resources";
@@ -40,8 +38,8 @@ public class BulkKnownPackTest {
         test.framework().modEventBus().addListener(AddPackFindersEvent.class, event -> {
             if (event.getPackType() == PackType.SERVER_DATA) {
                 for (int i = 0; i < 128; i++) {
-                    var id = "bulk_known_pack_test/"+i;
-                    PackLocationInfo info = new PackLocationInfo(id, Component.literal(i+"th containing single entry"), PackSource.BUILT_IN, Optional.of(new KnownPack(NAMESPACE, id, "1.0.0")));
+                    var id = "bulk_known_pack_test/" + i;
+                    PackLocationInfo info = new PackLocationInfo(id, Component.literal(i + "th containing single entry"), PackSource.BUILT_IN, Optional.of(new KnownPack(NAMESPACE, id, "1.0.0")));
                     final LoginPacketSplitTest.InMemoryResourcePack pack = new LoginPacketSplitTest.InMemoryResourcePack(info);
                     generateEntry(pack, i);
                     event.addRepositorySource(packs -> packs.accept(Pack.readMetaAndCreate(
@@ -60,8 +58,8 @@ public class BulkKnownPackTest {
             RegistryAccess access = changer.registryAccess();
             var biomes = access.registry(Registries.BIOME).orElseThrow();
             for (int i = 0; i < 128; i++) {
-                var id = new ResourceLocation(NAMESPACE, "entry_"+i);
-                biomes.getHolder(id).orElseThrow(() -> new IllegalStateException("Entry "+id+" that should be synced by KnownPack not found"));
+                var id = new ResourceLocation(NAMESPACE, "entry_" + i);
+                biomes.getHolder(id).orElseThrow(() -> new IllegalStateException("Entry " + id + " that should be synced by KnownPack not found"));
             }
         }
     }
@@ -81,6 +79,6 @@ public class BulkKnownPackTest {
         json.add("spawn_costs", new JsonObject());
         json.add("carvers", new JsonObject());
         json.add("features", new JsonArray());
-        pack.putData(new ResourceLocation(NAMESPACE, "worldgen/biome/entry_"+i+".json"), json);
+        pack.putData(new ResourceLocation(NAMESPACE, "worldgen/biome/entry_" + i + ".json"), json);
     }
 }

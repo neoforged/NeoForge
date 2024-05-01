@@ -192,7 +192,7 @@ public class LoginPacketSplitTest {
         public void listResources(PackType type, String namespace, String startingPath, ResourceOutput out) {
             if (type != PackType.SERVER_DATA) return;
             data.forEach((key, data) -> {
-                if (key.getNamespace().equals(namespace) && key.getPath().startsWith(startingPath+"/")) {
+                if (key.getNamespace().equals(namespace) && key.getPath().startsWith(startingPath + "/")) {
                     final byte[] bytes = data.get();
                     if (bytes != null) {
                         out.accept(key, () -> new ByteArrayInputStream(bytes));
