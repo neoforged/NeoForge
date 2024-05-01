@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Fired by {@link PlayerList#respawn(ServerPlayer, boolean)} when the server respawns a player.
+ * Fired by {@link PlayerList#respawn(ServerPlayer, boolean)} before the server respawns a player.
  * This may be used to change the {@link ServerLevel} the player respawns in, as well as their respawn position.
  * This event is fired after {@link BlockState#getRespawnPosition(EntityType, LevelReader, BlockPos, float, LivingEntity)} is called.
  * <p>
