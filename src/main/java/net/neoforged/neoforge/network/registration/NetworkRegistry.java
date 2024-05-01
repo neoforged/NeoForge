@@ -40,6 +40,7 @@ import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.BrandPayload;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.ResourceLocation;
@@ -219,6 +220,17 @@ public class NetworkRegistry {
             dumpStackToLog();
             return null;
         }
+    }
+
+    /**
+     * Checks if a payload is a modded payload. A modded payload is any payload that does not have `minecraft` as the domain, and is not a discarded payload.
+     * <p>
+     * The special handling for {@link DiscardedPayload} is because it falsely reports its type as the type that failed to decode.
+     * 
+     * @return True if the payload is modded, and modded payload handling should be invoked for it.
+     */
+    public static boolean isModdedPayload(CustomPacketPayload payload) {
+        return !(payload instanceof DiscardedPayload) && !"minecraft".equals(payload.type().id().getNamespace());
     }
 
     /**
