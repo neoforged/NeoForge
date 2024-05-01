@@ -193,7 +193,25 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.SEEDS_MELON).add(Items.MELON_SEEDS);
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
-        copy(Tags.Blocks.SHULKER_BOXES, Tags.Items.SHULKER_BOXES);
+        tag(Tags.Items.SHULKER_BOXES).add(
+                Items.SHULKER_BOX,
+                Items.WHITE_SHULKER_BOX,
+                Items.ORANGE_SHULKER_BOX,
+                Items.MAGENTA_SHULKER_BOX,
+                Items.LIGHT_BLUE_SHULKER_BOX,
+                Items.YELLOW_SHULKER_BOX,
+                Items.LIME_SHULKER_BOX,
+                Items.PINK_SHULKER_BOX,
+                Items.GRAY_SHULKER_BOX,
+                Items.LIGHT_GRAY_SHULKER_BOX,
+                Items.CYAN_SHULKER_BOX,
+                Items.PURPLE_SHULKER_BOX,
+                Items.BLUE_SHULKER_BOX,
+                Items.BROWN_SHULKER_BOX,
+                Items.GREEN_SHULKER_BOX,
+                Items.RED_SHULKER_BOX,
+                Items.BLACK_SHULKER_BOX
+        );
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
         copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
