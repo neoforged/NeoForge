@@ -35,7 +35,7 @@
 +                // Adapts the child pack with the following changes:
 +                // - Must be hidden
 +                // - Must have no children
-+                // - Has a pack source referencing its parent, which is not automatically added
++                // - Has a pack source of CHILD_SOURCE, which is not automatically added
 +                Pack adaptedChild = new Pack(
 +                        new PackLocationInfo(child.location.id(), child.location.title(), CHILD_SOURCE, child.location.knownPackInfo()),
 +                        child.resources,
