@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.registries;
+package net.neoforged.neoforge.event;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -13,8 +13,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The event used to modify the default {@linkplain Item#components() components} of an item. <br>
@@ -31,14 +33,18 @@ import net.neoforged.fml.event.IModBusEvent;
  *
  *    event.modify(Items.APPLE, builder -> builder
  *         .remove(DataComponents.FOOD)); // Remove the ability of eating apples
+ * }
  *
- *    event.modify(item -> item.components().has(DataComponents.FIRE_RESISTANT), builder -> builder
- *         .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire resistant items glint
+ * // Lowest priority listener
+ * public void modifyComponentsLow(ModifyDefaultComponentsEvent event) {
+ *    event.modifyMatching(item -> item.components().has(DataComponents.FIRE_RESISTANT), builder -> builder
+ *         .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire resistant items have a glint
  * }
  * }
  */
-public class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
-    ModifyDefaultComponentsEvent() {}
+public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
+    @ApiStatus.Internal
+    public ModifyDefaultComponentsEvent() {}
 
     /**
      * Patches the default components of the given {@code item}.
@@ -57,11 +63,15 @@ public class ModifyDefaultComponentsEvent extends Event implements IModBusEvent 
 
     /**
      * Patches the default components of all items matching the given {@code predicate}.
+     * <p>
+     * If this method is used to modify components based on the item's current default components, the
+     * event listener should use the {@link EventPriority#LOWEST lowest priority} so that {@linkplain #modify(ItemLike, Consumer) other mods' modifications} are
+     * already applied.
      *
      * @param predicate the item filter
      * @param patch     the patch to apply
      */
-    public void modify(Predicate<? super Item> predicate, Consumer<DataComponentPatch.Builder> patch) {
+    public void modifyMatching(Predicate<? super Item> predicate, Consumer<DataComponentPatch.Builder> patch) {
         getAllItems().filter(predicate).forEach(item -> modify(item, patch));
     }
 
