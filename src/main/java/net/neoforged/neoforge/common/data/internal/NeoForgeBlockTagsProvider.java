@@ -116,6 +116,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.SANDSTONE_RED_STAIRS).add(Blocks.RED_SANDSTONE_STAIRS, Blocks.SMOOTH_RED_SANDSTONE_STAIRS);
         tag(Tags.Blocks.SANDSTONE_UNCOLORED_STAIRS).add(Blocks.SANDSTONE_STAIRS, Blocks.SMOOTH_SANDSTONE_STAIRS);
         tag(Tags.Blocks.SANDSTONE_STAIRS).addTags(Tags.Blocks.SANDSTONE_RED_STAIRS, Tags.Blocks.SANDSTONE_UNCOLORED_STAIRS);
+
         tag(Tags.Blocks.STONES).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.STONE, Blocks.DEEPSLATE, Blocks.TUFF);
         tag(Tags.Blocks.STORAGE_BLOCKS).addTags(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL, Tags.Blocks.STORAGE_BLOCKS_COAL,
                 Tags.Blocks.STORAGE_BLOCKS_COPPER, Tags.Blocks.STORAGE_BLOCKS_DIAMOND, Tags.Blocks.STORAGE_BLOCKS_DRIED_KELP,
