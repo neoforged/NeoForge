@@ -73,9 +73,9 @@ public class ItemComponentTests {
                 .component(DataComponents.BASE_COLOR, DyeColor.BLUE))
                 .withLang("Test components item");
         test.framework().modEventBus().addListener((final ModifyDefaultComponentsEvent event) -> {
-            event.modify(testItem)
+            event.modify(testItem, builder -> builder
                     .remove(DataComponents.BASE_COLOR)
-                    .set(DataComponents.MAX_STACK_SIZE, 5);
+                    .set(DataComponents.MAX_STACK_SIZE, 5));
         });
 
         test.onGameTest(helper -> {
