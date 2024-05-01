@@ -29,7 +29,6 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.MappedRegistry;
@@ -48,7 +47,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageType;
@@ -64,16 +62,12 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
@@ -81,7 +75,6 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
@@ -91,8 +84,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -165,11 +156,10 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.potion.PotionBucketItem;
+import net.neoforged.neoforge.fluids.potion.PotionFluid;
+import net.neoforged.neoforge.fluids.potion.PotionFluidType;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
@@ -746,139 +736,12 @@ public class NeoForgeMod {
         // register the potion fluid only if a mod requests it
         if (enablePotionFluid) {
             // bucket item containing this fluid for all potion types
-            event.register(Registries.ITEM, helper -> helper.register(POTION_BUCKET.getKey(), new Item(new Item.Properties()
+            event.register(Registries.ITEM, helper -> helper.register(POTION_BUCKET.getKey(), new PotionBucketItem(new Item.Properties()
                     .stacksTo(1)
-                    .component(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)) {
-                @Override
-                public String getDescriptionId(ItemStack stack) {
-                    var potion = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
-                    return Potion.getName(potion, "%s.effect.".formatted(Items.POTION.getDescriptionId()));
-                }
+                    .component(DataComponents.POTION_CONTENTS, PotionContents.EMPTY))));
 
-                @Override
-                public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> tooltipLines, TooltipFlag tooltipFlag) {
-                    var contents = stack.get(DataComponents.POTION_CONTENTS);
-
-                    if (contents != null)
-                        contents.addPotionTooltip(tooltipLines::add, 1F, tooltipContext.tickRate());
-                }
-
-                @Override
-                public ItemStack getDefaultInstance() {
-                    return PotionContents.createItemStack(this, Potions.WATER);
-                }
-            }));
-
-            event.register(NeoForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(POTION_TYPE.getKey(), new FluidType(FluidType.Properties.create()) {
-                @Override
-                public String getDescriptionId(FluidStack stack) {
-                    var potion = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
-                    return Potion.getName(potion, "%s.effect.".formatted(Items.POTION.getDescriptionId()));
-                }
-
-                @Override
-                public ItemStack getBucket(FluidStack stack) {
-                    // if theres at least 1 bucket, we use the new potion bucket item
-                    // otherwise return a potion bottle
-                    var item = new ItemStack(stack.getAmount() % FluidType.BUCKET_VOLUME == 0 ? POTION_BUCKET : Items.POTION);
-                    item.copyFrom(stack, DataComponents.POTION_CONTENTS);
-                    return item;
-                }
-
-                @Override
-                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-                    consumer.accept(new IClientFluidTypeExtensions() {
-                        private final ResourceLocation TEXTURE_STILL = new ResourceLocation(NeoForgeVersion.MOD_ID, "block/potion_still");
-                        private final ResourceLocation TEXTURE_FLOWING = new ResourceLocation(NeoForgeVersion.MOD_ID, "block/potion_flow");
-
-                        @Override
-                        public int getTintColor() {
-                            return 0xFF385DC6; // PotionContents.BASE_POTION_COLOR
-                        }
-
-                        @Override
-                        public int getTintColor(FluidStack stack) {
-                            var color = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getColor();
-                            return FastColor.ARGB32.opaque(color);
-                        }
-
-                        @Override
-                        public ResourceLocation getStillTexture() {
-                            return TEXTURE_STILL;
-                        }
-
-                        @Override
-                        public ResourceLocation getFlowingTexture() {
-                            // even though we dont register a flowing potion fluid
-                            // we still provide a flowing texture for rendering
-                            // tanks / ui often use the flowing texture rather than the still texture
-                            return TEXTURE_FLOWING;
-                        }
-                    });
-                }
-            }));
-
-            event.register(Registries.FLUID, helper -> helper.register(POTION.getKey(), new Fluid() {
-                @Override
-                public Item getBucket() {
-                    return POTION_BUCKET.asItem();
-                }
-
-                @Override
-                protected boolean canBeReplacedWith(FluidState fluidState, BlockGetter level, BlockPos pos, Fluid fluid, Direction side) {
-                    return true;
-                }
-
-                @Override
-                protected Vec3 getFlow(BlockGetter level, BlockPos pos, FluidState fluidState) {
-                    return Vec3.ZERO;
-                }
-
-                @Override
-                public int getTickDelay(LevelReader level) {
-                    return 0;
-                }
-
-                @Override
-                protected float getExplosionResistance() {
-                    return 0F;
-                }
-
-                @Override
-                public float getHeight(FluidState fluidState, BlockGetter level, BlockPos pos) {
-                    return 0F;
-                }
-
-                @Override
-                public float getOwnHeight(FluidState fluidState) {
-                    return 0F;
-                }
-
-                @Override
-                protected BlockState createLegacyBlock(FluidState fluidState) {
-                    return Blocks.AIR.defaultBlockState();
-                }
-
-                @Override
-                public boolean isSource(FluidState fluidState) {
-                    return true;
-                }
-
-                @Override
-                public int getAmount(FluidState fluidState) {
-                    return 0;
-                }
-
-                @Override
-                public VoxelShape getShape(FluidState fluidState, BlockGetter level, BlockPos pos) {
-                    return Shapes.empty();
-                }
-
-                @Override
-                public FluidType getFluidType() {
-                    return POTION_TYPE.value();
-                }
-            }));
+            event.register(NeoForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(POTION_TYPE.getKey(), new PotionFluidType(FluidType.Properties.create())));
+            event.register(Registries.FLUID, helper -> helper.register(POTION.getKey(), new PotionFluid()));
         }
     }
 
@@ -886,8 +749,8 @@ public class NeoForgeMod {
         if (enablePotionFluid) {
             // register basic fluid handlers for potion items
             // when potion fluid is enabled
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, $) -> new PotionFluidHandlerItem(stack, Items.BUCKET, FluidType.BUCKET_VOLUME), POTION_BUCKET);
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, $) -> new PotionFluidHandlerItem(stack, Items.GLASS_BOTTLE, FluidType.BOTTLE_VOLUME), Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
+            event.registerItem(Capabilities.FluidHandler.ITEM, PotionBucketItem.capabilityProvider(Items.BUCKET, FluidType.BUCKET_VOLUME), POTION_BUCKET);
+            event.registerItem(Capabilities.FluidHandler.ITEM, PotionBucketItem.capabilityProvider(Items.GLASS_BOTTLE, FluidType.BOTTLE_VOLUME), Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
         }
     }
 
@@ -946,107 +809,5 @@ public class NeoForgeMod {
 
     public static boolean isPRBuild() {
         return isPRBuild;
-    }
-
-    // Copy of FluidBucketWrapper to allow differing capacities and empty containers
-    // builds contained fluid from the PotionContents component
-    private static final class PotionFluidHandlerItem implements IFluidHandlerItem {
-        private ItemStack container;
-        private final ItemLike emptyContainer;
-        private final int capacity;
-
-        private PotionFluidHandlerItem(ItemStack container, ItemLike emptyContainer, int capacity) {
-            this.container = container;
-            this.emptyContainer = emptyContainer;
-            this.capacity = capacity;
-        }
-
-        private void setFluid(FluidStack stack) {
-            if (stack.isEmpty())
-                container = emptyContainer.asItem().getDefaultInstance();
-            else
-                container = FluidUtil.getFilledBucket(stack);
-        }
-
-        public FluidStack getFluid() {
-            var container = getContainer();
-
-            if (container.has(DataComponents.POTION_CONTENTS)) {
-                var stack = new FluidStack(POTION, capacity);
-                stack.copyFrom(container, DataComponents.POTION_CONTENTS);
-                return stack;
-            }
-
-            return FluidStack.EMPTY;
-        }
-
-        @Override
-        public ItemStack getContainer() {
-            return container;
-        }
-
-        @Override
-        public int getTanks() {
-            return 1;
-        }
-
-        @Override
-        public boolean isFluidValid(int tank, FluidStack stack) {
-            return tank == 0 && stack.has(DataComponents.POTION_CONTENTS);
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return capacity;
-        }
-
-        @Override
-        public FluidStack getFluidInTank(int tank) {
-            return tank == 0 ? getFluid() : FluidStack.EMPTY;
-        }
-
-        @Override
-        public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
-            if (getContainer().getCount() != 1 || resource.getAmount() < capacity || !getFluid().isEmpty() || !resource.has(DataComponents.POTION_CONTENTS))
-                return 0;
-            if (action.execute())
-                setFluid(resource);
-
-            return capacity;
-        }
-
-        @Override
-        public FluidStack drain(FluidStack resource, IFluidHandler.FluidAction action) {
-            if (getContainer().getCount() != 1 || resource.getAmount() < capacity)
-                return FluidStack.EMPTY;
-
-            var fluid = getFluid();
-
-            if (!fluid.isEmpty() && FluidStack.isSameFluidSameComponents(fluid, resource)) {
-                if (action.execute())
-                    setFluid(FluidStack.EMPTY);
-
-                return fluid;
-            }
-
-            return FluidStack.EMPTY;
-        }
-
-        @Override
-        public FluidStack drain(int maxDrain, IFluidHandler.FluidAction action) {
-            if (getContainer().getCount() != 1 || maxDrain < capacity)
-                return FluidStack.EMPTY;
-
-            var fluid = getFluid();
-
-            if (!fluid.isEmpty()) {
-                if (action.execute())
-                    setFluid(FluidStack.EMPTY);
-
-                return fluid;
-            }
-
-            return FluidStack.EMPTY;
-        }
     }
 }
