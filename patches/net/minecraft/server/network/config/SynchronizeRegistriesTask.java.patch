@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/config/SynchronizeRegistriesTask.java
 +++ b/net/minecraft/server/network/config/SynchronizeRegistriesTask.java
-@@ -45,11 +_,9 @@
+@@ -45,11 +_,10 @@
      }
  
      public void handleResponse(List<KnownPack> p_326076_, Consumer<Packet<?>> p_326167_) {
@@ -9,6 +9,7 @@
 -        } else {
 -            this.sendRegistries(p_326167_, Set.of());
 -        }
++        // NeoForge: instead of using either all available KnownPacks or none, allow partial fallback to normal syncing
 +        Set<KnownPack> requested = new java.util.HashSet<>(this.requestedPacks);
 +        requested.retainAll(p_326076_);
 +        this.sendRegistries(p_326167_, requested);
