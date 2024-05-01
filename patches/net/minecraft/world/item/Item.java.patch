@@ -28,7 +28,7 @@
      }
  
      @Deprecated
-@@ -104,6 +_,17 @@
+@@ -104,6 +_,15 @@
          return this.components;
      }
  
@@ -38,9 +38,7 @@
 +        if (!net.neoforged.neoforge.internal.RegistrationEvents.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
 +        var builder = DataComponentMap.builder().addAll(components);
 +        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
-+        var built = builder.build();
-+        Properties.validateComponents(built);
-+        components = built;
++        components = Properties.COMPONENT_INTERNER.intern(Properties.validateComponents(builder.build()));
 +    }
 +
      public int getDefaultMaxStackSize() {
@@ -204,19 +202,14 @@
              if (this.components == null) {
                  this.components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
              }
-@@ -391,10 +_,13 @@
+@@ -391,6 +_,10 @@
  
          DataComponentMap buildAndValidateComponents() {
              DataComponentMap datacomponentmap = this.buildComponents();
-+            validateComponents(datacomponentmap);
-+            return datacomponentmap;
++            return validateComponents(datacomponentmap);
 +        }
 +
-+        public static void validateComponents(DataComponentMap datacomponentmap) {
++        public static DataComponentMap validateComponents(DataComponentMap datacomponentmap) {
              if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
                  throw new IllegalStateException("Item cannot have both durability and be stackable");
--            } else {
--                return datacomponentmap;
-             }
-         }
- 
+             } else {
