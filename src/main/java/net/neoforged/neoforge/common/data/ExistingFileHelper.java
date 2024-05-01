@@ -119,7 +119,7 @@ public class ExistingFileHelper {
             IModFileInfo modFileInfo = ModList.get().getModFileById(existingMod);
             if (modFileInfo != null) {
                 // Only opens primary packs - overlays are not currently considered for datagen
-                final String name = "mod:" + existingMod;
+                final String name = "mod/" + existingMod;
                 candidateClientResources.add(ResourcePackLoader.createPackForMod(modFileInfo).openPrimary(new PackLocationInfo(name, Component.empty(), PackSource.BUILT_IN, Optional.empty())));
                 candidateServerResources.add(ResourcePackLoader.createPackForMod(modFileInfo).openPrimary(new PackLocationInfo(name, Component.empty(), PackSource.BUILT_IN, Optional.empty())));
             }
