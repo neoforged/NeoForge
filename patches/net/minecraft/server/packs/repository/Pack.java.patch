@@ -9,7 +9,7 @@
  
      @Nullable
      public static Pack readMetaAndCreate(PackLocationInfo p_326065_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, PackSelectionConfig p_326429_) {
-@@ -32,6 +_,23 @@
+@@ -32,6 +_,43 @@
      }
  
      public Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_) {
@@ -17,6 +17,15 @@
 +    }
 +
 +    private Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_, List<Pack> children) {
++        // Logic from PackSource#decorateWithSource
++        PackSource parentSource = PackSource.create(
++                name -> Component.translatable(
++                        "pack.nameAndSource",
++                        name,
++                        Component.translatable("pack.neoforge.childof", p_326123_.title())
++                ).withStyle(net.minecraft.ChatFormatting.GRAY),
++                false
++        );
 +        List<Pack> flattenedChildren = new java.util.ArrayList<>();
 +        List<Pack> remainingChildren = children;
 +        // recursively flatten children
@@ -24,7 +33,18 @@
 +            List<Pack> oldChildren = remainingChildren;
 +            remainingChildren = new java.util.ArrayList<>();
 +            for (Pack child : oldChildren) {
-+                flattenedChildren.add(child.withChildren(List.of()).hidden());
++                // Adapts the child pack with the following changes:
++                // - Must be hidden
++                // - Must have no children
++                // - Has a pack source referencing its parent, which is not automatically added
++                Pack adaptedChild = new Pack(
++                        new PackLocationInfo(child.location.id(), child.location.title(), parentSource, child.location.knownPackInfo()),
++                        child.resources,
++                        new Metadata(child.metadata.description, child.metadata.compatibility, child.metadata.requestedFeatures, child.metadata.overlays, true),
++                        new PackSelectionConfig(false, child.selectionConfig.defaultPosition(), child.selectionConfig.fixedPosition()),
++                        List.of()
++                );
++                flattenedChildren.add(adaptedChild);
 +                remainingChildren.addAll(child.getChildren());
 +            }
 +        }
