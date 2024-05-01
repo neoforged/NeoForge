@@ -1165,7 +1165,7 @@ public class CommonHooks {
         return mask.isEnderMask(player, enderMan) || NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
     }
 
-    private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.concurrentOf(() -> {
+    private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.of(() -> {
         Map<String, StructuresBecomeConfiguredFix.Conversion> map = new HashMap<>();
         NeoForge.EVENT_BUS.post(new RegisterStructureConversionsEvent(map));
         return ImmutableMap.copyOf(map);
