@@ -84,7 +84,8 @@ public class LoginPacketSplitTest {
         if (ENABLED) {
             bus.addListener((final AddPackFindersEvent event) -> {
                 if (event.getPackType() == PackType.SERVER_DATA) {
-                    PackLocationInfo info = new PackLocationInfo("virtual_bigdata", Component.literal("Pack containing big datapack registries"), PackSource.BUILT_IN, Optional.of(new KnownPack(MOD_ID, "virtual_bigdata", "1.0.0")));
+                    // This pack info has no KnownPack, so it is actually synced
+                    PackLocationInfo info = new PackLocationInfo("virtual_bigdata", Component.literal("Pack containing big datapack registries"), PackSource.BUILT_IN, Optional.empty());
                     final InMemoryResourcePack pack = new InMemoryResourcePack(info);
                     generateEntries(pack);
                     event.addRepositorySource(packs -> packs.accept(Pack.readMetaAndCreate(
