@@ -9,7 +9,7 @@
 -        } else {
 -            this.sendRegistries(p_326167_, Set.of());
 -        }
-+        // NeoForge: instead of using either all available KnownPacks or none, allow partial fallback to normal syncing
++        // Neo: instead of using either all available KnownPacks or none, allow partial fallback to normal syncing
 +        Set<KnownPack> requested = new java.util.HashSet<>(this.requestedPacks);
 +        requested.retainAll(p_326076_);
 +        this.sendRegistries(p_326167_, requested);
