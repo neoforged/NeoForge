@@ -48,7 +48,7 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
     }
 
     /**
-     * {@return whether or not the pack repository being assembled is "trusted" to provide default KnownPacks}
+     * {@return whether or not the pack repository being assembled is the one used to provide known packs to the client to avoid syncing from the server}
      */
     public boolean isTrusted() {
         return trusted;
