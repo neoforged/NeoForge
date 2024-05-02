@@ -7,7 +7,7 @@
 +    /**
 +     * Holds the current connection type, based on the types of payloads that have been received so far.
 +     */
-+    protected net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.VANILLA;
++    protected net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.OTHER;
  
      protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
          this.minecraft = p_295454_;
@@ -20,25 +20,23 @@
      }
  
      @Override
-@@ -116,6 +_,25 @@
+@@ -116,6 +_,23 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
-+        // Neo: Unconditionally handle register/unregister payloads and update the connection type accordingly.
++        // Neo: Unconditionally handle register/unregister payloads.
 +        if (p_295727_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this.getConnection(), minecraftRegisterPayload.newChannels());
 +            return;
 +        }
 +
 +        if (p_295727_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
-+            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this.getConnection(), minecraftUnregisterPayload.forgottenChannels());
 +            return;
 +        }
 +
-+        // Neo: Handle modded payloads on modded connections. Vanilla payloads do not get sent to the modded handling pass.
-+        if (this.connectionType.isNotVanilla() && !"minecraft".equals(p_295727_.payload().type().id().getNamespace())) {
++        // Neo: Handle modded payloads. Vanilla payloads do not get sent to the modded handling pass. Additional payloads cannot be registered in the minecraft domain.
++        if (net.neoforged.neoforge.network.registration.NetworkRegistry.isModdedPayload(p_295727_.payload())) {
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.handleModdedPayload(this, p_295727_);
 +            return;
 +        }
