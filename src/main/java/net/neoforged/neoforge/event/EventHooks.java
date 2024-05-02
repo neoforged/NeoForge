@@ -140,8 +140,8 @@ import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.entity.player.BonemealEvent;
 import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
 import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
 import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
@@ -529,10 +529,29 @@ public class EventHooks {
         return event.getExtraLife();
     }
 
-    public static int onItemPickup(ItemEntity entityItem, Player player) {
-        var event = new EntityItemPickupEvent(player, entityItem);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
-        return event.getResult() == Result.ALLOW ? 1 : 0;
+    /**
+     * Called in {@link ItemEntity#playerTouch(Player)} before any other processing occurs.
+     * <p>
+     * Fires {@link ItemEntityPickupEvent.Pre} and returns the event.
+     * 
+     * @param itemEntity The item entity that a player collided with
+     * @param player     The player that collided with the item entity
+     */
+    public static ItemEntityPickupEvent.Pre fireItemPickupPre(ItemEntity itemEntity, Player player) {
+        return NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Pre(player, itemEntity));
+    }
+
+    /**
+     * Called in {@link ItemEntity#playerTouch(Player)} after an item was successfully picked up.
+     * <p>
+     * Fires {@link ItemEntityPickupEvent.Post}.
+     * 
+     * @param itemEntity The item entity that a player collided with
+     * @param player     The player that collided with the item entity
+     * @param copy       A copy of the item entity's item stack before the pickup
+     */
+    public static void fireItemPickupPost(ItemEntity itemEntity, Player player, ItemStack copy) {
+        NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Post(player, itemEntity, copy));
     }
 
     public static boolean canMountEntity(Entity entityMounting, Entity entityBeingMounted, boolean isMounting) {
@@ -867,10 +886,6 @@ public class EventHooks {
      */
     public static void firePlayerRespawnEvent(ServerPlayer player, boolean fromEndFight) {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
-    }
-
-    public static void firePlayerItemPickupEvent(Player player, ItemEntity item, ItemStack clone) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemPickupEvent(player, item, clone));
     }
 
     public static void firePlayerCraftingEvent(Player player, ItemStack crafted, Container craftMatrix) {

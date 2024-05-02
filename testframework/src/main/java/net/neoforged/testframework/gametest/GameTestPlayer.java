@@ -31,7 +31,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     private final GameTestHelper helper;
@@ -61,8 +62,8 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     public GameTestPlayer preventItemPickup() {
-        subscribe((final EntityItemPickupEvent event) -> {
-            if (event.getEntity() == this) event.setCanceled(true);
+        subscribe((ItemEntityPickupEvent.Pre event) -> {
+            if (event.getPlayer() == this) event.setCanPickup(TriState.FALSE);
         });
         return this;
     }
