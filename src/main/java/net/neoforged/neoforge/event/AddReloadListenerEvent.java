@@ -91,7 +91,7 @@ public class AddReloadListenerEvent extends Event {
 
         @Override
         public CompletableFuture<Void> reload(final PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller preparationsProfiler, final ProfilerFiller reloadProfiler, final Executor backgroundExecutor, final Executor gameExecutor) {
-            if (ModLoader.isLoadingStateValid())
+            if (!ModLoader.hasErrors())
                 return wrapped.reload(stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
             else
                 return CompletableFuture.completedFuture(null);

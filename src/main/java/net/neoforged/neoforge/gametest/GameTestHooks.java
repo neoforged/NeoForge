@@ -39,7 +39,7 @@ public class GameTestHooks {
 
     @SuppressWarnings("deprecation")
     public static void registerGametests() {
-        if (!registeredGametests && isGametestEnabled() && ModLoader.isLoadingStateValid()) {
+        if (!registeredGametests && isGametestEnabled() && !ModLoader.hasErrors()) {
             Set<String> enabledNamespaces = getEnabledNamespaces();
             LOGGER.info("Enabled Gametest Namespaces: {}", enabledNamespaces);
 

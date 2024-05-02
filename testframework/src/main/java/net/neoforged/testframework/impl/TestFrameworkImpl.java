@@ -53,6 +53,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
+import net.neoforged.testframework.conf.MissingDescriptionAction;
 import net.neoforged.testframework.gametest.DynamicStructureTemplates;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.group.Group;
@@ -426,6 +427,14 @@ public class TestFrameworkImpl implements MutableTestFramework {
         public void register(Test test) {
             if (tests.containsKey(test.id())) {
                 throw new UnsupportedOperationException("Duplicate test with ID: " + test.id());
+            }
+
+            if (test.visuals() == null || test.visuals().description() == null || test.visuals().description().isEmpty()) {
+                if (configuration.onMissingDescription() == MissingDescriptionAction.ERROR) {
+                    throw new IllegalStateException("Test '" + test.id() + "' has no description.");
+                } else if (configuration.onMissingDescription() == MissingDescriptionAction.WARNING) {
+                    logger.warn("Test '{}' has no description.", test.id());
+                }
             }
 
             tests.put(test.id(), test);

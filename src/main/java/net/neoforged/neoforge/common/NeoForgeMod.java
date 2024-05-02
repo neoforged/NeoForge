@@ -83,7 +83,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingWarning;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -156,7 +156,6 @@ import net.neoforged.neoforge.fluids.crafting.SingleFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.TagFluidIngredient;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -566,7 +565,7 @@ public class NeoForgeMod {
     }
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
-        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {} with MCP {}", NeoForgeVersion.getVersion(), NeoFormVersion.getMCVersion(), NeoFormVersion.getMCPVersion());
+        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), DetectedVersion.BUILT_IN.getName());
         ForgeSnapshotsMod.logStartupWarning();
 
         CrashReportCallables.registerCrashCallable("Crash Report UUID", () -> {
@@ -575,9 +574,8 @@ public class NeoForgeMod {
             return uuid.toString();
         });
 
-        LOGGER.debug(NEOFORGEMOD, "Loading Network data for FML net version: {}", NeoForgeVersion.getSpec());
-        CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getSpec);
-        CrashReportCallables.registerCrashCallable("NeoForge", () -> NeoForgeVersion.getGroup() + ":" + NeoForgeVersion.getVersion());
+        CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getFmlVersion);
+        CrashReportCallables.registerCrashCallable("NeoForge", NeoForgeVersion::getVersion);
 
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
@@ -632,8 +630,7 @@ public class NeoForgeMod {
 
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;
-            ModLoader.addWarning(new ModLoadingWarning(
-                    container.getModInfo(), "loadwarning.neoforge.prbuild"));
+            ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.prbuild").withAffectedMod(container.getModInfo()));
         }
     }
 

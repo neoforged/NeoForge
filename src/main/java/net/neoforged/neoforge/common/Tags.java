@@ -105,13 +105,13 @@ public class Tags {
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
-        public static final TagKey<Block> GRAVELS = tag("gravel");
+        public static final TagKey<Block> GRAVELS = tag("gravels");
         /**
          * Tag that holds all blocks that recipe viewers should not show to users.
          * Recipe viewers may use this to automatically find the corresponding BlockItem to hide.
          */
         public static final TagKey<Block> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
-        public static final TagKey<Block> NETHERRACKS = tag("netherrack");
+        public static final TagKey<Block> NETHERRACKS = tag("netherracks");
         public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
@@ -425,8 +425,8 @@ public class Tags {
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
-        public static final TagKey<Item> GRAVELS = tag("gravel");
-        public static final TagKey<Item> GUNPOWDERS = tag("gunpowder");
+        public static final TagKey<Item> GRAVELS = tag("gravels");
+        public static final TagKey<Item> GUNPOWDERS = tag("gunpowders");
         /**
          * Tag that holds all items that recipe viewers should not show to users.
          */
@@ -436,10 +436,10 @@ public class Tags {
         public static final TagKey<Item> INGOTS_GOLD = tag("ingots/gold");
         public static final TagKey<Item> INGOTS_IRON = tag("ingots/iron");
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
-        public static final TagKey<Item> LEATHERS = tag("leather");
+        public static final TagKey<Item> LEATHERS = tag("leathers");
         public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
-        public static final TagKey<Item> NETHERRACKS = tag("netherrack");
+        public static final TagKey<Item> NETHERRACKS = tag("netherracks");
         public static final TagKey<Item> NUGGETS = tag("nuggets");
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");

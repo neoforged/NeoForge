@@ -21,6 +21,7 @@ import net.neoforged.testframework.annotation.RegisterStructureTemplate;
 import net.neoforged.testframework.conf.ClientConfiguration;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
+import net.neoforged.testframework.conf.MissingDescriptionAction;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.summary.GitHubActionsStepSummaryDumper;
@@ -51,6 +52,7 @@ public class TestsMod {
                         .build())
                 .enable(Feature.CLIENT_SYNC, Feature.CLIENT_MODIFICATIONS, Feature.TEST_STORE)
                 .dumpers(new JUnitSummaryDumper(Path.of("tests/")), new GitHubActionsStepSummaryDumper())
+                .onMissingDescription(MissingDescriptionAction.ERROR)
                 .build().create();
 
         framework.init(modBus, container);

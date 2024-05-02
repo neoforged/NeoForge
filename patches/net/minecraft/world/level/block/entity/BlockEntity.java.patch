@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -26,7 +_,7 @@
+@@ -27,7 +_,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import org.slf4j.Logger;
  
@@ -9,7 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private final BlockEntityType<?> type;
      @Nullable
-@@ -35,6 +_,8 @@
+@@ -36,6 +_,8 @@
      protected boolean remove;
      private BlockState blockState;
      private DataComponentMap components = DataComponentMap.EMPTY;
@@ -18,7 +18,7 @@
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
          this.type = p_155228_;
-@@ -60,6 +_,8 @@
+@@ -61,6 +_,8 @@
      }
  
      protected void loadAdditional(CompoundTag p_338466_, HolderLookup.Provider p_338445_) {
@@ -27,7 +27,7 @@
      }
  
      public final void loadWithComponents(CompoundTag p_338356_, HolderLookup.Provider p_338558_) {
-@@ -75,6 +_,9 @@
+@@ -76,6 +_,9 @@
      }
  
      protected void saveAdditional(CompoundTag p_187471_, HolderLookup.Provider p_323635_) {
@@ -37,7 +37,7 @@
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
-@@ -204,10 +_,14 @@
+@@ -205,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -52,7 +52,7 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -230,6 +_,27 @@
+@@ -231,6 +_,27 @@
          return this.type;
      }
  
@@ -80,7 +80,7 @@
      @Deprecated
      public void setBlockState(BlockState p_155251_) {
          this.blockState = p_155251_;
-@@ -298,5 +_,15 @@
+@@ -309,5 +_,15 @@
          <T> T get(DataComponentType<T> p_338658_);
  
          <T> T getOrDefault(DataComponentType<? extends T> p_338573_, T p_338734_);

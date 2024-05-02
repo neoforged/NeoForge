@@ -6,11 +6,10 @@
 package net.neoforged.neoforge.server.loading;
 
 import java.io.File;
-import java.util.List;
-import net.neoforged.fml.LoadingFailedException;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingWarning;
+import net.neoforged.fml.ModLoadingException;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
@@ -33,17 +32,19 @@ public class ServerModLoader extends CommonModLoader {
             begin(() -> {});
             load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
             finish(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
-        } catch (LoadingFailedException error) {
+        } catch (ModLoadingException error) {
             ServerModLoader.hasErrors = true;
             // In case its not loaded properly
             LanguageHook.loadBuiltinLanguages();
-            CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error, new File("."));
+            CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), new File("."));
             throw error;
         }
-        List<ModLoadingWarning> warnings = ModLoader.getWarnings();
+        var warnings = ModLoader.getLoadingIssues().stream().filter(i -> i.severity() == ModLoadingIssue.Severity.WARNING).toList();
         if (!warnings.isEmpty()) {
-            LOGGER.warn(Logging.LOADING, "Mods loaded with {} warnings", warnings.size());
-            warnings.forEach(warning -> LOGGER.warn(Logging.LOADING, warning.formatToString()));
+            LOGGER.warn(Logging.LOADING, "Mods loaded with {} issues", warnings.size());
+            for (var issue : warnings) {
+                LOGGER.warn(Logging.LOADING, "{} [{}]", issue.translationKey(), issue.translationArgs());
+            }
         }
         NeoForge.EVENT_BUS.start();
     }

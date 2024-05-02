@@ -21,12 +21,12 @@ class ModListCommand {
                     ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.mods.list",
                             ModList.get().applyForEachModFile(modFile ->
                     // locator - filename : firstmod (version) - numberofmods\n
-                    String.format(Locale.ROOT, "%s %s : %s (%s) - %d",
-                            modFile.getProvider().name().replace(' ', '_'),
+                    String.format(Locale.ROOT, "%s : %s (%s) - %d %s",
                             modFile.getFileName(),
                             modFile.getModInfos().get(0).getModId(),
                             modFile.getModInfos().get(0).getVersion(),
-                            modFile.getModInfos().size())).collect(Collectors.joining("\n\u2022 ", "\n\u2022 ", ""))),
+                            modFile.getModInfos().size(),
+                            modFile.getDiscoveryAttributes())).collect(Collectors.joining("\n\u2022 ", "\n\u2022 ", ""))),
                             false);
                     return 0;
                 });
