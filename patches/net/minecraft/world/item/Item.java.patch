@@ -28,6 +28,22 @@
      }
  
      @Deprecated
+@@ -104,6 +_,15 @@
+         return this.components;
+     }
+ 
++    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.event.ModifyDefaultComponentsEvent the event} instead */
++    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    public void modifyDefaultComponentsFrom(net.minecraft.core.component.DataComponentPatch patch) {
++        if (!net.neoforged.neoforge.internal.RegistrationEvents.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
++        var builder = DataComponentMap.builder().addAll(components);
++        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
++        components = Properties.COMPONENT_INTERNER.intern(Properties.validateComponents(builder.build()));
++    }
++
+     public int getDefaultMaxStackSize() {
+         return this.components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
+     }
 @@ -111,6 +_,8 @@
      public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
      }
@@ -186,3 +202,14 @@
              if (this.components == null) {
                  this.components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
              }
+@@ -391,6 +_,10 @@
+ 
+         DataComponentMap buildAndValidateComponents() {
+             DataComponentMap datacomponentmap = this.buildComponents();
++            return validateComponents(datacomponentmap);
++        }
++
++        public static DataComponentMap validateComponents(DataComponentMap datacomponentmap) {
+             if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
+                 throw new IllegalStateException("Item cannot have both durability and be stackable");
+             } else {
