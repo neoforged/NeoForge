@@ -14,8 +14,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLLoader;
 
 public class ConfigCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -34,11 +36,17 @@ public class ConfigCommand {
             final String configFileName = ConfigTracker.INSTANCE.getConfigFileName(modId, type);
             if (configFileName != null) {
                 File f = new File(configFileName);
+                MutableComponent fileComponent = Component.literal(f.getName()).withStyle(ChatFormatting.UNDERLINE);
+
+                // Click action not allow on dedicated servers as client cannot click link to a server's file path.
+                if (!FMLLoader.getDist().isDedicatedServer()) {
+                    fileComponent.withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, f.getAbsolutePath())));
+                }
+
                 context.getSource().sendSuccess(() -> Component.translatable("commands.config.getwithtype",
-                        modId, type,
-                        Component.literal(f.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, f.getAbsolutePath())))), true);
+                        modId, type.toString(), fileComponent), true);
             } else {
-                context.getSource().sendSuccess(() -> Component.translatable("commands.config.noconfig", modId, type),
+                context.getSource().sendSuccess(() -> Component.translatable("commands.config.noconfig", modId, type.toString()),
                         true);
             }
             return 0;
