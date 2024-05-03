@@ -37,7 +37,7 @@ public class MonsterRoomHooks {
      * @param rand World generation random source
      * @return The entity type
      */
-    public static EntityType<?> getRandomDungeonMob(RandomSource rand) {
+    public static EntityType<?> getRandomMonsterRoomMob(RandomSource rand) {
         MobEntry mob = WeightedRandom.getRandomItem(rand, monsterRoomMobs).orElseThrow();
         return mob.type;
     }
