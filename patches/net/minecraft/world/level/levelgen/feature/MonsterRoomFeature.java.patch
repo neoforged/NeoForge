@@ -5,6 +5,6 @@
  
      private EntityType<?> randomEntityId(RandomSource p_225154_) {
 -        return Util.getRandom(MOBS, p_225154_);
-+        return net.neoforged.neoforge.common.DungeonHooks.getRandomDungeonMob(p_225154_);
++        return net.neoforged.neoforge.common.MonsterRoomHooks.getRandomDungeonMob(p_225154_);
      }
  }
