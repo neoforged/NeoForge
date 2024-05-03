@@ -517,6 +517,8 @@ public interface IItemStackExtension {
 
     /**
      * {@return the attribute modifiers for the given equipment slot}
+     * <p>
+     * Fires ItemAttributeModifierEvent to compute the final attribute modifiers.
      * 
      * @param equipmentSlot the equipment slot to get the attribute modifiers for
      */
