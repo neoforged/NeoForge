@@ -180,8 +180,6 @@ modId="registry_codec_test"
 [[mods]]
 modId="deferred_holder_test"
 [[mods]]
-modId="hidden_tooltip_parts"
-[[mods]]
 modId="gametest_test"
 [[mods]]
 modId="many_mob_effects_test"
