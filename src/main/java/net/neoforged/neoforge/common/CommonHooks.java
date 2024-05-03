@@ -926,16 +926,6 @@ public class CommonHooks {
     }
 
     /**
-     * Gets the burn time of this item stack.
-     * 
-     * @deprecated Use {@link IItemStackExtension#getBurnTime(RecipeType)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public static int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
-        return stack.getBurnTime(recipeType);
-    }
-
-    /**
      * All loot table drops should be passed to this function so that mod added effects (e.g. smelting enchantments) can be processed.
      *
      * @param list    The loot generated
