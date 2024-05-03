@@ -588,7 +588,6 @@ public interface IItemExtension {
     @ApiStatus.OverrideOnly
     default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
         FurnaceFuel furnaceFuel = self().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-        // TODO 1.20.5: Change default logic from -1 to calling the datamap (moving the logic from the itemstack method).
         return furnaceFuel == null ? 0 : furnaceFuel.burnTime();
     }
 
