@@ -101,7 +101,7 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/entity_type/monster_room_mobs.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code weight}, a positive integer - the weight of this type that will be used when selecting a type for the spawner.</li>
+     * <li>{@code weight}, a positive nonzero integer - the weight of this type that will be used when selecting a type for the spawner.</li>
      * </ul>
      *
      * The use of an integer as the value is also possible, though discouraged in case more options are added in the future.
