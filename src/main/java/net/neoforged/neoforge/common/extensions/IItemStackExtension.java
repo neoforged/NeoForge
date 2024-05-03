@@ -84,7 +84,7 @@ public interface IItemStackExtension {
         }
         int burnTime = self().getItem().getBurnTime(self(), recipeType);
         if (burnTime < 0) {
-            throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + "has a negative burn time");
+            throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
         }
         return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
     }
