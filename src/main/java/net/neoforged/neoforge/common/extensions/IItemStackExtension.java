@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -38,8 +39,6 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -83,11 +82,9 @@ public interface IItemStackExtension {
         if (self().isEmpty()) {
             return 0;
         }
-        // TODO 1.20.5: Throw if the returned value from the item is negative, and move datamap logic to the item method.
         int burnTime = self().getItem().getBurnTime(self(), recipeType);
         if (burnTime < 0) {
-            FurnaceFuel fuel = self().getItem().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-            burnTime = fuel != null ? fuel.burnTime() : 0;
+            throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
         }
         return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
     }

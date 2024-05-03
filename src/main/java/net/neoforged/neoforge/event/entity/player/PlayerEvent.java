@@ -454,7 +454,7 @@ public abstract class PlayerEvent extends LivingEvent {
 
         /**
          * Did this respawn event come from the player conquering the end?
-         * 
+         *
          * @return if this respawn was because the player conquered the end
          */
         public boolean isEndConquered() {
