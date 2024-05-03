@@ -8,12 +8,14 @@ package net.neoforged.neoforge.debug.attachment;
 import static net.minecraft.commands.Commands.literal;
 
 import com.mojang.brigadier.Command;
+import com.mojang.serialization.Codec;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
@@ -412,4 +414,32 @@ helper.assertTrue(optional.isPresent(), "Optional should have attached data");
 helper.succeed();
 });
 }*/
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that player attachments are copied on respawn when appropriate.")
+    static void playerAttachmentCopyOnRespawn(DynamicTest test, RegistrationHelper reg) {
+        var lostOnDeathBoolean = reg.attachments()
+                .register("lost_on_death_boolean", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).build());
+        var keptOnDeathBoolean = reg.attachments()
+                .register("kept_on_death_boolean", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).copyOnDeath().build());
+
+        test.onGameTest(helper -> {
+            var player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
+            player.setData(lostOnDeathBoolean, true);
+            player.setData(keptOnDeathBoolean, true);
+
+            var returningPlayer = player.getServer().getPlayerList().respawn(player, true);
+
+            helper.assertTrue(returningPlayer.getData(lostOnDeathBoolean), "Lost-on-death attachment should have remained after end portal respawning.");
+            helper.assertTrue(returningPlayer.getData(keptOnDeathBoolean), "Kept-on-death attachment should have remained after end portal respawning.");
+
+            var respawnedPlayer = player.getServer().getPlayerList().respawn(returningPlayer, false);
+
+            helper.assertFalse(respawnedPlayer.getData(lostOnDeathBoolean), "Lost-on-death attachment should not have remained after respawning.");
+            helper.assertTrue(respawnedPlayer.getData(keptOnDeathBoolean), "Kept-on-death attachment should have remained after respawning.");
+
+            helper.succeed();
+        });
+    }
 }
