@@ -139,7 +139,6 @@ import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.entity.player.BonemealEvent;
 import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
 import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
-import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
@@ -486,27 +485,6 @@ public class EventHooks {
      */
     public static BonemealEvent fireBonemealEvent(@Nullable Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
         return NeoForge.EVENT_BUS.post(new BonemealEvent(player, level, pos, state, stack));
-    }
-
-    @Nullable
-    public static InteractionResultHolder<ItemStack> onBucketUse(Player player, Level level, ItemStack stack, @Nullable HitResult target) {
-        FillBucketEvent event = new FillBucketEvent(player, stack, level, target);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return new InteractionResultHolder<ItemStack>(InteractionResult.FAIL, stack);
-
-        if (event.getResult() == Result.ALLOW) {
-            if (player.getAbilities().instabuild)
-                return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, stack);
-
-            stack.shrink(1);
-            if (stack.isEmpty())
-                return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, event.getFilledBucket());
-
-            if (!player.getInventory().add(event.getFilledBucket()))
-                player.drop(event.getFilledBucket(), false);
-
-            return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, stack);
-        }
-        return null;
     }
 
     public static PlayLevelSoundEvent.AtEntity onPlaySoundAtEntity(Entity entity, Holder<SoundEvent> name, SoundSource category, float volume, float pitch) {
