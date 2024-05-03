@@ -61,19 +61,6 @@ public class NeoForgeDataMaps {
             id("furnace_fuels"), Registries.ITEM, FurnaceFuel.CODEC).synced(FurnaceFuel.BURN_TIME_CODEC, false).build();
 
     /**
-     * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
-     * <p>
-     * The location of this data map is {@code neoforge/data_maps/entity_type/parrot_imitations.json}, and the values are objects with 1 field:
-     * <ul>
-     * <li>{@code sound}, sound event ID - the sound that the parrot will emit when imitating the mob</li>
-     * </ul>
-     *
-     * The use of a string as the value is also possible, though discouraged in case more options are added in the future.
-     */
-    public static final DataMapType<EntityType<?>, ParrotImitation> PARROT_IMITATIONS = DataMapType.builder(
-            id("parrot_imitations"), Registries.ENTITY_TYPE, ParrotImitation.CODEC).synced(ParrotImitation.SOUND_CODEC, false).build();
-
-    /**
      * The {@linkplain EntityType} data map that replaces {@link MonsterRoomFeature#MOBS}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/entity_type/monster_room_mobs.json}, and the values are objects with 1 field:
@@ -85,6 +72,19 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<EntityType<?>, MonsterRoomMob> MONSTER_ROOM_MOBS = DataMapType.builder(
             id("monster_room_mobs"), Registries.ENTITY_TYPE, MonsterRoomMob.CODEC).synced(MonsterRoomMob.WEIGHT_CODEC, false).build();
+
+    /**
+     * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/entity_type/parrot_imitations.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code sound}, sound event ID - the sound that the parrot will emit when imitating the mob</li>
+     * </ul>
+     *
+     * The use of a string as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<EntityType<?>, ParrotImitation> PARROT_IMITATIONS = DataMapType.builder(
+            id("parrot_imitations"), Registries.ENTITY_TYPE, ParrotImitation.CODEC).synced(ParrotImitation.SOUND_CODEC, false).build();
 
     /**
      * The {@linkplain VillagerProfession} data map that replaces {@link GiveGiftToHero#GIFTS}.
@@ -118,9 +118,9 @@ public class NeoForgeDataMaps {
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
+        event.register(MONSTER_ROOM_MOBS);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
-        event.register(MONSTER_ROOM_MOBS);
     }
 }
