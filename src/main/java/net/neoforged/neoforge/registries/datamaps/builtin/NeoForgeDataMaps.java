@@ -59,6 +59,7 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<Item, FurnaceFuel> FURNACE_FUELS = DataMapType.builder(
             id("furnace_fuels"), Registries.ITEM, FurnaceFuel.CODEC).synced(FurnaceFuel.BURN_TIME_CODEC, false).build();
+
     /**
      * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
      * <p>
@@ -71,6 +72,19 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<EntityType<?>, ParrotImitation> PARROT_IMITATIONS = DataMapType.builder(
             id("parrot_imitations"), Registries.ENTITY_TYPE, ParrotImitation.CODEC).synced(ParrotImitation.SOUND_CODEC, false).build();
+
+    /**
+     * The {@linkplain EntityType} data map that replaces {@link MonsterRoomFeature#MOBS}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/entity_type/monster_room_mobs.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code weight}, a positive nonzero integer - the weight of this type that will be used when selecting a type for the spawner.</li>
+     * </ul>
+     *
+     * The use of an integer as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<EntityType<?>, MonsterRoomMob> MONSTER_ROOM_MOBS = DataMapType.builder(
+            id("monster_room_mobs"), Registries.ENTITY_TYPE, MonsterRoomMob.CODEC).synced(MonsterRoomMob.WEIGHT_CODEC, false).build();
 
     /**
      * The {@linkplain VillagerProfession} data map that replaces {@link GiveGiftToHero#GIFTS}.
@@ -95,19 +109,6 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<GameEvent, VibrationFrequency> VIBRATION_FREQUENCIES = DataMapType.builder(
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
-
-    /**
-     * The {@linkplain EntityType} data map that replaces {@link MonsterRoomFeature#MOBS}.
-     * <p>
-     * The location of this data map is {@code neoforge/data_maps/entity_type/monster_room_mobs.json}, and the values are objects with 1 field:
-     * <ul>
-     * <li>{@code weight}, a positive nonzero integer - the weight of this type that will be used when selecting a type for the spawner.</li>
-     * </ul>
-     *
-     * The use of an integer as the value is also possible, though discouraged in case more options are added in the future.
-     */
-    public static final DataMapType<EntityType<?>, MonsterRoomMob> MONSTER_ROOM_MOBS = DataMapType.builder(
-            id("monster_room_mobs"), Registries.ENTITY_TYPE, MonsterRoomMob.CODEC).synced(MonsterRoomMob.WEIGHT_CODEC, false).build();
 
     private static ResourceLocation id(final String name) {
         return new ResourceLocation(NeoForgeVersion.MOD_ID, name);
