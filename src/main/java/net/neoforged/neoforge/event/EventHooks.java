@@ -42,6 +42,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.Container;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -86,6 +87,7 @@ import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
@@ -345,8 +347,17 @@ public class EventHooks {
         return event;
     }
 
-    public static PlayerSpawnPhantomsEvent onPhantomSpawn(ServerPlayer player, int phantomsToSpawn) {
-        var event = new PlayerSpawnPhantomsEvent(player, phantomsToSpawn);
+    /**
+     * Called from {@link PhantomSpawner#tick} just before the spawn conditions for phantoms are evaluated.
+     * Fires the {@link PlayerSpawnPhantomsEvent} and returns the event.
+     * 
+     * @param player The player for whom a spawn attempt is being made
+     * @param level  The level of the player
+     * @param pos    The block position of the player
+     */
+    public static PlayerSpawnPhantomsEvent firePlayerSpawnPhantoms(ServerPlayer player, ServerLevel level, BlockPos pos) {
+        Difficulty difficulty = level.getCurrentDifficultyAt(pos).getDifficulty();
+        var event = new PlayerSpawnPhantomsEvent(player, 1 + level.random.nextInt(difficulty.getId() + 1));
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
