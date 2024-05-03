@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.entity.item.ItemAllowPickupEvent;
  * <p>
  * When this test is enabled the following should be true
  * <ul>
- * <li>Items ontop of {@linkplain Tags.Blocks#STONE} should not be allowed to be picked up</li>
+ * <li>Items ontop of {@linkplain Tags.Blocks#STONES} should not be allowed to be picked up</li>
  * </ul>
  */
 @Mod(DisallowItemPickupTest.ID)
@@ -26,7 +26,7 @@ public final class DisallowItemPickupTest {
     public DisallowItemPickupTest() {
         NeoForge.EVENT_BUS.addListener(ItemAllowPickupEvent.class, event -> {
             // deny item pickups when item is on #stone
-            if (!ENABLED && event.getEntity().getBlockStateOn().is(Tags.Blocks.STONE))
+            if (ENABLED && event.getEntity().getBlockStateOn().is(Tags.Blocks.STONES))
                 event.setCanceled(true);
         });
     }

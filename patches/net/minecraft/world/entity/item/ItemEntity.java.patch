@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -44,6 +_,10 @@
+@@ -48,6 +_,10 @@
      @Nullable
      private UUID target;
      public final float bobOffs;
@@ -8,7 +8,7 @@
 +     * The maximum age of this EntityItem.  The item is expired once this is reached.
 +     */
 +    public int lifespan = ItemEntity.LIFETIME;
-
+ 
      public ItemEntity(EntityType<? extends ItemEntity> p_31991_, Level p_31992_) {
          super(p_31991_, p_31992_);
 @@ -66,6 +_,7 @@
@@ -82,7 +82,7 @@
                  this.discard();
              }
  
-@@ -299,6 +_,7 @@
+@@ -294,6 +_,7 @@
          p_32050_.putShort("Health", (short)this.health);
          p_32050_.putShort("Age", (short)this.age);
          p_32050_.putShort("PickupDelay", (short)this.pickupDelay);
