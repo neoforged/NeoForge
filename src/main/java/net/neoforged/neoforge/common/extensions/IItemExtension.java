@@ -588,7 +588,7 @@ public interface IItemExtension {
     @ApiStatus.OverrideOnly
     default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
         FurnaceFuel furnaceFuel = self().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-        return furnaceFuel == null ? 0 : furnaceFuel.burnTime();
+        return furnaceFuel == null ? -1 : furnaceFuel.burnTime();
     }
 
     /**
