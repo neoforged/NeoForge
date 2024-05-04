@@ -38,7 +38,7 @@ public class ConfigCommand {
                 File f = new File(configFileName);
                 MutableComponent fileComponent = Component.literal(f.getName()).withStyle(ChatFormatting.UNDERLINE);
 
-                // Click action not allow on dedicated servers as client cannot click link to a server's file path.
+                // Click action not allowed on dedicated servers as clients cannot click a link to a file on the server.
                 if (!FMLLoader.getDist().isDedicatedServer()) {
                     fileComponent.withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, f.getAbsolutePath())));
                 }
