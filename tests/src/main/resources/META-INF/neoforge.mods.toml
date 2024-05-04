@@ -33,8 +33,6 @@ license="LGPL v2.1"
 
 [[mods]]
     modId="finalize_spawn_fix_test"
-[[mods]]
-    modId="disallow_item_pickup_test"
 
 [[mods]]
     modId="ordered_test_1"
