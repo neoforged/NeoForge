@@ -16,7 +16,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
 
@@ -33,7 +33,7 @@ public class VillagerTradingManager {
         VillagerTrades.WANDERING_TRADER_TRADES.int2ObjectEntrySet().forEach(e -> WANDERER_TRADES.put(e.getIntKey(), Arrays.copyOf(e.getValue(), e.getValue().length)));
     }
 
-    static void loadTrades(ServerAboutToStartEvent e) {
+    static void loadTrades(TagsUpdatedEvent e) {
         postWandererEvent();
         postVillagerEvents();
     }
@@ -62,7 +62,7 @@ public class VillagerTradingManager {
                 mutableTrades.put(i, NonNullList.create());
             }
             trades.int2ObjectEntrySet().forEach(e -> {
-                Arrays.stream(e.getValue()).forEach(mutableTrades.get(e.getIntKey())::add);
+               Arrays.stream(e.getValue()).forEach(mutableTrades.get(e.getIntKey())::add);
             });
             NeoForge.EVENT_BUS.post(new VillagerTradesEvent(mutableTrades, prof));
             Int2ObjectMap<ItemListing[]> newTrades = new Int2ObjectOpenHashMap<>();
