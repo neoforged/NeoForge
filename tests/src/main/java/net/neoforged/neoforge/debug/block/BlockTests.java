@@ -35,7 +35,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.common.extensions.IBlockExtension;
+import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -138,12 +138,12 @@ public class BlockTests {
     @TestHolder(description = "Adds a block that can sustain Bubble Columns and verify it works")
     static void bubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var upwardBubbleColumnSustainingBlock = reg.blocks()
-                .registerBlock("upward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, IBlockExtension.BubbleColumnDirection.UPWARD), BlockBehaviour.Properties.of())
+                .registerBlock("upward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.UPWARD), BlockBehaviour.Properties.of())
                 .withLang("Upward Bubble Column Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();
         final var downwardBubbleColumnSustainingBlock = reg.blocks()
-                .registerBlock("downward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, IBlockExtension.BubbleColumnDirection.DOWNWARD), BlockBehaviour.Properties.of())
+                .registerBlock("downward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.DOWNWARD), BlockBehaviour.Properties.of())
                 .withLang("Downward Bubble Column Sustaining block")
                 .withDefaultWhiteModel()
                 .withBlockItem();

@@ -41,6 +41,7 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -755,7 +756,7 @@ public interface IBlockStateExtension {
      *
      * @return BubbleColumnDirection.NONE for no Bubble Column. Otherwise, will spawn Bubble Column flowing with specified direction
      */
-    default IBlockExtension.BubbleColumnDirection sustainBubbleColumn() {
+    default BubbleColumnDirection sustainBubbleColumn() {
         return self().getBlock().sustainBubbleColumn(self());
     }
 }

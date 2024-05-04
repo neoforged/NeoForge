@@ -5,11 +5,11 @@
          if (p_152718_.is(Blocks.BUBBLE_COLUMN)) {
              return p_152718_;
 -        } else if (p_152718_.is(Blocks.SOUL_SAND)) {
-+        } else if (p_152718_.sustainBubbleColumn() == BubbleColumnDirection.UPWARD) {
++        } else if (p_152718_.sustainBubbleColumn() == net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD) { // Neo: PR #931
              return Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, Boolean.valueOf(false));
          } else {
 -            return p_152718_.is(Blocks.MAGMA_BLOCK)
-+            return p_152718_.sustainBubbleColumn() == BubbleColumnDirection.DOWNWARD
++            return p_152718_.sustainBubbleColumn() == net.neoforged.neoforge.common.enums.BubbleColumnDirection.DOWNWARD // Neo: PR #931
                  ? Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, Boolean.valueOf(true))
                  : Blocks.WATER.defaultBlockState();
          }
@@ -18,7 +18,7 @@
      protected boolean canSurvive(BlockState p_50986_, LevelReader p_50987_, BlockPos p_50988_) {
          BlockState blockstate = p_50987_.getBlockState(p_50988_.below());
 -        return blockstate.is(Blocks.BUBBLE_COLUMN) || blockstate.is(Blocks.MAGMA_BLOCK) || blockstate.is(Blocks.SOUL_SAND);
-+        return blockstate.is(Blocks.BUBBLE_COLUMN) || blockstate.sustainBubbleColumn() != BubbleColumnDirection.NONE;
++        return blockstate.is(Blocks.BUBBLE_COLUMN) || blockstate.sustainBubbleColumn() != net.neoforged.neoforge.common.enums.BubbleColumnDirection.NONE; // Neo: PR #931
      }
  
      @Override

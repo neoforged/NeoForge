@@ -75,6 +75,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -975,12 +976,6 @@ public interface IBlockExtension {
      */
     default boolean isEmpty(BlockState state) {
         return state.is(Blocks.AIR) || state.is(Blocks.CAVE_AIR) || state.is(Blocks.VOID_AIR);
-    }
-
-    enum BubbleColumnDirection {
-        UPWARD,
-        DOWNWARD,
-        NONE
     }
 
     /**
