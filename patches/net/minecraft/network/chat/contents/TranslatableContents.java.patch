@@ -1,14 +1,28 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
-@@ -140,6 +_,11 @@
-                 j = l;
-             }
+@@ -81,6 +_,13 @@
+         this.key = p_265775_;
+         this.fallback = p_265204_;
+         this.args = p_265752_;
++        if (!net.neoforged.fml.loading.FMLEnvironment.production) {
++            for (Object arg : this.args) {
++                if (!(arg instanceof Component) && !isAllowedPrimitiveArgument(arg)) {
++                    throw new IllegalArgumentException("TranslatableContents's arguments must be a Component, Number, Boolean, or String. Was given " + arg + " for " + this.key);
++                }
++            }
++        }
+     }
  
+     @Override
+@@ -138,6 +_,11 @@
+                 }
+ 
+                 j = l;
++            }
++
 +            if (j == 0) {
 +                // Neo has some special formatting handlers defined in I18nExtension, use those if no %s replacements present.
 +                j = net.neoforged.neoforge.internal.TextComponentMessageFormatHandler.handle(this, p_237517_, this.args, p_237516_);
-+            }
-+
+             }
+ 
              if (j < p_237516_.length()) {
-                 String s3 = p_237516_.substring(j);
-                 if (s3.indexOf(37) != -1) {

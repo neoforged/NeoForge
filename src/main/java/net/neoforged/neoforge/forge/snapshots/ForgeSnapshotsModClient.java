@@ -17,7 +17,7 @@ public class ForgeSnapshotsModClient {
             graphics.drawCenteredString(font, Component.translatable("loadwarning.neoforge.prbuild"), width / 2, 4 + (font.lineHeight + 1) / 2, 0xFFFFFF | alpha);
         } else if (neoForgeVersion.contains("-beta")) {
             // Render a warning at the top of the screen
-            Component line = Component.translatable("neoforge.update.beta.1", ChatFormatting.RED, ChatFormatting.RESET).withStyle(ChatFormatting.RED);
+            Component line = Component.translatable("neoforge.update.beta.1", ChatFormatting.RED.toString(), ChatFormatting.RESET.toString()).withStyle(ChatFormatting.RED);
             graphics.drawCenteredString(font, line, width / 2, 4 + (0 * (font.lineHeight + 1)), 0xFFFFFF | alpha);
             line = Component.translatable("neoforge.update.beta.2");
             graphics.drawCenteredString(font, line, width / 2, 4 + (1 * (font.lineHeight + 1)), 0xFFFFFF | alpha);
