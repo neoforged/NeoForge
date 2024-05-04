@@ -72,7 +72,7 @@ public interface IItemStackExtension {
     /**
      * Returns the fuel burn time for this item stack. If it is zero, this item is not a fuel.
      * <p>
-     * Will never return a negative value.
+     * Will never return a negative value. If so, the game will crash.
      * 
      * @return the fuel burn time for this item stack in a furnace.
      * @apiNote This method by default returns the {@code burn_time} specified in
