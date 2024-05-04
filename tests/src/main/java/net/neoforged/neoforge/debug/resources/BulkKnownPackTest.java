@@ -60,6 +60,9 @@ public class BulkKnownPackTest {
     public static class Listener implements TestListener {
         @Override
         public void onEnabled(TestFramework framework, Test test, @Nullable Entity changer) {
+            if (changer == null) {
+                return;
+            }
             RegistryAccess access = changer.registryAccess();
             access.registry(Registries.BIOME).ifPresentOrElse(biomes -> {
                 for (int i = 0; i < 128; i++) {
