@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -34,7 +35,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -43,8 +43,6 @@ import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 @ForEachTest(groups = BlockTests.GROUP)
 public class BlockTests {
@@ -138,21 +136,26 @@ public class BlockTests {
     @EmptyTemplate(floor = true, value = "5x5x5")
     @TestHolder(description = "Adds a block that can sustain upward Bubble Columns and verify it works")
     static void upwardBubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
-        final var upwardBubbleColumnSustainingBlock = reg.blocks().registerBlock("upward_bubble_column_sustaining_block", CustomUpwardBubbleColumnSustainingBlock::new, BlockBehaviour.Properties.of())
-                .withLang("Upward Bubble Column Sustaining block").withBlockItem();
+        final var upwardBubbleColumnSustainingBlock = reg.blocks()
+                .registerBlock("upward_bubble_column_sustaining_block", CustomUpwardBubbleColumnSustainingBlock::new, BlockBehaviour.Properties.of())
+                .withLang("Upward Bubble Column Sustaining block")
+                .withBlockItem()
+                .withDefaultWhiteModel();
 
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
-                .fill(0, 0, 0, 3, 3, 2, Blocks.WATER)
-                .set(1, 1, 1, upwardBubbleColumnSustainingBlock.get().defaultBlockState())
-                .set(2, 1, 1, Blocks.OAK_PLANKS.defaultBlockState()));
+                .fill(0, 0, 0, 3, 3, 2, Blocks.WATER));
 
+        BlockPos testPosForModdedBlock = new BlockPos(1, 1, 1);
+        BlockPos testPosForPlanks = new BlockPos(2, 1, 1);
         BlockPos testPosForBubbles = new BlockPos(1, 3, 1);
         BlockPos testPosForNoBubbles = new BlockPos(2, 3, 1);
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenIdle(6)
-                .thenExecute(() -> helper.assertTrue(helper.getLevel().getBlockState(testPosForBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
-                .thenExecute(() -> helper.assertTrue(helper.getLevel().getBlockState(testPosForNoBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
+                .thenExecute(() -> helper.setBlock(testPosForModdedBlock, upwardBubbleColumnSustainingBlock.get().defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(testPosForPlanks, Blocks.OAK_PLANKS.defaultBlockState()))
+                .thenIdle(40)
+                .thenExecute(() -> helper.assertTrue(helper.getBlockState(testPosForBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertFalse(helper.getBlockState(testPosForNoBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
                 .thenSucceed());
     }
 
