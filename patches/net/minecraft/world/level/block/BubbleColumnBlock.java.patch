@@ -1,15 +1,17 @@
 --- a/net/minecraft/world/level/block/BubbleColumnBlock.java
 +++ b/net/minecraft/world/level/block/BubbleColumnBlock.java
-@@ -121,10 +_,10 @@
+@@ -121,10 +_,12 @@
      private static BlockState getColumnState(BlockState p_152718_) {
          if (p_152718_.is(Blocks.BUBBLE_COLUMN)) {
              return p_152718_;
 -        } else if (p_152718_.is(Blocks.SOUL_SAND)) {
-+        } else if (p_152718_.sustainBubbleColumn() == net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD) { // Neo: PR #931
++        }
++        net.neoforged.neoforge.common.enums.BubbleColumnDirection bubbleColumnDirection = p_152718_.sustainBubbleColumn(); // Neo: PR #931
++        if (bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD) {
              return Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, Boolean.valueOf(false));
          } else {
 -            return p_152718_.is(Blocks.MAGMA_BLOCK)
-+            return p_152718_.sustainBubbleColumn() == net.neoforged.neoforge.common.enums.BubbleColumnDirection.DOWNWARD // Neo: PR #931
++            return bubbleColumnDirection == net.neoforged.neoforge.common.enums.BubbleColumnDirection.DOWNWARD
                  ? Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, Boolean.valueOf(true))
                  : Blocks.WATER.defaultBlockState();
          }
