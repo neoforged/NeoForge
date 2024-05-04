@@ -7,7 +7,7 @@
 +        if (!net.neoforged.fml.loading.FMLEnvironment.production) {
 +            for (Object arg : this.args) {
 +                if (!(arg instanceof Component) && !isAllowedPrimitiveArgument(arg)) {
-+                    throw new IllegalArgumentException("TranslatableContents's arguments must be a Component, Number, Boolean, or String. Was given " + arg + " for " + this.key);
++                    throw new IllegalArgumentException("TranslatableContents' arguments must be either a Component, Number, Boolean, or a String. Was given " + arg + " for " + this.key);
 +                }
 +            }
 +        }
