@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -134,34 +135,39 @@ public class BlockTests {
 
     @GameTest()
     @EmptyTemplate(floor = true, value = "5x5x5")
-    @TestHolder(description = "Adds a block that can sustain upward Bubble Columns and verify it works")
-    static void upwardBubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
+    @TestHolder(description = "Adds a block that can sustain Bubble Columns and verify it works")
+    static void bubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var upwardBubbleColumnSustainingBlock = reg.blocks()
-                .registerBlock("upward_bubble_column_sustaining_block", CustomUpwardBubbleColumnSustainingBlock::new, BlockBehaviour.Properties.of())
+                .registerBlock("upward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, IBlockExtension.BubbleColumnDirection.UPWARD), BlockBehaviour.Properties.of())
                 .withLang("Upward Bubble Column Sustaining block")
-                .withBlockItem()
-                .withDefaultWhiteModel();
+                .withDefaultWhiteModel()
+                .withBlockItem();
+        final var downwardBubbleColumnSustainingBlock = reg.blocks()
+                .registerBlock("downward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, IBlockExtension.BubbleColumnDirection.DOWNWARD), BlockBehaviour.Properties.of())
+                .withLang("Downward Bubble Column Sustaining block")
+                .withDefaultWhiteModel()
+                .withBlockItem();
 
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
                 .fill(0, 0, 0, 3, 3, 2, Blocks.WATER));
 
-        BlockPos testPosForModdedBlock = new BlockPos(1, 1, 1);
-        BlockPos testPosForPlanks = new BlockPos(2, 1, 1);
-        BlockPos testPosForBubbles = new BlockPos(1, 3, 1);
-        BlockPos testPosForNoBubbles = new BlockPos(2, 3, 1);
-
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.setBlock(testPosForModdedBlock, upwardBubbleColumnSustainingBlock.get().defaultBlockState()))
-                .thenExecute(() -> helper.setBlock(testPosForPlanks, Blocks.OAK_PLANKS.defaultBlockState()))
-                .thenIdle(40)
-                .thenExecute(() -> helper.assertTrue(helper.getBlockState(testPosForBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
-                .thenExecute(() -> helper.assertFalse(helper.getBlockState(testPosForNoBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
+                .thenExecute(() -> helper.setBlock(new BlockPos(0, 1, 1), upwardBubbleColumnSustainingBlock.get().defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), downwardBubbleColumnSustainingBlock.get().defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(new BlockPos(2, 1, 1), Blocks.OAK_PLANKS.defaultBlockState()))
+                .thenIdle(20)
+                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(0, 3, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(1, 3, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertFalse(helper.getBlockState(new BlockPos(2, 3, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
                 .thenSucceed());
     }
 
-    private static class CustomUpwardBubbleColumnSustainingBlock extends Block {
-        public CustomUpwardBubbleColumnSustainingBlock(Properties properties) {
+    private static class CustomBubbleColumnSustainingBlock extends Block {
+        private final BubbleColumnDirection bubbleColumnDirection;
+
+        public CustomBubbleColumnSustainingBlock(Properties properties, BubbleColumnDirection bubbleColumnDirection1) {
             super(properties);
+            this.bubbleColumnDirection = bubbleColumnDirection1;
         }
 
         @Override
@@ -185,7 +191,7 @@ public class BlockTests {
 
         @Override
         public BubbleColumnDirection sustainBubbleColumn(BlockState state) {
-            return BubbleColumnDirection.UPWARD;
+            return bubbleColumnDirection;
         }
     }
 }
