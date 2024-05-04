@@ -134,7 +134,8 @@ public class BlockTests {
                 .thenSucceed();
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest()
+    @EmptyTemplate(floor = true, value = "5x5x5")
     @TestHolder(description = "Adds a block that can sustain upward Bubble Columns and verify it works")
     static void upwardBubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var upwardBubbleColumnSustainingBlock = reg.blocks().registerBlock("upward_bubble_column_sustaining_block", CustomUpwardBubbleColumnSustainingBlock::new, BlockBehaviour.Properties.of())
