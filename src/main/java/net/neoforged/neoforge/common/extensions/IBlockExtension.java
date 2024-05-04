@@ -987,7 +987,7 @@ public interface IBlockExtension {
      * @param state The current state
      * @return BubbleColumnDirection.NONE for no Bubble Column. Otherwise, will spawn Bubble Column flowing with specified direction
      */
-    default BubbleColumnDirection sustainBubbleColumn(BlockState state) {
+    default BubbleColumnDirection getBubbleColumnDirection(BlockState state) {
         if (state.is(Blocks.SOUL_SAND)) {
             return BubbleColumnDirection.UPWARD;
         } else if (state.is(Blocks.MAGMA_BLOCK)) {

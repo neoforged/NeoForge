@@ -189,7 +189,7 @@ public class BlockTests {
         }
 
         @Override
-        public BubbleColumnDirection sustainBubbleColumn(BlockState state) {
+        public BubbleColumnDirection getBubbleColumnDirection(BlockState state) {
             return bubbleColumnDirection;
         }
     }

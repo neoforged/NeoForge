@@ -756,7 +756,7 @@ public interface IBlockStateExtension {
      *
      * @return BubbleColumnDirection.NONE for no Bubble Column. Otherwise, will spawn Bubble Column flowing with specified direction
      */
-    default BubbleColumnDirection sustainBubbleColumn() {
-        return self().getBlock().sustainBubbleColumn(self());
+    default BubbleColumnDirection getBubbleColumnDirection() {
+        return self().getBlock().getBubbleColumnDirection(self());
     }
 }
