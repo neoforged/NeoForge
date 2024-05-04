@@ -134,7 +134,6 @@ public class BlockTests {
     }
 
     @GameTest()
-    @EmptyTemplate(floor = true, value = "5x5x5")
     @TestHolder(description = "Adds a block that can sustain Bubble Columns and verify it works")
     static void bubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var upwardBubbleColumnSustainingBlock = reg.blocks()
@@ -148,17 +147,17 @@ public class BlockTests {
                 .withDefaultWhiteModel()
                 .withBlockItem();
 
-        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
-                .fill(0, 0, 0, 3, 3, 2, Blocks.WATER));
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 2, 3)
+                .fill(0, 0, 0, 2, 2, 2, Blocks.WATER));
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.setBlock(new BlockPos(0, 1, 1), upwardBubbleColumnSustainingBlock.get().defaultBlockState()))
-                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), downwardBubbleColumnSustainingBlock.get().defaultBlockState()))
-                .thenExecute(() -> helper.setBlock(new BlockPos(2, 1, 1), Blocks.OAK_PLANKS.defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(new BlockPos(0, 0, 1), upwardBubbleColumnSustainingBlock.get().defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 0, 1), downwardBubbleColumnSustainingBlock.get().defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(new BlockPos(2, 0, 1), Blocks.OAK_PLANKS.defaultBlockState()))
                 .thenIdle(20)
-                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(0, 3, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
-                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(1, 3, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
-                .thenExecute(() -> helper.assertFalse(helper.getBlockState(new BlockPos(2, 3, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
+                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(0, 2, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(1, 2, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertFalse(helper.getBlockState(new BlockPos(2, 2, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
                 .thenSucceed());
     }
 
