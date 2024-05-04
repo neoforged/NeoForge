@@ -163,8 +163,7 @@ public class LoadingErrorScreen extends ErrorScreen {
     private record FormattedIssue(Component text, ModLoadingIssue issue) {
         public static FormattedIssue of(ModLoadingIssue issue) {
             return new FormattedIssue(
-                    Component.literal(I18nExtension.parseMessage(issue.translationKey(), formatArgs(issue))), issue
-            );
+                    Component.literal(I18nExtension.parseMessage(issue.translationKey(), formatArgs(issue))), issue);
         }
 
         private static Object[] formatArgs(ModLoadingIssue issue) {
