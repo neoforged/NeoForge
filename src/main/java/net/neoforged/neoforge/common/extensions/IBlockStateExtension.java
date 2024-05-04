@@ -746,4 +746,16 @@ public interface IBlockStateExtension {
     default boolean isEmpty() {
         return self().getBlock().isEmpty(self());
     }
+
+    /**
+     * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
+     * <p></p>
+     * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
+     * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
+     *
+     * @return BubbleColumnDirection.NONE for no Bubble Column. Otherwise, will spawn Bubble Column flowing with specified direction
+     */
+    default IBlockExtension.BubbleColumnDirection sustainBubbleColumn() {
+        return self().getBlock().sustainBubbleColumn(self());
+    }
 }

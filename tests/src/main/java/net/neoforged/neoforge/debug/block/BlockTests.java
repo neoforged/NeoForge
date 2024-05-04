@@ -5,14 +5,15 @@
 
 package net.neoforged.neoforge.debug.block;
 
-import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -22,22 +23,28 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BubbleColumnBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 @ForEachTest(groups = BlockTests.GROUP)
 public class BlockTests {
@@ -125,5 +132,56 @@ public class BlockTests {
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
                 .thenSucceed();
+    }
+
+    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @TestHolder(description = "Adds a block that can sustain upward Bubble Columns and verify it works")
+    static void upwardBubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
+        final var upwardBubbleColumnSustainingBlock = reg.blocks().registerBlock("upward_bubble_column_sustaining_block", CustomUpwardBubbleColumnSustainingBlock::new, BlockBehaviour.Properties.of())
+                .withLang("Upward Bubble Column Sustaining block").withBlockItem();
+
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
+                .fill(0, 0, 0, 3, 3, 2, Blocks.WATER)
+                .set(1, 1, 1, upwardBubbleColumnSustainingBlock.get().defaultBlockState())
+                .set(2, 1, 1, Blocks.OAK_PLANKS.defaultBlockState()));
+
+        BlockPos testPosForBubbles = new BlockPos(1, 3, 1);
+        BlockPos testPosForNoBubbles = new BlockPos(2, 3, 1);
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenIdle(6)
+                .thenExecute(() -> helper.assertTrue(helper.getLevel().getBlockState(testPosForBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertTrue(helper.getLevel().getBlockState(testPosForNoBubbles).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
+                .thenSucceed());
+    }
+
+    private static class CustomUpwardBubbleColumnSustainingBlock extends Block {
+        public CustomUpwardBubbleColumnSustainingBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected void tick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource) {
+            BubbleColumnBlock.updateColumn(serverLevel, blockPos.above(), blockState);
+        }
+
+        @Override
+        protected BlockState updateShape(BlockState currentBlockState, Direction direction, BlockState sideBlockState, LevelAccessor levelAccessor, BlockPos currentBlockPos, BlockPos sideBlockPos) {
+            if (direction == Direction.UP && sideBlockState.is(Blocks.WATER)) {
+                levelAccessor.scheduleTick(currentBlockPos, this, 1);
+            }
+
+            return super.updateShape(currentBlockState, direction, sideBlockState, levelAccessor, currentBlockPos, sideBlockPos);
+        }
+
+        @Override
+        protected void onPlace(BlockState blockState, Level level, BlockPos blockPos, BlockState oldBlockState, boolean isMoving) {
+            level.scheduleTick(blockPos, this, 1);
+        }
+
+        @Override
+        public BubbleColumnDirection sustainBubbleColumn(BlockState state) {
+            return BubbleColumnDirection.UPWARD;
+        }
     }
 }

@@ -1,0 +1,24 @@
+--- a/net/minecraft/world/level/block/BubbleColumnBlock.java
++++ b/net/minecraft/world/level/block/BubbleColumnBlock.java
+@@ -121,10 +_,10 @@
+     private static BlockState getColumnState(BlockState p_152718_) {
+         if (p_152718_.is(Blocks.BUBBLE_COLUMN)) {
+             return p_152718_;
+-        } else if (p_152718_.is(Blocks.SOUL_SAND)) {
++        } else if (p_152718_.sustainBubbleColumn() == BubbleColumnDirection.UPWARD) {
+             return Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, Boolean.valueOf(false));
+         } else {
+-            return p_152718_.is(Blocks.MAGMA_BLOCK)
++            return p_152718_.sustainBubbleColumn() == BubbleColumnDirection.DOWNWARD
+                 ? Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, Boolean.valueOf(true))
+                 : Blocks.WATER.defaultBlockState();
+         }
+@@ -190,7 +_,7 @@
+     @Override
+     protected boolean canSurvive(BlockState p_50986_, LevelReader p_50987_, BlockPos p_50988_) {
+         BlockState blockstate = p_50987_.getBlockState(p_50988_.below());
+-        return blockstate.is(Blocks.BUBBLE_COLUMN) || blockstate.is(Blocks.MAGMA_BLOCK) || blockstate.is(Blocks.SOUL_SAND);
++        return blockstate.is(Blocks.BUBBLE_COLUMN) || blockstate.sustainBubbleColumn() != BubbleColumnDirection.NONE;
+     }
+ 
+     @Override
