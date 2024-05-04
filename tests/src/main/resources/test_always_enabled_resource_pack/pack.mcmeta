@@ -1,7 +1,7 @@
 {
    "pack": {
       "pack_format": 12,
-      "description": "Nested resource pack",
+      "description": "Forced-Enabled-Always ResourcePack",
       "forge:resource_pack_format": 12,
       "forge:data_pack_format": 10
    }

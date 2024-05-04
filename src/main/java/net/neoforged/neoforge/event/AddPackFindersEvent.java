@@ -60,15 +60,16 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
      * @param packLocation    Location of the pack to load. Namespace should be the modid of the pack owner and path is the location under `resources/` folder
      * @param packType        Whether pack is a resourcepack or datapack
      * @param packNameDisplay The text that shows for the pack on the pack selection screen
+     * @param packSource      Controls whether the datapack is enabled or disabled by default. Resourcepacks are always disabled by default unless you set alwaysActive to true.
      * @param alwaysActive    Whether the pack is forced active always. If false, players have to manually activate the pack themselves
      * @param packPosition    Where the pack goes for determining pack applying order
      */
-    public void addPackFinders(ResourceLocation packLocation, PackType packType, Component packNameDisplay, boolean alwaysActive, Pack.Position packPosition) {
+    public void addPackFinders(ResourceLocation packLocation, PackType packType, Component packNameDisplay, PackSource packSource, boolean alwaysActive, Pack.Position packPosition) {
         if (getPackType() == packType) {
             var resourcePath = ModList.get().getModFileById(packLocation.getNamespace()).getFile().findResource(packLocation.getPath());
 
             var pack = Pack.readMetaAndCreate(
-                    new PackLocationInfo("builtin/" + packLocation.getNamespace(), packNameDisplay, PackSource.BUILT_IN, Optional.empty()),
+                    new PackLocationInfo(packLocation.toString(), packNameDisplay, packSource, Optional.empty()),
                     BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath)),
                     packType,
                     new PackSelectionConfig(alwaysActive, packPosition, false));
