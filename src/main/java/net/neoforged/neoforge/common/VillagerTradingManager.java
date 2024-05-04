@@ -34,8 +34,10 @@ public class VillagerTradingManager {
     }
 
     static void loadTrades(TagsUpdatedEvent e) {
-        postWandererEvent();
-        postVillagerEvents();
+        if (e.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+            postWandererEvent();
+            postVillagerEvents();
+        }
     }
 
     /**
