@@ -594,10 +594,6 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(this::registerPermissionNodes);
 
         UsernameCache.load();
-        if (dist.isClient()) {
-            ClientCommandHandler.init();
-            TagConventionLogWarningClient.init();
-        }
         DualStackUtils.initialise();
         TagConventionLogWarning.init();
 
