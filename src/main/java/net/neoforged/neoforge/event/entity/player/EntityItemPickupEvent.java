@@ -20,10 +20,7 @@ import net.neoforged.neoforge.event.entity.item.ItemAllowPickupEvent;
  * entity if all the items are picked up.
  *
  * setResult(ALLOW) is the same as the old setHandled()
- *
- * @deprecated To be replaced with {@linkplain ItemAllowPickupEvent}
  */
-@Deprecated(forRemoval = true)
 @Event.HasResult
 public class EntityItemPickupEvent extends PlayerEvent implements ICancellableEvent {
     private final ItemEntity item;

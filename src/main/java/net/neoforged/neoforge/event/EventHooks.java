@@ -480,7 +480,6 @@ public class EventHooks {
         return event.getExtraLife();
     }
 
-    @Deprecated(forRemoval = true) // to be replaced with onItemAllowPickup
     public static int onItemPickup(ItemEntity entityItem, Player player) {
         var event = NeoForge.EVENT_BUS.post(new EntityItemPickupEvent(player, entityItem));
         var hook = event.isCanceled() ? -1 : event.getResult() == Result.ALLOW ? 1 : 0;
