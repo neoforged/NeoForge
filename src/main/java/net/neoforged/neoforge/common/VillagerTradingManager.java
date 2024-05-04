@@ -62,7 +62,7 @@ public class VillagerTradingManager {
                 mutableTrades.put(i, NonNullList.create());
             }
             trades.int2ObjectEntrySet().forEach(e -> {
-               Arrays.stream(e.getValue()).forEach(mutableTrades.get(e.getIntKey())::add);
+                Arrays.stream(e.getValue()).forEach(mutableTrades.get(e.getIntKey())::add);
             });
             NeoForge.EVENT_BUS.post(new VillagerTradesEvent(mutableTrades, prof));
             Int2ObjectMap<ItemListing[]> newTrades = new Int2ObjectOpenHashMap<>();
