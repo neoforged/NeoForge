@@ -61,8 +61,9 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
      * @param packType        Whether pack is a resourcepack or datapack
      * @param packNameDisplay The text that shows for the pack on the pack selection screen
      * @param alwaysActive    Whether the pack is forced active always. If false, players have to manually activate the pack themselves
+     * @param packPosition    Where the pack goes for determining pack applying order
      */
-    public void addPackFinders(ResourceLocation packLocation, PackType packType, Component packNameDisplay, boolean alwaysActive) {
+    public void addPackFinders(ResourceLocation packLocation, PackType packType, Component packNameDisplay, boolean alwaysActive, Pack.Position packPosition) {
         if (getPackType() == packType) {
             var resourcePath = ModList.get().getModFileById(packLocation.getNamespace()).getFile().findResource(packLocation.getPath());
 
@@ -70,7 +71,7 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
                     new PackLocationInfo("builtin/" + packLocation.getNamespace(), packNameDisplay, PackSource.BUILT_IN, Optional.empty()),
                     BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath)),
                     packType,
-                    new PackSelectionConfig(alwaysActive, Pack.Position.BOTTOM, false));
+                    new PackSelectionConfig(alwaysActive, packPosition, false));
 
             addRepositorySource((packConsumer) -> packConsumer.accept(pack));
         }

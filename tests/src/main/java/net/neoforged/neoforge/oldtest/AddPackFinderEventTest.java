@@ -8,6 +8,7 @@ package net.neoforged.neoforge.oldtest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -27,6 +28,11 @@ public class AddPackFinderEventTest {
 
     @SubscribeEvent
     public void addPackFinders(AddPackFindersEvent event) {
-        event.addPackFinders(new ResourceLocation(MODID, "test_nested_resource_pack"), PackType.CLIENT_RESOURCES, Component.literal("display name"), true);
+        event.addPackFinders(
+                new ResourceLocation(MODID, "test_nested_resource_pack"),
+                PackType.CLIENT_RESOURCES,
+                Component.literal("display name"),
+                true,
+                Pack.Position.TOP);
     }
 }
