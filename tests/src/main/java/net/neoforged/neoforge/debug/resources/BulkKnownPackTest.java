@@ -61,11 +61,18 @@ public class BulkKnownPackTest {
         @Override
         public void onEnabled(TestFramework framework, Test test, @Nullable Entity changer) {
             RegistryAccess access = changer.registryAccess();
-            var biomes = access.registry(Registries.BIOME).orElseThrow();
-            for (int i = 0; i < 128; i++) {
-                var id = new ResourceLocation(NAMESPACE, "entry_" + i);
-                biomes.getHolder(id).orElseThrow(() -> new IllegalStateException("Entry " + id + " that should be synced by KnownPack not found"));
-            }
+            access.registry(Registries.BIOME).ifPresentOrElse(biomes -> {
+                for (int i = 0; i < 128; i++) {
+                    var id = new ResourceLocation(NAMESPACE, "entry_" + i);
+                    if (biomes.getHolder(id).isEmpty()) {
+                        framework.changeStatus(test, Test.Status.failed("Entry " + id + " that should be synced by KnownPack not found"), changer);
+                        return;
+                    }
+                    framework.changeStatus(test, Test.Status.passed(), changer);
+                }
+            }, () -> {
+                framework.changeStatus(test, Test.Status.failed("Failed to get biome registry"), changer);
+            });
         }
     }
 
