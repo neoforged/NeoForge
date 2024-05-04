@@ -580,7 +580,7 @@ public interface IItemExtension {
     }
 
     /**
-     * @return the fuel burn time for this item stack in a furnace. Return 0 to make it not act as a fuel.
+     * @return the fuel burn time for this item stack in a furnace. Returns 0 if value not present in the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS burn time data map}
      * @apiNote This method takes precedence over the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS data map}.
      *          However, you should use the data map unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
      */
