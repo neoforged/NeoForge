@@ -209,7 +209,7 @@ public class GenerationTask {
 
     private void releaseChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.addRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
+        this.chunkSource.removeRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
     }
 
     private boolean isChunkFullyGenerated(ChunkPos chunkPosInLocalSpace) {
