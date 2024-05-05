@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
-@@ -27,6 +_,7 @@
+@@ -27,13 +_,18 @@
      private final RecipeCategory category;
      private final CookingBookCategory bookCategory;
      private final Item result;
@@ -8,10 +8,28 @@
      private final Ingredient ingredient;
      private final float experience;
      private final int cookingTime;
-@@ -44,9 +_,22 @@
+     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+     @Nullable
+     private String group;
++    @Nullable
++    private String override;
+     private final AbstractCookingRecipe.Factory<?> factory;
++    @Nullable
++    private final AbstractCookingRecipe.NeoForgeFactory<?> neoForgeFactory;
+ 
+     private SimpleCookingRecipeBuilder(
+         RecipeCategory p_251345_,
+@@ -44,13 +_,59 @@
          int p_250189_,
          AbstractCookingRecipe.Factory<?> p_311960_
      ) {
+-        this.category = p_251345_;
+-        this.bookCategory = p_251607_;
+-        this.result = p_252112_.asItem();
+-        this.ingredient = p_250362_;
+-        this.experience = p_251204_;
+-        this.cookingTime = p_250189_;
+-        this.factory = p_311960_;
 +        this(p_251345_, p_251607_, new ItemStack(p_252112_), p_250362_, p_251204_, p_250189_, p_311960_);
 +    }
 +
@@ -24,15 +42,51 @@
 +            int p_250189_,
 +            AbstractCookingRecipe.Factory<?> p_311960_
 +    ) {
-         this.category = p_251345_;
-         this.bookCategory = p_251607_;
--        this.result = p_252112_.asItem();
++        this.category = p_251345_;
++        this.bookCategory = p_251607_;
 +        this.result = result.getItem();
 +        this.stackResult = result;
-         this.ingredient = p_250362_;
-         this.experience = p_251204_;
-         this.cookingTime = p_250189_;
-@@ -85,6 +_,38 @@
++        this.ingredient = p_250362_;
++        this.experience = p_251204_;
++        this.cookingTime = p_250189_;
++        this.factory = p_311960_;
++        this.neoForgeFactory = null;
++    }
++
++    private SimpleCookingRecipeBuilder(
++            RecipeCategory p_251345_,
++            CookingBookCategory p_251607_,
++            ItemLike p_252112_,
++            Ingredient p_250362_,
++            float p_251204_,
++            int p_250189_,
++            AbstractCookingRecipe.NeoForgeFactory<?> p_311960_
++    ) {
++        this(p_251345_, p_251607_, new ItemStack(p_252112_), p_250362_, p_251204_, p_250189_, p_311960_);
++    }
++
++    private SimpleCookingRecipeBuilder(
++            RecipeCategory p_251345_,
++            CookingBookCategory p_251607_,
++            ItemStack result,
++            Ingredient p_250362_,
++            float p_251204_,
++            int p_250189_,
++            AbstractCookingRecipe.NeoForgeFactory<?> p_311960_
++    ) {
++        this.category = p_251345_;
++        this.bookCategory = p_251607_;
++        this.result = result.getItem();
++        this.stackResult = result;
++        this.ingredient = p_250362_;
++        this.experience = p_251204_;
++        this.cookingTime = p_250189_;
++        this.factory = p_311960_;
++        this.neoForgeFactory = p_311960_;
+     }
+ 
+     public static <T extends AbstractCookingRecipe> SimpleCookingRecipeBuilder generic(
+@@ -85,11 +_,48 @@
          return new SimpleCookingRecipeBuilder(p_250319_, CookingBookCategory.FOOD, p_250377_, p_248930_, p_252329_, p_250482_, SmokingRecipe::new);
      }
  
@@ -71,12 +125,38 @@
      public SimpleCookingRecipeBuilder unlockedBy(String p_176792_, Criterion<?> p_300970_) {
          this.criteria.put(p_176792_, p_300970_);
          return this;
-@@ -110,7 +_,7 @@
+     }
+ 
++    public SimpleCookingRecipeBuilder override(@Nullable String override) {
++        this.override = override;
++        return this;
++    }
++
+     public SimpleCookingRecipeBuilder group(@Nullable String p_176795_) {
+         this.group = p_176795_;
+         return this;
+@@ -108,10 +_,20 @@
+             .rewards(AdvancementRewards.Builder.recipe(p_126264_))
+             .requirements(AdvancementRequirements.Strategy.OR);
          this.criteria.forEach(advancement$builder::addCriterion);
-         AbstractCookingRecipe abstractcookingrecipe = this.factory
-             .create(
+-        AbstractCookingRecipe abstractcookingrecipe = this.factory
+-            .create(
 -                Objects.requireNonNullElse(this.group, ""), this.bookCategory, this.ingredient, new ItemStack(this.result), this.experience, this.cookingTime
-+                Objects.requireNonNullElse(this.group, ""), this.bookCategory, this.ingredient, this.stackResult, this.experience, this.cookingTime
-             );
+-            );
++        AbstractCookingRecipe abstractcookingrecipe;
++        if (this.neoForgeFactory != null) {
++            abstractcookingrecipe = this.neoForgeFactory
++                    .create(
++                            Objects.requireNonNullElse(this.group, ""), this.bookCategory, this.ingredient, this.stackResult, this.experience, this.cookingTime, Objects.requireNonNullElse(this.override, "")
++                    );
++        } else {
++            abstractcookingrecipe = this.factory
++                    .create(
++                            Objects.requireNonNullElse(this.group, ""), this.bookCategory, this.ingredient, this.stackResult, this.experience, this.cookingTime
++                    );
++        }
++
++
          p_301266_.accept(p_126264_, abstractcookingrecipe, advancement$builder.build(p_126264_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
      }
+ 

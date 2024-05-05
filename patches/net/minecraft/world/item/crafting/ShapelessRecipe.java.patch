@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -19,12 +_,14 @@
+@@ -19,12 +_,20 @@
      final CraftingBookCategory category;
      final ItemStack result;
      final NonNullList<Ingredient> ingredients;
 +    private final boolean isSimple;
++    String override;
  
      public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, ItemStack p_252071_, NonNullList<Ingredient> p_250689_) {
          this.group = p_249640_;
@@ -12,9 +13,26 @@
          this.result = p_252071_;
          this.ingredients = p_250689_;
 +        this.isSimple = p_250689_.stream().allMatch(Ingredient::isSimple);
++    }
++
++    public ShapelessRecipe(String group, CraftingBookCategory category, ItemStack result, NonNullList<Ingredient> ingredients, String override) {
++        this(group, category, result, ingredients);
++        this.override = override;
      }
  
      @Override
+@@ -33,6 +_,11 @@
+     }
+ 
+     @Override
++    public String getOverride() {
++        return this.override;
++    }
++
++    @Override
+     public String getGroup() {
+         return this.group;
+     }
 @@ -54,17 +_,20 @@
  
      public boolean matches(CraftingContainer p_44262_, Level p_44263_) {
@@ -45,7 +63,7 @@
          private static final Codec<ShapelessRecipe> CODEC = RecordCodecBuilder.create(
              p_311734_ -> p_311734_.group(
                          ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(p_301127_ -> p_301127_.group),
-@@ -87,14 +_,13 @@
+@@ -87,20 +_,20 @@
                              .fieldOf("ingredients")
                              .flatXmap(
                                  p_301021_ -> {
@@ -64,3 +82,29 @@
                                              : DataResult.success(NonNullList.of(Ingredient.EMPTY, aingredient));
                                      }
                                  },
+                                 DataResult::success
+                             )
+-                            .forGetter(p_300975_ -> p_300975_.ingredients)
++                            .forGetter(p_300975_ -> p_300975_.ingredients),
++                            ExtraCodecs.strictOptionalField(Codec.STRING, "override", "").forGetter(p_311729_ -> p_311729_.override)
+                     )
+                     .apply(p_311734_, ShapelessRecipe::new)
+         );
+@@ -121,7 +_,8 @@
+             }
+ 
+             ItemStack itemstack = p_44294_.readItem();
+-            return new ShapelessRecipe(s, craftingbookcategory, itemstack, nonnulllist);
++            String override = p_44294_.readUtf();
++            return new ShapelessRecipe(s, craftingbookcategory, itemstack, nonnulllist, override);
+         }
+ 
+         public void toNetwork(FriendlyByteBuf p_44281_, ShapelessRecipe p_44282_) {
+@@ -134,6 +_,7 @@
+             }
+ 
+             p_44281_.writeItem(p_44282_.result);
++            p_44281_.writeUtf(p_44282_.override);
+         }
+     }
+ }

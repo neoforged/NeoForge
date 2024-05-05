@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -45,17 +_,23 @@
+@@ -45,23 +_,40 @@
      }
  
      protected void apply(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_) {
 +        var ops = this.makeConditionalOps();
          this.hasErrors = false;
-         Map<RecipeType<?>, Builder<ResourceLocation, RecipeHolder<?>>> map = Maps.newHashMap();
+-        Map<RecipeType<?>, Builder<ResourceLocation, RecipeHolder<?>>> map = Maps.newHashMap();
++        Map<RecipeType<?>, net.neoforged.neoforge.common.util.MutableHashedLinkedMap<ResourceLocation, RecipeHolder<?>>> map = Maps.newLinkedHashMap();
++        Map<RecipeType<?>, List<RecipeHolder<?>>> overrides = Maps.newLinkedHashMap();
          Builder<ResourceLocation, RecipeHolder<?>> builder = ImmutableMap.builder();
  
          for(Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
@@ -19,7 +21,11 @@
 -                builder.put(resourcelocation, recipeholder);
 +                Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), ops);
 +                recipeHolderOptional.ifPresentOrElse(recipeholder -> {
-+                    map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
++                    if (recipeholder.value().getOverride() == null || recipeholder.value().getOverride().isEmpty()) {
++                        map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> new net.neoforged.neoforge.common.util.MutableHashedLinkedMap<>()).put(resourcelocation, recipeholder);
++                    } else {
++                        overrides.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> new java.util.ArrayList<>()).add(recipeholder);
++                    }
 +                    builder.put(resourcelocation, recipeholder);
 +                }, () -> {
 +                    LOGGER.debug("Skipping loading recipe {} as it's conditions were not met", resourcelocation);
@@ -27,6 +33,19 @@
              } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
                  LOGGER.error("Parsing error loading recipe {}", resourcelocation, jsonparseexception);
              }
+         }
+ 
+-        this.recipes = map.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, p_44033_ -> ((Builder)p_44033_.getValue()).build()));
++        overrides.forEach((key, value) -> value.forEach((entry) -> { //todo safety checks
++            if (map.containsKey(key) && map.get(key).contains(new ResourceLocation(entry.value().getOverride()))) {
++                map.get(key).putBefore(new ResourceLocation(entry.value().getOverride()), entry.id(), entry);
++            }
++        }));
++
++        this.recipes = map.entrySet().stream().collect(ImmutableMap.toImmutableMap((e) -> e.getKey(), (e) -> ImmutableMap.copyOf(e.getValue())));
+         this.byName = builder.build();
+         LOGGER.info("Loaded {} recipes", map.size());
+     }
 @@ -136,9 +_,15 @@
          return this.recipes.values().stream().flatMap(p_220258_ -> p_220258_.keySet().stream());
      }

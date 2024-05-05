@@ -20,6 +20,17 @@
              }
          }
  
+@@ -46,6 +_,10 @@
+         return true;
+     }
+ 
++    default String getOverride() {
++        return "";
++    }
++
+     default String getGroup() {
+         return "";
+     }
 @@ -60,6 +_,6 @@
  
      default boolean isIncomplete() {

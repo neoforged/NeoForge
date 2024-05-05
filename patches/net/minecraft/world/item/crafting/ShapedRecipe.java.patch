@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipe.java
-@@ -11,7 +_,7 @@
+@@ -11,12 +_,13 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.Level;
  
@@ -9,7 +9,34 @@
      final ShapedRecipePattern pattern;
      final ItemStack result;
      final String group;
-@@ -41,11 +_,21 @@
+     final CraftingBookCategory category;
+     final boolean showNotification;
++    String override;
+ 
+     public ShapedRecipe(String p_272759_, CraftingBookCategory p_273506_, ShapedRecipePattern p_312827_, ItemStack p_272852_, boolean p_312010_) {
+         this.group = p_272759_;
+@@ -30,22 +_,42 @@
+         this(p_250221_, p_250716_, p_312814_, p_248581_, true);
+     }
+ 
++    public ShapedRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, boolean showNotification, String override) {
++        this(group, category, pattern, result, showNotification);
++        this.override = override;
++    }
++
+     @Override
+     public RecipeSerializer<?> getSerializer() {
+         return RecipeSerializer.SHAPED_RECIPE;
+     }
+ 
+     @Override
++    public String getOverride() {
++        return this.override;
++    }
++
++    @Override
+     public String getGroup() {
+         return this.group;
      }
  
      @Override
@@ -40,3 +67,31 @@
      }
  
      public static class Serializer implements RecipeSerializer<ShapedRecipe> {
+@@ -94,7 +_,8 @@
+                         CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_311732_ -> p_311732_.category),
+                         ShapedRecipePattern.MAP_CODEC.forGetter(p_311733_ -> p_311733_.pattern),
+                         ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(p_311730_ -> p_311730_.result),
+-                        ExtraCodecs.strictOptionalField(Codec.BOOL, "show_notification", true).forGetter(p_311731_ -> p_311731_.showNotification)
++                        ExtraCodecs.strictOptionalField(Codec.BOOL, "show_notification", true).forGetter(p_311731_ -> p_311731_.showNotification),
++                        ExtraCodecs.strictOptionalField(Codec.STRING, "override", "").forGetter(p_311729_ -> p_311729_.override)
+                     )
+                     .apply(p_311728_, ShapedRecipe::new)
+         );
+@@ -110,7 +_,8 @@
+             ShapedRecipePattern shapedrecipepattern = ShapedRecipePattern.fromNetwork(p_44240_);
+             ItemStack itemstack = p_44240_.readItem();
+             boolean flag = p_44240_.readBoolean();
+-            return new ShapedRecipe(s, craftingbookcategory, shapedrecipepattern, itemstack, flag);
++            String override = p_44240_.readUtf();
++            return new ShapedRecipe(s, craftingbookcategory, shapedrecipepattern, itemstack, flag, override);
+         }
+ 
+         public void toNetwork(FriendlyByteBuf p_44227_, ShapedRecipe p_44228_) {
+@@ -119,6 +_,7 @@
+             p_44228_.pattern.toNetwork(p_44227_);
+             p_44227_.writeItem(p_44228_.result);
+             p_44227_.writeBoolean(p_44228_.showNotification);
++            p_44227_.writeUtf(p_44228_.override);
+         }
+     }
+ }

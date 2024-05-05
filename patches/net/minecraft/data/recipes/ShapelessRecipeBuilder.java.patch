@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/ShapelessRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/ShapelessRecipeBuilder.java
-@@ -22,15 +_,21 @@
+@@ -22,15 +_,23 @@
      private final RecipeCategory category;
      private final Item result;
      private final int count;
@@ -9,6 +9,8 @@
      private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
      @Nullable
      private String group;
++    @Nullable
++    private String override;
  
      public ShapelessRecipeBuilder(RecipeCategory p_250837_, ItemLike p_251897_, int p_252227_) {
 +        this(p_250837_, new ItemStack(p_251897_, p_252227_));
@@ -35,12 +37,27 @@
      public ShapelessRecipeBuilder requires(TagKey<Item> p_206420_) {
          return this.requires(Ingredient.of(p_206420_));
      }
-@@ -95,7 +_,7 @@
+@@ -74,6 +_,11 @@
+         return this;
+     }
+ 
++    public ShapelessRecipeBuilder override(@Nullable String override) {
++        this.override = override;
++        return this;
++    }
++
+     public ShapelessRecipeBuilder group(@Nullable String p_126195_) {
+         this.group = p_126195_;
+         return this;
+@@ -95,8 +_,9 @@
          ShapelessRecipe shapelessrecipe = new ShapelessRecipe(
              Objects.requireNonNullElse(this.group, ""),
              RecipeBuilder.determineBookCategory(this.category),
 -            new ItemStack(this.result, this.count),
+-            this.ingredients
 +            this.resultStack,
-             this.ingredients
++            this.ingredients,
++            Objects.requireNonNullElse(this.override, "")
          );
          p_301215_.accept(p_126206_, shapelessrecipe, advancement$builder.build(p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+     }

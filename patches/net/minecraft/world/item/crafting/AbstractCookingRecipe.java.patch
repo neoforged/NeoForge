@@ -1,0 +1,48 @@
+--- a/net/minecraft/world/item/crafting/AbstractCookingRecipe.java
++++ b/net/minecraft/world/item/crafting/AbstractCookingRecipe.java
+@@ -14,6 +_,7 @@
+     protected final ItemStack result;
+     protected final float experience;
+     protected final int cookingTime;
++    String override;
+ 
+     public AbstractCookingRecipe(
+         RecipeType<?> p_250197_, String p_249518_, CookingBookCategory p_250891_, Ingredient p_251354_, ItemStack p_252185_, float p_252165_, int p_250256_
+@@ -27,6 +_,14 @@
+         this.cookingTime = p_250256_;
+     }
+ 
++    public AbstractCookingRecipe(
++            RecipeType<?> type, String group, CookingBookCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime, String override
++    ) {
++        this(type, group, category, ingredient, result, experience, cookingTime);
++        this.override = override;
++
++    }
++
+     @Override
+     public boolean matches(Container p_43748_, Level p_43749_) {
+         return this.ingredient.test(p_43748_.getItem(0));
+@@ -59,6 +_,11 @@
+     }
+ 
+     @Override
++    public String getOverride() {
++        return this.override;
++    }
++
++    @Override
+     public String getGroup() {
+         return this.group;
+     }
+@@ -74,6 +_,10 @@
+ 
+     public CookingBookCategory category() {
+         return this.category;
++    }
++
++    public interface NeoForgeFactory<T extends AbstractCookingRecipe> extends Factory<T> {
++        T create(String p_312581_, CookingBookCategory p_312220_, Ingredient p_312282_, ItemStack p_311868_, float p_312803_, int p_312165_, String override);
+     }
+ 
+     public interface Factory<T extends AbstractCookingRecipe> {

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/item/crafting/BlastingRecipe.java
++++ b/net/minecraft/world/item/crafting/BlastingRecipe.java
+@@ -8,6 +_,10 @@
+         super(RecipeType.BLASTING, p_251053_, p_249936_, p_251550_, p_251027_, p_250843_, p_249841_);
+     }
+ 
++    public BlastingRecipe(String p_251053_, CookingBookCategory p_249936_, Ingredient p_251550_, ItemStack p_251027_, float p_250843_, int p_249841_, String override) {
++        super(RecipeType.BLASTING, p_251053_, p_249936_, p_251550_, p_251027_, p_250843_, p_249841_, override);
++    }
++
+     @Override
+     public ItemStack getToastSymbol() {
+         return new ItemStack(Blocks.BLAST_FURNACE);
