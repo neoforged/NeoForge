@@ -9,6 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,8 @@ public class NeoForgeConfig {
         public final ConfigValue<String> permissionHandler;
 
         public final BooleanValue advertiseDedicatedServerToLan;
+
+        public final IntValue pointOfInterestStorageCacheLimit;
 
         Server(ModConfigSpec.Builder builder) {
             builder.comment("Server configuration settings")
@@ -59,6 +62,12 @@ public class NeoForgeConfig {
                     .comment("Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.")
                     .translation("neoforge.configgui.advertiseDedicatedServerToLan")
                     .define("advertiseDedicatedServerToLan", true);
+
+            pointOfInterestStorageCacheLimit = builder
+                    .comment("Set this to true to check the entire entity's collision bounding box for ladders instead of just the block they are in. Causes noticeable differences in mechanics so default is vanilla behavior. Default: false.")
+                    .translation("neoforge.configgui.pointOfInterestStorageCacheLimit")
+                    .worldRestart()
+                    .defineInRange("pointOfInterestStorageCacheLimit", 5000, 1, Integer.MAX_VALUE);
 
             builder.pop();
         }
