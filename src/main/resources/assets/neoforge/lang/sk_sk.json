@@ -69,6 +69,7 @@
   "fml.modloading.uncaughterror": "Vyskytla sa nezachytená chyba paralelného spracovania.\n§7{2,exc,msg}",
   "fml.modloading.errorduringevent": "{0,modinfo,name} ({0,modinfo,id}) narazil na chybu počas {1,lower} udalosti\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "Zlyhalo načítanie NeoForgu",
+  "fml.modloading.javafml.dangling_entrypoint": "File {4} contains mod entrypoint class §6{3}§r for mod with id §e{2}§r, which does not exist or is not in the same file.\nDid you forget to update the mod id in the entrypoint?",
   "fml.modloading.missingdependency": "Mód §e{4}§r vyžaduje §6{3}§r §o{5,vr}§r§ Aktuálne, §6{3}§r§7 je §o{6,i18n,fml.messages.artifactversion.ornotinstalled}§r{7, Voliteľné,§7Dôvod pre potrebu: §r}",
   "fml.modloading.missingdependency.optional": "Mód §e{4}§r podporuje len §3{3}§r §o{5,vr}§r\n§7Aktuálne, §3{3}§r§7 is §o{6}",
   "fml.modloading.incompatiblemod": "Mód §e{4}§r je §cnekompatibilný§r s §3{3}§r §o{5,vr}§r\n§7Aktuálne, §3{3}§r§7 je §o{6}§r\n§7Dôvodom je:§r §o{7,i18ntranslate}§r",
