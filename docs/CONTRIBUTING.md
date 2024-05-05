@@ -26,9 +26,17 @@ Contributing to NeoForge
 12. Commit & Push
 13. Make PR
 
+## Porting
+
+If you are interested in how NeoForge is ported to new Minecraft versions, see [the porting workflow][Porting].
+Please note that currently  only maintainers can use all the needed tools.
+Please do not open a porting PR without prior coordination.
+
 Contributor License Agreement
 =============================
 - You grant NeoForged a license to use your code contributed to the primary codebase (everything **not** under patches) in NeoForge, under the LGPLv2.1 license.
 - You assign copyright ownership of your contributions to the patches codebase (everything under patches) to NeoForged, where it will be licensed under the LGPLv2.1 license.
 
 This is intended as a **legally binding copyright assignment** to the NeoForged project for contributions under the patches codebase. However you retain your copyright for all other contributions.
+
+[Porting]: ../docs/PORTING.md
