@@ -1,12 +1,21 @@
 --- a/net/minecraft/client/resources/language/ClientLanguage.java
 +++ b/net/minecraft/client/resources/language/ClientLanguage.java
-@@ -77,4 +_,9 @@
+@@ -34,6 +_,7 @@
+ 
+         for (String s : p_265743_) {
+             String s1 = String.format(Locale.ROOT, "lang/%s.json", s);
++            net.neoforged.fml.i18n.I18nManager.loadTranslations(s);
+ 
+             for (String s2 : p_265765_.getNamespaces()) {
+                 try {
+@@ -76,5 +_,10 @@
+     @Override
      public FormattedCharSequence getVisualOrder(FormattedText p_118925_) {
          return FormattedBidiReorder.reorder(p_118925_, this.defaultRightToLeft);
-     }
++    }
 +
 +    @Override
 +    public Map<String, String> getLanguageData() {
 +        return storage;
-+    }
+     }
  }

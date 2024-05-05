@@ -16,7 +16,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.neoforge.common.I18nExtension;
+import net.neoforged.fml.i18n.I18nManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -51,6 +51,7 @@ public class LanguageHook {
         int loaded = 0;
         for (String namespace : clientResources.getNamespaces()) {
             try {
+                modTable.putAll(I18nManager.loadTranslations(langName));
                 ResourceLocation langResource = new ResourceLocation(namespace, langFile);
                 for (Resource resource : clientResources.getResourceStack(langResource)) {
                     try (InputStream stream = resource.open()) {
@@ -91,14 +92,16 @@ public class LanguageHook {
             LOGGER.warn("Failed to load built-in language file for NeoForge", exception);
         }
 
+        modTable.putAll(I18nManager.loadTranslations("en_us"));
+
         defaultLanguageTable.putAll(modTable);
-        I18nExtension.loadLanguageData(modTable);
+        I18nManager.injectTranslations(modTable);
     }
 
     static void loadModLanguages(MinecraftServer server) {
         modTable = new HashMap<>(5000);
         loadLanguage("en_us", server);
         defaultLanguageTable.putAll(modTable);
-        I18nExtension.loadLanguageData(modTable);
+        I18nManager.injectTranslations(modTable);
     }
 }
