@@ -69,6 +69,7 @@
   "fml.modloading.uncaughterror": "發生未捕獲的平行處理錯誤。\n§7{2,exc,msg}",
   "fml.modloading.errorduringevent": "{0,modinfo,name} ({0,modinfo,id})在 {1,lower} 事件階段發生錯誤\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "載入 NeoForge 失敗",
+  "fml.modloading.javafml.dangling_entrypoint": "File {4} contains mod entrypoint class §6{3}§r for mod with id §e{2}§r, which does not exist or is not in the same file.\nDid you forget to update the mod id in the entrypoint?",
   "fml.modloading.missingdependency": "模組 §e{4}§r 需要 §6{3}§r §o{5,vr}§r\n§7目前 §6{3}§r§7 是 §o{6,i18n,fml.messages.artifactversion.ornotinstalled}§r\n{7,optional,§7使用此前置項的原因：§r}",
   "fml.modloading.missingdependency.optional": "模組 §e{4}§r 只支援 §3{3}§r §r §o{5,vr}§r\n§7目前，§3{3}§r§7 是 §o{6}",
   "fml.modloading.incompatiblemod": "模組 §e{4}§r 與 §3{3}§r §o{5,vr}§r §c不相容§r\n§7目前 §3{3}§r§7 是 §o{6}§r\n§7原因：§r§o{7,i18ntranslate}§r",
