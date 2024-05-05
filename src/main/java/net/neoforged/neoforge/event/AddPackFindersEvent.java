@@ -69,7 +69,7 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
             var resourcePath = ModList.get().getModFileById(packLocation.getNamespace()).getFile().findResource(packLocation.getPath());
 
             var pack = Pack.readMetaAndCreate(
-                    new PackLocationInfo(packLocation.toString(), packNameDisplay, packSource, Optional.empty()),
+                    new PackLocationInfo("mod/" + packLocation, packNameDisplay, packSource, Optional.empty()),
                     BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath)),
                     packType,
                     new PackSelectionConfig(alwaysActive, packPosition, false));
