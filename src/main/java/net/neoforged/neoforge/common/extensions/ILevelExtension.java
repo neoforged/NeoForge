@@ -7,6 +7,8 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.BooleanSupplier;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -16,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.client.model.data.ModelDataManager;
 import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jetbrains.annotations.Nullable;
 
 public interface ILevelExtension {
@@ -105,4 +108,17 @@ public interface ILevelExtension {
      * but it is safe to call on any {@link Level}, without the need for an {@code instanceof} check.
      */
     default void invalidateCapabilities(ChunkPos pos) {}
+
+    /**
+     * Run a full single level tick.
+     *
+     * Wrapper method to expose the common method from {@linkplain ClientLevel} and {@linkplain ServerLevel},
+     * useful for ticking fake levels to update block/entity render animations.
+     *
+     * This method does not post the {@linkplain LevelTickEvent.Pre} or {@linkplain LevelTickEvent.Post} events,
+     * modders should post these events themselves before and after invoking this method.
+     */
+    default void tick(BooleanSupplier hasTime) {
+        // No-op default impl
+    }
 }
