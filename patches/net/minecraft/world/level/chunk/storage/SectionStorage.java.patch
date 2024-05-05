@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/chunk/storage/SectionStorage.java
++++ b/net/minecraft/world/level/chunk/storage/SectionStorage.java
+@@ -35,7 +_,7 @@
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final String SECTIONS_TAG = "Sections";
+     private final SimpleRegionStorage simpleRegionStorage;
+-    private final Long2ObjectMap<Optional<R>> storage = new Long2ObjectOpenHashMap<>();
++    private final net.neoforged.neoforge.common.util.SizeRestrictedLinkedHashMap<Optional<R>> storage = new net.neoforged.neoforge.common.util.SizeRestrictedLinkedHashMap<>(5000);
+     private final LongLinkedOpenHashSet dirty = new LongLinkedOpenHashSet();
+     private final Function<Runnable, Codec<R>> codec;
+     private final Function<Runnable, R> factory;
