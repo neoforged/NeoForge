@@ -69,6 +69,7 @@
   "fml.modloading.uncaughterror": "모드 병렬 처리 도중 문제가 발생하였습니다: §7{2,exc,msg}",
   "fml.modloading.errorduringevent": "모드 {0,modinfo,name} ({0,modinfo,id}) 를 불러오는 도중 이벤트 {1,lower} 에서 문제가 발생하였습니다: §7{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "네오 포지를 불러오는 데 실패했습니다",
+  "fml.modloading.javafml.dangling_entrypoint": "File {4} contains mod entrypoint class §6{3}§r for mod with id §e{2}§r, which does not exist or is not in the same file.\nDid you forget to update the mod id in the entrypoint?",
   "fml.modloading.missingdependency": "모드 §e{4}§r는 §6{3}§r §o{5,vr}(이)가 필요합니다. §r\n§7현재로는, §6{3}§r§7는 §o{6,i18n,fml.messages.artifactversion.ornotinstalled} 입니다.",
   "fml.modloading.missingdependency.optional": "§e{4}§r 는 §3{3}§r §o{5,vr}§r 만 지원합니다\n현재 설치된 §3{3}§r§7 는 §o{6} 입니다",
   "fml.modloading.incompatiblemod": "모드 §e{4}§r 는 §3{3}§r §o{5,vr}§r 와 §c호환되지 않습니다§r\n§7현재 §3{3}§r§7 는 §o{6} 입니다\n§7이유:§r §o{7,i18ntranslate}§r",
