@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
  * A special kind of Long2ObjectLinkedOpenHashMap that will remove the oldest values
  * automatically if it is given new values that exceeds its given maxCapacity
  */
-public class SizeRestrictedLinkedHashMap<V> extends Long2ObjectLinkedOpenHashMap<V> {
+public class SizeRestrictedLong2ObjectLinkedOpenHashMap<V> extends Long2ObjectLinkedOpenHashMap<V> {
 
     private final long maxCapacity;
 
@@ -17,7 +17,7 @@ public class SizeRestrictedLinkedHashMap<V> extends Long2ObjectLinkedOpenHashMap
      *
      * @param maxCapacity Maximum size before this hash map begins removing the oldest entries
      */
-    public SizeRestrictedLinkedHashMap(long maxCapacity) {
+    public SizeRestrictedLong2ObjectLinkedOpenHashMap(long maxCapacity) {
         super(DEFAULT_INITIAL_SIZE, DEFAULT_LOAD_FACTOR);
 
         this.maxCapacity = maxCapacity;
@@ -30,7 +30,7 @@ public class SizeRestrictedLinkedHashMap<V> extends Long2ObjectLinkedOpenHashMap
      * @param defaultInitialSize The expected ideal number of elements in the hash map
      * @param defaultLoadFactor The load factor for determining when to rehash
      */
-    public SizeRestrictedLinkedHashMap(long maxCapacity, int defaultInitialSize, int defaultLoadFactor) {
+    public SizeRestrictedLong2ObjectLinkedOpenHashMap(long maxCapacity, int defaultInitialSize, int defaultLoadFactor) {
         super(defaultInitialSize, defaultLoadFactor);
 
         this.maxCapacity = maxCapacity;
