@@ -5,7 +5,7 @@
      private final PlayerMap playerMap = new PlayerMap();
      private final Int2ObjectMap<ChunkMap.TrackedEntity> entityMap = new Int2ObjectOpenHashMap<>();
 -    private final Long2ByteMap chunkTypeCache = new Long2ByteOpenHashMap();
-+    private final Long2ByteMap chunkTypeCache = new net.neoforged.neoforge.common.util.SizeRestrictedLong2ByteLinkedOpenHashMap(net.neoforged.neoforge.common.NeoForgeConfig.SERVER.chunkTypeCacheLimit.get());
++    private final Long2ByteMap chunkTypeCache = new net.neoforged.neoforge.common.util.SizeRestrictedLong2ByteLinkedOpenHashMap(net.neoforged.neoforge.common.NeoForgeConfig.SERVER.chunkTypeCacheLimit.get()); // Neo: PR #937
      private final Long2LongMap chunkSaveCooldowns = new Long2LongOpenHashMap();
      private final Queue<Runnable> unloadQueue = Queues.newConcurrentLinkedQueue();
      private int serverViewDistance;

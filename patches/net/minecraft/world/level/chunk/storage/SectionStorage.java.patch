@@ -5,7 +5,7 @@
      private static final String SECTIONS_TAG = "Sections";
      private final SimpleRegionStorage simpleRegionStorage;
 -    private final Long2ObjectMap<Optional<R>> storage = new Long2ObjectOpenHashMap<>();
-+    private final Long2ObjectMap<Optional<R>> storage = new net.neoforged.neoforge.common.util.SizeRestrictedLong2ObjectLinkedOpenHashMap<>(net.neoforged.neoforge.common.NeoForgeConfig.SERVER.pointOfInterestStorageCacheLimit.get());
++    private final Long2ObjectMap<Optional<R>> storage = new net.neoforged.neoforge.common.util.SizeRestrictedLong2ObjectLinkedOpenHashMap<>(net.neoforged.neoforge.common.NeoForgeConfig.SERVER.pointOfInterestStorageCacheLimit.get()); // Neo: PR #937
      private final LongLinkedOpenHashSet dirty = new LongLinkedOpenHashSet();
      private final Function<Runnable, Codec<R>> codec;
      private final Function<Runnable, R> factory;
