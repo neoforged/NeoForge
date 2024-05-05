@@ -69,6 +69,7 @@
   "fml.modloading.uncaughterror": "An uncaught parallel processing error has occurred.\n§7{2,exc,msg}",
   "fml.modloading.errorduringevent": "{0,modinfo,name} ({0,modinfo,id}) encountered an error during the {1,lower} event phase\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "NeoForge yüklemesi başarısız",
+  "fml.modloading.javafml.dangling_entrypoint": "File {4} contains mod entrypoint class §6{3}§r for mod with id §e{2}§r, which does not exist or is not in the same file.\nDid you forget to update the mod id in the entrypoint?",
   "fml.modloading.missingdependency": "Mod §e{4}§r requires §6{3}§r §o{5,vr}§r\n§7Currently, §6{3}§r§7 is §o{6,i18n,fml.messages.artifactversion.ornotinstalled}§r\n{7,optional,§7Reason for the dependency: §r}",
   "fml.modloading.missingdependency.optional": "Mod §e{4}§r only supports §3{3}§r §o{5,vr}§r\n§7Currently, §3{3}§r§7 is §o{6}",
   "fml.modloading.incompatiblemod": "Mod §e{4}§r is §cincompatible§r with §3{3}§r §o{5,vr}§r\n§7Currently, §3{3}§r§7 is §o{6}§r\n§7The reason is:§r §o{7,i18ntranslate}§r",
