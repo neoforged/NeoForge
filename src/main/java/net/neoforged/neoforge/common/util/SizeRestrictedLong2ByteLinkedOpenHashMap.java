@@ -8,14 +8,12 @@ package net.neoforged.neoforge.common.util;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.longs.Long2ByteFunction;
 import it.unimi.dsi.fastutil.longs.Long2ByteLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 
 /**
  * A special kind of Long2ByteLinkedOpenHashMap that will remove the oldest values
  * automatically if it is given new values that exceeds its given maxCapacity
  */
 public class SizeRestrictedLong2ByteLinkedOpenHashMap extends Long2ByteLinkedOpenHashMap {
-
     private final long maxCapacity;
 
     /**
@@ -33,9 +31,9 @@ public class SizeRestrictedLong2ByteLinkedOpenHashMap extends Long2ByteLinkedOpe
     /**
      * Creates a new size-restricted hash map with given initial size, load factors, and max capacity.
      *
-     * @param maxCapacity Maximum size before this hash map begins removing the oldest entries
+     * @param maxCapacity        Maximum size before this hash map begins removing the oldest entries
      * @param defaultInitialSize The expected ideal number of elements in the hash map
-     * @param defaultLoadFactor The load factor for determining when to rehash
+     * @param defaultLoadFactor  The load factor for determining when to rehash
      */
     public SizeRestrictedLong2ByteLinkedOpenHashMap(long maxCapacity, int defaultInitialSize, int defaultLoadFactor) {
         super(defaultInitialSize, defaultLoadFactor);
@@ -112,7 +110,7 @@ public class SizeRestrictedLong2ByteLinkedOpenHashMap extends Long2ByteLinkedOpe
         final long[] key = this.key;
         int pos;
         // The starting point.
-        if (((curr = key[pos = (int)it.unimi.dsi.fastutil.HashCommon.mix((k)) & mask]) == (0))) return -(pos + 1);
+        if (((curr = key[pos = (int) it.unimi.dsi.fastutil.HashCommon.mix((k)) & mask]) == (0))) return -(pos + 1);
         if (((k) == (curr))) return pos;
         // There's always an unused entry.
         while (true) {

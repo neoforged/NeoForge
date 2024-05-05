@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
  * automatically if it is given new values that exceeds its given maxCapacity
  */
 public class SizeRestrictedLong2ObjectLinkedOpenHashMap<V> extends Long2ObjectLinkedOpenHashMap<V> {
-
     private final long maxCapacity;
 
     /**
@@ -31,9 +30,9 @@ public class SizeRestrictedLong2ObjectLinkedOpenHashMap<V> extends Long2ObjectLi
     /**
      * Creates a new size-restricted hash map with given initial size, load factors, and max capacity.
      *
-     * @param maxCapacity Maximum size before this hash map begins removing the oldest entries
+     * @param maxCapacity        Maximum size before this hash map begins removing the oldest entries
      * @param defaultInitialSize The expected ideal number of elements in the hash map
-     * @param defaultLoadFactor The load factor for determining when to rehash
+     * @param defaultLoadFactor  The load factor for determining when to rehash
      */
     public SizeRestrictedLong2ObjectLinkedOpenHashMap(long maxCapacity, int defaultInitialSize, int defaultLoadFactor) {
         super(defaultInitialSize, defaultLoadFactor);
@@ -92,7 +91,7 @@ public class SizeRestrictedLong2ObjectLinkedOpenHashMap<V> extends Long2ObjectLi
         final long[] key = this.key;
         int pos;
         // The starting point.
-        if (((curr = key[pos = (int)it.unimi.dsi.fastutil.HashCommon.mix((k)) & mask]) == (0))) return -(pos + 1);
+        if (((curr = key[pos = (int) it.unimi.dsi.fastutil.HashCommon.mix((k)) & mask]) == (0))) return -(pos + 1);
         if (((k) == (curr))) return pos;
         // There's always an unused entry.
         while (true) {
