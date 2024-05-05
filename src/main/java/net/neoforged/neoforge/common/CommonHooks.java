@@ -213,13 +213,6 @@ public class CommonHooks {
         return false;
     }
 
-    public static boolean isCorrectToolForDrops(BlockState state, Player player) {
-        if (!state.requiresCorrectToolForDrops())
-            return EventHooks.doPlayerHarvestCheck(player, state, true);
-
-        return player.hasCorrectToolForDrops(state);
-    }
-
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
         return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
     }
