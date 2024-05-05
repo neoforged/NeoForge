@@ -31,6 +31,8 @@ public class NeoForgeConfig {
 
         public final IntValue pointOfInterestStorageCacheLimit;
 
+        public final IntValue chunkTypeCacheLimit;
+
         Server(ModConfigSpec.Builder builder) {
             builder.comment("Server configuration settings")
                     .push("server");
@@ -64,10 +66,16 @@ public class NeoForgeConfig {
                     .define("advertiseDedicatedServerToLan", true);
 
             pointOfInterestStorageCacheLimit = builder
-                    .comment("Set this to true to check the entire entity's collision bounding box for ladders instead of just the block they are in. Causes noticeable differences in mechanics so default is vanilla behavior. Default: false.")
+                    .comment("Controls how many PoiSections that Minecraft will keep loaded in memory as chunks are loaded. When limit is reached, the oldest PoiSections will be dropped from cache. Default: 5000.")
                     .translation("neoforge.configgui.pointOfInterestStorageCacheLimit")
                     .worldRestart()
                     .defineInRange("pointOfInterestStorageCacheLimit", 5000, 1, Integer.MAX_VALUE);
+
+            chunkTypeCacheLimit = builder
+                    .comment("Controls how many chunk types that Minecraft will keep loaded in memory as chunks are loaded. When limit is reached, the oldest chunk types recorded will be dropped from cache. Default: 5000.")
+                    .translation("neoforge.configgui.chunkTypeCacheLimit")
+                    .worldRestart()
+                    .defineInRange("chunkTypeCacheLimit", 5000, 1, Integer.MAX_VALUE);
 
             builder.pop();
         }
