@@ -5,8 +5,12 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -15,6 +19,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -26,6 +32,7 @@ import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -35,11 +42,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -83,11 +89,9 @@ public interface IItemStackExtension {
         if (self().isEmpty()) {
             return 0;
         }
-        // TODO 1.20.5: Throw if the returned value from the item is negative, and move datamap logic to the item method.
         int burnTime = self().getItem().getBurnTime(self(), recipeType);
         if (burnTime < 0) {
-            FurnaceFuel fuel = self().getItem().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-            burnTime = fuel != null ? fuel.burnTime() : 0;
+            throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
         }
         return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
     }
@@ -506,5 +510,23 @@ public interface IItemStackExtension {
     @Nullable
     default <T> T getCapability(ItemCapability<T, Void> capability) {
         return capability.getCapability(self(), null);
+    }
+
+    /**
+     * {@return the attribute modifiers for the given equipment slot}
+     * <p>
+     * Fires ItemAttributeModifierEvent to compute the final attribute modifiers.
+     * 
+     * @param equipmentSlot the equipment slot to get the attribute modifiers for
+     */
+    default Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
+        ItemAttributeModifiers itemattributemodifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+        Multimap<Holder<Attribute>, AttributeModifier> multimap = LinkedHashMultimap.create();
+        if (!itemattributemodifiers.modifiers().isEmpty()) {
+            itemattributemodifiers.forEach(equipmentSlot, multimap::put);
+        } else {
+            self().getItem().getAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
+        }
+        return CommonHooks.getAttributeModifiers(self(), equipmentSlot, multimap);
     }
 }

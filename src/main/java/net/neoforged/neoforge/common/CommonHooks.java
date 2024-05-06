@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -45,11 +44,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -67,7 +68,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
@@ -109,7 +109,6 @@ import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -137,11 +136,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
-import net.neoforged.neoforge.common.extensions.IItemStackExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -212,13 +211,6 @@ public class CommonHooks {
             return from.getItem().canContinueUsing(from, to);
         }
         return false;
-    }
-
-    public static boolean isCorrectToolForDrops(BlockState state, Player player) {
-        if (!state.requiresCorrectToolForDrops())
-            return EventHooks.doPlayerHarvestCheck(player, state, true);
-
-        return player.hasCorrectToolForDrops(state);
     }
 
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
@@ -507,17 +499,14 @@ public class CommonHooks {
         if (player != null && !player.getAbilities().mayBuild) {
             AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_PLACE_ON);
             if (adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, context.getClickedPos(), false))) {
-                return net.minecraft.world.InteractionResult.PASS;
+                return InteractionResult.PASS;
             }
         }
 
         // handle all placement events here
         Item item = itemstack.getItem();
         int size = itemstack.getCount();
-        // Porting 1.20.5 redo this for components?
-        //CompoundTag nbt = null;
-        //if (itemstack.getTag() != null)
-        //    nbt = itemstack.getTag().copy();
+        DataComponentMap components = itemstack.getComponents();
 
         if (!(itemstack.getItem() instanceof BucketItem)) // if not bucket
             level.captureBlockSnapshots = true;
@@ -532,17 +521,14 @@ public class CommonHooks {
         if (ret.consumesAction()) {
             // save new item data
             int newSize = itemstack.getCount();
-            //CompoundTag newNBT = null;
-            //if (itemstack.getTag() != null) {
-            //    newNBT = itemstack.getTag().copy();
-            //}
+            DataComponentMap newComponents = itemstack.getComponents();
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>) level.capturedBlockSnapshots.clone();
             level.capturedBlockSnapshots.clear();
 
             // make sure to set pre-placement item data for event
             itemstack.setCount(size);
-            //itemstack.setTag(nbt);
+            itemstack.applyComponents(components);
             //TODO: Set pre-placement item attachments?
 
             Direction side = context.getClickedFace();
@@ -565,7 +551,7 @@ public class CommonHooks {
             } else {
                 // Change the stack to its new content
                 itemstack.setCount(newSize);
-                //itemstack.setTag(newNBT);
+                itemstack.applyComponents(newComponents);
 
                 for (BlockSnapshot snap : blockSnapshots) {
                     int updateFlag = snap.getFlag();
@@ -696,14 +682,6 @@ public class CommonHooks {
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
-    /**
-     * @deprecated Use {@link #onLeftClickBlock(Player, BlockPos, Direction, ServerboundPlayerActionPacket.Action)} instead
-     */
-    @Deprecated(since = "1.20.1", forRemoval = true)
-    public static PlayerInteractEvent.LeftClickBlock onLeftClickBlock(Player player, BlockPos pos, Direction face) {
-        return onLeftClickBlock(player, pos, face, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
-    }
-
     public static PlayerInteractEvent.LeftClickBlock onLeftClickBlock(Player player, BlockPos pos, Direction face, ServerboundPlayerActionPacket.Action action) {
         PlayerInteractEvent.LeftClickBlock evt = new PlayerInteractEvent.LeftClickBlock(player, pos, face, PlayerInteractEvent.LeftClickBlock.Action.convert(action));
         NeoForge.EVENT_BUS.post(evt);
@@ -807,7 +785,7 @@ public class CommonHooks {
     public static boolean onCropsGrowPre(Level level, BlockPos pos, BlockState state, boolean def) {
         BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
         NeoForge.EVENT_BUS.post(ev);
-        return (ev.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (ev.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT && def));
+        return (ev.getResult() == Event.Result.ALLOW || (ev.getResult() == Event.Result.DEFAULT && def));
     }
 
     public static void onCropsGrowPost(Level level, BlockPos pos, BlockState state) {
@@ -818,7 +796,7 @@ public class CommonHooks {
     public static CriticalHitEvent getCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
         CriticalHitEvent hitResult = new CriticalHitEvent(player, target, damageModifier, vanillaCritical);
         NeoForge.EVENT_BUS.post(hitResult);
-        if (hitResult.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT)) {
+        if (hitResult.getResult() == Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == Event.Result.DEFAULT)) {
             return hitResult;
         }
         return null;
@@ -893,9 +871,6 @@ public class CommonHooks {
         return event.getVanillaNoteId();
     }
 
-    @Deprecated(forRemoval = true, since = "1.20.1") // Tags use a codec now This was never used in 1.20
-    public static <T> void deserializeTagAdditions(List<TagEntry> list, JsonObject json, List<TagEntry> allList) {}
-
     public static final int VANILLA_SERIALIZER_LIMIT = 256;
 
     @Nullable
@@ -923,16 +898,6 @@ public class CommonHooks {
             return false;
         BlockState state = level.getBlockState(pos);
         return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
-    }
-
-    /**
-     * Gets the burn time of this item stack.
-     * 
-     * @deprecated Use {@link IItemStackExtension#getBurnTime(RecipeType)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public static int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
-        return stack.getBurnTime(recipeType);
     }
 
     /**
@@ -1054,7 +1019,7 @@ public class CommonHooks {
     public static void readAdditionalLevelSaveData(CompoundTag rootTag, LevelStorageSource.LevelDirectory levelDirectory) {
         CompoundTag tag = rootTag.getCompound("fml");
         if (tag.contains("LoadingModList")) {
-            ListTag modList = tag.getList("LoadingModList", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            ListTag modList = tag.getList("LoadingModList", Tag.TAG_COMPOUND);
             Map<String, ArtifactVersion> mismatchedVersions = new HashMap<>(modList.size());
             Map<String, ArtifactVersion> missingVersions = new HashMap<>(modList.size());
             for (int i = 0; i < modList.size(); i++) {

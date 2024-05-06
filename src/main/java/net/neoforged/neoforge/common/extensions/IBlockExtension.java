@@ -71,11 +71,11 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
@@ -193,7 +193,7 @@ public interface IBlockExtension {
      * @return True to spawn the drops
      */
     default public boolean canHarvestBlock(BlockState state, BlockGetter level, BlockPos pos, Player player) {
-        return CommonHooks.isCorrectToolForDrops(state, player);
+        return EventHooks.doPlayerHarvestCheck(player, state, level, pos);
     }
 
     /**

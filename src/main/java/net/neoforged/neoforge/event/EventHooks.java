@@ -73,6 +73,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
@@ -138,6 +139,7 @@ import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
@@ -187,9 +189,10 @@ public class EventHooks {
         return event;
     }
 
-    public static boolean doPlayerHarvestCheck(Player player, BlockState state, boolean success) {
-        PlayerEvent.HarvestCheck event = new PlayerEvent.HarvestCheck(player, state, success);
-        NeoForge.EVENT_BUS.post(event);
+    public static boolean doPlayerHarvestCheck(Player player, BlockState state, BlockGetter level, BlockPos pos) {
+        // Call deprecated hasCorrectToolForDrops overload for a fallback value, in turn the non-deprecated overload calls this method
+        boolean vanillaValue = player.hasCorrectToolForDrops(state);
+        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, state, level, pos, vanillaValue));
         return event.canHarvest();
     }
 
@@ -797,8 +800,29 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player));
     }
 
-    public static void firePlayerRespawnEvent(Player player, boolean endConquered) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, endConquered));
+    /**
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} before creating the new {@link ServerPlayer}
+     * to fire the {@link PlayerRespawnPositionEvent}
+     * 
+     * @param player          The old {@link ServerPlayer} that is being respawned
+     * @param respawnLevel    The default level the player will respawn into
+     * @param respawnAngle    The angle the player will face when they respawn
+     * @param respawnPosition The position in the level the player will respawn at
+     * @param fromEndFight    Whether the player is respawning because they jumped through the End return portal
+     * @return The event
+     */
+    public static PlayerRespawnPositionEvent firePlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
+        return NeoForge.EVENT_BUS.post(new PlayerRespawnPositionEvent(player, respawnLevel, respawnAngle, respawnPosition, fromEndFight));
+    }
+
+    /**
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} after creating and initializing the new {@link ServerPlayer}.
+     * 
+     * @param player       The new player instance created by the respawn process
+     * @param fromEndFight Whether the player is respawning because they jumped through the End return portal
+     */
+    public static void firePlayerRespawnEvent(ServerPlayer player, boolean fromEndFight) {
+        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
     }
 
     public static void firePlayerItemPickupEvent(Player player, ItemEntity item, ItemStack clone) {

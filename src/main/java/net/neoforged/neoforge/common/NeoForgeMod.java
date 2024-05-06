@@ -91,7 +91,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
-import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
@@ -612,10 +611,6 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(this::registerPermissionNodes);
 
         UsernameCache.load();
-        if (dist.isClient()) {
-            ClientCommandHandler.init();
-            TagConventionLogWarningClient.init();
-        }
         DualStackUtils.initialise();
         TagConventionLogWarning.init();
 

@@ -21,11 +21,13 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public final class TagConventionLogWarning {
     private TagConventionLogWarning() {}
 
-    protected enum LogWarningMode {
+    public enum LogWarningMode {
         SILENCED,
         DEV_SHORT,
         DEV_VERBOSE,
