@@ -29,8 +29,6 @@ public class NeoForgeConfig {
 
         public final BooleanValue advertiseDedicatedServerToLan;
 
-        public final IntValue pointOfInterestStorageCacheLimit;
-
         public final IntValue chunkTypeCacheLimit;
 
         Server(ModConfigSpec.Builder builder) {
@@ -65,17 +63,11 @@ public class NeoForgeConfig {
                     .translation("neoforge.configgui.advertiseDedicatedServerToLan")
                     .define("advertiseDedicatedServerToLan", true);
 
-            pointOfInterestStorageCacheLimit = builder
-                    .comment("Controls how many PoiSections that Minecraft will keep loaded in memory as chunks are loaded. When limit is reached, the oldest PoiSections will be dropped from cache. Default: 5000.")
-                    .translation("neoforge.configgui.pointOfInterestStorageCacheLimit")
-                    .worldRestart()
-                    .defineInRange("pointOfInterestStorageCacheLimit", 5000, 1, Integer.MAX_VALUE);
-
             chunkTypeCacheLimit = builder
-                    .comment("Controls how many chunk types that Minecraft will keep loaded in memory as chunks are loaded. When limit is reached, the oldest chunk types recorded will be dropped from cache. Default: 5000.")
+                    .comment("Controls how many chunk types that Minecraft will keep loaded in memory as chunks are loaded. When limit is reached, the oldest chunk types recorded will be dropped from cache. Default: 10000.")
                     .translation("neoforge.configgui.chunkTypeCacheLimit")
                     .worldRestart()
-                    .defineInRange("chunkTypeCacheLimit", 5000, 1, Integer.MAX_VALUE);
+                    .defineInRange("chunkTypeCacheLimit", 10000, 1, Integer.MAX_VALUE);
 
             builder.pop();
         }

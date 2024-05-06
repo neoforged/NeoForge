@@ -41,6 +41,19 @@ public class SizeRestrictedLong2ByteLinkedOpenHashMap extends Long2ByteLinkedOpe
         this.maxCapacity = maxCapacity;
     }
 
+    /**
+     * Returns the value to which the given key is mapped; if the key is present, it is moved to the
+     * first position of the iteration order. (Calls {@link #getAndMoveToFirst} internally)
+     *
+     * @param k the key.
+     * @return the corresponding value, or the {@linkplain #defaultReturnValue() default return value}
+     *         if no value was present for the given key.
+     */
+    @Override
+    public byte get(final long k) {
+        return getAndMoveToFirst(k);
+    }
+
     @Override
     public byte put(final long k, final byte v) {
         // Removes oldest entry to keep under maxCapacity.

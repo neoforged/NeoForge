@@ -1,13 +1,15 @@
 --- a/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/SectionStorage.java
-@@ -35,7 +_,9 @@
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final String SECTIONS_TAG = "Sections";
-     private final SimpleRegionStorage simpleRegionStorage;
--    private final Long2ObjectMap<Optional<R>> storage = new Long2ObjectOpenHashMap<>();
-+    private final Long2ObjectMap<Optional<R>> storage = new net.neoforged.neoforge.common.util.SizeRestrictedLong2ObjectLinkedOpenHashMap<>(
-+            net.neoforged.neoforge.common.NeoForgeConfig.SERVER.pointOfInterestStorageCacheLimit.get(),
-+            (Long keyAboutToBeRemoved) -> { setDirty(keyAboutToBeRemoved); flush(new ChunkPos(keyAboutToBeRemoved)); }); // Neo: PR #937
-     private final LongLinkedOpenHashSet dirty = new LongLinkedOpenHashSet();
-     private final Function<Runnable, Codec<R>> codec;
-     private final Function<Runnable, R> factory;
+@@ -231,4 +_,12 @@
+     public void close() throws IOException {
+         this.simpleRegionStorage.close();
+     }
++
++    /**
++     * Neo: Removes the data for the given chunk position.
++     * See PR #937
++     */
++    public void remove(long chunkLongPos) {
++        this.storage.remove(chunkLongPos);
++    }
+ }
