@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common;
 
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.ChunkPos;
@@ -30,7 +31,13 @@ public class PointOfInterestUnloading {
             ChunkPos chunkPos = chunkAccess.getPos();
             PoiManager poiManager = serverChunkCache.chunkMap.poiManager();
             poiManager.flush(chunkPos); // Make sure all POI in chunk are saved to disk first.
-            poiManager.remove(chunkPos.toLong()); // Remove the cached POIs for this chunk's location.
+
+            // Remove the cached POIs for this chunk's location.
+            int SectionPosMinY = SectionPos.blockToSectionCoord(chunkAccess.getMinBuildHeight());
+            for (int currentSectionY = 0; currentSectionY < chunkAccess.getSectionsCount(); currentSectionY++) {
+                long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
+                poiManager.remove(sectionPosKey);
+            }
         }
     }
 }
