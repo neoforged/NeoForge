@@ -40,6 +40,7 @@ public class GenerationTask {
 
     private final MinecraftServer server;
     private final ServerChunkCache chunkSource;
+    private final ServerLevel serverLevel;
 
     private final Iterator<ChunkPos> iterator;
     private final int x;
@@ -63,6 +64,7 @@ public class GenerationTask {
     public GenerationTask(ServerLevel serverLevel, int x, int z, int radius) {
         this.server = serverLevel.getServer();
         this.chunkSource = serverLevel.getChunkSource();
+        this.serverLevel = serverLevel;
 
         this.iterator = new CoarseOnionIterator(radius, COARSE_CELL_SIZE);
         this.x = x;
@@ -178,6 +180,13 @@ public class GenerationTask {
         int queuedCount = this.queuedCount.decrementAndGet();
         if (queuedCount <= QUEUE_THRESHOLD) {
             this.tryEnqueueTasks();
+        }
+
+        // Help make sure pregen progress does not get completely lost if game crashes/shuts down before pregen is finished.
+        if (((this.okCount.get() + this.errorCount.get()) % 1000) == 999) {
+            this.server.submit(() -> {
+                this.serverLevel.save(null, false, true);
+            });
         }
     }
 
