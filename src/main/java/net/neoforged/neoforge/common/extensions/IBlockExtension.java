@@ -976,4 +976,8 @@ public interface IBlockExtension {
     default boolean isEmpty(BlockState state) {
         return state.is(Blocks.AIR) || state.is(Blocks.CAVE_AIR) || state.is(Blocks.VOID_AIR);
     }
+
+    default boolean isCompatibleWithFluid(BlockState state, FluidState adjacentFluid) {
+        return state.getFluidState().getType().isSame(adjacentFluid.getType());
+    }
 }
