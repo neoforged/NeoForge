@@ -21,7 +21,7 @@
                  this.scheduleUnload(p_140182_, p_140183_);
              } else {
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && p_203002_ != null) {
-+                    net.neoforged.neoforge.common.PointOfInterestUnloading.OnChunkUnload(this, p_203002_); // Neo: PR #937
++                    net.neoforged.neoforge.common.PointOfInterestUnloading.OnChunkUnload(this.poiManager, p_203002_); // Neo: PR #937
                      if (p_203002_ instanceof LevelChunk) {
                          ((LevelChunk)p_203002_).setLoaded(false);
 +                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(p_203002_));
@@ -88,16 +88,3 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
-@@ -1397,5 +_,12 @@
-                 this.updatePlayer(serverplayer);
-             }
-         }
-+    }
-+
-+    /**
-+     * Neo: PR #937
-+     */
-+    public PoiManager poiManager() {
-+        return this.poiManager;
-     }
- }

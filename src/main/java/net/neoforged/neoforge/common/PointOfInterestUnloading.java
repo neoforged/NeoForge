@@ -18,9 +18,8 @@ public class PointOfInterestUnloading {
      * actually removing POIs long after they become irrelevant. We do it here in chunk unload event
      * so that chunk that are fully unloaded now gets the POI removed from the POI cached storage map.
      */
-    public static void OnChunkUnload(ChunkMap chunkMap, ChunkAccess chunkAccess) {
+    public static void OnChunkUnload(PoiManager poiManager, ChunkAccess chunkAccess) {
         ChunkPos chunkPos = chunkAccess.getPos();
-        PoiManager poiManager = chunkMap.poiManager();
         poiManager.flush(chunkPos); // Make sure all POI in chunk are saved to disk first.
 
         // Remove the cached POIs for this chunk's location.
