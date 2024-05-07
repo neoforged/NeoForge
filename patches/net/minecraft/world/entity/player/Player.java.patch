@@ -35,7 +35,7 @@
  
      @Override
      public void tick() {
-+        net.neoforged.neoforge.event.EventHooks.onPlayerPreTick(this);
++        net.neoforged.neoforge.event.EventHooks.firePlayerTickPre(this);
          this.noPhysics = this.isSpectator();
          if (this.isSpectator()) {
              this.setOnGround(false);
@@ -52,7 +52,7 @@
          this.turtleHelmetTick();
          this.cooldowns.tick();
          this.updatePlayerPose();
-+        net.neoforged.neoforge.event.EventHooks.onPlayerPostTick(this);
++        net.neoforged.neoforge.event.EventHooks.firePlayerTickPost(this);
      }
  
      @Override
@@ -97,7 +97,7 @@
          float f = this.inventory.getDestroySpeed(p_36282_);
          if (f > 1.0F) {
              int i = EnchantmentHelper.getBlockEfficiency(this);
-@@ -748,11 +_,12 @@
+@@ -748,13 +_,19 @@
              f /= 5.0F;
          }
  
@@ -105,12 +105,18 @@
          return f;
      }
  
++    @Deprecated // Neo: use position sensitive version below
      public boolean hasCorrectToolForDrops(BlockState p_36299_) {
--        return !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_);
-+        return net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(this, p_36299_, !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_));
+         return !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_);
      }
  
++    public boolean hasCorrectToolForDrops(BlockState state, Level level, BlockPos pos) {
++        return net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(this, state, level, pos);
++    }
++
      @Override
+     public void readAdditionalSaveData(CompoundTag p_36215_) {
+         super.readAdditionalSaveData(p_36215_);
 @@ -851,6 +_,7 @@
  
      @Override

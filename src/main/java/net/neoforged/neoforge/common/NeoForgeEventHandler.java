@@ -30,11 +30,11 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
@@ -70,14 +70,13 @@ public class NeoForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        WorldWorkerManager.tick(event.phase == TickEvent.Phase.START);
+    public void preServerTick(ServerTickEvent.Pre event) {
+        WorldWorkerManager.tick(true);
     }
 
     @SubscribeEvent
-    public void checkSettings(TickEvent.ClientTickEvent event) {
-        //if (event.phase == Phase.END)
-        //    CloudRenderer.updateCloudSettings();
+    public void postServerTick(ServerTickEvent.Post event) {
+        WorldWorkerManager.tick(false);
     }
 
     @SubscribeEvent

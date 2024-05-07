@@ -4,7 +4,7 @@
      private KnownPacksManager knownPacks;
      @Nullable
      protected ChatComponent.State chatState;
-+    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.VANILLA;
++    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.OTHER;
 +    private boolean initializedConnection = false;
 +    private java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
  
@@ -14,10 +14,10 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
-+        //Fallback detection layer for vanilla servers
-+        if (!this.connectionType.isNeoForge()) {
++        // Neo: Fallback detection layer for vanilla servers
++        if (this.connectionType.isOther()) {
 +            this.initializedConnection = true;
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNonModdedConnection(this);
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeOtherConnection(this);
 +        }
      }
  
@@ -33,9 +33,9 @@
                  )
              );
 +        // Packets can only be sent after the outbound protocol is set up again
-+        if (!this.initializedConnection && !this.connectionType.isNeoForge()) {
-+            //Fallback detection for servers with a delayed brand payload (BungeeCord)
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNonModdedConnection(this);
++        if (!this.initializedConnection && this.connectionType.isOther()) {
++            // Neo: Fallback detection for servers with a delayed brand payload (BungeeCord)
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeOtherConnection(this);
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
@@ -51,7 +51,7 @@
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket packet) {
 +        // Handle the query payload by responding with the client's network channels. Update the connection type accordingly.
 +        if (packet.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
-+            this.connectionType = this.connectionType.withNeoForgeQueryPayload();
++            this.connectionType = net.neoforged.neoforge.network.connection.ConnectionType.NEOFORGE;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.onNetworkQuery(this);
 +            return;
 +        }
@@ -59,7 +59,7 @@
 +        // Receiving a modded network payload implies a successful negotiation by the server.
 +        if (packet.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkPayload moddedNetworkPayload) {
 +            this.initializedConnection = true;
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedNetworkConnectionEstablished(this, moddedNetworkPayload.setup());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoForgeConnection(this, moddedNetworkPayload.setup());
 +            return;
 +        }
 +
@@ -70,10 +70,10 @@
 +        }
 +
 +        // Receiving a brand payload without having transitioned to a Neo connection implies a non-modded connection has begun.
-+        if (!this.connectionType.isNeoForge() && packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {
++        if (this.connectionType.isOther() && packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {
 +            this.initializedConnection = true;
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNonModdedConnection(this);
-+            return;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeOtherConnection(this);
++            // Continue processing the brand payload
 +        }
 +
 +        // Fallback to super for un/register, modded, and vanilla payloads.

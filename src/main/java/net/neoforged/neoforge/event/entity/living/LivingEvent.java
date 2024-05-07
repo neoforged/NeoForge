@@ -35,24 +35,6 @@ public abstract class LivingEvent extends EntityEvent {
     }
 
     /**
-     * LivingUpdateEvent is fired when a LivingEntity is ticked in {@link LivingEntity#tick()}. <br>
-     * <br>
-     * This event is fired via the {@link CommonHooks#onLivingTick(LivingEntity)}.<br>
-     * <br>
-     * This event is {@link ICancellableEvent}.<br>
-     * If this event is canceled, the Entity does not update.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.
-     **/
-    public static class LivingTickEvent extends LivingEvent implements ICancellableEvent {
-        public LivingTickEvent(LivingEntity e) {
-            super(e);
-        }
-    }
-
-    /**
      * LivingJumpEvent is fired when an Entity jumps.<br>
      * This event is fired whenever an Entity jumps in
      * {@code LivingEntity#jumpFromGround()}, {@code MagmaCube#jumpFromGround()},

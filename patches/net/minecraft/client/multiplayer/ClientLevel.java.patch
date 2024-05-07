@@ -25,14 +25,19 @@
      }
  
      public void queueLightUpdate(Runnable p_194172_) {
-@@ -282,6 +_,7 @@
+@@ -282,7 +_,11 @@
          p_104640_.setOldPosAndRot();
          p_104640_.tickCount++;
          this.getProfiler().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
-+        if (p_104640_.canUpdate())
-         p_104640_.tick();
+-        p_104640_.tick();
++        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
++        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(p_104640_).isCanceled()) {
++            p_104640_.tick();
++            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(p_104640_);
++        }
          this.getProfiler().pop();
  
+         for (Entity entity : p_104640_.getPassengers()) {
 @@ -330,8 +_,10 @@
      }
  

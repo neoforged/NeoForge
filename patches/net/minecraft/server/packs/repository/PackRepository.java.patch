@@ -20,7 +20,7 @@
          for (RepositorySource repositorysource : this.sources) {
 -            repositorysource.loadPacks(p_143903_ -> map.put(p_143903_.getId(), p_143903_));
 +            Map<String, Pack> sourceMap = Maps.newTreeMap();
-+            repositorysource.loadPacks(p_143903_ -> sourceMap.put(p_143903_.getId(), p_143903_));
++            repositorysource.loadPacks(p_143903_ -> p_143903_.streamSelfAndChildren().forEach(p -> sourceMap.put(p.getId(), p)));
 +            map.putAll(sourceMap);
          }
  
@@ -28,9 +28,9 @@
 @@ -77,11 +_,12 @@
      }
  
-     private List<Pack> rebuildSelected(Collection<String> p_10518_) {
+     public List<Pack> rebuildSelected(Collection<String> p_10518_) {
 -        List<Pack> list = this.getAvailablePacks(p_10518_).collect(Util.toMutableList());
-+        List<Pack> list = this.getAvailablePacks(p_10518_).flatMap(p -> Stream.concat(Stream.of(p), p.getChildren().stream())).collect(java.util.stream.Collectors.toList());
++        List<Pack> list = net.neoforged.neoforge.resource.ResourcePackLoader.expandAndRemoveRootChildren(this.getAvailablePacks(p_10518_), this.available.values());
  
          for (Pack pack : this.available.values()) {
              if (pack.isRequired() && !list.contains(pack)) {
@@ -40,6 +40,15 @@
              }
          }
  
+@@ -93,7 +_,7 @@
+     }
+ 
+     public Collection<String> getAvailableIds() {
+-        return this.available.keySet();
++        return this.available.values().stream().filter(p -> !p.isHidden()).map(Pack::getId).collect(ImmutableSet.toImmutableSet());
+     }
+ 
+     public Collection<Pack> getAvailablePacks() {
 @@ -101,7 +_,7 @@
      }
  

@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -51,7 +52,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * This event is fired whenever a player attempts to harvest a block in
      * {@link Player#hasCorrectToolForDrops(BlockState)}.<br>
      * <br>
-     * This event is fired via the {@link EventHooks#doPlayerHarvestCheck(Player, BlockState, boolean)}.<br>
+     * This event is fired via the {@link EventHooks#doPlayerHarvestCheck(Player, BlockState, BlockGetter, BlockPos)}.<br>
      * <br>
      * {@link #state} contains the {@link BlockState} that is being checked for harvesting. <br>
      * {@link #success} contains the boolean value for whether the Block will be successfully harvested. <br>
@@ -64,16 +65,28 @@ public abstract class PlayerEvent extends LivingEvent {
      **/
     public static class HarvestCheck extends PlayerEvent {
         private final BlockState state;
+        private final BlockGetter level;
+        private final BlockPos pos;
         private boolean success;
 
-        public HarvestCheck(Player player, BlockState state, boolean success) {
+        public HarvestCheck(Player player, BlockState state, BlockGetter level, BlockPos pos, boolean success) {
             super(player);
             this.state = state;
+            this.level = level;
+            this.pos = pos;
             this.success = success;
         }
 
         public BlockState getTargetBlock() {
             return this.state;
+        }
+
+        public BlockGetter getLevel() {
+            return level;
+        }
+
+        public BlockPos getPos() {
+            return pos;
         }
 
         public boolean canHarvest() {
@@ -454,7 +467,7 @@ public abstract class PlayerEvent extends LivingEvent {
 
         /**
          * Did this respawn event come from the player conquering the end?
-         * 
+         *
          * @return if this respawn was because the player conquered the end
          */
         public boolean isEndConquered() {

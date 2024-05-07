@@ -15,6 +15,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -65,13 +66,13 @@ import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
@@ -93,7 +94,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event.Result;
-import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
@@ -138,6 +138,7 @@ import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
@@ -160,6 +161,10 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -183,9 +188,10 @@ public class EventHooks {
         return event;
     }
 
-    public static boolean doPlayerHarvestCheck(Player player, BlockState state, boolean success) {
-        PlayerEvent.HarvestCheck event = new PlayerEvent.HarvestCheck(player, state, success);
-        NeoForge.EVENT_BUS.post(event);
+    public static boolean doPlayerHarvestCheck(Player player, BlockState state, BlockGetter level, BlockPos pos) {
+        // Call deprecated hasCorrectToolForDrops overload for a fallback value, in turn the non-deprecated overload calls this method
+        boolean vanillaValue = player.hasCorrectToolForDrops(state);
+        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, state, level, pos, vanillaValue));
         return event.canHarvest();
     }
 
@@ -793,8 +799,29 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player));
     }
 
-    public static void firePlayerRespawnEvent(Player player, boolean endConquered) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, endConquered));
+    /**
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} before creating the new {@link ServerPlayer}
+     * to fire the {@link PlayerRespawnPositionEvent}
+     * 
+     * @param player          The old {@link ServerPlayer} that is being respawned
+     * @param respawnLevel    The default level the player will respawn into
+     * @param respawnAngle    The angle the player will face when they respawn
+     * @param respawnPosition The position in the level the player will respawn at
+     * @param fromEndFight    Whether the player is respawning because they jumped through the End return portal
+     * @return The event
+     */
+    public static PlayerRespawnPositionEvent firePlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
+        return NeoForge.EVENT_BUS.post(new PlayerRespawnPositionEvent(player, respawnLevel, respawnAngle, respawnPosition, fromEndFight));
+    }
+
+    /**
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} after creating and initializing the new {@link ServerPlayer}.
+     * 
+     * @param player       The new player instance created by the respawn process
+     * @param fromEndFight Whether the player is respawning because they jumped through the End return portal
+     */
+    public static void firePlayerRespawnEvent(ServerPlayer player, boolean fromEndFight) {
+        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
     }
 
     public static void firePlayerItemPickupEvent(Player player, ItemEntity item, ItemStack clone) {
@@ -809,44 +836,81 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
     }
 
-    public static void onRenderTickStart(float timer) {
-        NeoForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, timer));
+    /**
+     * Fires {@link EntityTickEvent.Pre}. Called from the head of {@link LivingEntity#tick()}.
+     * 
+     * @param entity The entity being ticked
+     * @return The event
+     */
+    public static EntityTickEvent.Pre fireEntityTickPre(Entity entity) {
+        return NeoForge.EVENT_BUS.post(new EntityTickEvent.Pre(entity));
     }
 
-    public static void onRenderTickEnd(float timer) {
-        NeoForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, timer));
+    /**
+     * Fires {@link EntityTickEvent.Post}. Called from the tail of {@link LivingEntity#tick()}.
+     * 
+     * @param entity The entity being ticked
+     */
+    public static void fireEntityTickPost(Entity entity) {
+        NeoForge.EVENT_BUS.post(new EntityTickEvent.Post(entity));
     }
 
-    public static void onPlayerPreTick(Player player) {
-        NeoForge.EVENT_BUS.post(new TickEvent.PlayerTickEvent(TickEvent.Phase.START, player));
+    /**
+     * Fires {@link PlayerTickEvent.Pre}. Called from the head of {@link Player#tick()}.
+     * 
+     * @param player The player being ticked
+     */
+    public static void firePlayerTickPre(Player player) {
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Pre(player));
     }
 
-    public static void onPlayerPostTick(Player player) {
-        NeoForge.EVENT_BUS.post(new TickEvent.PlayerTickEvent(TickEvent.Phase.END, player));
+    /**
+     * Fires {@link PlayerTickEvent.Post}. Called from the tail of {@link Player#tick()}.
+     * 
+     * @param player The player being ticked
+     */
+    public static void firePlayerTickPost(Player player) {
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(player));
     }
 
-    public static void onPreLevelTick(Level level, BooleanSupplier haveTime) {
-        NeoForge.EVENT_BUS.post(new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.START, level, haveTime));
+    /**
+     * Fires {@link LevelTickEvent.Pre}. Called from {@link Minecraft#tick()} and {@link MinecraftServer#tickChildren(BooleanSupplier)} just before the try block for level tick is entered.
+     * 
+     * @param level    The level being ticked
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     */
+    public static void fireLevelTickPre(Level level, BooleanSupplier haveTime) {
+        NeoForge.EVENT_BUS.post(new LevelTickEvent.Pre(haveTime, level));
     }
 
-    public static void onPostLevelTick(Level level, BooleanSupplier haveTime) {
-        NeoForge.EVENT_BUS.post(new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.END, level, haveTime));
+    /**
+     * Fires {@link LevelTickEvent.Post}. Called from {@link Minecraft#tick()} and {@link MinecraftServer#tickChildren(BooleanSupplier)} just after the try block for level tick is exited.
+     * 
+     * @param level    The level being ticked
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     */
+    public static void fireLevelTickPost(Level level, BooleanSupplier haveTime) {
+        NeoForge.EVENT_BUS.post(new LevelTickEvent.Post(haveTime, level));
     }
 
-    public static void onPreClientTick() {
-        NeoForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.START));
+    /**
+     * Fires {@link ServerTickEvent.Pre}. Called from the head of {@link MinecraftServer#tickServer(BooleanSupplier)}.
+     * 
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     * @param server   The current server
+     */
+    public static void fireServerTickPre(BooleanSupplier haveTime, MinecraftServer server) {
+        NeoForge.EVENT_BUS.post(new ServerTickEvent.Pre(haveTime, server));
     }
 
-    public static void onPostClientTick() {
-        NeoForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
-    }
-
-    public static void onPreServerTick(BooleanSupplier haveTime, MinecraftServer server) {
-        NeoForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.START, haveTime, server));
-    }
-
-    public static void onPostServerTick(BooleanSupplier haveTime, MinecraftServer server) {
-        NeoForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, haveTime, server));
+    /**
+     * Fires {@link ServerTickEvent.Post}. Called from the tail of {@link MinecraftServer#tickServer(BooleanSupplier)}.
+     * 
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     * @param server   The current server
+     */
+    public static void fireServerTickPost(BooleanSupplier haveTime, MinecraftServer server) {
+        NeoForge.EVENT_BUS.post(new ServerTickEvent.Post(haveTime, server));
     }
 
     private static final WeightedRandomList<MobSpawnSettings.SpawnerData> NO_SPAWNS = WeightedRandomList.create();
@@ -926,13 +990,7 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(ItemStackLinkedSet.TYPE_AND_TAG,
-                (key, left, right) -> {
-                    //throw new IllegalStateException("Accidentally adding the same item stack twice " + key.getDisplayName().getString() + " to a Creative Mode Tab: " + tab.getDisplayName().getString());
-                    // Vanilla adds enchanting books twice in both visibilities.
-                    // This is just code cleanliness for them. For us lets just increase the visibility and merge the entries.
-                    return CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-                });
+        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>();
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)

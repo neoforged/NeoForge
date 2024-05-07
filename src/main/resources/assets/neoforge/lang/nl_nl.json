@@ -61,7 +61,7 @@
   "fml.language.missingversion": "Modbestand {5} heeft de taalaanbieder {3}:{4,vr} nodig om te kunnen laden\n§7We hebben {6,i18n,fml.messages.artifactversion} gevonden",
   "fml.modloading.missingclasses": "Het Modbestand {3} heeft mods die niet gevonden zijn",
   "fml.modloading.missingmetadata": "mods.toml mist metadata for modid {3}",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} heeft class laadfouten\n§7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) heeft class laadfouten\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name}({0,modinfo,id}) is niet correct geladen\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name} ({0,modinfo,id}) mist een functie die nodig is om het te runnen.\n§7Het heeft {3,featurebound} nodig, maar {4} is beschikbaar",
   "fml.modloading.uncaughterror": "Er is een onbetrapte, parallelle verwerkingsfout opgetreden.\n§7{2,exc,msg}",

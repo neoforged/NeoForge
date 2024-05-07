@@ -54,10 +54,6 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         return self().saveWithoutId(ret);
     }
 
-    boolean canUpdate();
-
-    void canUpdate(boolean value);
-
     @Nullable
     Collection<ItemEntity> captureDrops();
 
@@ -405,6 +401,6 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      *                if {@code false}, all serializable attachments are copied.
      */
     default void copyAttachmentsFrom(Entity other, boolean isDeath) {
-        AttachmentInternals.copyEntityAttachments(self(), other, isDeath);
+        AttachmentInternals.copyEntityAttachments(other, self(), isDeath);
     }
 }

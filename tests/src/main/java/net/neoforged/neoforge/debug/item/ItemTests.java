@@ -60,9 +60,9 @@ public class ItemTests {
     })
     static void customMobBucket(final DynamicTest test, final RegistrationHelper reg) {
         final var cowBucket = reg.items().register("cow_bucket", () -> new MobBucketItem(
-                () -> EntityType.COW,
-                () -> Fluids.WATER,
-                () -> SoundEvents.BUCKET_EMPTY_FISH,
+                EntityType.COW,
+                Fluids.WATER,
+                SoundEvents.BUCKET_EMPTY_FISH,
                 (new Item.Properties()).stacksTo(1)))
                 .withLang("Cow bucket");
         test.framework().modEventBus().addListener((final FMLCommonSetupEvent event) -> {
@@ -129,12 +129,6 @@ public class ItemTests {
                 }
                 return sup;
             }
-
-            // Porting 1.20.5 replacement?
-//            @Override
-//            public boolean spawnsEntity(@Nullable CompoundTag p_43231_, EntityType<?> p_43232_) {
-//                return super.spawnsEntity(p_43231_, p_43232_);
-//            }
         })
                 .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft:item/template_spawn_egg"))));
 

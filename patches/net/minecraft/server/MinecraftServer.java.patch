@@ -86,12 +86,11 @@
                  this.onServerExit();
              }
          }
-@@ -876,12 +_,14 @@
- 
+@@ -877,11 +_,13 @@
      public void tickServer(BooleanSupplier p_129871_) {
          long i = Util.getNanos();
-+        net.neoforged.neoforge.event.EventHooks.onPreServerTick(p_129871_, this);
          this.tickCount++;
++        net.neoforged.neoforge.event.EventHooks.fireServerTickPre(p_129871_, this);
          this.tickRateManager.tick();
          this.tickChildren(p_129871_);
          if (i - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) {
@@ -105,7 +104,7 @@
          this.smoothedTickTimeMillis = this.smoothedTickTimeMillis * 0.8F + (float)j / (float)TimeUtil.NANOSECONDS_PER_MILLISECOND * 0.19999999F;
          this.logTickMethodTime(i);
          this.profiler.pop();
-+        net.neoforged.neoforge.event.EventHooks.onPostServerTick(p_129871_, this);
++        net.neoforged.neoforge.event.EventHooks.fireServerTickPost(p_129871_, this);
      }
  
      private void logTickMethodTime(long p_321837_) {
@@ -150,7 +149,7 @@
              }
  
              this.profiler.push("tick");
-+            net.neoforged.neoforge.event.EventHooks.onPreLevelTick(serverlevel, p_129954_);
++            net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(serverlevel, p_129954_);
  
              try {
                  serverlevel.tick(p_129954_);
@@ -158,7 +157,7 @@
                  serverlevel.fillReportDetails(crashreport);
                  throw new ReportedException(crashreport);
              }
-+            net.neoforged.neoforge.event.EventHooks.onPostLevelTick(serverlevel, p_129954_);
++            net.neoforged.neoforge.event.EventHooks.fireLevelTickPost(serverlevel, p_129954_);
  
              this.profiler.pop();
              this.profiler.pop();
@@ -188,7 +187,7 @@
      public CompletableFuture<Void> reloadResources(Collection<String> p_129862_) {
          CompletableFuture<Void> completablefuture = CompletableFuture.<ImmutableList>supplyAsync(
 -                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
-+                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).flatMap(Pack::streamSelfAndChildren).map(Pack::open).collect(ImmutableList.toImmutableList()),
++                () -> this.packRepository.rebuildSelected(p_129862_).stream().map(Pack::open).collect(ImmutableList.toImmutableList()),
                  this
              )
              .thenCompose(
@@ -212,6 +211,15 @@
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
+@@ -1518,6 +_,8 @@
+                 set.add("vanilla");
+             }
+ 
++            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, datapackconfig.getEnabled(), p_248681_);
++
+             return configureRepositoryWithSelection(p_248681_, set, featureflagset, true);
+         }
+     }
 @@ -1688,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);

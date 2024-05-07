@@ -14,6 +14,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 
 /**
@@ -44,6 +45,11 @@ public interface RegistrationHelper {
      * {@return a helper for attachment type registration}
      */
     DeferredAttachmentTypes attachments();
+
+    /**
+     * Registers a data map.
+     */
+    <M extends DataMapType<?, ?>> M registerDataMap(M map);
 
     /**
      * {@return the mod id of this helper}

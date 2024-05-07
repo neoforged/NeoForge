@@ -164,9 +164,9 @@ public class NetworkComponentNegotiator {
     public static Optional<ComponentNegotiationResult> validateComponent(NegotiableNetworkComponent left, NegotiableNetworkComponent right, String requestingSide) {
         if (left.flow().isPresent()) {
             if (right.flow().isEmpty()) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.missing".formatted(requestingSide), left.flow().get())));
+                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.missing".formatted(requestingSide), left.flow().get().toString())));
             } else if (left.flow().get() != right.flow().get()) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.mismatch".formatted(requestingSide), left.flow().get(), right.flow().get())));
+                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.mismatch".formatted(requestingSide), left.flow().get().toString(), right.flow().get().toString())));
             }
         }
 

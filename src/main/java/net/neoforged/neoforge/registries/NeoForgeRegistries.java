@@ -35,14 +35,14 @@ public class NeoForgeRegistries {
     public static final Registry<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS).create();
     public static final Registry<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.BIOME_MODIFIER_SERIALIZERS).create();
     public static final Registry<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.STRUCTURE_MODIFIER_SERIALIZERS).create();
-    public static final Registry<FluidType> FLUID_TYPES = new RegistryBuilder<>(Keys.FLUID_TYPES).create();
+    public static final Registry<FluidType> FLUID_TYPES = new RegistryBuilder<>(Keys.FLUID_TYPES).sync(true).create();
     public static final Registry<HolderSetType> HOLDER_SET_TYPES = new RegistryBuilder<>(Keys.HOLDER_SET_TYPES).create();
     public static final Registry<ItemDisplayContext> DISPLAY_CONTEXTS = new RegistryBuilder<>(Keys.DISPLAY_CONTEXTS)
             .sync(true)
             .maxId(128 * 2) // 0 -> 127 gets positive ID, 128 -> 256 gets negative ID
             .defaultKey(new ResourceLocation("none"))
             .create();
-    public static final Registry<IngredientType<?>> INGREDIENT_TYPES = new RegistryBuilder<>(Keys.INGREDIENT_TYPES).create();
+    public static final Registry<IngredientType<?>> INGREDIENT_TYPES = new RegistryBuilder<>(Keys.INGREDIENT_TYPES).sync(true).create();
     public static final Registry<MapCodec<? extends ICondition>> CONDITION_SERIALIZERS = new RegistryBuilder<>(Keys.CONDITION_CODECS).create();
     public static final Registry<AttachmentType<?>> ATTACHMENT_TYPES = new RegistryBuilder<>(Keys.ATTACHMENT_TYPES).create();
 
