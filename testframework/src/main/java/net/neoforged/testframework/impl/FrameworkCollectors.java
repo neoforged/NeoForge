@@ -34,7 +34,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.moddiscovery.ModAnnotation;
+import net.neoforged.fml.loading.modscan.ModAnnotation;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -56,7 +56,7 @@ public final class FrameworkCollectors {
         if (sidesValue == null) sidesValue = data.annotationData().get("dist");
         if (sidesValue == null) return true;
         @SuppressWarnings("unchecked")
-        final EnumSet<Dist> sides = ((List<ModAnnotation.EnumHolder>) sidesValue).stream().map(eh -> Dist.valueOf(eh.getValue())).collect(java.util.stream.Collectors.toCollection(() -> EnumSet.noneOf(Dist.class)));
+        final EnumSet<Dist> sides = ((List<ModAnnotation.EnumHolder>) sidesValue).stream().map(eh -> Dist.valueOf(eh.value())).collect(java.util.stream.Collectors.toCollection(() -> EnumSet.noneOf(Dist.class)));
         return sides.contains(current);
     };
 

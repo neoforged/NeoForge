@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.loading;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.client.Minecraft;
@@ -19,10 +19,11 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.DataPackConfig;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.LoadingFailedException;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModLoadingException;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.ImmediateWindowHandler;
@@ -46,7 +47,7 @@ public class ClientModLoader extends CommonModLoader {
     private static Minecraft mc;
     private static boolean loadingComplete;
     @Nullable
-    private static LoadingFailedException error;
+    private static ModLoadingException error;
 
     public static void begin(final Minecraft minecraft, final PackRepository defaultResourcePacks, final ReloadableResourceManager mcResourceManager) {
         // force log4j to shutdown logging in a shutdown hook. This is because we disable default shutdown hook so the server properly logs it's shutdown
@@ -58,7 +59,7 @@ public class ClientModLoader extends CommonModLoader {
         LanguageHook.loadBuiltinLanguages();
         try {
             begin(ImmediateWindowHandler::renderTick);
-        } catch (LoadingFailedException e) {
+        } catch (ModLoadingException e) {
             error = e;
         }
         if (error == null) {
@@ -79,11 +80,11 @@ public class ClientModLoader extends CommonModLoader {
         // Don't load again on subsequent reloads
         if (loadingComplete) return;
         // If the mod loading state is invalid, skip further mod initialization
-        if (!ModLoader.isLoadingStateValid()) return;
+        if (ModLoader.hasErrors()) return;
 
         try {
             r.run();
-        } catch (LoadingFailedException e) {
+        } catch (ModLoadingException e) {
             if (error == null) error = e;
         }
     }
@@ -109,20 +110,12 @@ public class ClientModLoader extends CommonModLoader {
     }
 
     public static boolean completeModLoading() {
-        var warnings = ModLoader.getWarnings();
+        List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
         boolean showWarnings = true;
         try {
             showWarnings = NeoForgeConfig.CLIENT.showLoadWarnings.get();
         } catch (NullPointerException | IllegalStateException e) {
             // We're in an early error state, config is not available. Assume true.
-        }
-        if (!showWarnings) {
-            //User disabled warning screen, as least log them
-            if (!warnings.isEmpty()) {
-                LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
-                warnings.forEach(warning -> LOGGER.warn(Logging.LOADING, warning.formatToString()));
-            }
-            warnings = Collections.emptyList(); //Clear warnings, as the user does not want to see them
         }
         File dumpedLocation = null;
         if (error == null) {
@@ -131,11 +124,23 @@ public class ClientModLoader extends CommonModLoader {
         } else {
             // Double check we have the langs loaded for forge
             LanguageHook.loadBuiltinLanguages();
-            dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error, mc.gameDirectory);
+            dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), mc.gameDirectory);
         }
-        if (error != null || !warnings.isEmpty()) {
-            mc.setScreen(new LoadingErrorScreen(error, warnings, dumpedLocation));
+        if (error != null) {
+            mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation));
             return true;
+        } else if (!warnings.isEmpty()) {
+            if (!showWarnings) {
+                //User disabled warning screen, as least log them
+                LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
+                for (var warning : warnings) {
+                    LOGGER.warn(Logging.LOADING, "{} [{}]", warning.translationKey(), warning.translationArgs());
+                }
+                return false;
+            } else {
+                mc.setScreen(new LoadingErrorScreen(warnings, dumpedLocation));
+                return true;
+            }
         } else {
             return false;
         }

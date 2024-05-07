@@ -25,6 +25,6 @@
 +            @Nullable ChatComponent.State chatState,
 +            @Deprecated(forRemoval = true) boolean strictErrorHandling
 +    ) {
-+        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, strictErrorHandling, net.neoforged.neoforge.network.connection.ConnectionType.VANILLA);
++        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, strictErrorHandling, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
 +    }
  }

@@ -11,7 +11,7 @@
 +     */
 +    @Deprecated
 +    public CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean transferred) {
-+        this(gameProfile, latency, clientInformation, transferred, net.neoforged.neoforge.network.connection.ConnectionType.VANILLA);
++        this(gameProfile, latency, clientInformation, transferred, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
 +    }
 +
      public static CommonListenerCookie createInitial(GameProfile p_302024_, boolean p_320180_) {

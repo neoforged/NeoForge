@@ -35,7 +35,7 @@
 +
 +    private void initClient() {
 +        // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
-+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.fml.loading.FMLLoader.getLaunchHandler().isData()) {
++        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen()) {
 +            initializeClient(properties -> this.effectRenderer = properties);
 +        }
 +    }

@@ -40,4 +40,11 @@ public record PayloadRegistration<T extends CustomPacketPayload>(
     public ResourceLocation id() {
         return this.type().id();
     }
+
+    /**
+     * {@return true if the registered flow is compatible with the passed flow}
+     */
+    public boolean matchesFlow(PacketFlow flow) {
+        return this.flow.isEmpty() || this.flow.get() == flow;
+    }
 }

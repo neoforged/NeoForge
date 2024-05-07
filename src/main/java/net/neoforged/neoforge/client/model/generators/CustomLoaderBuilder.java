@@ -22,17 +22,6 @@ public abstract class CustomLoaderBuilder<T extends ModelBuilder<T>> {
     private boolean optional = false;
 
     /**
-     * @param loaderId           The ID of the associated {@link IGeometryLoader}
-     * @param parent             The parent {@link ModelBuilder}
-     * @param existingFileHelper The {@link ExistingFileHelper}
-     * @deprecated Use {@link #CustomLoaderBuilder(ResourceLocation, ModelBuilder, ExistingFileHelper, boolean)}} instead
-     */
-    @Deprecated(forRemoval = true, since = "1.20.2")
-    protected CustomLoaderBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-        this(loaderId, parent, existingFileHelper, false);
-    }
-
-    /**
      * @param loaderId            The ID of the associated {@link IGeometryLoader}
      * @param parent              The parent {@link ModelBuilder}
      * @param existingFileHelper  The {@link ExistingFileHelper}
