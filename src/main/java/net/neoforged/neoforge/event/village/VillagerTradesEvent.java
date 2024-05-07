@@ -13,10 +13,11 @@ import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
 /**
- * VillagerTradesEvent is fired during the {@link ServerAboutToStartEvent}. It is used to gather the trade lists for each profession.
+ * VillagerTradesEvent is fired during reload by {@link TagsUpdatedEvent}. It is used to gather the trade lists for each profession.
  * It is fired on the {@link NeoForge#EVENT_BUS}.
  * It is fired once for each registered villager profession.
  * Villagers pick two trades from their trade map, based on their level.
