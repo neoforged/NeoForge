@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "Seda sõnumit ei kuvata selle maailma puhul uuesti.",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "NeoForge andme-/ressursipakk",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "See kanal puudub serveri poolel, ent on nõutud kliendi poolel!",
   "neoforge.network.negotiation.failure.missing.server.client": "See kanal puudub kliendi poolel, ent on nõutud serveri poolel!",
   "neoforge.network.negotiation.failure.flow.client.missing": "Klient soovib, et last liiguks: %s, kuid server seda ei toeta!",
