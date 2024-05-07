@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common;
 
 import net.minecraft.core.SectionPos;
-import net.minecraft.server.level.ChunkMap;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
