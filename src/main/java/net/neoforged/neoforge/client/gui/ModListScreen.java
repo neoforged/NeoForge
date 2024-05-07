@@ -42,14 +42,14 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
+import net.neoforged.fml.i18n.FMLTranslations;
+import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.StringUtils;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.I18nExtension;
-import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
 import net.neoforged.neoforge.common.util.Size2i;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -249,7 +249,7 @@ public class ModListScreen extends Screen {
     public void init() {
         for (IModInfo mod : mods) {
             listWidth = Math.max(listWidth, getFontRenderer().width(mod.getDisplayName()) + 10);
-            listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionStringHelper.artifactVersionToString(mod.getVersion())) + 5);
+            listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionTranslator.artifactVersionToString(mod.getVersion())) + 5);
         }
         listWidth = Math.max(Math.min(listWidth, width / 3), 100);
         listWidth += listWidth % numButtons != 0 ? (numButtons - listWidth % numButtons) : 0;
@@ -400,22 +400,22 @@ public class ModListScreen extends Screen {
         }).orElse(Pair.of(null, new Size2i(0, 0)));
 
         lines.add(selectedMod.getDisplayName());
-        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.version", MavenVersionStringHelper.artifactVersionToString(selectedMod.getVersion())));
-        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
+        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.version", MavenVersionTranslator.artifactVersionToString(selectedMod.getVersion())));
+        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
-        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(I18nExtension.parseMessage("fml.menu.mods.info.credits", credits)));
-        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(I18nExtension.parseMessage("fml.menu.mods.info.authors", authors)));
-        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(I18nExtension.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
+        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits)));
+        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors)));
+        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
-            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.nochildmods"));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.nochildmods"));
         else
-            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
-            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
-        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
+        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
         lines.add(null);
-        lines.add(I18nExtension.getDescription(selectedMod));
+        lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
 
         /* Removed because people bitched that this information was misleading.
         lines.add(null);
@@ -429,7 +429,7 @@ public class ModListScreen extends Screen {
 
         if ((vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED) && vercheck.changes().size() > 0) {
             lines.add(null);
-            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.changelogheader"));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.changelogheader"));
             for (Entry<ComparableVersion, String> entry : vercheck.changes().entrySet()) {
                 lines.add("  " + entry.getKey() + ":");
                 lines.add(entry.getValue());
