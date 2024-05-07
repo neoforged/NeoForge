@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "このメッセージは、今後このワールドには表示されません。",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "NeoForge データ／リソースパック",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "このチャンネルはサーバー側にありませんが、クライアント側で必要です！",
   "neoforge.network.negotiation.failure.missing.server.client": "このチャンネルはクライアント側にありませんが、サーバー側で必要です！",
   "neoforge.network.negotiation.failure.flow.client.missing": "クライアントはペイロードの%sにフローすることを希望していますが、サーバーはそれをサポートしていません！",
