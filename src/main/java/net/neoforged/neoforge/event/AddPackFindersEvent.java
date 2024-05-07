@@ -14,6 +14,7 @@ import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
@@ -70,8 +71,10 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
         if (getPackType() == packType) {
             var resourcePath = ModList.get().getModFileById(packLocation.getNamespace()).getFile().findResource(packLocation.getPath());
 
+            var version = ModList.get().getModContainerById(packLocation.getNamespace()).get().getModInfo().getVersion();
+
             var pack = Pack.readMetaAndCreate(
-                    new PackLocationInfo("mod/" + packLocation, packNameDisplay, packSource, Optional.empty()),
+                    new PackLocationInfo("mod/" + packLocation, packNameDisplay, packSource, Optional.of(new KnownPack("neoforge", "mod/" + packLocation, version.toString()))),
                     BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath)),
                     packType,
                     new PackSelectionConfig(alwaysActive, packPosition, false));
@@ -79,7 +82,7 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
             addRepositorySource((packConsumer) -> packConsumer.accept(pack));
         }
     }
-  
+
     /**
      * {@return whether or not the pack repository being assembled is the one used to provide known packs to the client to avoid syncing from the server}
      */
