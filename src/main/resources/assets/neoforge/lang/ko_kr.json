@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "이 월드에는 이 메세지가 더 이상 표시되지 않을 것입니다.",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "네오 포지 데이터/리소스 팩",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "클라이언트에 필요한 네트워크 채널이 서버에 존재하지 않습니다!",
   "neoforge.network.negotiation.failure.missing.server.client": "서버에 필요한 네트워크 채널이 클라이언트에 존재하지 않습니다!",
   "neoforge.network.negotiation.failure.flow.client.missing": "클라이언트가 요구하는 패킷 방향(%s)을 서버에서 지원하지 않습니다!",
