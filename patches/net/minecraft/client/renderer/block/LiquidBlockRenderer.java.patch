@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
-@@ -38,6 +_,7 @@
+@@ -38,12 +_,17 @@
          this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).getParticleIcon();
          this.waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
          this.waterOverlay = ModelBakery.WATER_OVERLAY.sprite();
@@ -8,8 +8,33 @@
      }
  
      private static boolean isNeighborSameFluid(FluidState p_203186_, FluidState p_203187_) {
-@@ -70,8 +_,9 @@
+         return p_203187_.getType().isSame(p_203186_.getType());
+     }
  
++    private static boolean isNeighborStateCompatibleWithFluid(FluidState selfState, BlockState otherState) {
++        return otherState.isCompatibleWithFluid(selfState);
++    }
++
+     private static boolean isFaceOccludedByState(BlockGetter p_110979_, Direction p_110980_, float p_110981_, BlockPos p_110982_, BlockState p_110983_) {
+         if (p_110983_.canOcclude()) {
+             VoxelShape voxelshape = Shapes.box(0.0, 0.0, 0.0, 1.0, (double)p_110981_, 1.0);
+@@ -62,16 +_,24 @@
+         return isFaceOccludedByState(p_110960_, p_110963_.getOpposite(), 1.0F, p_110961_, p_110962_);
+     }
+ 
++    @Deprecated // Neo: use overload that accepts BlockState
+     public static boolean shouldRenderFace(
+         BlockAndTintGetter p_203167_, BlockPos p_203168_, FluidState p_203169_, BlockState p_203170_, Direction p_203171_, FluidState p_203172_
+     ) {
+         return !isFaceOccludedBySelf(p_203167_, p_203168_, p_203170_, p_203171_) && !isNeighborSameFluid(p_203169_, p_203172_);
+     }
+ 
++    public static boolean shouldRenderFace(
++            BlockAndTintGetter p_203167_, BlockPos p_203168_, FluidState p_203169_, BlockState p_203170_, Direction p_203171_, BlockState otherState
++    ) {
++        return !isFaceOccludedBySelf(p_203167_, p_203168_, p_203170_, p_203171_) && !isNeighborStateCompatibleWithFluid(p_203169_, otherState);
++    }
++
      public void tesselate(BlockAndTintGetter p_234370_, BlockPos p_234371_, VertexConsumer p_234372_, BlockState p_234373_, FluidState p_234374_) {
          boolean flag = p_234374_.is(FluidTags.LAVA);
 -        TextureAtlasSprite[] atextureatlassprite = flag ? this.lavaIcons : this.waterIcons;
@@ -20,6 +45,26 @@
          float f = (float)(i >> 16 & 0xFF) / 255.0F;
          float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
          float f2 = (float)(i & 0xFF) / 255.0F;
+@@ -87,13 +_,13 @@
+         FluidState fluidstate4 = blockstate4.getFluidState();
+         BlockState blockstate5 = p_234370_.getBlockState(p_234371_.relative(Direction.EAST));
+         FluidState fluidstate5 = blockstate5.getFluidState();
+-        boolean flag1 = !isNeighborSameFluid(p_234374_, fluidstate1);
+-        boolean flag2 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.DOWN, fluidstate)
++        boolean flag1 = !isNeighborStateCompatibleWithFluid(p_234374_, blockstate1);
++        boolean flag2 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.DOWN, blockstate)
+             && !isFaceOccludedByNeighbor(p_234370_, p_234371_, Direction.DOWN, 0.8888889F, blockstate);
+-        boolean flag3 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.NORTH, fluidstate2);
+-        boolean flag4 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.SOUTH, fluidstate3);
+-        boolean flag5 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.WEST, fluidstate4);
+-        boolean flag6 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.EAST, fluidstate5);
++        boolean flag3 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.NORTH, blockstate2);
++        boolean flag4 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.SOUTH, blockstate3);
++        boolean flag5 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.WEST, blockstate4);
++        boolean flag6 = shouldRenderFace(p_234370_, p_234371_, p_234374_, p_234373_, Direction.EAST, blockstate5);
+         if (flag1 || flag2 || flag6 || flag5 || flag3 || flag4) {
+             float f3 = p_234370_.getShade(Direction.DOWN, true);
+             float f4 = p_234370_.getShade(Direction.UP, true);
 @@ -181,15 +_,15 @@
                  float f52 = f4 * f;
                  float f30 = f4 * f1;

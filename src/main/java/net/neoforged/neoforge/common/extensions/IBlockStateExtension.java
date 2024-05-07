@@ -746,4 +746,11 @@ public interface IBlockStateExtension {
     default boolean isEmpty() {
         return self().getBlock().isEmpty(self());
     }
+
+    /**
+     * Return true if this block should cause an adjacent face of the given fluid to not render.
+     */
+    default boolean isCompatibleWithFluid(FluidState adjacentFluid) {
+        return self().getBlock().isCompatibleWithFluid(self(), adjacentFluid);
+    }
 }
