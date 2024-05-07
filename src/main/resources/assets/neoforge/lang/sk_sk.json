@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "Táto správa sa už nezobrazí znovu pre tento svet.",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "NeoForge data/resource pack",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "Tento kanál nie je obsiahnutý na strane servera, ale je požadovaný u klienta!",
   "neoforge.network.negotiation.failure.missing.server.client": "Tento kanál nie je obsiahnutý na strane klienta, ale je požadovaný na serveri!",
   "neoforge.network.negotiation.failure.flow.client.missing": "Klient chce zaťaženie plynúť: %s, ale server to nepodporuje!",
