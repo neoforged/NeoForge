@@ -9,7 +9,7 @@
 +     * Neo: Removes the data for the given chunk position.
 +     * See PR #937
 +     */
-+    public void remove(long chunkLongPos) {
-+        this.storage.remove(chunkLongPos);
++    public void remove(long sectionPosAsLong) {
++        this.storage.remove(sectionPosAsLong);
 +    }
  }
