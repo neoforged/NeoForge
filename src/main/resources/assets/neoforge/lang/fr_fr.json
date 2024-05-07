@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "Ce message ne s'affichera plus pour ce monde.",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "Pack de ressources/données de NeoForge",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "Ce canal est manquant du côté du serveur, mais requis par le client !",
   "neoforge.network.negotiation.failure.missing.server.client": "Ce canal est manquant du côté du client, mais requis par le serveur !",
   "neoforge.network.negotiation.failure.flow.client.missing": "Le client souhaite que les données passent par : %s, mais le serveur ne le supporte pas !",
