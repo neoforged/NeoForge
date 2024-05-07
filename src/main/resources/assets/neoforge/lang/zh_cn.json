@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "此消息将不会再为这个世界显示。",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "NeoForge 数据/资源包",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "服务器端无此客户端需要的频道！",
   "neoforge.network.negotiation.failure.missing.server.client": "客户端无此服务器端需要的频道！",
   "neoforge.network.negotiation.failure.flow.client.missing": "客户端希望传输在流 %s 上传输载荷，但服务器端不支持！",
