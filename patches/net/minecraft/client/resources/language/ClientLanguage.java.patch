@@ -4,7 +4,7 @@
  
          for (String s : p_265743_) {
              String s1 = String.format(Locale.ROOT, "lang/%s.json", s);
-+            net.neoforged.fml.i18n.I18nManager.loadTranslations(s);
++            map.putAll(net.neoforged.fml.i18n.I18nManager.loadTranslations(s));
  
              for (String s2 : p_265765_.getNamespaces()) {
                  try {
