@@ -10,7 +10,6 @@ import net.neoforged.fml.Logging;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
-import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 
@@ -28,8 +27,6 @@ public class NeoForgeConfig {
         public final ConfigValue<String> permissionHandler;
 
         public final BooleanValue advertiseDedicatedServerToLan;
-
-        public final IntValue chunkTypeCacheLimit;
 
         Server(ModConfigSpec.Builder builder) {
             builder.comment("Server configuration settings")
@@ -62,12 +59,6 @@ public class NeoForgeConfig {
                     .comment("Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.")
                     .translation("neoforge.configgui.advertiseDedicatedServerToLan")
                     .define("advertiseDedicatedServerToLan", true);
-
-            chunkTypeCacheLimit = builder
-                    .comment("Controls how many chunk types that Minecraft will keep loaded in memory as chunks are loaded. When limit is reached, the oldest chunk types recorded will be dropped from cache. Default: 10000.")
-                    .translation("neoforge.configgui.chunkTypeCacheLimit")
-                    .worldRestart()
-                    .defineInRange("chunkTypeCacheLimit", 10000, 1, Integer.MAX_VALUE);
 
             builder.pop();
         }

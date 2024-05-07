@@ -1,14 +1,5 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -135,7 +_,7 @@
-     private final String storageName;
-     private final PlayerMap playerMap = new PlayerMap();
-     private final Int2ObjectMap<ChunkMap.TrackedEntity> entityMap = new Int2ObjectOpenHashMap<>();
--    private final Long2ByteMap chunkTypeCache = new Long2ByteOpenHashMap();
-+    private final Long2ByteMap chunkTypeCache = new net.neoforged.neoforge.common.util.SizeRestrictedLong2ByteLinkedOpenHashMap(net.neoforged.neoforge.common.NeoForgeConfig.SERVER.chunkTypeCacheLimit.get()); // Neo: PR #937
-     private final Long2LongMap chunkSaveCooldowns = new Long2LongOpenHashMap();
-     private final Queue<Runnable> unloadQueue = Queues.newConcurrentLinkedQueue();
-     private int serverViewDistance;
 @@ -422,6 +_,7 @@
                  this.modified = true;
              }
@@ -17,11 +8,12 @@
              return p_140179_;
          }
      }
-@@ -533,8 +_,10 @@
+@@ -533,8 +_,11 @@
                  this.scheduleUnload(p_140182_, p_140183_);
              } else {
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && p_203002_ != null) {
 +                    net.neoforged.neoforge.common.PointOfInterestUnloading.onChunkUnload(this.poiManager, p_203002_); // Neo: PR #937
++                    this.chunkTypeCache.remove(p_203002_.getPos().toLong()); // Neo: PR #937
                      if (p_203002_ instanceof LevelChunk) {
                          ((LevelChunk)p_203002_).setLoaded(false);
 +                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(p_203002_));
