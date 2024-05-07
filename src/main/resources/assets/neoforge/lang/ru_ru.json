@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "Это сообщение больше не появится для этого мира.",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "Набор ресурсов/данных NeoForge",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "Этот канал отсутствует на стороне сервера, но необходим на клиенте!",
   "neoforge.network.negotiation.failure.missing.server.client": "Этот канал отсутствует на стороне клиента, но необходим на сервере!",
   "neoforge.network.negotiation.failure.flow.client.missing": "Клиент хочет, чтобы полезная нагрузка передавалась в: %s, но сервер ее не поддерживает!",
