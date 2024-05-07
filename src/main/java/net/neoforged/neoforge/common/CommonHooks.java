@@ -45,6 +45,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -89,6 +90,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
@@ -113,6 +115,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -124,6 +127,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -1359,6 +1363,24 @@ public class CommonHooks {
             return equals.getDeclaringClass() != Object.class && hashCode.getDeclaringClass() != Object.class;
         } catch (ReflectiveOperationException exception) {
             throw new RuntimeException("Failed to check for component equals and hashCode", exception);
+        }
+    }
+
+    /**
+     * The goal here is to fix the POI memory leak that happens due to
+     * {@link net.minecraft.world.level.chunk.storage.SectionStorage#storage} field never
+     * actually removing POIs long after they become irrelevant. We do it here in chunk unload event
+     * so that chunk that are fully unloaded now gets the POI removed from the POI cached storage map.
+     */
+    public static void onChunkUnload(PoiManager poiManager, ChunkAccess chunkAccess) {
+        ChunkPos chunkPos = chunkAccess.getPos();
+        poiManager.flush(chunkPos); // Make sure all POI in chunk are saved to disk first.
+
+        // Remove the cached POIs for this chunk's location.
+        int SectionPosMinY = SectionPos.blockToSectionCoord(chunkAccess.getMinBuildHeight());
+        for (int currentSectionY = 0; currentSectionY < chunkAccess.getSectionsCount(); currentSectionY++) {
+            long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
+            poiManager.remove(sectionPosKey);
         }
     }
 }

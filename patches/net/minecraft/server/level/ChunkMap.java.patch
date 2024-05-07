@@ -12,7 +12,7 @@
                  this.scheduleUnload(p_140182_, p_140183_);
              } else {
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && p_203002_ != null) {
-+                    net.neoforged.neoforge.common.PointOfInterestUnloading.onChunkUnload(this.poiManager, p_203002_); // Neo: PR #937
++                    net.neoforged.neoforge.common.CommonHooks.onChunkUnload(this.poiManager, p_203002_); // Neo: PR #937
 +                    this.chunkTypeCache.remove(p_203002_.getPos().toLong()); // Neo: PR #937
                      if (p_203002_ instanceof LevelChunk) {
                          ((LevelChunk)p_203002_).setLoaded(false);
@@ -80,3 +80,24 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
+@@ -1397,5 +_,20 @@
+                 this.updatePlayer(serverplayer);
+             }
+         }
++    }
++
++    /**
++     * Neo: PR #937
++     * This is for mainly pre-generation usage such as Neoforge's generate command.
++     * Use this to schedule chunk load tasks into ChunkTaskPriorityQueueSorter so a chunk is fully finished all of their tasks before scheduling more chunks to load.
++     * Reason for this is when scheduling a huge ton of Full Status chunk tasks to the server (to load chunks),
++     * you could cause the server to only process those loading tasks and never reach the two chunk tasks that are
++     * automatically scheduled to run after the chunk is loaded to Full. As a result of flooding the system with Full Status chunk tasks,
++     * the queue for the two kind of successor chunk tasks will grow and become a memory leak of lambdas and chunk references.
++     * Use this method to schedule tasks for loading chunks in your whenCompleteAsync method call so the tasks gets processed properly over time and not leak.
++     * See {@link net.neoforged.neoforge.server.command.generation.GenerationTask#enqueueChunks} as an example usage of this method.
++     */
++    public void scheduleOnMainThreadMailbox(ChunkTaskPriorityQueueSorter.Message<Runnable> msg) {
++        mainThreadMailbox.tell(msg);
+     }
+ }
