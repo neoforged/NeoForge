@@ -176,6 +176,7 @@
   "neoforge.selectWorld.backupWarning.experimental.additional": "This message will not show again for this world.",
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "NeoForge data/resource pack",
+  "pack.neoforge.source.child": "child",
   "neoforge.network.negotiation.failure.missing.client.server": "This channel is missing on the server side, but required on the client!",
   "neoforge.network.negotiation.failure.missing.server.client": "This channel is missing on the client side, but required on the server!",
   "neoforge.network.negotiation.failure.flow.client.missing": "The client wants the payload to flow: %s, but the server does not support it!",
