@@ -1,15 +1,23 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -23,6 +_,8 @@
+@@ -23,6 +_,16 @@
      private final Pack.ResourcesSupplier resources;
      private final Pack.Metadata metadata;
      private final PackSelectionConfig selectionConfig;
 +    private final boolean hidden; // Neo: Allow packs to be hidden from the UI entirely
 +    private final List<Pack> children; // Neo: Allows packs to specify packs which will always be placed beneath them; must be hidden
++    private static final PackSource CHILD_SOURCE = PackSource.create(
++            name -> Component.translatable(
++                    "pack.nameAndSource",
++                    name,
++                    Component.translatable("pack.neoforge.source.child")
++            ).withStyle(net.minecraft.ChatFormatting.GRAY),
++            false
++    ); // Neo: Pack source for child packs; should not be otherwise used
  
      @Nullable
      public static Pack readMetaAndCreate(PackLocationInfo p_326065_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, PackSelectionConfig p_326429_) {
-@@ -32,6 +_,23 @@
+@@ -32,6 +_,34 @@
      }
  
      public Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_) {
@@ -24,7 +32,18 @@
 +            List<Pack> oldChildren = remainingChildren;
 +            remainingChildren = new java.util.ArrayList<>();
 +            for (Pack child : oldChildren) {
-+                flattenedChildren.add(child.withChildren(List.of()).hidden());
++                // Adapts the child pack with the following changes:
++                // - Must be hidden
++                // - Must have no children
++                // - Has a pack source of CHILD_SOURCE, which is not automatically added
++                Pack adaptedChild = new Pack(
++                        new PackLocationInfo(child.location.id(), child.location.title(), CHILD_SOURCE, child.location.knownPackInfo()),
++                        child.resources,
++                        new Metadata(child.metadata.description, child.metadata.compatibility, child.metadata.requestedFeatures, child.metadata.overlays, true),
++                        new PackSelectionConfig(false, child.selectionConfig.defaultPosition(), child.selectionConfig.fixedPosition()),
++                        List.of()
++                );
++                flattenedChildren.add(adaptedChild);
 +                remainingChildren.addAll(child.getChildren());
 +            }
 +        }

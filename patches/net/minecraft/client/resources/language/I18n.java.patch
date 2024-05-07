@@ -4,7 +4,7 @@
  
      static void setLanguage(Language p_118942_) {
          language = p_118942_;
-+        net.neoforged.neoforge.common.I18nExtension.loadLanguageData(p_118942_.getLanguageData());
++        net.neoforged.fml.i18n.I18nManager.injectTranslations(p_118942_.getLanguageData());
      }
  
      public static String get(String p_118939_, Object... p_118940_) {

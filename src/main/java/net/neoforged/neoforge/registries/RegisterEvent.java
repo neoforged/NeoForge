@@ -12,7 +12,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,20 +90,6 @@ public class RegisterEvent extends Event implements IModBusEvent {
 
     @FunctionalInterface
     public interface RegisterHelper<T> {
-        /**
-         * Registers the given value with the given name to the registry.
-         * The namespace is inferred based on the active mod container.
-         * If you wish to specify a namespace, use {@link #register(ResourceLocation, Object)} instead.
-         *
-         * @param name  the name of the object to register as its key with the namespaced inferred from the active mod container
-         * @param value the object value
-         * @deprecated Use {@link #register(ResourceLocation, Object) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
-         */
-        @Deprecated(forRemoval = true, since = "1.20.2")
-        default void register(String name, T value) {
-            register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), value);
-        }
-
         /**
          * Registers the given value with the given name to the registry.
          *

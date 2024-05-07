@@ -31,9 +31,9 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
-import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ModMismatchDisconnectedScreen extends Screen {
@@ -61,10 +61,10 @@ public class ModMismatchDisconnectedScreen extends Screen {
         this.addRenderableWidget(new MismatchInfoPanel(minecraft, listWidth, listHeight, (this.height - this.listHeight) / 2, listLeft));
 
         int buttonWidth = Math.min(210, this.width / 2 - 20);
-        this.addRenderableWidget(Button.builder(Component.literal(I18nExtension.parseMessage("fml.button.open.file", logFile.getFileName())), button -> Util.getPlatform().openFile(logFile.toFile()))
+        this.addRenderableWidget(Button.builder(Component.literal(FMLTranslations.parseMessage("fml.button.open.file", logFile.getFileName())), button -> Util.getPlatform().openFile(logFile.toFile()))
                 .bounds(Math.max(this.width / 4 - buttonWidth / 2, listLeft), upperButtonHeight, buttonWidth, 20)
                 .build());
-        this.addRenderableWidget(Button.builder(Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
+        this.addRenderableWidget(Button.builder(Component.literal(FMLTranslations.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
                 .bounds(Math.min(this.width * 3 / 4 - buttonWidth / 2, listLeft + listWidth - buttonWidth), upperButtonHeight, buttonWidth, 20)
                 .build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.toMenu"), button -> this.minecraft.setScreen(this.parent))

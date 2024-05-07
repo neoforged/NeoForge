@@ -34,6 +34,36 @@ license="LGPL v2.1"
 [[mods]]
     modId="finalize_spawn_fix_test"
 
+[[mods]]
+    modId="multiple_entrypoints_test"
+
+[[mods]]
+    modId="ordered_test_1"
+[[mods]]
+    modId="ordered_test_2"
+[[dependencies.ordered_test_2]]
+    modId="ordered_test_1"
+    type="required"
+    ordering="AFTER"
+[[mods]]
+    modId="ordered_test_3"
+[[dependencies.ordered_test_3]]
+    modId="ordered_test_2"
+    type="required"
+    ordering="AFTER"
+[[mods]]
+    modId="ordered_test_4"
+[[dependencies.ordered_test_4]]
+    modId="ordered_test_3"
+    type="required"
+    ordering="AFTER"
+[[mods]]
+    modId="ordered_test_5"
+[[dependencies.ordered_test_5]]
+    modId="ordered_test_4"
+    type="required"
+    ordering="AFTER"
+
 # LEGACY TEST CASES
 ###### The mods below are from the old test framework and need to be yeeted later again.
 
@@ -152,8 +182,6 @@ modId="ingredient_invalidation"
 modId="registry_codec_test"
 [[mods]]
 modId="deferred_holder_test"
-[[mods]]
-modId="hidden_tooltip_parts"
 [[mods]]
 modId="gametest_test"
 [[mods]]

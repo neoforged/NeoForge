@@ -66,13 +66,13 @@ import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
@@ -188,9 +188,10 @@ public class EventHooks {
         return event;
     }
 
-    public static boolean doPlayerHarvestCheck(Player player, BlockState state, boolean success) {
-        PlayerEvent.HarvestCheck event = new PlayerEvent.HarvestCheck(player, state, success);
-        NeoForge.EVENT_BUS.post(event);
+    public static boolean doPlayerHarvestCheck(Player player, BlockState state, BlockGetter level, BlockPos pos) {
+        // Call deprecated hasCorrectToolForDrops overload for a fallback value, in turn the non-deprecated overload calls this method
+        boolean vanillaValue = player.hasCorrectToolForDrops(state);
+        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, state, level, pos, vanillaValue));
         return event.canHarvest();
     }
 
@@ -989,13 +990,7 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(ItemStackLinkedSet.TYPE_AND_TAG,
-                (key, left, right) -> {
-                    //throw new IllegalStateException("Accidentally adding the same item stack twice " + key.getDisplayName().getString() + " to a Creative Mode Tab: " + tab.getDisplayName().getString());
-                    // Vanilla adds enchanting books twice in both visibilities.
-                    // This is just code cleanliness for them. For us lets just increase the visibility and merge the entries.
-                    return CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-                });
+        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>();
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)

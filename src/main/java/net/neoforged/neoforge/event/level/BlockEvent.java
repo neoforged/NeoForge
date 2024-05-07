@@ -22,10 +22,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalShape;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockEvent extends Event {
@@ -66,7 +66,7 @@ public abstract class BlockEvent extends Event {
             super(level, pos, state);
             this.player = player;
 
-            if (state == null || !CommonHooks.isCorrectToolForDrops(state, player)) // Handle empty block or player unable to break block scenario
+            if (state == null || !EventHooks.doPlayerHarvestCheck(player, state, level, pos)) // Handle empty block or player unable to break block scenario
             {
                 this.exp = 0;
             } else {
