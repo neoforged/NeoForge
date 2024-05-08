@@ -43,6 +43,22 @@ allprojects {
     group 'net.neoforged'
     repositories {
         mavenLocal()
+
+        maven {
+            name 'Maven for PR #10' // https://github.com/neoforged/NeoForm/pull/10
+            url 'https://prmaven.neoforged.net/NeoForm/pr10'
+            content {
+                includeModule('net.neoforged', 'neoform')
+            }
+        }
+
+        maven {
+            name 'Maven for PR #1' // https://github.com/neoforged/GradleMinecraftDependencies/pull/1
+            url 'https://prmaven.neoforged.net/GradleMinecraftDependencies/pr1'
+            content {
+                includeModule('net.neoforged', 'minecraft-dependencies')
+            }
+        }
     }
 }
 
