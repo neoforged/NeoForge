@@ -127,6 +127,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.GRAVELS, Tags.Items.GRAVELS);
         tag(Tags.Items.GUNPOWDERS).add(Items.GUNPOWDER);
         tag(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS);
+        tag(Tags.Items.INDESTRUCTIBLE);
         tag(Tags.Items.INGOTS).addTags(Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_GOLD, Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_NETHERITE);
         tag(Tags.Items.INGOTS_COPPER).add(Items.COPPER_INGOT);
         tag(Tags.Items.INGOTS_GOLD).add(Items.GOLD_INGOT);
@@ -192,6 +193,24 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.SEEDS_MELON).add(Items.MELON_SEEDS);
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
+        tag(Tags.Items.SHULKER_BOXES).add(
+                Items.SHULKER_BOX,
+                Items.WHITE_SHULKER_BOX,
+                Items.ORANGE_SHULKER_BOX,
+                Items.MAGENTA_SHULKER_BOX,
+                Items.LIGHT_BLUE_SHULKER_BOX,
+                Items.YELLOW_SHULKER_BOX,
+                Items.LIME_SHULKER_BOX,
+                Items.PINK_SHULKER_BOX,
+                Items.GRAY_SHULKER_BOX,
+                Items.LIGHT_GRAY_SHULKER_BOX,
+                Items.CYAN_SHULKER_BOX,
+                Items.PURPLE_SHULKER_BOX,
+                Items.BLUE_SHULKER_BOX,
+                Items.BROWN_SHULKER_BOX,
+                Items.GREEN_SHULKER_BOX,
+                Items.RED_SHULKER_BOX,
+                Items.BLACK_SHULKER_BOX);
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
         copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);

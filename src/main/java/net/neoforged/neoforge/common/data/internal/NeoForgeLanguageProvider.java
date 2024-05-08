@@ -213,6 +213,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.GRAVELS, "Gravels");
         add(Tags.Items.GUNPOWDERS, "Gunpowders");
         add(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
+        add(Tags.Items.INDESTRUCTIBLE, "Indestructible");
         add(Tags.Items.INGOTS, "Ingots");
         add(Tags.Items.INGOTS_COPPER, "Copper Ingots");
         add(Tags.Items.INGOTS_GOLD, "Gold Ingots");

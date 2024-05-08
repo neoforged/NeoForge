@@ -431,6 +431,11 @@ public class Tags {
          * Tag that holds all items that recipe viewers should not show to users.
          */
         public static final TagKey<Item> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
+        /**
+         * For items that should not be destroyed under any circumstances.
+         * This does not prevent vanilla ways of destruction. These need to be handled by the mod itself (Explosions, Burning as Fuel, Crafting, Durability Breaking)
+         */
+        public static final TagKey<Item> INDESTRUCTIBLE = tag("indestructible");
         public static final TagKey<Item> INGOTS = tag("ingots");
         public static final TagKey<Item> INGOTS_COPPER = tag("ingots/copper");
         public static final TagKey<Item> INGOTS_GOLD = tag("ingots/gold");
@@ -533,6 +538,7 @@ public class Tags {
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
+        public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
