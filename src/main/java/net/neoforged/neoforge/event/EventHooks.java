@@ -290,7 +290,7 @@ public class EventHooks {
      * @param difficulty The local difficulty at the position of the mob
      * @param spawnType  The type of spawn that is occuring
      * @param spawnData  Optional spawn data relevant to the mob being spawned
-     * @return The SpawnGroupData from this event, or null if it was canceled. The return value of this method has no bearing on if the entity will be spawned
+     * @return The SpawnGroupData from the finalize, or null if it was canceled. The return value of this method has no bearing on if the entity will be spawned
      * 
      * @see FinalizeSpawnEvent
      * @see Mob#finalizeSpawn(ServerLevelAccessor, DifficultyInstance, MobSpawnType, SpawnGroupData)
@@ -303,13 +303,13 @@ public class EventHooks {
     @SuppressWarnings("deprecation") // Call to deprecated Mob#finalizeSpawn is expected.
     public static SpawnGroupData finalizeMobSpawn(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData) {
         var event = new FinalizeSpawnEvent(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, null);
-        boolean cancel = NeoForge.EVENT_BUS.post(event).isCanceled();
+        NeoForge.EVENT_BUS.post(event);
 
-        if (!cancel) {
-            mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
+        if (!event.isCanceled()) {
+            return mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
         }
 
-        return cancel ? null : event.getSpawnData();
+        return null;
     }
 
     /**
@@ -330,10 +330,11 @@ public class EventHooks {
     @SuppressWarnings("deprecation") // Call to deprecated Mob#finalizeSpawn is expected.
     public static FinalizeSpawnEvent finalizeMobSpawnSpawner(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, IOwnedSpawner spawner, boolean def) {
         var event = new FinalizeSpawnEvent(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, spawner.getOwner());
-        boolean cancel = NeoForge.EVENT_BUS.post(event).isCanceled();
+        NeoForge.EVENT_BUS.post(event);
 
-        if (!cancel && def) {
+        if (!event.isCanceled() && def) {
             // Spawners only call finalizeSpawn under certain conditions, which are passed through as def.
+            // Spawners also do not propagate the SpawnGroupData between spawns, so we ignore the result of Mob#finalizeSpawn
             mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
         }
 
