@@ -13,12 +13,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.commands.Commands;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.extensions.IBlockEntityRendererExtension;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
@@ -41,7 +41,7 @@ public final class ParticleBoundsDebugRenderer {
 
         Minecraft.getInstance().particleEngine.iterateParticles(particle -> {
             var bb = particle.getRenderBoundingBox(event.getPartialTick());
-            if (bb != IBlockEntityRendererExtension.INFINITE_EXTENT_AABB && event.getFrustum().isVisible(bb)) {
+            if (bb != AABB.INFINITE && event.getFrustum().isVisible(bb)) {
                 LevelRenderer.renderLineBox(poseStack, consumer, bb, 1F, 0F, 0F, 1F);
             }
         });
