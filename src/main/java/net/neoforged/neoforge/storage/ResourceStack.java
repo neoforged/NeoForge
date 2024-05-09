@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.storage;
 
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
@@ -24,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <T> the held resource type
  */
-public record ResourceStack<T extends IResource<T>>(T resource, int amount) implements DataComponentHolder {
+public record ResourceStack<T extends IResource>(T resource, int amount) implements DataComponentHolder {
     public ResourceStack {
         Objects.requireNonNull(resource, "resource");
     }
@@ -32,7 +33,7 @@ public record ResourceStack<T extends IResource<T>>(T resource, int amount) impl
     /**
      * Creates a standard stream codec for a resource amount.
      */
-    public static <B extends FriendlyByteBuf, T extends IResource<T>> StreamCodec<B, ResourceStack<T>> streamCodec(StreamCodec<? super B, T> resourceCodec) {
+    public static <B extends FriendlyByteBuf, T extends IResource> StreamCodec<B, ResourceStack<T>> streamCodec(StreamCodec<? super B, T> resourceCodec) {
         return StreamCodec.composite(
                 resourceCodec,
                 ResourceStack::resource,
@@ -66,16 +67,8 @@ public record ResourceStack<T extends IResource<T>>(T resource, int amount) impl
         return withAmount(this.amount + amount);
     }
 
-    public ResourceStack<T> withPatch(DataComponentPatch patch) {
-        return new ResourceStack<>(resource.withPatch(patch), amount);
-    }
-
-    public <D> ResourceStack<T> with(DataComponentType<D> type, D data) {
-        return new ResourceStack<>(resource.with(type, data), amount);
-    }
-
-    public ResourceStack<T> without(DataComponentType<?> type) {
-        return new ResourceStack<>(resource.without(type), amount);
+    public ResourceStack<T> with(UnaryOperator<T> operator) {
+        return new ResourceStack<>(operator.apply(resource), amount);
     }
 
     @Override

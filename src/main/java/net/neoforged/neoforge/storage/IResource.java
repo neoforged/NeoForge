@@ -15,17 +15,11 @@ import net.minecraft.core.component.DataComponentType;
  * <p>Instances must all be immutable, comparable with {@link Object#equals(Object)}
  * and they must implement a suitable {@link Object#hashCode()}.
  */
-public interface IResource<T extends IResource<T>> extends DataComponentHolder {
+public interface IResource extends DataComponentHolder {
     /**
      * Returns {@code true} if this represents the absence of a resource.
      *
      * <p>Examples include item resource with air as an item.
      */
     boolean isBlank(); // TODO: potentially use a different name
-
-    T withPatch(DataComponentPatch patch);
-
-    <D> T with(DataComponentType<D> type, D data);
-
-    T without(DataComponentType<?> type);
 }

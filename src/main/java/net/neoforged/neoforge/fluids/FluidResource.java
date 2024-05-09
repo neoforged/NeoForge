@@ -27,7 +27,7 @@ import net.neoforged.neoforge.storage.ResourceStack;
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IResource<FluidResource> {
+public final class FluidResource implements IResource {
     /**
      * Codec for a fluid resource.
      * Same format as {@link FluidStack#fixedAmountCodec}.
@@ -88,22 +88,19 @@ public final class FluidResource implements IResource<FluidResource> {
         return innerStack.isEmpty();
     }
 
-    @Override
-    public FluidResource withPatch(DataComponentPatch patch) {
+    public FluidResource applyPatch(DataComponentPatch patch) {
         FluidStack stack = innerStack.copy();
         stack.applyComponents(patch);
         return new FluidResource(stack);
     }
 
-    @Override
-    public <D> FluidResource with(DataComponentType<D> type, D data) {
+    public <D> FluidResource set(DataComponentType<D> type, D data) {
         FluidStack stack = innerStack.copy();
         stack.set(type, data);
         return new FluidResource(stack);
     }
 
-    @Override
-    public FluidResource without(DataComponentType<?> type) {
+    public FluidResource remove(DataComponentType<?> type) {
         FluidStack stack = innerStack.copy();
         stack.remove(type);
         return new FluidResource(stack);
