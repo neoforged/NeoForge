@@ -9,7 +9,9 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.storage.IStorage;
+import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.storage.IStorage;
+import net.neoforged.neoforge.transfer.TransferAction;
 
 @Deprecated(forRemoval = true, since = "1.22")
 public interface IItemHandler extends IStorage<ItemResource> {
@@ -68,15 +70,15 @@ public interface IItemHandler extends IStorage<ItemResource> {
     ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
     @Override
-    default int insert(int slot, ItemResource resource, int amount, boolean simulate) {
-        return amount - insertItem(slot, resource.toStack(amount), simulate).getCount();
+    default int insert(int slot, ItemResource resource, int amount, TransferAction action) {
+        return amount - insertItem(slot, resource.toStack(amount), action.isSimulating()).getCount();
     }
 
     @Override
-    default int insert(ItemResource resource, int amount, boolean simulate) {
+    default int insert(ItemResource resource, int amount, TransferAction action) {
         int inserted = 0;
         for (int i = 0; i < getSlots(); i++) {
-            inserted += insert(i, resource, amount - inserted, simulate);
+            inserted += insert(i, resource, amount - inserted, action);
             if (inserted >= amount) {
                 break;
             }
@@ -100,16 +102,16 @@ public interface IItemHandler extends IStorage<ItemResource> {
     ItemStack extractItem(int slot, int amount, boolean simulate);
 
     @Override
-    default int extract(int slot, ItemResource resource, int amount, boolean simulate) {
+    default int extract(int slot, ItemResource resource, int amount, TransferAction action) {
         if (!resource.matches(getStackInSlot(slot))) return 0;
-        return extractItem(slot, amount, simulate).getCount();
+        return extractItem(slot, amount, action.isSimulating()).getCount();
     }
 
     @Override
-    default int extract(ItemResource resource, int amount, boolean simulate) {
+    default int extract(ItemResource resource, int amount, TransferAction action) {
         int extracted = 0;
         for (int i = 0; i < getSlots(); i++) {
-            extracted += extract(i, resource, amount - extracted, simulate);
+            extracted += extract(i, resource, amount - extracted, action);
             if (extracted >= amount) {
                 break;
             }

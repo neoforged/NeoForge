@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.items;
+package net.neoforged.neoforge.transfer.items;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -22,14 +22,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.storage.IResource;
-import net.neoforged.neoforge.storage.ResourceStack;
+import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without amount information.
  */
-public final class ItemResource implements IResource {
+public final class ItemResource implements IResource, DataComponentHolder {
     /**
      * Codec for an item resource.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
