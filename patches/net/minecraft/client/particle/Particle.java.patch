@@ -6,7 +6,7 @@
  
 +    /**
 +     * Returns the bounding box that should be used for particle culling. {@link AABB#INFINITE} can be
-+     * returned for particles that should not be called.
++     * returned for particles that should not be culled.
 +     */
 +    public AABB getRenderBoundingBox(float partialTicks) {
 +        return getBoundingBox().inflate(1.0);
