@@ -6,11 +6,11 @@
 package net.neoforged.neoforge.storage;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -66,8 +66,16 @@ public record ResourceStack<T extends IResource<T>>(T resource, int amount) impl
         return withAmount(this.amount + amount);
     }
 
-    public ResourceStack<T> with(Consumer<DataComponentPatch.Builder> changes) {
-        return new ResourceStack<>(resource.with(changes), amount);
+    public ResourceStack<T> withPatch(DataComponentPatch patch) {
+        return new ResourceStack<>(resource.withPatch(patch), amount);
+    }
+
+    public <D> ResourceStack<T> with(DataComponentType<D> type, D data) {
+        return new ResourceStack<>(resource.with(type, data), amount);
+    }
+
+    public ResourceStack<T> without(DataComponentType<?> type) {
+        return new ResourceStack<>(resource.without(type), amount);
     }
 
     @Override

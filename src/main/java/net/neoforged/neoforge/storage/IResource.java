@@ -7,8 +7,7 @@ package net.neoforged.neoforge.storage;
 
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentPatch;
-
-import java.util.function.Consumer;
+import net.minecraft.core.component.DataComponentType;
 
 /**
  * Most general form of a resource that can be quantified and moved around.
@@ -24,5 +23,9 @@ public interface IResource<T extends IResource<T>> extends DataComponentHolder {
      */
     boolean isBlank(); // TODO: potentially use a different name
 
-    T with(Consumer<DataComponentPatch.Builder> changes);
+    T withPatch(DataComponentPatch patch);
+
+    <D> T with(DataComponentType<D> type, D data);
+
+    T without(DataComponentType<?> type);
 }
