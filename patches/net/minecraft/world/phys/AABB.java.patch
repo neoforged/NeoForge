@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/phys/AABB.java
++++ b/net/minecraft/world/phys/AABB.java
+@@ -9,6 +_,7 @@
+ 
+ public class AABB {
+     private static final double EPSILON = 1.0E-7;
++    public static final AABB INFINITE = new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+     public final double minX;
+     public final double minY;
+     public final double minZ;
