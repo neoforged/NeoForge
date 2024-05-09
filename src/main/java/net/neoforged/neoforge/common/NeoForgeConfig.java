@@ -99,9 +99,6 @@ public class NeoForgeConfig {
 
         public final BooleanValue useCombinedDepthStencilAttachment;
 
-        @Deprecated(since = "1.20.1", forRemoval = true) // Config option ignored.
-        public final BooleanValue compressLanIPv6Addresses;
-
         Client(ModConfigSpec.Builder builder) {
             builder.comment("Client only settings, mostly things related to rendering")
                     .push("client");
@@ -120,11 +117,6 @@ public class NeoForgeConfig {
                     .comment("Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.")
                     .translation("neoforge.configgui.useCombinedDepthStencilAttachment")
                     .define("useCombinedDepthStencilAttachment", false);
-
-            compressLanIPv6Addresses = builder
-                    .comment("[Deprecated for Removal] IPv6 addresses will always be compressed")
-                    .translation("neoforge.configgui.compressLanIPv6Addresses")
-                    .define("compressLanIPv6Addresses", true);
 
             builder.pop();
         }

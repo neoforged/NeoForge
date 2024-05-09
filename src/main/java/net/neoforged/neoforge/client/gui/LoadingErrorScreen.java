@@ -23,10 +23,10 @@ import net.minecraft.client.gui.screens.ErrorScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModLoadingIssue;
+import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
-import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -63,18 +63,18 @@ public class LoadingErrorScreen extends ErrorScreen {
         super.init();
         this.clearWidgets();
 
-        this.errorHeader = Component.literal(ChatFormatting.RED + I18nExtension.parseMessage("fml.loadingerrorscreen.errorheader", this.modLoadErrors.size()) + ChatFormatting.RESET);
-        this.warningHeader = Component.literal(ChatFormatting.YELLOW + I18nExtension.parseMessage("fml.loadingerrorscreen.warningheader", this.modLoadWarnings.size()) + ChatFormatting.RESET);
+        this.errorHeader = Component.literal(ChatFormatting.RED + FMLTranslations.parseMessage("fml.loadingerrorscreen.errorheader", this.modLoadErrors.size()) + ChatFormatting.RESET);
+        this.warningHeader = Component.literal(ChatFormatting.YELLOW + FMLTranslations.parseMessage("fml.loadingerrorscreen.warningheader", this.modLoadWarnings.size()) + ChatFormatting.RESET);
 
         int yOffset = 46;
-        this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), b -> Util.getPlatform().openFile(modsDir.toFile())));
-        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
+        this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.mods.folder")), b -> Util.getPlatform().openFile(modsDir.toFile())));
+        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
         if (this.modLoadErrors.isEmpty()) {
-            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.continue.launch")), b -> {
+            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.continue.launch")), b -> {
                 this.minecraft.setScreen(null);
             }));
         } else {
-            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(I18nExtension.parseMessage("fml.button.open.crashreport")), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
+            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.crashreport")), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
         }
         this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - 24, this.width / 2 - 55, 20, Component.translatable("menu.quit"), b -> this.minecraft.stop()));
 
@@ -163,7 +163,8 @@ public class LoadingErrorScreen extends ErrorScreen {
     private record FormattedIssue(Component text, ModLoadingIssue issue) {
         public static FormattedIssue of(ModLoadingIssue issue) {
             return new FormattedIssue(
-                    Component.literal(I18nExtension.parseMessage(issue.translationKey(), formatArgs(issue))), issue);
+                    Component.literal(FMLTranslations.parseMessage(issue.translationKey(), formatArgs(issue))),
+                    issue);
         }
 
         private static Object[] formatArgs(ModLoadingIssue issue) {

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common;
+package net.neoforged.neoforge.client;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
@@ -16,6 +16,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeConfig;
+import net.neoforged.neoforge.common.TagConventionLogWarning;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

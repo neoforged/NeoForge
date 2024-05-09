@@ -66,13 +66,13 @@ import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
@@ -98,6 +98,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
@@ -112,6 +113,7 @@ import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
@@ -119,7 +121,6 @@ import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingPackSizeEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
@@ -188,9 +189,10 @@ public class EventHooks {
         return event;
     }
 
-    public static boolean doPlayerHarvestCheck(Player player, BlockState state, boolean success) {
-        PlayerEvent.HarvestCheck event = new PlayerEvent.HarvestCheck(player, state, success);
-        NeoForge.EVENT_BUS.post(event);
+    public static boolean doPlayerHarvestCheck(Player player, BlockState state, BlockGetter level, BlockPos pos) {
+        // Call deprecated hasCorrectToolForDrops overload for a fallback value, in turn the non-deprecated overload calls this method
+        boolean vanillaValue = player.hasCorrectToolForDrops(state);
+        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, state, level, pos, vanillaValue));
         return event.canHarvest();
     }
 
@@ -251,8 +253,10 @@ public class EventHooks {
     }
 
     /**
-     * Vanilla calls to {@link Mob#finalizeSpawn} are replaced with calls to this method via coremod.<br>
-     * Mods should call this method in place of calling {@link Mob#finalizeSpawn}. Super calls (from within overrides) should not be wrapped.
+     * Finalizes the spawn of a mob by firing the {@link FinalizeSpawnEvent} and calling {@link Mob#finalizeSpawn} with the result.
+     * <p>
+     * Mods should call this method in place of calling {@link Mob#finalizeSpawn}, unless calling super from within an override.
+     * Vanilla calls to {@link Mob#finalizeSpawn} are replaced with calls to this method via coremod, so calls to this method will not show in an IDE.
      * <p>
      * When interfacing with this event, write all code as normal, and replace the call to {@link Mob#finalizeSpawn} with a call to this method.<p>
      * As an example, the following code block:
@@ -273,7 +277,7 @@ public class EventHooks {
      * 
      * <pre>
      * var zombie = new Zombie(level);
-     * EventHook.onFinalizeSpawn(zombie, level, difficulty, spawnType, spawnData);
+     * EventHooks.finalizeMobSpawn(zombie, level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
      * if (zombie.isAddedToWorld()) {
      *     // Do stuff with your new zombie
@@ -283,37 +287,60 @@ public class EventHooks {
      * </code>
      * The only code that changes is the {@link Mob#finalizeSpawn} call.
      * 
-     * @return The SpawnGroupData from this event, or null if it was canceled. The return value of this method has no bearing on if the entity will be spawned.
-     * @see MobSpawnEvent.FinalizeSpawn
+     * @param mob        The mob whose spawn is being finalized
+     * @param level      The level the mob will be spawned in
+     * @param difficulty The local difficulty at the position of the mob
+     * @param spawnType  The type of spawn that is occuring
+     * @param spawnData  Optional spawn data relevant to the mob being spawned
+     * @return The SpawnGroupData from the finalize, or null if it was canceled. The return value of this method has no bearing on if the entity will be spawned
+     * 
+     * @see FinalizeSpawnEvent
      * @see Mob#finalizeSpawn(ServerLevelAccessor, DifficultyInstance, MobSpawnType, SpawnGroupData)
+     * 
      * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
+     * 
      * @implNote Changes to the signature of this method must be reflected in the method redirector coremod.
      */
     @Nullable
     @SuppressWarnings("deprecation") // Call to deprecated Mob#finalizeSpawn is expected.
-    public static SpawnGroupData onFinalizeSpawn(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData) {
-        var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, null);
-        boolean cancel = NeoForge.EVENT_BUS.post(event).isCanceled();
+    public static SpawnGroupData finalizeMobSpawn(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData) {
+        var event = new FinalizeSpawnEvent(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, null);
+        NeoForge.EVENT_BUS.post(event);
 
-        if (!cancel) {
-            mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
+        if (!event.isCanceled()) {
+            return mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
         }
 
-        return cancel ? null : event.getSpawnData();
+        return null;
     }
 
     /**
-     * Returns the FinalizeSpawn event instance, or null if it was canceled.<br>
-     * This is separate since mob spawners perform special finalizeSpawn handling when NBT data is present, but we still want to fire the event.<br>
-     * This overload is also the only way to pass through a {@link BaseSpawner} instance.
+     * Finalizes the spawn of a mob by firing the {@link FinalizeSpawnEvent} and calling {@link Mob#finalizeSpawn} with the result.
+     * <p>
+     * This method is separate since mob spawners perform special finalizeSpawn handling when NBT data is present, but we still want to fire the event.
+     * <p>
+     * This overload is also the only way to pass through an {@link IOwnedSpawner} instance.
      * 
-     * @see #onFinalizeSpawn
+     * @param mob        The mob whose spawn is being finalized
+     * @param level      The level the mob will be spawned in
+     * @param difficulty The local difficulty at the position of the mob
+     * @param spawnType  The type of spawn that is occuring
+     * @param spawnData  Optional spawn data relevant to the mob being spawned
+     * @param spawner    The spawner that is attempting to spawn the mob
+     * @param def        If the spawner would normally call finalizeSpawn, regardless of the event
      */
-    @Nullable
-    public static MobSpawnEvent.FinalizeSpawn onFinalizeSpawnSpawner(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, @Nullable SpawnGroupData spawnData, BaseSpawner spawner) {
-        var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, MobSpawnType.SPAWNER, spawnData, spawner);
-        boolean cancel = NeoForge.EVENT_BUS.post(event).isCanceled();
-        return cancel ? null : event;
+    @SuppressWarnings("deprecation") // Call to deprecated Mob#finalizeSpawn is expected.
+    public static FinalizeSpawnEvent finalizeMobSpawnSpawner(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, IOwnedSpawner spawner, boolean def) {
+        var event = new FinalizeSpawnEvent(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, spawner.getOwner());
+        NeoForge.EVENT_BUS.post(event);
+
+        if (!event.isCanceled() && def) {
+            // Spawners only call finalizeSpawn under certain conditions, which are passed through as def.
+            // Spawners also do not propagate the SpawnGroupData between spawns, so we ignore the result of Mob#finalizeSpawn
+            mob.finalizeSpawn(level, event.getDifficulty(), event.getSpawnType(), event.getSpawnData());
+        }
+
+        return event;
     }
 
     public static PlayerSpawnPhantomsEvent onPhantomSpawn(ServerPlayer player, int phantomsToSpawn) {
@@ -989,13 +1016,7 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(ItemStackLinkedSet.TYPE_AND_TAG,
-                (key, left, right) -> {
-                    //throw new IllegalStateException("Accidentally adding the same item stack twice " + key.getDisplayName().getString() + " to a Creative Mode Tab: " + tab.getDisplayName().getString());
-                    // Vanilla adds enchanting books twice in both visibilities.
-                    // This is just code cleanliness for them. For us lets just increase the visibility and merge the entries.
-                    return CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-                });
+        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>();
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)
