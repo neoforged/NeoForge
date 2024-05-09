@@ -80,7 +80,7 @@
                  particlerendertype.begin(bufferbuilder, this.textureManager);
  
                  for (Particle particle : iterable) {
-+                    if (frustum != null && particle.shouldCull() && !frustum.isVisible(particle.getBoundingBox().inflate(1.0))) continue;
++                    if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_107341_))) continue;
                      try {
                          particle.render(bufferbuilder, p_107340_, p_107341_);
                      } catch (Throwable throwable) {
@@ -102,7 +102,7 @@
                                  );
                              }
                          }
-@@ -556,12 +_,18 @@
+@@ -556,12 +_,28 @@
                  d0 = (double)i + aabb.maxX + 0.1F;
              }
  
@@ -113,6 +113,16 @@
  
      public String countParticles() {
          return String.valueOf(this.particles.values().stream().mapToInt(Collection::size).sum());
++    }
++
++    public void iterateParticles(java.util.function.Consumer<Particle> consumer) {
++        for (ParticleRenderType particlerendertype : this.particles.keySet()) {
++            if (particlerendertype == ParticleRenderType.NO_RENDER) continue;
++            Iterable<Particle> iterable = this.particles.get(particlerendertype);
++            if (iterable != null) {
++                iterable.forEach(consumer);
++            }
++        }
 +    }
 +
 +    public void addBlockHitEffects(BlockPos pos, net.minecraft.world.phys.BlockHitResult target) {
