@@ -1,4 +1,6 @@
-package net.neoforged.neoforge.storage;
+package net.neoforged.neoforge.transfer.storage;
+
+import net.neoforged.neoforge.transfer.TransferAction;
 
 public interface IStorage<T> {
     int getSlots();
@@ -17,13 +19,13 @@ public interface IStorage<T> {
 
     boolean allowsExtraction();
 
-    int insert(int slot, T resource, int amount, boolean simulate);
+    int insert(int slot, T resource, int amount, TransferAction action);
 
-    int insert(T resource, int amount, boolean simulate);
+    int insert(T resource, int amount, TransferAction action);
 
-    int extract(int slot, T resource, int amount, boolean simulate);
+    int extract(int slot, T resource, int amount, TransferAction action);
 
-    int extract(T resource, int amount, boolean simulate);
+    int extract(T resource, int amount, TransferAction action);
 
     static <T> Class<IStorage<T>> asClass() {
         return (Class<IStorage<T>>) (Object) IStorage.class;

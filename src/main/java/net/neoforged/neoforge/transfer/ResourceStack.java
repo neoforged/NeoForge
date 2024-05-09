@@ -3,21 +3,16 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.storage;
+package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
-import net.minecraft.core.component.DataComponentHolder;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents an immutable resource and an amount.
@@ -25,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <T> the held resource type
  */
-public record ResourceStack<T extends IResource>(T resource, int amount) implements DataComponentHolder {
+public record ResourceStack<T extends IResource>(T resource, int amount) {
     public ResourceStack {
         Objects.requireNonNull(resource, "resource");
     }
@@ -69,10 +64,5 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
 
     public ResourceStack<T> with(UnaryOperator<T> operator) {
         return new ResourceStack<>(operator.apply(resource), amount);
-    }
-
-    @Override
-    public @NotNull DataComponentMap getComponents() {
-        return resource.getComponents();
     }
 }

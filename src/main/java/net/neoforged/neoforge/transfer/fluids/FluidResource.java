@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.fluids;
+package net.neoforged.neoforge.transfer.fluids;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -20,14 +20,15 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.storage.IResource;
-import net.neoforged.neoforge.storage.ResourceStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.ResourceStack;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IResource {
+public final class FluidResource implements IResource, DataComponentHolder {
     /**
      * Codec for a fluid resource.
      * Same format as {@link FluidStack#fixedAmountCodec}.

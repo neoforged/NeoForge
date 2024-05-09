@@ -3,11 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.storage;
-
-import net.minecraft.core.component.DataComponentHolder;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponentType;
+package net.neoforged.neoforge.transfer;
 
 /**
  * Most general form of a resource that can be quantified and moved around.
@@ -15,7 +11,7 @@ import net.minecraft.core.component.DataComponentType;
  * <p>Instances must all be immutable, comparable with {@link Object#equals(Object)}
  * and they must implement a suitable {@link Object#hashCode()}.
  */
-public interface IResource extends DataComponentHolder {
+public interface IResource {
     /**
      * Returns {@code true} if this represents the absence of a resource.
      *

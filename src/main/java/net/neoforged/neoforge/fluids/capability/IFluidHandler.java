@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.fluids.capability;
 
-import net.neoforged.neoforge.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.storage.IStorage;
+import net.neoforged.neoforge.transfer.storage.IStorage;
+import net.neoforged.neoforge.transfer.TransferAction;
 
 /**
  * Implement this interface as a capability which should handle fluids, generally storing them in
@@ -131,23 +132,23 @@ public interface IFluidHandler extends IStorage<FluidResource> {
     FluidStack drain(int maxDrain, FluidAction action);
 
     @Override
-    default int insert(int slot, FluidResource resource, int amount, boolean simulate) {
-        return insert(resource, amount, simulate);
+    default int insert(int slot, FluidResource resource, int amount, TransferAction action) {
+        return insert(resource, amount, action);
     }
 
     @Override
-    default int insert(FluidResource resource, int amount, boolean simulate) {
-        return fill(resource.toStack(amount), simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE);
+    default int insert(FluidResource resource, int amount, TransferAction action) {
+        return fill(resource.toStack(amount), action.isExecuting() ? FluidAction.EXECUTE : FluidAction.SIMULATE);
     }
 
     @Override
-    default int extract(int slot, FluidResource resource, int amount, boolean simulate) {
-        return extract(resource, amount, simulate);
+    default int extract(int slot, FluidResource resource, int amount, TransferAction action) {
+        return extract(resource, amount, action);
     }
 
     @Override
-    default int extract(FluidResource resource, int amount, boolean simulate) {
-        return drain(resource.toStack(amount), simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE).getAmount();
+    default int extract(FluidResource resource, int amount, TransferAction action) {
+        return drain(resource.toStack(amount), action.isExecuting() ? FluidAction.EXECUTE : FluidAction.SIMULATE).getAmount();
     }
 
     @Override

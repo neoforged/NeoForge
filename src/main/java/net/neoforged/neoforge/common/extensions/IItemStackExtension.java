@@ -47,8 +47,8 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.items.ItemResource;
-import net.neoforged.neoforge.storage.ResourceStack;
+import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 
 /*
