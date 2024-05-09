@@ -38,6 +38,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
+import net.neoforged.neoforge.storage.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -156,6 +157,10 @@ public final class FluidStack implements MutableDataComponentHolder {
 
     public boolean isComponentsPatchEmpty() {
         return !this.isEmpty() ? this.components.isPatchEmpty() : true;
+    }
+
+    public static FluidStack of(ResourceStack<FluidResource> stack) {
+        return stack.resource().toStack(stack.amount());
     }
 
     public FluidStack(Holder<Fluid> fluid, int amount, DataComponentPatch patch) {
@@ -458,6 +463,13 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     public void shrink(int removedAmount) {
         this.grow(-removedAmount);
+    }
+
+    /**
+     * Creates a new {@link ResourceStack} that represents this fluid stack.
+     */
+    public ResourceStack<FluidResource> immutable() {
+        return new ResourceStack<>(FluidResource.of(this), getAmount());
     }
 
     // Extra methods that are not directly adapted from ItemStack go below

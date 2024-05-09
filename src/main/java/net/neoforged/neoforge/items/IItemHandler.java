@@ -9,8 +9,10 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.storage.IStorage;
 
-public interface IItemHandler {
+@Deprecated(forRemoval = true, since = "1.22")
+public interface IItemHandler extends IStorage<ItemResource> {
     /**
      * Returns the number of slots available
      *
@@ -39,6 +41,16 @@ public interface IItemHandler {
      **/
     ItemStack getStackInSlot(int slot);
 
+    @Override
+    default ItemResource getResource(int slot) {
+        return ItemResource.of(getStackInSlot(slot));
+    }
+
+    @Override
+    default int getAmount(int slot) {
+        return getStackInSlot(slot).getCount();
+    }
+
     /**
      * <p>
      * Inserts an ItemStack into the given slot and return the remainder.
@@ -55,6 +67,23 @@ public interface IItemHandler {
      **/
     ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
+    @Override
+    default int insert(int slot, ItemResource resource, int amount, boolean simulate) {
+        return amount - insertItem(slot, resource.toStack(amount), simulate).getCount();
+    }
+
+    @Override
+    default int insert(ItemResource resource, int amount, boolean simulate) {
+        int inserted = 0;
+        for (int i = 0; i < getSlots(); i++) {
+            inserted += insert(i, resource, amount - inserted, simulate);
+            if (inserted >= amount) {
+                break;
+            }
+        }
+        return inserted;
+    }
+
     /**
      * Extracts an ItemStack from the given slot.
      * <p>
@@ -69,6 +98,24 @@ public interface IItemHandler {
      *         The returned ItemStack can be safely modified after, so item handlers should return a new or copied stack.
      **/
     ItemStack extractItem(int slot, int amount, boolean simulate);
+
+    @Override
+    default int extract(int slot, ItemResource resource, int amount, boolean simulate) {
+        if (!resource.matches(getStackInSlot(slot))) return 0;
+        return extractItem(slot, amount, simulate).getCount();
+    }
+
+    @Override
+    default int extract(ItemResource resource, int amount, boolean simulate) {
+        int extracted = 0;
+        for (int i = 0; i < getSlots(); i++) {
+            extracted += extract(i, resource, amount - extracted, simulate);
+            if (extracted >= amount) {
+                break;
+            }
+        }
+        return extracted;
+    }
 
     /**
      * Retrieves the maximum stack size allowed to exist in the given slot.
@@ -99,4 +146,24 @@ public interface IItemHandler {
      *         false if the slot can never insert the ItemStack in any situation.
      */
     boolean isItemValid(int slot, ItemStack stack);
+
+    @Override
+    default boolean isResourceValid(int slot, ItemResource resource) {
+        return isItemValid(slot, resource.toStack(1));
+    }
+
+    @Override
+    default boolean isEmpty(int slot) {
+        return getStackInSlot(slot).isEmpty();
+    }
+
+    @Override
+    default boolean allowsInsertion() {
+        return true;
+    }
+
+    @Override
+    default boolean allowsExtraction() {
+        return true;
+    }
 }

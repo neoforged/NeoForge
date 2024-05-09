@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.fluids.capability;
 
+import net.neoforged.neoforge.fluids.FluidResource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.storage.IStorage;
 
 /**
  * Implement this interface as a capability which should handle fluids, generally storing them in
@@ -14,7 +16,8 @@ import net.neoforged.neoforge.fluids.IFluidTank;
  * <p>
  * A reference implementation is provided {@link TileFluidHandler}.
  */
-public interface IFluidHandler {
+@Deprecated(forRemoval = true, since = "1.22")
+public interface IFluidHandler extends IStorage<FluidResource> {
     enum FluidAction {
         EXECUTE, SIMULATE;
 
@@ -34,6 +37,11 @@ public interface IFluidHandler {
      */
     int getTanks();
 
+    @Override
+    default int getSlots() {
+        return getTanks();
+    }
+
     /**
      * Returns the FluidStack in a given tank.
      *
@@ -52,6 +60,16 @@ public interface IFluidHandler {
      */
     FluidStack getFluidInTank(int tank);
 
+    @Override
+    default FluidResource getResource(int slot) {
+        return FluidResource.of(getFluidInTank(slot));
+    }
+
+    @Override
+    default int getAmount(int slot) {
+        return getFluidInTank(slot).getAmount();
+    }
+
     /**
      * Retrieves the maximum fluid amount for a given tank.
      *
@@ -59,6 +77,11 @@ public interface IFluidHandler {
      * @return The maximum fluid amount held by the tank.
      */
     int getTankCapacity(int tank);
+
+    @Override
+    default int getSlotLimit(int slot) {
+        return getTankCapacity(slot);
+    }
 
     /**
      * This function is a way to determine which fluids can exist inside a given handler. General purpose tanks will
@@ -70,6 +93,11 @@ public interface IFluidHandler {
      *         (Basically, is a given fluid EVER allowed in this tank?) Return FALSE if the answer to that question is 'no.'
      */
     boolean isFluidValid(int tank, FluidStack stack);
+
+    @Override
+    default boolean isResourceValid(int slot, FluidResource resource) {
+        return isFluidValid(slot, resource.toStack(1));
+    }
 
     /**
      * Fills fluid into internal tanks, distribution is left entirely to the IFluidHandler.
@@ -101,4 +129,39 @@ public interface IFluidHandler {
      *         simulated) drained.
      */
     FluidStack drain(int maxDrain, FluidAction action);
+
+    @Override
+    default int insert(int slot, FluidResource resource, int amount, boolean simulate) {
+        return insert(resource, amount, simulate);
+    }
+
+    @Override
+    default int insert(FluidResource resource, int amount, boolean simulate) {
+        return fill(resource.toStack(amount), simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE);
+    }
+
+    @Override
+    default int extract(int slot, FluidResource resource, int amount, boolean simulate) {
+        return extract(resource, amount, simulate);
+    }
+
+    @Override
+    default int extract(FluidResource resource, int amount, boolean simulate) {
+        return drain(resource.toStack(amount), simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE).getAmount();
+    }
+
+    @Override
+    default boolean isEmpty(int slot) {
+        return getFluidInTank(slot).isEmpty();
+    }
+
+    @Override
+    default boolean allowsInsertion() {
+        return true;
+    }
+
+    @Override
+    default boolean allowsExtraction() {
+        return true;
+    }
 }

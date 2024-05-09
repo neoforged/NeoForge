@@ -7,6 +7,7 @@ package net.neoforged.neoforge.items;
 
 import net.minecraft.world.item.ItemStack;
 
+@Deprecated(forRemoval = true, since = "1.22")
 public interface IItemHandlerModifiable extends IItemHandler {
     /**
      * Overrides the stack in the given slot. This method is used by the
