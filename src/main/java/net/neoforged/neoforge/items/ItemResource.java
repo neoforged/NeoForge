@@ -29,7 +29,7 @@ import net.neoforged.neoforge.storage.ResourceStack;
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without amount information.
  */
-public final class ItemResource implements IResource<ItemResource> {
+public final class ItemResource implements IResource {
     /**
      * Codec for an item resource.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
@@ -90,22 +90,19 @@ public final class ItemResource implements IResource<ItemResource> {
         return innerStack.isEmpty();
     }
 
-    @Override
-    public ItemResource withPatch(DataComponentPatch patch) {
+    public ItemResource applyPatch(DataComponentPatch patch) {
         ItemStack stack = innerStack.copy();
         stack.applyComponents(patch);
         return new ItemResource(stack);
     }
 
-    @Override
-    public <D> ItemResource with(DataComponentType<D> type, D data) {
+    public <D> ItemResource set(DataComponentType<D> type, D data) {
         ItemStack stack = innerStack.copy();
         stack.set(type, data);
         return new ItemResource(stack);
     }
 
-    @Override
-    public ItemResource without(DataComponentType<?> type) {
+    public ItemResource remove(DataComponentType<?> type) {
         ItemStack stack = innerStack.copy();
         stack.remove(type);
         return new ItemResource(stack);
