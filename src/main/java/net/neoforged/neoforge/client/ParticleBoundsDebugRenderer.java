@@ -41,7 +41,7 @@ public final class ParticleBoundsDebugRenderer {
 
         Minecraft.getInstance().particleEngine.iterateParticles(particle -> {
             var bb = particle.getRenderBoundingBox(event.getPartialTick());
-            if (bb != AABB.INFINITE && event.getFrustum().isVisible(bb)) {
+            if (!bb.isInfinite() && event.getFrustum().isVisible(bb)) {
                 LevelRenderer.renderLineBox(poseStack, consumer, bb, 1F, 0F, 0F, 1F);
             }
         });
