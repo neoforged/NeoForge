@@ -11,6 +11,7 @@ import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.storage.IItemContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +66,10 @@ public final class ItemCapability<T, C> extends BaseCapability<T, C> {
      */
     public static <T> ItemCapability<T, Void> createVoid(ResourceLocation name, Class<T> typeClass) {
         return create(name, typeClass, void.class);
+    }
+
+    public static <T> ItemCapability<T, IItemContext> createContextual(ResourceLocation name, Class<T> typeClass) {
+        return create(name, typeClass, IItemContext.class);
     }
 
     /**
