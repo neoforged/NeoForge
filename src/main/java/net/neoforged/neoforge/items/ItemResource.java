@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -90,11 +91,23 @@ public final class ItemResource implements IResource<ItemResource> {
     }
 
     @Override
-    public ItemResource with(Consumer<DataComponentPatch.Builder> changes) {
-        DataComponentPatch.Builder builder = DataComponentPatch.builder();
-        changes.accept(builder);
+    public ItemResource withPatch(DataComponentPatch patch) {
         ItemStack stack = innerStack.copy();
-        stack.applyComponents(builder.build());
+        stack.applyComponents(patch);
+        return new ItemResource(stack);
+    }
+
+    @Override
+    public <D> ItemResource with(DataComponentType<D> type, D data) {
+        ItemStack stack = innerStack.copy();
+        stack.set(type, data);
+        return new ItemResource(stack);
+    }
+
+    @Override
+    public ItemResource without(DataComponentType<?> type) {
+        ItemStack stack = innerStack.copy();
+        stack.remove(type);
         return new ItemResource(stack);
     }
 

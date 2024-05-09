@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -88,11 +89,23 @@ public final class FluidResource implements IResource<FluidResource> {
     }
 
     @Override
-    public FluidResource with(Consumer<DataComponentPatch.Builder> changes) {
-        DataComponentPatch.Builder builder = DataComponentPatch.builder();
-        changes.accept(builder);
+    public FluidResource withPatch(DataComponentPatch patch) {
         FluidStack stack = innerStack.copy();
-        stack.applyComponents(builder.build());
+        stack.applyComponents(patch);
+        return new FluidResource(stack);
+    }
+
+    @Override
+    public <D> FluidResource with(DataComponentType<D> type, D data) {
+        FluidStack stack = innerStack.copy();
+        stack.set(type, data);
+        return new FluidResource(stack);
+    }
+
+    @Override
+    public FluidResource without(DataComponentType<?> type) {
+        FluidStack stack = innerStack.copy();
+        stack.remove(type);
         return new FluidResource(stack);
     }
 
