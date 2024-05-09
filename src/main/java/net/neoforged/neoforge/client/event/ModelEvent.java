@@ -18,7 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import org.jetbrains.annotations.ApiStatus;
@@ -164,16 +163,6 @@ public abstract class ModelEvent extends Event {
         @ApiStatus.Internal
         public RegisterGeometryLoaders(Map<ResourceLocation, IGeometryLoader<?>> loaders) {
             this.loaders = loaders;
-        }
-
-        /**
-         * Registers a new geometry loader.
-         * 
-         * @deprecated Use {@link #register(ResourceLocation, IGeometryLoader) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
-         */
-        @Deprecated(forRemoval = true, since = "1.20.2")
-        public void register(String name, IGeometryLoader<?> loader) {
-            register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), loader);
         }
 
         /**

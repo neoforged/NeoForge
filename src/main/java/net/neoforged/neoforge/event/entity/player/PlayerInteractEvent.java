@@ -301,11 +301,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         private Result useItem = Result.DEFAULT;
         private final Action action;
 
-        @Deprecated(since = "1.20.1", forRemoval = true)
-        public LeftClickBlock(Player player, BlockPos pos, Direction face) {
-            this(player, pos, face, Action.START);
-        }
-
         @ApiStatus.Internal
         public LeftClickBlock(Player player, BlockPos pos, Direction face, Action action) {
             super(player, InteractionHand.MAIN_HAND, pos, face);

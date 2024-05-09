@@ -14,8 +14,8 @@ import net.minecraft.DetectedVersion;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
@@ -30,7 +30,7 @@ public class BrandingControl {
             brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion());
             brd.add("Minecraft " + DetectedVersion.BUILT_IN.getName());
             int tModCount = ModList.get().size();
-            brd.add(I18nExtension.parseMessage("fml.menu.loadingmods", tModCount));
+            brd.add(FMLTranslations.parseMessage("fml.menu.loadingmods", tModCount));
             brandings = brd.build();
             brandingsNoMC = brandings.subList(1, brandings.size());
         }

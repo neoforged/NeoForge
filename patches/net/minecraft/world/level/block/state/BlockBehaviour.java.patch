@@ -52,7 +52,7 @@
          } else {
 -            int i = p_60467_.hasCorrectToolForDrops(p_60466_) ? 30 : 100;
 -            return p_60467_.getDestroySpeed(p_60466_) / f / (float)i;
-+            int i = net.neoforged.neoforge.common.CommonHooks.isCorrectToolForDrops(p_60466_, p_60467_) ? 30 : 100;
++            int i = net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(p_60467_, p_60466_, p_60468_, p_60469_) ? 30 : 100;
 +            return p_60467_.getDigSpeed(p_60466_, p_60469_) / f / (float)i;
          }
      }

@@ -225,7 +225,7 @@ public class FullPotsAccessorDemo {
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerLoader(final ModelEvent.RegisterGeometryLoaders event) {
-            event.register("diorite_pot", new DioritePotGeometryLoader());
+            event.register(new ResourceLocation(MOD_ID, "diorite_pot"), new DioritePotGeometryLoader());
         }
 
         private static class DioritePotGeometryLoader implements IGeometryLoader<DioritePotModelGeometry> {
