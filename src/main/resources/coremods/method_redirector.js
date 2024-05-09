@@ -7,7 +7,7 @@ function finalizeSpawnNode(node){
     return new MethodInsnNode(
         Opcodes.INVOKESTATIC, 
         "net/neoforged/neoforge/event/EventHooks",
-        "onFinalizeSpawn", 
+        "finalizeMobSpawn", 
         "(Lnet/minecraft/world/entity/Mob;Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/world/entity/SpawnGroupData;)Lnet/minecraft/world/entity/SpawnGroupData;",
         false);
 }
