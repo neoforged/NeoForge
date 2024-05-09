@@ -2,7 +2,6 @@
   "order": [
     "minecraft:attribute",
     "minecraft:data_component_type",
-    "minecraft:armor_material",
     "minecraft:game_event",
     "minecraft:sound_event",
     "minecraft:fluid",
@@ -71,6 +70,7 @@
     "minecraft:creative_mode_tab",
     "minecraft:trigger_type",
     "minecraft:number_format_type",
+    "minecraft:armor_material",
     "minecraft:entity_sub_predicate_type",
     "minecraft:item_sub_predicate_type",
     "minecraft:map_decoration_type",
