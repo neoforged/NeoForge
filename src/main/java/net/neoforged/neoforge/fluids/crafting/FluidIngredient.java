@@ -178,23 +178,16 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     }
 
     /**
-     * Checks if this ingredient matches no fluids, i.e. either:
-     * <ul>
-     * <li>is equal to {@link #empty()},</li>
-     * <li>resolves to an empty list of fluids</li>
-     * </ul>
+     * Checks if this ingredient matches no fluids, i.e. if its
+     * list of {@linkplain #getStacks() matching fluids} is empty.
      * <p>
-     * Note that this method explicitly has the potential to <b>resolve</b>
-     * the ingredient; if this is not desired, you will need to check for
-     * emptiness another way!
+     * Note that this method explicitly <b>resolves</b> the ingredient;
+     * if this is not desired, you will need to check for emptiness another way!
      *
      * @return {@code true} if this ingredient matches no fluids, {@code false} otherwise
-     * @implNote If it is possible for your ingredient to return a "hint" on
-     *           whether it is empty without resolving, you should override this method
-     *           with a custom implementation.
      * @see #isEmpty()
      */
-    public boolean hasNoFluids() {
+    public final boolean hasNoFluids() {
         return getStacks().length == 0;
     }
 

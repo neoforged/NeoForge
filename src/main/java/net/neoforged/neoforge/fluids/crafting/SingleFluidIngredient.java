@@ -54,11 +54,6 @@ public class SingleFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean hasNoFluids() {
-        return fluid.value().isSame(Fluids.EMPTY);
-    }
-
-    @Override
     public int hashCode() {
         return this.fluid().value().hashCode();
     }
