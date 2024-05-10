@@ -12,8 +12,8 @@
                  this.scheduleUnload(p_140182_, p_140183_);
              } else {
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && p_203002_ != null) {
-+                    net.neoforged.neoforge.common.CommonHooks.onChunkUnload(this.poiManager, p_203002_); // Neo: PR #937
-+                    this.chunkTypeCache.remove(p_203002_.getPos().toLong()); // Neo: PR #937
++                    net.neoforged.neoforge.common.CommonHooks.onChunkUnload(this.poiManager, p_203002_); // Neo: Must be called for all chunk unloading. Not just LevelChunks.
++                    this.chunkTypeCache.remove(p_203002_.getPos().toLong()); // Neo: Prevent chunk type cache from permanently retaining data for unloaded chunks
                      if (p_203002_ instanceof LevelChunk) {
                          ((LevelChunk)p_203002_).setLoaded(false);
 +                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(p_203002_));
