@@ -43,8 +43,8 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      *
      * @see Ingredient#MAP_CODEC_NONEMPTY
      */
-    public static final MapCodec<FluidIngredient> MAP_CODEC = makeMapCodec();
-    private static final Codec<FluidIngredient> MAP_CODEC_CODEC = MAP_CODEC.codec();
+    public static final MapCodec<FluidIngredient> MAP_CODEC_NONEMPTY = makeMapCodec();
+    private static final Codec<FluidIngredient> MAP_CODEC_CODEC = MAP_CODEC_NONEMPTY.codec();
 
     public static final Codec<List<FluidIngredient>> LIST_CODEC = MAP_CODEC_CODEC.listOf();
     public static final Codec<List<FluidIngredient>> LIST_CODEC_NON_EMPTY = LIST_CODEC.validate(list -> {
@@ -61,7 +61,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      * as well as for the {@code type} field to be left out in case of a single fluid or tag ingredient.
      *
      * @see #codec(boolean)
-     * @see #MAP_CODEC
+     * @see #MAP_CODEC_NONEMPTY
      */
     public static final Codec<FluidIngredient> CODEC = codec(true);
     /**
@@ -107,14 +107,13 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     private FluidStack[] stacks;
 
     /**
+     * Returns an array of fluid stacks that this ingredient accepts.
+     * The fluid stacks within the returned array <b>must not</b> be modified by the caller!
      * {@return an array of fluid stacks this ingredient accepts}
-     * <p>
-     * This implementation simply caches the results of dissolving the ingredient using
-     * {@link #generateStacks()}, and should <i>not</i> be overridden unless you have good reason to.
      *
      * @see #generateStacks()
      */
-    public FluidStack[] getStacks() {
+    public final FluidStack[] getStacks() {
         if (stacks == null) {
             stacks = generateStacks().toArray(FluidStack[]::new);
         }
@@ -174,7 +173,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      *
      * @return {@code true} if this ingredient is {@link #empty()}, {@code false} otherwise
      */
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         return this == empty();
     }
 
@@ -196,7 +195,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      * @see #isEmpty()
      */
     public boolean hasNoFluids() {
-        return isEmpty() || getStacks().length == 0;
+        return getStacks().length == 0;
     }
 
     @Override
@@ -204,53 +203,6 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
     @Override
     public abstract boolean equals(Object obj);
-
-    // codecs
-    private static MapCodec<FluidIngredient> singleOrTagCodec() {
-        return NeoForgeExtraCodecs.xor(
-                SingleFluidIngredient.CODEC,
-                TagFluidIngredient.CODEC).xmap(either -> either.map(id -> id, id -> id), ingredient -> {
-                    if (ingredient instanceof SingleFluidIngredient fluid) {
-                        return Either.left(fluid);
-                    } else if (ingredient instanceof TagFluidIngredient tag) {
-                        return Either.right(tag);
-                    }
-                    throw new IllegalStateException("Basic fluid ingredient should be either a fluid or a tag!");
-                });
-    }
-
-    private static MapCodec<FluidIngredient> makeMapCodec() {
-        return NeoForgeExtraCodecs.<FluidIngredientType<?>, FluidIngredient, FluidIngredient>dispatchMapOrElse(
-                NeoForgeRegistries.FLUID_INGREDIENT_TYPES.byNameCodec(),
-                FluidIngredient::getType,
-                FluidIngredientType::codec,
-                FluidIngredient.SINGLE_OR_TAG_CODEC).xmap(either -> either.map(id -> id, id -> id), ingredient -> {
-                    // prefer serializing without a type field, if possible
-                    if (ingredient instanceof SingleFluidIngredient || ingredient instanceof TagFluidIngredient) {
-                        return Either.right(ingredient);
-                    }
-
-                    return Either.left(ingredient);
-                });
-    }
-
-    private static Codec<FluidIngredient> codec(boolean allowEmpty) {
-        var listCodec = Codec.lazyInitialized(() -> allowEmpty ? LIST_CODEC : LIST_CODEC_NON_EMPTY);
-        return Codec.either(listCodec, MAP_CODEC_CODEC)
-                // [{...}, {...}] is turned into a CompoundIngredient instance
-                .xmap(either -> either.map(CompoundFluidIngredient::of, i -> i),
-                        ingredient -> {
-                            // serialize CompoundIngredient instances as an array over their children
-                            if (ingredient instanceof CompoundFluidIngredient compound) {
-                                return Either.left(compound.children());
-                            } else if (ingredient.isEmpty()) {
-                                // serialize empty ingredients as []
-                                return Either.left(List.of());
-                            }
-
-                            return Either.right(ingredient);
-                        });
-    }
 
     // empty
     public static FluidIngredient empty() {
@@ -288,5 +240,57 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
     public static FluidIngredient tag(TagKey<Fluid> tag) {
         return new TagFluidIngredient(tag);
+    }
+
+    // codecs
+    private static MapCodec<FluidIngredient> singleOrTagCodec() {
+        return NeoForgeExtraCodecs.xor(
+                SingleFluidIngredient.CODEC,
+                TagFluidIngredient.CODEC).xmap(either -> either.map(id -> id, id -> id), ingredient -> {
+                    if (ingredient instanceof SingleFluidIngredient fluid) {
+                        return Either.left(fluid);
+                    } else if (ingredient instanceof TagFluidIngredient tag) {
+                        return Either.right(tag);
+                    }
+                    throw new IllegalStateException("Basic fluid ingredient should be either a fluid or a tag!");
+                });
+    }
+
+    private static MapCodec<FluidIngredient> makeMapCodec() {
+        return NeoForgeExtraCodecs.<FluidIngredientType<?>, FluidIngredient, FluidIngredient>dispatchMapOrElse(
+                NeoForgeRegistries.FLUID_INGREDIENT_TYPES.byNameCodec(),
+                FluidIngredient::getType,
+                FluidIngredientType::codec,
+                FluidIngredient.SINGLE_OR_TAG_CODEC).xmap(either -> either.map(id -> id, id -> id), ingredient -> {
+                    // prefer serializing without a type field, if possible
+                    if (ingredient instanceof SingleFluidIngredient || ingredient instanceof TagFluidIngredient) {
+                        return Either.right(ingredient);
+                    }
+
+                    return Either.left(ingredient);
+                }).validate(ingredient -> {
+                    if (!ingredient.isEmpty()) {
+                        return DataResult.error(() -> "Cannot serialize empty fluid ingredient using the map codec");
+                    }
+                    return DataResult.success(ingredient);
+                });
+    }
+
+    private static Codec<FluidIngredient> codec(boolean allowEmpty) {
+        var listCodec = Codec.lazyInitialized(() -> allowEmpty ? LIST_CODEC : LIST_CODEC_NON_EMPTY);
+        return Codec.either(listCodec, MAP_CODEC_CODEC)
+                // [{...}, {...}] is turned into a CompoundIngredient instance
+                .xmap(either -> either.map(CompoundFluidIngredient::of, i -> i),
+                        ingredient -> {
+                            // serialize CompoundIngredient instances as an array over their children
+                            if (ingredient instanceof CompoundFluidIngredient compound) {
+                                return Either.left(compound.children());
+                            } else if (ingredient.isEmpty()) {
+                                // serialize empty ingredients as []
+                                return Either.left(List.of());
+                            }
+
+                            return Either.right(ingredient);
+                        });
     }
 }

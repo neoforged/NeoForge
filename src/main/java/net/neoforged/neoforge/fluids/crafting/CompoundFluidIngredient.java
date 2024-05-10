@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
@@ -21,7 +22,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * @see CompoundIngredient CompoundIngredient, its item equivalent
  */
 public final class CompoundFluidIngredient extends FluidIngredient {
-    public static final MapCodec<CompoundFluidIngredient> CODEC = null;
+    public static final MapCodec<CompoundFluidIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(FluidIngredient.LIST_CODEC_NON_EMPTY, "children", "ingredients").xmap(CompoundFluidIngredient::new, CompoundFluidIngredient::children);
 
     private final List<FluidIngredient> children;
 
@@ -33,7 +34,7 @@ public final class CompoundFluidIngredient extends FluidIngredient {
     }
 
     /**
-     * Creates a compound ingredient from the given list of ingredients
+     * Creates a compound ingredient from the given list of ingredients.
      */
     public static FluidIngredient of(FluidIngredient... children) {
         if (children.length == 0)
@@ -45,7 +46,7 @@ public final class CompoundFluidIngredient extends FluidIngredient {
     }
 
     /**
-     * Creates a compound ingredient from the given list of ingredients
+     * Creates a compound ingredient from the given list of ingredients.
      */
     public static FluidIngredient of(List<FluidIngredient> children) {
         if (children.isEmpty())

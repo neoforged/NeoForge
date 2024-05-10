@@ -59,7 +59,7 @@ public final class SizedFluidIngredient {
      * <p>
      */
     public static final Codec<SizedFluidIngredient> FLAT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            FluidIngredient.MAP_CODEC.forGetter(SizedFluidIngredient::ingredient),
+            FluidIngredient.MAP_CODEC_NONEMPTY.forGetter(SizedFluidIngredient::ingredient),
             NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
             .apply(instance, SizedFluidIngredient::new));
 

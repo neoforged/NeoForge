@@ -378,7 +378,6 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC));
 
     private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
-    // TODO: implement
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SingleFluidIngredient>> SINGLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("single", () -> new FluidIngredientType<>(SingleFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<TagFluidIngredient>> TAG_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("tag", () -> new FluidIngredientType<>(TagFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<EmptyFluidIngredient>> EMPTY_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("empty", () -> new FluidIngredientType<>(EmptyFluidIngredient.CODEC));

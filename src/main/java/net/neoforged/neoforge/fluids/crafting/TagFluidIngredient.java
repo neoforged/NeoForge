@@ -20,7 +20,7 @@ import net.neoforged.neoforge.fluids.FluidType;
  * Fluid ingredient that matches all fluids within the given tag.
  * <p>
  * Unlike with ingredients, this is an explicit "type" of fluid ingredient,
- * though it may still be written without a type field, see {@link FluidIngredient#MAP_CODEC}
+ * though it may still be written without a type field, see {@link FluidIngredient#MAP_CODEC_NONEMPTY}
  */
 public class TagFluidIngredient extends FluidIngredient {
     public static final MapCodec<TagFluidIngredient> CODEC = TagKey.codec(Registries.FLUID)

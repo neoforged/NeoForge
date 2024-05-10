@@ -8,7 +8,6 @@ package net.neoforged.neoforge.fluids.crafting;
 import com.mojang.serialization.MapCodec;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -19,10 +18,10 @@ import net.neoforged.neoforge.fluids.FluidType;
  * Fluid ingredient that only matches the fluid of the given stack.
  * <p>
  * Unlike with ingredients, this is an explicit "type" of fluid ingredient,
- * though it may still be written without a type field, see {@link FluidIngredient#MAP_CODEC}
+ * though it may still be written without a type field, see {@link FluidIngredient#MAP_CODEC_NONEMPTY}
  */
 public class SingleFluidIngredient extends FluidIngredient {
-    public static final MapCodec<SingleFluidIngredient> CODEC = BuiltInRegistries.FLUID.holderByNameCodec()
+    public static final MapCodec<SingleFluidIngredient> CODEC = FluidStack.FLUID_NON_EMPTY_CODEC
             .xmap(SingleFluidIngredient::new, SingleFluidIngredient::fluid).fieldOf("fluid");
 
     private final Holder<Fluid> fluid;
