@@ -107,7 +107,7 @@
   "commands.neoforge.chunkgen.success": "生成完毕！",
   "commands.neoforge.chunkgen.error": "Generation experienced %1$s errors! Check the log for more information.",
   "commands.neoforge.chunkgen.stopped": "Generation stopped! %1$s out of %2$s chunks generated. (%3$s%)",
-  "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%)",
+  "commands.neoforge.chunkgen.status": "生成状态！已生成 %2$s 区块中的 %1$s。(%3$s%)",
   "commands.neoforge.chunkgen.not_running": "无进行中的预生成。运行 `/neoforge generate help` 以查看开始生成的命令。",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- 生成一个以给定坐标为中心的、边长为 chunkRadius * 2 的正方形。\n§2/neoforge generate stop §r§f- 停止当前生成，显示完成进度。\n§2/neoforge generate status §r- 显示当前生成的完成进度。\n§2/neoforge generate help §r- 显示此消息\n通用提示：如果从服务器控制台执行，可以通过 '/execute in <dimension> neoforge generate...' 在特定维度执行。",
   "commands.config.getwithtype": "%s 类型 %s 的配置在 %s 发现",
