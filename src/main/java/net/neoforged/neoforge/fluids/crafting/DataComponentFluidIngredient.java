@@ -24,6 +24,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 /**
  * Fluid ingredient that matches the given set of fluids, additionally performing either a
@@ -53,7 +54,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
         this.components = components;
         this.strict = strict;
         this.stacks = fluids.stream()
-                .map(i -> new FluidStack(i, 1, components.asPatch()))
+                .map(i -> new FluidStack(i, FluidType.BUCKET_VOLUME, components.asPatch()))
                 .toArray(FluidStack[]::new);
     }
 
