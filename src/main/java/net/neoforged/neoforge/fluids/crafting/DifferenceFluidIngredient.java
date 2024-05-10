@@ -23,8 +23,8 @@ public final class DifferenceFluidIngredient extends FluidIngredient {
     public static final MapCodec<DifferenceFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            FluidIngredient.CODEC.fieldOf("base").forGetter(DifferenceFluidIngredient::base),
-                            FluidIngredient.CODEC.fieldOf("subtracted").forGetter(DifferenceFluidIngredient::subtracted))
+                            FluidIngredient.CODEC_NON_EMPTY.fieldOf("base").forGetter(DifferenceFluidIngredient::base),
+                            FluidIngredient.CODEC_NON_EMPTY.fieldOf("subtracted").forGetter(DifferenceFluidIngredient::subtracted))
                     .apply(builder, DifferenceFluidIngredient::new));
     private final FluidIngredient base;
     private final FluidIngredient subtracted;

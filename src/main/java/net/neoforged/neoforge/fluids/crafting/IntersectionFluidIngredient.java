@@ -28,7 +28,7 @@ public final class IntersectionFluidIngredient extends FluidIngredient {
     public static final MapCodec<IntersectionFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            FluidIngredient.LIST_CODEC.fieldOf("children").forGetter(IntersectionFluidIngredient::children))
+                            FluidIngredient.LIST_CODEC_NON_EMPTY.fieldOf("children").forGetter(IntersectionFluidIngredient::children))
                     .apply(builder, IntersectionFluidIngredient::new));
     private final List<FluidIngredient> children;
 
