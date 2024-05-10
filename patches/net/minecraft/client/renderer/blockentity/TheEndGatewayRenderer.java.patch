@@ -7,6 +7,6 @@
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(TheEndGatewayBlockEntity blockEntity) {
-+        return blockEntity.isSpawning() || blockEntity.isCoolingDown() ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox(blockEntity);
++        return blockEntity.isSpawning() || blockEntity.isCoolingDown() ? net.minecraft.world.phys.AABB.INFINITE : super.getRenderBoundingBox(blockEntity);
 +    }
  }
