@@ -24,7 +24,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
 
 /**
  * Fluid ingredient that matches the given set of fluids, additionally performing either a
@@ -47,25 +46,31 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     private final HolderSet<Fluid> fluids;
     private final DataComponentPredicate components;
     private final boolean strict;
+    private final FluidStack[] stacks;
 
     public DataComponentFluidIngredient(HolderSet<Fluid> fluids, DataComponentPredicate components, boolean strict) {
         this.fluids = fluids;
         this.components = components;
         this.strict = strict;
+        this.stacks = fluids.stream()
+                .map(i -> new FluidStack(i, 1, components.asPatch()))
+                .toArray(FluidStack[]::new);
     }
 
     @Override
     public boolean test(FluidStack stack) {
-        if (!this.fluids.contains(stack.getFluidHolder())) {
+        if (strict) {
+            for (FluidStack stack2 : this.stacks) {
+                if (FluidStack.isSameFluidSameComponents(stack, stack2)) return true;
+            }
             return false;
+        } else {
+            return this.fluids.contains(stack.getFluidHolder()) && this.components.test(stack);
         }
-
-        return strict ? components.asPatch().equals(stack.getComponentsPatch())
-                : components.test(stack);
     }
 
     public Stream<FluidStack> generateStacks() {
-        return fluids.stream().map(i -> new FluidStack(i, FluidType.BUCKET_VOLUME, components.asPatch()));
+        return Stream.of(stacks);
     }
 
     @Override
