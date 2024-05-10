@@ -269,7 +269,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
                     return Either.left(ingredient);
                 }).validate(ingredient -> {
-                    if (!ingredient.isEmpty()) {
+                    if (ingredient.isEmpty()) {
                         return DataResult.error(() -> "Cannot serialize empty fluid ingredient using the map codec");
                     }
                     return DataResult.success(ingredient);
