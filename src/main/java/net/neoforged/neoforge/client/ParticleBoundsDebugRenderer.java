@@ -45,6 +45,8 @@ public final class ParticleBoundsDebugRenderer {
             }
         });
 
+        Minecraft.getInstance().renderBuffers().bufferSource().endBatch(RenderType.lines());
+
         poseStack.popPose();
     }
 
