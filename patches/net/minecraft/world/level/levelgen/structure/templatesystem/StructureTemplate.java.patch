@@ -130,7 +130,7 @@
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;
 -        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newHashMap();
-+        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newConcurrentMap(); // Neo: Make the global StructureTemplate's palette caches now thread safe for worldgen
++        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newConcurrentMap(); // Neo: Fixes MC-271899 - Make the global StructureTemplate's palette caches now thread safe for worldgen
  
          Palette(List<StructureTemplate.StructureBlockInfo> p_74648_) {
              this.blocks = p_74648_;
