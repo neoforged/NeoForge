@@ -1,11 +1,14 @@
 --- a/net/minecraft/world/level/block/entity/SpawnerBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SpawnerBlockEntity.java
-@@ -30,6 +_,8 @@
+@@ -30,6 +_,11 @@
                  p_155771_.sendBlockUpdated(p_155772_, blockstate, blockstate, 4);
              }
          }
 +
-+        public net.minecraft.world.level.block.entity.BlockEntity getSpawnerBlockEntity() { return SpawnerBlockEntity.this; }
++        @Override
++        public com.mojang.datafixers.util.Either<net.minecraft.world.level.block.entity.BlockEntity, net.minecraft.world.entity.Entity> getOwner() {
++            return com.mojang.datafixers.util.Either.left(SpawnerBlockEntity.this);
++        }
      };
  
      public SpawnerBlockEntity(BlockPos p_155752_, BlockState p_155753_) {
