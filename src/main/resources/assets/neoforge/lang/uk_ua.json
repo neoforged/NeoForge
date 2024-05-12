@@ -162,7 +162,7 @@
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
   "neoforge.controlsgui.alt": "ALT + %s",
-  "neoforge.container.enchant.limitedEnchantability": "Limited Enchantability",
+  "neoforge.container.enchant.limitedEnchantability": "Обмежена здатність до зачарування",
   "neoforge.swim_speed": "Швидкість плавання",
   "neoforge.name_tag_distance": "Відстань відображення імен",
   "neoforge.creative_flight": "Політ у творчому режимі",
