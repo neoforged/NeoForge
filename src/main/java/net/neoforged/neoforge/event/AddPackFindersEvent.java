@@ -22,6 +22,7 @@ import net.minecraft.server.packs.repository.RepositorySource;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 /**
  * Fired on {@link PackRepository} creation to allow mods to add new pack finders.
@@ -69,9 +70,11 @@ public class AddPackFindersEvent extends Event implements IModBusEvent {
      */
     public void addPackFinders(ResourceLocation packLocation, PackType packType, Component packNameDisplay, PackSource packSource, boolean alwaysActive, Pack.Position packPosition) {
         if (getPackType() == packType) {
-            var resourcePath = ModList.get().getModFileById(packLocation.getNamespace()).getFile().findResource(packLocation.getPath());
+            IModInfo modInfo = ModList.get().getModContainerById(packLocation.getNamespace()).orElseThrow(() -> new IllegalArgumentException("Mod not found: " + packLocation.getNamespace())).getModInfo();
 
-            var version = ModList.get().getModContainerById(packLocation.getNamespace()).get().getModInfo().getVersion();
+            var resourcePath = modInfo.getOwningFile().getFile().findResource(packLocation.getPath());
+
+            var version = modInfo.getVersion();
 
             var pack = Pack.readMetaAndCreate(
                     new PackLocationInfo("mod/" + packLocation, packNameDisplay, packSource, Optional.of(new KnownPack("neoforge", "mod/" + packLocation, version.toString()))),

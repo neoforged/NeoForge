@@ -1,20 +1,15 @@
 --- a/net/minecraft/client/multiplayer/KnownPacksManager.java
 +++ b/net/minecraft/client/multiplayer/KnownPacksManager.java
-@@ -44,9 +_,17 @@
+@@ -44,6 +_,12 @@
              }
          }
  
 +        if (list.size() > 1024) {
 +            list = list.subList(0, 1024);
 +            list1 = list1.subList(0, 1024);
-+            LOGGER.warn("NeoForge: too many KnownPacks requested; only the first 1024 will be sent via KnownPack, the rest will be synced normally");
++            com.mojang.logging.LogUtils.getLogger().warn("NeoForge: too many KnownPacks requested; only the first 1024 will be sent via KnownPack, the rest will be synced normally");
 +        }
 +
          this.repository.setSelected(list1);
          return list;
      }
-+
-+    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
- 
-     public CloseableResourceManager createResourceManager() {
-         List<PackResources> list = this.repository.openAllSelected();
