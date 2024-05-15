@@ -16,6 +16,9 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Stock data component class to hold a {@link FluidStack}.
@@ -31,72 +34,103 @@ public class SimpleFluidContent implements DataComponentHolder {
 
     private final FluidStack fluidStack;
 
-    private SimpleFluidContent(FluidStack fluidStack) {
-        this.fluidStack = fluidStack;
+    @Nullable
+    private ResourceStack<FluidResource> immutable;
+
+    private SimpleFluidContent(FluidStack stack) {
+        this.fluidStack = stack;
     }
 
     public static SimpleFluidContent copyOf(FluidStack fluidStack) {
         return fluidStack.isEmpty() ? EMPTY : new SimpleFluidContent(fluidStack.copy());
     }
 
+    public static SimpleFluidContent of(FluidResource resource, int amount) {
+        return resource.isBlank() || amount <= 0 ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
+    }
+
+    public static SimpleFluidContent of(ResourceStack<FluidResource> resourceStack) {
+        return resourceStack.isEmpty() ? EMPTY : SimpleFluidContent.of(resourceStack.resource(), resourceStack.amount());
+    }
+
     public FluidStack copy() {
         return this.fluidStack.copy();
+    }
+
+    public ResourceStack<FluidResource> getImmutableStack() {
+        ResourceStack<FluidResource> stack = immutable;
+        if (stack == null) {
+            stack = this.immutable = fluidStack.immutable();
+        }
+        return stack;
+    }
+
+    public Fluid getFluid() {
+        return this.fluidStack.getFluid();
+    }
+
+    public Holder<Fluid> getFluidHolder() {
+        return this.fluidStack.getFluidHolder();
+    }
+
+    public FluidType getFluidType() {
+        return this.fluidStack.getFluidType();
+    }
+
+    public int getAmount() {
+        return this.fluidStack.getAmount();
+    }
+
+    public FluidResource getResource() {
+        return getImmutableStack().resource();
     }
 
     public boolean isEmpty() {
         return this.fluidStack.isEmpty();
     }
 
-    public Fluid getFluid() {
-        return fluidStack.getFluid();
-    }
-
-    public Holder<Fluid> getFluidHolder() {
-        return fluidStack.getFluidHolder();
-    }
-
     public boolean is(TagKey<Fluid> tag) {
-        return fluidStack.is(tag);
+        return this.fluidStack.is(tag);
     }
 
     public boolean is(Fluid fluid) {
-        return fluidStack.is(fluid);
+        return this.fluidStack.is(fluid);
     }
 
     public boolean is(Predicate<Holder<Fluid>> predicate) {
-        return fluidStack.is(predicate);
+        return this.fluidStack.is(predicate);
     }
 
     public boolean is(Holder<Fluid> holder) {
-        return fluidStack.is(holder);
+        return this.fluidStack.is(holder);
     }
 
     public boolean is(HolderSet<Fluid> holders) {
-        return fluidStack.is(holders);
-    }
-
-    public int getAmount() {
-        return fluidStack.getAmount();
-    }
-
-    public FluidType getFluidType() {
-        return fluidStack.getFluidType();
+        return this.fluidStack.is(holders);
     }
 
     public boolean is(FluidType fluidType) {
-        return fluidStack.is(fluidType);
+        return this.fluidStack.is(fluidType);
     }
 
     public boolean matches(FluidStack other) {
-        return FluidStack.matches(fluidStack, other);
+        return FluidStack.matches(this.fluidStack, other);
     }
 
     public boolean isSameFluid(FluidStack other) {
-        return FluidStack.isSameFluid(fluidStack, other);
+        return FluidStack.isSameFluid(this.fluidStack, other);
+    }
+
+    public boolean isSameFluid(FluidResource other) {
+        return other.is(this.fluidStack.getFluid());
     }
 
     public boolean isSameFluidSameComponents(FluidStack other) {
-        return FluidStack.isSameFluidSameComponents(fluidStack, other);
+        return FluidStack.isSameFluidSameComponents(this.fluidStack, other);
+    }
+
+    public boolean isSameFluidSameComponents(FluidResource other) {
+        return other.matches(this.fluidStack);
     }
 
     public boolean isSameFluidSameComponents(SimpleFluidContent content) {

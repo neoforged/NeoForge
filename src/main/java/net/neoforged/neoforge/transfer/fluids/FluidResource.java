@@ -7,8 +7,10 @@ package net.neoforged.neoforge.transfer.fluids;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -17,10 +19,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.ResourceStack;
 
@@ -62,6 +66,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
             FluidResource::of);
 
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
+    public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(FluidResource.EMPTY, 0);
 
     public static FluidResource of(FluidStack fluidStack) {
         return fluidStack.isEmpty() ? EMPTY : new FluidResource(fluidStack.copyWithAmount(1));
@@ -115,6 +120,10 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.getFluidHolder();
     }
 
+    public FluidType getFluidType() {
+        return innerStack.getFluidType();
+    }
+
     @Override
     public DataComponentMap getComponents() {
         return innerStack.getComponents();
@@ -130,6 +139,34 @@ public final class FluidResource implements IResource, DataComponentHolder {
 
     public FluidStack toStack(int amount) {
         return this.innerStack.copyWithAmount(amount);
+    }
+
+    public boolean is(TagKey<Fluid> tag) {
+        return innerStack.is(tag);
+    }
+
+    public boolean is(Fluid fluid) {
+        return innerStack.is(fluid);
+    }
+
+    public boolean is(Predicate<Holder<Fluid>> predicate) {
+        return innerStack.is(predicate);
+    }
+
+    public boolean is(Holder<Fluid> holder) {
+        return innerStack.is(holder);
+    }
+
+    public boolean is(HolderSet<Fluid> holders) {
+        return innerStack.is(holders);
+    }
+
+    public boolean is(FluidType fluidType) {
+        return innerStack.is(fluidType);
+    }
+
+    public static boolean isSameFluid(FluidResource first, FluidResource other) {
+        return first.is(other.getFluid());
     }
 
     @Override
