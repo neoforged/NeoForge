@@ -38,6 +38,7 @@ import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -254,5 +255,41 @@ public class PlayerEventTests {
                             "Armor hurt not applied. %s actual but expected 5f".formatted(player.getItemBySlot(EquipmentSlot.CHEST).getDamageValue())))
                     .thenSucceed();
         });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the PlayerRespawnPositionEvent fires correctly and can change where the player respawns")
+    static void playerRespawnPositionEvent(final DynamicTest test, final RegistrationHelper reg) {
+        test.eventListeners().forge().addListener((final PlayerRespawnPositionEvent event) -> {
+            // Only affect the players with a custom name to not interfere with other tests
+            if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("respawn-position-test"))) {
+                return;
+            }
+
+            event.setRespawnPosition(event.getEntity().position().relative(Direction.SOUTH, 1));
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+                .thenExecute(player -> player.setCustomName(Component.literal("respawn-position-test")))
+                .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 0)), 0, false, true))
+                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false))
+                .thenExecute(() -> helper.assertEntityPresent(EntityType.PLAYER, new BlockPos(0, 1, 1)))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the PlayerRespawnEvent fires correctly and can modify the player after respawning")
+    static void playerRespawnEvent(final DynamicTest test, final RegistrationHelper reg) {
+        test.eventListeners().forge().addListener((final PlayerEvent.PlayerRespawnEvent event) -> {
+            event.getEntity().setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.APPLE));
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+                .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 1)), 0, true, true))
+                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false))
+                .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityType.PLAYER, Items.APPLE))
+                .thenSucceed());
     }
 }
