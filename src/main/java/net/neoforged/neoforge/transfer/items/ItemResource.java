@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.items;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentHolder;
@@ -24,7 +25,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.ResourceStack;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Immutable combination of an {@link Item} and data components.
@@ -103,10 +103,18 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return new ItemResource(stack);
     }
 
+    public <D> ItemResource set(Supplier<DataComponentType<D>> type, D data) {
+        return set(type.get(), data);
+    }
+
     public ItemResource remove(DataComponentType<?> type) {
         ItemStack stack = innerStack.copy();
         stack.remove(type);
         return new ItemResource(stack);
+    }
+
+    public ItemResource remove(Supplier<? extends DataComponentType<?>> type) {
+        return remove(type.get());
     }
 
     public Item getItem() {
