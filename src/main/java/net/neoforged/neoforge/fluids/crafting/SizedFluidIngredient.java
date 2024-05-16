@@ -7,6 +7,7 @@ package net.neoforged.neoforge.fluids.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Objects;
 import java.util.stream.Stream;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -40,7 +41,7 @@ public final class SizedFluidIngredient {
      *     "amount": 250
      * }
      * }</pre>
-     * 
+     *
      * <p>
      * <p>
      * Compound fluid ingredients are always serialized using the map codec, i.e.
@@ -55,7 +56,7 @@ public final class SizedFluidIngredient {
      *     "amount": 500
      * }
      * }</pre>
-     * 
+     *
      * <p>
      */
     public static final Codec<SizedFluidIngredient> FLAT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -150,6 +151,18 @@ public final class SizedFluidIngredient {
                     .toArray(FluidStack[]::new);
         }
         return cachedStacks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SizedFluidIngredient other)) return false;
+        return amount == other.amount && ingredient.equals(other.ingredient);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ingredient, amount);
     }
 
     @Override
