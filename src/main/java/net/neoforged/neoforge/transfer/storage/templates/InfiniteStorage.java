@@ -19,7 +19,9 @@ public abstract class InfiniteStorage<T extends IResource> implements ISingleSto
         return this;
     }
 
-    public abstract InfiniteStorage<T> setResource(T resource);
+    public InfiniteStorage<T> setResource(T resource) {
+        return this;
+    }
 
     @Override
     public int getAmount() {
@@ -102,6 +104,20 @@ public abstract class InfiniteStorage<T extends IResource> implements ISingleSto
         @Override
         public T getResource() {
             return context.getResource().getOrDefault(componentType, initialResource);
+        }
+    }
+
+    // TODO Give better name
+    public static class Static<T extends IResource> extends InfiniteStorage<T> {
+        private final T resource;
+
+        public Static(T resource) {
+            this.resource = resource;
+        }
+
+        @Override
+        public T getResource() {
+            return resource;
         }
     }
 }
