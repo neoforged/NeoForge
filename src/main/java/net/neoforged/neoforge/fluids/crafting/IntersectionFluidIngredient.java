@@ -90,7 +90,7 @@ public final class IntersectionFluidIngredient extends FluidIngredient {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) return true;
+        if (this == obj) return true;
         return obj instanceof IntersectionFluidIngredient other && children.equals(other.children);
     }
 }
