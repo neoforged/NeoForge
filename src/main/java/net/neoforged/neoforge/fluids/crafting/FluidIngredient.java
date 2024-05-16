@@ -27,6 +27,18 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+/**
+ * This class serves as the fluid analogue of an item {@link Ingredient},
+ * that is, a representation of both a {@linkplain #test predicate} to test
+ * {@link FluidStack}s against, and a {@linkplain #getStacks list} of matching stacks
+ * for e.g. display purposes.
+ * <p>
+ * The most common use for fluid ingredients is found in modded recipe inputs,
+ * for example crafting mechanics accepting a list of different fluids;
+ * since those mechanics even rely on a certain <em>amount</em> of a fluid being present,
+ * and fluid ingredients inherently do not hold any information with respect to fluid amount;
+ * you may also want to take a look at {@link SizedFluidIngredient}!
+ */
 public abstract class FluidIngredient implements Predicate<FluidStack> {
     /**
      * This is a codec that is used to represent basic "single fluid" or "tag"
@@ -155,6 +167,12 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      */
     protected abstract Stream<FluidStack> generateStacks();
 
+    /**
+     * Returns whether this fluid ingredient always requires {@linkplain #test direct stack testing}.
+     *
+     * @return {@code true} if this ingredient ignores NBT data when matching stacks, {@code false} otherwise
+     * @see ICustomIngredient#isSimple()
+     */
     public abstract boolean isSimple();
 
     /**
@@ -272,10 +290,10 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     private static Codec<FluidIngredient> codec(boolean allowEmpty) {
         var listCodec = Codec.lazyInitialized(() -> allowEmpty ? LIST_CODEC : LIST_CODEC_NON_EMPTY);
         return Codec.either(listCodec, MAP_CODEC_CODEC)
-                // [{...}, {...}] is turned into a CompoundIngredient instance
+                // [{...}, {...}] is turned into a CompoundFluidIngredient instance
                 .xmap(either -> either.map(CompoundFluidIngredient::of, i -> i),
                         ingredient -> {
-                            // serialize CompoundIngredient instances as an array over their children
+                            // serialize CompoundFluidIngredient instances as an array over their children
                             if (ingredient instanceof CompoundFluidIngredient compound) {
                                 return Either.left(compound.children());
                             } else if (ingredient.isEmpty()) {
