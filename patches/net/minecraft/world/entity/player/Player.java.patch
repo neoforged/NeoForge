@@ -127,7 +127,7 @@
                  }
  
 -                if (p_36154_.scalesWithDifficulty()) {
-+                p_36155_ = Math.max(0.0F, p_36154_.type().scaling().getScalingFunction().scaleDamage(p_36154_, this, p_36155_, this.level().getDifficulty()));
++                this.damageContainer.setNewDamage(Math.max(0.0F, p_36154_.type().scaling().getScalingFunction().scaleDamage(p_36154_, this, this.damageContainer.getNewDamage(), this.level().getDifficulty())));
 +
 +                if (false && p_36154_.scalesWithDifficulty()) {
                      if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
