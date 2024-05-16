@@ -75,17 +75,14 @@ public class FluidStorageItem implements ISingleStorage<FluidResource> {
     public int insert(FluidResource resource, int amount, TransferAction action) {
         if (resource.isBlank() || amount <= 0 || !isResourceValid(resource) || (isEmpty() && !getResource().equals(resource))) return 0;
         if (this.isEmpty()) {
-            if (amount < getIndividualLimit()) {
-                return fill(resource, 1, amount, action) == 1 ? amount : 0;
-            }
+            if (amount < getIndividualLimit()) return fill(resource, 1, amount, action) == 1 ? amount : 0;
             return fill(resource, amount / getIndividualLimit(), action) * getIndividualLimit();
         }
 
         int containerFill = getIndividualAmount();
-        if (amount < getIndividualLimit() - containerFill) {
-            return fill(resource, 1, amount + containerFill, action) == 1 ? amount : 0;
-        }
-        return fill(resource, amount / (getIndividualLimit() - containerFill), action) * (getIndividualLimit() - containerFill);
+        int spaceLeft = getIndividualLimit() - containerFill;
+        if (amount < spaceLeft) return fill(resource, 1, amount + containerFill, action) == 1 ? amount : 0;
+        return fill(resource, amount / spaceLeft, action) * spaceLeft;
     }
 
     @Override
