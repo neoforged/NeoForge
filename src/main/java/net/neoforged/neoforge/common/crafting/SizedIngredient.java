@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Objects;
 import java.util.stream.Stream;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -141,6 +142,18 @@ public final class SizedIngredient {
                     .toArray(ItemStack[]::new);
         }
         return cachedStacks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SizedIngredient other)) return false;
+        return count == other.count && ingredient.equals(other.ingredient);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ingredient, count);
     }
 
     @Override
