@@ -63,7 +63,7 @@ public class ClientModLoader extends CommonModLoader {
             error = e;
         }
         if (error == null) {
-            ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES);
+            ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES, false);
             DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames(PackType.SERVER_DATA));
             mcResourceManager.registerReloadListener(ClientModLoader::onResourceReload);
             mcResourceManager.registerReloadListener(BrandingControl.resourceManagerReloadListener());

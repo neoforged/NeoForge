@@ -79,6 +79,9 @@ public class StructureTemplateBuilder implements TemplateBuilderHelper<Structure
 
     @Override
     public StructureTemplateBuilder set(int x, int y, int z, BlockState state, @Nullable CompoundTag nbt) {
+        if (x < 0 || y < 0 || z < 0 || x >= size.getX() || y >= size.getY() || z >= size.getZ()) {
+            throw new IllegalArgumentException("Block position is out of template bounds");
+        }
         blocks.put(new BlockPos(x, y, z), new StructureTemplate.StructureBlockInfo(new BlockPos(x, y, z), state, nbt));
         return this;
     }

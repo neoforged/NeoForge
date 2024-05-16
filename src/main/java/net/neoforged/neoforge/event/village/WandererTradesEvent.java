@@ -10,10 +10,10 @@ import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
 /**
- * WandererTradesEvent is fired during the {@link ServerAboutToStartEvent}. It is used to gather the trade lists for the wandering merchant.
+ * WandererTradesEvent is fired during reload by {@link TagsUpdatedEvent}. It is used to gather the trade lists for the wandering merchant.
  * It is fired on the {@link NeoForge#EVENT_BUS}.
  * The wandering merchant picks a few trades from {@code generic} and a single trade from {@code rare}.
  * To add trades to the merchant, simply add new trades to the list. {@link BasicItemListing} provides a default implementation.

@@ -35,6 +35,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -51,6 +52,7 @@ import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
 
 public class ResourcePackLoader {
@@ -64,12 +66,12 @@ public class ResourcePackLoader {
         return Optional.ofNullable(ModList.get().getModFileById(modId)).map(IModFileInfo::getFile).map(mf -> modResourcePacks.get(mf));
     }
 
-    public static void populatePackRepository(PackRepository resourcePacks, PackType packType) {
+    public static void populatePackRepository(PackRepository resourcePacks, PackType packType, boolean trusted) {
         findResourcePacks();
         // First add the mod's builtin packs
         resourcePacks.addPackFinder(buildPackFinder(modResourcePacks, packType));
         // Then fire the event to add more packs
-        ModLoader.postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder));
+        ModLoader.postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder, trusted));
     }
 
     private synchronized static void findResourcePacks() {
@@ -92,15 +94,16 @@ public class ResourcePackLoader {
         for (Map.Entry<IModFile, Pack.ResourcesSupplier> e : modResourcePacks.entrySet()) {
             IModInfo mod = e.getKey().getModInfos().get(0);
             if ("minecraft".equals(mod.getModId())) continue; // skip the minecraft "mod"
-            final String name = "mod/" + mod.getModId();
-            final String packName = mod.getOwningFile().getFile().getFileName();
+            final String name = "mod/" + e.getKey().getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining(","));
+            final String version = e.getKey().getModInfos().stream().map(IModInfo::getVersion).map(ArtifactVersion::toString).collect(Collectors.joining(","));
+            final String packName = e.getKey().getFileName();
 
             try {
                 var locationInfo = new PackLocationInfo(
                         name,
                         Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
                         PackSource.DEFAULT,
-                        Optional.empty());
+                        Optional.of(new KnownPack("neoforge", name, version)));
 
                 final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack());
                 final Pack modPack;
@@ -202,7 +205,7 @@ public class ResourcePackLoader {
         ids.addAll(ModList.get().getModFiles().stream().filter(packType == PackType.CLIENT_RESOURCES ? IModFileInfo::showAsResourcePack : IModFileInfo::showAsDataPack)
                 .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
                 .map(IModFileInfo::getFile)
-                .map(mf -> "mod/" + mf.getModInfos().get(0).getModId())
+                .map(mf -> "mod/" + mf.getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining()))
                 .toList());
         ids.add(packType == PackType.CLIENT_RESOURCES ? MOD_RESOURCES_ID : MOD_DATA_ID);
         return ids;
