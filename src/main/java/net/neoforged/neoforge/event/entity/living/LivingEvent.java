@@ -38,7 +38,8 @@ public abstract class LivingEvent extends EntityEvent {
      * LivingJumpEvent is fired when an Entity jumps.<br>
      * This event is fired whenever an Entity jumps in
      * {@code LivingEntity#jumpFromGround()}, {@code MagmaCube#jumpFromGround()},
-     * and {@code Horse#jumpFromGround()}.<br>
+     * {@code Slime#jumpFromGround()}, {@code Camel#executeRidersJump()},
+     * and {@code AbstractHorse#executeRidersJump()}.<br>
      * <br>
      * This event is fired via the {@link CommonHooks#onLivingJump(LivingEntity)}.<br>
      * <br>

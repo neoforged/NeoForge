@@ -16,7 +16,7 @@
          this.setDeltaMovement(vec3.x, d0, vec3.z);
          this.setIsJumping(true);
          this.hasImpulse = true;
-+                    net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
++        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
          if (p_275435_.z > 0.0) {
              float f = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
              float f1 = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
