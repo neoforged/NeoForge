@@ -5,6 +5,10 @@
 
 package net.neoforged.neoforge.network.payload;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,11 +21,6 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.neoforged.neoforge.common.IExtensibleEnum;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A payload used to verify that specific Enums that implement {@linkplain IExtensibleEnum} have the same Enum Constants in the same order.
