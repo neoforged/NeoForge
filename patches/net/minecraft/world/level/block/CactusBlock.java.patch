@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -21,7 +_,7 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public class CactusBlock extends Block {
-+public class CactusBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
-     public static final MapCodec<CactusBlock> CODEC = simpleCodec(CactusBlock::new);
-     public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
-     public static final int MAX_AGE = 15;
 @@ -41,6 +_,7 @@
  
      @Override
@@ -34,28 +25,13 @@
              }
          }
      }
-@@ -99,7 +_,7 @@
+@@ -99,7 +_,8 @@
          }
  
          BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below());
 -        return (blockstate1.is(Blocks.CACTUS) || blockstate1.is(BlockTags.SAND)) && !p_51154_.getBlockState(p_51155_.above()).liquid();
-+        return blockstate1.canSustainPlant(p_51154_, p_51155_, Direction.UP, this) && !p_51154_.getBlockState(p_51155_.above()).liquid();
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate1.canSustainPlant(p_51154_, p_51155_.below(), Direction.UP, p_51153_);
++        return soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? ((blockstate1.is(Blocks.CACTUS) || blockstate1.is(BlockTags.SAND)) && !p_51154_.getBlockState(p_51155_.above()).liquid()) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
      }
  
      @Override
-@@ -115,5 +_,15 @@
-     @Override
-     protected boolean isPathfindable(BlockState p_51143_, PathComputationType p_51146_) {
-         return false;
-+    }
-+
-+    @Override
-+    public net.neoforged.neoforge.common.PlantType getPlantType(BlockGetter world, BlockPos pos) {
-+        return net.neoforged.neoforge.common.PlantType.DESERT;
-+    }
-+
-+    @Override
-+    public BlockState getPlant(BlockGetter world, BlockPos pos) {
-+        return defaultBlockState();
-     }
- }

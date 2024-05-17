@@ -1,14 +1,13 @@
 --- a/net/minecraft/world/level/block/SugarCaneBlock.java
 +++ b/net/minecraft/world/level/block/SugarCaneBlock.java
-@@ -19,7 +_,7 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public class SugarCaneBlock extends Block {
-+public class SugarCaneBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
-     public static final MapCodec<SugarCaneBlock> CODEC = simpleCodec(SugarCaneBlock::new);
-     public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
-     protected static final float AABB_OFFSET = 6.0F;
+@@ -5,7 +_,6 @@
+ import net.minecraft.core.Direction;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.tags.BlockTags;
+-import net.minecraft.tags.FluidTags;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.LevelAccessor;
 @@ -58,12 +_,15 @@
  
              if (i < 3) {
@@ -25,16 +24,15 @@
              }
          }
      }
-@@ -79,6 +_,8 @@
- 
-     @Override
-     protected boolean canSurvive(BlockState p_57175_, LevelReader p_57176_, BlockPos p_57177_) {
-+        BlockState soil = p_57176_.getBlockState(p_57177_.below());
-+        if (soil.canSustainPlant(p_57176_, p_57177_.below(), Direction.UP, this)) return true;
-         BlockState blockstate = p_57176_.getBlockState(p_57177_.below());
+@@ -83,13 +_,15 @@
          if (blockstate.is(this)) {
              return true;
-@@ -89,7 +_,7 @@
+         } else {
++            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_57176_, p_57177_.below(), Direction.UP, p_57175_);
++            if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
+             if (blockstate.is(BlockTags.DIRT) || blockstate.is(BlockTags.SAND)) {
+                 BlockPos blockpos = p_57177_.below();
+ 
                  for (Direction direction : Direction.Plane.HORIZONTAL) {
                      BlockState blockstate1 = p_57176_.getBlockState(blockpos.relative(direction));
                      FluidState fluidstate = p_57176_.getFluidState(blockpos.relative(direction));
@@ -43,19 +41,3 @@
                          return true;
                      }
                  }
-@@ -102,5 +_,15 @@
-     @Override
-     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_57186_) {
-         p_57186_.add(AGE);
-+    }
-+
-+    @Override
-+    public net.neoforged.neoforge.common.PlantType getPlantType(BlockGetter world, BlockPos pos) {
-+         return net.neoforged.neoforge.common.PlantType.BEACH;
-+    }
-+
-+    @Override
-+    public BlockState getPlant(BlockGetter world, BlockPos pos) {
-+        return defaultBlockState();
-     }
- }

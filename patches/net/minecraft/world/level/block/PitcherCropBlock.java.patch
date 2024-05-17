@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/block/PitcherCropBlock.java
++++ b/net/minecraft/world/level/block/PitcherCropBlock.java
+@@ -86,7 +_,8 @@
+ 
+     @Override
+     public boolean canSurvive(BlockState p_277671_, LevelReader p_277477_, BlockPos p_278085_) {
+-        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? false : super.canSurvive(p_277671_, p_277477_, p_278085_);
++        net.neoforged.neoforge.common.util.TriState soilDecision = p_277477_.getBlockState(p_278085_.below()).canSustainPlant(p_277477_, p_278085_.below(), Direction.UP, p_277671_);
++        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE : super.canSurvive(p_277671_, p_277477_, p_278085_);
+     }
+ 
+     @Override
+@@ -125,7 +_,7 @@
+ 
+     @Override
+     public void randomTick(BlockState p_277950_, ServerLevel p_277589_, BlockPos p_277937_, RandomSource p_277887_) {
+-        float f = CropBlock.getGrowthSpeed(this, p_277589_, p_277937_);
++        float f = CropBlock.getGrowthSpeed(p_277950_, p_277589_, p_277937_);
+         boolean flag = p_277887_.nextInt((int)(25.0F / f) + 1) == 0;
+         if (flag) {
+             this.grow(p_277589_, p_277950_, p_277937_, 1);
