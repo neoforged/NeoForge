@@ -1,5 +1,15 @@
 --- a/net/minecraft/world/level/block/BambooStalkBlock.java
 +++ b/net/minecraft/world/level/block/BambooStalkBlock.java
+@@ -97,7 +_,8 @@
+             return null;
+         } else {
+             BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below());
+-            if (blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON)) {
++            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_261764_.getLevel(), p_261764_.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
++            if (soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE) {
+                 if (blockstate.is(Blocks.BAMBOO_SAPLING)) {
+                     return this.defaultBlockState().setValue(AGE, Integer.valueOf(0));
+                 } else if (blockstate.is(Blocks.BAMBOO)) {
 @@ -130,10 +_,11 @@
      @Override
      protected void randomTick(BlockState p_261931_, ServerLevel p_261751_, BlockPos p_261616_, RandomSource p_261766_) {
