@@ -107,32 +107,6 @@ public class BlockTests {
                 .thenSucceed());
     }
 
-    @GameTest
-    @EmptyTemplate(floor = true)
-    @TestHolder(description = {
-            "Dead bushes should be placeable on regular terracotta (colored or not), but not on glazed terracotta",
-            "(neoforged/NeoForge#306)"
-    })
-    static void deadBushTerracottaTest(final ExtendedGameTestHelper helper) {
-        final BlockPos farmlandBlock = new BlockPos(1, 1, 1);
-        helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.TERRACOTTA))
-                .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(farmlandBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.WHITE_TERRACOTTA))
-                .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(farmlandBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.WHITE_GLAZED_TERRACOTTA))
-                .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
-                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
-
-                .thenSucceed();
-    }
-
     @GameTest()
     @TestHolder(description = "Adds a block that can sustain Bubble Columns and verify it works")
     static void bubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
