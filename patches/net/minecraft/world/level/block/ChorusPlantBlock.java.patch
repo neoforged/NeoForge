@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/block/ChorusPlantBlock.java
++++ b/net/minecraft/world/level/block/ChorusPlantBlock.java
+@@ -95,7 +_,8 @@
+             }
+         }
+ 
+-        return blockstate.is(this) || blockstate.is(Blocks.END_STONE);
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51725_, p_51726_, Direction.UP, p_51724_);
++        return blockstate.is(this) || blockstate.is(Blocks.END_STONE) || soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
+     }
+ 
+     @Override
