@@ -24,7 +24,7 @@ public record SyncExtensibleEnums(ServerConfigurationPacketListener listener) im
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
         if (listener.hasChannel(ExtensibleEnumDataPayload.TYPE)) {
-            sender.accept(ExtensibleEnumDataPayload.INSTANCE);
+            sender.accept(ExtensibleEnumDataPayload.getInstance());
         }
     }
 

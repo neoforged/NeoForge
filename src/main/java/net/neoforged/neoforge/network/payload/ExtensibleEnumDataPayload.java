@@ -35,7 +35,14 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
             ExtensibleEnumDataPayload::enumValueNames,
             ExtensibleEnumDataPayload::of);
 
-    public static final ExtensibleEnumDataPayload<?> INSTANCE = factory(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(MobCategory.class, BiomeSpecialEffects.GrassColorModifier.class));
+    private static ExtensibleEnumDataPayload<?> INSTANCE = null;
+
+    public static synchronized ExtensibleEnumDataPayload<?> getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = factory(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(MobCategory.class, BiomeSpecialEffects.GrassColorModifier.class));
+        }
+        return INSTANCE;
+    }
 
     @SuppressWarnings("unchecked")
     private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> of(List<String> enumClassNames, List<EnumData> enumData) {
