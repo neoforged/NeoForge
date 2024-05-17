@@ -147,7 +147,7 @@ public class BlockTests {
                 .withDefaultWhiteModel()
                 .withBlockItem();
 
-        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 2, 3)
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 3, 3)
                 .fill(0, 0, 0, 2, 2, 2, Blocks.WATER));
 
         test.onGameTest(helper -> helper.startSequence()

@@ -61,15 +61,16 @@
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -1273,12 +_,16 @@
+@@ -1273,12 +_,18 @@
          }
  
          this.resetProjectionMatrix(matrix4f);
 +        net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, camera, p_109090_);
 +        camera.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
          Matrix4f matrix4f1 = new Matrix4f()
--            .rotationXYZ(camera.getXRot() * (float) (Math.PI / 180.0), camera.getYRot() * (float) (Math.PI / 180.0) + (float) Math.PI, 0.0F);
-+            .rotationXYZ(camera.getXRot() * (float) (Math.PI / 180.0), camera.getYRot() * (float) (Math.PI / 180.0) + (float) Math.PI, cameraSetup.getRoll() * (float) (Math.PI / 180.0));
+             .rotationXYZ(camera.getXRot() * (float) (Math.PI / 180.0), camera.getYRot() * (float) (Math.PI / 180.0) + (float) Math.PI, 0.0F);
++        // Neo: Use matrix multiplication so roll is stacked on top of vanilla XY rotations
++        matrix4f1 = new Matrix4f().rotationZ(cameraSetup.getRoll() * (float) (Math.PI / 180.0)).mul(matrix4f1);
          this.minecraft
              .levelRenderer
              .prepareCullFrustum(camera.getPosition(), matrix4f1, this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));

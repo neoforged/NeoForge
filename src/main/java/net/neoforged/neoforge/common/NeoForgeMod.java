@@ -522,6 +522,7 @@ public class NeoForgeMod {
         }
     });
 
+    private static boolean enableProperFilenameValidation = false;
     private static boolean enableMilkFluid = false;
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.empty_milk"));
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.fill_milk"));
@@ -543,6 +544,18 @@ public class NeoForgeMod {
      */
     public static void enableMilkFluid() {
         enableMilkFluid = true;
+    }
+
+    /**
+     * Run this method during mod constructor to enable {@link net.minecraft.FileUtil#RESERVED_WINDOWS_FILENAMES_NEOFORGE} regex being used for filepath validation.
+     * Fixes MC-268617 at cost of vanilla incompat edge cases with files generated with this activated and them migrated to vanilla instance - See PR #767
+     */
+    public static void enableProperFilenameValidation() {
+        enableProperFilenameValidation = true;
+    }
+
+    public static boolean getProperFilenameValidation() {
+        return enableProperFilenameValidation;
     }
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
