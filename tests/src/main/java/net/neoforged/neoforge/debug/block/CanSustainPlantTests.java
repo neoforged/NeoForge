@@ -511,7 +511,7 @@ public class CanSustainPlantTests {
     @GameTest
     @EmptyTemplate(floor = true)
     @TestHolder(description = {
-            "Small Dripleaf should be placeable on any block in water. And plantable on custom blocks that allow the plant even outside of water."
+            "Small Dripleaf should be placeable on any block in water or on dry clay and moss blocks. And plantable on custom blocks that allow the plant even outside of water."
     })
     static void survivabilitySmallDripleafTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
@@ -540,13 +540,27 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.below(), Blocks.CLAY))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.AIR))
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
+                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.SMALL_DRIPLEAF), Direction.UP))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock.above()))
+
+                .thenExecute(() -> helper.setBlock(belowBlock.below(), Blocks.MOSS_BLOCK))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.AIR))
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
+                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.SMALL_DRIPLEAF), Direction.UP))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock.above()))
+
                 .thenSucceed());
     }
 
     @GameTest
     @EmptyTemplate(floor = true)
     @TestHolder(description = {
-            "Big Dripleaf should be placeable on dirt, farmland, small dripleaf, and big dripleaf but not on sand. And plantable on custom blocks that allow the plant."
+            "Big Dripleaf should be placeable on dirt, farmland, clay, moss block, and big dripleaf but not on sand. And plantable on custom blocks that allow the plant."
     })
     static void survivabilityBigDripleafTest(final DynamicTest test, final RegistrationHelper reg) {
         final var sustainingBlock = reg.blocks()
@@ -567,6 +581,16 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BIG_DRIPLEAF, belowBlock.above()))
 
                 .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.CLAY))
+                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.BIG_DRIPLEAF), Direction.UP))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.BIG_DRIPLEAF, belowBlock.above()))
+
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.MOSS_BLOCK))
+                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.BIG_DRIPLEAF), Direction.UP))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.BIG_DRIPLEAF, belowBlock.above()))
+
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
                 .thenExecute(() -> helper.setBlock(belowBlock, sustainingBlock.get()))
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.BIG_DRIPLEAF), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BIG_DRIPLEAF, belowBlock.above()))
@@ -579,13 +603,6 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
                 .thenExecute(() -> helper.setBlock(belowBlock, Blocks.DIRT))
                 .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.BIG_DRIPLEAF))
-                .thenExecute(player -> helper.useBlock(belowBlock.above(), player, new ItemStack(Items.BIG_DRIPLEAF), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.BIG_DRIPLEAF, belowBlock.above(2)))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.DIRT))
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.SMALL_DRIPLEAF.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true)))
                 .thenExecute(player -> helper.useBlock(belowBlock.above(), player, new ItemStack(Items.BIG_DRIPLEAF), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BIG_DRIPLEAF, belowBlock.above(2)))
 
