@@ -6,7 +6,7 @@
              this.createNormalMenuOptions(l, 24);
 +            this.addRenderableWidget(new net.neoforged.neoforge.client.gui.widget.ModsButton(Button.builder(Component.translatable("fml.menu.mods", net.neoforged.fml.ModList.get().size()), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
 +                .pos(this.width / 2 - 100, l + 24 * 3).size(200, 20)));
-+            l += 14; // Move down Options, Quit, Language, and Accessibility buttons to make room for mods button
++            l += 12; // Move down Options, Quit, Language, and Accessibility buttons to make room for mods button
          }
  
          SpriteIconButton spriteiconbutton = this.addRenderableWidget(
