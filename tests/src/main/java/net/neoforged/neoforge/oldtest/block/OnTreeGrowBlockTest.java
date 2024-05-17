@@ -21,7 +21,6 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.SpecialPlantable;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.registries.DeferredItem;

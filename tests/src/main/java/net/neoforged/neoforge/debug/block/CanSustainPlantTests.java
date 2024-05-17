@@ -9,54 +9,26 @@ import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BubbleColumnBlock;
 import net.minecraft.world.level.block.ChorusPlantBlock;
-import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.MangrovePropaguleBlock;
-import net.minecraft.world.level.block.SmallDripleafBlock;
-import net.minecraft.world.level.block.WaterlilyBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
-import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
-import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 @ForEachTest(groups = { "level.block.survivability" })
 public class CanSustainPlantTests {
-
     @GameTest
     @EmptyTemplate(floor = true)
     @TestHolder(description = {
@@ -554,6 +526,13 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.SMALL_DRIPLEAF, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.below(), Blocks.GRASS_BLOCK))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.AIR))
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
+                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.SMALL_DRIPLEAF), Direction.UP))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.SMALL_DRIPLEAF, belowBlock))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.SMALL_DRIPLEAF, belowBlock.above()))
+
                 .thenSucceed());
     }
 
@@ -626,7 +605,7 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.setBlock(belowBlock, Blocks.END_STONE))
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.CHORUS_PLANT), Direction.UP))
                 .thenExecute(() -> helper.assertBlockState(belowBlock.above(), (state) -> state.getValue(ChorusPlantBlock.DOWN), () -> "Chorus Plant not found with down property"))
-                
+
                 .thenExecute(player -> helper.useBlock(belowBlock.above(), player, new ItemStack(Items.CHORUS_PLANT), Direction.UP))
                 .thenExecute(() -> helper.assertBlockState(belowBlock.above(2), (state) -> state.getValue(ChorusPlantBlock.DOWN), () -> "Chorus Plant not found with down property"))
 

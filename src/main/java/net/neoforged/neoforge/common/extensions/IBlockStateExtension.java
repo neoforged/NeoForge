@@ -40,7 +40,6 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.common.SpecialPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
@@ -264,10 +263,10 @@ public interface IBlockStateExtension {
      * Determines if this block either force allow or force disallow a plant from being placed on it. (Or pass and let the plant's decision win)
      * This will be called in plant's canSurvive method and/or mayPlace method.
      *
-     * @param level         The current level
-     * @param soilPosition  The current position of the block that will sustain the plant
-     * @param facing        The direction relative to the given position the plant wants to be, typically its UP
-     * @param plant         The plant that is checking survivability
+     * @param level        The current level
+     * @param soilPosition The current position of the block that will sustain the plant
+     * @param facing       The direction relative to the given position the plant wants to be, typically its UP
+     * @param plant        The plant that is checking survivability
      * @return {@link TriState#TRUE} to allow the plant to be planted/stay. {@link TriState#FALSE} to disallow the plant from placing. {@link TriState#DEFAULT} to allow the plant to make the decision to stay or not.
      */
     default TriState canSustainPlant(BlockGetter level, BlockPos soilPosition, Direction facing, BlockState plant) {

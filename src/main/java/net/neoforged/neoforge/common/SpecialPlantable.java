@@ -5,12 +5,10 @@
 
 package net.neoforged.neoforge.common;
 
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.state.BlockState;
-
-import javax.annotation.Nullable;
 
 /**
  * Intended for mods to help mark if a modded item allows for placing modded plants of any kind or size.
