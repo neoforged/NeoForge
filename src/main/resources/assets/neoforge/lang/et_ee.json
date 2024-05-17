@@ -1,5 +1,5 @@
 {
-  "fml.menu.mods": "Modid",
+  "fml.menu.mods": "%sModid",
   "fml.menu.mods.title": "Modid",
   "fml.menu.mods.normal": "Väljas",
   "fml.menu.mods.search": "Otsi",

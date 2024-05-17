@@ -1,5 +1,5 @@
 {
-  "fml.menu.mods": "模组",
+  "fml.menu.mods": "%s模组",
   "fml.menu.mods.title": "模组",
   "fml.menu.mods.normal": "关闭",
   "fml.menu.mods.search": "搜索",

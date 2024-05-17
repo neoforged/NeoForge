@@ -1,5 +1,5 @@
 {
-  "fml.menu.mods": "Mod",
+  "fml.menu.mods": "%sMod",
   "fml.menu.mods.title": "Mod",
   "fml.menu.mods.normal": "Spento",
   "fml.menu.mods.search": "Cerca",
