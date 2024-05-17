@@ -427,7 +427,7 @@
                  }
  
 -                return this.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY;
-+                return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, p_36349_, this.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY);
++                return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, p_36349_, this.abilities.instabuild ? ((ProjectileWeaponItem)p_36349_.getItem()).getDefaultCreativeAmmo(this, p_36349_) : ItemStack.EMPTY);
              }
          }
      }
