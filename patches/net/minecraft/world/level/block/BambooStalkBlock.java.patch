@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/BambooStalkBlock.java
 +++ b/net/minecraft/world/level/block/BambooStalkBlock.java
-@@ -27,7 +_,7 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public class BambooStalkBlock extends Block implements BonemealableBlock {
-+public class BambooStalkBlock extends Block implements BonemealableBlock, net.neoforged.neoforge.common.IPlantable {
-     public static final MapCodec<BambooStalkBlock> CODEC = simpleCodec(BambooStalkBlock::new);
-     protected static final float SMALL_LEAVES_AABB_OFFSET = 3.0F;
-     protected static final float LARGE_LEAVES_AABB_OFFSET = 5.0F;
 @@ -130,10 +_,11 @@
      @Override
      protected void randomTick(BlockState p_261931_, ServerLevel p_261751_, BlockPos p_261616_, RandomSource p_261766_) {
@@ -23,6 +14,16 @@
                  }
              }
          }
+@@ -141,7 +_,8 @@
+ 
+     @Override
+     protected boolean canSurvive(BlockState p_261860_, LevelReader p_262154_, BlockPos p_261493_) {
+-        return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
++        net.neoforged.neoforge.common.util.TriState soilDecision = p_262154_.getBlockState(p_261493_.below()).canSustainPlant(p_262154_, p_261493_.below(), Direction.UP, p_261860_);
++        return soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
+     }
+ 
+     @Override
 @@ -193,7 +_,7 @@
  
      @Override
@@ -32,16 +33,3 @@
      }
  
      protected void growBamboo(BlockState p_261855_, Level p_262076_, BlockPos p_262109_, RandomSource p_261633_, int p_261759_) {
-@@ -238,5 +_,12 @@
-         }
- 
-         return i;
-+    }
-+
-+    @Override
-+    public BlockState getPlant(BlockGetter world, BlockPos pos) {
-+        BlockState state = world.getBlockState(pos);
-+        if (state.getBlock() != this) return defaultBlockState();
-+        return state;
-     }
- }

@@ -1,33 +1,13 @@
 --- a/net/minecraft/world/level/block/BushBlock.java
 +++ b/net/minecraft/world/level/block/BushBlock.java
-@@ -11,7 +_,7 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.pathfinder.PathComputationType;
- 
--public abstract class BushBlock extends Block {
-+public abstract class BushBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
-     public BushBlock(BlockBehaviour.Properties p_51021_) {
-         super(p_51021_);
-     }
-@@ -33,6 +_,8 @@
+@@ -33,7 +_,9 @@
      @Override
      protected boolean canSurvive(BlockState p_51028_, LevelReader p_51029_, BlockPos p_51030_) {
          BlockPos blockpos = p_51030_.below();
-+        if (p_51028_.getBlock() == this) //Forge: This function is called during world gen and placement, before this block is set, so if we are not 'here' then assume it's the pre-check.
-+            return p_51029_.getBlockState(blockpos).canSustainPlant(p_51029_, blockpos, Direction.UP, this);
-         return this.mayPlaceOn(p_51029_.getBlockState(blockpos), p_51029_, blockpos);
+-        return this.mayPlaceOn(p_51029_.getBlockState(blockpos), p_51029_, blockpos);
++        BlockState belowBlockState = p_51029_.getBlockState(blockpos);
++        net.neoforged.neoforge.common.util.TriState soilDecision = belowBlockState.canSustainPlant(p_51029_, blockpos, Direction.UP, p_51028_);
++        return soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? this.mayPlaceOn(belowBlockState, p_51029_, blockpos) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
      }
  
-@@ -44,5 +_,12 @@
      @Override
-     protected boolean isPathfindable(BlockState p_51023_, PathComputationType p_51026_) {
-         return p_51026_ == PathComputationType.AIR && !this.hasCollision ? true : super.isPathfindable(p_51023_, p_51026_);
-+    }
-+
-+    @Override
-+    public BlockState getPlant(BlockGetter world, BlockPos pos) {
-+        BlockState state = world.getBlockState(pos);
-+        if (state.getBlock() != this) return defaultBlockState();
-+        return state;
-     }
- }

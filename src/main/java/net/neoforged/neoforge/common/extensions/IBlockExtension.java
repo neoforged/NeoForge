@@ -71,10 +71,11 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.IPlantable;
+import net.neoforged.neoforge.common.SpecialPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -357,24 +358,19 @@ public interface IBlockExtension {
     }
 
     /**
-     * Determines if this block can support the passed in plant, allowing it to be planted and grow.
-     * Some examples:
-     * Reeds check if its a reed, or if its sand/dirt/grass and adjacent to water
-     * Cacti checks if its a cacti, or if its sand
-     * Nether types check for soul sand
-     * Crops check for tilled soil
-     * Caves check if it's a solid surface
-     * Plains check if its grass or dirt
-     * Water check if its still water
+     * Determines if this block either force allow or force disallow a plant from being placed on it. (Or pass and let the plant's decision win)
+     * This will be called in plant's canSurvive method and/or mayPlace method.
      *
-     * @param state     The Current state
-     * @param level     The current level
-     *
-     * @param facing    The direction relative to the given position the plant wants to be, typically its UP
-     * @param plantable The plant that wants to check
-     * @return True to allow the plant to be planted/stay.
+     * @param state         The current state
+     * @param level         The current level
+     * @param soilPosition  The current position of the block that will sustain the plant
+     * @param facing        The direction relative to the given position the plant wants to be, typically its UP
+     * @param plant         The plant that is checking survivability
+     * @return {@link TriState#TRUE} to allow the plant to be planted/stay. {@link TriState#FALSE} to disallow the plant from placing. {@link TriState#DEFAULT} to allow the plant to make the decision to stay or not.
      */
-    boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, IPlantable plantable);
+    default TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos soilPosition, Direction facing, BlockState plant) {
+        return TriState.DEFAULT;
+    }
 
     /**
      * Called when a tree grows on top of this block and tries to set it to dirt by the trunk placer.
