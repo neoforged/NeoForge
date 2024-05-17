@@ -1,5 +1,5 @@
 {
-  "fml.menu.mods": "Моды",
+  "fml.menu.mods": "%sМоды",
   "fml.menu.mods.title": "Моды",
   "fml.menu.mods.normal": "Выкл",
   "fml.menu.mods.search": "Поиск",
