@@ -5,21 +5,17 @@
 
 package net.neoforged.neoforge.network.configuration;
 
-import java.util.List;
-import java.util.function.Consumer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.function.Consumer;
+
 /**
- * Syncs registries to the client
+ * Syncs extensible Enums and verifies that they match
  */
 @ApiStatus.Internal
 public record SyncExtensibleEnums(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
@@ -29,7 +25,7 @@ public record SyncExtensibleEnums(ServerConfigurationPacketListener listener) im
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
         if (listener.hasChannel(ExtensibleEnumDataPayload.TYPE)) {
-            sender.accept(ExtensibleEnumDataPayload.factory(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(MobCategory.class, BiomeSpecialEffects.GrassColorModifier.class)));
+            sender.accept(ExtensibleEnumDataPayload.INSTANCE);
         }
     }
 

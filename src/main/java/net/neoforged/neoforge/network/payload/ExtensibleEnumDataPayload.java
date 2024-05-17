@@ -5,18 +5,23 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.FireworkExplosion;
+import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.neoforged.neoforge.common.IExtensibleEnum;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A payload used to verify that specific Enums that implement {@linkplain IExtensibleEnum} have the same Enum Constants in the same order.
@@ -30,6 +35,8 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
             EnumData.STREAM_CODEC.apply(ByteBufCodecs.list()),
             ExtensibleEnumDataPayload::enumValueNames,
             ExtensibleEnumDataPayload::of);
+
+    public static final ExtensibleEnumDataPayload<?> INSTANCE = factory(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(MobCategory.class, BiomeSpecialEffects.GrassColorModifier.class));
 
     @SuppressWarnings("unchecked")
     private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> of(List<String> enumClassNames, List<EnumData> enumData) {
@@ -56,7 +63,7 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
         return new ExtensibleEnumDataPayload<>(map);
     }
 
-    public static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> factory(List<Class<? extends T>> orderedEnums, List<Class<? extends T>> unorderedEnums) {
+    private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> factory(List<Class<? extends T>> orderedEnums, List<Class<? extends T>> unorderedEnums) {
         Map<Class<? extends T>, EnumData> map = new HashMap<>();
         for (Class<? extends T> enumToVerify : orderedEnums) {
             map.put(enumToVerify, new EnumData(Arrays.stream(enumToVerify.getEnumConstants()).map(Enum::name).toList(), true));
