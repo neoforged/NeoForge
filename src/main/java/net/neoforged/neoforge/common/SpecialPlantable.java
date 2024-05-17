@@ -15,13 +15,13 @@ import net.minecraft.world.level.LevelReader;
  * Also allows Villagers to properly plant items with this interface on if the Villager has this item in inventory.
  * <p></p>
  * People trying to plant modded items should check if item implements this interface.
- * Then check for true from canPlacePlantAtSpot first before calling spawnPlantAtSpot.
- * Implementers of this interface would ideally call canSurvive on their plant block in canPlacePlantAtSpot.
+ * Then check for true from canPlacePlantAtPosition first before calling spawnPlantAtPosition.
+ * Implementers of this interface would ideally call canSurvive on their plant block in canPlacePlantAtPosition.
  * <p></p>
  * (Note: Vanilla plantable items are BlockItem where you can get their states directly and call canSurvive)
  */
 public interface SpecialPlantable {
-    Boolean canPlacePlantAtSpot(LevelReader level, BlockPos pos, @Nullable Direction direction);
+    Boolean canPlacePlantAtPosition(LevelReader level, BlockPos pos, @Nullable Direction direction);
 
-    void spawnPlantAtSpot(LevelReader level, BlockPos pos, @Nullable Direction direction);
+    void spawnPlantAtPosition(LevelReader level, BlockPos pos, @Nullable Direction direction);
 }
