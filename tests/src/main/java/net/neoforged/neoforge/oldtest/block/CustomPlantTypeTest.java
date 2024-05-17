@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,8 +23,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.IPlantable;
-import net.neoforged.neoforge.common.PlantType;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -59,36 +59,27 @@ public class CustomPlantTypeTest {
         }
 
         @Override
-        public boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, IPlantable plantable) {
-            PlantType type = plantable.getPlantType(level, pos.relative(facing));
-            if (type != null && type == CustomPlantBlock.pt) {
-                return true;
+        public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, BlockState plantable) {
+            if (plantable.is(CUSTOM_PLANT)) {
+                return TriState.TRUE;
             }
             return super.canSustainPlant(state, level, pos, facing, plantable);
         }
     }
 
-    public static class CustomPlantBlock extends FlowerBlock implements IPlantable {
-        public static PlantType pt = PlantType.get("custom_plant_type");
-
+    public static class CustomPlantBlock extends FlowerBlock {
         public CustomPlantBlock() {
             super(MobEffects.WEAKNESS, 9, Properties.of().mapColor(MapColor.PLANT).noCollission().sound(SoundType.GRASS));
         }
 
         @Override
-        public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-            return pt;
-        }
-
-        @Override
-        public BlockState getPlant(BlockGetter level, BlockPos pos) {
-            return defaultBlockState();
-        }
-
-        @Override
         public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
             BlockState soil = world.getBlockState(pos.below());
-            return soil.canSustainPlant(world, pos, Direction.UP, this);
+            TriState soilDecision = soil.canSustainPlant(world, pos.below(), Direction.UP, state);
+            if (soilDecision == TriState.DEFAULT) {
+                return soil.is(Blocks.MAGMA_BLOCK);
+            }
+            return soilDecision == TriState.TRUE;
         }
 
         @Override
