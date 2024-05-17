@@ -17,6 +17,7 @@ import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
+import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
@@ -56,6 +57,10 @@ public class NetworkInitialization {
                         KnownRegistryDataMapsPayload.TYPE,
                         KnownRegistryDataMapsPayload.STREAM_CODEC,
                         ClientRegistryManager::handleKnownDataMaps)
+                .configurationToClient(
+                        ExtensibleEnumDataPayload.TYPE,
+                        ExtensibleEnumDataPayload.STREAM_CODEC,
+                        ClientPayloadHandler::handle)
                 .configurationToServer(
                         KnownRegistryDataMapsReplyPayload.TYPE,
                         KnownRegistryDataMapsReplyPayload.STREAM_CODEC,

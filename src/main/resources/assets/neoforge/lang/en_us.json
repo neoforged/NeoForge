@@ -216,6 +216,7 @@
   "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s",
 
   "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
+  "neoforge.network.extensible_enum_data.failed": "Enum mismatches found: %s",
   "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
   "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
 }

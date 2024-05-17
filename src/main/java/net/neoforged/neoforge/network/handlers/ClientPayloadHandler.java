@@ -8,6 +8,9 @@ package net.neoforged.neoforge.network.handlers;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.netty.buffer.Unpooled;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +23,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -33,6 +37,7 @@ import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
+import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
@@ -137,5 +142,62 @@ public final class ClientPayloadHandler {
 
     public static void handle(AdvancedContainerSetDataPayload msg, IPayloadContext context) {
         context.handle(msg.toVanillaPacket());
+    }
+
+    public static void handle(ExtensibleEnumDataPayload<?> msg, IPayloadContext context) {
+        enum MissMatchReason {
+            MISSING_ON_CLIENT,
+            ADDED_ONLY_ON_CLIENT,
+            ID_MISMATCH;
+
+            private void buildError(StringBuilder builder, List<String> errors) {
+                String msg = switch (this) {
+                    case ID_MISMATCH -> "idmissmatch";
+                    case ADDED_ONLY_ON_CLIENT -> "clientOnly";
+                    case MISSING_ON_CLIENT -> "serverOnly";
+                };
+                builder.append(msg).append('[').append(String.join(",", errors)).append(']');
+            }
+        }
+
+        Map<Class<?>, Map<MissMatchReason, List<String>>> allErrors = new HashMap<>();
+        msg.enums().forEach((enumClass, enumData) -> {
+            List<String> missingOnClient = enumData.enumValues().stream().filter(value -> Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).noneMatch(value::equals)).toList();
+            List<String> addedOnlyOnClient = Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).filter(value -> enumData.enumValues().stream().noneMatch(value::equals)).toList();
+            List<String> idMismatch = List.of();
+            if (enumData.verifyOrder()) {
+                idMismatch = Arrays.stream(enumClass.getEnumConstants())
+                        .map(enumValue -> new Tuple<>(enumValue, enumData.enumValues().indexOf(enumValue.name())))
+                        .filter(tuple -> tuple.getA().ordinal() != tuple.getB())
+                        .filter(tuple -> tuple.getB() != -1)
+                        .map(tuple -> tuple.getA().name() + "[" + tuple.getB() + "->" + tuple.getA().ordinal() + "]")
+                        .toList();
+            }
+            if (!missingOnClient.isEmpty() || !addedOnlyOnClient.isEmpty() || !idMismatch.isEmpty()) {
+                Map<MissMatchReason, List<String>> errors = new HashMap<>();
+                allErrors.put(enumClass, errors);
+                if (!missingOnClient.isEmpty()) {
+                    errors.put(MissMatchReason.MISSING_ON_CLIENT, missingOnClient);
+                }
+                if (!addedOnlyOnClient.isEmpty()) {
+                    errors.put(MissMatchReason.ADDED_ONLY_ON_CLIENT, addedOnlyOnClient);
+                }
+                if (!idMismatch.isEmpty()) {
+                    errors.put(MissMatchReason.ID_MISMATCH, idMismatch);
+                }
+            }
+        });
+        if (allErrors.isEmpty()) {
+            return;
+        }
+        StringBuilder strBuilder = new StringBuilder();
+        allErrors.forEach((enumClazz, errors) -> {
+            strBuilder.append(enumClazz.getName());
+            strBuilder.append('[');
+            errors.forEach((reason, innerErrors) -> reason.buildError(strBuilder, innerErrors));
+            strBuilder.append("],");
+        });
+        strBuilder.deleteCharAt(strBuilder.length() - 1); //remove last ','
+        context.disconnect(Component.translatable("neoforge.network.extensible_enum_data.failed", strBuilder.toString()));
     }
 }

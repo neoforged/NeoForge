@@ -13,6 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
+import net.neoforged.neoforge.network.configuration.SyncExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
@@ -44,5 +45,6 @@ public class ConfigurationInitialization {
 
         //These two can always be registered they detect the listener connection type internally and will skip themselves.
         event.register(new RegistryDataMapNegotiation(event.getListener()));
+        event.register(new SyncExtensibleEnums(event.getListener()));
     }
 }
