@@ -14,7 +14,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -39,7 +38,7 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
 
     public static synchronized ExtensibleEnumDataPayload<?> getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = factory(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(MobCategory.class, BiomeSpecialEffects.GrassColorModifier.class));
+            INSTANCE = factory(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(BiomeSpecialEffects.GrassColorModifier.class));
         }
         return INSTANCE;
     }
