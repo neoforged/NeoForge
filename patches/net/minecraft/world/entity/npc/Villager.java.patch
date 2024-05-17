@@ -37,3 +37,12 @@
                  p_35409_.addFreshEntityWithPassengers(witch);
                  this.releaseAllPois();
                  this.discard();
+@@ -829,7 +_,7 @@
+     @Override
+     public boolean wantsToPickUp(ItemStack p_35543_) {
+         Item item = p_35543_.getItem();
+-        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item))
++        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item) || (p_35543_.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem()))
+             && this.getInventory().canAddItem(p_35543_);
+     }
+ 

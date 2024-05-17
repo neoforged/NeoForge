@@ -13,9 +13,9 @@
                              p_23196_.setBlockAndUpdate(this.aboveFarmlandPos, blockstate1);
                              p_23196_.gameEvent(GameEvent.BLOCK_PLACE, this.aboveFarmlandPos, GameEvent.Context.of(p_23197_, blockstate1));
                              flag = true;
-+                        } else if (itemstack.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable) {
-+                            if (((net.neoforged.neoforge.common.SpecialPlantable)itemstack.getItem()).canPlacePlantAtPosition(p_23196_, aboveFarmlandPos, net.minecraft.core.Direction.DOWN)) {
-+                                ((net.neoforged.neoforge.common.SpecialPlantable)itemstack.getItem()).spawnPlantAtPosition(p_23196_, aboveFarmlandPos, net.minecraft.core.Direction.DOWN);
++                        } else if (itemstack.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem()) {
++                            if (specialPlantable.canPlacePlantAtPosition(p_23196_, aboveFarmlandPos, net.minecraft.core.Direction.DOWN)) {
++                                specialPlantable.spawnPlantAtPosition(p_23196_, aboveFarmlandPos, net.minecraft.core.Direction.DOWN);
 +                                flag = true;
 +                            }
                          }
