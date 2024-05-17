@@ -21,9 +21,9 @@ import net.minecraft.world.level.LevelReader;
  * (Note: Vanilla plantable items are BlockItem where you can get their states directly and call canSurvive)
  */
 public interface SpecialPlantable {
-
     /**
      * Checks location if this item can spawn a plant with the given direction attachment point.
+     * 
      * @return If plant can spawn
      */
     boolean canPlacePlantAtPosition(LevelReader level, BlockPos pos, @Nullable Direction direction);
