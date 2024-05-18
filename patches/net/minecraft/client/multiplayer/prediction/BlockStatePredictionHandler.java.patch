@@ -5,11 +5,11 @@
                      blockpos, blockstatepredictionhandler$serververifiedstate.blockState, blockstatepredictionhandler$serververifiedstate.playerPos
                  );
 +                // Neo: Restore the BlockEntity if one was present before the break was cancelled. Fixes MC-270804
-+                if (blockstatepredictionhandler$serververifiedstate.snapshot != null &&
-+                        blockstatepredictionhandler$serververifiedstate.blockState == blockstatepredictionhandler$serververifiedstate.snapshot.getReplacedBlock()) {
-+                    if (blockstatepredictionhandler$serververifiedstate.snapshot.restoreBlockEntity(p_233858_, blockpos)) {
++                var verifiedState = blockstatepredictionhandler$serververifiedstate;
++                if (verifiedState.snapshot != null && verifiedState.blockState == verifiedState.snapshot.getState()) {
++                    if (verifiedState.snapshot.restoreBlockEntity(p_233858_, blockpos)) {
 +                        // Attempt a re-render if BE data was loaded, since some blocks may depend on it.
-+                        p_233858_.sendBlockUpdated(blockpos, blockstatepredictionhandler$serververifiedstate.blockState, blockstatepredictionhandler$serververifiedstate.blockState, 3);
++                        p_233858_.sendBlockUpdated(blockpos, verifiedState.blockState, verifiedState.blockState, 3);
 +                    }
 +                }
              }

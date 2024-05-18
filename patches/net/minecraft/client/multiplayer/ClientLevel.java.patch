@@ -22,7 +22,7 @@
      public boolean setBlock(BlockPos p_233643_, BlockState p_233644_, int p_233645_, int p_233646_) {
          if (this.blockStatePredictionHandler.isPredicting()) {
 +            // Neo: Record and store a snapshot in the prediction so that BE data can be restored if the break is denied.
-+            var snapshot = net.neoforged.neoforge.common.util.BlockSnapshot.create(this.dimension(), this, p_233643_);
++            var snapshot = net.neoforged.neoforge.common.util.BlockSnapshot.create(this.dimension(), this, p_233643_, p_233645_);
 +
              BlockState blockstate = this.getBlockState(p_233643_);
              boolean flag = super.setBlock(p_233643_, p_233644_, p_233645_, p_233646_);

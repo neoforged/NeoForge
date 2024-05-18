@@ -555,7 +555,7 @@ public class CommonHooks {
                 // revert back all captured blocks
                 for (BlockSnapshot blocksnapshot : Lists.reverse(blockSnapshots)) {
                     level.restoringBlockSnapshots = true;
-                    blocksnapshot.restore(true, false);
+                    blocksnapshot.restore(blocksnapshot.getFlags() | Block.UPDATE_CLIENTS);
                     level.restoringBlockSnapshots = false;
                 }
             } else {
@@ -564,8 +564,8 @@ public class CommonHooks {
                 //itemstack.setTag(newNBT);
 
                 for (BlockSnapshot snap : blockSnapshots) {
-                    int updateFlag = snap.getFlag();
-                    BlockState oldBlock = snap.getReplacedBlock();
+                    int updateFlag = snap.getFlags();
+                    BlockState oldBlock = snap.getState();
                     BlockState newBlock = level.getBlockState(snap.getPos());
                     newBlock.onPlace(level, snap.getPos(), oldBlock, false);
 
