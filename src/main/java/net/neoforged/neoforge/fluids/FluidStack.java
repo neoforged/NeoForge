@@ -49,7 +49,7 @@ import org.slf4j.Logger;
  * <p>Most methods in this class are adapted from {@link ItemStack}.
  */
 public final class FluidStack implements MutableDataComponentHolder {
-    private static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = BuiltInRegistries.FLUID.holderByNameCodec().validate(holder -> {
+    public static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = BuiltInRegistries.FLUID.holderByNameCodec().validate(holder -> {
         return holder.is(Fluids.EMPTY.builtInRegistryHolder()) ? DataResult.error(() -> {
             return "Fluid must not be minecraft:empty";
         }) : DataResult.success(holder);
