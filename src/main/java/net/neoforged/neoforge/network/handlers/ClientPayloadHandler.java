@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network.handlers;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -145,22 +146,26 @@ public final class ClientPayloadHandler {
     }
 
     public static void handle(ExtensibleEnumDataPayload<?> msg, IPayloadContext context) {
-        enum MissMatchReason {
+        enum MismatchReason {
             MISSING_ON_CLIENT,
             ADDED_ONLY_ON_CLIENT,
             ID_MISMATCH;
 
-            private void buildError(StringBuilder builder, List<String> errors) {
+            private void buildError(Class<?> enumClass, List<String> errors) {
+                StringBuilder stringBuilder = new StringBuilder("Extensible Enum mismatch found: ");
+                stringBuilder.append(enumClass.getName());
                 String msg = switch (this) {
-                    case ID_MISMATCH -> "idmissmatch";
-                    case ADDED_ONLY_ON_CLIENT -> "clientOnly";
-                    case MISSING_ON_CLIENT -> "serverOnly";
+                    case ID_MISMATCH -> " has elements in a different order: ";
+                    case ADDED_ONLY_ON_CLIENT -> " has elements only on the client: ";
+                    case MISSING_ON_CLIENT -> " has elements only on the server: ";
                 };
-                builder.append(msg).append('[').append(String.join(",", errors)).append(']');
+                stringBuilder.append(msg);
+                stringBuilder.append(String.join(", ", errors));
+                LogUtils.getLogger().error(stringBuilder.toString());
             }
         }
 
-        Map<Class<?>, Map<MissMatchReason, List<String>>> allErrors = new HashMap<>();
+        Map<Class<?>, Map<MismatchReason, List<String>>> allErrors = new HashMap<>();
         msg.enums().forEach((enumClass, enumData) -> {
             List<String> missingOnClient = enumData.enumValues().stream().filter(value -> Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).noneMatch(value::equals)).toList();
             List<String> addedOnlyOnClient = Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).filter(value -> enumData.enumValues().stream().noneMatch(value::equals)).toList();
@@ -174,30 +179,25 @@ public final class ClientPayloadHandler {
                         .toList();
             }
             if (!missingOnClient.isEmpty() || !addedOnlyOnClient.isEmpty() || !idMismatch.isEmpty()) {
-                Map<MissMatchReason, List<String>> errors = new HashMap<>();
+                Map<MismatchReason, List<String>> errors = new HashMap<>();
                 allErrors.put(enumClass, errors);
                 if (!missingOnClient.isEmpty()) {
-                    errors.put(MissMatchReason.MISSING_ON_CLIENT, missingOnClient);
+                    errors.put(MismatchReason.MISSING_ON_CLIENT, missingOnClient);
                 }
                 if (!addedOnlyOnClient.isEmpty()) {
-                    errors.put(MissMatchReason.ADDED_ONLY_ON_CLIENT, addedOnlyOnClient);
+                    errors.put(MismatchReason.ADDED_ONLY_ON_CLIENT, addedOnlyOnClient);
                 }
                 if (!idMismatch.isEmpty()) {
-                    errors.put(MissMatchReason.ID_MISMATCH, idMismatch);
+                    errors.put(MismatchReason.ID_MISMATCH, idMismatch);
                 }
             }
         });
         if (allErrors.isEmpty()) {
             return;
         }
-        StringBuilder strBuilder = new StringBuilder();
+        context.disconnect(Component.translatable("neoforge.network.extensible_enum_data.failed"));
         allErrors.forEach((enumClazz, errors) -> {
-            strBuilder.append(enumClazz.getName());
-            strBuilder.append('[');
-            errors.forEach((reason, innerErrors) -> reason.buildError(strBuilder, innerErrors));
-            strBuilder.append("],");
+            errors.forEach((reason, innerErrors) -> reason.buildError(enumClazz, innerErrors));
         });
-        strBuilder.deleteCharAt(strBuilder.length() - 1); //remove last ','
-        context.disconnect(Component.translatable("neoforge.network.extensible_enum_data.failed", strBuilder.toString()));
     }
 }

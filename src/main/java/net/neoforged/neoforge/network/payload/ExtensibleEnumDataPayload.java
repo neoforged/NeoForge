@@ -36,9 +36,9 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
 
     private static ExtensibleEnumDataPayload<?> INSTANCE = null;
 
-    public static synchronized ExtensibleEnumDataPayload<?> getInstance() {
+    public static synchronized ExtensibleEnumDataPayload<?> getOrCreateInstance() {
         if (INSTANCE == null) {
-            INSTANCE = factory(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(BiomeSpecialEffects.GrassColorModifier.class));
+            INSTANCE = create(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(BiomeSpecialEffects.GrassColorModifier.class));
         }
         return INSTANCE;
     }
@@ -68,7 +68,7 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
         return new ExtensibleEnumDataPayload<>(map);
     }
 
-    private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> factory(List<Class<? extends T>> orderedEnums, List<Class<? extends T>> unorderedEnums) {
+    private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> create(List<Class<? extends T>> orderedEnums, List<Class<? extends T>> unorderedEnums) {
         Map<Class<? extends T>, EnumData> map = new HashMap<>();
         for (Class<? extends T> enumToVerify : orderedEnums) {
             map.put(enumToVerify, new EnumData(Arrays.stream(enumToVerify.getEnumConstants()).map(Enum::name).toList(), true));
