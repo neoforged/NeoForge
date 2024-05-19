@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -15,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * An immutable ordered set (not implementing {@link java.util.Set}) of chunk {@linkplain RenderType render types}.
@@ -52,7 +50,9 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
         var bits = new BitSet();
         for (RenderType renderType : renderTypes) {
             int index = renderType.getChunkLayerId();
-            Preconditions.checkArgument(index >= 0, "Attempted to create chunk render type set with a non-chunk render type: " + renderType);
+            if (index < 0) {
+                throw new IllegalArgumentException("Attempted to create chunk render type set with a non-chunk render type: " + renderType);
+            }
             bits.set(index);
         }
         return new ChunkRenderTypeSet(bits);
@@ -108,7 +108,6 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
         return id >= 0 && bits.get(id);
     }
 
-    @NotNull
     @Override
     public Iterator<RenderType> iterator() {
         return new IteratorImpl();
@@ -149,7 +148,6 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
             return false;
         }
 
-        @NotNull
         @Override
         public Iterator<RenderType> iterator() {
             return Collections.emptyIterator();
@@ -176,7 +174,6 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
             return renderType.getChunkLayerId() >= 0; // Could just return true for efficiency purposes, but checking is near-free
         }
 
-        @NotNull
         @Override
         public Iterator<RenderType> iterator() {
             return CHUNK_RENDER_TYPES_LIST.iterator();

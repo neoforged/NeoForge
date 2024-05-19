@@ -24,13 +24,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 
 @ForEachTest(side = Dist.CLIENT, groups = "client")
@@ -64,8 +63,7 @@ public class ClientTests {
             event.register(stickKey);
         });
 
-        test.eventListeners().forge().addListener((final TickEvent.ClientTickEvent event) -> {
-            if (event.phase != TickEvent.Phase.START) return;
+        test.eventListeners().forge().addListener((ClientTickEvent.Pre event) -> {
             if (stickKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.STICK)) {
@@ -91,9 +89,8 @@ public class ClientTests {
             z = position.z;
         }
 
-        @NotNull
         @Override
-        public CompletableFuture<AudioStream> getStream(@NotNull SoundBufferLibrary soundBuffers, @NotNull Sound sound, boolean looping) {
+        public CompletableFuture<AudioStream> getStream(SoundBufferLibrary soundBuffers, Sound sound, boolean looping) {
             return CompletableFuture.completedFuture(new SineStream());
         }
     }
@@ -104,13 +101,11 @@ public class ClientTests {
 
         private static double value = 0;
 
-        @NotNull
         @Override
         public AudioFormat getFormat() {
             return FORMAT;
         }
 
-        @NotNull
         @Override
         public ByteBuffer read(int capacity) {
             ByteBuffer buffer = BufferUtils.createByteBuffer(capacity);

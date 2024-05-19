@@ -1,18 +1,18 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -97,9 +_,9 @@
-         Entity $$11 = this.entity;
-         if ($$11 instanceof ItemFrame itemframe && this.tickCount % 10 == 0) {
+@@ -100,9 +_,9 @@
+ 
+         if (this.entity instanceof ItemFrame itemframe && this.tickCount % 10 == 0) {
              ItemStack itemstack = itemframe.getItem();
 -            if (itemstack.getItem() instanceof MapItem) {
 +            if (true) {
-                 Integer integer = MapItem.getMapId(itemstack);
--                MapItemSavedData mapitemsaveddata = MapItem.getSavedData(integer, this.level);
+                 MapId mapid = itemstack.get(DataComponents.MAP_ID);
+-                MapItemSavedData mapitemsaveddata = MapItem.getSavedData(mapid, this.level);
 +                MapItemSavedData mapitemsaveddata = MapItem.getSavedData(itemstack, this.level);
                  if (mapitemsaveddata != null) {
-                     for(ServerPlayer serverplayer : this.level.players()) {
+                     for (ServerPlayer serverplayer : this.level.players()) {
                          mapitemsaveddata.tickCarriedBy(serverplayer, itemstack);
-@@ -219,16 +_,18 @@
+@@ -230,16 +_,18 @@
      public void removePairing(ServerPlayer p_8535_) {
          this.entity.stopSeenByPlayer(p_8535_);
          p_8535_.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));
@@ -20,9 +20,8 @@
      }
  
      public void addPairing(ServerPlayer p_8542_) {
--        List<Packet<ClientGamePacketListener>> list = new ArrayList<>();
+         List<Packet<? super ClientGamePacketListener>> list = new ArrayList<>();
 -        this.sendPairingData(p_8542_, list::add);
-+        List<Packet<? super ClientGamePacketListener>> list = new ArrayList<>();
 +        this.sendPairingData(p_8542_, new net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor<>(list::add));
          p_8542_.connection.send(new ClientboundBundlePacket(list));
          this.entity.startSeenByPlayer(p_8542_);
@@ -34,7 +33,7 @@
          if (this.entity.isRemoved()) {
              LOGGER.warn("Fetching packet for removed entity {}", this.entity);
          }
-@@ -236,6 +_,7 @@
+@@ -247,6 +_,7 @@
          Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket();
          this.yHeadRotp = Mth.floor(this.entity.getYHeadRot() * 256.0F / 360.0F);
          p_289563_.accept(packet);

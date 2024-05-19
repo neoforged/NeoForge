@@ -1,30 +1,5 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -29,11 +_,24 @@
- import net.minecraft.world.phys.HitResult;
- 
- public class BucketItem extends Item implements DispensibleContainerItem {
-+    /** Neo: Field accesses are redirected to {@link #getFluid()} with a coremod. */
-     private final Fluid content;
- 
-+    // Forge: Use the other constructor that takes a Supplier
-+    @Deprecated
-     public BucketItem(Fluid p_40689_, Item.Properties p_40690_) {
-         super(p_40690_);
-         this.content = p_40689_;
-+        this.fluidSupplier = () -> p_40689_;
-+    }
-+
-+    /**
-+     * @param supplier A fluid supplier such as {@link net.neoforged.neoforge.registries.DeferredHolder}
-+     */
-+    public BucketItem(java.util.function.Supplier<? extends Fluid> supplier, Item.Properties builder) {
-+        super(builder);
-+        this.content = null;
-+        this.fluidSupplier = supplier;
-     }
- 
-     @Override
 @@ -42,6 +_,8 @@
          BlockHitResult blockhitresult = getPlayerPOVHitResult(
              p_40703_, p_40704_, this.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE
@@ -34,7 +9,7 @@
          if (blockhitresult.getType() == HitResult.Type.MISS) {
              return InteractionResultHolder.pass(itemstack);
          } else if (blockhitresult.getType() != HitResult.Type.BLOCK) {
-@@ -59,7 +_,7 @@
+@@ -58,7 +_,7 @@
                      ItemStack itemstack2 = bucketpickup.pickupBlock(p_40704_, p_40703_, blockpos, blockstate1);
                      if (!itemstack2.isEmpty()) {
                          p_40704_.awardStat(Stats.ITEM_USED.get(this));
@@ -43,7 +18,7 @@
                          p_40703_.gameEvent(p_40704_, GameEvent.FLUID_PICKUP, blockpos);
                          ItemStack itemstack1 = ItemUtils.createFilledResult(itemstack, p_40704_, itemstack2);
                          if (!p_40703_.isClientSide) {
-@@ -73,8 +_,8 @@
+@@ -72,8 +_,8 @@
                  return InteractionResultHolder.fail(itemstack);
              } else {
                  BlockState blockstate = p_40703_.getBlockState(blockpos);
@@ -54,32 +29,19 @@
                      this.checkExtraContent(p_40704_, p_40703_, itemstack, blockpos2);
                      if (p_40704_ instanceof ServerPlayer) {
                          CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)p_40704_, blockpos2, itemstack);
-@@ -98,9 +_,14 @@
+@@ -97,7 +_,11 @@
      }
  
      @Override
-+    @Deprecated //Forge: use the ItemStack sensitive version
++    @Deprecated // Neo: use the ItemStack sensitive version
      public boolean emptyContents(@Nullable Player p_150716_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_) {
-         Fluid $$6 = this.content;
--        if (!($$6 instanceof FlowingFluid)) {
 +        return this.emptyContents(p_150716_, p_150717_, p_150718_, p_150719_, null);
 +    }
-+
 +    public boolean emptyContents(@Nullable Player p_150716_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_, @Nullable ItemStack container) {
-+        if (!(this.content instanceof FlowingFluid)) {
+         if (!(this.content instanceof FlowingFluid flowingfluid)) {
              return false;
          } else {
-             FlowingFluid flowingfluid;
-@@ -109,7 +_,7 @@
-             boolean flag2;
-             BlockState blockstate;
-             label82: {
--                flowingfluid = (FlowingFluid)$$6;
-+                flowingfluid = (FlowingFluid)this.content;
-                 blockstate = p_150717_.getBlockState(p_150718_);
-                 $$7 = blockstate.getBlock();
-                 $$8 = blockstate.canBeReplaced(this.content);
-@@ -128,8 +_,12 @@
+@@ -124,8 +_,12 @@
              }
  
              boolean flag1 = flag2;
@@ -93,7 +55,7 @@
              } else if (p_150717_.dimensionType().ultraWarm() && this.content.is(FluidTags.WATER)) {
                  int l = p_150718_.getX();
                  int i = p_150718_.getY();
-@@ -151,7 +_,7 @@
+@@ -147,7 +_,7 @@
  
                  return true;
              } else {
@@ -102,7 +64,7 @@
                      liquidblockcontainer1.placeLiquid(p_150717_, p_150718_, blockstate, flowingfluid.getSource(false));
                      this.playEmptySound(p_150716_, p_150717_, p_150718_);
                      return true;
-@@ -172,8 +_,17 @@
+@@ -168,8 +_,14 @@
      }
  
      protected void playEmptySound(@Nullable Player p_40696_, LevelAccessor p_40697_, BlockPos p_40698_) {
@@ -112,9 +74,6 @@
          p_40697_.playSound(p_40696_, p_40698_, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
          p_40697_.gameEvent(p_40696_, GameEvent.FLUID_PLACE, p_40698_);
 +    }
-+
-+    private final java.util.function.Supplier<? extends Fluid> fluidSupplier;
-+    public Fluid getFluid() { return fluidSupplier.get(); }
 +
 +    protected boolean canBlockContainFluid(@Nullable Player player, Level worldIn, BlockPos posIn, BlockState blockstate)
 +    {

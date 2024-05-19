@@ -6,14 +6,12 @@
 package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
-import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
@@ -31,11 +29,36 @@ public class AddPackFinderEventTest {
 
     @SubscribeEvent
     public void addPackFinders(AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            var resourcePath = ModList.get().getModFileById(MODID).getFile().findResource("test_nested_resource_pack");
-            var pack = Pack.readMetaAndCreate("builtin/add_pack_finders_test", Component.literal("display name"), true,
-                    BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath, true)), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.BUILT_IN);
-            event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
-        }
+        event.addPackFinders(
+                new ResourceLocation(MODID, "test_disabled_data_pack"),
+                PackType.SERVER_DATA,
+                Component.literal("Disabled-By-Default DataPack Name"),
+                PackSource.FEATURE,
+                false,
+                Pack.Position.TOP);
+
+        event.addPackFinders(
+                new ResourceLocation(MODID, "test_enabled_data_pack"),
+                PackType.SERVER_DATA,
+                Component.literal("Enabled-By-Default DataPack Name"),
+                PackSource.BUILT_IN,
+                false,
+                Pack.Position.TOP);
+
+        event.addPackFinders(
+                new ResourceLocation(MODID, "test_disabled_resource_pack"),
+                PackType.CLIENT_RESOURCES,
+                Component.literal("Disabled-By-Default ResourcePack Name"),
+                PackSource.BUILT_IN,
+                false,
+                Pack.Position.TOP);
+
+        event.addPackFinders(
+                new ResourceLocation(MODID, "test_always_enabled_resource_pack"),
+                PackType.CLIENT_RESOURCES,
+                Component.literal("Forced-Enabled-Always ResourcePack Name"),
+                PackSource.BUILT_IN,
+                true,
+                Pack.Position.TOP);
     }
 }

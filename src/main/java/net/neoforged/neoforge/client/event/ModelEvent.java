@@ -8,14 +8,16 @@ package net.neoforged.neoforge.client.event;
 import com.google.common.base.Preconditions;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import org.jetbrains.annotations.ApiStatus;
@@ -44,11 +46,13 @@ public abstract class ModelEvent extends Event {
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final Map<ResourceLocation, BakedModel> models;
+        private final Function<Material, TextureAtlasSprite> textureGetter;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
+        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, Function<Material, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
             this.models = models;
+            this.textureGetter = textureGetter;
             this.modelBakery = modelBakery;
         }
 
@@ -57,6 +61,17 @@ public abstract class ModelEvent extends Event {
          */
         public Map<ResourceLocation, BakedModel> getModels() {
             return models;
+        }
+
+        /**
+         * Returns a lookup function to retrieve {@link TextureAtlasSprite}s by name from any of the atlases handled by
+         * the {@link ModelManager}. See {@link ModelManager#VANILLA_ATLASES} for the atlases accessible through the
+         * returned function
+         *
+         * @return a function to lookup sprites from an atlas by name
+         */
+        public Function<Material, TextureAtlasSprite> getTextureGetter() {
+            return textureGetter;
         }
 
         /**
@@ -148,16 +163,6 @@ public abstract class ModelEvent extends Event {
         @ApiStatus.Internal
         public RegisterGeometryLoaders(Map<ResourceLocation, IGeometryLoader<?>> loaders) {
             this.loaders = loaders;
-        }
-
-        /**
-         * Registers a new geometry loader.
-         * 
-         * @deprecated Use {@link #register(ResourceLocation, IGeometryLoader) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
-         */
-        @Deprecated(forRemoval = true, since = "1.20.2")
-        public void register(String name, IGeometryLoader<?> loader) {
-            register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), loader);
         }
 
         /**

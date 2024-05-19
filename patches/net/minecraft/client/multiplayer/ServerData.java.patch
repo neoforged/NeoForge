@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/multiplayer/ServerData.java
 +++ b/net/minecraft/client/multiplayer/ServerData.java
-@@ -35,6 +_,7 @@
+@@ -34,6 +_,7 @@
      private byte[] iconBytes;
      private ServerData.Type type;
-     private boolean enforcesSecureChat;
+     private ServerData.State state = ServerData.State.INITIAL;
 +    public net.neoforged.neoforge.client.ExtendedServerListData neoForgeData = null;
  
      public ServerData(String p_105375_, String p_105376_, ServerData.Type p_295587_) {

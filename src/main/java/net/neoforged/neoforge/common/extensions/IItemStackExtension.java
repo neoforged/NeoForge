@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.Map;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -17,29 +19,33 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.HorseArmorItem;
+import net.minecraft.world.item.AdventureModePredicate;
+import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -71,20 +77,31 @@ public interface IItemStackExtension {
     }
 
     /**
-     * @return the fuel burn time for this itemStack in a furnace. Return 0 to make
-     *         it not act as a fuel. Return -1 to let the default vanilla logic
-     *         decide.
+     * Returns the fuel burn time for this item stack. If it is zero, this item is not a fuel.
+     * <p>
+     * Will never return a negative value.
+     * 
+     * @return the fuel burn time for this item stack in a furnace.
+     * @apiNote This method by default returns the {@code burn_time} specified in
+     *          the {@code furnace_fuels.json} file.
      */
     default int getBurnTime(@Nullable RecipeType<?> recipeType) {
-        return self().getItem().getBurnTime(self(), recipeType);
+        if (self().isEmpty()) {
+            return 0;
+        }
+        int burnTime = self().getItem().getBurnTime(self(), recipeType);
+        if (burnTime < 0) {
+            throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
+        }
+        return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
         Player entityplayer = context.getPlayer();
         BlockPos blockpos = context.getClickedPos();
         BlockInWorld blockworldstate = new BlockInWorld(context.getLevel(), blockpos, false);
-        Registry<Block> registry = entityplayer.level().registryAccess().registryOrThrow(Registries.BLOCK);
-        if (entityplayer != null && !entityplayer.getAbilities().mayBuild && !self().hasAdventureModePlaceTagForBlock(registry, blockworldstate)) {
+        AdventureModePredicate adventureModePredicate = self().get(DataComponents.CAN_PLACE_ON);
+        if (entityplayer != null && !entityplayer.getAbilities().mayBuild && (adventureModePredicate == null || !adventureModePredicate.test(blockworldstate))) {
             return InteractionResult.PASS;
         } else {
             Item item = self().getItem();
@@ -154,14 +171,14 @@ public interface IItemStackExtension {
      * <p>
      * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}.
      * <p>
-     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
+     * Use in place of {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
      * <p>
-     * Use {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} instead when modifying the item's enchantments.
+     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
      *
      * @param enchantment The enchantment being checked for.
      * @return The level of the enchantment, or 0 if not present.
      * @see #getAllEnchantments()
-     * @see EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)
+     * @see DataComponents#ENCHANTMENTS
      */
     default int getEnchantmentLevel(Enchantment enchantment) {
         int level = self().getItem().getEnchantmentLevel(self(), enchantment);
@@ -171,17 +188,17 @@ public interface IItemStackExtension {
     /**
      * Gets the gameplay level of all enchantments on this stack.
      * <p>
-     * Use in place of {@link EnchantmentHelper#getEnchantments(ItemStack)} for gameplay logic.
+     * Use in place of {@link DataComponents#ENCHANTMENTS} for gameplay logic.
      * <p>
-     * Use {@link EnchantmentHelper#getEnchantments(ItemStack)} instead when modifying the item's enchantments.
+     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
      *
-     * @return Map of all enchantments on the stack, or an empty empty if no enchantments are present.
+     * @return Map of all enchantments on the stack, or an empty map if no enchantments are present.
      * @see #getEnchantmentLevel(Enchantment)
-     * @see EnchantmentHelper#getEnchantments(ItemStack)
+     * @see DataComponents#ENCHANTMENTS
      */
-    default Map<Enchantment, Integer> getAllEnchantments() {
-        Map<Enchantment, Integer> map = self().getItem().getAllEnchantments(self());
-        return EventHooks.getEnchantmentLevel(map, self());
+    default ItemEnchantments getAllEnchantments() {
+        var enchantments = self().getItem().getAllEnchantments(self());
+        return EventHooks.getEnchantmentLevel(enchantments, self());
     }
 
     /**
@@ -272,21 +289,24 @@ public interface IItemStackExtension {
 
     /**
      * Called to tick armor in the armor slot. Override to do something
+     * 
+     * @deprecated Use {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} by checking that the slot argument is an armor slot. Armor slots are 36, 37, 38 and 39.
      */
+    @Deprecated(forRemoval = true, since = "1.20.4")
     default void onArmorTick(Level level, Player player) {
         self().getItem().onArmorTick(self(), level, player);
     }
 
     /**
-     * Called every tick when this item is equipped {@linkplain AbstractHorse#isArmor(ItemStack) as an armor item} by a horse {@linkplain AbstractHorse#canWearArmor() that can wear armor}.
+     * Called every tick when this item is equipped {@linkplain Mob#isBodyArmorItem(ItemStack) as an armor item} by a horse {@linkplain Mob#canWearBodyArmor()} that can wear armor}.
      * <p>
-     * In vanilla, only {@linkplain Horse horses} can wear armor, and they can only equip items that extend {@link HorseArmorItem}.
+     * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
      *
      * @param level The level the horse is in
      * @param horse The horse wearing this item
      */
-    default void onHorseArmorTick(Level level, Mob horse) {
-        self().getItem().onHorseArmorTick(self(), level, horse);
+    default void onAnimalArmorTick(Level level, Mob horse) {
+        self().getItem().onAnimalArmorTick(self(), level, horse);
     }
 
     /**
@@ -432,8 +452,8 @@ public interface IItemStackExtension {
      * @param target the entity targeted by the attack.
      * @return the bounding box.
      */
-    @NotNull
-    default AABB getSweepHitBox(@NotNull Player player, @NotNull Entity target) {
+
+    default AABB getSweepHitBox(Player player, Entity target) {
         return self().getItem().getSweepHitBox(self(), player, target);
     }
 
@@ -490,5 +510,23 @@ public interface IItemStackExtension {
     @Nullable
     default <T> T getCapability(ItemCapability<T, Void> capability) {
         return capability.getCapability(self(), null);
+    }
+
+    /**
+     * {@return the attribute modifiers for the given equipment slot}
+     * <p>
+     * Fires ItemAttributeModifierEvent to compute the final attribute modifiers.
+     * 
+     * @param equipmentSlot the equipment slot to get the attribute modifiers for
+     */
+    default Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
+        ItemAttributeModifiers itemattributemodifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+        Multimap<Holder<Attribute>, AttributeModifier> multimap = LinkedHashMultimap.create();
+        if (!itemattributemodifiers.modifiers().isEmpty()) {
+            itemattributemodifiers.forEach(equipmentSlot, multimap::put);
+        } else {
+            self().getItem().getAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
+        }
+        return CommonHooks.getAttributeModifiers(self(), equipmentSlot, multimap);
     }
 }

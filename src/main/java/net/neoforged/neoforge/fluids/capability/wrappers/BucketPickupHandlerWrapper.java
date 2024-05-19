@@ -18,7 +18,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 public class BucketPickupHandlerWrapper implements IFluidHandler {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -40,7 +39,6 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         if (tank == 0) {
@@ -59,7 +57,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
@@ -68,27 +66,26 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
         return 0;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (!resource.isEmpty() && FluidType.BUCKET_VOLUME <= resource.getAmount()) {
             FluidState fluidState = world.getFluidState(blockPos);
-            if (!fluidState.isEmpty() && resource.getFluid() == fluidState.getType()) {
+            if (!fluidState.isEmpty() && resource.is(fluidState.getType())) {
                 if (action.execute()) {
                     ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                     if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket) {
-                        FluidStack extracted = new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);
-                        if (!resource.isFluidEqual(extracted)) {
+                        FluidStack extracted = new FluidStack(bucket.content, FluidType.BUCKET_VOLUME);
+                        if (!FluidStack.isSameFluidSameComponents(resource, extracted)) {
                             //Be loud if something went wrong
                             LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
-                                    BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.getFluid()));
+                                    BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.content));
                             return FluidStack.EMPTY;
                         }
                         return extracted;
                     }
                 } else {
                     FluidStack extracted = new FluidStack(fluidState.getType(), FluidType.BUCKET_VOLUME);
-                    if (resource.isFluidEqual(extracted)) {
+                    if (FluidStack.isSameFluid(resource, extracted)) {
                         //Validate NBT matches
                         return extracted;
                     }
@@ -98,7 +95,6 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
         return FluidStack.EMPTY;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (FluidType.BUCKET_VOLUME <= maxDrain) {
@@ -109,7 +105,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
                 }
                 ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                 if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket) {
-                    return new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);
+                    return new FluidStack(bucket.content, FluidType.BUCKET_VOLUME);
                 }
             }
         }

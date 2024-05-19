@@ -30,7 +30,7 @@
      }
  
      public static boolean isExceptionForConnection(BlockState p_152464_) {
-@@ -213,6 +_,8 @@
+@@ -209,6 +_,8 @@
          BlockState blockstate = p_152446_.getBlockState(p_152449_);
          if (p_152445_.skipRendering(blockstate, p_152448_)) {
              return false;
@@ -39,7 +39,7 @@
          } else if (blockstate.canOcclude()) {
              Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(p_152445_, blockstate, p_152448_);
              Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> object2bytelinkedopenhashmap = OCCLUSION_CACHE.get();
-@@ -305,9 +_,12 @@
+@@ -297,9 +_,12 @@
      public static void dropResources(
          BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
      ) {
@@ -53,7 +53,7 @@
          }
      }
  
-@@ -335,7 +_,7 @@
+@@ -327,7 +_,7 @@
      }
  
      private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
@@ -62,7 +62,7 @@
              ItemEntity itementity = p_152442_.get();
              itementity.setDefaultPickUpDelay();
              p_152441_.addFreshEntity(itementity);
-@@ -343,11 +_,12 @@
+@@ -335,11 +_,12 @@
      }
  
      public void popExperience(ServerLevel p_49806_, BlockPos p_49807_, int p_49808_) {
@@ -76,7 +76,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -366,7 +_,8 @@
+@@ -358,7 +_,8 @@
      public void playerDestroy(Level p_49827_, Player p_49828_, BlockPos p_49829_, BlockState p_49830_, @Nullable BlockEntity p_49831_, ItemStack p_49832_) {
          p_49828_.awardStat(Stats.BLOCK_MINED.get(this));
          p_49828_.causeFoodExhaustion(0.005F);
@@ -86,7 +86,7 @@
      }
  
      public void setPlacedBy(Level p_49847_, BlockPos p_49848_, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack p_49851_) {
-@@ -394,8 +_,10 @@
+@@ -386,8 +_,10 @@
  
      public void updateEntityAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
          p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0, 0.0, 1.0));
@@ -97,7 +97,7 @@
      public ItemStack getCloneItemStack(LevelReader p_304395_, BlockPos p_49824_, BlockState p_49825_) {
          return new ItemStack(this);
      }
-@@ -429,6 +_,7 @@
+@@ -421,6 +_,7 @@
      public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
      }
  
@@ -105,15 +105,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -464,6 +_,7 @@
-         return p_152456_.setValue(p_152457_, p_152455_.getValue(p_152457_));
-     }
- 
-+    @Deprecated //Forge: Use more sensitive version {@link IForgeBlockState#getSoundType(IWorldReader, BlockPos, Entity) }
-     public SoundType getSoundType(BlockState p_49963_) {
-         return this.soundType;
-     }
-@@ -498,6 +_,75 @@
+@@ -486,6 +_,75 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  
@@ -130,7 +122,7 @@
 +
 +    private void initClient() {
 +        // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
-+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.fml.loading.FMLLoader.getLaunchHandler().isData()) {
++        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen()) {
 +            initializeClient(properties -> {
 +                if (properties == this)
 +                    throw new IllegalStateException("Don't extend IBlockRenderProperties in your block, use an anonymous class instead.");

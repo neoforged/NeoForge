@@ -4,7 +4,7 @@
   "group": "wooden_fence",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "W": {
       "item": "minecraft:warped_planks"
@@ -16,6 +16,6 @@
   ],
   "result": {
     "count": 3,
-    "item": "minecraft:warped_fence"
+    "id": "minecraft:warped_fence"
   }
 }

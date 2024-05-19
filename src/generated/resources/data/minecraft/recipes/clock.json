@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "X": {
       "item": "minecraft:redstone"
@@ -15,6 +15,7 @@
     " # "
   ],
   "result": {
-    "item": "minecraft:clock"
+    "count": 1,
+    "id": "minecraft:clock"
   }
 }

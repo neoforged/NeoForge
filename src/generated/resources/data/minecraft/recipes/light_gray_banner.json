@@ -7,7 +7,7 @@
       "item": "minecraft:light_gray_wool"
     },
     "|": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "pattern": [
@@ -16,6 +16,7 @@
     " | "
   ],
   "result": {
-    "item": "minecraft:light_gray_banner"
+    "count": 1,
+    "id": "minecraft:light_gray_banner"
   }
 }

@@ -8,7 +8,6 @@ package net.neoforged.testframework.client;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public class CommitBasedList<T> implements Iterable<T> {
     private final List<T> backend;
@@ -47,7 +46,6 @@ public class CommitBasedList<T> implements Iterable<T> {
         return backend;
     }
 
-    @NotNull
     @Override
     public Iterator<T> iterator() {
         return get().iterator();

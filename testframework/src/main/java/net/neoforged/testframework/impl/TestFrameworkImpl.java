@@ -5,21 +5,8 @@
 
 package net.neoforged.testframework.impl;
 
-import static java.time.temporal.ChronoField.DAY_OF_MONTH;
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
-import static java.time.temporal.ChronoField.YEAR;
-
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +16,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -43,6 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -51,7 +38,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -66,14 +53,19 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
+import net.neoforged.testframework.conf.MissingDescriptionAction;
 import net.neoforged.testframework.gametest.DynamicStructureTemplates;
+import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.impl.packet.ChangeEnabledPayload;
 import net.neoforged.testframework.impl.packet.ChangeStatusPayload;
 import net.neoforged.testframework.impl.packet.TestFrameworkPayloadInitialization;
+import net.neoforged.testframework.summary.SummaryDumper;
+import net.neoforged.testframework.summary.TestSummary;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,26 +74,6 @@ import org.slf4j.LoggerFactory;
 @MethodsReturnNonnullByDefault
 public class TestFrameworkImpl implements MutableTestFramework {
     static final Set<TestFrameworkImpl> FRAMEWORKS = Collections.synchronizedSet(new HashSet<>());
-
-    //@formatter:off
-    private static final DateTimeFormatter LOG_FORMAT = new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-                .appendValue(DAY_OF_MONTH, 2)
-                .appendLiteral('-')
-                .appendValue(MONTH_OF_YEAR, 2)
-                .appendLiteral('-')
-                .appendValue(YEAR, 4)
-            .optionalStart()
-                .appendLiteral('_')
-                .parseLenient()
-                .appendValue(HOUR_OF_DAY, 2)
-                .appendLiteral('-')
-                .appendValue(MINUTE_OF_HOUR, 2)
-            .optionalEnd()
-            .toFormatter()
-            .withLocale(Locale.getDefault())
-            .withZone(ZoneId.systemDefault());
-    //@formatter:on
 
     private final FrameworkConfiguration configuration;
     private final @Nullable FrameworkClient client;
@@ -112,9 +84,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     private @Nullable MinecraftServer server;
     private final DynamicStructureTemplates structures;
-    private final SummaryDumper summaryDumper;
 
-    private String commandName;
+    private @UnknownNullability String commandName;
 
     public TestFrameworkImpl(FrameworkConfiguration configuration) {
         FRAMEWORKS.add(this);
@@ -122,7 +93,6 @@ public class TestFrameworkImpl implements MutableTestFramework {
         this.configuration = configuration;
         this.id = configuration.id();
         this.structures = new DynamicStructureTemplates();
-        this.summaryDumper = new SummaryDumper(this);
 
         this.logger = LoggerFactory.getLogger("TestFramework " + this.id);
         new LoggerSetup(this).prepareLogger();
@@ -146,27 +116,25 @@ public class TestFrameworkImpl implements MutableTestFramework {
         NeoForge.EVENT_BUS.addListener((final ServerStoppedEvent event) -> {
             server = event.getServer() == server ? null : server;
 
-            if (!configuration().isEnabled(Feature.SUMMARY_DUMP)) return;
+            if (configuration().isEnabled(Feature.SUMMARY_DUMP)) {
+                boolean isGameTestRun = event.getServer() instanceof GameTestServer;
 
-            // Summarise test results
-            logger().info("Test summary processing...");
-            logger().info("Test summary:\n{}", summaryDumper.createLoggingSummary());
+                // Summarise test results
+                var builder = new TestSummary.Builder(id(), isGameTestRun);
+                tests().all().forEach(test -> {
+                    String id = test.id();
+                    Test.Status status = tests().getStatus(id);
+                    boolean enabled = tests().isEnabled(id);
+                    GameTestData gameTest = test.asGameTest();
+                    Test.Visuals visuals = test.visuals();
+                    Component title = visuals.title();
+                    List<Component> description = visuals.description();
+                    boolean isManual = gameTest == null;
+                    builder.addTest(id, title, description, status, test.groups(), enabled || (!isManual && isGameTestRun), isManual, !isManual && gameTest.required());
+                });
+                processSummary(builder.build());
+            }
 
-            final Path dumpPath = Path.of("logs/tests/" + id().toString().replace(":", "_") + "/summary_" + LOG_FORMAT.format(ZonedDateTime.now()) + ".md");
-            final String summary = """
-                    # Test Summary
-
-                    ## Disabled Tests
-                    %s
-
-                    ## Enabled Tests
-                    %s
-
-                    %s"""
-                    .formatted(summaryDumper.createDisabledList(), summaryDumper.createEnabledList(), summaryDumper.dumpTable());
-            LamdbaExceptionUtils.uncheck(() -> Files.createDirectories(dumpPath.getParent()));
-            LamdbaExceptionUtils.uncheck(() -> Files.writeString(dumpPath, summary));
-            logger().info("Dumped test summary to {}", dumpPath);
             logger().info("Test Framework finished.");
         });
 
@@ -185,14 +153,13 @@ public class TestFrameworkImpl implements MutableTestFramework {
                         .limit(20)
                         .flatMap(it -> tests().byId(it).stream())
                         .<Component>map(it -> Component.literal("- ")
-                                .append(it.visuals().title()).append(" - ").append(tests().isEnabled(it.id()) ? Component.literal("disable")
-                                        .withStyle(style -> style
+                                .append(it.visuals().title()).append(" - ").append(tests().isEnabled(it.id())
+                                        ? Component.literal("disable").withStyle(style -> style
                                                 .withColor(ChatFormatting.RED).withBold(true)
                                                 .withClickEvent(disableCommand(it.id())))
-                                        : Component.literal("enable")
-                                                .withStyle(style -> style
-                                                        .withColor(ChatFormatting.GREEN).withBold(true)
-                                                        .withClickEvent(enableCommand(it.id())))))
+                                        : Component.literal("enable").withStyle(style -> style
+                                                .withColor(ChatFormatting.GREEN).withBold(true)
+                                                .withClickEvent(enableCommand(it.id())))))
                         .iterator();
                 while (tests.hasNext()) {
                     final Component current = tests.next();
@@ -203,6 +170,13 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 }
                 event.getEntity().sendSystemMessage(message);
             });
+        }
+    }
+
+    private void processSummary(TestSummary summary) {
+        for (SummaryDumper formatter : configuration().dumpers()) {
+            if (formatter.enabled(summary))
+                formatter.dump(summary, logger);
         }
     }
 
@@ -233,15 +207,17 @@ public class TestFrameworkImpl implements MutableTestFramework {
         return configuration;
     }
 
-    private IEventBus modBus;
+    private @UnknownNullability IEventBus modBus;
+    private @UnknownNullability ModContainer container;
 
     @Override
     public void init(final IEventBus modBus, final ModContainer container) {
+        this.container = container;
         final var byStage = FrameworkCollectors
                 .onInitMethodsWithAnnotation(container);
 
         this.modBus = modBus;
-        tests.buses = Map.of(Mod.EventBusSubscriber.Bus.FORGE, NeoForge.EVENT_BUS, Mod.EventBusSubscriber.Bus.MOD, modBus);
+        tests.buses = Map.of(EventBusSubscriber.Bus.GAME, NeoForge.EVENT_BUS, EventBusSubscriber.Bus.MOD, modBus);
 
         byStage.get(OnInit.Stage.BEFORE_SETUP).forEach(cons -> cons.accept(this));
 
@@ -296,6 +272,11 @@ public class TestFrameworkImpl implements MutableTestFramework {
     }
 
     @Override
+    public ModContainer container() {
+        return container;
+    }
+
+    @Override
     public ResourceLocation id() {
         return id;
     }
@@ -325,8 +306,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(
-                () -> PacketDistributor.ALL.noArg().send(packet),
-                () -> PacketDistributor.SERVER.noArg().send(packet),
+                () -> PacketDistributor.sendToAllPlayers(packet),
+                () -> PacketDistributor.sendToServer(packet),
                 null);
     }
 
@@ -343,7 +324,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         logger.info("Test '{}' has been {}{}.", test.id(), enabled ? "enabled" : "disabled", changer instanceof Player player ? " by " + player.getGameProfile().getName() : "");
 
         if (enabled) {
-            changeStatus(test, new Test.Status(Test.Result.NOT_PROCESSED, ""), changer);
+            changeStatus(test, Test.Status.DEFAULT, changer);
         }
 
         final Consumer<TestListener> listenerConsumer = enabled ? listener -> listener.onEnabled(this, test, changer) : listener -> listener.onDisabled(this, test, changer);
@@ -352,8 +333,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         final ChangeEnabledPayload packet = new ChangeEnabledPayload(TestFrameworkImpl.this, test.id(), enabled);
         sendPacketIfOn(
-                () -> PacketDistributor.ALL.noArg().send(packet),
-                () -> PacketDistributor.SERVER.noArg().send(packet),
+                () -> PacketDistributor.sendToAllPlayers(packet),
+                () -> PacketDistributor.sendToServer(packet),
                 null);
     }
 
@@ -376,7 +357,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         private final Map<String, EventListenerGroupImpl> collectors = new HashMap<>();
         private final Set<String> enabled = Collections.synchronizedSet(new LinkedHashSet<>());
         private final Map<String, Test.Status> statuses = new ConcurrentHashMap<>();
-        private Map<Mod.EventBusSubscriber.Bus, IEventBus> buses = Map.of();
+        private Map<EventBusSubscriber.Bus, IEventBus> buses = Map.of();
 
         private final Set<TestListener> globalListeners = new HashSet<>();
 
@@ -448,6 +429,14 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 throw new UnsupportedOperationException("Duplicate test with ID: " + test.id());
             }
 
+            if (test.visuals() == null || test.visuals().description() == null || test.visuals().description().isEmpty()) {
+                if (configuration.onMissingDescription() == MissingDescriptionAction.ERROR) {
+                    throw new IllegalStateException("Test '" + test.id() + "' has no description.");
+                } else if (configuration.onMissingDescription() == MissingDescriptionAction.WARNING) {
+                    logger.warn("Test '{}' has no description.", test.id());
+                }
+            }
+
             tests.put(test.id(), test);
             if (test.groups().isEmpty()) {
                 getOrCreateGroup("ungrouped").add(test);
@@ -504,7 +493,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 if (isEnabledByDefault.test(test)) {
                     enable(test.id());
                 }
-                setStatus(test.id(), new Test.Status(Test.Result.NOT_PROCESSED, ""));
+                setStatus(test.id(), Test.Status.DEFAULT);
             }
         }
     }

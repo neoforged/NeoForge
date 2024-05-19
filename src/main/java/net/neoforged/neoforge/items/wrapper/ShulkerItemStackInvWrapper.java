@@ -6,22 +6,16 @@
 package net.neoforged.neoforge.items.wrapper;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
 public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     private final ItemStack stack;
-
-    private CompoundTag cachedTag;
-    private NonNullList<ItemStack> itemStacksCache;
 
     public ShulkerItemStackInvWrapper(ItemStack stack) {
         this.stack = stack;
@@ -33,15 +27,13 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack getStackInSlot(int slot) {
         validateSlotIndex(slot);
         return getItemList().get(slot);
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (stack.isEmpty())
             return ItemStack.EMPTY;
 
@@ -81,7 +73,6 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         NonNullList<ItemStack> itemStacks = getItemList();
         if (amount == 0)
@@ -125,12 +116,12 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+    public boolean isItemValid(int slot, ItemStack stack) {
         return stack.getItem().canFitInsideContainerItems();
     }
 
     @Override
-    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+    public void setStackInSlot(int slot, ItemStack stack) {
         validateSlotIndex(slot);
         if (!isItemValid(slot, stack)) throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
         NonNullList<ItemStack> itemStacks = getItemList();
@@ -139,25 +130,13 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     }
 
     private NonNullList<ItemStack> getItemList() {
-        CompoundTag rootTag = BlockItem.getBlockEntityData(this.stack);
-        if (cachedTag == null || !cachedTag.equals(rootTag))
-            itemStacksCache = refreshItemList(rootTag);
-        return itemStacksCache;
-    }
-
-    private NonNullList<ItemStack> refreshItemList(CompoundTag rootTag) {
-        NonNullList<ItemStack> itemStacks = NonNullList.withSize(getSlots(), ItemStack.EMPTY);
-        if (rootTag != null && rootTag.contains("Items", CompoundTag.TAG_LIST)) {
-            ContainerHelper.loadAllItems(rootTag, itemStacks);
-        }
-        cachedTag = rootTag;
-        return itemStacks;
+        ItemContainerContents contents = this.stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+        NonNullList<ItemStack> list = NonNullList.create();
+        contents.copyInto(list);
+        return list;
     }
 
     private void setItemList(NonNullList<ItemStack> itemStacks) {
-        CompoundTag existing = BlockItem.getBlockEntityData(this.stack);
-        CompoundTag rootTag = ContainerHelper.saveAllItems(existing == null ? new CompoundTag() : existing, itemStacks);
-        BlockItem.setBlockEntityData(this.stack, BlockEntityType.SHULKER_BOX, rootTag);
-        cachedTag = rootTag;
+        this.stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(itemStacks));
     }
 }

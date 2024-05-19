@@ -23,6 +23,7 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -31,7 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -53,6 +54,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -68,7 +70,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(FullPotsAccessorDemo.MOD_ID)
@@ -108,10 +109,8 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        @SuppressWarnings("deprecation")
-        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             if (level.getBlockEntity(pos) instanceof DioriteFlowerPotBlockEntity be) {
-                ItemStack stack = player.getItemInHand(hand);
                 boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().containsKey(BuiltInRegistries.ITEM.getKey(item));
                 boolean hasFlower = be.plant != Blocks.AIR;
 
@@ -137,12 +136,12 @@ public class FullPotsAccessorDemo {
                     }
 
                     level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                    return InteractionResult.sidedSuccess(level.isClientSide());
+                    return ItemInteractionResult.sidedSuccess(level.isClientSide());
                 } else {
-                    return InteractionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
-            return super.use(state, level, pos, player, hand, hit);
+            return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }
 
         @Override
@@ -185,13 +184,13 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public CompoundTag getUpdateTag() {
-            return saveWithFullMetadata();
+        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
+            return saveWithFullMetadata(holderLookup);
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag) {
-            super.handleUpdateTag(tag);
+        public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.handleUpdateTag(tag, holderLookup);
             modelData = modelData.derive().with(PLANT_PROPERTY, plant).build();
             requestModelDataUpdate();
         }
@@ -202,31 +201,31 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-            handleUpdateTag(pkt.getTag());
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holderLookup) {
+            handleUpdateTag(pkt.getTag(), holderLookup);
             //noinspection ConstantConditions
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.loadAdditional(tag, holderLookup);
             plant = BuiltInRegistries.BLOCK.get(new ResourceLocation(tag.getString("plant")));
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag) {
+        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             //noinspection ConstantConditions
             tag.putString("plant", BuiltInRegistries.BLOCK.getKey(plant).toString());
-            super.saveAdditional(tag);
+            super.saveAdditional(tag, holderLookup);
         }
     }
 
-    @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerLoader(final ModelEvent.RegisterGeometryLoaders event) {
-            event.register("diorite_pot", new DioritePotGeometryLoader());
+            event.register(new ResourceLocation(MOD_ID, "diorite_pot"), new DioritePotGeometryLoader());
         }
 
         private static class DioritePotGeometryLoader implements IGeometryLoader<DioritePotModelGeometry> {
@@ -258,9 +257,8 @@ public class FullPotsAccessorDemo {
                 super(wrappedModel);
             }
 
-            @NotNull
             @Override
-            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData extraData, @Nullable RenderType renderType) {
                 List<List<BakedQuad>> quads = new ArrayList<>();
                 quads.add(originalModel.getQuads(state, side, rand, extraData, renderType));
 
@@ -284,7 +282,7 @@ public class FullPotsAccessorDemo {
             }
 
             @Override
-            public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+            public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
                 return CUTOUT;
             }
         }

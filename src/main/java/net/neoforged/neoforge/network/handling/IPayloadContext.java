@@ -6,60 +6,129 @@
 package net.neoforged.neoforge.network.handling;
 
 import io.netty.channel.ChannelHandlerContext;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Defines a phase-less payload context that is passed to a handler for a payload that arrives during the connection.
+ * Common context interface for payload handlers.
  */
+@ApiStatus.NonExtendable
 public interface IPayloadContext {
     /**
-     * {@return a handler that can be used to reply to the payload}
+     * Retrieves the packet listener associated with this context.
+     * <p>
+     * For usability, this is typed to {@link ICommonPacketListener}, but can be downcast to the vanilla packet listeners if necessary.
      */
-    IReplyHandler replyHandler();
+    ICommonPacketListener listener();
 
     /**
-     * {@return a handler that can be used to have the current listener which received the payload handle another packet immediately}
+     * {@return the connection}
      */
-    IPacketHandler packetHandler();
+    default Connection connection() {
+        return this.listener().getConnection();
+    }
 
     /**
-     * {@return a handler that can execute tasks on the main thread}
+     * Retrieves the player relevant to this payload. Players are only available in the {@link ConnectionProtocol#PLAY} phase.
+     * <p>
+     * For server-bound payloads, retrieves the sending {@link ServerPlayer}.
+     * <p>
+     * For client-bound payloads, retrieves the receiving {@link LocalPlayer}.
+     * 
+     * @throws UnsupportedOperationException when called during the configuration phase.
      */
-    ISynchronizedWorkHandler workHandler();
+    Player player();
 
     /**
-     * {@return the flow of the packet}
+     * Sends the given payload back to the sender.
+     *
+     * @param payload The payload to send.
+     */
+    default void reply(CustomPacketPayload payload) {
+        this.listener().send(payload);
+    }
+
+    /**
+     * Disconnects the player from the network.
+     */
+    default void disconnect(Component reason) {
+        this.listener().disconnect(reason);
+    }
+
+    /**
+     * For handlers running on the network thread, submits the given task to be run on the main thread of the game.
+     * <p>
+     * For handlers running on the main thread, immediately executes the task.
+     * <p>
+     * On the network thread, the future will be automatically guarded against exceptions using {@link CompletableFuture#exceptionally}.
+     * If you need to catch your own exceptions, use a try/catch block within your task.
+     * 
+     * @param task The task to run.
+     */
+    CompletableFuture<Void> enqueueWork(Runnable task);
+
+    /**
+     * @see #enqueueWork(Runnable)
+     */
+    <T> CompletableFuture<T> enqueueWork(Supplier<T> task);
+
+    /**
+     * {@return the flow of the received payload}
      */
     PacketFlow flow();
 
     /**
      * {@return the protocol of the connection}
      */
-    ConnectionProtocol protocol();
+    default ConnectionProtocol protocol() {
+        return this.listener().protocol();
+    }
+
+    /**
+     * Handles a packet using the current context.
+     * <p>
+     * Used to trigger vanilla handling when custom payloads may be transformed into a vanilla packet.
+     *
+     * @param packet The packet.
+     */
+    default void handle(Packet<?> packet) {
+        NetworkRegistry.handlePacketUnchecked(packet, this.listener());
+    }
+
+    /**
+     * Handles a payload using the current context.
+     * <p>
+     * Used to handle sub-payloads if necessary.
+     *
+     * @param payload The payload.
+     */
+    void handle(CustomPacketPayload payload);
+
+    /**
+     * Marks a {@link ConfigurationTask} as completed.
+     *
+     * @param type The type of task that was completed.
+     * @throws UnsupportedOperationException if called on the client, or called on the server outside of the configuration phase.
+     */
+    void finishCurrentTask(ConfigurationTask.Type type);
 
     /**
      * {@return the channel handler context}
      */
-    ChannelHandlerContext channelHandlerContext();
-
-    /**
-     * {@return the player that acts within this context}
-     * 
-     * @implNote This {@link Optional} will be filled with the current client side player if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
-     */
-    Optional<Player> player();
-
-    /**
-     * {@return the level acts within this context}
-     *
-     * @implNote This {@link Optional} will be filled with the current client side level if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
-     */
-    default Optional<Level> level() {
-        return player().map(Entity::level);
+    default ChannelHandlerContext channelHandlerContext() {
+        return this.connection().channel().pipeline().lastContext();
     }
 }

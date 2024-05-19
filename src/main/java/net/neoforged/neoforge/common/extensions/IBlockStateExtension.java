@@ -16,7 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SpawnPlacements.Type;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
@@ -34,15 +33,17 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface IBlockStateExtension {
@@ -66,6 +67,17 @@ public interface IBlockStateExtension {
      */
     default float getFriction(LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return self().getBlock().getFriction(self(), level, pos, entity);
+    }
+
+    /**
+     * Whether this block state has dynamic light emission which is not solely based on its underlying block or its
+     * state properties and instead uses the {@link BlockPos}, the {@link AuxiliaryLightManager} or another external
+     * data source to determine its light value in {@link #getLightEmission(BlockGetter, BlockPos)}
+     *
+     * @return true if this block state cannot determine its light emission solely based on its properties, false otherwise
+     */
+    default boolean hasDynamicLightEmission() {
+        return self().getBlock().hasDynamicLightEmission(self());
     }
 
     /**
@@ -123,6 +135,24 @@ public interface IBlockStateExtension {
     }
 
     /**
+     * Called when a block is removed by {@link PushReaction#DESTROY}. This is responsible for
+     * actually destroying the block, and the block is intact at time of call.
+     * <p>
+     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#DESTROY}.
+     * <p>
+     * Note: When used in multiplayer, this is called on both client and
+     * server sides!
+     *
+     * @param level         The current level
+     * @param pos           Block position in level
+     * @param pushDirection The direction of block movement
+     * @param fluid         The current fluid state at current position
+     */
+    default void onDestroyedByPushReaction(Level level, BlockPos pos, Direction pushDirection, FluidState fluid) {
+        self().getBlock().onDestroyedByPushReaction(self(), level, pos, pushDirection, fluid);
+    }
+
+    /**
      * Determines if this block is classified as a Bed, Allowing
      * players to sleep in it, though the block has to specifically
      * perform the sleeping functionality in it's activated event.
@@ -134,19 +164,6 @@ public interface IBlockStateExtension {
      */
     default boolean isBed(BlockGetter level, BlockPos pos, @Nullable LivingEntity sleeper) {
         return self().getBlock().isBed(self(), level, pos, sleeper);
-    }
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @param type  The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    default boolean isValidSpawn(LevelReader level, BlockPos pos, Type type, EntityType<?> entityType) {
-        return self().getBlock().isValidSpawn(self(), level, pos, type, entityType);
     }
 
     /**
@@ -340,7 +357,7 @@ public interface IBlockStateExtension {
 
     /**
      * Determines the amount of enchanting power this block can provide to an enchanting table.
-     * 
+     *
      * @param level The level
      * @param pos   Block position in level
      * @return The amount of enchanting power this block produces.
@@ -354,7 +371,7 @@ public interface IBlockStateExtension {
      *
      * <p>This method is not suitable for listening to capability invalidations.
      * For capability invalidations specifically, use {@link BlockCapabilityCache} instead.
-     * 
+     *
      * @param level    The level
      * @param pos      Block position in level
      * @param neighbor Block position of neighbor
@@ -365,7 +382,7 @@ public interface IBlockStateExtension {
 
     /**
      * Called to determine whether to allow the block to handle its own indirect power rather than using the default rules.
-     * 
+     *
      * @param level The level
      * @param pos   Block position in level
      * @param side  The INPUT side of the block to be powered - ie the opposite of this block's output side
@@ -390,7 +407,7 @@ public interface IBlockStateExtension {
 
     /**
      * Sensitive version of getSoundType
-     * 
+     *
      * @param level  The level
      * @param pos    The position. Note that the level may not necessarily have {@code state} here!
      * @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
@@ -441,11 +458,11 @@ public interface IBlockStateExtension {
 
     /**
      * Determines if this block can stick to another block when pushed by a piston.
-     * 
+     *
      * @param other Other block
      * @return True to link blocks
      */
-    default boolean canStickTo(@NotNull BlockState other) {
+    default boolean canStickTo(BlockState other) {
         return self().getBlock().canStickTo(self(), other);
     }
 
@@ -546,7 +563,7 @@ public interface IBlockStateExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+    default PathType getBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob) {
         return self().getBlock().getBlockPathType(self(), level, pos, mob);
     }
 
@@ -563,7 +580,7 @@ public interface IBlockStateExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getAdjacentBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType) {
+    default PathType getAdjacentBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, PathType originalType) {
         return self().getBlock().getAdjacentBlockPathType(self(), level, pos, mob, originalType);
     }
 
@@ -729,5 +746,17 @@ public interface IBlockStateExtension {
      */
     default boolean isEmpty() {
         return self().getBlock().isEmpty(self());
+    }
+
+    /**
+     * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
+     * <p></p>
+     * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
+     * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
+     *
+     * @return BubbleColumnDirection.NONE for no Bubble Column. Otherwise, will spawn Bubble Column flowing with specified direction
+     */
+    default BubbleColumnDirection getBubbleColumnDirection() {
+        return self().getBlock().getBubbleColumnDirection(self());
     }
 }

@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.neoforged.neoforge.debug.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "InterfaceTestMixin",
+    "TestMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

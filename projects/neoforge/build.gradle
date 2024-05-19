@@ -1,5 +1,3 @@
-import org.gradle.api.plugins.jvm.JvmTestSuite
-
 plugins {
     id 'java-library'
     id 'maven-publish'
@@ -15,12 +13,6 @@ dynamicProject {
 
 installerProfile {
     profile = 'NeoForge'
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(project.java_version))
-    }
 }
 
 minecraft {
@@ -40,18 +32,6 @@ sourceSets {
     }
 }
 
-configurations {
-    junit {
-        transitive = true
-        canBeConsumed = true
-        canBeResolved = true
-    }
-    moduleOnly
-    runtimeClasspath {
-        exclude module: 'junit'
-    }
-}
-
 dependencies {
     runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
 
@@ -63,15 +43,15 @@ dependencies {
     moduleOnly "org.ow2.asm:asm-analysis:${project.asm_version}"
     moduleOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
     moduleOnly "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
-    userdevTestImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
-    userdevTestImplementation(project(':neoforge-junit-utils'))
 
     installer ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
+        exclude group: 'net.fabricmc'
     }
     installer ("net.neoforged.fancymodloader:earlydisplay:${project.fancy_mod_loader_version}") {
         exclude group: 'org.lwjgl'
         exclude group: 'org.slf4j'
+        exclude group: 'net.fabricmc'
     }
     installer "cpw.mods:securejarhandler:${project.securejarhandler_version}"
     installer "org.ow2.asm:asm:${project.asm_version}"
@@ -81,7 +61,6 @@ dependencies {
     installer "org.ow2.asm:asm-analysis:${project.asm_version}"
     installer "net.neoforged:accesstransformers:${project.accesstransformers_version}"
     installer "net.neoforged:bus:${project.eventbus_version}"
-    installer "net.neoforged.fancymodloader:spi:${project.fancy_mod_loader_version}"
     installer "net.neoforged:coremods:${project.coremods_version}"
     installer "cpw.mods:modlauncher:${project.modlauncher_version}"
     installer "net.minecraftforge:unsafe:${project.unsafe_version}"
@@ -91,14 +70,19 @@ dependencies {
     installer "org.apache.maven:maven-artifact:${project.apache_maven_artifact_version}"
     installer "net.jodah:typetools:${project.typetools_version}"
     installer "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
-    installer "org.spongepowered:mixin:${project.mixin_version}"
+    installer("net.fabricmc:sponge-mixin:${project.mixin_version}") { transitive = false }
     installer "org.openjdk.nashorn:nashorn-core:${project.nashorn_core_version}"
     installer ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
+    // We depend on apache commons directly as there is a difference between the version the server uses and the one the client does
+    installer "org.apache.commons:commons-lang3:${project.apache_commons_lang3_version}"
     installer ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
+    // Manually override log4j since the version coming from other `installer` dependencies is outdated
+    installer "org.apache.logging.log4j:log4j-api:${project.log4j_version}"
+    installer "org.apache.logging.log4j:log4j-core:${project.log4j_version}"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 
@@ -148,15 +132,6 @@ runTypes {
         arguments.addAll '--fml.mcVersion', project.minecraft_version
         arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
-
-    junit {
-        junit true
-
-        arguments.addAll '--fml.neoForgeVersion', project.version
-        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
-        arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.neoFormVersion', project.neoform_version
-    }
 }
 
 runs {
@@ -170,7 +145,6 @@ runs {
         programArguments.addAll '--mod', 'neoforge'
 
         modSources.add project.sourceSets.main
-        modSources.add project.sourceSets.test
 
         idea {
             primarySourceSet project.sourceSets.main
@@ -273,7 +247,10 @@ publishing {
             }
         }
 
-        changelog.publish(it)
+        if (!rootProject.isPreReleaseVersion) {
+            // Only publish a changelog for releases
+            changelog.publish(it)
+        }
 
         versionMapping {
             usage('java-api') {

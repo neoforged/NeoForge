@@ -1,13 +1,29 @@
 --- a/net/minecraft/world/level/chunk/ImposterProtoChunk.java
 +++ b/net/minecraft/world/level/chunk/ImposterProtoChunk.java
-@@ -217,6 +_,10 @@
+@@ -219,6 +_,15 @@
      }
  
      @Override
-+    public void findBlocks(java.util.function.BiPredicate<BlockState, BlockPos> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
-+        this.wrapped.findBlocks(p_285343_, p_285030_);
++    public void findBlocks(java.util.function.BiPredicate<BlockState, BlockPos> p_285465_, BiConsumer<BlockPos, BlockState> p_285030_) {
++        this.wrapped.findBlocks(p_285465_, p_285030_);
++    }
++
++    @Override
++    public void findBlocks(Predicate<BlockState> p_285465_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {
++        this.wrapped.findBlocks(p_285465_, fineFilter, p_285030_);
 +    }
 +
      public TickContainerAccess<Block> getBlockTicks() {
          return this.allowWrites ? this.wrapped.getBlockTicks() : BlackholeTickAccess.emptyContainer();
      }
+@@ -291,5 +_,10 @@
+     @Override
+     public ChunkSkyLightSources getSkyLightSources() {
+         return this.wrapped.getSkyLightSources();
++    }
++
++    @Override
++    public net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
++        return wrapped.getAttachmentHolder();
+     }
+ }

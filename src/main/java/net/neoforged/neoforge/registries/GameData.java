@@ -16,6 +16,7 @@ import net.minecraft.core.IdMapper;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -24,7 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.StartupMessageManager;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.NeoForge;
@@ -33,10 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-/**
- * INTERNAL ONLY
- * MODDERS SHOULD HAVE NO REASON TO USE THIS CLASS
- */
 @ApiStatus.Internal
 public class GameData {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -78,9 +75,7 @@ public class GameData {
     }
 
     public static void postRegisterEvents() {
-        Set<ResourceLocation> ordered = new LinkedHashSet<>(BuiltInRegistries.getVanillaRegistrationOrder());
-        ordered.retainAll(RegistryManager.getVanillaRegistryKeys());
-        ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
+        Set<ResourceLocation> ordered = GameData.getRegistrationOrder();
 
         RuntimeException aggregate = new RuntimeException();
         for (ResourceLocation rootRegistryName : ordered) {
@@ -89,9 +84,9 @@ public class GameData {
                 Registry<?> registry = Objects.requireNonNull(BuiltInRegistries.REGISTRY.get(rootRegistryName));
                 RegisterEvent registerEvent = new RegisterEvent(registryKey, registry);
 
-                StartupMessageManager.modLoaderConsumer().ifPresent(s -> s.accept("REGISTERING " + registryKey.location()));
+                StartupNotificationManager.modLoaderMessage("REGISTERING " + registryKey.location());
 
-                ModLoader.get().postEventWrapContainerInModOrder(registerEvent);
+                ModLoader.postEventWrapContainerInModOrder(registerEvent);
             } catch (Throwable t) {
                 aggregate.addSuppressed(t);
             }
@@ -110,5 +105,24 @@ public class GameData {
 
     static void fireRemapEvent(final Map<ResourceLocation, Map<ResourceLocation, IdMappingEvent.IdRemapping>> remaps, final boolean isFreezing) {
         NeoForge.EVENT_BUS.post(new IdMappingEvent(remaps, isFreezing));
+    }
+
+    /**
+     * Creates a {@link LinkedHashSet} containing the ordered list of registry names in the registration order.
+     * <p>
+     * The order is Attributes, then the remaining vanilla registries in vanilla order, then modded registries in alphabetical order.
+     * <p>
+     * Due to static init issues, this is not necessarily the order that vanilla objects are bootstrapped in.
+     * 
+     * @return A {@link LinkedHashSet} containing the registration order.
+     */
+    public static Set<ResourceLocation> getRegistrationOrder() {
+        Set<ResourceLocation> ordered = new LinkedHashSet<>();
+        ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
+        ordered.add(Registries.DATA_COMPONENT_TYPE.location()); // Vanilla order is incorrect, Item depends on data components at construction time.
+        ordered.add(Registries.ARMOR_MATERIAL.location()); // Vanilla order is incorrect, ArmorItem depends on armor materials at construction time.
+        ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
+        ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
+        return ordered;
     }
 }

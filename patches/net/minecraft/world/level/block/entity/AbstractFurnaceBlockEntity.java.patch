@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -59,6 +_,7 @@
+@@ -60,6 +_,7 @@
      public static final int NUM_DATA_VALUES = 4;
      public static final int BURN_TIME_STANDARD = 200;
      public static final int BURN_COOL_SPEED = 2;
@@ -8,21 +8,76 @@
      protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
      int litTime;
      int litDuration;
-@@ -111,8 +_,10 @@
+@@ -72,9 +_,14 @@
+         public int get(int p_58431_) {
+             switch (p_58431_) {
+                 case 0:
++                    if (litDuration > Short.MAX_VALUE) {
++                        // Neo: preserve litTime / litDuration ratio on the client as data slots are synced as shorts.
++                        return net.minecraft.util.Mth.floor(((double) litTime / litDuration) * Short.MAX_VALUE);
++                    }
++
+                     return AbstractFurnaceBlockEntity.this.litTime;
+                 case 1:
+-                    return AbstractFurnaceBlockEntity.this.litDuration;
++                    return Math.min(AbstractFurnaceBlockEntity.this.litDuration, Short.MAX_VALUE);
+                 case 2:
+                     return AbstractFurnaceBlockEntity.this.cookingProgress;
+                 case 3:
+@@ -114,18 +_,40 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
 +        this.recipeType = p_154994_;
      }
  
-+    /**@deprecated Forge: get burn times by calling CommonHooks#getBurnTime(ItemStack)*/ @Deprecated
+     public static void invalidateCache() {
+         fuelCache = null;
+     }
+ 
++    /**
++     * @deprecated Neo: get burn times by calling {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#getBurnTime(RecipeType)}
++     */
++    @Deprecated
      public static Map<Item, Integer> getFuel() {
-         Map<Item, Integer> map = Maps.newLinkedHashMap();
-         add(map, Items.LAVA_BUCKET, 20000);
-@@ -213,9 +_,9 @@
-         super.load(p_155025_);
+         Map<Item, Integer> map = fuelCache;
+         if (map != null) {
+             return map;
+         } else {
+             Map<Item, Integer> map1 = Maps.newLinkedHashMap();
++            buildFuels((e, time) -> e.ifRight(tag -> add(map1, tag, time)).ifLeft(item -> add(map1, item, time)));
++            fuelCache = map1;
++            return map1;
++        }
++    }
++
++    private static void add(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> consumer, ItemLike item, int time) {
++        consumer.accept(com.mojang.datafixers.util.Either.left(item.asItem()), time);
++    }
++
++    private static void add(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> consumer, TagKey<Item> tag, int time) {
++        consumer.accept(com.mojang.datafixers.util.Either.right(tag), time);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void buildFuels(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> map1) {
++        {
+             add(map1, Items.LAVA_BUCKET, 20000);
+             add(map1, Blocks.COAL_BLOCK, 16000);
+             add(map1, Items.BLAZE_ROD, 2400);
+@@ -185,8 +_,6 @@
+             add(map1, Blocks.AZALEA, 100);
+             add(map1, Blocks.FLOWERING_AZALEA, 100);
+             add(map1, Blocks.MANGROVE_ROOTS, 300);
+-            fuelCache = map1;
+-            return map1;
+         }
+     }
+ 
+@@ -226,9 +_,9 @@
+         super.loadAdditional(p_155025_, p_323468_);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-         ContainerHelper.loadAllItems(p_155025_, this.items);
+         ContainerHelper.loadAllItems(p_155025_, this.items, p_323468_);
 -        this.litTime = p_155025_.getShort("BurnTime");
 -        this.cookingProgress = p_155025_.getShort("CookTime");
 -        this.cookingTotalTime = p_155025_.getShort("CookTimeTotal");
@@ -32,20 +87,20 @@
          this.litDuration = this.getBurnDuration(this.items.get(1));
          CompoundTag compoundtag = p_155025_.getCompound("RecipesUsed");
  
-@@ -227,9 +_,9 @@
+@@ -240,9 +_,9 @@
      @Override
-     protected void saveAdditional(CompoundTag p_187452_) {
-         super.saveAdditional(p_187452_);
+     protected void saveAdditional(CompoundTag p_187452_, HolderLookup.Provider p_323656_) {
+         super.saveAdditional(p_187452_, p_323656_);
 -        p_187452_.putShort("BurnTime", (short)this.litTime);
 -        p_187452_.putShort("CookTime", (short)this.cookingProgress);
 -        p_187452_.putShort("CookTimeTotal", (short)this.cookingTotalTime);
 +        p_187452_.putInt("BurnTime", this.litTime);
 +        p_187452_.putInt("CookTime", this.cookingProgress);
 +        p_187452_.putInt("CookTimeTotal", this.cookingTotalTime);
-         ContainerHelper.saveAllItems(p_187452_, this.items);
+         ContainerHelper.saveAllItems(p_187452_, this.items, p_323656_);
          CompoundTag compoundtag = new CompoundTag();
          this.recipesUsed.forEach((p_187449_, p_187450_) -> compoundtag.putInt(p_187449_.toString(), p_187450_));
-@@ -255,28 +_,30 @@
+@@ -268,28 +_,30 @@
              }
  
              int i = p_155017_.getMaxStackSize();
@@ -72,7 +127,7 @@
  
 -            if (p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
 +            if (p_155017_.isLit() && p_155017_.canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
-                 ++p_155017_.cookingProgress;
+                 p_155017_.cookingProgress++;
                  if (p_155017_.cookingProgress == p_155017_.cookingTotalTime) {
                      p_155017_.cookingProgress = 0;
                      p_155017_.cookingTotalTime = getTotalCookTime(p_155014_, p_155017_);
@@ -81,7 +136,7 @@
                          p_155017_.setRecipeUsed(recipeholder);
                      }
  
-@@ -300,9 +_,9 @@
+@@ -313,9 +_,9 @@
          }
      }
  
@@ -93,20 +148,19 @@
              if (itemstack.isEmpty()) {
                  return false;
              } else {
-@@ -311,10 +_,10 @@
-                     return true;
-                 } else if (!ItemStack.isSameItem(itemstack1, itemstack)) {
+@@ -325,9 +_,9 @@
+                 } else if (!ItemStack.isSameItemSameComponents(itemstack1, itemstack)) {
                      return false;
--                } else if (itemstack1.getCount() < p_155008_ && itemstack1.getCount() < itemstack1.getMaxStackSize()) {
-+                } else if (itemstack1.getCount() + itemstack.getCount() <= p_155008_ && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize()) { // Forge fix: make furnace respect stack sizes in furnace recipes
-                     return true;
                  } else {
--                    return itemstack1.getCount() < itemstack.getMaxStackSize();
-+                    return itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize(); // Forge fix: make furnace respect stack sizes in furnace recipes
+-                    return itemstack1.getCount() < p_155008_ && itemstack1.getCount() < itemstack1.getMaxStackSize()
++                    return itemstack1.getCount() + itemstack.getCount() <= p_155008_ && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize() // Neo fix: make furnace respect stack sizes in furnace recipes
+                         ? true
+-                        : itemstack1.getCount() < itemstack.getMaxStackSize();
++                        : itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize(); // Neo fix: make furnace respect stack sizes in furnace recipes
                  }
              }
          } else {
-@@ -322,15 +_,15 @@
+@@ -335,15 +_,15 @@
          }
      }
  
@@ -120,36 +174,37 @@
              ItemStack itemstack2 = p_267073_.get(2);
              if (itemstack2.isEmpty()) {
                  p_267073_.set(2, itemstack1.copy());
-             } else if (itemstack2.is(itemstack1.getItem())) {
+             } else if (ItemStack.isSameItemSameComponents(itemstack2, itemstack1)) {
 -                itemstack2.grow(1);
 +                itemstack2.grow(itemstack1.getCount());
              }
  
              if (itemstack.is(Blocks.WET_SPONGE.asItem()) && !p_267073_.get(1).isEmpty() && p_267073_.get(1).is(Items.BUCKET)) {
-@@ -349,7 +_,7 @@
+@@ -361,8 +_,7 @@
+         if (p_58343_.isEmpty()) {
              return 0;
          } else {
-             Item item = p_58343_.getItem();
+-            Item item = p_58343_.getItem();
 -            return getFuel().getOrDefault(item, 0);
-+            return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58343_, this.recipeType);
++            return p_58343_.getBurnTime(this.recipeType);
          }
      }
  
-@@ -358,7 +_,7 @@
+@@ -371,7 +_,7 @@
      }
  
      public static boolean isFuel(ItemStack p_58400_) {
 -        return getFuel().containsKey(p_58400_.getItem());
-+        return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58400_, null) > 0;
++        return p_58400_.getBurnTime(null) > 0;
      }
  
      @Override
-@@ -444,7 +_,7 @@
+@@ -429,7 +_,7 @@
              return true;
          } else {
              ItemStack itemstack = this.items.get(1);
 -            return isFuel(p_58390_) || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
-+            return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58390_, this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
++            return p_58390_.getBurnTime(this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
          }
      }
  

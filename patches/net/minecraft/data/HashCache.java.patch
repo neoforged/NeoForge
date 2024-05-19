@@ -1,14 +1,14 @@
 --- a/net/minecraft/data/HashCache.java
 +++ b/net/minecraft/data/HashCache.java
-@@ -37,6 +_,7 @@
+@@ -39,6 +_,7 @@
      private final Path cacheDir;
      private final String versionId;
      private final Map<String, HashCache.ProviderCache> caches;
 +    private final Map<String, HashCache.ProviderCache> originalCaches;
      private final Set<String> cachesToWrite = new HashSet<>();
-     private final Set<Path> cachePaths = new HashSet<>();
+     final Set<Path> cachePaths = new HashSet<>();
      private final int initialCount;
-@@ -63,6 +_,7 @@
+@@ -65,6 +_,7 @@
          }
  
          this.caches = map;
@@ -16,7 +16,7 @@
          this.initialCount = i;
      }
  
-@@ -104,6 +_,8 @@
+@@ -106,6 +_,8 @@
          this.caches.forEach((p_253378_, p_253379_) -> {
              if (this.cachesToWrite.contains(p_253378_)) {
                  Path path = this.getProviderCachePath(p_253378_);
@@ -25,11 +25,11 @@
                  p_253379_.save(this.rootDir, path, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()) + "\t" + p_253378_);
              }
  
-@@ -219,10 +_,11 @@
+@@ -222,10 +_,11 @@
                  bufferedwriter.write(p_236145_);
                  bufferedwriter.newLine();
  
--                for(Entry<Path, HashCode> entry : this.data.entrySet()) {
+-                for (Entry<Path, HashCode> entry : this.data.entrySet()) {
 +                // Forge: Standardize order of entries
 +                for(Map.Entry<Path, HashCode> entry : this.data.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
                      bufferedwriter.write(entry.getValue().toString());

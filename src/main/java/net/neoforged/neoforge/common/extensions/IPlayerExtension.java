@@ -8,13 +8,13 @@ package net.neoforged.neoforge.common.extensions;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.IContainerFactory;
@@ -22,65 +22,6 @@ import net.neoforged.neoforge.network.IContainerFactory;
 public interface IPlayerExtension {
     private Player self() {
         return (Player) this;
-    }
-
-    /**
-     * The entity reach is increased by 2 for creative players, unless it is currently zero, which disables attacks and entity interactions.
-     * 
-     * @return The entity reach of this player.
-     */
-    default double getEntityReach() {
-        double range = self().getAttributeValue(NeoForgeMod.ENTITY_REACH.value());
-        return range == 0 ? 0 : range + (self().isCreative() ? 2 : 0);
-    }
-
-    /**
-     * The reach distance is increased by 0.5 for creative players, unless it is currently zero, which disables interactions.
-     * 
-     * @return The reach distance of this player.
-     */
-    default double getBlockReach() {
-        double reach = self().getAttributeValue(NeoForgeMod.BLOCK_REACH.value());
-        return reach == 0 ? 0 : reach + (self().isCreative() ? 0.5 : 0);
-    }
-
-    /**
-     * Checks if the player can reach an entity by targeting the passed vector.<br>
-     * On the server, additional padding is added to account for movement/lag.
-     * 
-     * @param entityHitVec The vector being range-checked.
-     * @param padding      Extra validation distance.
-     * @return If the player can attack the entity.
-     * @apiNote Do not use for block checks, as this method uses {@link #getEntityReach()}
-     */
-    default boolean canReach(Vec3 entityHitVec, double padding) {
-        return self().getEyePosition().closerThan(entityHitVec, getEntityReach() + padding);
-    }
-
-    /**
-     * Checks if the player can reach an entity.<br>
-     * On the server, additional padding is added to account for movement/lag.
-     * 
-     * @param entity  The entity being range-checked.
-     * @param padding Extra validation distance.
-     * @return If the player can attack the passed entity.
-     * @apiNote Prefer using {@link #canReach(Vec3, double)} if you have a {@link HitResult} available.
-     */
-    default boolean canReach(Entity entity, double padding) {
-        return isCloseEnough(entity, getEntityReach() + padding);
-    }
-
-    /**
-     * Checks if the player can reach a block.<br>
-     * On the server, additional padding is added to account for movement/lag.
-     * 
-     * @param pos     The position being range-checked.
-     * @param padding Extra validation distance.
-     * @return If the player can interact with this location.
-     */
-    default boolean canReach(BlockPos pos, double padding) {
-        double reach = this.getBlockReach() + padding;
-        return self().getEyePosition().distanceToSqr(Vec3.atCenterOf(pos)) < reach * reach;
     }
 
     /**
@@ -123,7 +64,21 @@ public interface IPlayerExtension {
      * @param extraDataWriter Consumer to write any additional data the GUI needs
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
-    default OptionalInt openMenu(MenuProvider menuProvider, Consumer<FriendlyByteBuf> extraDataWriter) {
+    default OptionalInt openMenu(MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
+    }
+
+    /**
+     * Determine whether a player is allowed creative flight via game mode or attribute.
+     * <p>
+     * Modders are discouraged from setting {@link Abilities#mayfly} directly.
+     *
+     * @return true when creative flight is available
+     * @see NeoForgeMod#CREATIVE_FLIGHT
+     */
+    @SuppressWarnings("deprecation")
+    default boolean mayFly() {
+        // TODO 1.20.5: consider forcing mods to use the attribute
+        return self().getAbilities().mayfly || self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
     }
 }

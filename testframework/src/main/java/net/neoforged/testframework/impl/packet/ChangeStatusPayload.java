@@ -10,16 +10,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import org.jetbrains.annotations.NotNull;
 
 public record ChangeStatusPayload(MutableTestFramework framework, String testId, Test.Status status) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_status");
-    @Override
+    public static final CustomPacketPayload.Type<ChangeStatusPayload> ID = new Type<>(new ResourceLocation("neoforge", "tf_change_status"));
     public void write(FriendlyByteBuf buf) {
         buf.writeUtf(testId);
         buf.writeEnum(status.result());
@@ -27,15 +25,15 @@ public record ChangeStatusPayload(MutableTestFramework framework, String testId,
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 
-    public void handle(PlayPayloadContext context) {
+    public void handle(IPayloadContext context) {
         switch (context.flow().getReceptionSide()) {
             case CLIENT -> framework.tests().setStatus(testId, status);
             case SERVER -> {
-                final Player player = context.player().orElseThrow();
+                Player player = context.player();
                 if (framework.configuration().isEnabled(Feature.CLIENT_MODIFICATIONS) && Objects.requireNonNull(player.getServer()).getPlayerList().isOp(player.getGameProfile())) {
                     framework.tests().byId(testId).ifPresent(test -> framework.changeStatus(test, status, player));
                 }

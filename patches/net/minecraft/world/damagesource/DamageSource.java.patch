@@ -9,5 +9,5 @@
 +     */
 +    @Deprecated(since = "1.20.1")
      public boolean scalesWithDifficulty() {
-         return switch(this.type().scaling()) {
+         return switch (this.type().scaling()) {
              case NEVER -> false;

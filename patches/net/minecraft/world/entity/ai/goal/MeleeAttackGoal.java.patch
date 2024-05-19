@@ -23,9 +23,9 @@
 +                    }
 +                }
                  this.path = this.mob.getNavigation().createPath(livingentity, 0);
-                 if (this.path != null) {
-                     return true;
-@@ -110,6 +_,18 @@
+                 return this.path != null ? true : this.mob.isWithinMeleeAttackRange(livingentity);
+             }
+@@ -106,6 +_,18 @@
                  this.pathedTargetZ = livingentity.getZ();
                  this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
                  double d0 = this.mob.distanceToSqr(livingentity);

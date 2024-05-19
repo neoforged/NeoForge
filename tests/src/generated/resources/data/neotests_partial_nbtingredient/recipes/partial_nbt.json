@@ -11,9 +11,11 @@
     "I": {
       "type": "testframework:test_enabled",
       "base": {
-        "type": "neoforge:nbt",
-        "item": "minecraft:iron_axe",
-        "tag": "{Damage:2}"
+        "type": "neoforge:components",
+        "components": {
+          "minecraft:damage": 2
+        },
+        "items": "minecraft:iron_axe"
       },
       "framework": "neotests:tests",
       "testId": "partialNBTIngredient"
@@ -23,6 +25,7 @@
     "IDE"
   ],
   "result": {
-    "item": "minecraft:allium"
+    "count": 1,
+    "id": "minecraft:allium"
   }
 }

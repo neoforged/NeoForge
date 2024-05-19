@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility to format data into a textual (markdown-compliant) table.
@@ -81,7 +80,7 @@ public class TextTable {
         }
     }
 
-    public void add(@NotNull Object... values) {
+    public void add(Object... values) {
         if (values.length != columns.size()) {
             throw new IllegalArgumentException("Received wrong amount of values for table row, expected " + columns.size() + ", received " + columns.size() + ".");
         }

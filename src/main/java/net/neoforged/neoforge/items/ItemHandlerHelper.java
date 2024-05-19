@@ -13,12 +13,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemHandlerHelper {
-    @NotNull
-    public static ItemStack insertItem(IItemHandler dest, @NotNull ItemStack stack, boolean simulate) {
+    public static ItemStack insertItem(IItemHandler dest, ItemStack stack, boolean simulate) {
         if (dest == null || stack.isEmpty())
             return stack;
 
@@ -32,39 +30,13 @@ public class ItemHandlerHelper {
         return stack;
     }
 
-    public static boolean canItemStacksStack(@NotNull ItemStack a, @NotNull ItemStack b) {
-        if (a.isEmpty() || !ItemStack.isSameItem(a, b) || a.hasTag() != b.hasTag())
-            return false;
-
-        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areAttachmentsCompatible(b);
+    @Deprecated(forRemoval = true, since = "1.20.5")
+    public static boolean canItemStacksStack(ItemStack a, ItemStack b) {
+        return ItemStack.isSameItemSameComponents(a, b);
     }
 
-    /**
-     * A relaxed version of canItemStacksStack that stacks itemstacks with different metadata if they don't have subtypes.
-     * This usually only applies when players pick up items.
-     */
-    public static boolean canItemStacksStackRelaxed(@NotNull ItemStack a, @NotNull ItemStack b) {
-        if (a.isEmpty() || b.isEmpty() || a.getItem() != b.getItem())
-            return false;
-
-        if (!a.isStackable())
-            return false;
-
-        // Metadata value only matters when the item has subtypes
-        // Vanilla stacks non-subtype items with different metadata together
-        // TODO Item subtypes, is this still necessary?
-        /* e.g. a stick with metadata 0 and a stick with metadata 1 stack
-        if (a.getHasSubtypes() && a.getMetadata() != b.getMetadata())
-            return false;
-        */
-        if (a.hasTag() != b.hasTag())
-            return false;
-
-        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areAttachmentsCompatible(b);
-    }
-
-    @NotNull
-    public static ItemStack copyStackWithSize(@NotNull ItemStack itemStack, int size) {
+    @Deprecated(forRemoval = true, since = "1.20.5")
+    public static ItemStack copyStackWithSize(ItemStack itemStack, int size) {
         if (size == 0)
             return ItemStack.EMPTY;
         ItemStack copy = itemStack.copy();
@@ -77,8 +49,7 @@ public class ItemHandlerHelper {
      * This is equivalent to the behaviour of a player picking up an item.
      * Note: This function stacks items without subtypes with different metadata together.
      */
-    @NotNull
-    public static ItemStack insertItemStacked(IItemHandler inventory, @NotNull ItemStack stack, boolean simulate) {
+    public static ItemStack insertItemStacked(IItemHandler inventory, ItemStack stack, boolean simulate) {
         if (inventory == null || stack.isEmpty())
             return stack;
 
@@ -92,7 +63,7 @@ public class ItemHandlerHelper {
         // go through the inventory and try to fill up already existing items
         for (int i = 0; i < sizeInventory; i++) {
             ItemStack slot = inventory.getStackInSlot(i);
-            if (canItemStacksStackRelaxed(slot, stack)) {
+            if (canItemStacksStack(slot, stack)) {
                 stack = inventory.insertItem(i, stack, simulate);
 
                 if (stack.isEmpty()) {
@@ -118,7 +89,7 @@ public class ItemHandlerHelper {
     }
 
     /** giveItemToPlayer without preferred slot */
-    public static void giveItemToPlayer(Player player, @NotNull ItemStack stack) {
+    public static void giveItemToPlayer(Player player, ItemStack stack) {
         giveItemToPlayer(player, stack, -1);
     }
 
@@ -129,7 +100,7 @@ public class ItemHandlerHelper {
      * @param player The player to give the item to
      * @param stack  The itemstack to insert
      */
-    public static void giveItemToPlayer(Player player, @NotNull ItemStack stack, int preferredSlot) {
+    public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
         if (stack.isEmpty()) return;
 
         IItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());

@@ -20,15 +20,15 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.PlantType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(CustomPlantTypeTest.MODID)
-@Mod.EventBusSubscriber(bus = Bus.MOD)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class CustomPlantTypeTest {
     static final String MODID = "custom_plant_type_test";
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
@@ -40,16 +40,16 @@ public class CustomPlantTypeTest {
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {
         event.register(Registries.BLOCK, helper -> {
-            helper.register(CUSTOM_SOIL_BLOCK, new CustomBlock());
-            helper.register(CUSTOM_PLANT_BLOCK, new CustomPlantBlock());
+            helper.register(CUSTOM_SOIL.getId(), new CustomBlock());
+            helper.register(CUSTOM_PLANT.getId(), new CustomPlantBlock());
         });
     }
 
     @SubscribeEvent
     public static void registerItems(RegisterEvent event) {
         event.register(Registries.ITEM, helper -> {
-            helper.register(CUSTOM_SOIL_BLOCK, new BlockItem(CUSTOM_SOIL.get(), new Item.Properties()));
-            helper.register(CUSTOM_PLANT_BLOCK, new BlockItem(CUSTOM_PLANT.get(), new Item.Properties()));
+            helper.register(CUSTOM_SOIL.getId(), new BlockItem(CUSTOM_SOIL.get(), new Item.Properties()));
+            helper.register(CUSTOM_PLANT.getId(), new BlockItem(CUSTOM_PLANT.get(), new Item.Properties()));
         });
     }
 

@@ -7,11 +7,10 @@ package net.neoforged.testframework.impl.test;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import javax.annotation.Nonnull;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.ReflectionUtils;
@@ -21,7 +20,7 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
     private final Method method;
 
     private final Class<? extends Event> eventClass;
-    private final Mod.EventBusSubscriber.Bus bus;
+    private final EventBusSubscriber.Bus bus;
     private final EventPriority priority;
     private final boolean receiveCancelled;
 
@@ -31,7 +30,7 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
 
         //noinspection unchecked
         this.eventClass = (Class<? extends Event>) method.getParameterTypes()[0];
-        this.bus = IModBusEvent.class.isAssignableFrom(eventClass) ? Mod.EventBusSubscriber.Bus.MOD : Mod.EventBusSubscriber.Bus.FORGE;
+        this.bus = IModBusEvent.class.isAssignableFrom(eventClass) ? EventBusSubscriber.Bus.MOD : EventBusSubscriber.Bus.GAME;
 
         final SubscribeEvent seAnnotation = method.getAnnotation(SubscribeEvent.class);
         if (seAnnotation == null) {
@@ -51,7 +50,7 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
     }
 
     @Override
-    public void onEnabled(@Nonnull Test.EventListenerGroup buses) {
+    public void onEnabled(Test.EventListenerGroup buses) {
         super.onEnabled(buses);
         buses.getFor(bus).addListener(priority, receiveCancelled, eventClass, event -> {
             try {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -104,6 +_,14 @@
+@@ -102,6 +_,14 @@
          this.noPhysics = true;
          this.noCulling = true;
          this.phaseManager = new EnderDragonPhaseManager(this);
@@ -15,7 +15,7 @@
      }
  
      public void setDragonFight(EndDragonFight p_287736_) {
-@@ -171,8 +_,12 @@
+@@ -169,8 +_,12 @@
          return adouble;
      }
  
@@ -28,7 +28,7 @@
          this.processFlappingMovement();
          if (this.level().isClientSide) {
              this.setHealth(this.getHealth());
-@@ -470,7 +_,7 @@
+@@ -465,7 +_,7 @@
                      BlockPos blockpos = new BlockPos(k1, l1, i2);
                      BlockState blockstate = this.level().getBlockState(blockpos);
                      if (!blockstate.isAir() && !blockstate.is(BlockTags.DRAGON_TRANSPARENT)) {
@@ -37,7 +37,7 @@
                              flag1 = this.level().removeBlock(blockpos, false) || flag1;
                          } else {
                              flag = true;
-@@ -564,7 +_,8 @@
+@@ -559,7 +_,8 @@
  
          if (this.level() instanceof ServerLevel) {
              if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && flag) {
@@ -47,7 +47,7 @@
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
-@@ -575,7 +_,8 @@
+@@ -570,7 +_,8 @@
          this.move(MoverType.SELF, new Vec3(0.0, 0.1F, 0.0));
          if (this.dragonDeathTime == 200 && this.level() instanceof ServerLevel) {
              if (flag) {
@@ -57,7 +57,7 @@
              }
  
              if (this.dragonFight != null) {
-@@ -907,8 +_,19 @@
+@@ -902,8 +_,19 @@
      }
  
      @Override
@@ -76,4 +76,4 @@
 +        if (true) return; // Forge: Fix MC-158205: Moved into setId()
          EnderDragonPart[] aenderdragonpart = this.getSubEntities();
  
-         for(int i = 0; i < aenderdragonpart.length; ++i) {
+         for (int i = 0; i < aenderdragonpart.length; i++) {

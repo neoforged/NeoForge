@@ -5,60 +5,49 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
-import net.minecraft.nbt.CompoundTag;
+import java.util.function.Supplier;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * FluidHandlerItemStack is a template capability provider for ItemStacks.
- * Data is stored directly in the vanilla NBT, in the same way as the old ItemFluidContainer.
+ * Data is stored in a {@link SimpleFluidContent} component.
  *
- * This class allows an ItemStack to contain any partial level of fluid up to its capacity, unlike {@link FluidHandlerItemStackSimple}
+ * <p>This class allows an ItemStack to contain any partial level of fluid up to its capacity, unlike {@link FluidHandlerItemStackSimple}
  *
- * Additional examples are provided to enable consumable fluid containers (see {@link Consumable}),
+ * <p>Additional examples are provided to enable consumable fluid containers (see {@link Consumable}),
  * fluid containers with different empty and full items (see {@link SwapEmpty},
  */
 public class FluidHandlerItemStack implements IFluidHandlerItem {
-    public static final String FLUID_NBT_KEY = "Fluid";
-
-    @NotNull
+    protected final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected ItemStack container;
     protected int capacity;
 
     /**
-     * @param container The container itemStack, data is stored on it directly as NBT.
-     * @param capacity  The maximum capacity of this fluid tank.
+     * @param componentType The data component type to use for data storage.
+     * @param container     The container itemStack, data is stored on it directly under a component.
+     * @param capacity      The maximum capacity of this fluid tank.
      */
-    public FluidHandlerItemStack(@NotNull ItemStack container, int capacity) {
+    public FluidHandlerItemStack(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity) {
+        this.componentType = componentType;
         this.container = container;
         this.capacity = capacity;
     }
 
-    @NotNull
     @Override
     public ItemStack getContainer() {
         return container;
     }
 
-    @NotNull
     public FluidStack getFluid() {
-        CompoundTag tagCompound = container.getTag();
-        if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
-            return FluidStack.EMPTY;
-        }
-        return FluidStack.loadFluidStackFromNBT(tagCompound.getCompound(FLUID_NBT_KEY));
+        return container.getOrDefault(componentType, SimpleFluidContent.EMPTY).copy();
     }
 
     protected void setFluid(FluidStack fluid) {
-        if (!container.hasTag()) {
-            container.setTag(new CompoundTag());
-        }
-
-        CompoundTag fluidTag = new CompoundTag();
-        fluid.writeToNBT(fluidTag);
-        container.getTag().put(FLUID_NBT_KEY, fluidTag);
+        container.set(componentType, SimpleFluidContent.copyOf(fluid));
     }
 
     @Override
@@ -66,7 +55,6 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         return getFluid();
@@ -78,7 +66,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
@@ -93,14 +81,12 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
             int fillAmount = Math.min(capacity, resource.getAmount());
 
             if (doFill.execute()) {
-                FluidStack filled = resource.copy();
-                filled.setAmount(fillAmount);
-                setFluid(filled);
+                setFluid(resource.copyWithAmount(fillAmount));
             }
 
             return fillAmount;
         } else {
-            if (contained.isFluidEqual(resource)) {
+            if (FluidStack.isSameFluidSameComponents(contained, resource)) {
                 int fillAmount = Math.min(capacity - contained.getAmount(), resource.getAmount());
 
                 if (doFill.execute() && fillAmount > 0) {
@@ -115,16 +101,14 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
         }
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
+        if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, getFluid())) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (container.getCount() != 1 || maxDrain <= 0) {
@@ -138,8 +122,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
 
         final int drainAmount = Math.min(contained.getAmount(), maxDrain);
 
-        FluidStack drained = contained.copy();
-        drained.setAmount(drainAmount);
+        FluidStack drained = contained.copyWithAmount(drainAmount);
 
         if (action.execute()) {
             contained.shrink(drainAmount);
@@ -166,15 +149,15 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
      * Can be used to swap out or destroy the container.
      */
     protected void setContainerToEmpty() {
-        container.removeTagKey(FLUID_NBT_KEY);
+        container.remove(componentType);
     }
 
     /**
      * Destroys the container item when it's emptied.
      */
     public static class Consumable extends FluidHandlerItemStack {
-        public Consumable(ItemStack container, int capacity) {
-            super(container, capacity);
+        public Consumable(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity) {
+            super(componentType, container, capacity);
         }
 
         @Override
@@ -190,8 +173,8 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
     public static class SwapEmpty extends FluidHandlerItemStack {
         protected final ItemStack emptyContainer;
 
-        public SwapEmpty(ItemStack container, ItemStack emptyContainer, int capacity) {
-            super(container, capacity);
+        public SwapEmpty(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, ItemStack emptyContainer, int capacity) {
+            super(componentType, container, capacity);
             this.emptyContainer = emptyContainer;
         }
 

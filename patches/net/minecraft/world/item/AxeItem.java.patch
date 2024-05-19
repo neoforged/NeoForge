@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -55,7 +_,7 @@
+@@ -56,7 +_,7 @@
          Level level = p_40529_.getLevel();
          BlockPos blockpos = p_40529_.getClickedPos();
          Player player = p_40529_.getPlayer();
@@ -9,7 +9,7 @@
          if (optional.isEmpty()) {
              return InteractionResult.PASS;
          } else {
-@@ -74,20 +_,19 @@
+@@ -75,20 +_,19 @@
          }
      }
  
@@ -34,7 +34,7 @@
                  if (optional2.isPresent()) {
                      p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
                      p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
-@@ -99,8 +_,19 @@
+@@ -100,8 +_,19 @@
          }
      }
  

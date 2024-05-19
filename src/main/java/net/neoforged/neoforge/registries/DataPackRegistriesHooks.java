@@ -5,39 +5,37 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistrySynchronization;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public final class DataPackRegistriesHooks {
     private DataPackRegistriesHooks() {} // utility class
 
-    private static final Map<ResourceKey<? extends Registry<?>>, RegistrySynchronization.NetworkedRegistryData<?>> NETWORKABLE_REGISTRIES = new LinkedHashMap<>();
+    private static final List<RegistryDataLoader.RegistryData<?>> NETWORKABLE_REGISTRIES = new ArrayList<>();
     private static final List<RegistryDataLoader.RegistryData<?>> DATA_PACK_REGISTRIES = new ArrayList<>(RegistryDataLoader.WORLDGEN_REGISTRIES);
     private static final List<RegistryDataLoader.RegistryData<?>> DATA_PACK_REGISTRIES_VIEW = Collections.unmodifiableList(DATA_PACK_REGISTRIES);
     private static final Set<ResourceKey<? extends Registry<?>>> SYNCED_CUSTOM_REGISTRIES = new HashSet<>();
     private static final Set<ResourceKey<? extends Registry<?>>> SYNCED_CUSTOM_REGISTRIES_VIEW = Collections.unmodifiableSet(SYNCED_CUSTOM_REGISTRIES);
 
     /* Internal forge hook for retaining mutable access to RegistryAccess's codec registry when it bootstraps. */
-    public static Map<ResourceKey<? extends Registry<?>>, RegistrySynchronization.NetworkedRegistryData<?>> grabNetworkableRegistries(ImmutableMap.Builder<ResourceKey<? extends Registry<?>>, RegistrySynchronization.NetworkedRegistryData<?>> builder) {
-        if (!StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(RegistrySynchronization.class))
+    public static List<RegistryDataLoader.RegistryData<?>> grabNetworkableRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
+        if (!StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(RegistryDataLoader.class))
             throw new IllegalCallerException("Attempted to call DataPackRegistriesHooks#grabNetworkableRegistries!");
-        NETWORKABLE_REGISTRIES.forEach(builder::put);
+        List<RegistryDataLoader.RegistryData<?>> builder = new ArrayList<>(list);
+        builder.addAll(NETWORKABLE_REGISTRIES);
         NETWORKABLE_REGISTRIES.clear();
-        NETWORKABLE_REGISTRIES.putAll(builder.build());
-        return Collections.unmodifiableMap(NETWORKABLE_REGISTRIES);
+        NETWORKABLE_REGISTRIES.addAll(builder);
+        return Collections.unmodifiableList(NETWORKABLE_REGISTRIES);
     }
 
     /* Internal forge method, registers a datapack registry codec and folder. */
@@ -46,7 +44,7 @@ public final class DataPackRegistriesHooks {
         DATA_PACK_REGISTRIES.add(loaderData);
         if (data.networkCodec() != null) {
             SYNCED_CUSTOM_REGISTRIES.add(loaderData.key());
-            NETWORKABLE_REGISTRIES.put(loaderData.key(), new RegistrySynchronization.NetworkedRegistryData<>(loaderData.key(), data.networkCodec()));
+            NETWORKABLE_REGISTRIES.add(new RegistryDataLoader.RegistryData<T>(loaderData.key(), data.networkCodec()));
         }
     }
 
@@ -69,5 +67,12 @@ public final class DataPackRegistriesHooks {
      */
     public static Set<ResourceKey<? extends Registry<?>>> getSyncedCustomRegistries() {
         return SYNCED_CUSTOM_REGISTRIES_VIEW;
+    }
+
+    @Nullable
+    @ApiStatus.Internal
+    @SuppressWarnings("unchecked")
+    public static <T> RegistryDataLoader.RegistryData<T> getSyncedRegistry(final ResourceKey<? extends Registry<T>> registry) {
+        return (RegistryDataLoader.RegistryData<T>) NETWORKABLE_REGISTRIES.stream().filter(data -> data.key().equals(registry)).findFirst().orElse(null);
     }
 }

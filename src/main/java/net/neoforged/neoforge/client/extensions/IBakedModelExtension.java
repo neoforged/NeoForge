@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -37,17 +37,25 @@ public interface IBakedModelExtension {
     /**
      * A null {@link RenderType} is used for the breaking overlay as well as non-standard rendering, so models should return all their quads.
      */
-    @NotNull
-    default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+    default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData data, @Nullable RenderType renderType) {
         return self().getQuads(state, side, rand);
     }
 
-    default boolean useAmbientOcclusion(BlockState state) {
-        return self().useAmbientOcclusion();
-    }
-
-    default boolean useAmbientOcclusion(BlockState state, RenderType renderType) {
-        return self().useAmbientOcclusion(state);
+    /**
+     * Controls the AO behavior for all quads of this model. The default behavior is to use AO unless the block emits light,
+     * {@link TriState#TRUE} and {@link TriState#FALSE} force AO to be enabled and disabled respectively, regardless of
+     * the block emitting light or not. {@link BakedQuad#hasAmbientOcclusion()} can be used to disable AO for a specific
+     * quad even if this method says otherwise.
+     * <p>
+     * This method cannot force AO if the global smooth lighting video setting is disabled.
+     *
+     * @param state      the block state this model is being rendered for
+     * @param data       the model data used to render this model
+     * @param renderType the render type the model is being rendered with
+     * @return {@link TriState#TRUE} to force-enable AO, {@link TriState#FALSE} to force-disable AO or {@link TriState#DEFAULT} to use vanilla AO behavior
+     */
+    default TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
+        return self().useAmbientOcclusion() ? TriState.DEFAULT : TriState.FALSE;
     }
 
     /**
@@ -59,11 +67,11 @@ public interface IBakedModelExtension {
         return self();
     }
 
-    default @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+    default ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
         return modelData;
     }
 
-    default TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+    default TextureAtlasSprite getParticleIcon(ModelData data) {
         return self().getParticleIcon();
     }
 
@@ -73,7 +81,7 @@ public interface IBakedModelExtension {
      * <p>
      * By default, defers query to {@link ItemBlockRenderTypes}.
      */
-    default ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    default ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
         return ItemBlockRenderTypes.getRenderLayers(state);
     }
 

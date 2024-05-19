@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
       "tag": "minecraft:planks"
@@ -15,6 +15,7 @@
     "#"
   ],
   "result": {
-    "item": "minecraft:wooden_sword"
+    "count": 1,
+    "id": "minecraft:wooden_sword"
   }
 }

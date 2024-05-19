@@ -15,7 +15,6 @@ import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -123,7 +122,6 @@ public class NetworkComponentNegotiator {
      * @param otherSide   The other side to check for missing components.
      * @return The list of disabled optional components.
      */
-    @NotNull
     private static List<NegotiableNetworkComponent> buildDisabledOptionalComponents(List<NegotiableNetworkComponent> currentSide, List<NegotiableNetworkComponent> otherSide) {
         return currentSide.stream()
                 .filter(NegotiableNetworkComponent::optional)
@@ -156,22 +154,15 @@ public class NetworkComponentNegotiator {
     public static Optional<ComponentNegotiationResult> validateComponent(NegotiableNetworkComponent left, NegotiableNetworkComponent right, String requestingSide) {
         if (left.flow().isPresent()) {
             if (right.flow().isEmpty()) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.missing".formatted(requestingSide), left.flow().get())));
+                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.missing".formatted(requestingSide), left.flow().get().toString())));
             } else if (left.flow().get() != right.flow().get()) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.mismatch".formatted(requestingSide), left.flow().get(), right.flow().get())));
+                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.mismatch".formatted(requestingSide), left.flow().get().toString(), right.flow().get().toString())));
             }
         }
 
-        //If either side has no version set, fail
-        if (left.version().isEmpty() && right.version().isPresent()) {
-            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.%s.missing".formatted(requestingSide), right.version().get())));
-        }
-
-        //Check if both sides have the same version, or none set.
-        if (left.version().isPresent() && right.version().isPresent()) {
-            if (!left.version().get().equals(right.version().get())) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", left.version().get(), right.version().get())));
-            }
+        //Check if both sides have the same version.
+        if (!left.version().equals(right.version())) {
+            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", left.version(), right.version())));
         }
 
         //This happens when both the ranges are empty.

@@ -1,9 +1,12 @@
 plugins {
     id 'java'
+    id 'maven-publish'
     id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
     id 'net.neoforged.gradle.platform'
 }
+
+java.withSourcesJar()
 
 repositories {
     maven {
@@ -28,22 +31,31 @@ license {
     include '**/*.java'
 }
 
-spotless {
-    java {
-        endWithNewline()
-        indentWithSpaces()
-        removeUnusedImports()
-        toggleOffOn()
-        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
-        importOrder()
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
 
-        // courtesy of diffplug/spotless#240
-        // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
-        custom 'noWildcardImports', { String fileContents ->
-            if (fileContents.contains('*;\n')) {
-                throw new GradleException('No wildcard imports are allowed!')
-            }
-        }
-        bumpThisNumberIfACustomStepChanges(1)
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties version: version
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand version: version
     }
 }
+
+publishing {
+    publications.create('TestFramework', MavenPublication) {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+
+        from components.java
+    }
+    repositories {
+        maven rootProject.gradleutils.getPublishingMaven()
+    }
+}
+
+apply from: rootProject.file('buildscript/spotless-rules.gradle')
+apply from: rootProject.file('buildscript/generate-package-infos.gradle')
+apply from: rootProject.file('buildscript/apply-all-formatting.gradle')

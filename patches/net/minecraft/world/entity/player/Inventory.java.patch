@@ -1,33 +1,35 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -137,7 +_,7 @@
+@@ -133,7 +_,7 @@
  
-         for(int k = 0; k < 9; ++k) {
+         for (int k = 0; k < 9; k++) {
              int l = (this.selected + k) % 9;
 -            if (!this.items.get(l).isEnchanted()) {
 +            if (!this.items.get(l).isNotReplaceableByPickAction(this.player, l)) {
                  return l;
              }
          }
-@@ -186,7 +_,8 @@
-         int i = p_36049_.getCount();
-         ItemStack itemstack = this.getItem(p_36048_);
-         if (itemstack.isEmpty()) {
--            itemstack = new ItemStack(item, 0);
-+            itemstack = p_36049_.copy(); // Forge: Replace Item clone above to preserve item capabilities when picking the item up.
-+            itemstack.setCount(0);
-             if (p_36049_.hasTag()) {
-                 itemstack.setTag(p_36049_.getTag().copy());
-             }
-@@ -237,6 +_,7 @@
+@@ -214,13 +_,18 @@
+     }
+ 
+     public void tick() {
++        int slot = 0;
+         for (NonNullList<ItemStack> nonnulllist : this.compartments) {
+             for (int i = 0; i < nonnulllist.size(); i++) {
+                 if (!nonnulllist.get(i).isEmpty()) {
+-                    nonnulllist.get(i).inventoryTick(this.player.level(), this.player, i, this.selected == i);
++                    // Neo: Fix the slot param to be the global index instead of the per-compartment index.
++                    // Neo: Fix the selected param to only be true for hotbar slots.
++                    nonnulllist.get(i).inventoryTick(this.player.level(), this.player, slot, this.selected == slot);
                  }
++                slot++;
              }
          }
 +        armor.forEach(e -> e.onArmorTick(player.level(), player));
      }
  
      public boolean add(ItemStack p_36055_) {
-@@ -284,6 +_,8 @@
+@@ -268,6 +_,8 @@
              } catch (Throwable throwable) {
                  CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");

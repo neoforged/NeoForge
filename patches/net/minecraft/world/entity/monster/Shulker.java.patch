@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Shulker.java
 +++ b/net/minecraft/world/entity/monster/Shulker.java
-@@ -391,6 +_,12 @@
+@@ -392,6 +_,12 @@
                      && this.level().noCollision(this, new AABB(blockpos1).deflate(1.0E-6))) {
                      Direction direction = this.findAttachableSurface(blockpos1);
                      if (direction != null) {

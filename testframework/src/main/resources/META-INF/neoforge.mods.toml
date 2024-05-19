@@ -1,0 +1,8 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="LGPL v2.1"
+[[mods]]
+modId="testframework"
+version="${version}"
+displayName="Test Framework"
+description="A test framework"

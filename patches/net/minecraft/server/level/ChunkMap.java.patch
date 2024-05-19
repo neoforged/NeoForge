@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -414,6 +_,7 @@
+@@ -422,6 +_,7 @@
                  this.modified = true;
              }
  
@@ -8,46 +8,50 @@
              return p_140179_;
          }
      }
-@@ -528,6 +_,7 @@
+@@ -533,8 +_,11 @@
+                 this.scheduleUnload(p_140182_, p_140183_);
+             } else {
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && p_203002_ != null) {
++                    net.neoforged.neoforge.common.CommonHooks.onChunkUnload(this.poiManager, p_203002_); // Neo: Must be called for all chunk unloading. Not just LevelChunks.
++                    this.chunkTypeCache.remove(p_203002_.getPos().toLong()); // Neo: Prevent chunk type cache from permanently retaining data for unloaded chunks
                      if (p_203002_ instanceof LevelChunk) {
                          ((LevelChunk)p_203002_).setLoaded(false);
 +                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(p_203002_));
                      }
  
                      this.save(p_203002_);
-@@ -737,11 +_,22 @@
-                 }
+@@ -735,11 +_,22 @@
+             }
  
-                 levelchunk.setFullStatus(() -> ChunkLevel.fullStatus(p_140384_.getTicketLevel()));
+             levelchunk.setFullStatus(() -> ChunkLevel.fullStatus(p_140384_.getTicketLevel()));
++            try {
++            p_140384_.currentlyLoading = levelchunk; // Neo: bypass the future chain when getChunk is called, this prevents deadlocks.
+             levelchunk.runPostLoad();
++            } finally {
++                p_140384_.currentlyLoading = null; // Neo: Stop bypassing the future chain.
++            }
+             if (this.entitiesInLevel.add(chunkpos.toLong())) {
+                 levelchunk.setLoaded(true);
 +                try {
 +                p_140384_.currentlyLoading = levelchunk; // Neo: bypass the future chain when getChunk is called, this prevents deadlocks.
-                 levelchunk.runPostLoad();
+                 levelchunk.registerAllBlockEntitiesAfterLevelLoad();
+                 levelchunk.registerTickContainerInLevel(this.level);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Load(levelchunk, !(protochunk instanceof ImposterProtoChunk)));
 +                } finally {
-+                p_140384_.currentlyLoading = null; // Neo: Stop bypassing the future chain.
++                    p_140384_.currentlyLoading = null; // Neo: Stop bypassing the future chain.
 +                }
-                 if (this.entitiesInLevel.add(chunkpos.toLong())) {
-                     levelchunk.setLoaded(true);
-+                    try {
-+                    p_140384_.currentlyLoading = levelchunk; // Neo: bypass the future chain when getChunk is called, this prevents deadlocks.
-                     levelchunk.registerAllBlockEntitiesAfterLevelLoad();
-                     levelchunk.registerTickContainerInLevel(this.level);
-+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Load(levelchunk, !(protochunk instanceof ImposterProtoChunk)));
-+                    } finally {
-+                         p_140384_.currentlyLoading = null; // Neo: Stop bypassing the future chain.
-+                    }
-                 }
+             }
  
-                 return levelchunk;
-@@ -844,6 +_,7 @@
+             return levelchunk;
+@@ -839,6 +_,7 @@
  
                  this.level.getProfiler().incrementCounter("chunkSave");
                  CompoundTag compoundtag = ChunkSerializer.write(this.level, p_140259_);
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(p_140259_, p_140259_.getWorldForge() != null ? p_140259_.getWorldForge() : this.level, compoundtag));
-                 this.write(chunkpos, compoundtag);
-                 this.markPosition(chunkpos, chunkstatus.getChunkType());
-                 return true;
-@@ -902,9 +_,11 @@
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(p_140259_, p_140259_.getLevel() != null ? p_140259_.getLevel() : this.level, compoundtag));
+                 this.write(chunkpos, compoundtag).exceptionallyAsync(p_329914_ -> {
+                     this.level.getServer().reportChunkSaveFailure(chunkpos);
+                     return null;
+@@ -901,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
@@ -59,7 +63,7 @@
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
-@@ -1099,6 +_,7 @@
+@@ -1102,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }
  
@@ -67,7 +71,7 @@
              this.updateChunkTracking(p_140185_);
          }
      }
-@@ -1151,7 +_,7 @@
+@@ -1153,7 +_,7 @@
      }
  
      protected void addEntity(Entity p_140200_) {
@@ -76,3 +80,24 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
+@@ -1397,5 +_,20 @@
+                 this.updatePlayer(serverplayer);
+             }
+         }
++    }
++
++    /**
++     * Neo: PR #937
++     * This is for mainly pre-generation usage such as Neoforge's generate command.
++     * Use this to schedule chunk load tasks into ChunkTaskPriorityQueueSorter so a chunk is fully finished all of their tasks before scheduling more chunks to load.
++     * Reason for this is when scheduling a huge ton of Full Status chunk tasks to the server (to load chunks),
++     * you could cause the server to only process those loading tasks and never reach the two chunk tasks that are
++     * automatically scheduled to run after the chunk is loaded to Full. As a result of flooding the system with Full Status chunk tasks,
++     * the queue for the two kind of successor chunk tasks will grow and become a memory leak of lambdas and chunk references.
++     * Use this method to schedule tasks for loading chunks in your whenCompleteAsync method call so the tasks gets processed properly over time and not leak.
++     * See {@link net.neoforged.neoforge.server.command.generation.GenerationTask#enqueueChunks} as an example usage of this method.
++     */
++    public void scheduleOnMainThreadMailbox(ChunkTaskPriorityQueueSorter.Message<Runnable> msg) {
++        mainThreadMailbox.tell(msg);
+     }
+ }

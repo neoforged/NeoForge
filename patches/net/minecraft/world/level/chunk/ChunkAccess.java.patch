@@ -1,43 +1,115 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -308,23 +_,28 @@
+@@ -57,7 +_,7 @@
+ import net.minecraft.world.ticks.TickContainerAccess;
+ import org.slf4j.Logger;
+ 
+-public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess {
++public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolder {
+     public static final int NO_FILLED_SECTION = -1;
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
+@@ -311,10 +_,19 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
 -        this.findBlocks(p_284897_ -> p_284897_.getLightEmission() != 0, p_285269_);
-+        this.findBlocks((p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, p_285269_);
++        this.findBlocks(p_284897_ -> p_284897_.hasDynamicLightEmission() || p_284897_.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, p_285269_);
      }
  
      public void findBlocks(Predicate<BlockState> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
-+        findBlocks((state, pos) -> p_285343_.test(state), p_285030_);
++        findBlocks(p_285343_, (state, pos) -> p_285343_.test(state), p_285030_);
 +    }
 +
++    @Deprecated(forRemoval = true)
 +    public void findBlocks(java.util.function.BiPredicate<BlockState, BlockPos> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
++        findBlocks(state -> p_285343_.test(state, BlockPos.ZERO), p_285343_, p_285030_);
++    }
++
++    public void findBlocks(Predicate<BlockState> p_285343_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-         for(int i = this.getMinSection(); i < this.getMaxSection(); ++i) {
-             LevelChunkSection levelchunksection = this.getSection(this.getSectionIndexFromSectionY(i));
--            if (levelchunksection.maybeHas(p_285343_)) {
-+            if (levelchunksection.maybeHas((state) -> p_285343_.test(state, BlockPos.ZERO))) {
-                 BlockPos blockpos = SectionPos.of(this.chunkPos, i).origin();
- 
-                 for(int j = 0; j < 16; ++j) {
-                     for(int k = 0; k < 16; ++k) {
-                         for(int l = 0; l < 16; ++l) {
+         for (int i = this.getMinSection(); i < this.getMaxSection(); i++) {
+@@ -326,8 +_,9 @@
+                     for (int k = 0; k < 16; k++) {
+                         for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
 -                            if (p_285343_.test(blockstate)) {
 -                                p_285030_.accept(blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k), blockstate);
 +                            blockpos$mutableblockpos.setWithOffset(blockpos, l, j, k);
-+                            if (p_285343_.test(blockstate, blockpos$mutableblockpos.immutable())) {
++                            if (fineFilter.test(blockstate, blockpos$mutableblockpos)) {
 +                                p_285030_.accept(blockpos$mutableblockpos, blockstate);
                              }
                          }
                      }
-@@ -469,4 +_,7 @@
+@@ -472,4 +_,70 @@
  
      public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
      }
 +
++    // FORGE START
++    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++
++    @Override
++    public boolean hasAttachments() {
++        return getAttachmentHolder().hasAttachments();
++    }
++
++    @Override
++    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++        return getAttachmentHolder().hasData(type);
++    }
++
++    @Override
++    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        return getAttachmentHolder().getData(type);
++    }
++
++    @Override
++    public <T> java.util.Optional<T> getExistingData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        return getAttachmentHolder().getExistingData(type);
++    }
++
++    @Override
 +    @Nullable
-+    public net.minecraft.world.level.LevelAccessor getWorldForge() { return null; }
++    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++        setUnsaved(true);
++        return getAttachmentHolder().setData(type, data);
++    }
++
++    @Override
++    @Nullable
++    public <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        setUnsaved(true);
++        return getAttachmentHolder().removeData(type);
++    }
++
++    /**
++     * <strong>FOR INTERNAL USE ONLY</strong>
++     * <p>
++     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
++    @Nullable
++    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
++        return getAttachmentHolder().serializeAttachments(provider);
++    }
++
++    /**
++     * <strong>FOR INTERNAL USE ONLY</strong>
++     * <p>
++     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
++     *
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
++        getAttachmentHolder().deserializeInternal(provider, tag);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    protected net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
++        return attachmentHolder;
++    }
++    @Nullable
++    public net.minecraft.world.level.Level getLevel() { return null; }
  }

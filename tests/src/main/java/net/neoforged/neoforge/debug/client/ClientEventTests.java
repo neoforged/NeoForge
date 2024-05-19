@@ -9,12 +9,18 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -60,5 +66,41 @@ public class ClientEventTests {
                 test.fail("Failed to access fixed buffers map");
             }
         });
+    }
+
+    @TestHolder(description = { "Tests if adding custom geometry to chunks works", "When the message \"diamond block\" is sent in chat, this should render a fake diamond block above the player's position" })
+    static void addSectionGeometryTest(final ClientChatEvent chatEvent, final DynamicTest test) {
+        if (chatEvent.getMessage().equalsIgnoreCase("diamond block")) {
+            var player = Minecraft.getInstance().player;
+            var testBlockAt = player.blockPosition().above(3);
+            var section = SectionPos.of(testBlockAt);
+            var sectionOrigin = section.origin();
+            NeoForge.EVENT_BUS.addListener((final AddSectionGeometryEvent event) -> {
+                if (event.getSectionOrigin().equals(sectionOrigin)) {
+                    event.addRenderer(context -> {
+                        var poseStack = context.getPoseStack();
+                        poseStack.pushPose();
+                        poseStack.translate(
+                                testBlockAt.getX() - sectionOrigin.getX(),
+                                testBlockAt.getY() - sectionOrigin.getY(),
+                                testBlockAt.getZ() - sectionOrigin.getZ());
+                        var renderType = RenderType.solid();
+                        Minecraft.getInstance().getBlockRenderer().renderBatched(
+                                Blocks.DIAMOND_BLOCK.defaultBlockState(),
+                                testBlockAt,
+                                context.getRegion(),
+                                poseStack,
+                                context.getOrCreateChunkBuffer(renderType),
+                                false,
+                                new SingleThreadedRandomSource(0),
+                                ModelData.EMPTY,
+                                renderType);
+                        poseStack.popPose();
+                    });
+                }
+            });
+            Minecraft.getInstance().levelRenderer.setSectionDirty(section.x(), section.y(), section.z());
+            test.requestConfirmation(player, Component.literal("Is a diamond block rendered above you?"));
+        }
     }
 }

@@ -47,7 +47,6 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper;
 import net.neoforged.neoforge.common.util.ConcatenatedListView;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -126,9 +125,8 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             this.itemPasses = itemPasses;
         }
 
-        @NotNull
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData data, @Nullable RenderType renderType) {
             List<List<BakedQuad>> quadLists = new ArrayList<>();
             for (Map.Entry<String, BakedModel> entry : children.entrySet()) {
                 if (renderType == null || (state != null && entry.getValue().getRenderTypes(state, rand, data).contains(renderType))) {
@@ -139,7 +137,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
         }
 
         @Override
-        public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+        public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
             var builder = Data.builder();
             for (var entry : children.entrySet())
                 builder.with(entry.getKey(), entry.getValue().getModelData(level, pos, state, Data.resolve(modelData, entry.getKey())));
@@ -182,7 +180,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
         }
 
         @Override
-        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+        public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
             var sets = new ArrayList<ChunkRenderTypeSet>();
             for (Map.Entry<String, BakedModel> entry : children.entrySet())
                 sets.add(entry.getValue().getRenderTypes(state, rand, CompositeModel.Data.resolve(data, entry.getKey())));

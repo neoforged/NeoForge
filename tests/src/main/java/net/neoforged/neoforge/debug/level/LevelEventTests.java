@@ -55,7 +55,7 @@ public class LevelEventTests {
     }
 
     @GameTest
-    @TestHolder
+    @TestHolder(description = "Tests if the alter ground event is fired, replacing podzol with redstone blocks")
     static void alterGroundEvent(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(16, 32, 16)
                 .fill(0, 0, 0, 15, 0, 15, Blocks.DIRT.defaultBlockState())
@@ -92,7 +92,7 @@ public class LevelEventTests {
     @TestHolder(description = "Tests the vanilla game event by hurting entities that are sheared in the overworld")
     static void vanillaGameEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final VanillaGameEvent event) -> {
-            if (event.getVanillaEvent() == GameEvent.SHEAR && event.getLevel().dimension() == Level.OVERWORLD) {
+            if (event.getVanillaEvent().is(GameEvent.SHEAR) && event.getLevel().dimension() == Level.OVERWORLD) {
                 final var entities = event.getLevel().getEntitiesOfClass(Entity.class, new AABB(BlockPos.containing(event.getEventPosition())), e -> e instanceof Shearable);
                 entities.get(0).hurt(event.getLevel().damageSources().generic(), event.getCause() == null ? 1 : 3);
                 test.pass();

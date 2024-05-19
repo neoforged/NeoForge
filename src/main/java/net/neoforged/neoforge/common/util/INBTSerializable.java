@@ -5,14 +5,17 @@
 
 package net.neoforged.neoforge.common.util;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
+import org.jetbrains.annotations.UnknownNullability;
 
 /**
  * An interface designed to unify various things in the Minecraft
  * code base that can be serialized to and from a NBT tag.
  */
 public interface INBTSerializable<T extends Tag> {
-    T serializeNBT();
+    @UnknownNullability
+    T serializeNBT(HolderLookup.Provider provider);
 
-    void deserializeNBT(T nbt);
+    void deserializeNBT(HolderLookup.Provider provider, T nbt);
 }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/net/minecraft/world/entity/animal/allay/Allay.java
-@@ -370,9 +_,9 @@
+@@ -366,9 +_,9 @@
      public boolean wantsToPickUp(ItemStack p_218387_) {
          ItemStack itemstack = this.getItemInHand(InteractionHand.MAIN_HAND);
          return !itemstack.isEmpty()

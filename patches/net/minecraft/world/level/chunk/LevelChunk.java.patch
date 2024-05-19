@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -48,7 +_,7 @@
+@@ -50,7 +_,7 @@
  import net.minecraft.world.ticks.TickContainerAccess;
  import org.slf4j.Logger;
  
@@ -9,7 +9,15 @@
      static final Logger LOGGER = LogUtils.getLogger();
      private static final TickingBlockEntity NULL_TICKER = new TickingBlockEntity() {
          @Override
-@@ -270,14 +_,14 @@
+@@ -139,6 +_,7 @@
+         this.setAllStarts(p_196851_.getAllStarts());
+         this.setAllReferences(p_196851_.getAllReferences());
+ 
++        net.neoforged.neoforge.attachment.AttachmentInternals.copyChunkAttachmentsOnPromotion(p_196850_.registryAccess(), p_196851_.getAttachmentHolder(), this.getAttachmentHolder());
+         for (Entry<Heightmap.Types, Heightmap> entry : p_196851_.getHeightmaps()) {
+             if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
+                 this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
+@@ -271,14 +_,14 @@
                  boolean flag2 = blockstate.hasBlockEntity();
                  if (!this.level.isClientSide) {
                      blockstate.onRemove(this.level, p_62865_, p_62866_, p_62867_);
@@ -26,7 +34,7 @@
                          p_62866_.onPlace(this.level, p_62865_, blockstate, p_62867_);
                      }
  
-@@ -321,6 +_,10 @@
+@@ -322,6 +_,10 @@
      @Nullable
      public BlockEntity getBlockEntity(BlockPos p_62868_, LevelChunk.EntityCreationType p_62869_) {
          BlockEntity blockentity = this.blockEntities.get(p_62868_);
@@ -37,7 +45,7 @@
          if (blockentity == null) {
              CompoundTag compoundtag = this.pendingBlockEntities.remove(p_62868_);
              if (compoundtag != null) {
-@@ -338,9 +_,6 @@
+@@ -339,9 +_,6 @@
                      this.addAndRegisterBlockEntity(blockentity);
                  }
              }
@@ -55,7 +63,7 @@
          }
      }
  
-@@ -385,6 +_,7 @@
+@@ -381,6 +_,7 @@
              BlockEntity blockentity = this.blockEntities.put(blockpos.immutable(), p_156374_);
              if (blockentity != null && blockentity != p_156374_) {
                  blockentity.setRemoved();
@@ -63,12 +71,12 @@
              }
          }
      }
-@@ -394,9 +_,14 @@
-     public CompoundTag getBlockEntityNbtForSaving(BlockPos p_62932_) {
+@@ -390,9 +_,14 @@
+     public CompoundTag getBlockEntityNbtForSaving(BlockPos p_62932_, HolderLookup.Provider p_323699_) {
          BlockEntity blockentity = this.getBlockEntity(p_62932_);
          if (blockentity != null && !blockentity.isRemoved()) {
 +            try {
-             CompoundTag compoundtag1 = blockentity.saveWithFullMetadata();
+             CompoundTag compoundtag1 = blockentity.saveWithFullMetadata(this.level.registryAccess());
              compoundtag1.putBoolean("keepPacked", false);
              return compoundtag1;
 +            } catch (Exception e) {
@@ -78,7 +86,7 @@
          } else {
              CompoundTag compoundtag = this.pendingBlockEntities.get(p_62932_);
              if (compoundtag != null) {
-@@ -419,6 +_,7 @@
+@@ -414,6 +_,7 @@
                  }
  
                  blockentity.setRemoved();
@@ -86,16 +94,16 @@
              }
          }
  
-@@ -479,7 +_,7 @@
-         p_187974_.accept((p_187968_, p_187969_, p_187970_) -> {
-             BlockEntity blockentity = this.getBlockEntity(p_187968_, LevelChunk.EntityCreationType.IMMEDIATE);
-             if (blockentity != null && p_187970_ != null && blockentity.getType() == p_187969_) {
--                blockentity.load(p_187970_);
-+                blockentity.handleUpdateTag(p_187970_);
+@@ -474,7 +_,7 @@
+         p_187974_.accept((p_338077_, p_338078_, p_338079_) -> {
+             BlockEntity blockentity = this.getBlockEntity(p_338077_, LevelChunk.EntityCreationType.IMMEDIATE);
+             if (blockentity != null && p_338079_ != null && blockentity.getType() == p_338078_) {
+-                blockentity.loadWithComponents(p_338079_, this.level.registryAccess());
++                blockentity.handleUpdateTag(p_338079_, this.level.registryAccess());
              }
          });
      }
-@@ -587,6 +_,7 @@
+@@ -582,6 +_,7 @@
      }
  
      public void clearAllBlockEntities() {
@@ -103,38 +111,20 @@
          this.blockEntities.values().forEach(BlockEntity::setRemoved);
          this.blockEntities.clear();
          this.tickersInLevel.values().forEach(p_187966_ -> p_187966_.rebind(NULL_TICKER));
-@@ -594,6 +_,7 @@
+@@ -589,6 +_,7 @@
      }
  
      public void registerAllBlockEntitiesAfterLevelLoad() {
 +        this.level.addFreshBlockEntities(this.blockEntities.values());
          this.blockEntities.values().forEach(p_187988_ -> {
-             Level level = this.level;
-             if (level instanceof ServerLevel serverlevel) {
-@@ -646,6 +_,33 @@
+             if (this.level instanceof ServerLevel serverlevel) {
+                 this.addGameEventListener(p_187988_, serverlevel);
+@@ -640,6 +_,15 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
 +    // FORGE START
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
-+
-+    @Override
-+    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        return attachmentHolder.hasData(type);
-+    }
-+
-+    @Override
-+    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return attachmentHolder.getData(type);
-+    }
-+
-+    @Override
-+    @Nullable
-+    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        setUnsaved(true);
-+        return attachmentHolder.setData(type, data);
-+    }
 +
 +    @Override
 +    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
@@ -145,7 +135,7 @@
      class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
          private final T blockEntity;
          private final BlockEntityTicker<T> ticker;
-@@ -663,6 +_,7 @@
+@@ -657,6 +_,7 @@
                  if (LevelChunk.this.isTicking(blockpos)) {
                      try {
                          ProfilerFiller profilerfiller = LevelChunk.this.level.getProfiler();
@@ -153,7 +143,7 @@
                          profilerfiller.push(this::getType);
                          BlockState blockstate = LevelChunk.this.getBlockState(blockpos);
                          if (this.blockEntity.getType().isValid(blockstate)) {
-@@ -684,6 +_,12 @@
+@@ -678,7 +_,15 @@
                          CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking block entity");
                          CrashReportCategory crashreportcategory = crashreport.addCategory("Block entity being ticked");
                          this.blockEntity.fillCrashReportCategory(crashreportcategory);
@@ -164,40 +154,8 @@
 +                            LevelChunk.this.removeBlockEntity(blockEntity.getBlockPos());
 +                        } else
                          throw new ReportedException(crashreport);
++                    } finally {
++                        net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackEnd(blockEntity);
                      }
                  }
-@@ -715,6 +_,34 @@
-         IMMEDIATE,
-         QUEUED,
-         CHECK;
-+    }
-+
-+
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
-+     */
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    @Nullable
-+    public final CompoundTag writeAttachmentsToNBT() {
-+        return attachmentHolder.serializeAttachments();
-+    }
-+
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
-+     *
-+     */
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final void readAttachmentsFromNBT(CompoundTag tag) {
-+        attachmentHolder.deserializeInternal(tag);
-+    }
-+
-+    @Override
-+    public Level getWorldForge() {
-+        return getLevel();
-     }
- 
-     @FunctionalInterface
+             }

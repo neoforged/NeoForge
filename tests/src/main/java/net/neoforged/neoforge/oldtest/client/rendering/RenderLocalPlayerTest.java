@@ -10,11 +10,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @Mod(RenderLocalPlayerTest.MODID)
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@EventBusSubscriber(value = Dist.CLIENT)
 public class RenderLocalPlayerTest {
     public static final String MODID = "render_local_player_test";
     static final boolean ENABLED = false;

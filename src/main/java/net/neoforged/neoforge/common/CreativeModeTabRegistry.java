@@ -39,12 +39,11 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
 import net.neoforged.neoforge.client.CreativeModeTabSearchRegistry;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -92,9 +91,8 @@ public final class CreativeModeTabRegistry {
         return new SimplePreparableReloadListener<JsonObject>() {
             final Gson gson = new GsonBuilder().create();
 
-            @NotNull
             @Override
-            protected JsonObject prepare(@NotNull ResourceManager resourceManager, ProfilerFiller profiler) {
+            protected JsonObject prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
                 Optional<Resource> res = resourceManager.getResource(CREATIVE_MODE_TAB_ORDERING_JSON);
                 if (res.isEmpty())
                     return new JsonObject();
@@ -108,7 +106,7 @@ public final class CreativeModeTabRegistry {
             }
 
             @Override
-            protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p) {
+            protected void apply(JsonObject data, ResourceManager resourceManager, ProfilerFiller p) {
                 try {
                     if (data.size() > 0) {
                         JsonArray order = GsonHelper.getAsJsonArray(data, "order");
@@ -218,7 +216,7 @@ public final class CreativeModeTabRegistry {
 
         recalculateItemCreativeModeTabs();
 
-        if (FMLEnvironment.dist.isClient() && !FMLLoader.getLaunchHandler().isData())
+        if (FMLEnvironment.dist.isClient() && !DatagenModLoader.isRunningDataGen())
             CreativeModeTabSearchRegistry.createSearchTrees();
     }
 

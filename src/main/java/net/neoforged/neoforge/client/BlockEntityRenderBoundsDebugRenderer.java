@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -21,12 +20,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
 public final class BlockEntityRenderBoundsDebugRenderer {
     private static boolean enabled = false;
 
@@ -41,15 +40,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
         Vec3 camera = event.getCamera().getPosition();
         VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
 
-        for (SectionRenderDispatcher.RenderSection section : levelRenderer.getVisibleSections()) {
-            for (BlockEntity be : section.getCompiled().getRenderableBlockEntities()) {
-                drawRenderBoundingBox(poseStack, consumer, camera, be);
-            }
-        }
-
-        for (BlockEntity be : levelRenderer.getGlobalBlockEntities()) {
-            drawRenderBoundingBox(poseStack, consumer, camera, be);
-        }
+        levelRenderer.iterateVisibleBlockEntities(be -> drawRenderBoundingBox(poseStack, consumer, camera, be));
     }
 
     private static void drawRenderBoundingBox(PoseStack poseStack, VertexConsumer consumer, Vec3 camera, BlockEntity be) {

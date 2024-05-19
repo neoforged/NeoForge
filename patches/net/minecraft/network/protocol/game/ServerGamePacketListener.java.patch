@@ -1,11 +1,11 @@
 --- a/net/minecraft/network/protocol/game/ServerGamePacketListener.java
 +++ b/net/minecraft/network/protocol/game/ServerGamePacketListener.java
-@@ -3,7 +_,7 @@
- import net.minecraft.network.ConnectionProtocol;
+@@ -4,7 +_,7 @@
  import net.minecraft.network.protocol.common.ServerCommonPacketListener;
+ import net.minecraft.network.protocol.ping.ServerPingPacketListener;
  
--public interface ServerGamePacketListener extends ServerPingPacketListener, ServerCommonPacketListener {
-+public interface ServerGamePacketListener extends ServerPingPacketListener, ServerCommonPacketListener, net.neoforged.neoforge.common.extensions.IServerGamePacketListenerExtension {
+-public interface ServerGamePacketListener extends ServerCommonPacketListener, ServerPingPacketListener {
++public interface ServerGamePacketListener extends ServerCommonPacketListener, ServerPingPacketListener, net.neoforged.neoforge.common.extensions.IServerGamePacketListenerExtension {
      @Override
      default ConnectionProtocol protocol() {
          return ConnectionProtocol.PLAY;

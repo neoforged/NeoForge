@@ -4,7 +4,7 @@
   "group": "wooden_fence",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "W": {
       "item": "minecraft:mangrove_planks"
@@ -16,6 +16,6 @@
   ],
   "result": {
     "count": 3,
-    "item": "minecraft:mangrove_fence"
+    "id": "minecraft:mangrove_fence"
   }
 }

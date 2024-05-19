@@ -7,20 +7,26 @@ package net.neoforged.neoforge.debug.loot;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.ItemSubPredicates;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -30,8 +36,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantment.Rarity;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
@@ -63,43 +67,36 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.condition.TestEnabledLootCondition;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.NotNull;
 
 @ForEachTest(groups = "loot", idPrefix = "glm_")
 public class GlobalLootModifiersTest {
     public static final RegistrationHelper HELPER = RegistrationHelper.create("neotests_glm_test");
 
-    private static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM = HELPER.registrar(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS);
+    private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLM = HELPER.registrar(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS);
     private static final DeferredRegister<Enchantment> ENCHANTS = HELPER.registrar(Registries.ENCHANTMENT);
 
-    private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<DungeonLootEnhancerModifier>> DUNGEON_LOOT = GLM.register("dungeon_loot", DungeonLootEnhancerModifier.CODEC);
-    private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<SmeltingEnchantmentModifier>> SMELTING = GLM.register("smelting", SmeltingEnchantmentModifier.CODEC);
-    private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<WheatSeedsConverterModifier>> WHEATSEEDS = GLM.register("wheat_harvest", WheatSeedsConverterModifier.CODEC);
-    private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<SilkTouchTestModifier>> SILKTOUCH = GLM.register("silk_touch_bamboo", SilkTouchTestModifier.CODEC);
-    private static final DeferredHolder<Enchantment, Enchantment> SMELT = ENCHANTS.register("smelt", () -> new SmelterEnchantment(Rarity.UNCOMMON, EnchantmentCategory.DIGGER, EquipmentSlot.MAINHAND));
+    private static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<DungeonLootEnhancerModifier>> DUNGEON_LOOT = GLM.register("dungeon_loot", DungeonLootEnhancerModifier.CODEC);
+    private static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<SmeltingEnchantmentModifier>> SMELTING = GLM.register("smelting", SmeltingEnchantmentModifier.CODEC);
+    private static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<WheatSeedsConverterModifier>> WHEATSEEDS = GLM.register("wheat_harvest", WheatSeedsConverterModifier.CODEC);
+    private static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<SilkTouchTestModifier>> SILKTOUCH = GLM.register("silk_touch_bamboo", SilkTouchTestModifier.CODEC);
+    private static final DeferredHolder<Enchantment, Enchantment> SMELT = ENCHANTS.register("smelt", () -> new Enchantment(
+            Enchantment.definition(ItemTags.MINING_ENCHANTABLE, 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlot.MAINHAND)));
 
     @OnInit
     static void init(final TestFramework framework) {
         HELPER.register(framework.modEventBus());
     }
 
-    private static class SmelterEnchantment extends Enchantment {
-        protected SmelterEnchantment(Rarity rarityIn, EnchantmentCategory typeIn, EquipmentSlot... slots) {
-            super(rarityIn, typeIn, slots);
-        }
-    }
-
     /**
      * The smelting enchantment causes this modifier to be invoked, via the smelting loot_modifier json
      */
     private static class SmeltingEnchantmentModifier extends LootModifier {
-        public static final Supplier<Codec<SmeltingEnchantmentModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, SmeltingEnchantmentModifier::new)));
+        public static final Supplier<MapCodec<SmeltingEnchantmentModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SmeltingEnchantmentModifier::new)));
 
         public SmeltingEnchantmentModifier(LootItemCondition[] conditionsIn) {
             super(conditionsIn);
         }
 
-        @NotNull
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ObjectArrayList<ItemStack> ret = new ObjectArrayList<ItemStack>();
@@ -116,7 +113,7 @@ public class GlobalLootModifiersTest {
         }
 
         @Override
-        public Codec<? extends IGlobalLootModifier> codec() {
+        public MapCodec<? extends IGlobalLootModifier> codec() {
             return CODEC.get();
         }
     }
@@ -125,13 +122,12 @@ public class GlobalLootModifiersTest {
      * When harvesting blocks with bamboo, this modifier is invoked, via the silk_touch_bamboo loot_modifier json
      */
     private static class SilkTouchTestModifier extends LootModifier {
-        public static final Supplier<Codec<SilkTouchTestModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, SilkTouchTestModifier::new)));
+        public static final Supplier<MapCodec<SilkTouchTestModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SilkTouchTestModifier::new)));
 
         public SilkTouchTestModifier(LootItemCondition[] conditionsIn) {
             super(conditionsIn);
         }
 
-        @NotNull
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ItemStack ctxTool = context.getParamOrNull(LootContextParams.TOOL);
@@ -142,12 +138,12 @@ public class GlobalLootModifiersTest {
             fakeTool.enchant(Enchantments.SILK_TOUCH, 1);
             LootParams.Builder builder = new LootParams.Builder(context.getLevel());
             builder.withParameter(LootContextParams.TOOL, fakeTool);
-            LootTable loottable = context.getLevel().getServer().getLootData().getLootTable(context.getParamOrNull(LootContextParams.BLOCK_STATE).getBlock().getLootTable());
+            LootTable loottable = context.getLevel().getServer().reloadableRegistries().getLootTable(context.getParamOrNull(LootContextParams.BLOCK_STATE).getBlock().getLootTable());
             return loottable.getRandomItems(builder.create(LootContextParamSets.EMPTY)); // TODO - porting: we need an AT
         }
 
         @Override
-        public Codec<? extends IGlobalLootModifier> codec() {
+        public MapCodec<? extends IGlobalLootModifier> codec() {
             return CODEC.get();
         }
     }
@@ -157,7 +153,7 @@ public class GlobalLootModifiersTest {
      * This modifier checks how many seeds were harvested and turns X seeds into Y wheat (3:1)
      */
     private static class WheatSeedsConverterModifier extends LootModifier {
-        public static final Supplier<Codec<WheatSeedsConverterModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).and(
+        public static final Supplier<MapCodec<WheatSeedsConverterModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).and(
                 inst.group(
                         Codec.INT.fieldOf("numSeeds").forGetter(m -> m.numSeedsToConvert),
                         BuiltInRegistries.ITEM.byNameCodec().fieldOf("seedItem").forGetter(m -> m.itemToCheck),
@@ -175,7 +171,6 @@ public class GlobalLootModifiersTest {
             itemReward = reward;
         }
 
-        @NotNull
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             //
@@ -198,13 +193,13 @@ public class GlobalLootModifiersTest {
         }
 
         @Override
-        public Codec<? extends IGlobalLootModifier> codec() {
+        public MapCodec<? extends IGlobalLootModifier> codec() {
             return CODEC.get();
         }
     }
 
     private static class DungeonLootEnhancerModifier extends LootModifier {
-        public static final Supplier<Codec<DungeonLootEnhancerModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst)
+        public static final Supplier<MapCodec<DungeonLootEnhancerModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst)
                 .and(ExtraCodecs.POSITIVE_INT.optionalFieldOf("multiplication_factor", 2).forGetter(m -> m.multiplicationFactor))
                 .apply(inst, DungeonLootEnhancerModifier::new)));
 
@@ -228,7 +223,7 @@ public class GlobalLootModifiersTest {
         }
 
         @Override
-        public Codec<? extends IGlobalLootModifier> codec() {
+        public MapCodec<? extends IGlobalLootModifier> codec() {
             return CODEC.get();
         }
     }
@@ -239,9 +234,10 @@ public class GlobalLootModifiersTest {
     static void smeltingModifierTest(final DynamicTest test) {
         HELPER.provider(GlobalLootModifierProvider.class, prov -> prov.add("smelting", new SmeltingEnchantmentModifier(
                 new LootItemCondition[] {
-                        MatchTool.toolMatches(
-                                ItemPredicate.Builder.item().hasEnchantment(
-                                        new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1))))
+                        MatchTool.toolMatches(ItemPredicate.Builder.item().withSubPredicate(
+                                ItemSubPredicates.ENCHANTMENTS,
+                                ItemEnchantmentsPredicate.enchantments(
+                                        List.of(new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1))))))
                                 .build(),
                         new TestEnabledLootCondition(test)
                 })));
@@ -311,7 +307,7 @@ public class GlobalLootModifiersTest {
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST.defaultBlockState()))
                 .thenMap(() -> helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class))
-                .thenExecute(chest -> chest.setLootTable(new ResourceLocation("chests/simple_dungeon"), 124424))
+                .thenExecute(chest -> chest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("chests/simple_dungeon")), 124424))
 
                 .thenExecute(chest -> chest.unpackLootTable(helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL)))
 
@@ -321,7 +317,7 @@ public class GlobalLootModifiersTest {
                         .collect(Collectors.toMap(ItemStack::getItem, ItemStack::getCount, Integer::sum)))
 
                 .thenMapToSequence(stacks -> helper
-                        .startSequence(() -> helper.getLevel().getServer().getLootData().getLootTable(new ResourceLocation("chests/simple_dungeon"))
+                        .startSequence(() -> helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("chests/simple_dungeon")))
                                 .getRandomItems(new LootParams.Builder(helper.getLevel())
                                         .withParameter(LootContextParams.ORIGIN, helper.absoluteVec(new Vec3(1, 3, 1)))
                                         .create(LootContextParamSets.CHEST), 124424))

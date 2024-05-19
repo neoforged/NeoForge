@@ -14,6 +14,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -32,7 +33,6 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(CustomArmorModelTest.MOD_ID)
@@ -59,7 +59,7 @@ public class CustomArmorModelTest {
     }
 
     private static class TintedArmorItem extends ArmorItem {
-        public TintedArmorItem(ArmorMaterial material, ArmorItem.Type slot, Properties props) {
+        public TintedArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type slot, Properties props) {
             super(material, slot, props);
         }
 
@@ -67,7 +67,6 @@ public class CustomArmorModelTest {
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {
                 @Override
-                @NotNull
                 public Model getGenericArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
                     TintedArmorModel.INSTANCE.base = _default;
                     return TintedArmorModel.INSTANCE;
@@ -77,14 +76,16 @@ public class CustomArmorModelTest {
     }
 
     private static class EndermanArmorItem extends ArmorItem {
-        public EndermanArmorItem(ArmorMaterial material, ArmorItem.Type slot, Properties props) {
+        private static final ResourceLocation ARMOR_TEXTURE = new ResourceLocation("textures/entity/enderman/enderman.png");
+
+        public EndermanArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type slot, Properties props) {
             super(material, slot, props);
         }
 
         @Nullable
         @Override
-        public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-            return "textures/entity/enderman/enderman.png";
+        public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
+            return ARMOR_TEXTURE;
         }
 
         @Override
@@ -109,7 +110,7 @@ public class CustomArmorModelTest {
         }
 
         @Override
-        public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
             if (base != null) {
                 base.renderToBuffer(poseStack, consumer, light, overlay, red, 0, 0, alpha);
             }

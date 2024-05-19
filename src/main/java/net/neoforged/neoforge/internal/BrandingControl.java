@@ -10,14 +10,14 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
+import net.minecraft.DetectedVersion;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 
 public class BrandingControl {
     private static List<String> brandings;
@@ -28,9 +28,9 @@ public class BrandingControl {
         if (brandings == null) {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
             brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion());
-            brd.add("Minecraft " + NeoFormVersion.getMCVersion());
+            brd.add("Minecraft " + DetectedVersion.BUILT_IN.getName());
             int tModCount = ModList.get().size();
-            brd.add(I18nExtension.parseMessage("fml.menu.loadingmods", tModCount));
+            brd.add(FMLTranslations.parseMessage("fml.menu.loadingmods", tModCount));
             brandings = brd.build();
             brandingsNoMC = brandings.subList(1, brandings.size());
         }

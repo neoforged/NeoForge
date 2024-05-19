@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.lighting.LightEngine;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightManager, INBTSerializable<ListTag> {
@@ -56,8 +58,9 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
         return lights.getOrDefault(pos, (byte) 0);
     }
 
+    @Nullable
     @Override
-    public ListTag serializeNBT() {
+    public ListTag serializeNBT(HolderLookup.Provider provider) {
         if (lights.isEmpty()) {
             return null;
         }
@@ -73,7 +76,7 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
     }
 
     @Override
-    public void deserializeNBT(ListTag list) {
+    public void deserializeNBT(HolderLookup.Provider provider, ListTag list) {
         for (int i = 0; i < list.size(); i++) {
             CompoundTag tag = list.getCompound(i);
             lights.put(BlockPos.of(tag.getLong("pos")), tag.getByte("level"));

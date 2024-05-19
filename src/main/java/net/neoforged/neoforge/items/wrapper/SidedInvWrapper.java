@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SidedInvWrapper implements IItemHandlerModifiable {
@@ -80,15 +79,13 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack getStackInSlot(int slot) {
         int i = getSlot(inv, slot, side);
         return i == -1 ? ItemStack.EMPTY : inv.getItem(i);
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (stack.isEmpty())
             return ItemStack.EMPTY;
 
@@ -158,7 +155,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+    public void setStackInSlot(int slot, ItemStack stack) {
         int slot1 = getSlot(inv, slot, side);
 
         if (slot1 != -1)
@@ -171,7 +168,6 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount == 0)
             return ItemStack.EMPTY;
@@ -211,7 +207,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+    public boolean isItemValid(int slot, ItemStack stack) {
         int slot1 = getSlot(inv, slot, side);
         return slot1 == -1 ? false : inv.canPlaceItem(slot1, stack);
     }

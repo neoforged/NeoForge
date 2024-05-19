@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/DyeColor.java
 +++ b/net/minecraft/world/item/DyeColor.java
-@@ -38,6 +_,7 @@
+@@ -42,6 +_,7 @@
      private final MapColor mapColor;
      private final float[] textureDiffuseColors;
      private final int fireworkColor;
@@ -8,15 +8,15 @@
      private final int textColor;
  
      private DyeColor(int p_41046_, String p_41047_, int p_41048_, MapColor p_285297_, int p_41050_, int p_41051_) {
-@@ -48,6 +_,7 @@
+@@ -52,6 +_,7 @@
          int i = (p_41048_ & 0xFF0000) >> 16;
          int j = (p_41048_ & 0xFF00) >> 8;
          int k = (p_41048_ & 0xFF) >> 0;
-+        this.tag = net.minecraft.tags.ItemTags.create(new net.minecraft.resources.ResourceLocation("forge", "dyes/" + p_41047_));
++        this.tag = net.minecraft.tags.ItemTags.create(new net.minecraft.resources.ResourceLocation("c", "dyes/" + p_41047_));
          this.textureDiffuseColors = new float[]{(float)i / 255.0F, (float)j / 255.0F, (float)k / 255.0F};
          this.fireworkColor = p_41050_;
      }
-@@ -100,5 +_,23 @@
+@@ -104,5 +_,23 @@
      @Override
      public String getSerializedName() {
          return this.name;

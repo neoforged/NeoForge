@@ -18,14 +18,15 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.network.Connection;
-import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.Difficulty;
@@ -49,6 +50,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
@@ -85,7 +87,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         BlockPos blockpos = this.absolutePos(pos);
         BlockState blockstate = this.getLevel().getBlockState(blockpos);
         BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(blockpos), direction, blockpos, true);
-        InteractionResult interactionresult = blockstate.use(this.getLevel(), player, InteractionHand.MAIN_HAND, hit);
+        InteractionResult interactionresult = blockstate.useWithoutItem(this.getLevel(), player, hit);
         if (!interactionresult.consumesAction()) {
             UseOnContext useoncontext = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
             player.getItemInHand(InteractionHand.MAIN_HAND).useOn(useoncontext);
@@ -104,7 +106,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     }
 
     public GameTestPlayer makeTickingMockServerPlayerInLevel(GameType gameType) {
-        final CommonListenerCookie commonlistenercookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-mock-player"));
+        final CommonListenerCookie commonlistenercookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-mock-player"), false);
         final GameTestPlayer serverplayer = new GameTestPlayer(this.getLevel().getServer(), this.getLevel(), commonlistenercookie.gameProfile(), commonlistenercookie.clientInformation(), this);
         final Connection connection = new Connection(PacketFlow.SERVERBOUND) {
             @Override
@@ -119,9 +121,10 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             }
         };
         EmbeddedChannel embeddedchannel = new EmbeddedChannel(connection);
-        embeddedchannel.attr(Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.SERVERBOUND));
-        embeddedchannel.attr(Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.CLIENTBOUND));
-        NetworkRegistry.getInstance().configureMockConnection(connection);
+        // TODO - check if needs to be ported
+        // embeddedchannel.attr(Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.SERVERBOUND));
+        // embeddedchannel.attr(Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.CLIENTBOUND));
+        NetworkRegistry.configureMockConnection(connection);
         this.getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         this.getLevel().getServer().getConnection().getConnections().add(connection);
         this.testInfo.addListener(serverplayer);
@@ -188,8 +191,25 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         return requireBlockEntity(new BlockPos(x, y, z), type);
     }
 
+    @Nullable
+    public <T, C> T getCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
+        return getLevel().getCapability(cap, absolutePos(pos), context);
+    }
+
+    public <T, C> T requireCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
+        final var capability = getCapability(cap, pos, context);
+        if (capability == null) {
+            throw new GameTestAssertPosException("Expected capability " + cap + " but there was none", absolutePos(pos), pos, getTick());
+        }
+        return capability;
+    }
+
     public <T> ParametrizedGameTestSequence<T> startSequence(Supplier<T> value) {
         return new ParametrizedGameTestSequence<>(this.testInfo, this.startSequence(), value);
+    }
+
+    public Player makeMockPlayer() {
+        return makeMockPlayer(GameType.CREATIVE);
     }
 
     public void killAllEntitiesOfClass(Class<?>... types) {
@@ -265,14 +285,17 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             public void testStructureLoaded(GameTestInfo info) {}
 
             @Override
-            public void testPassed(GameTestInfo info) {
+            public void testPassed(GameTestInfo info, GameTestRunner runner) {
                 listener.accept(true);
             }
 
             @Override
-            public void testFailed(GameTestInfo info) {
+            public void testFailed(GameTestInfo info, GameTestRunner runner) {
                 listener.accept(false);
             }
+
+            @Override
+            public void testAddedForRerun(GameTestInfo p_320937_, GameTestInfo p_320294_, GameTestRunner p_320147_) {}
         });
     }
 
@@ -317,11 +340,11 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         addEndListener(success -> NeoForge.EVENT_BUS.unregister(event));
     }
 
-    public <E extends LivingEntity> void assertMobEffectPresent(E entity, MobEffect effect, String testName) {
+    public <E extends LivingEntity> void assertMobEffectPresent(E entity, Holder<MobEffect> effect, String testName) {
         assertEntityProperty(entity, e -> e.hasEffect(effect), testName);
     }
 
-    public <E extends LivingEntity> void assertMobEffectAbsent(E entity, MobEffect effect, String testName) {
+    public <E extends LivingEntity> void assertMobEffectAbsent(E entity, Holder<MobEffect> effect, String testName) {
         assertEntityProperty(entity, e -> !e.hasEffect(effect), testName);
     }
 

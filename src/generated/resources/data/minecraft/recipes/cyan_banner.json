@@ -7,7 +7,7 @@
       "item": "minecraft:cyan_wool"
     },
     "|": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "pattern": [
@@ -16,6 +16,7 @@
     " | "
   ],
   "result": {
-    "item": "minecraft:cyan_banner"
+    "count": 1,
+    "id": "minecraft:cyan_banner"
   }
 }

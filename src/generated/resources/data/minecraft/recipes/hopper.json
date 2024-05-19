@@ -3,10 +3,10 @@
   "category": "redstone",
   "key": {
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -15,6 +15,7 @@
     " I "
   ],
   "result": {
-    "item": "minecraft:hopper"
+    "count": 1,
+    "id": "minecraft:hopper"
   }
 }

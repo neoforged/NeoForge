@@ -16,7 +16,7 @@
 +    }
 +
 +    @Override
-+    public T create(int windowId, Inventory playerInv, net.minecraft.network.FriendlyByteBuf extraData) {
++    public T create(int windowId, Inventory playerInv, net.minecraft.network.RegistryFriendlyByteBuf extraData) {
 +        if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory) {
 +            return ((net.neoforged.neoforge.network.IContainerFactory<T>) this.constructor).create(windowId, playerInv, extraData);
 +        }

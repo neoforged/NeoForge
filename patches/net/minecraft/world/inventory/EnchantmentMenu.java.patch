@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/EnchantmentMenu.java
 +++ b/net/minecraft/world/inventory/EnchantmentMenu.java
-@@ -58,7 +_,7 @@
+@@ -57,7 +_,7 @@
          this.addSlot(new Slot(this.enchantSlots, 1, 35, 47) {
              @Override
              public boolean mayPlace(ItemStack p_39517_) {
@@ -9,23 +9,23 @@
              }
  
              @Override
-@@ -95,23 +_,24 @@
+@@ -94,23 +_,24 @@
              ItemStack itemstack = p_39461_.getItem(0);
              if (!itemstack.isEmpty() && itemstack.isEnchantable()) {
-                 this.access.execute((p_39485_, p_39486_) -> {
+                 this.access.execute((p_337902_, p_337903_) -> {
 -                    int j = 0;
 +                    float j = 0;
  
-                     for(BlockPos blockpos : EnchantmentTableBlock.BOOKSHELF_OFFSETS) {
-                         if (EnchantmentTableBlock.isValidBookShelf(p_39485_, p_39486_, blockpos)) {
--                            ++j;
-+                            j += p_39485_.getBlockState(p_39486_.offset(blockpos)).getEnchantPowerBonus(p_39485_, p_39486_.offset(blockpos));
+                     for (BlockPos blockpos : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
+                         if (EnchantingTableBlock.isValidBookShelf(p_337902_, p_337903_, blockpos)) {
+-                            j++;
++                            j += p_337902_.getBlockState(p_337903_.offset(blockpos)).getEnchantPowerBonus(p_337902_, p_337903_.offset(blockpos));
                          }
                      }
  
                      this.random.setSeed((long)this.enchantmentSeed.get());
  
-                     for(int k = 0; k < 3; ++k) {
+                     for (int k = 0; k < 3; k++) {
 -                        this.costs[k] = EnchantmentHelper.getEnchantmentCost(this.random, k, j, itemstack);
 +                        this.costs[k] = EnchantmentHelper.getEnchantmentCost(this.random, k, (int)j, itemstack);
                          this.enchantClue[k] = -1;
@@ -33,11 +33,11 @@
                          if (this.costs[k] < k + 1) {
                              this.costs[k] = 0;
                          }
-+                        this.costs[k] = net.neoforged.neoforge.event.EventHooks.onEnchantmentLevelSet(p_39485_, p_39486_, k, (int)j, itemstack, costs[k]);
++                        this.costs[k] = net.neoforged.neoforge.event.EventHooks.onEnchantmentLevelSet(p_337902_, p_337903_, k, (int)j, itemstack, costs[k]);
                      }
  
-                     for(int l = 0; l < 3; ++l) {
-@@ -250,7 +_,7 @@
+                     for (int l = 0; l < 3; l++) {
+@@ -239,7 +_,7 @@
                  if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
                      return ItemStack.EMPTY;
                  }

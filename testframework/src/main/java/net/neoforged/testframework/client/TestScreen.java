@@ -20,7 +20,6 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import org.jetbrains.annotations.NotNull;
 
 public class TestScreen extends AbstractTestScreen {
     protected EditBox searchTextField;
@@ -66,7 +65,7 @@ public class TestScreen extends AbstractTestScreen {
         };
 
         groupableList.resetRows("");
-        this.addWidget(groupableList);
+        this.addRenderableWidget(groupableList);
 
         this.searchTextField = new EditBox(this.font, this.width / 2 - 110, 22, 220, 20, Component.literal("Search"));
         this.searchTextField.setResponder(s -> {
@@ -80,14 +79,14 @@ public class TestScreen extends AbstractTestScreen {
 
         addRenderableWidget(Button.builder(Component.literal("Disable"), pButton -> groupableList.getSelected().enable(false)).bounds(searchTextField.getX() - 43, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canDisable();
                 super.renderWidget(pPoseStack, pMouseX, pMouseY, pPartialTick);
             }
         }));
         addRenderableWidget(Button.builder(Component.literal("Enable"), pButton -> groupableList.getSelected().enable(true)).bounds(searchTextField.getX() + searchTextField.getWidth() + 3, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canEnable();
                 super.renderWidget(pPoseStack, pMouseX, pMouseY, pPartialTick);
             }
@@ -95,7 +94,7 @@ public class TestScreen extends AbstractTestScreen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         if (showAsGroup.getValue()) {
             filterMode.visible = false;
             filterMode.active = false;
@@ -104,7 +103,6 @@ public class TestScreen extends AbstractTestScreen {
             filterMode.active = true;
         }
 
-        groupableList.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         searchTextField.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
 

@@ -5,8 +5,16 @@
 
 package net.neoforged.neoforge.common;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -19,13 +27,18 @@ import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.registries.DataMapLoader;
+import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
@@ -57,14 +70,13 @@ public class NeoForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        WorldWorkerManager.tick(event.phase == TickEvent.Phase.START);
+    public void preServerTick(ServerTickEvent.Pre event) {
+        WorldWorkerManager.tick(true);
     }
 
     @SubscribeEvent
-    public void checkSettings(TickEvent.ClientTickEvent event) {
-        //if (event.phase == Phase.END)
-        //    CloudRenderer.updateCloudSettings();
+    public void postServerTick(ServerTickEvent.Post event) {
+        WorldWorkerManager.tick(false);
     }
 
     @SubscribeEvent
@@ -89,8 +101,42 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void tagsUpdated(TagsUpdatedEvent event) {
-        if (event.shouldUpdateStaticData()) {
-            CommonHooks.updateBurns();
+        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+            DATA_MAPS.apply();
+        }
+    }
+
+    @SubscribeEvent
+    public void onDpSync(final OnDatapackSyncEvent event) {
+        RegistryManager.getDataMaps().forEach((registry, values) -> {
+            final var regOpt = event.getPlayerList().getServer().overworld().registryAccess()
+                    .registry(registry);
+            if (regOpt.isEmpty()) return;
+            event.getRelevantPlayers().forEach(player -> {
+                if (!player.connection.hasChannel(RegistryDataMapSyncPayload.TYPE)) {
+                    return;
+                }
+                if (player.connection.getConnection().isMemoryConnection()) {
+                    // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
+                    return;
+                }
+                final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
+                if (playerMaps == null) return; // Skip gametest players for instance
+                handleSync(player, regOpt.get(), playerMaps.getOrDefault(registry, List.of()));
+            });
+        });
+    }
+
+    private <T> void handleSync(ServerPlayer player, Registry<T> registry, Collection<ResourceLocation> attachments) {
+        if (attachments.isEmpty()) return;
+        final Map<ResourceLocation, Map<ResourceKey<T>, ?>> att = new HashMap<>();
+        attachments.forEach(key -> {
+            final var attach = RegistryManager.getDataMap(registry.key(), key);
+            if (attach == null || attach.networkCodec() == null) return;
+            att.put(key, registry.getDataMap(attach));
+        });
+        if (!att.isEmpty()) {
+            PacketDistributor.sendToPlayer(player, new RegistryDataMapSyncPayload<>(registry.key(), att));
         }
     }
 
@@ -101,11 +147,13 @@ public class NeoForgeEventHandler {
     }
 
     private static LootModifierManager INSTANCE;
+    private static DataMapLoader DATA_MAPS;
 
     @SubscribeEvent
     public void onResourceReload(AddReloadListenerEvent event) {
         INSTANCE = new LootModifierManager();
         event.addListener(INSTANCE);
+        event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
     }
 
     static LootModifierManager getLootModifierManager() {
@@ -116,7 +164,6 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(TierSortingRegistry.getReloadListener());
         event.addListener(CreativeModeTabRegistry.getReloadListener());
     }
 

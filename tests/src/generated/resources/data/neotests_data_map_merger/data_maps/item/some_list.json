@@ -1,0 +1,16 @@
+{
+  "values": {
+    "minecraft:blue_orchid": [
+      {
+        "intValue": 1,
+        "stringValue": "a"
+      }
+    ],
+    "minecraft:dandelion": [
+      {
+        "intValue": 14,
+        "stringValue": "abc"
+      }
+    ]
+  }
+}

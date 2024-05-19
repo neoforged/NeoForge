@@ -9,16 +9,16 @@
  
      public CompressionEncoder(int p_129448_) {
          this.threshold = p_129448_;
-@@ -21,6 +_,12 @@
-             VarInt.write(p_129454_, 0);
-             p_129454_.writeBytes(p_129453_);
+@@ -17,6 +_,12 @@
+ 
+     protected void encode(ChannelHandlerContext p_129452_, ByteBuf p_129453_, ByteBuf p_129454_) {
+         int i = p_129453_.readableBytes();
++        if (!DISABLE_PACKET_DEBUG && i > net.minecraft.network.CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH) {
++            p_129453_.markReaderIndex();
++            LOGGER.error("Attempted to send packet over maximum protocol size: {} > {}\nData:\n{}", i, net.minecraft.network.CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH,
++                    net.neoforged.neoforge.logging.PacketDump.getContentDump(p_129453_));
++            p_129453_.resetReaderIndex();
++        }
+         if (i > 8388608) {
+             throw new IllegalArgumentException("Packet too big (is " + i + ", should be less than 8388608)");
          } else {
-+            if (!DISABLE_PACKET_DEBUG && i > net.minecraft.network.CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH) {
-+                 p_129453_.markReaderIndex();
-+                 LOGGER.error("Attempted to send packet over maximum protocol size: {} > {}\nData:\n{}", i, net.minecraft.network.CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH,
-+                            net.neoforged.neoforge.logging.PacketDump.getContentDump(p_129453_));
-+                 p_129453_.resetReaderIndex();
-+            }
-             byte[] abyte = new byte[i];
-             p_129453_.readBytes(abyte);
-             VarInt.write(p_129454_, abyte.length);

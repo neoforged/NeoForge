@@ -3,13 +3,14 @@
   "category": "equipment",
   "ingredients": [
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "minecraft:flint"
     }
   ],
   "result": {
-    "item": "minecraft:flint_and_steel"
+    "count": 1,
+    "id": "minecraft:flint_and_steel"
   }
 }

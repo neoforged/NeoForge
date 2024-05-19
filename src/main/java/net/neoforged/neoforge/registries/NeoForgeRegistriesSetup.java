@@ -36,6 +36,7 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.ENCHANTMENT, // Required for EnchantmentMenu syncing
             BuiltInRegistries.ENTITY_TYPE, // Required for Entity spawn packets
             BuiltInRegistries.ITEM, // Required for Item/ItemStack packets
+            BuiltInRegistries.FLUID, // Required for Fluid/FluidStack packets
             BuiltInRegistries.PARTICLE_TYPE, // Required for ParticleType packets
             BuiltInRegistries.BLOCK_ENTITY_TYPE, // Required for BlockEntity packets
             BuiltInRegistries.PAINTING_VARIANT, // Required for EntityDataSerializers
@@ -45,7 +46,18 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.VILLAGER_TYPE, // Required for EntityDataSerializers
             BuiltInRegistries.VILLAGER_PROFESSION, // Required for EntityDataSerializers
             BuiltInRegistries.CAT_VARIANT, // Required for EntityDataSerializers
-            BuiltInRegistries.FROG_VARIANT // Required for EntityDataSerializers
+            BuiltInRegistries.FROG_VARIANT, // Required for EntityDataSerializers
+            BuiltInRegistries.DATA_COMPONENT_TYPE, // Required for itemstack sync
+            BuiltInRegistries.RECIPE_SERIALIZER, // Required for Recipe sync
+            BuiltInRegistries.ATTRIBUTE, // Required for ClientboundUpdateAttributesPacket
+
+            // Required due to appearing in usages of ByteBufCodecs#registry
+            BuiltInRegistries.POTION, // PotionContents#STREAM_CODEC
+            BuiltInRegistries.NUMBER_FORMAT_TYPE, // NumberFormatTypes#STREAM_CODEC
+            BuiltInRegistries.CUSTOM_STAT, // StatType creates a registry StreamCodec using the provided stat registry
+            BuiltInRegistries.POSITION_SOURCE_TYPE, // PositionSource#STREAM_CODEC
+            BuiltInRegistries.ARMOR_MATERIAL, // TrimMaterial#DIRECT_STREAM_CODEC
+            BuiltInRegistries.MAP_DECORATION_TYPE // MapDecorationType#STREAM_CODEC
     );
 
     private static void registerRegistries(NewRegistryEvent event) {
@@ -57,8 +69,8 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.HOLDER_SET_TYPES);
         event.register(NeoForgeRegistries.DISPLAY_CONTEXTS);
         event.register(NeoForgeRegistries.INGREDIENT_TYPES);
+        event.register(NeoForgeRegistries.FLUID_INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
-        event.register(NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS);
         event.register(NeoForgeRegistries.ATTACHMENT_TYPES);
     }
 

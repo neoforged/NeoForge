@@ -13,8 +13,6 @@ apply plugin: 'net.neoforged.gradle.junit'
 def neoforgeProject = project(':neoforge')
 def testframeworkProject = project(':testframework')
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
-
 repositories {
     mavenLocal()
     maven {
@@ -130,22 +128,6 @@ license {
     include '**/*.java'
 }
 
-spotless {
-    java {
-        endWithNewline()
-        indentWithSpaces()
-        removeUnusedImports()
-        toggleOffOn()
-        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
-        importOrder()
-
-        // courtesy of diffplug/spotless#240
-        // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
-        custom 'noWildcardImports', { String fileContents ->
-            if (fileContents.contains('*;\n')) {
-                throw new GradleException('No wildcard imports are allowed!')
-            }
-        }
-        bumpThisNumberIfACustomStepChanges(1)
-    }
-}
+apply from: rootProject.file('buildscript/spotless-rules.gradle')
+apply from: rootProject.file('buildscript/generate-package-infos.gradle')
+apply from: rootProject.file('buildscript/apply-all-formatting.gradle')

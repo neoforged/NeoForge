@@ -8,81 +8,59 @@ package net.neoforged.neoforge.common.crafting;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import java.util.function.Function;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.ItemStack;
+import com.mojang.serialization.MapCodec;
+import java.util.stream.Stream;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.Internal
 public class CraftingHelper {
-    public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC);
-
-    @ApiStatus.Internal
-    public static Codec<ItemStack> smeltingResultCodec() {
-        return ExtraCodecs
-                .either(
-                        BuiltInRegistries.ITEM.byNameCodec(),
-                        ItemStack.ITEM_WITH_COUNT_CODEC)
-                .xmap(
-                        either -> either.map(ItemStack::new, Function.identity()),
-                        stack -> {
-                            if (stack.getCount() != 1) {
-                                return Either.right(stack);
-                            }
-
-                            var tagForWriting = getTagForWriting(stack);
-                            var attachments = stack.serializeAttachments();
-                            return tagForWriting == null && attachments == null ? Either.left(stack.getItem()) : Either.right(stack);
-                        });
+    public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty) {
+        var listCodec = Codec.lazyInitialized(() -> allowEmpty ? Ingredient.LIST_CODEC : Ingredient.LIST_CODEC_NONEMPTY);
+        return Codec.either(listCodec, makeIngredientMapCodec().codec())
+                .xmap(either -> either.map(list -> {
+                    // Use CompoundIngredient.of(...) to convert empty ingredients to Ingredient.EMPTY
+                    return CompoundIngredient.of(list.toArray(Ingredient[]::new));
+                }, i -> i), ingredient -> {
+                    if (ingredient.isCustom()) {
+                        if (ingredient.getCustomIngredient() instanceof CompoundIngredient compound) {
+                            // Use [] syntax for CompoundIngredients.
+                            return Either.left(compound.children());
+                        }
+                    } else if (ingredient.getValues().length != 1) {
+                        // Use [] syntax for vanilla ingredients that either 0 or 2+ values.
+                        return Either.left(Stream.of(ingredient.getValues()).map(v -> Ingredient.fromValues(Stream.of(v))).toList());
+                    }
+                    // Else use {} syntax.
+                    return Either.right(ingredient);
+                });
     }
 
-    @Nullable
-    public static CompoundTag getTagForWriting(ItemStack stack) {
-        // Check if not writing the NBT would still give the correct item.
-        // Just checking for tag != null is not enough: damageable items get a tag set in the stack constructor,
-        // but we don't want to write it to the recipe file.
-        if (stack.getTag() == null || stack.getTag().equals(new ItemStack(stack.getItem(), stack.getCount()).getTag())) {
-            return null;
-        } else {
-            return stack.getTag();
-        }
-    }
-
-    @ApiStatus.Internal
-    public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
-        var compoundIngredientCodec = ExtraCodecs.lazyInitializedCodec(() -> allowEmpty ? CompoundIngredient.DIRECT_CODEC : CompoundIngredient.DIRECT_CODEC_NONEMPTY);
-        return NeoForgeExtraCodecs.withAlternative(
-                // Compound ingredient handling
-                compoundIngredientCodec.flatComapMap(
-                        Function.identity(),
-                        i -> i instanceof CompoundIngredient c ? DataResult.success(c) : DataResult.error(() -> "Not a compound ingredient")),
-                // Otherwise choose between custom and vanilla
-                makeIngredientCodec0(allowEmpty, vanillaCodec));
-    }
-
-    // Choose between dispatch codec for custom ingredients and vanilla codec
-    private static Codec<Ingredient> makeIngredientCodec0(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
-        // Dispatch codec for custom ingredient types:
-        Codec<Ingredient> dispatchCodec = NeoForgeRegistries.INGREDIENT_TYPES.byNameCodec()
-                .dispatch(Ingredient::getType, ingredientType -> ingredientType.codec(allowEmpty));
-        // Either codec to combine with the vanilla ingredient codec:
-        Codec<Either<Ingredient, Ingredient>> eitherCodec = ExtraCodecs.either(
-                dispatchCodec,
-                vanillaCodec);
-        return eitherCodec.xmap(either -> either.map(i -> i, i -> i), ingredient -> {
-            // Prefer writing without the "type" field if possible:
-            if (ingredient.getType() == NeoForgeMod.VANILLA_INGREDIENT_TYPE.get()) {
-                return Either.right(ingredient);
-            } else {
-                return Either.left(ingredient);
-            }
-        });
+    public static MapCodec<Ingredient> makeIngredientMapCodec() {
+        // Dispatch codec for custom ingredient types, else fallback to vanilla ingredient codec.
+        return NeoForgeExtraCodecs.<IngredientType<?>, ICustomIngredient, Ingredient.Value>dispatchMapOrElse(
+                NeoForgeRegistries.INGREDIENT_TYPES.byNameCodec(),
+                ICustomIngredient::getType,
+                IngredientType::codec,
+                Ingredient.Value.MAP_CODEC)
+                .xmap(either -> either.map(ICustomIngredient::toVanilla, v -> Ingredient.fromValues(Stream.of(v))), ingredient -> {
+                    if (!ingredient.isCustom()) {
+                        var values = ingredient.getValues();
+                        if (values.length == 1) {
+                            return Either.right(values[0]);
+                        }
+                        // Convert vanilla ingredients with 2+ values to a CompoundIngredient. Empty ingredients are not allowed here.
+                        return Either.left(new CompoundIngredient(Stream.of(ingredient.getValues()).map(v -> Ingredient.fromValues(Stream.of(v))).toList()));
+                    }
+                    return Either.left(ingredient.getCustomIngredient());
+                })
+                .validate(ingredient -> {
+                    if (!ingredient.isCustom() && ingredient.getValues().length == 0) {
+                        return DataResult.error(() -> "Cannot serialize empty ingredient using the map codec");
+                    }
+                    return DataResult.success(ingredient);
+                });
     }
 }

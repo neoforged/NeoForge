@@ -32,43 +32,47 @@ import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
-import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.registries.RegistryManager;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
 /**
  * A filter for impl packets, used to filter/modify parts of vanilla impl messages that
  * will cause errors or warnings on vanilla clients, for example entity attributes that are added by Forge or mods.
  */
+@ApiStatus.Internal
 @ChannelHandler.Sharable
 public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public VanillaConnectionNetworkFilter() {
+    private final ConnectionType connectionType;
+
+    public VanillaConnectionNetworkFilter(ConnectionType connectionType) {
         super(
                 ImmutableMap.<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>>builder()
                         .put(handler(ClientboundUpdateAttributesPacket.class, VanillaConnectionNetworkFilter::filterEntityProperties))
                         .put(handler(ClientboundCommandsPacket.class, VanillaConnectionNetworkFilter::filterCommandList))
                         .put(handler(ClientboundUpdateTagsPacket.class, VanillaConnectionNetworkFilter::filterCustomTagTypes))
                         .build());
+
+        this.connectionType = connectionType;
     }
 
     @Override
     public boolean isNecessary(Connection manager) {
-        return NetworkRegistry.getInstance().isVanillaConnection(manager);
+        return !connectionType.isNeoForge();
     }
 
     /**
      * Filter for SEntityPropertiesPacket. Filters out any entity attributes that are not in the "minecraft" namespace.
      * A vanilla client would ignore these with an error log.
      */
-    @NotNull
     private static ClientboundUpdateAttributesPacket filterEntityProperties(ClientboundUpdateAttributesPacket msg) {
         ClientboundUpdateAttributesPacket newPacket = new ClientboundUpdateAttributesPacket(msg.getEntityId(), Collections.emptyList());
         msg.getValues().stream()
                 .filter(snapshot -> {
-                    ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(snapshot.getAttribute());
+                    ResourceLocation key = snapshot.attribute().unwrapKey().map(ResourceKey::location).orElse(null);
                     return key != null && key.getNamespace().equals("minecraft");
                 })
                 .forEach(snapshot -> newPacket.getValues().add(snapshot));
@@ -79,7 +83,6 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
      * Filter for SCommandListPacket. Uses {@link CommandTreeCleaner} to filter out any ArgumentTypes that are not in the "minecraft" or "brigadier" namespace.
      * A vanilla client would fail to deserialize the packet and disconnect with an error message if these were sent.
      */
-    @NotNull
     private static ClientboundCommandsPacket filterCommandList(ClientboundCommandsPacket packet) {
         CommandBuildContext commandBuildContext = Commands.createValidationContext(VanillaRegistries.createLookup());
         RootCommandNode<SharedSuggestionProvider> root = packet.getRoot(commandBuildContext);

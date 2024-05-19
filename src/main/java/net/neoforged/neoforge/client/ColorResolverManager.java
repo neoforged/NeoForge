@@ -23,8 +23,18 @@ public final class ColorResolverManager {
     @ApiStatus.Internal
     public static void init() {
         ImmutableList.Builder<ColorResolver> builder = ImmutableList.builder();
-        ModLoader.get().postEvent(new RegisterColorHandlersEvent.ColorResolvers(builder));
+        ModLoader.postEvent(new RegisterColorHandlersEvent.ColorResolvers(builder));
         colorResolvers = builder.build();
+    }
+
+    /**
+     * Get all registered custom {@link ColorResolver}s. The returned list does not include vanilla resolvers,
+     * since they are not explicitly registered.
+     *
+     * @return a list of all registered color resolvers, not including vanilla color resolvers
+     */
+    public static ImmutableList<ColorResolver> getRegisteredResolvers() {
+        return colorResolvers;
     }
 
     /**

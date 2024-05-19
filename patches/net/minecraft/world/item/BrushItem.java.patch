@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BrushItem.java
 +++ b/net/minecraft/world/item/BrushItem.java
-@@ -148,4 +_,9 @@
+@@ -142,4 +_,9 @@
              };
          }
      }

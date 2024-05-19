@@ -5,30 +5,27 @@
 
 package net.neoforged.neoforge.network.filters;
 
-import static net.minecraft.network.Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL;
-import static net.minecraft.network.Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.network.CompressionDecoder;
 import net.minecraft.network.Connection;
-import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.VarInt;
+import net.minecraft.network.HandlerNames;
+import net.minecraft.network.PacketEncoder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.SplitPacketPayload;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
@@ -39,38 +36,41 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A generic packet splitter that can be used to split packets that are too large to be sent in one go.
  */
-@Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
+@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final int MAX_PACKET_SIZE = CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH;
-    private static final int MAX_PART_SIZE = determineMaxPayloadSize(
-            ConnectionProtocol.CONFIGURATION,
-            PacketFlow.SERVERBOUND);
+    private record SizeLimits(int packet, int part) {
+        public SizeLimits(int packet) {
+            this(packet, determineMaxPayloadSize(packet));
+        }
+    }
+
+    // Used for in-memory connections
+    private static final SizeLimits compressedSizeLimits = new SizeLimits(CompressionDecoder.MAXIMUM_COMPRESSED_LENGTH);
+    // Used for non-in-memory connections
+    private static final SizeLimits uncompressedSizeLimits = new SizeLimits(CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH);
 
     private static final byte STATE_FIRST = 1;
     private static final byte STATE_LAST = 2;
 
-    private final AttributeKey<ConnectionProtocol.CodecData<?>> codecKey;
-
-    public GenericPacketSplitter(Connection connection) {
-        this(getProtocolKey(connection.getDirection().getOpposite()));
-    }
-
-    public GenericPacketSplitter(AttributeKey<ConnectionProtocol.CodecData<?>> codecKey) {
-        this.codecKey = codecKey;
-    }
+    public static final String CHANNEL_HANDLER_NAME = "neoforge:splitter";
 
     @SubscribeEvent
-    private static void register(final RegisterPayloadHandlerEvent event) {
-        event.registrar(NeoForgeVersion.MOD_ID)
-                .versioned(NeoForgeVersion.getSpec())
+    private static void register(final RegisterPayloadHandlersEvent event) {
+        event.registrar("1")
                 .optional()
-                .common(
-                        SplitPacketPayload.ID,
-                        SplitPacketPayload::new,
-                        GenericPacketSplitter::receivedPacket);
+                .commonBidirectional(SplitPacketPayload.TYPE, SplitPacketPayload.STREAM_CODEC, GenericPacketSplitter::handle);
+    }
+
+    private static void handle(SplitPacketPayload payload, IPayloadContext context) {
+        if (context.channelHandlerContext().pipeline().get(CHANNEL_HANDLER_NAME) instanceof GenericPacketSplitter splitter) {
+            splitter.receivedPacket(payload, context);
+        } else {
+            LOGGER.error("Received split packet without a splitter");
+            context.disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
+        }
     }
 
     @Override
@@ -87,58 +87,51 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
             return;
         }
 
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        packet.write(buf);
-        if (buf.readableBytes() <= MAX_PACKET_SIZE) {
-            buf.release();
+        if (!((ctx.pipeline().get(HandlerNames.ENCODER) instanceof PacketEncoder<?> encoder))) {
+            // No encoder in pipeline, pipeline is probably unbound
             out.add(packet);
-        } else {
-            int parts = (int) Math.ceil(((double) buf.readableBytes()) / MAX_PART_SIZE);
-            if (parts == 1) {
-                buf.release();
+            return;
+        }
+
+        boolean hasCompressor = ctx.pipeline().get(HandlerNames.COMPRESS) != null;
+        // If there IS a compressor, use the NON-compressed limit since the compressor will compress after us!
+        var sizeLimits = hasCompressor ? uncompressedSizeLimits : compressedSizeLimits;
+
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        try {
+            @SuppressWarnings({ "unchecked", "rawtypes" }) // Eclipse requires the extra rawtype cast first.
+            var codec = (StreamCodec<ByteBuf, Packet<?>>) (StreamCodec) encoder.getProtocolInfo().codec();
+            codec.encode(buf, packet);
+            if (buf.readableBytes() <= sizeLimits.packet()) {
                 out.add(packet);
-            } else {
-
-                Attribute<ConnectionProtocol.CodecData<?>> attribute = ctx.channel().attr(this.codecKey);
-                ConnectionProtocol.CodecData<?> codecdata = attribute.get();
-
-                final byte[] packetData = buf.array();
-                for (int part = 0; part < parts; part++) {
-                    final ByteBuf partPrefix;
-                    if (part == 0) {
-                        partPrefix = Unpooled.buffer(5);
-                        partPrefix.writeByte(STATE_FIRST);
-
-                        VarInt.write(partPrefix, codecdata.packetId(packet));
-                    } else {
-                        partPrefix = Unpooled.buffer(1);
-                        partPrefix.writeByte(part == parts - 1 ? STATE_LAST : 0);
-                    }
-
-                    final int partSize = Math.min(MAX_PART_SIZE, packetData.length - (part * MAX_PART_SIZE));
-                    final int prefixSize = partPrefix.readableBytes();
-                    final byte[] payloadSlice = new byte[partSize + prefixSize];
-
-                    partPrefix.readBytes(payloadSlice, 0, prefixSize);
-                    System.arraycopy(packetData, part * MAX_PART_SIZE, payloadSlice, prefixSize, partSize);
-
-                    out.add(createPacket(codecdata.flow(), payloadSlice));
-
-                    partPrefix.release();
-                }
-                // We cloned all the data into arrays, no need to retain the buffer anymore
-                buf.release();
+                return;
             }
+
+            int parts = (int) Math.ceil(((double) buf.readableBytes()) / sizeLimits.part());
+            if (parts == 1) {
+                out.add(packet);
+                return;
+            }
+
+            final byte[] packetData = buf.array();
+            for (int part = 0; part < parts; part++) {
+                final int partSize = Math.min(sizeLimits.part(), packetData.length - (part * sizeLimits.part()));
+                final byte[] payloadSlice = new byte[partSize + 1];
+
+                byte prefix = part == 0 ? STATE_FIRST : part == parts - 1 ? STATE_LAST : 0;
+                payloadSlice[0] = prefix;
+                System.arraycopy(packetData, part * sizeLimits.part(), payloadSlice, 1, partSize);
+
+                out.add(createPacket(encoder.getProtocolInfo().flow(), payloadSlice));
+            }
+        } finally {
+            buf.release();
         }
     }
 
-    private static final List<byte[]> receivedBuffers = new ArrayList<>();
+    private final List<byte[]> receivedBuffers = new ArrayList<>();
 
-    private static void receivedPacket(SplitPacketPayload payload, IPayloadContext context) {
-        final ConnectionProtocol protocol = context.protocol();
-        final PacketFlow flow = context.flow();
-        final ChannelHandlerContext channelHandlerContext = context.channelHandlerContext();
-
+    private void receivedPacket(SplitPacketPayload payload, IPayloadContext context) {
         byte state = payload.payload()[0];
         if (state == STATE_FIRST) {
             if (!receivedBuffers.isEmpty()) {
@@ -155,21 +148,13 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         if (state == STATE_LAST) {
             final byte[][] buffers = receivedBuffers.toArray(new byte[0][]);
             FriendlyByteBuf full = new FriendlyByteBuf(Unpooled.wrappedBuffer(buffers));
-            int packetId = full.readVarInt();
 
-            Packet<?> packet = protocol.codec(flow).createPacket(packetId, full, channelHandlerContext);
-            if (packet == null) {
-                LOGGER.error("Received invalid packet ID {} in neoforge:split", packetId);
-            } else {
+            try {
+                Packet<?> packet = context.connection().getInboundProtocol().codec().decode(full);
+                context.enqueueWork(() -> context.handle(packet));
+            } finally {
                 receivedBuffers.clear();
                 full.release();
-
-                context.workHandler()
-                        .submitAsync(() -> context.packetHandler().handle(packet))
-                        .exceptionally(throwable -> {
-                            LOGGER.error("Error handling packet", throwable);
-                            return null;
-                        });
             }
         }
     }
@@ -183,7 +168,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
 
     @Override
     public boolean isNecessary(Connection manager) {
-        return !manager.isMemoryConnection() && isRemoteCompatible(manager);
+        return isRemoteCompatible(manager);
     }
 
     public enum RemoteCompatibility {
@@ -192,26 +177,23 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     }
 
     public static RemoteCompatibility getRemoteCompatibility(Connection manager) {
-        return NetworkRegistry.getInstance().isVanillaConnection(manager) ? RemoteCompatibility.ABSENT : RemoteCompatibility.PRESENT;
+        return NetworkRegistry.hasChannel(manager, null, SplitPacketPayload.TYPE.id()) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
     }
 
     public static boolean isRemoteCompatible(Connection manager) {
         return getRemoteCompatibility(manager) != RemoteCompatibility.ABSENT;
     }
 
-    public static int determineMaxPayloadSize(ConnectionProtocol protocol, PacketFlow flow) {
+    public static int determineMaxPayloadSize(int maxPacketSize) {
         final FriendlyByteBuf temporaryBuf = new FriendlyByteBuf(Unpooled.buffer());
-        int packetId = switch (flow) {
-            case SERVERBOUND -> protocol.codec(flow).packetId(new ServerboundCustomPayloadPacket(new SplitPacketPayload(new byte[0])));
-            case CLIENTBOUND -> protocol.codec(flow).packetId(new ClientboundCustomPayloadPacket(new SplitPacketPayload(new byte[0])));
-        };
-
         //Simulate writing our split packet with a full byte array
+
         //First write the packet id, as does the vanilla packet encoder.
-        temporaryBuf.writeVarInt(packetId);
+        //Write a byte for the packet id. Technically it could be multiple bytes, should the packet id be larger than 127.
+        temporaryBuf.writeByte(0);
 
         //Then write the payload id, as does the custom payload packet, regardless of flow.
-        temporaryBuf.writeResourceLocation(SplitPacketPayload.ID);
+        temporaryBuf.writeResourceLocation(SplitPacketPayload.TYPE.id());
 
         //Then write the byte prefix to indicate the state of the packet.
         temporaryBuf.writeByte(STATE_FIRST);
@@ -225,13 +207,6 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         //During normal write operations, this is the prefix content that is written before the actual payload.
         //This is the same for both clientbound and serverbound packets.
         final int prefixSize = temporaryBuf.readableBytes();
-        return CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH - prefixSize;
-    }
-
-    private static AttributeKey<ConnectionProtocol.CodecData<?>> getProtocolKey(PacketFlow flow) {
-        return switch (flow) {
-            case CLIENTBOUND -> ATTRIBUTE_CLIENTBOUND_PROTOCOL;
-            case SERVERBOUND -> ATTRIBUTE_SERVERBOUND_PROTOCOL;
-        };
+        return maxPacketSize - prefixSize;
     }
 }

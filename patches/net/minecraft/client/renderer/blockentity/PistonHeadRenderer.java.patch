@@ -19,6 +19,6 @@
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(PistonMovingBlockEntity blockEntity) {
-+        return INFINITE_EXTENT_AABB;
++        return net.minecraft.world.phys.AABB.INFINITE;
      }
  }

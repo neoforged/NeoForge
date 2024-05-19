@@ -9,32 +9,46 @@ plugins {
 
 apply plugin: 'net.neoforged.gradleutils'
 
-gradleutils.version {
-    minecraftVersion project.minecraft_version
-    versionPrefix = null // Reset version prefix, which is set by prev. line
-    tags {
-        label = 'beta'
-        cleanMarkerLabel = 'stable'
-    }
-    branches {
-        suffixBranch = true
-    }
-}
+ext.isPreReleaseVersion = project.minecraft_version.contains("w") || project.minecraft_version.contains("-")
 
-changelog {
-    from "20.2"
-    disableAutomaticPublicationRegistration()
+if (isPreReleaseVersion) {
+    project.version = "${project.neoforge_snapshot_next_stable}.0-alpha.${project.minecraft_version}.${(new Date()).format('yyyyMMdd.HHmmss', TimeZone.getTimeZone('UTC'))}"
+} else {
+    gradleutils.version {
+        minecraftVersion project.minecraft_version
+        versionPrefix = null // Reset version prefix, which is set by prev. line
+        tags {
+            label = 'beta'
+            cleanMarkerLabel = 'stable'
+        }
+        branches {
+            suffixBranch = true
+        }
+    }
+
+    changelog {
+        from '20.6'
+        disableAutomaticPublicationRegistration()
+    }
+
+    project.version = gradleutils.version.toString()
 }
 
 // Print version, generally useful to know - also appears on CI
-System.out.println("NeoForge version ${gradleutils.version.toString()}")
+System.out.println("NeoForge version ${project.version}")
 
 allprojects {
-    version gradleutils.version.toString()
+    version rootProject.version
     group 'net.neoforged'
     repositories {
         mavenLocal()
     }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
 }
 
 apply plugin: 'com.diffplug.spotless'
@@ -64,22 +78,6 @@ spotless {
         target rootProject.fileTree("src", {
             include "**/*.java"
         })
-
-        endWithNewline()
-        indentWithSpaces()
-        removeUnusedImports()
-        toggleOffOn()
-        eclipse().configFile file('codeformat/formatter-config.xml')
-        importOrder()
-
-        // courtesy of diffplug/spotless#240
-        // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
-        custom 'noWildcardImports', { String fileContents ->
-            if (fileContents.contains('*;\n')) {
-                throw new GradleException('No wildcard imports are allowed!')
-            }
-        }
-        bumpThisNumberIfACustomStepChanges(1)
     }
     format 'patches', {
         target rootProject.fileTree("patches")
@@ -87,6 +85,31 @@ spotless {
         custom 'noImportChanges', { String fileContents ->
             if (fileContents.contains('+import') || fileContents.contains('-import')) {
                 throw new GradleException("Import changes are not allowed in patches!")
+            }
+            return fileContents
+        }
+
+        def interfaceChange = Pattern.compile('^[-+].*(implements|(interface.*extends)).*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
+        custom 'noInterfaceRemoval', { String fileContents ->
+            def interfaceChanges = fileContents.findAll(interfaceChange)
+            if (interfaceChanges.isEmpty()) return fileContents
+            String removalChange = ""
+            interfaceChanges.each { String change ->
+                if (change.startsWith('-')) {
+                    //Skip the - and the ending brace
+                    int implementsIndex = change.indexOf("implements")
+                    if (implementsIndex == -1) implementsIndex = change.indexOf("extends")
+                    //It should never still be -1 based on our initial matching regex, but if it does fail so we can figure out why
+                    if (implementsIndex == -1) implementsIndex = 1
+                    removalChange = change.substring(implementsIndex, change.length() - 1).trim()
+                } else if (!removalChange.isEmpty() && !change.contains(removalChange)) {
+                    throw new GradleException("Removal of interfaces via patches is not allowed!")
+                } else {
+                    removalChange = ""
+                }
+            }
+            if (!removalChange.isEmpty()) {
+                throw new GradleException("Removal of interfaces via patches is not allowed!")
             }
             return fileContents
         }
@@ -103,6 +126,10 @@ spotless {
             return sb.toString()
         }
 
-        bumpThisNumberIfACustomStepChanges(2)
+        bumpThisNumberIfACustomStepChanges(3)
     }
 }
+
+apply from: rootProject.file('buildscript/spotless-rules.gradle')
+apply from: rootProject.file('buildscript/generate-package-infos.gradle')
+apply from: rootProject.file('buildscript/apply-all-formatting.gradle')

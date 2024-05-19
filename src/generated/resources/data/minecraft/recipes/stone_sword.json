@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
       "tag": "minecraft:stone_tool_materials"
@@ -15,6 +15,7 @@
     "#"
   ],
   "result": {
-    "item": "minecraft:stone_sword"
+    "count": 1,
+    "id": "minecraft:stone_sword"
   }
 }

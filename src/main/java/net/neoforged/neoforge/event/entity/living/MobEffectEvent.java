@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -13,7 +14,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -41,12 +41,12 @@ public abstract class MobEffectEvent extends LivingEvent {
      * This Event does not have a result.
      */
     public static class Remove extends MobEffectEvent implements ICancellableEvent {
-        private final MobEffect effect;
+        private final Holder<MobEffect> effect;
         @Nullable
         private final EffectCure cure;
 
         @ApiStatus.Internal
-        public Remove(LivingEntity living, MobEffect effect, @Nullable EffectCure cure) {
+        public Remove(LivingEntity living, Holder<MobEffect> effect, @Nullable EffectCure cure) {
             super(living, living.getEffect(effect));
             this.effect = effect;
             this.cure = cure;
@@ -62,7 +62,7 @@ public abstract class MobEffectEvent extends LivingEvent {
         /**
          * @return the {@link MobEffect} which is being removed from the entity
          */
-        public MobEffect getEffect() {
+        public Holder<MobEffect> getEffect() {
             return this.effect;
         }
 
@@ -96,12 +96,11 @@ public abstract class MobEffectEvent extends LivingEvent {
     @HasResult
     public static class Applicable extends MobEffectEvent {
         @ApiStatus.Internal
-        public Applicable(LivingEntity living, @NotNull MobEffectInstance effectInstance) {
+        public Applicable(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }
 
         @Override
-        @NotNull
         public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
         }
@@ -128,7 +127,6 @@ public abstract class MobEffectEvent extends LivingEvent {
          * @return the added {@link MobEffectInstance}. This is the unmerged MobEffectInstance if the old MobEffectInstance is not null.
          */
         @Override
-        @NotNull
         public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
         }

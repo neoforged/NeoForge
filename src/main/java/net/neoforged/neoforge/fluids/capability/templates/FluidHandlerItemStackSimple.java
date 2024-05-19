@@ -5,57 +5,46 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
-import net.minecraft.nbt.CompoundTag;
+import java.util.function.Supplier;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * FluidHandlerItemStackSimple is a template capability provider for ItemStacks.
- * Data is stored directly in the vanilla NBT, in the same way as the old ItemFluidContainer.
+ * Data is stored in a {@link SimpleFluidContent} component.
  *
- * This implementation only allows item containers to be fully filled or emptied, similar to vanilla buckets.
+ * <p>This implementation only allows item containers to be fully filled or emptied, similar to vanilla buckets.
  */
 public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
-    public static final String FLUID_NBT_KEY = "Fluid";
-
-    @NotNull
+    protected final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected ItemStack container;
     protected int capacity;
 
     /**
-     * @param container The container itemStack, data is stored on it directly as NBT.
-     * @param capacity  The maximum capacity of this fluid tank.
+     * @param componentType The data component type to use for data storage.
+     * @param container     The container itemStack, data is stored on it directly as NBT.
+     * @param capacity      The maximum capacity of this fluid tank.
      */
-    public FluidHandlerItemStackSimple(@NotNull ItemStack container, int capacity) {
+    public FluidHandlerItemStackSimple(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity) {
+        this.componentType = componentType;
         this.container = container;
         this.capacity = capacity;
     }
 
-    @NotNull
     @Override
     public ItemStack getContainer() {
         return container;
     }
 
-    @NotNull
     public FluidStack getFluid() {
-        CompoundTag tagCompound = container.getTag();
-        if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
-            return FluidStack.EMPTY;
-        }
-        return FluidStack.loadFluidStackFromNBT(tagCompound.getCompound(FLUID_NBT_KEY));
+        return container.getOrDefault(componentType, SimpleFluidContent.EMPTY).copy();
     }
 
     protected void setFluid(FluidStack fluid) {
-        if (!container.hasTag()) {
-            container.setTag(new CompoundTag());
-        }
-
-        CompoundTag fluidTag = new CompoundTag();
-        fluid.writeToNBT(fluidTag);
-        container.getTag().put(FLUID_NBT_KEY, fluidTag);
+        container.set(componentType, SimpleFluidContent.copyOf(fluid));
     }
 
     @Override
@@ -63,7 +52,6 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         return getFluid();
@@ -75,12 +63,12 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
     @Override
-    public int fill(@NotNull FluidStack resource, FluidAction action) {
+    public int fill(FluidStack resource, FluidAction action) {
         if (container.getCount() != 1 || resource.isEmpty() || !canFillFluidType(resource)) {
             return 0;
         }
@@ -90,9 +78,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
             int fillAmount = Math.min(capacity, resource.getAmount());
             if (fillAmount == capacity) {
                 if (action.execute()) {
-                    FluidStack filled = resource.copy();
-                    filled.setAmount(fillAmount);
-                    setFluid(filled);
+                    setFluid(resource.copyWithAmount(fillAmount));
                 }
 
                 return fillAmount;
@@ -102,16 +88,14 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
         return 0;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
+        if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, getFluid())) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (container.getCount() != 1 || maxDrain <= 0) {
@@ -151,15 +135,15 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
      * Can be used to destroy the container with "container.stackSize--"
      */
     protected void setContainerToEmpty() {
-        container.removeTagKey(FLUID_NBT_KEY);
+        container.remove(componentType);
     }
 
     /**
      * Destroys the container item when it's emptied.
      */
     public static class Consumable extends FluidHandlerItemStackSimple {
-        public Consumable(ItemStack container, int capacity) {
-            super(container, capacity);
+        public Consumable(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity) {
+            super(componentType, container, capacity);
         }
 
         @Override
@@ -175,8 +159,8 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
     public static class SwapEmpty extends FluidHandlerItemStackSimple {
         protected final ItemStack emptyContainer;
 
-        public SwapEmpty(ItemStack container, ItemStack emptyContainer, int capacity) {
-            super(container, capacity);
+        public SwapEmpty(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, ItemStack emptyContainer, int capacity) {
+            super(componentType, container, capacity);
             this.emptyContainer = emptyContainer;
         }
 

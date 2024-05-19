@@ -9,6 +9,8 @@ import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -59,6 +61,11 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     @Override
+    public final boolean hasAttachments() {
+        return attachments != null && !attachments.isEmpty();
+    }
+
+    @Override
     public final boolean hasData(AttachmentType<?> type) {
         validateAttachmentType(type);
         return attachments != null && attachments.containsKey(type);
@@ -76,6 +83,15 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     @Override
+    public <T> Optional<T> getExistingData(AttachmentType<T> type) {
+        validateAttachmentType(type);
+        if (attachments == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((T) this.attachments.get(type));
+    }
+
+    @Override
     @MustBeInvokedByOverriders
     public <T> @Nullable T setData(AttachmentType<T> type, T data) {
         validateAttachmentType(type);
@@ -83,12 +99,22 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         return (T) getAttachmentMap().put(type, data);
     }
 
+    @Override
+    @MustBeInvokedByOverriders
+    public <T> @Nullable T removeData(AttachmentType<T> type) {
+        validateAttachmentType(type);
+        if (attachments == null) {
+            return null;
+        }
+        return (T) attachments.remove(type);
+    }
+
     /**
      * Writes the serializable attachments to a tag.
      * Returns {@code null} if there are no serializable attachments.
      */
     @Nullable
-    public final CompoundTag serializeAttachments() {
+    public final CompoundTag serializeAttachments(HolderLookup.Provider provider) {
         if (attachments == null) {
             return null;
         }
@@ -96,18 +122,21 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
             if (type.serializer != null) {
-                if (tag == null)
-                    tag = new CompoundTag();
-                tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue()));
+                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
+                if (serialized != null) {
+                    if (tag == null)
+                        tag = new CompoundTag();
+                    tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
+                }
             }
         }
         return tag;
     }
 
     /**
-     * Reads serializable attachments from a tag previously created via {@link #serializeAttachments()}.
+     * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(HolderLookup.Provider)}.
      */
-    protected final void deserializeAttachments(CompoundTag tag) {
+    protected final void deserializeAttachments(HolderLookup.Provider provider, CompoundTag tag) {
         for (var key : tag.getAllKeys()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             ResourceLocation keyLocation = ResourceLocation.tryParse(key);
@@ -119,52 +148,15 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
             if (type == null || type.serializer == null) {
                 LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
+                continue;
             }
 
             try {
-                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key)));
+                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key), provider));
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }
         }
-    }
-
-    /**
-     * Checks if two attachment holders have compatible attachments,
-     * i.e. if they have the same serialized form.
-     *
-     * <p>Same as calling {@code Objects.equals(first.serializeAttachments(), second.serializeAttachments())},
-     * but implemented more efficiently.
-     *
-     * @return {@code true} if the attachments are compatible, {@code false} otherwise
-     */
-    public static <H extends AttachmentHolder> boolean areAttachmentsCompatible(H first, H second) {
-        Map<AttachmentType<?>, Object> firstAttachments = first.attachments != null ? first.attachments : Map.of();
-        Map<AttachmentType<?>, Object> secondAttachments = second.attachments != null ? second.attachments : Map.of();
-
-        for (var entry : firstAttachments.entrySet()) {
-            AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
-            if (type.serializer != null) {
-                var otherData = secondAttachments.get(type);
-                if (otherData == null)
-                    // TODO: cache serialization of default value?
-                    otherData = type.defaultValueSupplier.apply(second.getExposedHolder());
-                if (!type.comparator.areCompatible(entry.getValue(), otherData))
-                    return false;
-            }
-        }
-        for (var entry : secondAttachments.entrySet()) {
-            AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
-            if (type.serializer != null) {
-                var data = firstAttachments.get(type);
-                if (data != null)
-                    continue; // already checked in the first loop
-                data = type.defaultValueSupplier.apply(first.getExposedHolder());
-                if (!type.comparator.areCompatible(entry.getValue(), data))
-                    return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -184,8 +176,8 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             return exposedHolder;
         }
 
-        public void deserializeInternal(CompoundTag tag) {
-            deserializeAttachments(tag);
+        public void deserializeInternal(HolderLookup.Provider provider, CompoundTag tag) {
+            deserializeAttachments(provider, tag);
         }
     }
 }

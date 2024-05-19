@@ -7,6 +7,6 @@
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(StructureBlockEntity blockEntity) {
-+        return INFINITE_EXTENT_AABB;
++        return net.minecraft.world.phys.AABB.INFINITE;
 +    }
  }

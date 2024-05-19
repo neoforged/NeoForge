@@ -166,7 +166,7 @@ public abstract class EntityEvent extends Event {
         public void setNewSize(EntityDimensions size, boolean updateEyeHeight) {
             this.newSize = size;
             if (updateEyeHeight) {
-                this.newEyeHeight = this.getEntity().getEyeHeightAccess(this.getPose(), this.newSize);
+                this.newEyeHeight = this.getEntity().getEyeHeightAccess(this.getPose());
             }
         }
 

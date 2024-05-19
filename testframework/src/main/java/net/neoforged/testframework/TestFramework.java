@@ -73,6 +73,13 @@ public interface TestFramework {
     IEventBus modEventBus();
 
     /**
+     * {@return the mod container bus linked to this framework}
+     *
+     * @apiNote this is set in {@link MutableTestFramework#init(IEventBus, ModContainer)}
+     */
+    ModContainer container();
+
+    /**
      * {@return a registrar for in-code structure templates}
      */
     DynamicStructureTemplates dynamicStructures();

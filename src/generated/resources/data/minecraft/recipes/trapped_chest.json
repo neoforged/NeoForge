@@ -3,13 +3,14 @@
   "category": "redstone",
   "ingredients": [
     {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     {
       "item": "minecraft:tripwire_hook"
     }
   ],
   "result": {
-    "item": "minecraft:trapped_chest"
+    "count": 1,
+    "id": "minecraft:trapped_chest"
   }
 }

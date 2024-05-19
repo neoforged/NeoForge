@@ -8,12 +8,14 @@
 +        if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.removerMob.level(), this.removerMob)) {
              return false;
          } else if (this.nextStartTick > 0) {
-             --this.nextStartTick;
-@@ -159,6 +_,7 @@
-         if (chunkaccess == null) {
-             return false;
-         } else {
-+            if (!chunkaccess.getBlockState(p_25851_).canEntityDestroy(p_25850_, p_25851_, this.removerMob)) return false;
-             return chunkaccess.getBlockState(p_25851_).is(this.blockToRemove)
+             this.nextStartTick--;
+@@ -158,7 +_,8 @@
+         );
+         return chunkaccess == null
+             ? false
+-            : chunkaccess.getBlockState(p_25851_).is(this.blockToRemove)
++            : chunkaccess.getBlockState(p_25851_).canEntityDestroy(p_25850_, p_25851_, this.removerMob)
++                && chunkaccess.getBlockState(p_25851_).is(this.blockToRemove)
                  && chunkaccess.getBlockState(p_25851_.above()).isAir()
                  && chunkaccess.getBlockState(p_25851_.above(2)).isAir();
+     }

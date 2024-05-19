@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/net/minecraft/client/gui/components/DebugScreenOverlay.java
-@@ -134,8 +_,13 @@
+@@ -135,8 +_,13 @@
          this.block = entity.pick(20.0, 0.0F, false);
          this.liquid = entity.pick(20.0, 0.0F, true);
          p_281427_.drawManaged(() -> {
@@ -16,7 +16,7 @@
              if (this.renderFpsCharts) {
                  int i = p_281427_.guiWidth();
                  int j = i / 2;
-@@ -160,7 +_,7 @@
+@@ -161,7 +_,7 @@
          this.minecraft.getProfiler().pop();
      }
  
@@ -25,7 +25,7 @@
          List<String> list = this.getGameInformation();
          list.add("");
          boolean flag = this.minecraft.getSingleplayerServer() != null;
-@@ -175,11 +_,13 @@
+@@ -176,11 +_,13 @@
                  + (this.renderNetworkCharts ? " visible" : " hidden")
          );
          list.add("For help: press F3 + Q");
@@ -40,7 +40,7 @@
          this.renderLines(p_281261_, list, false);
      }
  
-@@ -508,6 +_,13 @@
+@@ -509,6 +_,13 @@
              GlUtil.getRenderer(),
              GlUtil.getOpenGLVersion()
          );
@@ -54,7 +54,7 @@
          if (this.minecraft.showOnlyReducedInfo()) {
              return list;
          } else {
-@@ -544,6 +_,7 @@
+@@ -545,6 +_,7 @@
                  list.add("");
                  list.add(ChatFormatting.UNDERLINE + "Targeted Entity");
                  list.add(String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType())));

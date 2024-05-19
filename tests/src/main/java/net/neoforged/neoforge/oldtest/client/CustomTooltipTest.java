@@ -38,7 +38,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
 
 @Mod(CustomTooltipTest.ID)
 public class CustomTooltipTest {
@@ -89,8 +88,8 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> components, TooltipFlag flag) {
-            super.appendHoverText(stack, level, components, flag);
+        public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> components, TooltipFlag flag) {
+            super.appendHoverText(stack, context, components, flag);
             components.add(Component.literal("This is a very very very very very very long hover text that should really really be split across multiple lines.").withStyle(ChatFormatting.YELLOW));
         }
 

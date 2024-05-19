@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -25,11 +26,11 @@ import org.jetbrains.annotations.Nullable;
  **/
 public class VanillaGameEvent extends Event implements ICancellableEvent {
     private final Level level;
-    private final GameEvent vanillaEvent;
+    private final Holder<GameEvent> vanillaEvent;
     private final Vec3 position;
     private final GameEvent.Context context;
 
-    public VanillaGameEvent(Level level, GameEvent vanillaEvent, Vec3 position, GameEvent.Context context) {
+    public VanillaGameEvent(Level level, Holder<GameEvent> vanillaEvent, Vec3 position, GameEvent.Context context) {
         this.level = level;
         this.vanillaEvent = vanillaEvent;
         this.position = position;
@@ -54,7 +55,7 @@ public class VanillaGameEvent extends Event implements ICancellableEvent {
     /**
      * @return The Vanilla event.
      */
-    public GameEvent getVanillaEvent() {
+    public Holder<GameEvent> getVanillaEvent() {
         return vanillaEvent;
     }
 

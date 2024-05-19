@@ -1,14 +1,16 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
-@@ -139,6 +_,11 @@
-                 }
-             }
- 
-+            if (j == 0) {
-+                // Forge has some special formatting handlers defined in ForgeI18n, use those if no %s replacements present.
-+                j = net.neoforged.neoforge.internal.TextComponentMessageFormatHandler.handle(this, p_237517_, this.args, p_237516_);
+@@ -81,6 +_,13 @@
+         this.key = p_265775_;
+         this.fallback = p_265204_;
+         this.args = p_265752_;
++        if (!net.neoforged.fml.loading.FMLEnvironment.production) {
++            for (Object arg : this.args) {
++                if (!(arg instanceof Component) && !isAllowedPrimitiveArgument(arg)) {
++                    throw new IllegalArgumentException("TranslatableContents' arguments must be either a Component, Number, Boolean, or a String. Was given " + arg + " for " + this.key);
++                }
 +            }
-+
-             if (j < p_237516_.length()) {
-                 String s3 = p_237516_.substring(j);
-                 if (s3.indexOf(37) != -1) {
++        }
+     }
+ 
+     @Override

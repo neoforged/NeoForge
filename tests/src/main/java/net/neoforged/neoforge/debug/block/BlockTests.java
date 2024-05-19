@@ -11,10 +11,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,20 +24,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BubbleColumnBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,16 +76,16 @@ public class BlockTests {
     }
 
     @GameTest
-    @EmptyTemplate(floor = true)
+    @EmptyTemplate(floor = true, value = "5x5x5") // barrier blocks may prevent respawn
     @TestHolder(description = "Tests if the Neo-added getRespawnPosition method correctly changes the position")
     static void customRespawnTest(final DynamicTest test, final RegistrationHelper reg) {
         final var respawn = reg.blocks().register("respawn", () -> new Block(BlockBehaviour.Properties.of()) {
             @Override
-            public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
+            protected ItemInteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level world, BlockPos pos, Player player, InteractionHand p_316595_, BlockHitResult p_316140_) {
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.setRespawnPosition(world.dimension(), pos, 0, false, true);
                 }
-                return InteractionResult.sidedSuccess(world.isClientSide);
+                return ItemInteractionResult.sidedSuccess(world.isClientSide);
             }
 
             @Override
@@ -125,5 +131,66 @@ public class BlockTests {
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
                 .thenSucceed();
+    }
+
+    @GameTest()
+    @TestHolder(description = "Adds a block that can sustain Bubble Columns and verify it works")
+    static void bubbleColumnTest(final DynamicTest test, final RegistrationHelper reg) {
+        final var upwardBubbleColumnSustainingBlock = reg.blocks()
+                .registerBlock("upward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.UPWARD), BlockBehaviour.Properties.of())
+                .withLang("Upward Bubble Column Sustaining block")
+                .withDefaultWhiteModel()
+                .withBlockItem();
+        final var downwardBubbleColumnSustainingBlock = reg.blocks()
+                .registerBlock("downward_bubble_column_sustaining_block", (properties) -> new CustomBubbleColumnSustainingBlock(properties, BubbleColumnDirection.DOWNWARD), BlockBehaviour.Properties.of())
+                .withLang("Downward Bubble Column Sustaining block")
+                .withDefaultWhiteModel()
+                .withBlockItem();
+
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 3, 3)
+                .fill(0, 0, 0, 2, 2, 2, Blocks.WATER));
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenExecute(() -> helper.setBlock(new BlockPos(0, 0, 1), upwardBubbleColumnSustainingBlock.get().defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 0, 1), downwardBubbleColumnSustainingBlock.get().defaultBlockState()))
+                .thenExecute(() -> helper.setBlock(new BlockPos(2, 0, 1), Blocks.OAK_PLANKS.defaultBlockState()))
+                .thenIdle(20)
+                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(0, 2, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertTrue(helper.getBlockState(new BlockPos(1, 2, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was not found where it should be"))
+                .thenExecute(() -> helper.assertFalse(helper.getBlockState(new BlockPos(2, 2, 1)).is(Blocks.BUBBLE_COLUMN), "Bubble Column presence was found where it shouldn't be"))
+                .thenSucceed());
+    }
+
+    private static class CustomBubbleColumnSustainingBlock extends Block {
+        private final BubbleColumnDirection bubbleColumnDirection;
+
+        public CustomBubbleColumnSustainingBlock(Properties properties, BubbleColumnDirection bubbleColumnDirection1) {
+            super(properties);
+            this.bubbleColumnDirection = bubbleColumnDirection1;
+        }
+
+        @Override
+        protected void tick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource) {
+            BubbleColumnBlock.updateColumn(serverLevel, blockPos.above(), blockState);
+        }
+
+        @Override
+        protected BlockState updateShape(BlockState currentBlockState, Direction direction, BlockState sideBlockState, LevelAccessor levelAccessor, BlockPos currentBlockPos, BlockPos sideBlockPos) {
+            if (direction == Direction.UP && sideBlockState.is(Blocks.WATER)) {
+                levelAccessor.scheduleTick(currentBlockPos, this, 1);
+            }
+
+            return super.updateShape(currentBlockState, direction, sideBlockState, levelAccessor, currentBlockPos, sideBlockPos);
+        }
+
+        @Override
+        protected void onPlace(BlockState blockState, Level level, BlockPos blockPos, BlockState oldBlockState, boolean isMoving) {
+            level.scheduleTick(blockPos, this, 1);
+        }
+
+        @Override
+        public BubbleColumnDirection getBubbleColumnDirection(BlockState state) {
+            return bubbleColumnDirection;
+        }
     }
 }

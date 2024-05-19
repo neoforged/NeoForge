@@ -12,7 +12,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is called when a player attempts to use Bonemeal on a block.
@@ -23,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * setResult(ALLOW) is the same as the old setHandled()
  */
+// TODO 1.20.5: Make player nullable. Remove extends PlayerEvent and remove the dispenser fake player.
 @Event.HasResult
 public class BonemealEvent extends PlayerEvent implements ICancellableEvent {
     private final Level level;
@@ -30,7 +30,7 @@ public class BonemealEvent extends PlayerEvent implements ICancellableEvent {
     private final BlockState block;
     private final ItemStack stack;
 
-    public BonemealEvent(@NotNull Player player, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState block, @NotNull ItemStack stack) {
+    public BonemealEvent(Player player, Level level, BlockPos pos, BlockState block, ItemStack stack) {
         super(player);
         this.level = level;
         this.pos = pos;
@@ -50,7 +50,6 @@ public class BonemealEvent extends PlayerEvent implements ICancellableEvent {
         return block;
     }
 
-    @NotNull
     public ItemStack getStack() {
         return stack;
     }

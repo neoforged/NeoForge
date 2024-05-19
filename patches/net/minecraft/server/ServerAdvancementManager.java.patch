@@ -1,15 +1,20 @@
 --- a/net/minecraft/server/ServerAdvancementManager.java
 +++ b/net/minecraft/server/ServerAdvancementManager.java
-@@ -44,7 +_,11 @@
+@@ -41,11 +_,15 @@
+     }
+ 
+     protected void apply(Map<ResourceLocation, JsonElement> p_136034_, ResourceManager p_136035_, ProfilerFiller p_136036_) {
+-        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
++        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
          Builder<ResourceLocation, AdvancementHolder> builder = ImmutableMap.builder();
-         p_136034_.forEach((p_311532_, p_311533_) -> {
+         p_136034_.forEach((p_337529_, p_337530_) -> {
              try {
--                Advancement advancement = Util.getOrThrow(Advancement.CODEC.parse(JsonOps.INSTANCE, p_311533_), JsonParseException::new);
-+                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, registryAccess == null ? com.mojang.serialization.JsonOps.INSTANCE : net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(JsonOps.INSTANCE, registryAccess), conditionContext), p_311533_).orElse(null);
+-                Advancement advancement = Advancement.CODEC.parse(registryops, p_337530_).getOrThrow(JsonParseException::new);
++                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, registryops, p_337530_).orElse(null);
 +                if (advancement == null) {
-+                    LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_311532_);
++                    LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_337529_);
 +                    return;
 +                }
-                 this.validate(p_311532_, advancement);
-                 builder.put(p_311532_, new AdvancementHolder(p_311532_, advancement));
+                 this.validate(p_337529_, advancement);
+                 builder.put(p_337529_, new AdvancementHolder(p_337529_, advancement));
              } catch (Exception exception) {

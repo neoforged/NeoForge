@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,17 +31,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.network.CompressionDecoder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
@@ -55,7 +56,6 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -83,16 +83,15 @@ public class LoginPacketSplitTest {
         if (ENABLED) {
             bus.addListener((final AddPackFindersEvent event) -> {
                 if (event.getPackType() == PackType.SERVER_DATA) {
-                    final InMemoryResourcePack pack = new InMemoryResourcePack("virtual_bigdata");
+                    // This pack info has no KnownPack, so it is actually synced
+                    PackLocationInfo info = new PackLocationInfo("virtual_bigdata", Component.literal("Pack containing big datapack registries"), PackSource.BUILT_IN, Optional.empty());
+                    final InMemoryResourcePack pack = new InMemoryResourcePack(info);
                     generateEntries(pack);
                     event.addRepositorySource(packs -> packs.accept(Pack.readMetaAndCreate(
-                            pack.id,
-                            Component.literal("Pack containing big datapack registries"),
-                            true,
+                            pack.location(),
                             BuiltInPackSource.fixedResources(pack),
                             PackType.SERVER_DATA,
-                            Pack.Position.TOP,
-                            PackSource.BUILT_IN)));
+                            new PackSelectionConfig(true, Pack.Position.TOP, false))));
                 }
             });
 
@@ -124,9 +123,10 @@ public class LoginPacketSplitTest {
         LOG.warn("Setting up big data registry took " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " miliseconds.");
 
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        record RegistryData(Registry<BigData> registry) {}
-        writeJsonWithCodec(buf, RecordCodecBuilder.create(in -> in.group(
-                RegistryCodecs.networkCodec(BIG_DATA, Lifecycle.stable(), BigData.CODEC).fieldOf("registry").forGetter(RegistryData::registry)).apply(in, RegistryData::new)), new RegistryData(dummyRegistry)); // RegistryCodecs.networkCodec returns a list codec, and writeWithNbt doesn't like non-compounds
+        dummyRegistry.holders().forEach(ref -> {
+            buf.writeUtf(ref.getRegisteredName());
+            buf.writeJsonWithCodec(BigData.CODEC, ref.value());
+        });
 
         final int size = buf.writerIndex();
         LOG.warn("Dummy big registry size: " + size + ", or " + ((double) size / CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH * 100) + "% of the maximum packet size.");
@@ -149,10 +149,10 @@ public class LoginPacketSplitTest {
         private final Map<ResourceLocation, Supplier<byte[]>> data = new ConcurrentHashMap<>();
         private final Map<String, Supplier<byte[]>> root = new ConcurrentHashMap<>();
 
-        private final String id;
+        private final PackLocationInfo info;
 
-        public InMemoryResourcePack(String id) {
-            this.id = id;
+        public InMemoryResourcePack(PackLocationInfo info) {
+            this.info = info;
 
             final JsonObject mcmeta = new JsonObject();
             final JsonObject packJson = new JsonObject();
@@ -176,7 +176,7 @@ public class LoginPacketSplitTest {
             return openResource(data, loc);
         }
 
-        private <T> @Nullable IoSupplier<InputStream> openResource(Map<T, Supplier<byte[]>> map, @NotNull T key) {
+        private <T> @Nullable IoSupplier<InputStream> openResource(Map<T, Supplier<byte[]>> map, T key) {
             final Supplier<byte[]> supplier = map.get(key);
             if (supplier == null) {
                 return null;
@@ -192,7 +192,7 @@ public class LoginPacketSplitTest {
         public void listResources(PackType type, String namespace, String startingPath, ResourceOutput out) {
             if (type != PackType.SERVER_DATA) return;
             data.forEach((key, data) -> {
-                if (key.getNamespace().equals(namespace) && key.getPath().startsWith(startingPath)) {
+                if (key.getNamespace().equals(namespace) && key.getPath().startsWith(startingPath + "/")) {
                     final byte[] bytes = data.get();
                     if (bytes != null) {
                         out.accept(key, () -> new ByteArrayInputStream(bytes));
@@ -220,8 +220,8 @@ public class LoginPacketSplitTest {
         }
 
         @Override
-        public String packId() {
-            return id;
+        public PackLocationInfo location() {
+            return info;
         }
 
         @Override
@@ -252,7 +252,7 @@ public class LoginPacketSplitTest {
 
     public <T> void writeJsonWithCodec(FriendlyByteBuf buf, Codec<T> codec, T instance) {
         DataResult<JsonElement> dataresult = codec.encodeStart(JsonOps.INSTANCE, instance);
-        final String s = GSON.toJson(Util.getOrThrow(dataresult, p_261421_ -> new EncoderException("Failed to encode: " + p_261421_ + " " + instance)));
+        final String s = GSON.toJson(dataresult.getOrThrow(error -> new EncoderException("Failed to encode: " + error + " " + instance)));
         buf.writeVarInt(s.length());
         buf.writeUtf(s, s.length());
     }

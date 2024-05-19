@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "X": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -11,6 +11,7 @@
     "X X"
   ],
   "result": {
-    "item": "minecraft:iron_helmet"
+    "count": 1,
+    "id": "minecraft:iron_helmet"
   }
 }

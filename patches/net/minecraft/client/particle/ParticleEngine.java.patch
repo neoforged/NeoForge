@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -81,11 +_,11 @@
+@@ -79,11 +_,11 @@
          ParticleRenderType.CUSTOM
      );
      protected ClientLevel level;
@@ -14,8 +14,8 @@
      private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
      private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
      private final TextureAtlas textureAtlas;
-@@ -208,10 +_,14 @@
-         this.register(ParticleTypes.TRIAL_SPAWNER_DETECTION, TrialSpawnerDetectionParticle.Provider::new);
+@@ -214,10 +_,14 @@
+         this.register(ParticleTypes.OMINOUS_SPAWNING, FlyStraightTowardsParticle.OminousSpawnProvider::new);
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
@@ -30,7 +30,7 @@
      public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
          this.register(
              p_273423_,
-@@ -228,10 +_,12 @@
+@@ -234,10 +_,12 @@
          );
      }
  
@@ -44,46 +44,43 @@
      }
  
      @Override
-@@ -357,7 +_,7 @@
+@@ -363,7 +_,7 @@
      private <T extends ParticleOptions> Particle makeParticle(
          T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
      ) {
--        ParticleProvider<T> particleprovider = (ParticleProvider)this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getId(p_107396_.getType()));
+-        ParticleProvider<T> particleprovider = (ParticleProvider<T>)this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getId(p_107396_.getType()));
 +        ParticleProvider<T> particleprovider = (ParticleProvider<T>) this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107396_.getType()));
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
-@@ -433,15 +_,24 @@
+@@ -439,11 +_,21 @@
          }
      }
  
-+    /**@deprecated Forge: use {@link #render(PoseStack, MultiBufferSource.BufferSource, LightTexture, Camera, float, net.minecraft.client.renderer.culling.Frustum)} with Frustum as additional parameter*/
++    /** @deprecated Neo: use {@link #render(LightTexture, Camera, float, net.minecraft.client.renderer.culling.Frustum)}  with Frustum as additional parameter */
 +    @Deprecated
-     public void render(PoseStack p_107337_, MultiBufferSource.BufferSource p_107338_, LightTexture p_107339_, Camera p_107340_, float p_107341_) {
-+         render(p_107337_, p_107338_, p_107339_, p_107340_, p_107341_, null);
+     public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_) {
++        render(p_107339_, p_107340_, p_107341_, null);
 +    }
 +
-+    public void render(PoseStack p_107337_, MultiBufferSource.BufferSource p_107338_, LightTexture p_107339_, Camera p_107340_, float p_107341_, @Nullable net.minecraft.client.renderer.culling.Frustum clippingHelper) {
++    public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum) {
          p_107339_.turnOnLightLayer();
          RenderSystem.enableDepthTest();
++        //TODO porting: is this even needed with the particle render order fix???
 +        RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE2);
 +        RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE0);
-         PoseStack posestack = RenderSystem.getModelViewStack();
-         posestack.pushPose();
-         posestack.mulPoseMatrix(p_107337_.last().pose());
-         RenderSystem.applyModelViewMatrix();
  
--        for(ParticleRenderType particlerendertype : RENDER_ORDER) {
+-        for (ParticleRenderType particlerendertype : RENDER_ORDER) {
 +        for(ParticleRenderType particlerendertype : this.particles.keySet()) { // Forge: allow custom IParticleRenderType's
 +            if (particlerendertype == ParticleRenderType.NO_RENDER) continue;
              Iterable<Particle> iterable = this.particles.get(particlerendertype);
              if (iterable != null) {
                  RenderSystem.setShader(GameRenderer::getParticleShader);
-@@ -450,6 +_,7 @@
+@@ -452,6 +_,7 @@
                  particlerendertype.begin(bufferbuilder, this.textureManager);
  
-                 for(Particle particle : iterable) {
-+                    if (clippingHelper != null && particle.shouldCull() && !clippingHelper.isVisible(particle.getBoundingBox().inflate(1.0))) continue;
+                 for (Particle particle : iterable) {
++                    if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_107341_))) continue;
                      try {
                          particle.render(bufferbuilder, p_107340_, p_107341_);
                      } catch (Throwable throwable) {
@@ -105,7 +102,7 @@
                                  );
                              }
                          }
-@@ -556,12 +_,18 @@
+@@ -556,12 +_,28 @@
                  d0 = (double)i + aabb.maxX + 0.1F;
              }
  
@@ -116,6 +113,16 @@
  
      public String countParticles() {
          return String.valueOf(this.particles.values().stream().mapToInt(Collection::size).sum());
++    }
++
++    public void iterateParticles(java.util.function.Consumer<Particle> consumer) {
++        for (ParticleRenderType particlerendertype : this.particles.keySet()) {
++            if (particlerendertype == ParticleRenderType.NO_RENDER) continue;
++            Iterable<Particle> iterable = this.particles.get(particlerendertype);
++            if (iterable != null) {
++                iterable.forEach(consumer);
++            }
++        }
 +    }
 +
 +    public void addBlockHitEffects(BlockPos pos, net.minecraft.world.phys.BlockHitResult target) {

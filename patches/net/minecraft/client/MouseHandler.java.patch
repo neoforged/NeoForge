@@ -65,23 +65,38 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);
-@@ -235,12 +_,13 @@
-         double d1 = d0 - this.lastMouseEventTime;
-         this.lastMouseEventTime = d0;
-         if (this.isMouseGrabbed() && this.minecraft.isWindowActive()) {
--            double d4 = this.minecraft.options.sensitivity().get() * 0.6F + 0.2F;
-+            var event = net.neoforged.neoforge.client.ClientHooks.getTurnPlayerValues(this.minecraft.options.sensitivity().get(), this.minecraft.options.smoothCamera);
-+            double d4 = event.getMouseSensitivity() * 0.6F + 0.2F;
-             double d5 = d4 * d4 * d4;
-             double d6 = d5 * 8.0;
-             double d2;
-             double d3;
--            if (this.minecraft.options.smoothCamera) {
-+            if (event.getCinematicCameraEnabled()) {
-                 double d7 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d6, d1 * d6);
-                 double d8 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d6, d1 * d6);
-                 d2 = d7;
-@@ -292,6 +_,14 @@
+@@ -224,9 +_,11 @@
+                     double d5 = this.accumulatedDY
+                         * (double)this.minecraft.getWindow().getGuiScaledHeight()
+                         / (double)this.minecraft.getWindow().getScreenHeight();
+-                    Screen.wrapScreenError(
+-                        () -> screen.mouseDragged(d2, d3, this.activeButton, d4, d5), "mouseDragged event handler", screen.getClass().getCanonicalName()
+-                    );
++                    Screen.wrapScreenError(() -> {
++                        if (net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPre(screen, d2, d3, this.activeButton, d4, d5)) return;
++                        if (screen.mouseDragged(d2, d3, this.activeButton, d4, d5)) return;
++                        net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPost(screen, d2, d3, this.activeButton, d4, d5);
++                    }, "mouseDragged event handler", screen.getClass().getCanonicalName());
+                 }
+ 
+                 screen.afterMouseMove();
+@@ -242,12 +_,13 @@
+     }
+ 
+     private void turnPlayer(double p_316356_) {
+-        double d2 = this.minecraft.options.sensitivity().get() * 0.6F + 0.2F;
++        var event = net.neoforged.neoforge.client.ClientHooks.getTurnPlayerValues(this.minecraft.options.sensitivity().get(), this.minecraft.options.smoothCamera);
++        double d2 = event.getMouseSensitivity() * 0.6F + 0.2F;
+         double d3 = d2 * d2 * d2;
+         double d4 = d3 * 8.0;
+         double d0;
+         double d1;
+-        if (this.minecraft.options.smoothCamera) {
++        if (event.getCinematicCameraEnabled()) {
+             double d5 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d4, p_316356_ * d4);
+             double d6 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d4, p_316356_ * d4);
+             d0 = d5;
+@@ -293,6 +_,14 @@
  
      public double ypos() {
          return this.ypos;

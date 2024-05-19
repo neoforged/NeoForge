@@ -6,7 +6,7 @@
              if (fluidstate.getType().isSame(this) && this.canPassThroughWall(direction, p_256464_, p_76037_, p_76038_, blockpos, blockstate)) {
 -                if (fluidstate.isSource()) {
 +                if (fluidstate.isSource() && net.neoforged.neoforge.event.EventHooks.canCreateFluidSource(p_256464_, blockpos, blockstate, fluidstate.canConvertToSource(p_256464_, blockpos))) {
-                     ++j;
+                     j++;
                  }
  
 @@ -172,7 +_,7 @@

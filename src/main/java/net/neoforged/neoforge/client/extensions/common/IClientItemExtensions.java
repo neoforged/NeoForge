@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -97,7 +96,6 @@ public interface IClientItemExtensions {
      * @return A HumanoidModel to be rendered. Relevant properties are to be copied over by the caller.
      * @see #getGenericArmorModel(LivingEntity, ItemStack, EquipmentSlot, HumanoidModel)
      */
-    @NotNull
     default HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
         return original;
     }
@@ -116,7 +114,6 @@ public interface IClientItemExtensions {
      * @return A Model to be rendered. Relevant properties must be copied over manually.
      * @see #getHumanoidArmorModel(LivingEntity, ItemStack, EquipmentSlot, HumanoidModel)
      */
-    @NotNull
     default Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
         HumanoidModel<?> replacement = getHumanoidArmorModel(livingEntity, itemStack, equipmentSlot, original);
         if (replacement != original) {
@@ -149,6 +146,24 @@ public interface IClientItemExtensions {
      */
     default BlockEntityWithoutLevelRenderer getCustomRenderer() {
         return Minecraft.getInstance().getItemRenderer().getBlockEntityRenderer();
+    }
+
+    /**
+     * {@return Whether the item should bob when rendered in the world as an entity}
+     *
+     * @param stack The stack being rendered
+     */
+    default boolean shouldBobAsEntity(ItemStack stack) {
+        return true;
+    }
+
+    /**
+     * {@return Whether the item should be spread out when rendered in the world as an entity}
+     *
+     * @param stack The stack being rendered
+     */
+    default boolean shouldSpreadAsEntity(ItemStack stack) {
+        return true;
     }
 
     enum FontContext {

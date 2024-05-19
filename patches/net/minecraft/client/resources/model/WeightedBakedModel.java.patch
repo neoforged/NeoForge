@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class WeightedBakedModel implements BakedModel {
-+public class WeightedBakedModel implements net.neoforged.neoforge.client.model.IDynamicBakedModel {
++public class WeightedBakedModel implements BakedModel, net.neoforged.neoforge.client.model.IDynamicBakedModel {
      private final int totalWeight;
      private final List<WeightedEntry.Wrapper<BakedModel>> list;
      private final BakedModel wrapped;
@@ -17,22 +17,17 @@
 +    // FORGE: Implement our overloads (here and below) so child models can have custom logic
 +    public List<BakedQuad> getQuads(@Nullable BlockState p_235058_, @Nullable Direction p_235059_, RandomSource p_235060_, net.neoforged.neoforge.client.model.data.ModelData modelData, @org.jetbrains.annotations.Nullable net.minecraft.client.renderer.RenderType renderType) {
          return WeightedRandom.getWeightedItem(this.list, Math.abs((int)p_235060_.nextLong()) % this.totalWeight)
--            .map(p_235065_ -> p_235065_.getData().getQuads(p_235058_, p_235059_, p_235060_))
-+            .map(p_235065_ -> p_235065_.getData().getQuads(p_235058_, p_235059_, p_235060_, modelData, renderType))
+-            .map(p_337442_ -> p_337442_.data().getQuads(p_235058_, p_235059_, p_235060_))
++            .map(p_235065_ -> p_235065_.data().getQuads(p_235058_, p_235059_, p_235060_, modelData, renderType))
              .orElse(Collections.emptyList());
      }
  
-@@ -41,6 +_,16 @@
+@@ -41,6 +_,11 @@
      }
  
      @Override
-+    public boolean useAmbientOcclusion(BlockState state) {
-+        return this.wrapped.useAmbientOcclusion(state);
-+    }
-+
-+    @Override
-+    public boolean useAmbientOcclusion(BlockState state, net.minecraft.client.renderer.RenderType renderType) {
-+        return this.wrapped.useAmbientOcclusion(state, renderType);
++    public net.neoforged.neoforge.common.util.TriState useAmbientOcclusion(BlockState state, net.neoforged.neoforge.client.model.data.ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
++        return this.wrapped.useAmbientOcclusion(state, modelData, renderType);
 +    }
 +
 +    @Override
@@ -60,7 +55,7 @@
 +    @Override // FORGE: Get render types based on the active weighted model
 +    public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.neoforged.neoforge.client.model.data.ModelData data) {
 +        return WeightedRandom.getWeightedItem(this.list, Math.abs((int)rand.nextLong()) % this.totalWeight)
-+                  .map((p_235065_) -> p_235065_.getData().getRenderTypes(state, rand, data))
++                  .map((p_235065_) -> p_235065_.data().getRenderTypes(state, rand, data))
 +                  .orElse(net.neoforged.neoforge.client.ChunkRenderTypeSet.none());
      }
  

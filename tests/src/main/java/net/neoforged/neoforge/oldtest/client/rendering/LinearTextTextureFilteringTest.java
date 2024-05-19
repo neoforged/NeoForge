@@ -8,12 +8,13 @@ package net.neoforged.neoforge.oldtest.client.rendering;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.ScreenEvent.Render;
 
 @Mod(LinearTextTextureFilteringTest.MODID)
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@EventBusSubscriber(value = Dist.CLIENT)
 public class LinearTextTextureFilteringTest {
     public static final String MODID = "text_linear_filtering_test";
     static final boolean ENABLED = false;
