@@ -32,7 +32,8 @@ public class BlockTagIngredient implements ICustomIngredient {
 
     protected final TagKey<Block> tag;
 
-    @Nullable protected ItemStack[] itemStacks;
+    @Nullable
+    protected ItemStack[] itemStacks;
 
     public BlockTagIngredient(TagKey<Block> tag) {
         this.tag = tag;
