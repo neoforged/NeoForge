@@ -141,7 +141,7 @@
 +            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
              RenderStateShard.PARTICLES_TARGET.clearRenderState();
          } else {
-+            // Neo: render solid particles before translucent geometry to match order of chunk render types, fixes solid particles disappearing underwater
++            // Neo: render solid particles before translucent geometry to match order of chunk render types, fixes solid particles disappearing underwater in Fast/Fancy (MC-161917)
 +            profilerfiller.popPush("solid_particles");
 +            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum, type -> !type.isTranslucent());
              profilerfiller.popPush("translucent");
