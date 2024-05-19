@@ -26,6 +26,7 @@ public record SyncExtensibleEnums(ServerConfigurationPacketListener listener) im
         if (listener.hasChannel(ExtensibleEnumDataPayload.TYPE)) {
             sender.accept(ExtensibleEnumDataPayload.getOrCreateInstance());
         }
+        listener.finishCurrentTask(TYPE);
     }
 
     @Override

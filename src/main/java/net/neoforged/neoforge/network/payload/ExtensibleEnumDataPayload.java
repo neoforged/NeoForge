@@ -9,11 +9,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -28,30 +30,26 @@ import org.jetbrains.annotations.ApiStatus;
 public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map<Class<? extends T>, EnumData> enums) implements CustomPacketPayload {
     public static final Type<ExtensibleEnumDataPayload<?>> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "extensible_enum_data"));
     public static final StreamCodec<FriendlyByteBuf, ExtensibleEnumDataPayload<?>> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()),
-            ExtensibleEnumDataPayload::enumClassNames,
-            EnumData.STREAM_CODEC.apply(ByteBufCodecs.list()),
-            ExtensibleEnumDataPayload::enumValueNames,
+            ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, EnumData.STREAM_CODEC),
+            ExtensibleEnumDataPayload::mappedValues,
             ExtensibleEnumDataPayload::of);
-
     private static ExtensibleEnumDataPayload<?> INSTANCE = null;
 
     public static synchronized ExtensibleEnumDataPayload<?> getOrCreateInstance() {
         if (INSTANCE == null) {
-            INSTANCE = create(List.of(Rarity.class, FireworkExplosion.Shape.class), List.of(BiomeSpecialEffects.GrassColorModifier.class));
+            INSTANCE = create(List.of(Rarity.class, FireworkExplosion.Shape.class, RecipeBookType.class), List.of(BiomeSpecialEffects.GrassColorModifier.class));
         }
+        ;
+
         return INSTANCE;
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> of(List<String> enumClassNames, List<EnumData> enumData) {
-        Map<Class<? extends T>, EnumData> map = new HashMap<>();
-        if (enumClassNames.size() != enumData.size()) {
-            throw new IllegalArgumentException("different amount of enum classes and enum value lists during extensible enum sync");
-        }
-        for (int i = 0; i < enumClassNames.size(); i++) {
-            String enumClassName = enumClassNames.get(i);
-            EnumData data = enumData.get(i);
+    private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> of(Map<String, EnumData> classnameToValueMap) {
+        Map<Class<? extends T>, EnumData> classToValueMap = new HashMap<>();
+        for (Map.Entry<String, EnumData> entry : classnameToValueMap.entrySet()) {
+            String enumClassName = entry.getKey();
+            EnumData data = entry.getValue();
             try {
                 Class<? extends T> enumClazz = (Class<? extends T>) Class.forName(enumClassName);
                 if (!Enum.class.isAssignableFrom(enumClazz)) {
@@ -60,12 +58,12 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
                 if (!IExtensibleEnum.class.isAssignableFrom(enumClazz)) {
                     throw new IllegalStateException("Class " + enumClassName + " is not IExtensible");
                 }
-                map.put(enumClazz, data);
+                classToValueMap.put(enumClazz, data);
             } catch (ClassNotFoundException cnfe) {
                 throw new IllegalStateException("EnumClass " + enumClassName + " couldn't be found", cnfe);
             }
         }
-        return new ExtensibleEnumDataPayload<>(map);
+        return new ExtensibleEnumDataPayload<>(classToValueMap);
     }
 
     private static <T extends Enum<?> & IExtensibleEnum> ExtensibleEnumDataPayload<T> create(List<Class<? extends T>> orderedEnums, List<Class<? extends T>> unorderedEnums) {
@@ -84,12 +82,8 @@ public record ExtensibleEnumDataPayload<T extends Enum<?> & IExtensibleEnum>(Map
         return TYPE;
     }
 
-    private List<String> enumClassNames() {
-        return enums().keySet().stream().map(Class::getName).toList();
-    }
-
-    private List<EnumData> enumValueNames() {
-        return enums().values().stream().toList();
+    private Map<String, EnumData> mappedValues() {
+        return enums.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getName(), Map.Entry::getValue));
     }
 
     public record EnumData(List<String> enumValues, boolean verifyOrder) {
