@@ -9,20 +9,21 @@ import com.mojang.serialization.MapCodec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Ingredient that matches ItemStacks of blocks from a TagKey<Block>, useful in cases
- * like "minecraft:convertable_to_mud" where there isn't an accompanying item tag
+ * {@link Ingredient} that matches {@link ItemStack}s of {@link Block}s from a {@link TagKey<Block>}, useful in cases
+ * like {@code "minecraft:convertable_to_mud"} where there isn't an accompanying item tag
  * <p>
- * Notice: This should not be used as a replacement for the normal Item Tag Ingredient,
+ * Notice: This should not be used as a replacement for the normal {@link Ingredient#of(TagKey)},
  * This should only be used when there is no way an item tag can be used in your use case
  */
 public class BlockTagIngredient implements ICustomIngredient {
@@ -31,8 +32,7 @@ public class BlockTagIngredient implements ICustomIngredient {
 
     protected final TagKey<Block> tag;
 
-    @Nullable
-    protected ItemStack[] itemStacks;
+    @Nullable protected ItemStack[] itemStacks;
 
     public BlockTagIngredient(TagKey<Block> tag) {
         this.tag = tag;
@@ -69,7 +69,7 @@ public class BlockTagIngredient implements ICustomIngredient {
         }
 
         for (ItemStack itemStack : itemStacks) {
-            if (itemStack.is(stack.getItem())) {
+            if (itemStack != null && itemStack.is(stack.getItem())) {
                 return true;
             }
         }
