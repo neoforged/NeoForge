@@ -132,22 +132,27 @@
          }
  
          this.minecraft.debugRenderer.render(posestack, multibuffersource$buffersource, d0, d1, d2);
-@@ -1173,7 +_,8 @@
+@@ -1173,9 +_,13 @@
              this.particlesTarget.copyDepthFrom(this.minecraft.getMainRenderTarget());
              RenderStateShard.PARTICLES_TARGET.setupRenderState();
              profilerfiller.popPush("particles");
 -            this.minecraft.particleEngine.render(p_109606_, p_109604_, f);
-+            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum);
++            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum, type -> true);
 +            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
              RenderStateShard.PARTICLES_TARGET.clearRenderState();
          } else {
++            // Neo: render solid particles before translucent geometry to match order of chunk render types, fixes solid particles disappearing underwater
++            profilerfiller.popPush("solid_particles");
++            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum, type -> !type.isTranslucent());
              profilerfiller.popPush("translucent");
+             if (this.translucentTarget != null) {
+                 this.translucentTarget.clear(Minecraft.ON_OSX);
 @@ -1187,7 +_,8 @@
              profilerfiller.popPush("string");
              this.renderSectionLayer(RenderType.tripwire(), d0, d1, d2, p_254120_, p_323920_);
              profilerfiller.popPush("particles");
 -            this.minecraft.particleEngine.render(p_109606_, p_109604_, f);
-+            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum);
++            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum, type -> type.isTranslucent()); // Neo: only render translucent particles at this stage
 +            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
          }
  

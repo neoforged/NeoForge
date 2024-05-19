@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/particle/ParticleRenderType.java
++++ b/net/minecraft/client/particle/ParticleRenderType.java
+@@ -126,4 +_,8 @@
+     void begin(BufferBuilder p_107436_, TextureManager p_107437_);
+ 
+     void end(Tesselator p_107438_);
++
++    default boolean isTranslucent() {
++        return this == PARTICLE_SHEET_TRANSLUCENT;
++    }
+ }
