@@ -4,7 +4,7 @@
              super(p_333967_);
          }
  
-+        @Override // NEO: use getAllEnchantments for enchantments
++        @Override // Neo: use getAllEnchantments for enchantments
 +        public boolean matches(ItemStack p_333958_) {
 +            return matches(p_333958_, p_333958_.getAllEnchantments());
 +        }
