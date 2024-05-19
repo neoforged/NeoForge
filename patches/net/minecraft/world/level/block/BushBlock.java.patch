@@ -1,13 +1,14 @@
 --- a/net/minecraft/world/level/block/BushBlock.java
 +++ b/net/minecraft/world/level/block/BushBlock.java
-@@ -33,7 +_,9 @@
+@@ -33,7 +_,10 @@
      @Override
      protected boolean canSurvive(BlockState p_51028_, LevelReader p_51029_, BlockPos p_51030_) {
          BlockPos blockpos = p_51030_.below();
 -        return this.mayPlaceOn(p_51029_.getBlockState(blockpos), p_51029_, blockpos);
 +        BlockState belowBlockState = p_51029_.getBlockState(blockpos);
 +        net.neoforged.neoforge.common.util.TriState soilDecision = belowBlockState.canSustainPlant(p_51029_, blockpos, Direction.UP, p_51028_);
-+        return soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? this.mayPlaceOn(belowBlockState, p_51029_, blockpos) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        return this.mayPlaceOn(belowBlockState, p_51029_, blockpos);
      }
  
      @Override

@@ -61,16 +61,15 @@
              if (flag2) {
                  f /= 2.0F;
              }
-@@ -155,7 +_,8 @@
+@@ -155,6 +_,8 @@
  
      @Override
      protected boolean canSurvive(BlockState p_52282_, LevelReader p_52283_, BlockPos p_52284_) {
--        return hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_);
 +        net.neoforged.neoforge.common.util.TriState soilDecision = p_52283_.getBlockState(p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
-+        return soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
+         return hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_);
      }
  
-     protected static boolean hasSufficientLight(LevelReader p_294828_, BlockPos p_295989_) {
 @@ -164,7 +_,7 @@
  
      @Override
