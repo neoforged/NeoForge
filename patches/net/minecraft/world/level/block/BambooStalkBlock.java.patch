@@ -24,16 +24,15 @@
                  }
              }
          }
-@@ -141,7 +_,8 @@
+@@ -141,6 +_,8 @@
  
      @Override
      protected boolean canSurvive(BlockState p_261860_, LevelReader p_262154_, BlockPos p_261493_) {
--        return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
 +        net.neoforged.neoforge.common.util.TriState soilDecision = p_262154_.getBlockState(p_261493_.below()).canSustainPlant(p_262154_, p_261493_.below(), Direction.UP, p_261860_);
-+        return soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
+         return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
  
-     @Override
 @@ -193,7 +_,7 @@
  
      @Override

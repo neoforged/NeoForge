@@ -1,13 +1,14 @@
 --- a/net/minecraft/world/level/block/MangrovePropaguleBlock.java
 +++ b/net/minecraft/world/level/block/MangrovePropaguleBlock.java
-@@ -93,7 +_,11 @@
+@@ -93,7 +_,12 @@
  
      @Override
      protected boolean canSurvive(BlockState p_221473_, LevelReader p_221474_, BlockPos p_221475_) {
 -        return isHanging(p_221473_) ? p_221474_.getBlockState(p_221475_.above()).is(Blocks.MANGROVE_LEAVES) : super.canSurvive(p_221473_, p_221474_, p_221475_);
 +        if (isHanging(p_221473_)) {
 +            net.neoforged.neoforge.common.util.TriState soilDecision = p_221474_.getBlockState(p_221475_.above()).canSustainPlant(p_221474_, p_221475_.above(), Direction.DOWN, p_221473_);
-+            return soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? p_221474_.getBlockState(p_221475_.above()).is(Blocks.MANGROVE_LEAVES) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++            if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++            return p_221474_.getBlockState(p_221475_.above()).is(Blocks.MANGROVE_LEAVES);
 +        }
 +        return super.canSurvive(p_221473_, p_221474_, p_221475_);
      }
