@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.LevelReader;
 
 /**
@@ -37,7 +38,7 @@ public interface SpecialPlantable {
     /**
      * Whether Villagers can pick up this item and plant it down on any block that extends FarmBlock.
      */
-    default boolean villagerCanPlantItem() {
+    default boolean villagerCanPlantItem(Villager villager) {
         return false;
     };
 }
