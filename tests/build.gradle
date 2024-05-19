@@ -1,14 +1,7 @@
-import net.neoforged.gradle.dsl.common.runs.task.extensions.TestTaskExtension
-
-plugins {
-    id 'net.neoforged.gradle.junit' version '7.0.124-junit' apply false
-}
-
 apply plugin: 'net.neoforged.gradle.platform'
 apply plugin: 'java'
 apply plugin: 'com.diffplug.spotless'
 apply plugin: 'net.neoforged.licenser'
-apply plugin: 'net.neoforged.gradle.junit'
 
 def neoforgeProject = project(':neoforge')
 def testframeworkProject = project(':testframework')
@@ -33,21 +26,6 @@ sourceSets {
     }
 }
 
-runTypes {
-    junit {
-        from neoforgeProject.runTypes.junit
-        runAdapter = neoforgeProject.runTypes.junit.runAdapter
-    }
-}
-
-test {
-    useJUnitPlatform()
-    extensions.configure(TestTaskExtension) {
-        // We need the classes of Neo to be available
-        it.testSource neoforgeProject.sourceSets.main
-    }
-}
-
 dependencies {
     implementation neoforgeProject
     implementation testframeworkProject
@@ -57,7 +35,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
     testImplementation("org.assertj:assertj-core:${project.assertj_core}")
-    testImplementation(project(':neoforge-junit-utils'))
+    //testImplementation(project(':neoforge-junit-utils'))
     testImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
@@ -66,6 +44,10 @@ dependencies {
 runs {
     client {
         configure neoforgeProject.runTypes.client
+    }
+    junit {
+        configure neoforgeProject.runTypes.junit
+        unitTestSource sourceSets.test
     }
     server {
         configure neoforgeProject.runTypes.server
@@ -106,10 +88,16 @@ runs {
 }
 
 //We need the assets and natives tasks from the forge project.
-runs.configureEach {
+runs.all {
     dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
     modSource neoforgeProject.sourceSets.main
     modSource testframeworkProject.sourceSets.main
+}
+
+test.doFirst {
+    tasks.test.systemProperties.putAll(runs.junit.systemProperties.get())
+    tasks.test.environment.putAll(runs.junit.environmentVariables.get())
+    tasks.test.setJvmArgs(runs.junit.jvmArguments.get())
 }
 
 afterEvaluate {

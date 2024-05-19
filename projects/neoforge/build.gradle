@@ -132,6 +132,14 @@ runTypes {
         arguments.addAll '--fml.mcVersion', project.minecraft_version
         arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
+
+    junit {
+        junit true
+        arguments.addAll '--fml.neoForgeVersion', project.version
+        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
+        arguments.addAll '--fml.mcVersion', project.minecraft_version
+        arguments.addAll '--fml.neoFormVersion', project.neoform_version
+    }
 }
 
 runs {
@@ -139,9 +147,7 @@ runs {
     server { }
     gameTestServer { }
     gameTestClient { }
-    "Data" {
-        configure project.runTypes.data
-
+    data {
         programArguments.addAll '--mod', 'neoforge'
 
         modSources.add project.sourceSets.main

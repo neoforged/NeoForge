@@ -43,6 +43,17 @@ allprojects {
     repositories {
         mavenLocal()
     }
+    repositories {
+        maven {
+            name 'Maven for PR #54' // https://github.com/neoforged/FancyModLoader/pull/54
+            url 'https://prmaven.neoforged.net/FancyModLoader/pr54'
+            content {
+                includeModule('net.neoforged.fancymodloader', 'earlydisplay')
+                includeModule('net.neoforged.fancymodloader', 'junit-fml')
+                includeModule('net.neoforged.fancymodloader', 'loader')
+            }
+        }
+    }
 }
 
 subprojects {
