@@ -10,13 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -30,12 +35,13 @@ public class BlockTagIngredient implements ICustomIngredient {
     public static final MapCodec<BlockTagIngredient> CODEC = TagKey.codec(Registries.BLOCK)
             .xmap(BlockTagIngredient::new, BlockTagIngredient::getTag).fieldOf("tag");
 
+    @NotNull
     protected final TagKey<Block> tag;
 
     @Nullable
     protected ItemStack[] itemStacks;
 
-    public BlockTagIngredient(TagKey<Block> tag) {
+    public BlockTagIngredient(@NotNull TagKey<Block> tag) {
         this.tag = tag;
     }
 
@@ -48,6 +54,13 @@ public class BlockTagIngredient implements ICustomIngredient {
                     list.add(stack);
                 }
             }
+
+            if (list.isEmpty()) {
+                ItemStack itemStack = new ItemStack(net.minecraft.world.level.block.Blocks.BARRIER);
+                itemStack.set(DataComponents.CUSTOM_NAME, Component.literal("Empty Tag: " + this.tag.location()));
+                list.add(itemStack);
+            }
+
             itemStacks = list.toArray(ItemStack[]::new);
         }
     }
@@ -60,15 +73,10 @@ public class BlockTagIngredient implements ICustomIngredient {
 
     @Override
     public boolean test(@Nullable ItemStack stack) {
-        if (stack == null) {
+        if (stack == null)
             return false;
-        }
 
         dissolve();
-        if (itemStacks.length == 0) {
-            return stack.isEmpty();
-        }
-
         for (ItemStack itemStack : itemStacks) {
             if (itemStack != null && itemStack.is(stack.getItem())) {
                 return true;
@@ -90,5 +98,17 @@ public class BlockTagIngredient implements ICustomIngredient {
     @Override
     public IngredientType<?> getType() {
         return NeoForgeMod.BLOCK_TAG_INGREDIENT.get();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BlockTagIngredient that)) return false;
+        return tag.equals(that.tag);
+    }
+
+    @Override
+    public int hashCode() {
+        return tag.hashCode();
     }
 }
