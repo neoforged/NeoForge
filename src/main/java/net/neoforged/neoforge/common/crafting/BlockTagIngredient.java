@@ -55,7 +55,7 @@ public class BlockTagIngredient implements ICustomIngredient {
     @Override
     public Stream<ItemStack> getItems() {
         dissolve();
-        return itemStacks != null ? Stream.of(itemStacks) : Stream.empty();
+        return Stream.of(itemStacks);
     }
 
     @Override
