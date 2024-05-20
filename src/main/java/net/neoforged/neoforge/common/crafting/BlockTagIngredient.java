@@ -16,12 +16,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,13 +32,12 @@ public class BlockTagIngredient implements ICustomIngredient {
     public static final MapCodec<BlockTagIngredient> CODEC = TagKey.codec(Registries.BLOCK)
             .xmap(BlockTagIngredient::new, BlockTagIngredient::getTag).fieldOf("tag");
 
-    @NotNull
     protected final TagKey<Block> tag;
 
     @Nullable
     protected ItemStack[] itemStacks;
 
-    public BlockTagIngredient(@NotNull TagKey<Block> tag) {
+    public BlockTagIngredient(TagKey<Block> tag) {
         this.tag = tag;
     }
 
