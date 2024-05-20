@@ -1,0 +1,39 @@
+--- a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
++++ b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
+@@ -43,7 +_,7 @@
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ 
+-public final class TrialSpawner {
++public final class TrialSpawner implements net.neoforged.neoforge.common.extensions.IOwnedSpawner {
+     public static final String NORMAL_CONFIG_TAG_NAME = "normal_config";
+     public static final String OMINOUS_CONFIG_TAG_NAME = "ominous_config";
+     public static final int DETECT_PLAYER_SPAWN_BUFFER = 40;
+@@ -229,9 +_,9 @@
+                                 }
+ 
+                                 boolean flag = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().contains("id", 8);
+-                                if (flag) {
+-                                    mob.finalizeSpawn(p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.TRIAL_SPAWNER, null);
+-                                }
++                                // Neo: Patch in FinalizeSpawn for spawners so it may be fired unconditionally, instead of only when vanilla would normally call it.
++                                // The local flag is the conditions under which the spawner will normally call Mob#finalizeSpawn.
++                                net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.TRIAL_SPAWNER, null, this, flag);
+ 
+                                 mob.setPersistenceRequired();
+                                 spawndata.getEquipment().ifPresent(mob::equip);
+@@ -416,5 +_,14 @@
+         TrialSpawnerState getState();
+ 
+         void markUpdated();
++    }
++
++    @Override
++    @org.jetbrains.annotations.Nullable
++    public com.mojang.datafixers.util.Either<net.minecraft.world.level.block.entity.BlockEntity, Entity> getOwner() {
++        if (this.stateAccessor instanceof net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity be) {
++            return com.mojang.datafixers.util.Either.left(be);
++        }
++        return null;
+     }
+ }

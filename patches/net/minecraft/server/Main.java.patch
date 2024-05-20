@@ -126,7 +126,7 @@
                      boolean flag2 = !optionset.has(optionspec) && !optionset.valuesOf(optionspec15).contains("nogui");
 -                    if (flag2 && !GraphicsEnvironment.isHeadless()) {
 -                        dedicatedserver1.showGui();
-+                    if (dedicatedserver1 instanceof DedicatedServer dedicatedServer && flag1 && !GraphicsEnvironment.isHeadless()) {
++                    if (dedicatedserver1 instanceof DedicatedServer dedicatedServer && flag2 && !GraphicsEnvironment.isHeadless()) {
 +                        dedicatedServer.showGui();
                      }
  
