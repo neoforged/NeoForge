@@ -7,11 +7,16 @@ package net.neoforged.neoforge.energy;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 /**
  * Variant of {@link EnergyStorage} for use with {@link ItemStack} components.
  * <p>
  * The actual data storage is managed by a data component, and all changes will write back to that component.
+ * <p>
+ * To use this class, register a new {@link DataComponentType} which holds an {@link Integer} for your item.
+ * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
  */
 public class ItemEnergyStorage implements IEnergyStorage {
     protected final ItemStack parent;
