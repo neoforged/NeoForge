@@ -20,6 +20,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ChunkResult;
+import net.minecraft.server.level.ChunkTaskPriorityQueueSorter;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
@@ -41,6 +42,7 @@ public class GenerationTask {
 
     private final MinecraftServer server;
     private final ServerChunkCache chunkSource;
+    private final ServerLevel serverLevel;
 
     private final Iterator<ChunkPos> iterator;
     private final int x;
@@ -64,6 +66,7 @@ public class GenerationTask {
     public GenerationTask(ServerLevel serverLevel, int x, int z, int radius) {
         this.server = serverLevel.getServer();
         this.chunkSource = serverLevel.getChunkSource();
+        this.serverLevel = serverLevel;
 
         this.iterator = new CoarseOnionIterator(radius, COARSE_CELL_SIZE);
         this.x = x;
@@ -154,14 +157,14 @@ public class GenerationTask {
                 continue;
             }
 
-            holder.getOrScheduleFuture(ChunkStatus.FULL, chunkMap).whenComplete((result, throwable) -> {
+            holder.getOrScheduleFuture(ChunkStatus.FULL, chunkMap).whenCompleteAsync((result, throwable) -> {
                 if (throwable == null) {
                     this.acceptChunkResult(chunkLongPos, result);
                 } else {
                     LOGGER.warn("Encountered unexpected error while generating chunk", throwable);
                     this.acceptChunkResult(chunkLongPos, ChunkHolder.UNLOADED_CHUNK);
                 }
-            });
+            }, runnable -> chunkMap.scheduleOnMainThreadMailbox(ChunkTaskPriorityQueueSorter.message(holder, runnable)));
         }
     }
 
@@ -179,6 +182,13 @@ public class GenerationTask {
         int queuedCount = this.queuedCount.decrementAndGet();
         if (queuedCount <= QUEUE_THRESHOLD) {
             this.tryEnqueueTasks();
+        }
+
+        // Help make sure pregen progress does not get completely lost if game crashes/shuts down before pregen is finished.
+        if (((this.okCount.get() + this.errorCount.get()) % 1000) == 999) {
+            this.server.submit(() -> {
+                this.serverLevel.save(null, false, true);
+            });
         }
     }
 
@@ -209,7 +219,7 @@ public class GenerationTask {
 
     private void releaseChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.addRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
+        this.chunkSource.removeRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
     }
 
     private boolean isChunkFullyGenerated(ChunkPos chunkPosInLocalSpace) {

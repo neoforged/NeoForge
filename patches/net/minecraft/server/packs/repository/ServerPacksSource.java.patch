@@ -1,13 +1,20 @@
 --- a/net/minecraft/server/packs/repository/ServerPacksSource.java
 +++ b/net/minecraft/server/packs/repository/ServerPacksSource.java
-@@ -72,7 +_,9 @@
+@@ -72,11 +_,15 @@
      }
  
      public static PackRepository createPackRepository(Path p_251569_, DirectoryValidator p_295336_) {
 -        return new PackRepository(new ServerPacksSource(p_295336_), new FolderRepositorySource(p_251569_, PackType.SERVER_DATA, PackSource.WORLD, p_295336_));
 +        final PackRepository packRepository = new PackRepository(new ServerPacksSource(p_295336_), new FolderRepositorySource(p_251569_, PackType.SERVER_DATA, PackSource.WORLD, p_295336_));
-+        net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(packRepository, PackType.SERVER_DATA);
++        net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(packRepository, PackType.SERVER_DATA, false);
 +        return packRepository;
      }
  
      public static PackRepository createVanillaTrustedRepository() {
+-        return new PackRepository(new ServerPacksSource(new DirectoryValidator(p_293813_ -> true)));
++        final PackRepository packRepository = new PackRepository(new ServerPacksSource(new DirectoryValidator(p_293813_ -> true)));
++        net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(packRepository, PackType.SERVER_DATA, true);
++        return packRepository;
+     }
+ 
+     public static PackRepository createPackRepository(LevelStorageSource.LevelStorageAccess p_250213_) {

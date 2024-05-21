@@ -83,6 +83,7 @@ public class LoginPacketSplitTest {
         if (ENABLED) {
             bus.addListener((final AddPackFindersEvent event) -> {
                 if (event.getPackType() == PackType.SERVER_DATA) {
+                    // This pack info has no KnownPack, so it is actually synced
                     PackLocationInfo info = new PackLocationInfo("virtual_bigdata", Component.literal("Pack containing big datapack registries"), PackSource.BUILT_IN, Optional.empty());
                     final InMemoryResourcePack pack = new InMemoryResourcePack(info);
                     generateEntries(pack);
@@ -191,7 +192,7 @@ public class LoginPacketSplitTest {
         public void listResources(PackType type, String namespace, String startingPath, ResourceOutput out) {
             if (type != PackType.SERVER_DATA) return;
             data.forEach((key, data) -> {
-                if (key.getNamespace().equals(namespace) && key.getPath().startsWith(startingPath)) {
+                if (key.getNamespace().equals(namespace) && key.getPath().startsWith(startingPath + "/")) {
                     final byte[] bytes = data.get();
                     if (bytes != null) {
                         out.accept(key, () -> new ByteArrayInputStream(bytes));
