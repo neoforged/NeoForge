@@ -71,10 +71,6 @@ public class BlockTagIngredient extends Ingredient {
         }
 
         dissolve();
-        if (itemStacks.length == 0) {
-            return stack.isEmpty();
-        }
-
         for (ItemStack itemStack : itemStacks) {
             if (itemStack.is(stack.getItem())) {
                 return true;
@@ -103,13 +99,11 @@ public class BlockTagIngredient extends Ingredient {
         public Collection<ItemStack> getItems() {
             List<ItemStack> list = new ArrayList<>();
 
-            for (Holder<Block> holder : BuiltInRegistries.BLOCK.getTagOrEmpty(this.tag)) {
+            for (Holder<Block> holder : BuiltInRegistries.BLOCK.getTagOrEmpty(this.tag))
                 list.add(new ItemStack(holder.value().asItem()));
-            }
 
-            if (list.size() == 0) {
+            if (list.isEmpty())
                 list.add(new ItemStack(Blocks.BARRIER).setHoverName(Component.literal("Empty Tag: " + this.tag.location())));
-            }
 
             return list;
         }
