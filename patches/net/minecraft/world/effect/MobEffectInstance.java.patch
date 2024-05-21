@@ -76,12 +76,12 @@
          public static final MapCodec<MobEffectInstance.Details> MAP_CODEC = MapCodec.recursive(
              "MobEffectInstance.Details",
              p_323465_ -> RecordCodecBuilder.mapCodec(
-@@ -408,11 +_,12 @@
-                                 Codec.BOOL.optionalFieldOf("ambient", Boolean.valueOf(false)).forGetter(MobEffectInstance.Details::ambient),
+@@ -409,10 +_,13 @@
                                  Codec.BOOL.optionalFieldOf("show_particles", Boolean.valueOf(true)).forGetter(MobEffectInstance.Details::showParticles),
                                  Codec.BOOL.optionalFieldOf("show_icon").forGetter(p_323788_ -> Optional.of(p_323788_.showIcon())),
--                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
-+                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect), net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
+                                 p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
++                                // Neo: Add additional serialization logic for custom EffectCure(s)
++                                , net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
                              )
                              .apply(p_324063_, MobEffectInstance.Details::create)
                  )
