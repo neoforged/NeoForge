@@ -66,9 +66,11 @@
      static class BlendState {
          private float factor;
          private float factorPreviousFrame;
-@@ -397,8 +_,7 @@
+@@ -396,9 +_,9 @@
+         }
      }
  
++    // TODO: https://github.com/neoforged/NeoForge/issues/986 - Fix this to have vanilla-compatible syncing.
      static record Details(
 -        int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect
 -    ) {
@@ -76,29 +78,20 @@
          public static final MapCodec<MobEffectInstance.Details> MAP_CODEC = MapCodec.recursive(
              "MobEffectInstance.Details",
              p_323465_ -> RecordCodecBuilder.mapCodec(
-@@ -408,13 +_,14 @@
-                                 Codec.BOOL.optionalFieldOf("ambient", Boolean.valueOf(false)).forGetter(MobEffectInstance.Details::ambient),
+@@ -409,6 +_,7 @@
                                  Codec.BOOL.optionalFieldOf("show_particles", Boolean.valueOf(true)).forGetter(MobEffectInstance.Details::showParticles),
                                  Codec.BOOL.optionalFieldOf("show_icon").forGetter(p_323788_ -> Optional.of(p_323788_.showIcon())),
--                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
-+                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect),
-+                                net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
+                                 p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
++                                // , net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
                              )
                              .apply(p_324063_, MobEffectInstance.Details::create)
                  )
-         );
-         public static final StreamCodec<ByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
--            p_329990_ -> StreamCodec.composite(
-+            p_329990_ -> net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.composite(
-                     ByteBufCodecs.VAR_INT,
-                     MobEffectInstance.Details::amplifier,
-                     ByteBufCodecs.VAR_INT,
-@@ -427,14 +_,16 @@
+@@ -427,14 +_,28 @@
                      MobEffectInstance.Details::showIcon,
                      p_329990_.apply(ByteBufCodecs::optional),
                      MobEffectInstance.Details::hiddenEffect,
-+                    net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.<java.util.Set<net.neoforged.neoforge.common.EffectCure>>apply(ByteBufCodecs.collection(java.util.HashSet::new)).apply(ByteBufCodecs::optional),
-+                    MobEffectInstance.Details::cures,
++                    // net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.<java.util.Set<net.neoforged.neoforge.common.EffectCure>>apply(ByteBufCodecs.collection(java.util.HashSet::new)).apply(ByteBufCodecs::optional),
++                    // MobEffectInstance.Details::cures,
                      MobEffectInstance.Details::new
                  )
          );
@@ -108,7 +101,20 @@
 +            int p_323657_, int p_324205_, boolean p_324263_, boolean p_324000_, Optional<Boolean> p_323607_, Optional<MobEffectInstance.Details> p_324604_, Optional<java.util.Set<net.neoforged.neoforge.common.EffectCure>> cures
          ) {
 -            return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_);
+-        }
 +            return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_, cures);
-         }
++        }
++
++        // TODO: https://github.com/neoforged/NeoForge/issues/986 - Delete these once custom cure sync is fixed.
++        @Deprecated(forRemoval = true, since = "1.20.6")
++        private static MobEffectInstance.Details create(int amplifier, int duration, boolean ambient, boolean showParticles, Optional<Boolean> showIcon, Optional<MobEffectInstance.Details> hiddenEffect) {
++            return create(amplifier, duration, ambient, showParticles, showIcon, hiddenEffect, Optional.empty());
++        }
++
++        @Deprecated(forRemoval = true, since = "1.20.6")
++        private Details(int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect) {
++            this(amplifier, duration, ambient, showParticles, showIcon, hiddenEffect, Optional.empty());
++        }
++
      }
  }
