@@ -141,7 +141,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
@@ -1373,6 +1372,7 @@ public class CommonHooks {
             long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
             poiManager.remove(sectionPosKey);
         }
+    }
 
     /**
      * Checks if a mob effect can be applied to an entity by firing {@link MobEffectEvent.Applicable}.
