@@ -47,7 +47,7 @@ public class CriticalHitEvent extends PlayerEvent {
      * 
      * @param modifier The new damage modifier.
      */
-    public float getDmgMultiplier() {
+    public float getDamageMultiplier() {
         return this.dmgMultiplier;
     }
 
@@ -57,9 +57,9 @@ public class CriticalHitEvent extends PlayerEvent {
      * Changing the damage modifier to zero does not guarantee that the attack does zero damage.
      * 
      * @param modifier The new damage modifier. Must not be negative.
-     * @see #getDmgMultiplier()
+     * @see #getDamageMultiplier()
      */
-    public void setDmgMultiplier(float dmgMultiplier) {
+    public void setDamageMultiplier(float dmgMultiplier) {
         if (dmgMultiplier < 0) {
             throw new UnsupportedOperationException("Attempted to set a negative damage multiplier: " + dmgMultiplier);
         }
@@ -87,9 +87,9 @@ public class CriticalHitEvent extends PlayerEvent {
      * <p>
      * If the event {@link #isVanillaCritical()}, the damage multiplier will be 1.5, otherwise it will be 1.0
      * 
-     * @see #getDmgMultiplier()
+     * @see #getDamageMultiplier()
      */
-    public float getVanillaDmgMultiplier() {
+    public float getVanillaMultiplier() {
         return this.vanillaDmgMultiplier;
     }
 

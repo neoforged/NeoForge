@@ -251,7 +251,7 @@
 +                        flag2 = critEvent.isCriticalHit();
                          if (flag2) {
 -                            f *= 1.5F;
-+                            f *= critEvent.getDmgMultiplier();
++                            f *= critEvent.getDamageMultiplier();
                          }
  
                          f += f1;

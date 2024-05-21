@@ -58,27 +58,25 @@ public class BlockGrowFeatureEvent extends LevelEvent implements ICancellableEve
     }
 
     /**
-     * Changes the feature that will be grown. May not set
+     * Changes the feature that will be grown. If a null feature is set, the original block will remain in place.
      * 
-     * @param feature a {@linkplain Holder} referencing a tree feature to be placed instead of the current feature.
+     * @param feature a {@linkplain Holder} referencing a new feature to be placed instead of the current feature.
      */
-    public void setFeature(Holder<ConfiguredFeature<?, ?>> feature) {
+    public void setFeature(@Nullable Holder<ConfiguredFeature<?, ?>> feature) {
         this.feature = feature;
     }
 
     /**
-     * Changes the feature that will be grown.
+     * Changes the feature that will be grown. If the holder cannot be resolved, a null feature will be set.
      * 
-     * @param featureKey a {@linkplain ResourceKey} referencing a tree feature to be placed instead of the current feature.
+     * @param featureKey a {@linkplain ResourceKey} referencing a new feature to be placed instead of the current feature.
      */
     public void setFeature(ResourceKey<ConfiguredFeature<?, ?>> featureKey) {
-        this.feature = this.getLevel().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(featureKey);
+        this.feature = this.getLevel().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(featureKey).orElse(null);
     }
 
     /**
-     * Canceling this event will prevent the feature from growing.
-     * <p>
-     * The original block will remain in place.
+     * Canceling this event will prevent the feature from growing. The original block will remain in place.
      */
     @Override
     public void setCanceled(boolean canceled) {
