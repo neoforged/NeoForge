@@ -388,6 +388,15 @@ public class NeoForgeMod {
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DifferenceFluidIngredient>> DIFFERENCE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("difference", () -> new FluidIngredientType<>(DifferenceFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<IntersectionFluidIngredient>> INTERSECTION_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("intersection", () -> new FluidIngredientType<>(IntersectionFluidIngredient.CODEC));
 
+    private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SingleFluidIngredient>> SINGLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("single", () -> new FluidIngredientType<>(SingleFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<TagFluidIngredient>> TAG_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("tag", () -> new FluidIngredientType<>(TagFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<EmptyFluidIngredient>> EMPTY_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("empty", () -> new FluidIngredientType<>(EmptyFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CompoundFluidIngredient>> COMPOUND_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("compound", () -> new FluidIngredientType<>(CompoundFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DataComponentFluidIngredient>> DATA_COMPONENT_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("components", () -> new FluidIngredientType<>(DataComponentFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DifferenceFluidIngredient>> DIFFERENCE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("difference", () -> new FluidIngredientType<>(DifferenceFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<IntersectionFluidIngredient>> INTERSECTION_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("intersection", () -> new FluidIngredientType<>(IntersectionFluidIngredient.CODEC));
+
     private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);

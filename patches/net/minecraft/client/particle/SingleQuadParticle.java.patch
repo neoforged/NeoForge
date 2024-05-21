@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/particle/SingleQuadParticle.java
 +++ b/net/minecraft/client/particle/SingleQuadParticle.java
-@@ -80,6 +_,12 @@
-             .setLight(p_345037_);
+@@ -81,6 +_,12 @@
+             .endVertex();
      }
  
 +    @Override

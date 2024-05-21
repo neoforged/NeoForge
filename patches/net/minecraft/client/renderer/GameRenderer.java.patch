@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -311,6 +_,8 @@
-             this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/spider.json"));
+@@ -310,6 +_,8 @@
+             this.loadEffect(new ResourceLocation("shaders/post/spider.json"));
          } else if (p_109107_ instanceof EnderMan) {
-             this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/invert.json"));
+             this.loadEffect(new ResourceLocation("shaders/post/invert.json"));
 +        } else {
 +            net.neoforged.neoforge.client.ClientHooks.loadEntityShader(p_109107_, this);
          }
      }
  
-@@ -714,6 +_,7 @@
+@@ -735,6 +_,7 @@
                  )
              );
              this.loadBlurEffect(p_250719_);
@@ -17,7 +17,7 @@
          } catch (IOException ioexception) {
              list1.forEach(p_172729_ -> p_172729_.getFirst().close());
              throw new RuntimeException("could not reload shaders", ioexception);
-@@ -872,7 +_,7 @@
+@@ -893,7 +_,7 @@
                  d0 *= Mth.lerp(this.minecraft.options.fovEffectScale().get(), 1.0, 0.85714287F);
              }
  
@@ -26,7 +26,7 @@
          }
      }
  
-@@ -888,6 +_,10 @@
+@@ -909,6 +_,10 @@
                  return;
              }
  
@@ -37,7 +37,7 @@
              f2 /= (float)livingentity.hurtDuration;
              f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
              float f3 = livingentity.getHurtDir();
-@@ -1036,12 +_,12 @@
+@@ -1058,12 +_,12 @@
                      (float)((double)window.getHeight() / window.getGuiScale()),
                      0.0F,
                      1000.0F,
@@ -52,29 +52,29 @@
              RenderSystem.applyModelViewMatrix();
              Lighting.setupFor3DItems();
              GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
-@@ -1079,7 +_,7 @@
+@@ -1097,7 +_,7 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
--                    this.minecraft.screen.renderWithTooltip(guigraphics, i, j, p_348648_.getRealtimeDeltaTicks());
-+                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, this.minecraft.getTimer().getRealtimeDeltaTicks());
+-                    this.minecraft.screen.renderWithTooltip(guigraphics, i, j, this.minecraft.getDeltaFrameTime());
++                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, this.minecraft.getDeltaFrameTime());
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -1253,12 +_,18 @@
+@@ -1273,12 +_,18 @@
          }
  
          this.resetProjectionMatrix(matrix4f);
-+        net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, camera, f);
++        net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, camera, p_109090_);
 +        camera.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
-         Quaternionf quaternionf = camera.rotation().conjugate(new Quaternionf());
-         Matrix4f matrix4f1 = new Matrix4f().rotation(quaternionf);
+         Matrix4f matrix4f1 = new Matrix4f()
+             .rotationXYZ(camera.getXRot() * (float) (Math.PI / 180.0), camera.getYRot() * (float) (Math.PI / 180.0) + (float) Math.PI, 0.0F);
 +        // Neo: Use matrix multiplication so roll is stacked on top of vanilla XY rotations
 +        matrix4f1 = new Matrix4f().rotationZ(cameraSetup.getRoll() * (float) (Math.PI / 180.0)).mul(matrix4f1);
          this.minecraft
              .levelRenderer
              .prepareCullFrustum(camera.getPosition(), matrix4f1, this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));
-         this.minecraft.levelRenderer.renderLevel(p_348589_, flag, camera, this, this.lightTexture, matrix4f1, matrix4f);
+         this.minecraft.levelRenderer.renderLevel(p_109090_, p_109091_, flag, camera, this, this.lightTexture, matrix4f1, matrix4f);
 +        this.minecraft.getProfiler().popPush("neoforge_render_last");
 +        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, null, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
          this.minecraft.getProfiler().popPush("hand");
