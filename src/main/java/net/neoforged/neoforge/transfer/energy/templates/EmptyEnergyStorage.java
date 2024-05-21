@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.energy;
+package net.neoforged.neoforge.transfer.energy.templates;
+
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.energy.IEnergyStorage;
 
 /**
  * Implementation of {@link IEnergyStorage} that cannot store, receive, or provide energy.
@@ -21,22 +24,22 @@ public class EmptyEnergyStorage implements IEnergyStorage {
     protected EmptyEnergyStorage() {}
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
+    public int insert(int maxReceive, TransferAction action) {
         return 0;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
+    public int extract(int maxExtract, TransferAction action) {
         return 0;
     }
 
     @Override
-    public int getEnergyStored() {
+    public int getAmount() {
         return 0;
     }
 
     @Override
-    public int getMaxEnergyStored() {
+    public int getLimit() {
         return 0;
     }
 
@@ -46,7 +49,7 @@ public class EmptyEnergyStorage implements IEnergyStorage {
     }
 
     @Override
-    public boolean canReceive() {
+    public boolean canInsert() {
         return false;
     }
 }

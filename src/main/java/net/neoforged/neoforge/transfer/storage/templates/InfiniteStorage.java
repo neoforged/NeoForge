@@ -43,12 +43,12 @@ public abstract class InfiniteStorage<T extends IResource> implements ISingleSto
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean canInsert() {
         return autoSetResource;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean canExtract() {
         return true;
     }
 

@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.energy;
+package net.neoforged.neoforge.transfer.energy;
+
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.energy.templates.EnergyStorage;
 
 /**
  * An energy storage is the unit of interaction with Energy inventories.
@@ -20,32 +23,32 @@ public interface IEnergyStorage {
      *
      * @param maxReceive
      *                   Maximum amount of energy to be inserted.
-     * @param simulate
-     *                   If TRUE, the insertion will only be simulated.
+     * @param action
+     *                  If SIMULATE, the insertion will only be simulated.
      * @return Amount of energy that was (or would have been, if simulated) accepted by the storage.
      */
-    int receiveEnergy(int maxReceive, boolean simulate);
+    int insert(int maxReceive, TransferAction action);
 
     /**
      * Removes energy from the storage. Returns quantity of energy that was removed.
      *
      * @param maxExtract
      *                   Maximum amount of energy to be extracted.
-     * @param simulate
-     *                   If TRUE, the extraction will only be simulated.
+     * @param action
+     *                 If SIMULATE, the extraction will only be simulated.
      * @return Amount of energy that was (or would have been, if simulated) extracted from the storage.
      */
-    int extractEnergy(int maxExtract, boolean simulate);
+    int extract(int maxExtract, TransferAction action);
 
     /**
      * Returns the amount of energy currently stored.
      */
-    int getEnergyStored();
+    int getAmount();
 
     /**
      * Returns the maximum amount of energy that can be stored.
      */
-    int getMaxEnergyStored();
+    int getLimit();
 
     /**
      * Returns if this storage can have energy extracted.
@@ -57,5 +60,5 @@ public interface IEnergyStorage {
      * Used to determine if this storage can receive energy.
      * If this is false, then any calls to receiveEnergy will return 0.
      */
-    boolean canReceive();
+    boolean canInsert();
 }

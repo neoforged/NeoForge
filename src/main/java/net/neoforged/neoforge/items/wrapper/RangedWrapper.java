@@ -26,7 +26,7 @@ public class RangedWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return maxSlot - minSlot;
     }
 

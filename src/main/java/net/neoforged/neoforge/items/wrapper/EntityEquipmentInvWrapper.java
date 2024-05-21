@@ -49,7 +49,7 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
     }
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return slots.size();
     }
 

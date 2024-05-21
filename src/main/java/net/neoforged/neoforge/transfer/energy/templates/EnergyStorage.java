@@ -3,12 +3,14 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.energy;
+package net.neoforged.neoforge.transfer.energy.templates;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.energy.IEnergyStorage;
 
 /**
  * Reference implementation of {@link IEnergyStorage}. Use/extend this or implement your own.
@@ -42,34 +44,34 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
-        if (!canReceive())
+    public int insert(int maxReceive, TransferAction action) {
+        if (!canInsert())
             return 0;
 
         int energyReceived = Math.min(capacity - energy, Math.min(this.maxReceive, maxReceive));
-        if (!simulate)
+        if (action.isExecuting())
             energy += energyReceived;
         return energyReceived;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
+    public int extract(int maxExtract, TransferAction action) {
         if (!canExtract())
             return 0;
 
         int energyExtracted = Math.min(energy, Math.min(this.maxExtract, maxExtract));
-        if (!simulate)
+        if (action.isExecuting())
             energy -= energyExtracted;
         return energyExtracted;
     }
 
     @Override
-    public int getEnergyStored() {
+    public int getAmount() {
         return energy;
     }
 
     @Override
-    public int getMaxEnergyStored() {
+    public int getLimit() {
         return capacity;
     }
 
@@ -79,13 +81,13 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     }
 
     @Override
-    public boolean canReceive() {
+    public boolean canInsert() {
         return this.maxReceive > 0;
     }
 
     @Override
     public Tag serializeNBT(HolderLookup.Provider provider) {
-        return IntTag.valueOf(this.getEnergyStored());
+        return IntTag.valueOf(this.getAmount());
     }
 
     @Override

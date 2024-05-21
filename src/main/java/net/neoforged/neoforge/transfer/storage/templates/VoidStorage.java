@@ -1,5 +1,6 @@
 package net.neoforged.neoforge.transfer.storage.templates;
 
+import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
@@ -10,7 +11,7 @@ import net.neoforged.neoforge.transfer.storage.ISingleStorage;
  * It does not store resources that get filled into it, but "destroys" them upon receiving them.
  * @param <T> The type of resource that this storage can accept.
  */
-public class VoidStorage<T> implements ISingleStorage<T> {
+public class VoidStorage<T extends IResource> implements ISingleStorage<T> {
     public static final VoidStorage<ItemResource> ITEM = new VoidStorage<>(ItemResource.EMPTY);
     public static final VoidStorage<FluidResource> FLUID = new VoidStorage<>(FluidResource.EMPTY);
 
@@ -41,17 +42,12 @@ public class VoidStorage<T> implements ISingleStorage<T> {
     }
 
     @Override
-    public boolean isEmpty() {
+    public boolean canInsert() {
         return true;
     }
 
     @Override
-    public boolean allowsInsertion() {
-        return true;
-    }
-
-    @Override
-    public boolean allowsExtraction() {
+    public boolean canExtract() {
         return false;
     }
 

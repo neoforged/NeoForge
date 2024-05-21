@@ -22,7 +22,7 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return 27;
     }
 
@@ -106,8 +106,8 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
     }
 
     private void validateSlotIndex(int slot) {
-        if (slot < 0 || slot >= getSlots())
-            throw new RuntimeException("Slot " + slot + " not in valid range - [0," + getSlots() + ")");
+        if (slot < 0 || slot >= this.getSlotCount())
+            throw new RuntimeException("Slot " + slot + " not in valid range - [0," + this.getSlotCount() + ")");
     }
 
     @Override

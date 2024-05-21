@@ -9,6 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
 
 /**
  * Implement this interface on Block classes which represent world-placeable Fluids.
@@ -28,11 +31,12 @@ public interface IFluidBlock {
      *
      * @param level      the level to place the block in
      * @param pos        the position to place the block at
-     * @param fluidStack the fluid stack to get the required data from
+     * @param resource the fluid resource to get the required data from
+     * @param amount     the amount of fluid to place in the block
      * @param action     If SIMULATE, the placement will only be simulated
      * @return the amount of fluid extracted from the provided stack to achieve some fluid level
      */
-    int place(Level level, BlockPos pos, FluidStack fluidStack, IFluidHandler.FluidAction action);
+    int place(Level level, BlockPos pos, FluidResource resource, int amount, TransferAction action);
 
     /**
      * Attempt to drain the block. This method should be called by devices such as pumps.
@@ -43,7 +47,7 @@ public interface IFluidBlock {
      *               If SIMULATE, the drain will only be simulated.
      * @return the fluid stack after draining the block
      */
-    FluidStack drain(Level level, BlockPos pos, IFluidHandler.FluidAction action);
+    ResourceStack<FluidResource> drain(Level level, BlockPos pos, TransferAction action);
 
     /**
      * Check to see if a block can be drained. This method should be called by devices such as

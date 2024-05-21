@@ -11,19 +11,19 @@ import net.neoforged.neoforge.transfer.storage.ISingleStorage;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class FluidStorageItem implements ISingleStorage<FluidResource> {
+public class BucketLikeFluidStorageItem implements ISingleStorage<FluidResource> {
     private final int individualLimit;
     private final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected final IItemContext context;
     private Predicate<FluidResource> validator = r -> true;
 
-    public FluidStorageItem(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
+    public BucketLikeFluidStorageItem(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
         this.individualLimit = limit;
         this.componentType = componentType;
         this.context = context;
     }
 
-    public FluidStorageItem setValidator(Predicate<FluidResource> validator) {
+    public BucketLikeFluidStorageItem setValidator(Predicate<FluidResource> validator) {
         this.validator = validator;
         return this;
     }
@@ -73,31 +73,22 @@ public class FluidStorageItem implements ISingleStorage<FluidResource> {
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource) || (isEmpty() && !getResource().equals(resource))) return 0;
-        if (this.isEmpty()) {
-            if (amount < getIndividualLimit()) return fill(resource, 1, amount, action) == 1 ? amount : 0;
-            return fill(resource, amount / getIndividualLimit(), action) * getIndividualLimit();
-        }
-
-        int containerFill = getIndividualAmount();
-        int spaceLeft = getIndividualLimit() - containerFill;
-        if (amount < spaceLeft) return fill(resource, 1, amount + containerFill, action) == 1 ? amount : 0;
-        return fill(resource, amount / spaceLeft, action) * spaceLeft;
+        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource) || !isEmpty()) return 0;
+        int toFill = getIndividualLimit();
+        if (amount < toFill) return 0;
+        return fill(resource, amount / toFill, action) * toFill;
     }
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
         if (resource.isBlank() || amount <= 0 || isEmpty() || !getResource().equals(resource)) return 0;
         int containerFill = getIndividualAmount();
-        if (amount <= containerFill) {
-            ItemResource extractedContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, containerFill - amount));
-            int exchanged = context.exchange(extractedContainer, 1, action);
-            return exchanged == 1 ? containerFill : 0;
-        } else {
+        if (amount > containerFill) {
             int extractedCount = amount / containerFill;
             int exchanged = empty(extractedCount, action);
             return exchanged * containerFill;
         }
+        return 0;
     }
 
     protected int empty(int count, TransferAction action) {
@@ -106,15 +97,11 @@ public class FluidStorageItem implements ISingleStorage<FluidResource> {
     }
 
     protected int fill(FluidResource resource, int count, TransferAction action) {
-        return fill(resource, count, getIndividualLimit(), action);
-    }
-
-    protected int fill(FluidResource resource, int count, int amount, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, amount));
+        ItemResource filledContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, getIndividualAmount()));
         return context.exchange(filledContainer, count, action);
     }
 
-    public static class Consumable extends FluidStorageItem {
+    public static class Consumable extends BucketLikeFluidStorageItem {
         public Consumable(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
             super(limit, componentType, context);
         }
@@ -125,7 +112,7 @@ public class FluidStorageItem implements ISingleStorage<FluidResource> {
         }
     }
 
-    public static class SwapEmpty extends FluidStorageItem {
+    public static class SwapEmpty extends BucketLikeFluidStorageItem {
         private final ItemResource emptyContainer;
 
         public SwapEmpty(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context, ItemResource emptyContainer) {

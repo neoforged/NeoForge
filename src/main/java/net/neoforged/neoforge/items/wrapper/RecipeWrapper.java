@@ -22,7 +22,7 @@ public class RecipeWrapper implements Container {
      */
     @Override
     public int getContainerSize() {
-        return inv.getSlots();
+        return inv.getSlotCount();
     }
 
     /**
@@ -63,7 +63,7 @@ public class RecipeWrapper implements Container {
 
     @Override
     public boolean isEmpty() {
-        for (int i = 0; i < inv.getSlots(); i++) {
+        for (int i = 0; i < inv.getSlotCount(); i++) {
             if (!inv.getStackInSlot(i).isEmpty()) return false;
         }
         return true;
@@ -76,7 +76,7 @@ public class RecipeWrapper implements Container {
 
     @Override
     public void clearContent() {
-        for (int i = 0; i < inv.getSlots(); i++) {
+        for (int i = 0; i < inv.getSlotCount(); i++) {
             inv.setStackInSlot(i, ItemStack.EMPTY);
         }
     }

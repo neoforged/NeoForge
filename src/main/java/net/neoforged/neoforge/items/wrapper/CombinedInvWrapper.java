@@ -19,7 +19,7 @@ public class CombinedInvWrapper implements IItemHandlerModifiable {
         this.baseIndex = new int[itemHandler.length];
         int index = 0;
         for (int i = 0; i < itemHandler.length; i++) {
-            index += itemHandler[i].getSlots();
+            index += itemHandler[i].getSlotCount();
             baseIndex[i] = index;
         }
         this.slotCount = index;
@@ -61,7 +61,7 @@ public class CombinedInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return slotCount;
     }
 

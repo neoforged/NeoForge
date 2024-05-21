@@ -1,10 +1,11 @@
 package net.neoforged.neoforge.transfer.storage;
 
+import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 
-public interface ISingleStorage<T> extends IStorage<T> {
+public interface ISingleStorage<T extends IResource> extends IStorage<T> {
     @Override
-    default int getSlots() {
+    default int getSlotCount() {
         return 1;
     }
 
@@ -34,13 +35,6 @@ public interface ISingleStorage<T> extends IStorage<T> {
     @Override
     default boolean isResourceValid(int slot, T resource) {
         return isResourceValid(resource);
-    }
-
-    boolean isEmpty();
-
-    @Override
-    default boolean isEmpty(int slot) {
-        return isEmpty();
     }
 
     @Override
