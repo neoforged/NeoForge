@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.energy;
 
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -61,12 +62,13 @@ public class ItemEnergyStorage implements IEnergyStorage {
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
-        if (!canReceive())
+    public int receiveEnergy(int toReceive, boolean simulate) {
+        if (!canReceive() || toReceive <= 0) {
             return 0;
+        }
 
         int energy = this.getEnergyStored();
-        int energyReceived = Math.min(capacity - energy, Math.min(this.maxReceive, maxReceive));
+        int energyReceived = Mth.clamp(this.capacity - energy, 0, Math.min(this.maxReceive, toReceive));
         if (!simulate) {
             this.setEnergy(energy + energyReceived);
         }
@@ -74,12 +76,13 @@ public class ItemEnergyStorage implements IEnergyStorage {
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
-        if (!canExtract())
+    public int extractEnergy(int toExtract, boolean simulate) {
+        if (!canExtract() || toExtract <= 0) {
             return 0;
+        }
 
         int energy = this.getEnergyStored();
-        int energyExtracted = Math.min(energy, Math.min(this.maxExtract, maxExtract));
+        int energyExtracted = Math.min(energy, Math.min(this.maxExtract, toExtract));
         if (!simulate) {
             this.setEnergy(energy - energyExtracted);
         }
@@ -89,7 +92,7 @@ public class ItemEnergyStorage implements IEnergyStorage {
     @Override
     public int getEnergyStored() {
         int rawEnergy = this.parent.getOrDefault(this.powerComponent, 0);
-        return Math.max(0, Math.min(capacity, rawEnergy));
+        return Mth.clamp(rawEnergy, 0, this.capacity);
     }
 
     @Override
@@ -107,7 +110,13 @@ public class ItemEnergyStorage implements IEnergyStorage {
         return this.maxReceive > 0;
     }
 
+    /**
+     * Writes a new energy value to the data component. Clamps to [0, capacity]
+     * 
+     * @param energy The new energy value
+     */
     protected void setEnergy(int energy) {
-        this.parent.set(this.powerComponent, Math.clamp(energy, 0, this.capacity));
+        int realEnergy = Mth.clamp(energy, 0, this.capacity);
+        this.parent.set(this.powerComponent, realEnergy);
     }
 }
