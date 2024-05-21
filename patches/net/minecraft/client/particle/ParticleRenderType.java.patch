@@ -24,18 +24,6 @@
      };
      ParticleRenderType CUSTOM = new ParticleRenderType() {
          @Override
-@@ -107,6 +_,11 @@
-         public String toString() {
-             return "CUSTOM";
-         }
-+
-+        @Override
-+        public boolean isTranslucent() {
-+            return false;
-+        }
-     };
-     ParticleRenderType NO_RENDER = new ParticleRenderType() {
-         @Override
 @@ -126,4 +_,9 @@
      void begin(BufferBuilder p_107436_, TextureManager p_107437_);
  
