@@ -109,6 +109,7 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
+import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -203,7 +204,7 @@ public class NeoForgeMod {
 
     /**
      * Reach Distance represents the distance at which a player may interact with the world. The default is 4.5 blocks. Players in creative mode have an additional 0.5 blocks of block reach.
-     * 
+     *
      * @see IPlayerExtension#getBlockReach()
      * @see IPlayerExtension#canReach(BlockPos, double)
      */
@@ -231,7 +232,7 @@ public class NeoForgeMod {
     /**
      * Attack Range represents the distance at which a player may attack an entity. The default is 3 blocks. Players in creative mode have an additional 2 blocks of entity reach.
      * The default of 3.0 is technically considered a bug by Mojang - see MC-172289 and MC-92484. However, updating this value would allow for longer-range attacks on vanilla servers, which makes some people mad.
-     * 
+     *
      * @see IPlayerExtension#getEntityReach()
      * @see IPlayerExtension#canReach(Entity, double)
      * @see IPlayerExtension#canReach(Vec3, double)
@@ -240,7 +241,7 @@ public class NeoForgeMod {
 
     /**
      * Step Height Addition modifies the amount of blocks an entity may walk up without jumping.
-     * 
+     *
      * @see IEntityExtension#getStepHeight()
      */
     public static final Holder<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("neoforge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
@@ -399,6 +400,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<NBTIngredient>> NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(NBTIngredient.CODEC, NBTIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC, DifferenceIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<BlockTagIngredient>> BLOCK_TAG_INGREDIENT = INGREDIENT_TYPES.register("block_tag", () -> new IngredientType<>(BlockTagIngredient.CODEC));
 
     private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
@@ -567,7 +569,7 @@ public class NeoForgeMod {
      * Used in place of {@link DamageSources#magic()} for damage dealt by {@link MobEffects#POISON}.
      * <p>
      * May also be used by mods providing poison-like effects.
-     * 
+     *
      * @see {@link Tags.DamageTypes#IS_POISON}
      */
     public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(NeoForgeVersion.MOD_ID, "poison"));
