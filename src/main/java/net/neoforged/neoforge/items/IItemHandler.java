@@ -20,7 +20,7 @@ public interface IItemHandler extends IStorage<ItemResource> {
      *
      * @return The number of slots available
      **/
-    int getSlots();
+    int getSlotCount();
 
     /**
      * Returns the ItemStack in a given slot.
@@ -77,7 +77,7 @@ public interface IItemHandler extends IStorage<ItemResource> {
     @Override
     default int insert(ItemResource resource, int amount, TransferAction action) {
         int inserted = 0;
-        for (int i = 0; i < getSlots(); i++) {
+        for (int i = 0; i < getSlotCount(); i++) {
             inserted += insert(i, resource, amount - inserted, action);
             if (inserted >= amount) {
                 break;
@@ -110,7 +110,7 @@ public interface IItemHandler extends IStorage<ItemResource> {
     @Override
     default int extract(ItemResource resource, int amount, TransferAction action) {
         int extracted = 0;
-        for (int i = 0; i < getSlots(); i++) {
+        for (int i = 0; i < getSlotCount(); i++) {
             extracted += extract(i, resource, amount - extracted, action);
             if (extracted >= amount) {
                 break;
@@ -160,12 +160,12 @@ public interface IItemHandler extends IStorage<ItemResource> {
     }
 
     @Override
-    default boolean allowsInsertion() {
+    default boolean canInsert() {
         return true;
     }
 
     @Override
-    default boolean allowsExtraction() {
+    default boolean canExtract() {
         return true;
     }
 }

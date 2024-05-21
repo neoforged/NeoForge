@@ -13,7 +13,7 @@ public class EmptyItemHandler implements IItemHandlerModifiable {
     public static final IItemHandler INSTANCE = new EmptyItemHandler();
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return 0;
     }
 

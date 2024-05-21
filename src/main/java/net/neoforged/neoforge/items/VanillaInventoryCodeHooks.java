@@ -39,7 +39,7 @@ public class VanillaInventoryCodeHooks {
                 .map(itemHandlerResult -> {
                     IItemHandler handler = itemHandlerResult.getKey();
 
-                    for (int i = 0; i < handler.getSlots(); i++) {
+                    for (int i = 0; i < handler.getSlotCount(); i++) {
                         ItemStack extractItem = handler.extractItem(i, 1, true);
                         if (!extractItem.isEmpty()) {
                             for (int j = 0; j < dest.getContainerSize(); j++) {
@@ -122,7 +122,7 @@ public class VanillaInventoryCodeHooks {
     }
 
     private static ItemStack putStackInInventoryAllSlots(BlockEntity source, Object destination, IItemHandler destInventory, ItemStack stack) {
-        for (int slot = 0; slot < destInventory.getSlots() && !stack.isEmpty(); slot++) {
+        for (int slot = 0; slot < destInventory.getSlotCount() && !stack.isEmpty(); slot++) {
             stack = insertStack(source, destination, destInventory, stack, slot);
         }
         return stack;
@@ -169,7 +169,7 @@ public class VanillaInventoryCodeHooks {
     }
 
     private static boolean isFull(IItemHandler itemHandler) {
-        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
+        for (int slot = 0; slot < itemHandler.getSlotCount(); slot++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || stackInSlot.getCount() < itemHandler.getSlotLimit(slot)) {
                 return false;
@@ -179,7 +179,7 @@ public class VanillaInventoryCodeHooks {
     }
 
     private static boolean isEmpty(IItemHandler itemHandler) {
-        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
+        for (int slot = 0; slot < itemHandler.getSlotCount(); slot++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
             if (stackInSlot.getCount() > 0) {
                 return false;

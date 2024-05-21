@@ -20,7 +20,7 @@ public class ItemHandlerHelper {
         if (dest == null || stack.isEmpty())
             return stack;
 
-        for (int i = 0; i < dest.getSlots(); i++) {
+        for (int i = 0; i < dest.getSlotCount(); i++) {
             stack = dest.insertItem(i, stack, simulate);
             if (stack.isEmpty()) {
                 return ItemStack.EMPTY;
@@ -44,7 +44,7 @@ public class ItemHandlerHelper {
             return insertItem(inventory, stack, simulate);
         }
 
-        int sizeInventory = inventory.getSlots();
+        int sizeInventory = inventory.getSlotCount();
 
         // go through the inventory and try to fill up already existing items
         for (int i = 0; i < sizeInventory; i++) {
@@ -95,7 +95,7 @@ public class ItemHandlerHelper {
         // try adding it into the inventory
         ItemStack remainder = stack;
         // insert into preferred slot first
-        if (preferredSlot >= 0 && preferredSlot < inventory.getSlots()) {
+        if (preferredSlot >= 0 && preferredSlot < inventory.getSlotCount()) {
             remainder = inventory.insertItem(preferredSlot, stack, false);
         }
         // then into the inventory in general
@@ -133,7 +133,7 @@ public class ItemHandlerHelper {
             int itemsFound = 0;
             float proportion = 0.0F;
 
-            for (int j = 0; j < inv.getSlots(); ++j) {
+            for (int j = 0; j < inv.getSlotCount(); ++j) {
                 ItemStack itemstack = inv.getStackInSlot(j);
 
                 if (!itemstack.isEmpty()) {
@@ -142,7 +142,7 @@ public class ItemHandlerHelper {
                 }
             }
 
-            proportion = proportion / (float) inv.getSlots();
+            proportion = proportion / (float) inv.getSlotCount();
             return Mth.floor(proportion * 14.0F) + (itemsFound > 0 ? 1 : 0);
         }
     }

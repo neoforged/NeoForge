@@ -1,11 +1,12 @@
 package net.neoforged.neoforge.transfer.storage.templates;
 
+import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 import net.neoforged.neoforge.transfer.storage.ISingleStorage;
 
-public class EmptyStorage<T> implements ISingleStorage<T> {
+public class EmptyStorage<T extends IResource> implements ISingleStorage<T> {
     public static final EmptyStorage<ItemResource> ITEM = new EmptyStorage<>(ItemResource.EMPTY);
     public static final EmptyStorage<FluidResource> FLUID = new EmptyStorage<>(FluidResource.EMPTY);
 
@@ -36,17 +37,12 @@ public class EmptyStorage<T> implements ISingleStorage<T> {
     }
 
     @Override
-    public boolean isEmpty() {
-        return true;
-    }
-
-    @Override
-    public boolean allowsInsertion() {
+    public boolean canInsert() {
         return false;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean canExtract() {
         return false;
     }
 

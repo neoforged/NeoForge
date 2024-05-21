@@ -30,8 +30,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.templates.EnergyStorage;
+import net.neoforged.neoforge.transfer.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -171,10 +171,10 @@ public class GameTestTest {
         }
 
         // Adds 2000 FE, but our energy storage can only hold 1000 FE
-        energyStorage.receiveEnergy(2000, false);
+        energyStorage.insert(2000, false);
 
         // Fails test if stored energy is not equal to 1000 FE
-        int energy = energyStorage.getEnergyStored();
+        int energy = energyStorage.getAmount();
         int target = 1000;
         if (energy != target) {
             helper.fail("Expected energy=" + target + " but it was energy=" + energy, energyPos);

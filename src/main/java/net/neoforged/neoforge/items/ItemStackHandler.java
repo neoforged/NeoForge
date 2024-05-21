@@ -41,7 +41,7 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return stacks.size();
     }
 

@@ -27,8 +27,8 @@ public class ForwardingItemHandler implements IItemHandler {
     }
 
     @Override
-    public int getSlots() {
-        return delegate.get().getSlots();
+    public int getSlotCount() {
+        return delegate.get().getSlotCount();
     }
 
     @Override

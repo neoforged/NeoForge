@@ -47,18 +47,17 @@ public class FluidStorageAttachment implements ISingleStorage<FluidResource> {
         return validator.test(resource);
     }
 
-    @Override
     public boolean isEmpty() {
         return holder.getData(attachmentType).isEmpty();
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean canInsert() {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean canExtract() {
         return true;
     }
 

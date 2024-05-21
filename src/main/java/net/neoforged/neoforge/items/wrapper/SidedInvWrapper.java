@@ -73,7 +73,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return inv.getSlotsForFace(side).length;
     }
 

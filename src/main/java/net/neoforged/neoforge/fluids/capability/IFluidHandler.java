@@ -29,6 +29,14 @@ public interface IFluidHandler extends IStorage<FluidResource> {
         public boolean simulate() {
             return this == SIMULATE;
         }
+
+        public TransferAction toTransferAction() {
+            return execute() ? TransferAction.EXECUTE : TransferAction.SIMULATE;
+        }
+
+        public static FluidAction fromTransferAction(TransferAction action) {
+            return action.isExecuting() ? EXECUTE : SIMULATE;
+        }
     }
 
     /**
@@ -39,7 +47,7 @@ public interface IFluidHandler extends IStorage<FluidResource> {
     int getTanks();
 
     @Override
-    default int getSlots() {
+    default int getSlotCount() {
         return getTanks();
     }
 
@@ -138,7 +146,7 @@ public interface IFluidHandler extends IStorage<FluidResource> {
 
     @Override
     default int insert(FluidResource resource, int amount, TransferAction action) {
-        return fill(resource.toStack(amount), action.isExecuting() ? FluidAction.EXECUTE : FluidAction.SIMULATE);
+        return fill(resource.toStack(amount), FluidAction.fromTransferAction(action));
     }
 
     @Override
@@ -148,7 +156,7 @@ public interface IFluidHandler extends IStorage<FluidResource> {
 
     @Override
     default int extract(FluidResource resource, int amount, TransferAction action) {
-        return drain(resource.toStack(amount), action.isExecuting() ? FluidAction.EXECUTE : FluidAction.SIMULATE).getAmount();
+        return drain(resource.toStack(amount), FluidAction.fromTransferAction(action)).getAmount();
     }
 
     @Override
@@ -157,12 +165,12 @@ public interface IFluidHandler extends IStorage<FluidResource> {
     }
 
     @Override
-    default boolean allowsInsertion() {
+    default boolean canInsert() {
         return true;
     }
 
     @Override
-    default boolean allowsExtraction() {
+    default boolean canExtract() {
         return true;
     }
 }

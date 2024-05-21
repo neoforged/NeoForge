@@ -34,7 +34,7 @@ public class InvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public int getSlots() {
+    public int getSlotCount() {
         return getInv().getContainerSize();
     }
 

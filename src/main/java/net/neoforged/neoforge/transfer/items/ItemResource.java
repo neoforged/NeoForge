@@ -64,6 +64,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
             ItemResource::of);
 
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     public static ItemResource of(ItemStack itemStack) {
         return itemStack.isEmpty() ? EMPTY : new ItemResource(itemStack.copyWithCount(1));
@@ -144,6 +145,10 @@ public final class ItemResource implements IResource, DataComponentHolder {
 
     public ItemStack toStack(int count) {
         return this.innerStack.copyWithCount(count);
+    }
+
+    public int getMaxStackSize() {
+        return innerStack.getMaxStackSize();
     }
 
     @Override
