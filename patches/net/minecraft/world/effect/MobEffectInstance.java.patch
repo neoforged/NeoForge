@@ -66,11 +66,9 @@
      static class BlendState {
          private float factor;
          private float factorPreviousFrame;
-@@ -396,9 +_,9 @@
-         }
+@@ -397,8 +_,7 @@
      }
  
-+    // TODO: https://github.com/neoforged/NeoForge/issues/986 - Fix this to have vanilla-compatible syncing.
      static record Details(
 -        int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect
 -    ) {
@@ -78,15 +76,21 @@
          public static final MapCodec<MobEffectInstance.Details> MAP_CODEC = MapCodec.recursive(
              "MobEffectInstance.Details",
              p_323465_ -> RecordCodecBuilder.mapCodec(
-@@ -409,6 +_,7 @@
+@@ -408,11 +_,12 @@
+                                 Codec.BOOL.optionalFieldOf("ambient", Boolean.valueOf(false)).forGetter(MobEffectInstance.Details::ambient),
                                  Codec.BOOL.optionalFieldOf("show_particles", Boolean.valueOf(true)).forGetter(MobEffectInstance.Details::showParticles),
                                  Codec.BOOL.optionalFieldOf("show_icon").forGetter(p_323788_ -> Optional.of(p_323788_.showIcon())),
-                                 p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
-+                                // , net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
+-                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
++                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect), net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
                              )
                              .apply(p_324063_, MobEffectInstance.Details::create)
                  )
-@@ -427,14 +_,28 @@
+         );
++        // TODO: https://github.com/neoforged/NeoForge/issues/986 - Fix this to have vanilla-compatible sync.
+         public static final StreamCodec<ByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
+             p_329990_ -> StreamCodec.composite(
+                     ByteBufCodecs.VAR_INT,
+@@ -427,14 +_,23 @@
                      MobEffectInstance.Details::showIcon,
                      p_329990_.apply(ByteBufCodecs::optional),
                      MobEffectInstance.Details::hiddenEffect,
@@ -106,11 +110,6 @@
 +        }
 +
 +        // TODO: https://github.com/neoforged/NeoForge/issues/986 - Delete these once custom cure sync is fixed.
-+        @Deprecated(forRemoval = true, since = "1.20.6")
-+        private static MobEffectInstance.Details create(int amplifier, int duration, boolean ambient, boolean showParticles, Optional<Boolean> showIcon, Optional<MobEffectInstance.Details> hiddenEffect) {
-+            return create(amplifier, duration, ambient, showParticles, showIcon, hiddenEffect, Optional.empty());
-+        }
-+
 +        @Deprecated(forRemoval = true, since = "1.20.6")
 +        private Details(int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect) {
 +            this(amplifier, duration, ambient, showParticles, showIcon, hiddenEffect, Optional.empty());
