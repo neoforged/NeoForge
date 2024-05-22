@@ -56,7 +56,7 @@ public class ItemEnergyTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that ItemEnergyStorage can read and write from a data component")
+    @TestHolder(description = "Tests that ComponentEnergyStorage can read and write from a data component")
     public static void testItemEnergy(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
             ItemStack stack = BATTERY.toStack();

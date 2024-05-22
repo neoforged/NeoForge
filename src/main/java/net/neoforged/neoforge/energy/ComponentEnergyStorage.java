@@ -70,7 +70,7 @@ public class ComponentEnergyStorage implements IEnergyStorage {
 
         int energy = this.getEnergyStored();
         int energyReceived = Mth.clamp(this.capacity - energy, 0, Math.min(this.maxReceive, toReceive));
-        if (!simulate) {
+        if (!simulate && energyReceived > 0) {
             this.setEnergy(energy + energyReceived);
         }
         return energyReceived;
@@ -84,7 +84,7 @@ public class ComponentEnergyStorage implements IEnergyStorage {
 
         int energy = this.getEnergyStored();
         int energyExtracted = Math.min(energy, Math.min(this.maxExtract, toExtract));
-        if (!simulate) {
+        if (!simulate && energyExtracted > 0) {
             this.setEnergy(energy - energyExtracted);
         }
         return energyExtracted;
