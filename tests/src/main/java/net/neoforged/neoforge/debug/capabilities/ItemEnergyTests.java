@@ -15,8 +15,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.energy.ComponentEnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.energy.ItemEnergyStorage;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.testframework.DynamicTest;
@@ -49,7 +49,7 @@ public class ItemEnergyTests {
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
             e.registerItem(EnergyStorage.ITEM, (stack, ctx) -> {
-                return new ItemEnergyStorage(stack, ENERGY_COMPONENT.get(), MAX_CAPACITY);
+                return new ComponentEnergyStorage(stack, ENERGY_COMPONENT.get(), MAX_CAPACITY);
             }, BATTERY);
         });
     }
