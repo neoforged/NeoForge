@@ -13,3 +13,34 @@
              }
  
              public R decode(RegistryFriendlyByteBuf p_331253_) {
+@@ -519,9 +_,17 @@
+         return new StreamCodec<RegistryFriendlyByteBuf, HolderSet<T>>() {
+             private static final int NAMED_SET = -1;
+             private final StreamCodec<RegistryFriendlyByteBuf, Holder<T>> holderCodec = ByteBufCodecs.holderRegistry(p_332137_);
+-
++            private final Map<net.neoforged.neoforge.registries.holdersets.HolderSetType, StreamCodec<RegistryFriendlyByteBuf, net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>>> holderSetCodecs = new java.util.HashMap<>();
++
++            private StreamCodec<RegistryFriendlyByteBuf, net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>> holderSetCodec(net.neoforged.neoforge.registries.holdersets.HolderSetType type) {
++                return this.holderSetCodecs.computeIfAbsent(type, key -> key.makeStreamCodec(p_332137_).map(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::cast, net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::cast));
++            }
++
++            // NeoForge: Make use of vanilla unused negative VarInt values(starting from -1) for ICustomHolderSet support
+             public HolderSet<T> decode(RegistryFriendlyByteBuf p_340887_) {
+                 int i = VarInt.read(p_340887_) - 1;
++                if (i < -1)
++                    return this.holderSetCodec(net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.byIdOrThrow(-2 - i)).decode(p_340887_);
+                 if (i == -1) {
+                     Registry<T> registry = p_340887_.registryAccess().registryOrThrow(p_332137_);
+                     return registry.getTag(TagKey.create(p_332137_, ResourceLocation.STREAM_CODEC.decode(p_340887_))).orElseThrow();
+@@ -537,6 +_,11 @@
+             }
+ 
+             public void encode(RegistryFriendlyByteBuf p_341009_, HolderSet<T> p_340834_) {
++                if (p_340834_ instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> customHolderSet) {
++                    VarInt.write(p_341009_, -1 - net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.getId(customHolderSet.type()));
++                    this.holderSetCodec(customHolderSet.type()).encode(p_341009_, customHolderSet);
++                    return;
++                }
+                 Optional<TagKey<T>> optional = p_340834_.unwrapKey();
+                 if (optional.isPresent()) {
+                     VarInt.write(p_341009_, 0);

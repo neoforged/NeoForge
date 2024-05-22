@@ -19,6 +19,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
@@ -41,15 +44,6 @@ import org.jetbrains.annotations.Nullable;
  */
 // this doesn't extend CompositeHolderSet because it doesn't need to cache a set
 public class NotHolderSet<T> implements ICustomHolderSet<T> {
-    public static <T> MapCodec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
-        return RecordCodecBuilder.<NotHolderSet<T>>mapCodec(
-                builder -> builder
-                        .group(
-                                RegistryOps.retrieveRegistryLookup(registryKey).forGetter(NotHolderSet::registryLookup),
-                                HolderSetCodec.create(registryKey, holderCodec, forceList).fieldOf("value").forGetter(NotHolderSet::value))
-                        .apply(builder, NotHolderSet::new));
-    }
-
     private final List<Runnable> owners = new ArrayList<>();
     private final HolderLookup.RegistryLookup<T> registryLookup;
     private final HolderSet<T> value;
@@ -152,6 +146,35 @@ public class NotHolderSet<T> implements ICustomHolderSet<T> {
         this.list = null;
         for (Runnable runnable : this.owners) {
             runnable.run();
+        }
+    }
+
+    public static class Type implements HolderSetType {
+        @Override
+        public <T> MapCodec<? extends ICustomHolderSet<T>> makeCodec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+            return RecordCodecBuilder.<NotHolderSet<T>>mapCodec(
+                    builder -> builder
+                            .group(
+                                    RegistryOps.retrieveRegistryLookup(registryKey).forGetter(NotHolderSet::registryLookup),
+                                    HolderSetCodec.create(registryKey, holderCodec, forceList).fieldOf("value").forGetter(NotHolderSet::value))
+                            .apply(builder, NotHolderSet::new));
+        }
+
+        @Override
+        public <T> StreamCodec<RegistryFriendlyByteBuf, ? extends ICustomHolderSet<T>> makeStreamCodec(ResourceKey<? extends Registry<T>> registryKey) {
+            return new StreamCodec<RegistryFriendlyByteBuf, NotHolderSet<T>>() {
+                private final StreamCodec<RegistryFriendlyByteBuf, HolderSet<T>> holderSetCodec = ByteBufCodecs.holderSet(registryKey);
+
+                @Override
+                public NotHolderSet<T> decode(RegistryFriendlyByteBuf buf) {
+                    return new NotHolderSet<>(buf.registryAccess().lookupOrThrow(registryKey), holderSetCodec.decode(buf));
+                }
+
+                @Override
+                public void encode(RegistryFriendlyByteBuf buf, NotHolderSet<T> holderSet) {
+                    holderSetCodec.encode(buf, holderSet.value);
+                }
+            };
         }
     }
 }

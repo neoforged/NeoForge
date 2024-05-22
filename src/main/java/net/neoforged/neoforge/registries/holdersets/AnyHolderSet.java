@@ -19,6 +19,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -35,10 +37,6 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * </pre>
  */
 public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) implements ICustomHolderSet<T> {
-    public static <T> MapCodec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
-        return RegistryOps.retrieveRegistryLookup(registryKey)
-                .xmap(AnyHolderSet::new, AnyHolderSet::registryLookup);
-    }
 
     @Override
     public HolderSetType type() {
@@ -98,5 +96,32 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
     @Override
     public String toString() {
         return "AnySet(" + this.registryLookup.key() + ")";
+    }
+    public static class Type implements HolderSetType {
+        @Override
+        public <T> MapCodec<? extends ICustomHolderSet<T>> makeCodec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+            return RegistryOps.retrieveRegistryLookup(registryKey)
+                    .xmap(AnyHolderSet::new, AnyHolderSet::registryLookup);
+        }
+
+        @Override
+        public <T> StreamCodec<RegistryFriendlyByteBuf, ? extends ICustomHolderSet<T>> makeStreamCodec(ResourceKey<? extends Registry<T>> registryKey) {
+            return new StreamCodec<RegistryFriendlyByteBuf, AnyHolderSet<T>>() {
+                @Override
+                public AnyHolderSet<T> decode(RegistryFriendlyByteBuf buf) {
+                    return new AnyHolderSet<>(buf.registryAccess().lookupOrThrow(registryKey));
+                }
+
+                @Override
+                public void encode(RegistryFriendlyByteBuf buf, AnyHolderSet<T> holderSet) {
+                    final var registryKeyIn = holderSet.registryLookup.key();
+                    if (!registryKey.equals(registryKeyIn)) {
+                        throw new IllegalStateException("Can not encode " + holderSet
+                                + ", expected registry: "
+                                + registryKey.registry() + "/" + registryKey.location());
+                    }
+                }
+            };
+        }
     }
 }

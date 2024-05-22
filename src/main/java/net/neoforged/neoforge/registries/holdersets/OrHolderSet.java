@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -31,15 +34,13 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * </pre>
  */
 public class OrHolderSet<T> extends CompositeHolderSet<T> {
-    public static <T> MapCodec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
-        return HolderSetCodec.create(registryKey, holderCodec, forceList)
-                .listOf()
-                .xmap(OrHolderSet::new, CompositeHolderSet::homogenize)
-                .fieldOf("values");
-    }
-
     public OrHolderSet(List<HolderSet<T>> values) {
         super(values);
+    }
+
+    @SafeVarargs
+    public OrHolderSet(HolderSet<T>... values) {
+        this(List.of(values));
     }
 
     @Override
@@ -55,5 +56,22 @@ public class OrHolderSet<T> extends CompositeHolderSet<T> {
     @Override
     public String toString() {
         return "OrSet[" + this.getComponents() + "]";
+    }
+
+    public static class Type implements HolderSetType {
+        @Override
+        public <T> MapCodec<? extends ICustomHolderSet<T>> makeCodec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+            return HolderSetCodec.create(registryKey, holderCodec, forceList)
+                    .listOf()
+                    .xmap(OrHolderSet::new, CompositeHolderSet::homogenize)
+                    .fieldOf("values");
+        }
+
+        @Override
+        public <T> StreamCodec<RegistryFriendlyByteBuf, ? extends ICustomHolderSet<T>> makeStreamCodec(ResourceKey<? extends Registry<T>> registryKey) {
+            return ByteBufCodecs.<RegistryFriendlyByteBuf, HolderSet<T>>list()
+                    .apply(ByteBufCodecs.holderSet(registryKey))
+                    .map(OrHolderSet::new, CompositeHolderSet::getComponents);
+        }
     }
 }
