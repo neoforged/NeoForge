@@ -20,9 +20,4 @@ public interface ICustomHolderSet<T> extends HolderSet<T> {
     default SerializationType serializationType() {
         return SerializationType.OBJECT;
     }
-
-    @SuppressWarnings("unchecked")
-    default <H extends ICustomHolderSet<T>> H cast() {
-        return (H) this;
-    }
 }
