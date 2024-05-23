@@ -60,6 +60,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.slf4j.Logger;
 
+// @formatter:off
 /**
  * A {@link ParameterResolver} that provides a {@link MinecraftServer} parameter.
  * <p>
@@ -71,13 +72,12 @@ import org.slf4j.Logger;
  * <p>
  * Example usage:
  * {@snippet :
- * &#64;Test
- * &#64;ExtendWith(EphemeralTestServerProvider.class)
+ * @Test
+ * @ExtendWith(EphemeralTestServerProvider.class)
  * void someJUnitTest(MinecraftServer server) {
  *     assert server.registryAccess().registryOrThrow(Registries.ITEM).getTag(ItemTags.ANVIL).isPresent();
  * }
  * }
- *
  * You can also annotate a class with {@link ExtendWith} to provide a server to all tests in that class.
  *
  * <p>
@@ -85,6 +85,7 @@ import org.slf4j.Logger;
  *
  * @see ExtendWith
  */
+// @formatter:on
 public class EphemeralTestServerProvider implements ParameterResolver, Extension {
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
     public static final AtomicBoolean IN_CONSTRUCTION = new AtomicBoolean();
