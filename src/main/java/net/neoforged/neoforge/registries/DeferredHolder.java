@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
@@ -24,12 +23,17 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A Deferred Holder is a {@link Holder} that is constructed with only a ResourceKey.
+ * It will be populated with the target Holder from the registry when available.
+ * <p>
+ * This class can be type erased to {@link Holder} or {@link RegistryObject} depending on what functionality is needed.
  *
- * <p>It will be populated with the underlying Holder from the registry when available.
- *
- * @param <T> The type of object being held by this DeferredHolder.
+ * @param <R> The registry type of the target object.
+ * @param <T> The concrete type of the target object.
+ * 
+ * @see {@link Holder}
+ * @see {@link RegistryObject}
  */
-public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
+public class DeferredHolder<R, T extends R> implements Holder<R>, RegistryObject<T> {
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
      *
@@ -107,10 +111,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isBound() is bound}.
-     *
-     * @throws IllegalStateException If the backing registry is unavailable.
-     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * {@inheritDoc}
      */
     @Override
     public T get() {
@@ -118,18 +119,15 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * Returns an optional containing the target object, if {@link #isBound() bound}; otherwise {@linkplain Optional#empty() an empty optional}.
-     *
-     * @return an optional containing the target object, if {@link #isBound() bound}; otherwise {@linkplain Optional#empty() an empty optional}
+     * {@inheritDoc}
      */
+    @Override
     public Optional<T> asOptional() {
         return isBound() ? Optional.of(value()) : Optional.empty();
     }
 
     /**
-     * Returns the registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist.
-     *
-     * @return the registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist
+     * {@return the registry that this DeferredHolder is pointing at, or null if it doesn't exist}
      */
     @Nullable
     @SuppressWarnings("unchecked")
@@ -157,15 +155,17 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * @return The ID of the object pointed to by this DeferredHolder.
+     * {@inheritDoc}
      */
+    @Override
     public ResourceLocation getId() {
         return this.key.location();
     }
 
     /**
-     * @return The ResourceKey of the object pointed to by this DeferredHolder.
+     * {@inheritDoc}
      */
+    @Override
     public ResourceKey<R> getKey() {
         return this.key;
     }
@@ -210,7 +210,9 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      * {@return true if the passed ResourceKey is the same as this holder's resource key}
      */
     @Override
-    public boolean is(ResourceKey<R> key) {
+    @SuppressWarnings("rawtypes")
+    public boolean is(ResourceKey key) {
+        // Rawtype to override both Holder#is and RegistryObject#is via type erasure
         return key == this.key;
     }
 
@@ -300,5 +302,20 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public Holder<R> getDelegate() {
         bind(false);
         return this.holder != null ? this.holder.getDelegate() : this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @deprecated There is no need to call this method if you already have a {@link DeferredHolder}, just use it directly.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    public <Z> Holder<Z> asHolder(ResourceKey<? extends Registry<Z>> registryKey) {
+        if (!isFor(registryKey)) {
+            throw new UnsupportedOperationException("The holder " + this.key + " is not a member of the registry " + registryKey);
+        }
+        return (Holder<Z>) this.holder;
     }
 }
