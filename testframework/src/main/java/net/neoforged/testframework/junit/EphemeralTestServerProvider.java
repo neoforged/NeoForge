@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.junit;
 
 import com.google.common.base.Stopwatch;
@@ -66,8 +71,8 @@ import org.slf4j.Logger;
  * <p>
  * Example usage:
  * {@snippet :
- * @Test
- * @ExtendWith(EphemeralTestServerProvider.class)
+ * &#64;Test
+ * &#64;ExtendWith(EphemeralTestServerProvider.class)
  * void someJUnitTest(MinecraftServer server) {
  *     assert server.registryAccess().registryOrThrow(Registries.ITEM).getTag(ItemTags.ANVIL).isPresent();
  * }
@@ -153,24 +158,24 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 LOGGER.debug("Starting resource loading");
                 Stopwatch stopwatch = Stopwatch.createStarted();
                 WorldStem worldstem = Util.blockUntilDone(
-                                exec -> WorldLoader.load(
-                                        worldloader$initconfig,
-                                        ctx -> {
-                                            Registry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
-                                            WorldDimensions.Complete worlddimensions$complete = ctx.datapackWorldgen()
-                                                    .registryOrThrow(Registries.WORLD_PRESET)
-                                                    .getHolderOrThrow(WorldPresets.FLAT)
-                                                    .value()
-                                                    .createWorldDimensions()
-                                                    .bake(registry);
-                                            return new WorldLoader.DataLoadOutput<>(
-                                                    new PrimaryLevelData(
-                                                            levelsettings, WORLD_OPTIONS, worlddimensions$complete.specialWorldProperty(), worlddimensions$complete.lifecycle()),
-                                                    worlddimensions$complete.dimensionsRegistryAccess());
-                                        },
-                                        WorldStem::new,
-                                        Util.backgroundExecutor(),
-                                        exec))
+                        exec -> WorldLoader.load(
+                                worldloader$initconfig,
+                                ctx -> {
+                                    Registry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
+                                    WorldDimensions.Complete worlddimensions$complete = ctx.datapackWorldgen()
+                                            .registryOrThrow(Registries.WORLD_PRESET)
+                                            .getHolderOrThrow(WorldPresets.FLAT)
+                                            .value()
+                                            .createWorldDimensions()
+                                            .bake(registry);
+                                    return new WorldLoader.DataLoadOutput<>(
+                                            new PrimaryLevelData(
+                                                    levelsettings, WORLD_OPTIONS, worlddimensions$complete.specialWorldProperty(), worlddimensions$complete.lifecycle()),
+                                            worlddimensions$complete.dimensionsRegistryAccess());
+                                },
+                                WorldStem::new,
+                                Util.backgroundExecutor(),
+                                exec))
                         .get();
                 stopwatch.stop();
                 LOGGER.debug("Finished resource loading after {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
@@ -299,6 +304,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         }
 
         private final LocalSampleLogger sampleLogger = new LocalSampleLogger(1);
+
         @Override
         protected SampleLogger getTickTimeLogger() {
             return sampleLogger;

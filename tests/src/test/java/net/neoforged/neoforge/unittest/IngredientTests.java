@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.unittest;
 
+import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
@@ -17,9 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 @ExtendWith(EphemeralTestServerProvider.class)
 public class IngredientTests {
