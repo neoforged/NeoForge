@@ -209,8 +209,13 @@ public class VanillaInventoryCodeHooks {
         // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
         List<Entity> list = worldIn.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
         if (!list.isEmpty()) {
-            var entity = list.get(worldIn.random.nextInt(list.size()));
-            var entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+            Entity entity;
+            IItemHandler entityCap;
+            do {
+                entity = list.remove(worldIn.random.nextInt(list.size()));
+                entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+            }
+            while (entityCap != null && !list.isEmpty());
             if (entityCap != null)
                 return Optional.of(ImmutablePair.of(entityCap, entity));
         }
