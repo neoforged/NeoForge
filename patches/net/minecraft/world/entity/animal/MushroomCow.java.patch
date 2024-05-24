@@ -5,7 +5,7 @@
              this.playSound(soundevent, 1.0F, 1.0F);
              return InteractionResult.sidedSuccess(this.level().isClientSide);
 -        } else if (itemstack.is(Items.SHEARS) && this.readyForShearing()) {
-+        } else if (false && itemstack.getItem() == Items.SHEARS && this.readyForShearing()) { //Forge: Moved to onSheared
++        } else if (false && itemstack.is(Items.SHEARS) && this.readyForShearing()) { //Neo: Moved to onSheared
              this.shear(SoundSource.PLAYERS);
              this.gameEvent(GameEvent.SHEAR, p_28941_);
              if (!this.level().isClientSide) {
