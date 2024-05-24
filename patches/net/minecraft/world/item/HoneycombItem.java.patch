@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/item/HoneycombItem.java
 +++ b/net/minecraft/world/item/HoneycombItem.java
+@@ -3,6 +_,7 @@
+ import com.google.common.base.Suppliers;
+ import com.google.common.collect.BiMap;
+ import com.google.common.collect.ImmutableBiMap;
++
+ import java.util.Optional;
+ import java.util.function.Supplier;
+ import net.minecraft.advancements.CriteriaTriggers;
 @@ -21,7 +_,7 @@
  
  public class HoneycombItem extends Item implements SignApplicator {
@@ -18,3 +26,24 @@
      );
      public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
  
+@@ -103,5 +_,20 @@
+     @Override
+     public boolean canApplyToSign(SignText p_277550_, Player p_277640_) {
+         return true;
++    }
++
++    /**
++     * Registers a before and after blocks that can be waxed and unwaxed
++     * <p>
++     * Important: This should be done during {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent} as the map behind this is NOT thread safe.
++     *
++     * @param before the unwaxed block
++     * @param after  the waxed block
++     */
++    public static void registerWaxableBlock(Block before, Block after) {
++        java.util.Objects.requireNonNull(before, "Waxable before before must not be null");
++        java.util.Objects.requireNonNull(after, "Waxable Block after must not be null");
++
++        HoneycombItem.WAXABLES.get().put(before, after);
+     }
+ }

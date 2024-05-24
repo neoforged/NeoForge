@@ -102,7 +102,6 @@ import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
@@ -125,7 +124,6 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -145,7 +143,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
@@ -1362,35 +1359,5 @@ public class CommonHooks {
             long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
             poiManager.remove(sectionPosKey);
         }
-    }
-
-    /**
-     * Registers a before and after blocks that can oxidize and de-oxidize
-     * <p>
-     * Important: This should be done during {@link FMLCommonSetupEvent} as the map behind this is NOT thread safe.
-     *
-     * @param before block with less oxidization
-     * @param after  block with more oxidization
-     */
-    public static void registerOxidizableBlock(Block before, Block after) {
-        Objects.requireNonNull(before, "Oxidizable Block before must not be null");
-        Objects.requireNonNull(after, "Oxidizable Block after must not be null");
-
-        WeatheringCopper.NEXT_BY_BLOCK.get().put(before, after);
-    }
-
-    /**
-     * Registers a before and after blocks that can be waxed and unwaxed
-     * <p>
-     * Important: This should be done during {@link FMLCommonSetupEvent} as the map behind this is NOT thread safe.
-     *
-     * @param before the unwaxed block
-     * @param after  the waxed block
-     */
-    public static void registerWaxableBlock(Block before, Block after) {
-        Objects.requireNonNull(before, "Waxable before before must not be null");
-        Objects.requireNonNull(after, "Waxable Block after must not be null");
-
-        HoneycombItem.WAXABLES.get().put(before, after);
     }
 }

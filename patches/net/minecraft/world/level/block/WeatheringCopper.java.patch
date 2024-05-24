@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/level/block/WeatheringCopper.java
 +++ b/net/minecraft/world/level/block/WeatheringCopper.java
+@@ -4,6 +_,7 @@
+ import com.google.common.collect.BiMap;
+ import com.google.common.collect.ImmutableBiMap;
+ import com.mojang.serialization.Codec;
++
+ import java.util.Optional;
+ import java.util.function.Supplier;
+ import net.minecraft.util.StringRepresentable;
 @@ -11,7 +_,7 @@
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
@@ -18,3 +26,25 @@
      );
      Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
  
+@@ -77,6 +_,21 @@
+     @Override
+     default float getChanceModifier() {
+         return this.getAge() == WeatheringCopper.WeatherState.UNAFFECTED ? 0.75F : 1.0F;
++    }
++
++    /**
++     * Registers a before and after blocks that can oxidize and de-oxidize
++     * <p>
++     * Important: This should be done during {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent} as the map behind this is NOT thread safe.
++     *
++     * @param before block with less oxidization
++     * @param after  block with more oxidization
++     */
++    static void registerOxidizableBlock(Block before, Block after) {
++        java.util.Objects.requireNonNull(before, "Oxidizable Block before must not be null");
++        java.util.Objects.requireNonNull(after, "Oxidizable Block after must not be null");
++
++        WeatheringCopper.NEXT_BY_BLOCK.get().put(before, after);
+     }
+ 
+     public static enum WeatherState implements StringRepresentable {
