@@ -385,12 +385,12 @@
          CONTAINER(
              new ResourceLocation("hud/heart/container"),
              new ResourceLocation("hud/heart/container_blinking"),
-@@ -1406,8 +_,22 @@
+@@ -1406,8 +_,23 @@
              } else {
                  gui$hearttype = NORMAL;
              }
--
 +            gui$hearttype = net.neoforged.neoforge.event.EventHooks.firePlayerHeartTypeEvent(p_168733_, gui$hearttype);
+ 
              return gui$hearttype;
 +        }
 +
