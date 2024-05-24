@@ -54,9 +54,9 @@ public interface IShearable {
      * <p>
      * For entities, they should trust their internal location information over the values passed into this function.
      *
-     * @param item    The ItemStack that is being used, may be empty.
-     * @param level   The current level.
-     * @param pos     If this is a block, the block's position in level.
+     * @param item  The ItemStack that is being used, may be empty.
+     * @param level The current level.
+     * @param pos   If this is a block, the block's position in level.
      * @return A List containing all items that resulted from the shearing process. May be empty.
      */
     default List<ItemStack> onSheared(@Nullable Player player, ItemStack item, Level level, BlockPos pos) {
