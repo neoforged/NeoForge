@@ -108,6 +108,7 @@ import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TippedArrowItem;
+import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
@@ -124,6 +125,7 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -1359,5 +1361,31 @@ public class CommonHooks {
             long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
             poiManager.remove(sectionPosKey);
         }
+    }
+
+    /**
+     * Registers a before and after blocks that can oxidize and de-oxidize
+     *
+     * @param before block with less oxidization
+     * @param after block with more oxidization
+     */
+    public static void registerOxidizableBlock(Block before, Block after) {
+        Objects.requireNonNull(before, "Oxidizable Block before must not be null");
+        Objects.requireNonNull(after, "Oxidizable Block after must not be null");
+
+        WeatheringCopper.NEXT_BY_BLOCK.get().put(before, after);
+    }
+
+    /**
+     * Registers a before and after blocks that can be waxed and unwaxed
+     *
+     * @param before the unwaxed block
+     * @param after the waxed block
+     */
+    public static void registerWaxableBlock(Block before, Block after) {
+        Objects.requireNonNull(before, "Waxable before before must not be null");
+        Objects.requireNonNull(after, "Waxable Block after must not be null");
+
+        HoneycombItem.WAXABLES.get().put(before, after);
     }
 }
