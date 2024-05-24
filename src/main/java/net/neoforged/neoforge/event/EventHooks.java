@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -139,6 +140,7 @@ import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent;
@@ -860,6 +862,18 @@ public class EventHooks {
 
     public static void firePlayerSmeltedEvent(Player player, ItemStack smelted) {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
+    }
+
+    /**
+     * Called by {@link Gui.HeartType#forPlayer} to allow for modification of the displayed heart type in the
+     * health bar.
+     *
+     * @param player    The local {@link Player}
+     * @param heartType The {@link Gui.HeartType} which would be displayed by vanilla
+     * @return The heart type which should be displayed
+     */
+    public static Gui.HeartType firePlayerHeartTypeEvent(Player player, Gui.HeartType heartType) {
+        return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
     }
 
     /**
