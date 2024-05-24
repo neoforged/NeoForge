@@ -1,19 +1,11 @@
 --- a/net/minecraft/world/item/HoneycombItem.java
 +++ b/net/minecraft/world/item/HoneycombItem.java
-@@ -2,6 +_,7 @@
- 
- import com.google.common.base.Suppliers;
- import com.google.common.collect.BiMap;
-+import com.google.common.collect.HashBiMap;
- import com.google.common.collect.ImmutableBiMap;
- import java.util.Optional;
- import java.util.function.Supplier;
 @@ -21,7 +_,7 @@
  
  public class HoneycombItem extends Item implements SignApplicator {
      public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
 -        () -> ImmutableBiMap.<Block, Block>builder()
-+        () -> HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
++        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
                  .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
                  .put(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER)
                  .put(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER)

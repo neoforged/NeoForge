@@ -102,13 +102,13 @@ import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TippedArrowItem;
-import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
@@ -1367,7 +1367,7 @@ public class CommonHooks {
      * Registers a before and after blocks that can oxidize and de-oxidize
      *
      * @param before block with less oxidization
-     * @param after block with more oxidization
+     * @param after  block with more oxidization
      */
     public static void registerOxidizableBlock(Block before, Block after) {
         Objects.requireNonNull(before, "Oxidizable Block before must not be null");
@@ -1380,7 +1380,7 @@ public class CommonHooks {
      * Registers a before and after blocks that can be waxed and unwaxed
      *
      * @param before the unwaxed block
-     * @param after the waxed block
+     * @param after  the waxed block
      */
     public static void registerWaxableBlock(Block before, Block after) {
         Objects.requireNonNull(before, "Waxable before before must not be null");

@@ -1,19 +1,11 @@
 --- a/net/minecraft/world/level/block/WeatheringCopper.java
 +++ b/net/minecraft/world/level/block/WeatheringCopper.java
-@@ -2,6 +_,7 @@
- 
- import com.google.common.base.Suppliers;
- import com.google.common.collect.BiMap;
-+import com.google.common.collect.HashBiMap;
- import com.google.common.collect.ImmutableBiMap;
- import com.mojang.serialization.Codec;
- import java.util.Optional;
 @@ -11,7 +_,7 @@
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
      Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
 -        () -> ImmutableBiMap.<Block, Block>builder()
-+        () -> HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
++        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
                  .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
                  .put(Blocks.EXPOSED_COPPER, Blocks.WEATHERED_COPPER)
                  .put(Blocks.WEATHERED_COPPER, Blocks.OXIDIZED_COPPER)
