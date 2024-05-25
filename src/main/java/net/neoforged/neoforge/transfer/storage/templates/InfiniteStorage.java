@@ -6,12 +6,12 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
-import net.neoforged.neoforge.transfer.storage.ISingleStorage;
+import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public abstract class InfiniteStorage<T extends IResource> implements ISingleStorage<T> {
+public abstract class InfiniteStorage<T extends IResource> implements ISingleResourceHandler<T> {
     private boolean autoSetResource = false;
 
     public InfiniteStorage<T> autoSetResource() {

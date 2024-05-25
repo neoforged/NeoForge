@@ -6,12 +6,12 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.ISingleStorage;
+import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class FluidStorageItem implements ISingleStorage<FluidResource> {
+public class FluidStorageItem implements ISingleResourceHandler<FluidResource> {
     private final int individualLimit;
     private final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected final IItemContext context;
@@ -56,7 +56,6 @@ public class FluidStorageItem implements ISingleStorage<FluidResource> {
         return validator.test(resource);
     }
 
-    @Override
     public boolean isEmpty() {
         return !context.getResource().has(componentType);
     }
@@ -73,11 +72,14 @@ public class FluidStorageItem implements ISingleStorage<FluidResource> {
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource) || (isEmpty() && !getResource().equals(resource))) return 0;
-        if (this.isEmpty()) {
+        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource)) return 0;
+        FluidResource presentResource = getResource();
+        if (presentResource.isBlank()) {
             if (amount < getIndividualLimit()) return fill(resource, 1, amount, action) == 1 ? amount : 0;
             return fill(resource, amount / getIndividualLimit(), action) * getIndividualLimit();
         }
+
+        if (!presentResource.equals(resource)) return 0;
 
         int containerFill = getIndividualAmount();
         int spaceLeft = getIndividualLimit() - containerFill;

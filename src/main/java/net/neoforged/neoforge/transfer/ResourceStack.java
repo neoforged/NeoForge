@@ -62,10 +62,6 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
         return withAmount(this.amount + amount);
     }
 
-    public ResourceStack<T> growToCap(int amount, int cap) {
-        return withAmount(Math.min(this.amount + amount, cap));
-    }
-
     public ResourceStack<T> with(UnaryOperator<T> operator) {
         return new ResourceStack<>(operator.apply(resource), amount);
     }

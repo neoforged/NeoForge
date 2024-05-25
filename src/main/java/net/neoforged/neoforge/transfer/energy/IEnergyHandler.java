@@ -17,7 +17,7 @@ import net.neoforged.neoforge.transfer.energy.templates.EnergyStorage;
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  *
  */
-public interface IEnergyStorage {
+public interface IEnergyHandler {
     /**
      * Adds energy to the storage. Returns quantity of energy that was accepted.
      *

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.fluids.capability;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.transfer.storage.IStorage;
+import net.neoforged.neoforge.transfer.storage.IResourceHandler;
 import net.neoforged.neoforge.transfer.TransferAction;
 
 /**
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
  * A reference implementation is provided {@link TileFluidHandler}.
  */
 @Deprecated(forRemoval = true, since = "1.22")
-public interface IFluidHandler extends IStorage<FluidResource> {
+public interface IFluidHandler extends IResourceHandler<FluidResource> {
     enum FluidAction {
         EXECUTE, SIMULATE;
 

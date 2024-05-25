@@ -3,7 +3,7 @@ package net.neoforged.neoforge.transfer.storage;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 
-public interface IStorage<T extends IResource> {
+public interface IResourceHandler<T extends IResource> {
     int getSlotCount();
 
     T getResource(int slot);
@@ -26,7 +26,7 @@ public interface IStorage<T extends IResource> {
 
     int extract(T resource, int amount, TransferAction action);
 
-    static <T extends IResource> Class<IStorage<T>> asClass() {
-        return (Class<IStorage<T>>) (Object) IStorage.class;
+    static <T extends IResource> Class<IResourceHandler<T>> asClass() {
+        return (Class<IResourceHandler<T>>) (Object) IResourceHandler.class;
     }
 }

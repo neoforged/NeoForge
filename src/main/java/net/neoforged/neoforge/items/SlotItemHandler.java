@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+@Deprecated(forRemoval = true, since = "1.21")
 public class SlotItemHandler extends Slot {
     private static Container emptyInventory = new SimpleContainer(0);
     private final IItemHandler itemHandler;

@@ -3,7 +3,7 @@ package net.neoforged.neoforge.transfer.storage;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 
-public interface ISingleStorage<T extends IResource> extends IStorage<T> {
+public interface ISingleResourceHandler<T extends IResource> extends IResourceHandler<T> {
     @Override
     default int getSlotCount() {
         return 1;

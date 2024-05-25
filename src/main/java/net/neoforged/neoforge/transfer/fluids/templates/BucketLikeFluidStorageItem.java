@@ -6,12 +6,12 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.ISingleStorage;
+import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class BucketLikeFluidStorageItem implements ISingleStorage<FluidResource> {
+public class BucketLikeFluidStorageItem implements ISingleResourceHandler<FluidResource> {
     private final int individualLimit;
     private final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected final IItemContext context;

@@ -31,7 +31,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.energy.templates.EnergyStorage;
-import net.neoforged.neoforge.transfer.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -165,7 +165,7 @@ public class GameTestTest {
         helper.setBlock(energyPos, ENERGY_BLOCK.get());
 
         // Queries the energy capability
-        IEnergyStorage energyStorage = helper.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, helper.absolutePos(energyPos), null);
+        IEnergyHandler energyStorage = helper.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, helper.absolutePos(energyPos), null);
         if (energyStorage == null) {
             helper.fail("Expected energy storage", energyPos);
         }

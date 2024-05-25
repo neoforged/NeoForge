@@ -5,12 +5,12 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.storage.ISingleStorage;
+import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class FluidStorageAttachment implements ISingleStorage<FluidResource> {
+public class FluidStorageAttachment implements ISingleResourceHandler<FluidResource> {
     private final AttachmentHolder holder;
     private final Supplier<AttachmentType<SimpleFluidContent>> attachmentType;
     private final int limit;
