@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import net.minecraft.DetectedVersion;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
@@ -31,8 +29,6 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -56,7 +52,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
@@ -78,7 +73,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
@@ -599,7 +593,6 @@ public class NeoForgeMod {
         modEventBus.addListener(this::gatherData);
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
-        modEventBus.addListener(EventPriority.HIGHEST, this::registerVanillaDisplayContexts);
         modEventBus.addListener(this::registerLootData);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
@@ -726,18 +719,6 @@ public class NeoForgeMod {
                 helper.register(FLOWING_MILK.getId(), new BaseFlowingFluid.Flowing(properties));
             });
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void registerVanillaDisplayContexts(RegisterEvent event) {
-        if (!event.getRegistryKey().equals(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
-            return;
-        }
-        MappedRegistry<ItemDisplayContext> forgeRegistry = (MappedRegistry<ItemDisplayContext>) event.getRegistry();
-
-        Arrays.stream(ItemDisplayContext.values())
-                .filter(Predicate.not(ItemDisplayContext::isModded))
-                .forEach(ctx -> forgeRegistry.register(ctx.getId(), ResourceKey.create(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, ResourceLocation.fromNamespaceAndPath("minecraft", ctx.getSerializedName())), ctx, RegistrationInfo.BUILT_IN));
     }
 
     public void registerLootData(RegisterEvent event) {
