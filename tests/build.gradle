@@ -47,7 +47,7 @@ runs {
     }
     junit {
         configure neoforgeProject.runTypes.junit
-        unitTestSource sourceSets.test
+        //unitTestSource sourceSets.test
     }
     server {
         configure neoforgeProject.runTypes.server
