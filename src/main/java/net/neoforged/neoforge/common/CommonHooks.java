@@ -78,6 +78,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -139,7 +140,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
@@ -181,6 +181,7 @@ import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
@@ -189,6 +190,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
+import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -778,24 +780,35 @@ public class CommonHooks {
         Biome apply(final Biome.ClimateSettings climate, final BiomeSpecialEffects effects, final BiomeGenerationSettings gen, final MobSpawnSettings spawns);
     }
 
-    public static boolean onCropsGrowPre(Level level, BlockPos pos, BlockState state, boolean def) {
-        BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
+    /**
+     * Checks if a crop can grow by firing {@link CropGrowEvent.Pre}.
+     * 
+     * @param level The level the crop is in
+     * @param pos   The position of the crop
+     * @param state The state of the crop
+     * @param def   The result of the default checks performed by the crop.
+     * @return true if the crop can grow
+     */
+    public static boolean canCropGrow(Level level, BlockPos pos, BlockState state, boolean def) {
+        var ev = new CropGrowEvent.Pre(level, pos, state);
         NeoForge.EVENT_BUS.post(ev);
-        return (ev.getResult() == Event.Result.ALLOW || (ev.getResult() == Event.Result.DEFAULT && def));
+        return (ev.getResult() == CropGrowEvent.Pre.Result.GROW || (ev.getResult() == CropGrowEvent.Pre.Result.DEFAULT && def));
     }
 
-    public static void onCropsGrowPost(Level level, BlockPos pos, BlockState state) {
-        NeoForge.EVENT_BUS.post(new BlockEvent.CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
+    public static void fireCropGrowPost(Level level, BlockPos pos, BlockState state) {
+        NeoForge.EVENT_BUS.post(new CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
     }
 
-    @Nullable
-    public static CriticalHitEvent getCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
-        CriticalHitEvent hitResult = new CriticalHitEvent(player, target, damageModifier, vanillaCritical);
-        NeoForge.EVENT_BUS.post(hitResult);
-        if (hitResult.getResult() == Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == Event.Result.DEFAULT)) {
-            return hitResult;
-        }
-        return null;
+    /**
+     * Fires the {@link CriticalHitEvent} and returns the resulting event.
+     * 
+     * @param player          The attacking player
+     * @param target          The attack target
+     * @param vanillaCritical If the attack would have been a critical hit by vanilla's rules in {@link Player#attack(Entity)}.
+     * @param damageModifier  The base damage modifier. Vanilla critical hits have a damage modifier of 1.5.
+     */
+    public static CriticalHitEvent fireCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
+        return NeoForge.EVENT_BUS.post(new CriticalHitEvent(player, target, damageModifier, vanillaCritical));
     }
 
     /**
@@ -893,7 +906,7 @@ public class CommonHooks {
         if (!level.isLoaded(pos))
             return false;
         BlockState state = level.getBlockState(pos);
-        return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
+        return EventHooks.canEntityGrief(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
     }
 
     /**
@@ -1351,5 +1364,17 @@ public class CommonHooks {
             long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
             poiManager.remove(sectionPosKey);
         }
+    }
+
+    /**
+     * Checks if a mob effect can be applied to an entity by firing {@link MobEffectEvent.Applicable}.
+     * 
+     * @param entity The target entity the mob effect is being applied to.
+     * @param effect The mob effect being applied.
+     * @return True if the mob effect can be applied, otherwise false.
+     */
+    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
+        var event = new MobEffectEvent.Applicable(entity, effect);
+        return NeoForge.EVENT_BUS.post(event).getApplicationResult();
     }
 }

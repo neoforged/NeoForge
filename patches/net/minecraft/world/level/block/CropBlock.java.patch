@@ -10,9 +10,9 @@
              if (i < this.getMaxAge()) {
                  float f = getGrowthSpeed(this, p_221051_, p_221052_);
 -                if (p_221053_.nextInt((int)(25.0F / f) + 1) == 0) {
-+                if (net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_221051_, p_221052_, p_221050_, p_221053_.nextInt((int)(25.0F / f) + 1) == 0)) {
++                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_221051_, p_221052_, p_221050_, p_221053_.nextInt((int)(25.0F / f) + 1) == 0)) {
                      p_221051_.setBlock(p_221052_, this.getStateForAge(i + 1), 2);
-+                    net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_221051_, p_221052_, p_221050_);
++                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_221051_, p_221052_, p_221050_);
                  }
              }
          }
@@ -33,7 +33,7 @@
      @Override
      protected void entityInside(BlockState p_52277_, Level p_52278_, BlockPos p_52279_, Entity p_52280_) {
 -        if (p_52280_ instanceof Ravager && p_52278_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+        if (p_52280_ instanceof Ravager && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(p_52278_, p_52280_)) {
++        if (p_52280_ instanceof Ravager && net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_52278_, p_52280_)) {
              p_52278_.destroyBlock(p_52279_, true, p_52280_);
          }
  
