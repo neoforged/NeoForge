@@ -8,6 +8,7 @@ package net.neoforged.neoforge.items;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
@@ -118,7 +119,7 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
 
     @Override
     public int getSlotLimit(int slot) {
-        return 64;
+        return Item.ABSOLUTE_MAX_STACK_SIZE;
     }
 
     @Override
