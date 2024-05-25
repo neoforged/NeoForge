@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
-public class EmptyHandler implements IItemHandlerModifiable {
-    public static final IItemHandler INSTANCE = new EmptyHandler();
+public class EmptyItemHandler implements IItemHandlerModifiable {
+    public static final IItemHandler INSTANCE = new EmptyItemHandler();
 
     @Override
     public int getSlots() {
