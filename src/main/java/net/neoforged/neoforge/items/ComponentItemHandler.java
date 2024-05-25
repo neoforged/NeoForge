@@ -56,6 +56,20 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
     }
 
     @Override
+    public void setStackInSlot(int slot, ItemStack stack) {
+        this.validateSlotIndex(slot);
+        if (!this.isItemValid(slot, stack)) {
+            throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
+        }
+        ItemContainerContents contents = this.getContents();
+        ItemStack existing = this.getStackFromContents(contents, slot);
+        // Minimize component changes by only updating them if necessary
+        if (!ItemStack.isSameItemSameComponents(stack, existing) || stack.getCount() != existing.getCount()) {
+            this.updateContents(contents, stack, slot);
+        }
+    }
+
+    @Override
     public ItemStack insertItem(int slot, ItemStack toInsert, boolean simulate) {
         this.validateSlotIndex(slot);
 
@@ -95,14 +109,14 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        validateSlotIndex(slot);
+        this.validateSlotIndex(slot);
 
         if (amount == 0) {
             return ItemStack.EMPTY;
         }
 
         ItemContainerContents contents = this.getContents();
-        ItemStack existing = getStackFromContents(contents, slot);
+        ItemStack existing = this.getStackFromContents(contents, slot);
 
         if (existing.isEmpty()) {
             return ItemStack.EMPTY;
@@ -111,7 +125,7 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
         int toExtract = Math.min(amount, existing.getMaxStackSize());
 
         if (!simulate) {
-            updateContents(contents, existing.copyWithCount(existing.getCount() - toExtract), slot);
+            this.updateContents(contents, existing.copyWithCount(existing.getCount() - toExtract), slot);
         }
 
         return existing.copyWithCount(toExtract);
@@ -125,15 +139,6 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
         return stack.getItem().canFitInsideContainerItems();
-    }
-
-    @Override
-    public void setStackInSlot(int slot, ItemStack stack) {
-        validateSlotIndex(slot);
-        if (!isItemValid(slot, stack)) {
-            throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
-        }
-        updateContents(getContents(), stack, slot);
     }
 
     /**
@@ -164,7 +169,7 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
      * @return A copy of the stack in the target slot
      */
     protected ItemStack getStackFromContents(ItemContainerContents contents, int slot) {
-        validateSlotIndex(slot);
+        this.validateSlotIndex(slot);
         return contents.getSlots() <= slot ? ItemStack.EMPTY : contents.getStackInSlot(slot);
     }
 
@@ -178,14 +183,14 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
      * @param slot     The target slot
      */
     protected void updateContents(ItemContainerContents contents, ItemStack stack, int slot) {
-        validateSlotIndex(slot);
+        this.validateSlotIndex(slot);
         // Use the max of the contents slots and the capability slots to avoid truncating
         NonNullList<ItemStack> list = NonNullList.withSize(Math.max(contents.getSlots(), this.getSlots()), ItemStack.EMPTY);
         contents.copyInto(list);
         ItemStack oldStack = list.get(slot);
         list.set(slot, stack);
         this.parent.set(this.component, ItemContainerContents.fromItems(list));
-        onContentsChanged(slot, oldStack, stack);
+        this.onContentsChanged(slot, oldStack, stack);
     }
 
     /**
