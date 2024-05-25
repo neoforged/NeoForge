@@ -10,11 +10,11 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.IStorage;
+import net.neoforged.neoforge.transfer.storage.IResourceHandler;
 import net.neoforged.neoforge.transfer.TransferAction;
 
 @Deprecated(forRemoval = true, since = "1.22")
-public interface IItemHandler extends IStorage<ItemResource> {
+public interface IItemHandler extends IResourceHandler<ItemResource> {
     /**
      * Returns the number of slots available
      *

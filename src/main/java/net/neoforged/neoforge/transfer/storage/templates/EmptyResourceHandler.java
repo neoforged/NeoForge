@@ -4,15 +4,15 @@ import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.ISingleStorage;
+import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 
-public class EmptyStorage<T extends IResource> implements ISingleStorage<T> {
-    public static final EmptyStorage<ItemResource> ITEM = new EmptyStorage<>(ItemResource.EMPTY);
-    public static final EmptyStorage<FluidResource> FLUID = new EmptyStorage<>(FluidResource.EMPTY);
+public class EmptyResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
+    public static final EmptyResourceHandler<ItemResource> ITEM = new EmptyResourceHandler<>(ItemResource.EMPTY);
+    public static final EmptyResourceHandler<FluidResource> FLUID = new EmptyResourceHandler<>(FluidResource.EMPTY);
 
     private final T emptyResource;
 
-    public EmptyStorage(T emptyResource) {
+    public EmptyResourceHandler(T emptyResource) {
         this.emptyResource = emptyResource;
     }
 

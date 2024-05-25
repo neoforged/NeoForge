@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.transfer.energy.templates;
 
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 
 /**
- * Implementation of {@link IEnergyStorage} that cannot store, receive, or provide energy.
+ * Implementation of {@link IEnergyHandler} that cannot store, receive, or provide energy.
  * Use the {@link #INSTANCE}, don't instantiate. Example:
  * 
  * <pre>{@code
@@ -18,10 +18,10 @@ import net.neoforged.neoforge.transfer.energy.IEnergyStorage;
  * // Use storage without checking whether it's present.
  * }</pre>
  */
-public class EmptyEnergyStorage implements IEnergyStorage {
-    public static final EmptyEnergyStorage INSTANCE = new EmptyEnergyStorage();
+public class EmptyEnergyHandler implements IEnergyHandler {
+    public static final EmptyEnergyHandler INSTANCE = new EmptyEnergyHandler();
 
-    protected EmptyEnergyStorage() {}
+    protected EmptyEnergyHandler() {}
 
     @Override
     public int insert(int maxReceive, TransferAction action) {

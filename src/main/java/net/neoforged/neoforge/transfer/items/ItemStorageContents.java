@@ -3,11 +3,14 @@ package net.neoforged.neoforge.transfer.items;
 import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.transfer.ResourceStack;
 
-import java.util.List;
-
 public class ItemStorageContents {
+    public static final ItemStorageContents EMPTY = new ItemStorageContents(0);
     NonNullList<ResourceStack<ItemResource>> items;
     int hashCode;
+
+    public static ItemStorageContents of(int size) {
+        return new ItemStorageContents(size);
+    }
 
     private ItemStorageContents(NonNullList<ResourceStack<ItemResource>> items) {
         this.items = items;
@@ -18,16 +21,11 @@ public class ItemStorageContents {
         this(NonNullList.withSize(size, ItemResource.EMPTY_STACK));
     }
 
-    private ItemStorageContents(List<ResourceStack<ItemResource>> items) {
-        this(items.size());
-
-        for (int i = 0; i < items.size(); i++) {
-            this.items.set(i, items.get(i));
-        }
-    }
-
     public ItemStorageContents set(int slot, ResourceStack<ItemResource> stack) {
         NonNullList<ResourceStack<ItemResource>> newList = NonNullList.copyOf(items);
+        while (newList.size() <= slot) {
+            newList.add(ItemResource.EMPTY_STACK);
+        }
         newList.set(slot, stack);
         return new ItemStorageContents(newList);
     }
@@ -36,15 +34,10 @@ public class ItemStorageContents {
         return set(slot, new ResourceStack<>(resource, amount));
     }
 
-    public ItemStorageContents setResource(int slot, ItemResource resource) {
-        return set(slot, resource, get(slot).amount());
-    }
-
-    public ItemStorageContents setAmount(int slot, int amount) {
-        return set(slot, get(slot).resource(), amount);
-    }
-
     public ResourceStack<ItemResource> get(int slot) {
+        if (slot < 0 || slot >= items.size()) {
+            return ItemResource.EMPTY_STACK;
+        }
         return items.get(slot);
     }
 
