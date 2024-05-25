@@ -63,8 +63,7 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
         }
         ItemContainerContents contents = this.getContents();
         ItemStack existing = this.getStackFromContents(contents, slot);
-        // Minimize component changes by only updating them if necessary
-        if (!ItemStack.isSameItemSameComponents(stack, existing) || stack.getCount() != existing.getCount()) {
+        if (!ItemStack.matches(stack, existing)) {
             this.updateContents(contents, stack, slot);
         }
     }
