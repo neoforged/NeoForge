@@ -137,6 +137,17 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
     }
 
     /**
+     * Called from {@link #updateContents} after the stack stored in a slot has been updated.
+     * <p>
+     * Modifications to the stacks used as parameters here will not write-back to the stored data.
+     * 
+     * @param slot     The slot that changed
+     * @param oldStack The old stack that was present in the slot
+     * @param newStack The new stack that is now present in the slot
+     */
+    protected void onContentsChanged(int slot, ItemStack oldStack, ItemStack newStack) {}
+
+    /**
      * Retrieves the {@link ItemContainerContents} from the parent object's data component map.
      */
     protected ItemContainerContents getContents() {
@@ -171,8 +182,10 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
         // Use the max of the contents slots and the capability slots to avoid truncating
         NonNullList<ItemStack> list = NonNullList.withSize(Math.max(contents.getSlots(), this.getSlots()), ItemStack.EMPTY);
         contents.copyInto(list);
+        ItemStack oldStack = list.get(slot);
         list.set(slot, stack);
         this.parent.set(this.component, ItemContainerContents.fromItems(list));
+        onContentsChanged(slot, oldStack, stack);
     }
 
     /**
