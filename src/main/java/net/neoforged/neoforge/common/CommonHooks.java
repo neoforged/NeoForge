@@ -58,7 +58,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -125,7 +124,7 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -449,51 +448,44 @@ public class CommonHooks {
             state.getBlock().popExperience(level, pos, exp);
     }
 
-    public static int onBlockBreakEvent(Level level, GameType gameType, ServerPlayer entityPlayer, BlockPos pos) {
-        // Logic from tryHarvestBlock for pre-canceling the event
+    /**
+     * Fires {@link BlockEvent.BreakEvent}, pre-emptively canceling the event based on the conditions that will cause the block to not be broken anyway.
+     * <p>
+     * Note that undoing the pre-cancel will not permit breaking the block, since the vanilla conditions will always be checked.
+     * 
+     * @param level    The level
+     * @param gameType The game type of the breaking player
+     * @param player   The breaking player
+     * @param pos      The position of the block being broken
+     * @param state    The state of the block being broken
+     * @return The experience dropped by the broken block, or -1 if the break event was canceled.
+     */
+    public static int fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
         boolean preCancelEvent = false;
-        ItemStack itemstack = entityPlayer.getMainHandItem();
-        if (!itemstack.isEmpty() && !itemstack.getItem().canAttackBlock(level.getBlockState(pos), level, pos, entityPlayer)) {
+
+        ItemStack itemstack = player.getMainHandItem();
+        if (!itemstack.isEmpty() && !itemstack.getItem().canAttackBlock(state, level, pos, player)) {
             preCancelEvent = true;
         }
 
-        if (gameType.isBlockPlacingRestricted()) {
-            if (gameType == GameType.SPECTATOR)
-                preCancelEvent = true;
-
-            if (!entityPlayer.mayBuild()) {
-                AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_BREAK);
-                if (itemstack.isEmpty() || adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, pos, false))) {
-                    preCancelEvent = true;
-                }
-            }
+        if (player.blockActionRestricted(level, pos, gameType)) {
+            preCancelEvent = true;
         }
 
-        // Tell client the block is gone immediately then process events
-        if (level.getBlockEntity(pos) == null) {
-            entityPlayer.connection.send(new ClientboundBlockUpdatePacket(pos, level.getFluidState(pos).createLegacyBlock()));
+        if (state.getBlock() instanceof GameMasterBlock && !player.canUseGameMasterBlocks()) {
+            preCancelEvent = true;
         }
 
         // Post the block break event
-        BlockState state = level.getBlockState(pos);
-        BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, entityPlayer);
+        BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, player);
         event.setCanceled(preCancelEvent);
         NeoForge.EVENT_BUS.post(event);
 
-        // Handle if the event is canceled
+        // If the event is canceled, let the client know the block still exists
         if (event.isCanceled()) {
-            // Let the client know the block still exists
-            entityPlayer.connection.send(new ClientboundBlockUpdatePacket(level, pos));
-
-            // Update any tile entity data for this block
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity != null) {
-                Packet<?> pkt = blockEntity.getUpdatePacket();
-                if (pkt != null) {
-                    entityPlayer.connection.send(pkt);
-                }
-            }
+            player.connection.send(new ClientboundBlockUpdatePacket(pos, state));
         }
+
         return event.isCanceled() ? -1 : event.getExpToDrop();
     }
 
@@ -551,7 +543,7 @@ public class CommonHooks {
                 // revert back all captured blocks
                 for (BlockSnapshot blocksnapshot : Lists.reverse(blockSnapshots)) {
                     level.restoringBlockSnapshots = true;
-                    blocksnapshot.restore(true, false);
+                    blocksnapshot.restore(blocksnapshot.getFlags() | Block.UPDATE_CLIENTS);
                     level.restoringBlockSnapshots = false;
                 }
             } else {
@@ -560,8 +552,8 @@ public class CommonHooks {
                 itemstack.applyComponents(newComponents);
 
                 for (BlockSnapshot snap : blockSnapshots) {
-                    int updateFlag = snap.getFlag();
-                    BlockState oldBlock = snap.getReplacedBlock();
+                    int updateFlag = snap.getFlags();
+                    BlockState oldBlock = snap.getState();
                     BlockState newBlock = level.getBlockState(snap.getPos());
                     newBlock.onPlace(level, snap.getPos(), oldBlock, false);
 
