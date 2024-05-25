@@ -4,6 +4,7 @@ plugins {
     id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
     id 'net.neoforged.gradle.platform'
+    id 'neoforged.formatting-conventions'
 }
 
 java.withSourcesJar()
@@ -63,7 +64,3 @@ publishing {
         maven rootProject.gradleutils.getPublishingMaven()
     }
 }
-
-apply from: rootProject.file('buildscript/spotless-rules.gradle')
-apply from: rootProject.file('buildscript/generate-package-infos.gradle')
-apply from: rootProject.file('buildscript/apply-all-formatting.gradle')

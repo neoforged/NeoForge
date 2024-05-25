@@ -46,7 +46,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: assemble
           cache-read-only: false
 
       - name: Publish artifacts

@@ -4,7 +4,8 @@ import java.util.regex.Pattern
 plugins {
     id 'net.neoforged.gradleutils' version '3.0.0-alpha.10' apply false
     id 'com.diffplug.spotless' version '6.22.0' apply false
-    id 'net.neoforged.licenser' version '0.7.2' apply false
+    id 'net.neoforged.licenser' version '0.7.2'
+    id 'neoforged.formatting-conventions'
 }
 
 apply plugin: 'net.neoforged.gradleutils'
@@ -61,9 +62,6 @@ subprojects {
 
     java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
 }
-
-apply plugin: 'com.diffplug.spotless'
-apply plugin: 'net.neoforged.licenser'
 
 repositories {
     mavenCentral()
@@ -140,7 +138,3 @@ spotless {
         bumpThisNumberIfACustomStepChanges(3)
     }
 }
-
-apply from: rootProject.file('buildscript/spotless-rules.gradle')
-apply from: rootProject.file('buildscript/generate-package-infos.gradle')
-apply from: rootProject.file('buildscript/apply-all-formatting.gradle')
