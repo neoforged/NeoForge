@@ -1,13 +1,5 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
-@@ -106,6 +_,7 @@
-     }
- 
-     public boolean destroyBlock(BlockPos p_105268_) {
-+        if (minecraft.player.getMainHandItem().onBlockStartBreak(p_105268_, minecraft.player)) return false;
-         if (this.minecraft.player.blockActionRestricted(this.minecraft.level, p_105268_, this.localPlayerMode)) {
-             return false;
-         } else {
 @@ -120,9 +_,8 @@
                  } else if (blockstate.isAir()) {
                      return false;

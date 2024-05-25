@@ -139,21 +139,6 @@ public interface IItemExtension {
     }
 
     /**
-     * Called before a block is broken. Return true to prevent default block
-     * harvesting.
-     *
-     * Note: In SMP, this is called on both client and server sides!
-     *
-     * @param itemstack The current ItemStack
-     * @param pos       Block's position in world
-     * @param player    The Player that is wielding the item
-     * @return True to prevent harvesting, false to continue as normal
-     */
-    default boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
-        return false;
-    }
-
-    /**
      * Called when an entity stops using an item for any reason, notably when selecting another item without releasing or finishing.
      * This method is called in addition to any other hooks called when an item is finished using; when another hook is also called it will be called before this method.
      *
