@@ -35,6 +35,7 @@ import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.util.TransformationHelper;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.joml.Quaternionf;
@@ -118,9 +119,9 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         } else {
             ResourceLocation asLoc;
             if (texture.contains(":")) {
-                asLoc = new ResourceLocation(texture);
+                asLoc = ResourceLocation.parse(texture);
             } else {
-                asLoc = new ResourceLocation(getLocation().getNamespace(), texture);
+                asLoc = ResourceLocation.fromNamespaceAndPath(getLocation().getNamespace(), texture);
             }
             return texture(key, asLoc);
         }
@@ -157,7 +158,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
      */
     public T renderType(String renderType) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
-        return renderType(new ResourceLocation(renderType));
+        return renderType(ResourceLocation.parse(renderType));
     }
 
     /**
@@ -327,21 +328,22 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                     if (face == null) continue;
 
                     JsonObject faceObj = new JsonObject();
-                    faceObj.addProperty("texture", serializeLocOrKey(face.texture));
-                    if (!Arrays.equals(face.uv.uvs, part.uvsByFace(dir))) {
-                        faceObj.add("uv", new Gson().toJsonTree(face.uv.uvs));
+                    faceObj.addProperty("texture", serializeLocOrKey(face.texture()));
+                    if (!Arrays.equals(face.uv().uvs, part.uvsByFace(dir))) {
+                        faceObj.add("uv", new Gson().toJsonTree(face.uv().uvs));
                     }
-                    if (face.cullForDirection != null) {
-                        faceObj.addProperty("cullface", face.cullForDirection.getSerializedName());
+                    if (face.cullForDirection() != null) {
+                        faceObj.addProperty("cullface", face.cullForDirection().getSerializedName());
                     }
-                    if (face.uv.rotation != 0) {
-                        faceObj.addProperty("rotation", face.uv.rotation);
+                    if (face.uv().rotation != 0) {
+                        faceObj.addProperty("rotation", face.uv().rotation);
                     }
-                    if (face.tintIndex != -1) {
-                        faceObj.addProperty("tintindex", face.tintIndex);
+                    if (face.tintIndex() != -1) {
+                        faceObj.addProperty("tintindex", face.tintIndex());
                     }
-                    if (!face.getFaceData().equals(ExtraFaceData.DEFAULT)) {
-                        faceObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.getFaceData()).result().get());
+                    // TODO 1.21 - port properly
+                    if (false) { //if (!face.getFaceData().equals(ExtraFaceData.DEFAULT)) {
+                        faceObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.faceData()).result().get());
                     }
                     faces.add(dir.getSerializedName(), faceObj);
                 }
@@ -369,7 +371,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         if (tex.charAt(0) == '#') {
             return tex;
         }
-        return new ResourceLocation(tex).toString();
+        return ResourceLocation.parse(tex).toString();
     }
 
     private JsonArray serializeVector3f(Vector3f vec) {
@@ -675,7 +677,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                 if (this.texture == null) {
                     throw new IllegalStateException("A model face must have a texture");
                 }
-                return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
+                return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion), new MutableObject<>());
             }
 
             public ElementBuilder end() {

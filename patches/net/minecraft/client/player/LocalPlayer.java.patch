@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -160,6 +_,7 @@
+@@ -161,6 +_,7 @@
  
      @Override
      public boolean hurt(DamageSource p_108662_, float p_108663_) {
@@ -8,7 +8,7 @@
          return false;
      }
  
-@@ -296,6 +_,7 @@
+@@ -297,6 +_,7 @@
          ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
              : ServerboundPlayerActionPacket.Action.DROP_ITEM;
@@ -16,7 +16,7 @@
          ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
          this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
          return !itemstack.isEmpty();
-@@ -493,7 +_,14 @@
+@@ -489,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -32,15 +32,15 @@
      }
  
      @Override
-@@ -685,6 +_,7 @@
+@@ -682,6 +_,7 @@
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
-         float f = Mth.clamp(0.3F + EnchantmentHelper.getSneakingSpeedBonus(this), 0.0F, 1.0F);
+         float f = (float)this.getAttributeValue(Attributes.SNEAKING_SPEED);
          this.input.tick(this.isMovingSlowly(), f);
 +        net.neoforged.neoforge.client.ClientHooks.onMovementInputUpdate(this, this.input);
          this.minecraft.getTutorial().onInput(this.input);
          if (this.isUsingItem() && !this.isPassenger()) {
              this.input.leftImpulse *= 0.2F;
-@@ -713,7 +_,7 @@
+@@ -710,7 +_,7 @@
          boolean flag4 = this.canStartSprinting();
          boolean flag5 = this.isPassenger() ? this.getVehicle().onGround() : this.onGround();
          boolean flag6 = !flag1 && !flag2;
@@ -49,7 +49,7 @@
              if (this.sprintTriggerTime <= 0 && !this.minecraft.options.keySprint.isDown()) {
                  this.sprintTriggerTime = 7;
              } else {
-@@ -721,15 +_,15 @@
+@@ -718,15 +_,15 @@
              }
          }
  
@@ -68,7 +68,7 @@
                      this.setSprinting(false);
                  }
              } else if (flag8) {
-@@ -738,7 +_,7 @@
+@@ -735,7 +_,7 @@
          }
  
          boolean flag9 = false;
@@ -77,7 +77,7 @@
              if (this.minecraft.gameMode.isAlwaysFlying()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -763,14 +_,15 @@
+@@ -760,14 +_,15 @@
  
          if (this.input.jumping && !flag9 && !flag && !abilities.flying && !this.isPassenger() && !this.onClimbable()) {
              ItemStack itemstack = this.getItemBySlot(EquipmentSlot.CHEST);
@@ -96,7 +96,7 @@
          }
  
          if (this.isEyeInFluid(FluidTags.WATER)) {
-@@ -872,6 +_,7 @@
+@@ -875,6 +_,7 @@
      @Override
      public void rideTick() {
          super.rideTick();
@@ -104,7 +104,7 @@
          this.handsBusy = false;
          if (this.getControlledVehicle() instanceof Boat boat) {
              boat.setInput(this.input.left, this.input.right, this.input.up, this.input.down);
-@@ -1058,7 +_,7 @@
+@@ -1061,7 +_,7 @@
      }
  
      private boolean hasEnoughFoodToStartSprinting() {

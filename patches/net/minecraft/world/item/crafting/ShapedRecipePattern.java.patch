@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipePattern.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
-@@ -19,7 +_,30 @@
- import net.minecraft.world.inventory.CraftingContainer;
+@@ -20,7 +_,30 @@
+ import net.minecraft.world.item.ItemStack;
  
- public record ShapedRecipePattern(int width, int height, NonNullList<Ingredient> ingredients, Optional<ShapedRecipePattern.Data> data) {
+ public final class ShapedRecipePattern {
 +    /** @deprecated Neo: use {@link #getMaxWidth} and {@link #getMaxHeight} */ @Deprecated
      private static final int MAX_SIZE = 3;
 +    static int maxWidth = 3;
@@ -31,7 +31,7 @@
      public static final MapCodec<ShapedRecipePattern> MAP_CODEC = ShapedRecipePattern.Data.MAP_CODEC
          .flatXmap(
              ShapedRecipePattern::unpack,
-@@ -179,16 +_,16 @@
+@@ -214,16 +_,16 @@
  
      public static record Data(Map<Character, Ingredient> key, List<String> pattern) {
          private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(p_312085_ -> {
@@ -42,7 +42,7 @@
              } else if (p_312085_.isEmpty()) {
                  return DataResult.error(() -> "Invalid pattern: empty pattern not allowed");
              } else {
-                 int i = p_312085_.get(0).length();
+                 int i = p_312085_.getFirst().length();
  
                  for (String s : p_312085_) {
 -                    if (s.length() > 3) {

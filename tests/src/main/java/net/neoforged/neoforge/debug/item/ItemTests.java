@@ -130,7 +130,7 @@ public class ItemTests {
                 return sup;
             }
         })
-                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft:item/template_spawn_egg"))));
+                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath("minecraft", "item/template_spawn_egg"))));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.IRON_BLOCK))
@@ -144,7 +144,7 @@ public class ItemTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom rarities (with custom styles) work on items")
     static void itemCustomRarity(final DynamicTest test, final RegistrationHelper reg) {
-        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", new ResourceLocation(reg.modId(), "custom"), style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
+        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", ResourceLocation.fromNamespaceAndPath(reg.modId(), "custom"), style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
         final Supplier<Item> item = reg.items().registerSimpleItem("test", new Item.Properties().rarity(rarity))
                 .withLang("Custom rarity test");
 

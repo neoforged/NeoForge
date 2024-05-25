@@ -1,0 +1,10 @@
+--- a/net/minecraft/ReportType.java
++++ b/net/minecraft/ReportType.java
+@@ -131,6 +_,7 @@
+         p_350666_.append("---- ");
+         p_350666_.append(this.header());
+         p_350666_.append(" ----\n");
++        net.neoforged.fml.CrashReportCallables.getHeaders().forEach(header -> p_350666_.append(header).append('\n'));
+         p_350666_.append("// ");
+         p_350666_.append(this.getErrorComment());
+         p_350666_.append('\n');

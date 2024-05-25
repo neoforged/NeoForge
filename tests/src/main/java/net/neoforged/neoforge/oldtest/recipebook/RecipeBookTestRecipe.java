@@ -22,6 +22,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -29,7 +30,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
-public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.RecipeBookTestContainer> {
+public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     public final Ingredients ingredients;
     private final int width;
     private final int height;
@@ -53,30 +54,24 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
      * Taken from {@link ShapedRecipe}
      */
     @Override
-    public boolean matches(RecipeBookExtensionTest.RecipeBookTestContainer container, Level level) {
-        for (int i = 0; i <= 2 - this.width; ++i) {
-            for (int j = 0; j <= 4 - this.height; ++j) {
-                if (this.matches(container, i, j, true) || this.matches(container, i, j, false))
-                    return true;
-            }
+    public boolean matches(CraftingInput input, Level level) {
+        if (input.width() == this.width && input.height() == this.height) {
+            if (this.matches(input, true) || this.matches(input, false))
+                return true;
         }
 
         return false;
     }
 
-    private boolean matches(RecipeBookExtensionTest.RecipeBookTestContainer container, int x, int y, boolean mirror) //unsure about the last boolean
+    private boolean matches(CraftingInput input, boolean mirror) //unsure about the last boolean
     {
-        for (int i = 0; i < 2; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                int curX = i - x;
-                int curY = j - y;
+        for (int x = 0; x < 2; ++x) {
+            for (int y = 0; y < 4; ++y) {
                 Ingredient ingredient = Ingredient.EMPTY;
-                if (curX >= 0 && curY >= 0 && curX < this.width && curY < this.height) {
-                    int idx = mirror ? this.width - curX - 1 + curY * this.width : curX + curY * this.width;
-                    ingredient = this.items.get(idx);
-                }
+                int idx = mirror ? this.width - x - 1 + y * this.width : x + y * this.width;
+                ingredient = this.items.get(idx);
 
-                if (!ingredient.test(container.getItem(i + j * 2)))
+                if (!ingredient.test(input.getItem(x + y * 2)))
                     return false;
             }
         }
@@ -85,7 +80,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
     }
 
     @Override
-    public ItemStack assemble(RecipeBookExtensionTest.RecipeBookTestContainer p_44001_, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput p_44001_, HolderLookup.Provider registryAccess) {
         return this.getResultItem(registryAccess).copy();
     }
 

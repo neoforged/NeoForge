@@ -12,7 +12,7 @@
 +    }
 +
 +    @Override
-+    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader world, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortune, int silktouch) {
++    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader world, net.minecraft.util.RandomSource randomSource, BlockPos pos) {
 +        return 15 + randomSource.nextInt(15) + randomSource.nextInt(15);
      }
  

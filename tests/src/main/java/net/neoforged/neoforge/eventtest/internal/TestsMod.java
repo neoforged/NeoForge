@@ -45,7 +45,7 @@ public class TestsMod {
             .build();
 
     public TestsMod(IEventBus modBus, ModContainer container) {
-        final MutableTestFramework framework = FrameworkConfiguration.builder(new ResourceLocation("neotests:tests"))
+        final MutableTestFramework framework = FrameworkConfiguration.builder(ResourceLocation.fromNamespaceAndPath("neotests", "tests"))
                 .clientConfiguration(() -> ClientConfiguration.builder()
                         .toggleOverlayKey(GLFW.GLFW_KEY_J)
                         .openManagerKey(GLFW.GLFW_KEY_N)

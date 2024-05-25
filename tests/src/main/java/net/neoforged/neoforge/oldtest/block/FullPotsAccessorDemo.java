@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
@@ -210,7 +211,7 @@ public class FullPotsAccessorDemo {
         @Override
         public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             super.loadAdditional(tag, holderLookup);
-            plant = BuiltInRegistries.BLOCK.get(new ResourceLocation(tag.getString("plant")));
+            plant = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(tag.getString("plant")));
         }
 
         @Override
@@ -225,7 +226,7 @@ public class FullPotsAccessorDemo {
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerLoader(final ModelEvent.RegisterGeometryLoaders event) {
-            event.register(new ResourceLocation(MOD_ID, "diorite_pot"), new DioritePotGeometryLoader());
+            event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "diorite_pot"), new DioritePotGeometryLoader());
         }
 
         private static class DioritePotGeometryLoader implements IGeometryLoader<DioritePotModelGeometry> {
@@ -238,8 +239,8 @@ public class FullPotsAccessorDemo {
 
         private record DioritePotModelGeometry(UnbakedModel wrappedModel) implements IUnbakedGeometry<DioritePotModelGeometry> {
             @Override
-            public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-                return new DioritePotModel(wrappedModel.bake(baker, spriteGetter, modelState, modelLocation));
+            public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+                return new DioritePotModel(wrappedModel.bake(baker, spriteGetter, modelState));
             }
 
             @Override
@@ -250,8 +251,8 @@ public class FullPotsAccessorDemo {
 
         private static class DioritePotModel extends BakedModelWrapper<BakedModel> {
             private static final ChunkRenderTypeSet CUTOUT = ChunkRenderTypeSet.of(RenderType.cutout());
-            private static final ResourceLocation POT_TEXTURE = new ResourceLocation("minecraft:block/flower_pot");
-            private static final ResourceLocation DIRT_TEXTURE = new ResourceLocation("minecraft:block/dirt");
+            private static final ResourceLocation POT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/flower_pot");
+            private static final ResourceLocation DIRT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/dirt");
 
             public DioritePotModel(BakedModel wrappedModel) {
                 super(wrappedModel);

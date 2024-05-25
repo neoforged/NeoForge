@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -62,11 +_,12 @@
+@@ -61,11 +_,12 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  import org.slf4j.Logger;
  
@@ -15,7 +15,7 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -187,12 +_,13 @@
+@@ -186,12 +_,13 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
@@ -30,7 +30,7 @@
      }
  
      public static boolean isExceptionForConnection(BlockState p_152464_) {
-@@ -209,6 +_,8 @@
+@@ -208,6 +_,8 @@
          BlockState blockstate = p_152446_.getBlockState(p_152449_);
          if (p_152445_.skipRendering(blockstate, p_152448_)) {
              return false;
@@ -39,7 +39,7 @@
          } else if (blockstate.canOcclude()) {
              Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(p_152445_, blockstate, p_152448_);
              Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> object2bytelinkedopenhashmap = OCCLUSION_CACHE.get();
-@@ -282,15 +_,19 @@
+@@ -281,24 +_,30 @@
  
      public static void dropResources(BlockState p_49951_, Level p_49952_, BlockPos p_49953_) {
          if (p_49952_ instanceof ServerLevel) {
@@ -61,8 +61,9 @@
          }
      }
  
-@@ -298,8 +_,10 @@
-         BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
+     public static void dropResources(
+-        BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
++            BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
      ) {
          if (p_49883_ instanceof ServerLevel) {
 +            beginCapturingDrops();
@@ -73,7 +74,7 @@
          }
      }
  
-@@ -327,19 +_,26 @@
+@@ -326,19 +_,26 @@
      }
  
      private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
@@ -103,7 +104,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -386,8 +_,10 @@
+@@ -385,8 +_,10 @@
  
      public void updateEntityAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
          p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0, 0.0, 1.0));
@@ -114,7 +115,7 @@
      public ItemStack getCloneItemStack(LevelReader p_304395_, BlockPos p_49824_, BlockState p_49825_) {
          return new ItemStack(this);
      }
-@@ -421,6 +_,7 @@
+@@ -420,6 +_,7 @@
      public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
      }
  
@@ -122,7 +123,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -486,6 +_,104 @@
+@@ -485,6 +_,104 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  

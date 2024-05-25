@@ -31,14 +31,14 @@ public interface IAdvancementBuilderExtension {
         AdvancementHolder advancementholder = self().build(id);
 
         Optional<ResourceLocation> parent = advancementholder.value().parent();
-        if (parent.isPresent() && !fileHelper.exists(parent.get(), PackType.SERVER_DATA, ".json", "advancements")) {
+        if (parent.isPresent() && !fileHelper.exists(parent.get(), PackType.SERVER_DATA, ".json", "advancement")) {
             throw new IllegalStateException("The parent: '%s' of advancement '%s', has not been saved yet!".formatted(
                     parent.orElseThrow(),
                     id));
         }
 
         saver.accept(advancementholder);
-        fileHelper.trackGenerated(id, PackType.SERVER_DATA, ".json", "advancements");
+        fileHelper.trackGenerated(id, PackType.SERVER_DATA, ".json", "advancement");
         return advancementholder;
     }
 }

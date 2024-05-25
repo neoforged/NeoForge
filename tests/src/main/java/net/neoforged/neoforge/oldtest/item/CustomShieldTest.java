@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.item;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -49,7 +50,7 @@ public class CustomShieldTest {
         }
 
         @Override
-        public int getUseDuration(ItemStack stack) {
+        public int getUseDuration(ItemStack stack, LivingEntity entity) {
             return 72000;
         }
 

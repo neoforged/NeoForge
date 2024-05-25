@@ -52,7 +52,7 @@ public class LanguageHook {
         for (String namespace : clientResources.getNamespaces()) {
             try {
                 modTable.putAll(I18nManager.loadTranslations(langName));
-                ResourceLocation langResource = new ResourceLocation(namespace, langFile);
+                ResourceLocation langResource = ResourceLocation.fromNamespaceAndPath(namespace, langFile);
                 for (Resource resource : clientResources.getResourceStack(langResource)) {
                     try (InputStream stream = resource.open()) {
                         Language.loadFromJson(stream, (key, value) -> modTable.put(key, value));

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -146,6 +_,38 @@
+@@ -146,6 +_,39 @@
          return this.hashCode;
      }
  
@@ -35,6 +35,7 @@
 +    }
 +
 +    // Neo End
++
 +
      static record Slot(int index, ItemStack item) {
          public static final Codec<ItemContainerContents.Slot> CODEC = RecordCodecBuilder.create(

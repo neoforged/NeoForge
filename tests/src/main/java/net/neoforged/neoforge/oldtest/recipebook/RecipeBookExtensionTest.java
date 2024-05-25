@@ -13,6 +13,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.RecipeBookType;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
@@ -65,7 +66,7 @@ public class RecipeBookExtensionTest {
     }
 
     public static ResourceLocation getId(String name) {
-        return new ResourceLocation(MOD_ID, name);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
     }
 
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
@@ -88,6 +89,10 @@ public class RecipeBookExtensionTest {
     public static class RecipeBookTestContainer extends SimpleContainer {
         public RecipeBookTestContainer() {
             super(8);
+        }
+
+        public CraftingInput asCraftingInput() {
+            return CraftingInput.of(2, 4, getItems());
         }
     }
 }

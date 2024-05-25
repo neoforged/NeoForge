@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -83,18 +_,18 @@
+@@ -84,18 +_,18 @@
          this.buildRecipes(
              new RecipeOutput() {
                  @Override
@@ -23,7 +23,7 @@
                                      RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
                                  )
                              );
-@@ -112,12 +_,16 @@
+@@ -113,12 +_,16 @@
      }
  
      protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_) {

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.item;
 
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -26,7 +27,8 @@ public class ItemEventTests {
     static void itemAttributeModifier(final DynamicTest test) {
         test.eventListeners().forge().addListener((final ItemAttributeModifierEvent event) -> {
             if (event.getSlotType() == EquipmentSlot.MAINHAND && event.getItemStack().getItem() == Items.APPLE) {
-                event.addModifier(Attributes.ARMOR, new AttributeModifier(test.createModId(), 10f, AttributeModifier.Operation.ADD_VALUE));
+                ResourceLocation modifierId = ResourceLocation.fromNamespaceAndPath(test.createModId(), "apple_armor");
+                event.addModifier(Attributes.ARMOR, new AttributeModifier(modifierId, 10f, AttributeModifier.Operation.ADD_VALUE));
             } else if (event.getSlotType() == EquipmentSlot.CHEST && event.getItemStack().is(Items.GOLDEN_CHESTPLATE)) {
                 event.clearModifiers();
             }

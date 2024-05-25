@@ -33,13 +33,11 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.SOUND_EVENT, // Required for SoundEvent packets
             BuiltInRegistries.MOB_EFFECT, // Required for MobEffect packets
             BuiltInRegistries.BLOCK, // Required for chunk BlockState paletted containers syncing
-            BuiltInRegistries.ENCHANTMENT, // Required for EnchantmentMenu syncing
             BuiltInRegistries.ENTITY_TYPE, // Required for Entity spawn packets
             BuiltInRegistries.ITEM, // Required for Item/ItemStack packets
             BuiltInRegistries.FLUID, // Required for Fluid/FluidStack packets
             BuiltInRegistries.PARTICLE_TYPE, // Required for ParticleType packets
             BuiltInRegistries.BLOCK_ENTITY_TYPE, // Required for BlockEntity packets
-            BuiltInRegistries.PAINTING_VARIANT, // Required for EntityDataSerializers
             BuiltInRegistries.MENU, // Required for ClientboundOpenScreenPacket
             BuiltInRegistries.COMMAND_ARGUMENT_TYPE, // Required for ClientboundCommandsPacket
             BuiltInRegistries.STAT_TYPE, // Required for ClientboundAwardStatsPacket

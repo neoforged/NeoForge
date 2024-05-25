@@ -9,7 +9,7 @@
      public static final int NO_FILLED_SECTION = -1;
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
-@@ -311,10 +_,19 @@
+@@ -315,10 +_,19 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -30,7 +30,7 @@
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
          for (int i = this.getMinSection(); i < this.getMaxSection(); i++) {
-@@ -326,8 +_,9 @@
+@@ -330,8 +_,9 @@
                      for (int k = 0; k < 16; k++) {
                          for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
@@ -42,7 +42,7 @@
                              }
                          }
                      }
-@@ -472,4 +_,70 @@
+@@ -476,4 +_,70 @@
  
      public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
      }

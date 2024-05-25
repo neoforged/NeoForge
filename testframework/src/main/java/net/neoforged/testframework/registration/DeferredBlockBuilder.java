@@ -58,10 +58,10 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
                         .to(16, 16, 16)
                         .allFaces((direction, faceBuilder) -> faceBuilder.uvs(0, 0, 16, 16).texture("#all").tintindex(0).cullface(direction))
                         .end()
-                        .texture("all", new ResourceLocation("testframework:block/white"))
-                        .texture("particle", new ResourceLocation("testframework:block/white"));
+                        .texture("all", ResourceLocation.fromNamespaceAndPath("testframework", "block/white"))
+                        .texture("particle", ResourceLocation.fromNamespaceAndPath("testframework", "block/white"));
             } else {
-                model = prov.models().cubeAll(key.location().getPath(), new ResourceLocation("testframework:block/white"));
+                model = prov.models().cubeAll(key.location().getPath(), ResourceLocation.fromNamespaceAndPath("testframework", "block/white"));
             }
             if (hasItem) {
                 prov.simpleBlockWithItem(value(), model);

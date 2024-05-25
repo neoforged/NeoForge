@@ -62,7 +62,7 @@ public class DataMapTests {
     @TestHolder(description = "Tests if data map mergers function properly")
     static void dataMapMerger(final DynamicTest test, final RegistrationHelper reg) {
         final AdvancedDataMapType<Item, List<SomeObject>, Default<List<SomeObject>, Item>> someData = AdvancedDataMapType.builder(
-                new ResourceLocation(reg.modId(), "some_list"),
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "some_list"),
                 Registries.ITEM, SomeObject.CODEC.listOf())
                 .merger(DataMapValueMerger.listMerger())
                 .build();
@@ -141,7 +141,7 @@ public class DataMapTests {
         }
 
         final AdvancedDataMapType<Item, Map<String, SomeObject>, CustomRemover> someData = AdvancedDataMapType.builder(
-                new ResourceLocation(reg.modId(), "some_map"),
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "some_map"),
                 Registries.ITEM, ExtraCodecs.strictUnboundedMap(Codec.STRING, SomeObject.CODEC))
                 .merger(DataMapValueMerger.mapMerger())
                 .remover(Codec.STRING.listOf().xmap(CustomRemover::new, CustomRemover::keys))
@@ -208,7 +208,7 @@ public class DataMapTests {
     @TestHolder(description = "Tests if registry data maps work")
     static void dataMapTest(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<Item, SomeObject> someData = DataMapType.builder(
-                new ResourceLocation(reg.modId(), "some_data"),
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "some_data"),
                 Registries.ITEM, SomeObject.CODEC)
                 .synced(SomeObject.CODEC, true)
                 .build();
@@ -264,7 +264,7 @@ public class DataMapTests {
         }
 
         final DataMapType<DamageType, ExperienceGrant> xpGrant = reg.registerDataMap(DataMapType.builder(
-                new ResourceLocation(reg.modId(), "xp_grant"),
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "xp_grant"),
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build());
 
@@ -315,7 +315,7 @@ public class DataMapTests {
     @TestHolder(description = "Tests if the data map update event works", groups = EventTests.GROUP)
     static void dataMapUpdateEventTest(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<Item, Integer> dataMap = reg.registerDataMap(DataMapType.builder(
-                new ResourceLocation(reg.modId(), "weight"),
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "weight"),
                 Registries.ITEM, Codec.INT)
                 .build());
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
-@@ -116,7 +_,6 @@
+@@ -118,7 +_,6 @@
  
      @Override
      public void setTarget(@Nullable LivingEntity p_32537_) {
@@ -8,7 +8,7 @@
          AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
          if (p_32537_ == null) {
              this.targetChangeTime = 0;
-@@ -130,6 +_,7 @@
+@@ -132,6 +_,7 @@
                  attributeinstance.addTransientModifier(SPEED_MODIFIER_ATTACKING);
              }
          }
@@ -16,7 +16,7 @@
      }
  
      @Override
-@@ -212,7 +_,7 @@
+@@ -214,7 +_,7 @@
  
      boolean isLookingAtMe(Player p_32535_) {
          ItemStack itemstack = p_32535_.getInventory().armor.get(3);
@@ -25,7 +25,7 @@
              return false;
          } else {
              Vec3 vec3 = p_32535_.getViewVector(1.0F).normalize();
-@@ -299,8 +_,10 @@
+@@ -301,8 +_,10 @@
          boolean flag = blockstate.blocksMotion();
          boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
          if (flag && !flag1) {
@@ -37,7 +37,7 @@
              if (flag2) {
                  this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                  if (!this.isSilent()) {
-@@ -451,7 +_,7 @@
+@@ -459,7 +_,7 @@
              if (this.enderman.getCarriedBlock() == null) {
                  return false;
              } else {
@@ -46,7 +46,7 @@
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
              }
-@@ -471,7 +_,7 @@
+@@ -479,7 +_,7 @@
              BlockState blockstate2 = this.enderman.getCarriedBlock();
              if (blockstate2 != null) {
                  blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.enderman.level(), blockpos);
@@ -55,7 +55,7 @@
                      level.setBlock(blockpos, blockstate2, 3);
                      level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.enderman, blockstate2));
                      this.enderman.setCarriedBlock(null);
-@@ -483,6 +_,7 @@
+@@ -491,6 +_,7 @@
              return p_32562_.isAir()
                  && !p_32563_.isAir()
                  && !p_32563_.is(Blocks.BEDROCK)
@@ -63,7 +63,7 @@
                  && p_32563_.isCollisionShapeFullBlock(p_32559_, p_32564_)
                  && p_32561_.canSurvive(p_32559_, p_32560_)
                  && p_32559_.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
-@@ -594,7 +_,7 @@
+@@ -602,7 +_,7 @@
              if (this.enderman.getCarriedBlock() != null) {
                  return false;
              } else {

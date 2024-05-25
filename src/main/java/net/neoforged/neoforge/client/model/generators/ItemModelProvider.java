@@ -28,7 +28,7 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
     public ItemModelBuilder basicItem(ResourceLocation item) {
         return getBuilder(item.toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", new ResourceLocation(item.getNamespace(), "item/" + item.getPath()));
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/" + item.getPath()));
     }
 
     @Override

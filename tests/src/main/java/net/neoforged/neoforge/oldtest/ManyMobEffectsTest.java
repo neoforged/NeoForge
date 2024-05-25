@@ -80,7 +80,7 @@ public class ManyMobEffectsTest {
         if (!ENABLED) return;
         MOB_EFFECTS.register(modBus);
         NeoForge.EVENT_BUS.addListener(ManyMobEffectsTest::mobInteract);
-        modBus.addListener((final RegisterEvent event) -> event.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(new ResourceLocation(MODID, "many_mob_effects_test"), CreativeModeTab.builder().withSearchBar()
+        modBus.addListener((final RegisterEvent event) -> event.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(ResourceLocation.fromNamespaceAndPath(MODID, "many_mob_effects_test"), CreativeModeTab.builder().withSearchBar()
                 .icon(() -> new ItemStack(Items.POTION))
                 .displayItems((params, output) -> {
                     var stack = new ItemStack(Items.POTION);

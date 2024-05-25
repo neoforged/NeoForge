@@ -38,7 +38,7 @@ public final class ParticleBoundsDebugRenderer {
         VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
 
         Minecraft.getInstance().particleEngine.iterateParticles(particle -> {
-            var bb = particle.getRenderBoundingBox(event.getPartialTick());
+            var bb = particle.getRenderBoundingBox(event.getPartialTick().getGameTimeDeltaPartialTick(false));
             if (!bb.isInfinite() && event.getFrustum().isVisible(bb)) {
                 poseStack.pushPose();
                 var offset = particle.getPos().subtract(camPos);

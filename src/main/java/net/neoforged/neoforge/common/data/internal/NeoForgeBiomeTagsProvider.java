@@ -192,8 +192,8 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
-        tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).addOptionalTag(new ResourceLocation("forge", "is_slope"));
-        tag(Tags.Biomes.IS_MOUNTAIN_PEAK).addOptionalTag(new ResourceLocation("forge", "is_peak"));
+        tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_slope"));
+        tag(Tags.Biomes.IS_MOUNTAIN_PEAK).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_peak"));
         tagWithOptionalLegacy(Tags.Biomes.IS_MOUNTAIN);
         tagWithOptionalLegacy(Tags.Biomes.IS_HOT_OVERWORLD);
         tagWithOptionalLegacy(Tags.Biomes.IS_HOT_NETHER);
@@ -207,14 +207,14 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER);
         tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_END);
         tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION);
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD).addOptionalTag(new ResourceLocation("forge", "is_sparse/overworld"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER).addOptionalTag(new ResourceLocation("forge", "is_sparse/nether"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_END).addOptionalTag(new ResourceLocation("forge", "is_sparse/end"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION).addOptionalTag(new ResourceLocation("forge", "is_sparse"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(new ResourceLocation("forge", "is_dense/overworld"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER).addOptionalTag(new ResourceLocation("forge", "is_dense/nether"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_END).addOptionalTag(new ResourceLocation("forge", "is_dense/end"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION).addOptionalTag(new ResourceLocation("forge", "is_dense"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse/overworld"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse/nether"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_END).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse/end"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense/overworld"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense/nether"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_END).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense/end"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense"));
         tagWithOptionalLegacy(Tags.Biomes.IS_WET_OVERWORLD);
         tagWithOptionalLegacy(Tags.Biomes.IS_WET_NETHER);
         tagWithOptionalLegacy(Tags.Biomes.IS_WET_END);
@@ -233,7 +233,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tagWithOptionalLegacy(Tags.Biomes.IS_PLATEAU);
         tagWithOptionalLegacy(Tags.Biomes.IS_MODIFIED);
         tagWithOptionalLegacy(Tags.Biomes.IS_FLORAL);
-        tag(Tags.Biomes.IS_AQUATIC).addOptionalTag(new ResourceLocation("forge", "is_water"));
+        tag(Tags.Biomes.IS_AQUATIC).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_water"));
         tagWithOptionalLegacy(Tags.Biomes.IS_DESERT);
         tagWithOptionalLegacy(Tags.Biomes.IS_PLAINS);
         tagWithOptionalLegacy(Tags.Biomes.IS_SWAMP);
@@ -255,7 +255,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
     }
 
     private TagAppender<Biome> tagWithOptionalLegacy(TagKey<Biome> tag) {
-        return tag(tag).addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+        return tag(tag).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath()));
     }
 
     @Override

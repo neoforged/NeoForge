@@ -17,7 +17,7 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 
 public record ChangeEnabledPayload(MutableTestFramework framework, String testId, boolean enabled) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<ChangeEnabledPayload> ID = new Type<>(new ResourceLocation("neoforge", "tf_change_enabled"));
+    public static final CustomPacketPayload.Type<ChangeEnabledPayload> ID = new Type<>(ResourceLocation.fromNamespaceAndPath("neoforge", "tf_change_enabled"));
     public void handle(IPayloadContext context) {
         switch (context.flow().getReceptionSide()) {
             case CLIENT -> {

@@ -32,9 +32,9 @@ public class CreativeModeTabTest {
     public static final String MOD_ID = "creative_mode_tab_test";
     private static final boolean ENABLED = true;
 
-    private static final ResourceKey<CreativeModeTab> LOGS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "logs"));
-    private static final ResourceKey<CreativeModeTab> STONE = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "stone"));
-    private static final ResourceKey<CreativeModeTab> DAMAGED_SWORDS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "damaged_swords"));
+    private static final ResourceKey<CreativeModeTab> LOGS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "logs"));
+    private static final ResourceKey<CreativeModeTab> STONE = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stone"));
+    private static final ResourceKey<CreativeModeTab> DAMAGED_SWORDS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "damaged_swords"));
 
     public CreativeModeTabTest(IEventBus modEventBus) {
         if (!ENABLED)
@@ -70,7 +70,7 @@ public class CreativeModeTabTest {
                     .withTabsAfter(CreativeModeTabs.BUILDING_BLOCKS)
                     .build());
 
-            helper.register(new ResourceLocation(MOD_ID, "colors"), CreativeModeTab.builder().title(Component.literal("Colors"))
+            helper.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "colors"), CreativeModeTab.builder().title(Component.literal("Colors"))
                     .displayItems((params, output) -> {
                         for (DyeColor color : DyeColor.values()) {
                             output.accept(DyeItem.byColor(color));
@@ -95,15 +95,15 @@ public class CreativeModeTabTest {
             List<Block> blocks = List.of(Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.COBBLESTONE);
             for (int i = 0; i < blocks.size(); i++) {
                 Block block = blocks.get(i);
-                helper.register(new ResourceLocation(MOD_ID, "dummy" + i), CreativeModeTab.builder()
+                helper.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "dummy" + i), CreativeModeTab.builder()
                         .title(Component.literal("Dummy " + i))
                         .icon(() -> new ItemStack(block))
                         .displayItems((params, output) -> output.accept(block))
                         .build());
             }
 
-            final ResourceLocation custom_tabs_image = new ResourceLocation(MOD_ID, "textures/gui/container/creative_inventory/custom_tabs.png");
-            helper.register(new ResourceLocation(MOD_ID, "with_tabs_image"), CreativeModeTab.builder()
+            final ResourceLocation custom_tabs_image = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/container/creative_inventory/custom_tabs.png");
+            helper.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "with_tabs_image"), CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.with_tabs_image"))
                     .icon(() -> new ItemStack(Blocks.BRICKS))
                     .displayItems((params, output) -> output.accept(Blocks.BRICKS))

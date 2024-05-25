@@ -1,0 +1,15 @@
+--- a/net/minecraft/data/tags/EnchantmentTagsProvider.java
++++ b/net/minecraft/data/tags/EnchantmentTagsProvider.java
+@@ -13,8 +_,12 @@
+ import net.minecraft.world.item.enchantment.Enchantment;
+ 
+ public abstract class EnchantmentTagsProvider extends TagsProvider<Enchantment> {
++    /** @deprecated Forge: Use the {@linkplain #EnchantmentTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
+     public EnchantmentTagsProvider(PackOutput p_341044_, CompletableFuture<HolderLookup.Provider> p_341146_) {
+         super(p_341044_, Registries.ENCHANTMENT, p_341146_);
++    }
++    public EnchantmentTagsProvider(PackOutput p_341044_, CompletableFuture<HolderLookup.Provider> p_341146_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
++        super(p_341044_, Registries.ENCHANTMENT, p_341146_, modId, existingFileHelper);
+     }
+ 
+     protected void tooltipOrder(HolderLookup.Provider p_341105_, ResourceKey<Enchantment>... p_345255_) {

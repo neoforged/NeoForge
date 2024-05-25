@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-@@ -321,7 +_,7 @@
+@@ -322,7 +_,7 @@
  
              if (this.destroyBlocksTick > 0) {
                  this.destroyBlocksTick--;
@@ -9,7 +9,7 @@
                      boolean flag = false;
                      int l = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
                      int i1 = Mth.floor(this.getBbHeight());
-@@ -330,7 +_,7 @@
+@@ -331,7 +_,7 @@
                          this.getBlockX() - l, this.getBlockY(), this.getBlockZ() - l, this.getBlockX() + l, this.getBlockY() + i1, this.getBlockZ() + l
                      )) {
                          BlockState blockstate = this.level().getBlockState(blockpos);
@@ -18,7 +18,7 @@
                              flag = this.level().destroyBlock(blockpos, true, this) || flag;
                          }
                      }
-@@ -349,6 +_,10 @@
+@@ -350,6 +_,10 @@
          }
      }
  
@@ -29,7 +29,7 @@
      public static boolean canDestroy(BlockState p_31492_) {
          return !p_31492_.isAir() && !p_31492_.is(BlockTags.WITHER_IMMUNE);
      }
-@@ -493,6 +_,7 @@
+@@ -495,6 +_,7 @@
  
      @Override
      public void checkDespawn() {

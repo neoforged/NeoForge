@@ -8,7 +8,7 @@
 -            this.drawSystemInformation(p_281427_);
 +            final List<String> gameInformation = new java.util.ArrayList<>();
 +            final List<String> systemInformation = new java.util.ArrayList<>();
-+            var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getFrameTime(), gameInformation, systemInformation);
++            var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getTimer(), gameInformation, systemInformation);
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
 +
 +            this.drawGameInformation(p_281427_, gameInformation);

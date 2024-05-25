@@ -17,7 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public final class FrozenRegistrySyncCompletedPayload implements CustomPacketPayload {
-    public static final Type<FrozenRegistrySyncCompletedPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "frozen_registry_sync_completed"));
+    public static final Type<FrozenRegistrySyncCompletedPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "frozen_registry_sync_completed"));
     public static final FrozenRegistrySyncCompletedPayload INSTANCE = new FrozenRegistrySyncCompletedPayload();
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistrySyncCompletedPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 

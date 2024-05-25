@@ -41,7 +41,7 @@ public class NeoForgeRegistries {
     public static final Registry<ItemDisplayContext> DISPLAY_CONTEXTS = new RegistryBuilder<>(Keys.DISPLAY_CONTEXTS)
             .sync(true)
             .maxId(128 * 2) // 0 -> 127 gets positive ID, 128 -> 256 gets negative ID
-            .defaultKey(new ResourceLocation("none"))
+            .defaultKey(ResourceLocation.withDefaultNamespace("none"))
             .create();
     public static final Registry<IngredientType<?>> INGREDIENT_TYPES = new RegistryBuilder<>(Keys.INGREDIENT_TYPES).sync(true).create();
     public static final Registry<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = new RegistryBuilder<>(Keys.FLUID_INGREDIENT_TYPES).sync(true).create();
@@ -69,7 +69,7 @@ public class NeoForgeRegistries {
         public static final ResourceKey<Registry<StructureModifier>> STRUCTURE_MODIFIERS = key("structure_modifier");
 
         private static <T> ResourceKey<Registry<T>> key(String name) {
-            return ResourceKey.createRegistryKey(new ResourceLocation(NeoForgeVersion.MOD_ID, name));
+            return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name));
         }
     }
 }

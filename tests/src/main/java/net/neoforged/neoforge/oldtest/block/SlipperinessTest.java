@@ -27,7 +27,7 @@ public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
     static final String BLOCK_ID = "test_block";
 
-    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(new ResourceLocation(MOD_ID, BLOCK_ID));
+    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(ResourceLocation.fromNamespaceAndPath(MOD_ID, BLOCK_ID));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {

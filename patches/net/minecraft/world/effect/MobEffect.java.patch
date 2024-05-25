@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -30,7 +_,7 @@
+@@ -35,7 +_,7 @@
  import net.minecraft.world.flag.FeatureFlagSet;
  import net.minecraft.world.flag.FeatureFlags;
  
 -public class MobEffect implements FeatureElement {
 +public class MobEffect implements FeatureElement, net.neoforged.neoforge.common.extensions.IMobEffectExtension {
+     public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
+     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
-     private final Map<Holder<Attribute>, MobEffect.AttributeTemplate> attributeModifiers = new Object2ObjectOpenHashMap<>();
-     private final MobEffectCategory category;
-@@ -49,6 +_,7 @@
+@@ -56,6 +_,7 @@
              int i = p_333517_.isAmbient() ? AMBIENT_ALPHA : 255;
              return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(i, p_19452_));
          };
@@ -17,7 +17,7 @@
      }
  
      protected MobEffect(MobEffectCategory p_333963_, int p_333864_, ParticleOptions p_333716_) {
-@@ -174,6 +_,28 @@
+@@ -180,6 +_,28 @@
      public FeatureFlagSet requiredFeatures() {
          return this.requiredFeatures;
      }
@@ -44,5 +44,5 @@
 +    }
 +    // END NEO
  
-     static record AttributeTemplate(UUID id, double amount, AttributeModifier.Operation operation) {
-         public AttributeModifier create(String p_316465_, int p_316614_) {
+     static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+         public AttributeModifier create(int p_316614_) {

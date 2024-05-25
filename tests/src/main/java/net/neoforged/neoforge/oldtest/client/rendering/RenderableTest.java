@@ -8,6 +8,7 @@ package net.neoforged.neoforge.oldtest.client.rendering;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Map;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
@@ -65,7 +66,7 @@ public class RenderableTest {
     }
 
     private static class Client {
-        private static ResourceLocation MODEL_LOC = new ResourceLocation("minecraft:block/blue_stained_glass");
+        private static ResourceLocation MODEL_LOC = ResourceLocation.fromNamespaceAndPath("minecraft", "block/blue_stained_glass");
 
         private static IRenderable<CompositeRenderable.Transforms> renderable;
         private static IRenderable<ModelData> bakedRenderable;
@@ -87,7 +88,7 @@ public class RenderableTest {
                 @Override
                 protected ObjModel prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
                     var settings = new ObjModel.ModelSettings(
-                            new ResourceLocation("new_model_loader_test:models/item/sugar_glider.obj"),
+                            ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/sugar_glider.obj"),
                             false,
                             true,
                             true,
@@ -99,14 +100,14 @@ public class RenderableTest {
                 @Override
                 protected void apply(ObjModel model, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
                     var config = StandaloneGeometryBakingContext.create(Map.of(
-                            "#qr", new ResourceLocation("minecraft:block/quartz_block_top")));
+                            "#qr", ResourceLocation.fromNamespaceAndPath("minecraft", "block/quartz_block_top")));
                     renderable = model.bakeRenderable(config);
                 }
             });
         }
 
         public static void registerStage(RenderLevelStageEvent.RegisterStageEvent event) {
-            var stage = event.register(new ResourceLocation(MODID, "test_stage"), null);
+            var stage = event.register(ResourceLocation.fromNamespaceAndPath(MODID, "test_stage"), null);
             LOGGER.info("Registered RenderLevelStageEvent.Stage: {}", stage);
         }
 
@@ -133,7 +134,7 @@ public class RenderableTest {
             }
         }
 
-        private static void render(Stage stage, PoseStack poseStack, int renderTick, float partialTick, double camX, double camY, double camZ, int xOffset) {
+        private static void render(Stage stage, PoseStack poseStack, int renderTick, DeltaTracker deltaTracker, double camX, double camY, double camZ, int xOffset) {
             double x = camX, y = camY, z = camZ;
             if (!BlockPos.containing(0, y, 0).closerThan(BlockPos.containing(x, y, z), 100))
                 return;
@@ -146,6 +147,7 @@ public class RenderableTest {
 
             var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 
+            float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
             double time = renderTick + partialTick;
 
             var map = ImmutableMap.<String, Matrix4f>builder();

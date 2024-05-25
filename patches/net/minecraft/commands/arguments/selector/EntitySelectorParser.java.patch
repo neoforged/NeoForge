@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
-@@ -457,6 +_,9 @@
+@@ -476,6 +_,9 @@
              }
  
              this.reader.skip();
@@ -10,10 +10,10 @@
              this.parseSelector();
          } else {
              this.parseNameOrUUID();
-@@ -472,6 +_,7 @@
-         p_121248_.suggest("@r", Component.translatable("argument.entity.selector.randomPlayer"));
+@@ -492,6 +_,7 @@
          p_121248_.suggest("@s", Component.translatable("argument.entity.selector.self"));
          p_121248_.suggest("@e", Component.translatable("argument.entity.selector.allEntities"));
+         p_121248_.suggest("@n", Component.translatable("argument.entity.selector.nearestEntity"));
 +        net.neoforged.neoforge.common.command.EntitySelectorManager.fillSelectorSuggestions(p_121248_);
      }
  

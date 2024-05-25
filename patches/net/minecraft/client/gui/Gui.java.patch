@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/Gui.java
 +++ b/net/minecraft/client/gui/Gui.java
-@@ -68,6 +_,9 @@
+@@ -69,6 +_,9 @@
  import net.neoforged.api.distmarker.OnlyIn;
  import org.joml.Matrix4fStack;
  
@@ -9,8 +9,8 @@
 +
  @OnlyIn(Dist.CLIENT)
  public class Gui {
-     protected static final ResourceLocation CROSSHAIR_SPRITE = new ResourceLocation("hud/crosshair");
-@@ -150,9 +_,21 @@
+     protected static final ResourceLocation CROSSHAIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair");
+@@ -158,9 +_,21 @@
      protected long healthBlinkTime;
      protected float autosaveIndicatorValue;
      protected float lastAutosaveIndicatorValue;
@@ -32,7 +32,7 @@
      public Gui(Minecraft p_232355_) {
          this.minecraft = p_232355_;
          this.debugOverlay = new DebugScreenOverlay(p_232355_);
-@@ -162,27 +_,40 @@
+@@ -170,27 +_,40 @@
          this.bossOverlay = new BossHealthOverlay(p_232355_);
          this.subtitleOverlay = new SubtitleOverlay(p_232355_);
          this.resetTitleTimes();
@@ -42,10 +42,10 @@
 -            .add(this::renderHotbarAndDecorations)
 -            .add(this::renderExperienceLevel)
 -            .add(this::renderEffects)
--            .add((p_315814_, p_315815_) -> this.bossOverlay.render(p_315814_));
+-            .add((p_315814_, p_348661_) -> this.bossOverlay.render(p_315814_));
 -        LayeredDraw layereddraw1 = new LayeredDraw()
 -            .add(this::renderDemoOverlay)
--            .add((p_315812_, p_315813_) -> {
+-            .add((p_315812_, p_348497_) -> {
 +        var playerHealthComponents = new net.neoforged.neoforge.client.gui.GuiLayerManager()
 +                .add(PLAYER_HEALTH, (guiGraphics, partialTick) -> renderHealthLevel(guiGraphics))
 +                .add(ARMOR_LEVEL, (guiGraphics, partialTick) -> renderArmorLevel(guiGraphics))
@@ -77,7 +77,7 @@
 -            .add(this::renderTitle)
 -            .add(this::renderChat)
 -            .add(this::renderTabList)
--            .add((p_315816_, p_315817_) -> this.subtitleOverlay.render(p_315816_));
+-            .add((p_315816_, p_348512_) -> this.subtitleOverlay.render(p_315816_));
 -        this.layers.add(layereddraw, () -> !p_232355_.options.hideGui).add(this::renderSleepOverlay).add(layereddraw1, () -> !p_232355_.options.hideGui);
 +            .add(SCOREBOARD_SIDEBAR, this::renderScoreboardSidebar)
 +            .add(OVERLAY_MESSAGE, this::renderOverlayMessage)
@@ -90,18 +90,18 @@
      }
  
      public void resetTitleTimes() {
-@@ -193,7 +_,9 @@
+@@ -201,7 +_,9 @@
  
-     public void render(GuiGraphics p_282884_, float p_282611_) {
+     public void render(GuiGraphics p_282884_, DeltaTracker p_348630_) {
          RenderSystem.enableDepthTest();
--        this.layers.render(p_282884_, p_282611_);
+-        this.layers.render(p_282884_, p_348630_);
 +        leftHeight = 39;
 +        rightHeight = 39;
-+        this.layerManager.render(p_282884_, p_282611_);
++        this.layerManager.render(p_282884_, p_348630_);
          RenderSystem.disableDepthTest();
      }
  
-@@ -252,8 +_,12 @@
+@@ -262,8 +_,12 @@
              }
  
              if (i > 8) {
@@ -112,9 +112,9 @@
 -                p_316291_.pose().translate((float)(p_316291_.guiWidth() / 2), (float)(p_316291_.guiHeight() - 68), 0.0F);
 +                //If y shift is smaller less than the default y level, just render it at the base y level
 +                p_316291_.pose().translate((float)(p_316291_.guiWidth() / 2), (float)(p_316291_.guiHeight() - Math.max(yShift, 68)), 0.0F);
-                 int j = 16777215;
+                 int j;
                  if (this.animateOverlayMessageColor) {
-                     j = Mth.hsvToRgb(f / 50.0F, 0.7F, 0.6F) & 16777215;
+                     j = Mth.hsvToArgb(f / 50.0F, 0.7F, 0.6F, i);
 @@ -441,6 +_,8 @@
              List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
  
@@ -137,25 +137,25 @@
      }
  
 +    @Deprecated // Neo: Split up into different layers
-     private void renderHotbarAndDecorations(GuiGraphics p_316628_, float p_316765_) {
-+        renderHotbar(p_316628_, p_316765_);
-+        maybeRenderJumpMeter(p_316628_, p_316765_);
-+        maybeRenderExperienceBar(p_316628_, p_316765_);
-+        maybeRenderPlayerHealth(p_316628_, p_316765_);
-+        maybeRenderVehicleHealth(p_316628_, p_316765_);
-+        maybeRenderSelectedItemName(p_316628_, p_316765_);
-+        maybeRenderSpectatorTooltip(p_316628_, p_316765_);
+     private void renderHotbarAndDecorations(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++        renderHotbar(p_316628_, p_348543_);
++        maybeRenderJumpMeter(p_316628_, p_348543_);
++        maybeRenderExperienceBar(p_316628_, p_348543_);
++        maybeRenderPlayerHealth(p_316628_, p_348543_);
++        maybeRenderVehicleHealth(p_316628_, p_348543_);
++        maybeRenderSelectedItemName(p_316628_, p_348543_);
++        maybeRenderSpectatorTooltip(p_316628_, p_348543_);
 +    }
 +
-+    private void renderHotbar(GuiGraphics p_316628_, float p_316765_) {
++    private void renderHotbar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
              this.spectatorGui.renderHotbar(p_316628_);
          } else {
-             this.renderItemHotbar(p_316628_, p_316765_);
+             this.renderItemHotbar(p_316628_, p_348543_);
          }
 +    }
  
-+    private void maybeRenderJumpMeter(GuiGraphics p_316628_, float p_316765_) {
++    private void maybeRenderJumpMeter(GuiGraphics p_316628_, DeltaTracker p_348543_) {
          int i = p_316628_.guiWidth() / 2 - 91;
          PlayerRideableJumping playerrideablejumping = this.minecraft.player.jumpableVehicle();
          if (playerrideablejumping != null) {
@@ -165,24 +165,24 @@
 +
 +    }
 +
-+    private void maybeRenderExperienceBar(GuiGraphics p_316628_, float p_316765_) {
++    private void maybeRenderExperienceBar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
 +        int i = p_316628_.guiWidth() / 2 - 91;
 +        if (this.minecraft.player.jumpableVehicle() == null && this.isExperienceBarVisible()) {
              this.renderExperienceBar(p_316628_, i);
          }
 +    }
  
-+    private void maybeRenderPlayerHealth(GuiGraphics p_316628_, float p_316765_) {
++    private void maybeRenderPlayerHealth(GuiGraphics p_316628_, DeltaTracker p_348543_) {
          if (this.minecraft.gameMode.canHurtPlayer()) {
              this.renderPlayerHealth(p_316628_);
          }
 +    }
  
-+    private void maybeRenderVehicleHealth(GuiGraphics p_316628_, float p_316765_) {
++    private void maybeRenderVehicleHealth(GuiGraphics p_316628_, DeltaTracker p_348543_) {
          this.renderVehicleHealth(p_316628_);
 +    }
 +
-+    private void maybeRenderSelectedItemName(GuiGraphics p_316628_, float p_316765_) {
++    private void maybeRenderSelectedItemName(GuiGraphics p_316628_, DeltaTracker p_348543_) {
          if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
 -            this.renderSelectedItemName(p_316628_);
 -        } else if (this.minecraft.player.isSpectator()) {
@@ -190,7 +190,7 @@
 +        }
 +    }
 +
-+    private void maybeRenderSpectatorTooltip(GuiGraphics p_316628_, float p_316765_) {
++    private void maybeRenderSpectatorTooltip(GuiGraphics p_316628_, DeltaTracker p_348543_) {
 +        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && this.minecraft.player.isSpectator()) {
              this.spectatorGui.renderTooltip(p_316628_);
          }
@@ -222,31 +222,31 @@
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  k += 14;
              }
-@@ -656,7 +_,13 @@
+@@ -655,7 +_,13 @@
+             }
  
              if (l > 0) {
-                 p_283501_.fill(j - 2, k - 2, j + i + 2, k + 9 + 2, this.minecraft.options.getBackgroundColor(0));
--                p_283501_.drawString(this.getFont(), mutablecomponent, j, k, 16777215 + (l << 24));
+-                p_283501_.drawStringWithBackdrop(this.getFont(), mutablecomponent, j, k, i, FastColor.ARGB32.color(l, -1));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {
-+                    p_283501_.drawString(this.getFont(), highlightTip, j, k, 16777215 + (l << 24));
++                    p_283501_.drawStringWithBackdrop(this.getFont(), highlightTip, j, k, i, FastColor.ARGB32.color(l, -1));
 +                } else {
 +                    j = (p_283501_.guiWidth() - font.width(highlightTip)) / 2;
-+                    p_283501_.drawString(font, highlightTip, j, k, 16777215 + (l << 24));
++                    p_283501_.drawStringWithBackdrop(font, highlightTip, j, k, i, FastColor.ARGB32.color(l, -1));
 +                }
              }
          }
  
-@@ -664,7 +_,7 @@
+@@ -663,7 +_,7 @@
      }
  
-     private void renderDemoOverlay(GuiGraphics p_281825_, float p_316211_) {
+     private void renderDemoOverlay(GuiGraphics p_281825_, DeltaTracker p_348679_) {
 -        if (this.minecraft.isDemo()) {
 +        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // NEO: Hide demo timer when F3 debug overlay is open; fixes MC-271166
              this.minecraft.getProfiler().push("demo");
              Component component;
              if (this.minecraft.level.getGameTime() >= 120500L) {
-@@ -777,7 +_,15 @@
+@@ -778,7 +_,15 @@
          return (int)Math.ceil((double)p_93013_ / 10.0);
      }
  
@@ -262,7 +262,7 @@
          Player player = this.getCameraPlayer();
          if (player != null) {
              int i = Mth.ceil(player.getHealth());
-@@ -802,35 +_,62 @@
+@@ -803,35 +_,62 @@
              this.random.setSeed((long)(this.tickCount * 312871));
              int l = p_283143_.guiWidth() / 2 - 91;
              int i1 = p_283143_.guiWidth() / 2 + 91;
@@ -336,7 +336,7 @@
                  int l3 = Mth.ceil((double)(j3 - 2) * 10.0 / (double)i3);
                  int i4 = Mth.ceil((double)j3 * 10.0 / (double)i3) - l3;
                  RenderSystem.enableBlend();
-@@ -844,6 +_,7 @@
+@@ -845,6 +_,7 @@
                  }
  
                  RenderSystem.disableBlend();
@@ -344,7 +344,7 @@
              }
  
              this.minecraft.getProfiler().pop();
-@@ -983,7 +_,7 @@
+@@ -984,7 +_,7 @@
              if (i != 0) {
                  int j = (int)Math.ceil((double)livingentity.getHealth());
                  this.minecraft.getProfiler().popPush("mountHealth");
@@ -353,7 +353,7 @@
                  int l = p_283368_.guiWidth() / 2 + 91;
                  int i1 = k;
                  int j1 = 0;
-@@ -1006,6 +_,7 @@
+@@ -1007,6 +_,7 @@
                      }
  
                      i1 -= 10;
@@ -361,7 +361,7 @@
                      j1 += 20;
                  }
  
-@@ -1162,7 +_,7 @@
+@@ -1163,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !itemstack.is(this.lastToolHighlight.getItem())
@@ -370,7 +370,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1289,8 +_,13 @@
+@@ -1292,8 +_,13 @@
          }
      }
  
@@ -383,9 +383,9 @@
 -    public static enum HeartType {
 +    public static enum HeartType implements net.neoforged.neoforge.common.IExtensibleEnum {
          CONTAINER(
-             new ResourceLocation("hud/heart/container"),
-             new ResourceLocation("hud/heart/container_blinking"),
-@@ -1406,8 +_,23 @@
+             ResourceLocation.withDefaultNamespace("hud/heart/container"),
+             ResourceLocation.withDefaultNamespace("hud/heart/container_blinking"),
+@@ -1409,8 +_,23 @@
              } else {
                  gui$hearttype = NORMAL;
              }

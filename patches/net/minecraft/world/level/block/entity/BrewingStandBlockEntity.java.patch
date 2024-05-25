@@ -29,7 +29,7 @@
  
          p_155293_.set(3, itemstack);
          p_155291_.levelEvent(1035, p_155292_, 0);
-@@ -204,13 +_,13 @@
+@@ -208,13 +_,13 @@
  
      @Override
      public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {

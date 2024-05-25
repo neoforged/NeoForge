@@ -52,6 +52,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
     private final Path logFile;
     private final int listHeight = 140;
     private final Map<ResourceLocation, Component> mismatchedChannelData;
+    // TODO 1.21: DisconnectionDetails
 
     public ModMismatchDisconnectedScreen(Screen parentScreen, Component reason, Map<ResourceLocation, Component> mismatchedChannelData) {
         super(Component.translatable("disconnect.lost"));

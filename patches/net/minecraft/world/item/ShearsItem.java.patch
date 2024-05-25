@@ -1,22 +1,20 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -55,6 +_,29 @@
+@@ -55,6 +_,27 @@
      }
  
      @Override
 +    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
 +        if (entity instanceof net.neoforged.neoforge.common.IShearable target) {
++            if (entity.level().isClientSide) return InteractionResult.CONSUME;
 +            BlockPos pos = entity.blockPosition();
-+            Level level = entity.level();
-+            if (target.isShearable(player, stack, level, pos)) {
-+                if (level.isClientSide) return InteractionResult.SUCCESS;
-+                for (ItemStack drop : target.onSheared(player, stack, level, pos)) {
-+                    target.spawnShearedDrop(level, pos, drop);
-+                }
++            if (target.isShearable(player, stack, entity.level(), pos)) {
++                target.onSheared(player, stack, entity.level(), pos)
++                      .forEach(drop -> target.spawnShearedDrop(entity.level(), pos, drop));
 +                entity.gameEvent(GameEvent.SHEAR, player);
-+                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
-+                return InteractionResult.CONSUME;
++                stack.hurtAndBreak(1, player, hand == net.minecraft.world.InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
 +            }
++            return InteractionResult.SUCCESS;
 +        }
 +        return InteractionResult.PASS;
 +    }

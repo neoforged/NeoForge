@@ -138,6 +138,7 @@ public class LivingEntityEventTests {
         test.onGameTest(helper -> {
             final var skelly = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0);
             final var pig = helper.spawnWithNoFreeWill(EntityType.PIG, 1, 2, 2);
+            skelly.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOW));
             skelly.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 10));
             skelly.setData(shootsFireRes, true);
 
@@ -208,8 +209,11 @@ public class LivingEntityEventTests {
 
                 .thenExecute(zombie -> zombie.setItemInHand(InteractionHand.MAIN_HAND, Items.SHIELD.getDefaultInstance()))
                 .thenExecute(zombie -> zombie.startUsingItem(InteractionHand.MAIN_HAND))
-                .thenExecuteAfter(10, zombie -> helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0)
-                        .performRangedAttack(zombie, 1f))
+                .thenExecuteAfter(10, zombie -> {
+                    var skelly = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0);
+                    skelly.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOW));
+                    skelly.performRangedAttack(zombie, 1f);
+                })
                 .thenWaitUntil(() -> helper.assertEntityIsHolding(new BlockPos(1, 2, 2), EntityType.ZOMBIE, Items.STONE))
                 .thenSucceed());
     }

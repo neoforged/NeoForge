@@ -77,7 +77,7 @@ public class CustomItemDisplayContextTest {
 
     @EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     private static class RendererEvents {
-        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", new ResourceLocation("custom_transformtype_test", "hanging"), null);
+        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", ResourceLocation.fromNamespaceAndPath("custom_transformtype_test", "hanging"), null);
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -86,7 +86,7 @@ public class CustomItemDisplayContextTest {
 
         @SubscribeEvent
         public static void registerContext(final RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register(new ResourceLocation(MODID, "hanging"), HANGING));
+            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register(ResourceLocation.fromNamespaceAndPath(MODID, "hanging"), HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer

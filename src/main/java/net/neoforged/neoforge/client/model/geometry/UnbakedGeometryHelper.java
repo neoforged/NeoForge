@@ -87,21 +87,21 @@ public class UnbakedGeometryHelper {
             tex = namespace != null ? namespace + ":" + path : path;
         }
 
-        return new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(tex));
+        return new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(tex));
     }
 
     /**
      * Helper for baking {@link BlockModel} instances. Handles baking custom geometries and deferring item model baking.
      */
     @ApiStatus.Internal
-    public static BakedModel bake(BlockModel blockModel, ModelBaker modelBaker, BlockModel owner, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation, boolean guiLight3d) {
+    public static BakedModel bake(BlockModel blockModel, ModelBaker modelBaker, BlockModel owner, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, boolean guiLight3d) {
         IUnbakedGeometry<?> customModel = blockModel.customData.getCustomGeometry();
         if (customModel != null)
-            return customModel.bake(blockModel.customData, modelBaker, spriteGetter, modelState, blockModel.getOverrides(modelBaker, owner, spriteGetter), modelLocation);
+            return customModel.bake(blockModel.customData, modelBaker, spriteGetter, modelState, blockModel.getOverrides(modelBaker, owner, spriteGetter));
 
         // Handle vanilla item models here, since vanilla has a shortcut for them
         if (blockModel.getRootModel() == ModelBakery.GENERATION_MARKER)
-            return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, blockModel).bakeVanilla(modelBaker, blockModel, spriteGetter, modelState, modelLocation, guiLight3d);
+            return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, blockModel).bakeVanilla(modelBaker, blockModel, spriteGetter, modelState, guiLight3d);
 
         if (blockModel.getRootModel() == ModelBakery.BLOCK_ENTITY_MARKER) {
             var particleSprite = spriteGetter.apply(blockModel.getMaterial("particle"));
@@ -109,7 +109,7 @@ public class UnbakedGeometryHelper {
         }
 
         var elementsModel = new ElementsModel(blockModel.getElements());
-        return elementsModel.bake(blockModel.customData, modelBaker, spriteGetter, modelState, blockModel.getOverrides(modelBaker, owner, spriteGetter), modelLocation);
+        return elementsModel.bake(blockModel.customData, modelBaker, spriteGetter, modelState, blockModel.getOverrides(modelBaker, owner, spriteGetter));
     }
 
     /**
@@ -211,15 +211,15 @@ public class UnbakedGeometryHelper {
     /**
      * Bakes a list of {@linkplain BlockElement block elements} and feeds the baked quads to a {@linkplain IModelBuilder model builder}.
      */
-    public static void bakeElements(IModelBuilder<?> builder, List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation) {
+    public static void bakeElements(IModelBuilder<?> builder, List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState) {
         for (BlockElement element : elements) {
             element.faces.forEach((side, face) -> {
-                var sprite = spriteGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(face.texture)));
-                var quad = bakeElementFace(element, face, sprite, side, modelState, modelLocation);
-                if (face.cullForDirection == null)
+                var sprite = spriteGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(face.texture())));
+                var quad = bakeElementFace(element, face, sprite, side, modelState);
+                if (face.cullForDirection() == null)
                     builder.addUnculledFace(quad);
                 else
-                    builder.addCulledFace(Direction.rotate(modelState.getRotation().getMatrix(), face.cullForDirection), quad);
+                    builder.addCulledFace(Direction.rotate(modelState.getRotation().getMatrix(), face.cullForDirection()), quad);
             });
         }
     }
@@ -227,19 +227,19 @@ public class UnbakedGeometryHelper {
     /**
      * Bakes a list of {@linkplain BlockElement block elements} and returns the list of baked quads.
      */
-    public static List<BakedQuad> bakeElements(List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation) {
+    public static List<BakedQuad> bakeElements(List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState) {
         if (elements.isEmpty())
             return List.of();
         var list = new ArrayList<BakedQuad>();
-        bakeElements(IModelBuilder.collecting(list), elements, spriteGetter, modelState, modelLocation);
+        bakeElements(IModelBuilder.collecting(list), elements, spriteGetter, modelState);
         return list;
     }
 
     /**
      * Turns a single {@link BlockElementFace} into a {@link BakedQuad}.
      */
-    public static BakedQuad bakeElementFace(BlockElement element, BlockElementFace face, TextureAtlasSprite sprite, Direction direction, ModelState state, ResourceLocation modelLocation) {
-        return FACE_BAKERY.bakeQuad(element.from, element.to, face, sprite, direction, state, element.rotation, element.shade, modelLocation);
+    public static BakedQuad bakeElementFace(BlockElement element, BlockElementFace face, TextureAtlasSprite sprite, Direction direction, ModelState state) {
+        return FACE_BAKERY.bakeQuad(element.from, element.to, face, sprite, direction, state, element.rotation, element.shade);
     }
 
     /**

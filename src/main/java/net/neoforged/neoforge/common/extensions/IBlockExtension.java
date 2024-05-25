@@ -11,6 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -273,7 +274,7 @@ public interface IBlockExtension {
      * @param orientation The angle the entity had when setting the respawn point
      * @return The spawn position or the empty optional if respawning here is not possible
      */
-    default Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
+    default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
         return Optional.empty();
     }
 
@@ -446,15 +447,13 @@ public interface IBlockExtension {
     /**
      * Gathers how much experience this block drops when broken.
      *
-     * @param state          The current state
-     * @param level          The level
-     * @param randomSource   Random source to use for experience randomness
-     * @param pos            Block position
-     * @param fortuneLevel   fortune enchantment level of tool being used
-     * @param silkTouchLevel silk touch enchantment level of tool being used
+     * @param state        The current state
+     * @param level        The level
+     * @param randomSource Random source to use for experience randomness
+     * @param pos          Block position
      * @return Amount of XP from breaking this block.
      */
-    default int getExpDrop(BlockState state, LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+    default int getExpDrop(BlockState state, LevelReader level, RandomSource randomSource, BlockPos pos) {
         return 0;
     }
 
@@ -528,12 +527,12 @@ public interface IBlockExtension {
      * @param level     The level
      * @param pos       The position of this state
      * @param beaconPos The position of the beacon
-     * @return A float RGB [0.0, 1.0] array to be averaged with a beacon's existing beam color, or null to do nothing to the beam
+     * @return An Integer ARGB value to be averaged with a beacon's existing beam color, or null to do nothing to the beam
      */
     @Nullable
-    default float[] getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
+    default Integer getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
         if (self() instanceof BeaconBeamBlock)
-            return ((BeaconBeamBlock) self()).getColor().getTextureDiffuseColors();
+            return ((BeaconBeamBlock) self()).getColor().getTextureDiffuseColor();
         return null;
     }
 

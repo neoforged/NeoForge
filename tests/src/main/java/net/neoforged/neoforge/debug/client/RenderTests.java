@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,13 +21,9 @@ public class RenderTests {
         test.framework().modEventBus().addListener(RenderLevelStageEvent.RegisterStageEvent.class, event -> {
             var state = new AtomicInteger();
             var usage = VertexFormatElement.Usage.create("TEST", "Test",
-                    (size, type, stride, offset, uvIndex, index) -> state.incrementAndGet(),
-                    (uvIndex, index) -> state.decrementAndGet());
-            var element = new VertexFormatElement(0, VertexFormatElement.Type.BYTE, usage, 4);
-            var format = new VertexFormat(
-                    ImmutableMap.<String, VertexFormatElement>builder()
-                            .put("TEST", element)
-                            .build());
+                    (size, type, stride, offset, index) -> state.incrementAndGet());
+            var element = new VertexFormatElement(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.BYTE, usage, 4);
+            var format = VertexFormat.builder().add("TEST", element).build();
 
             format.setupBufferState();
 
@@ -38,11 +33,6 @@ public class RenderTests {
             }
 
             format.clearBufferState();
-
-            if (state.get() != 0) {
-                test.fail("VertexFormatElement.Usage clear state callback was not called");
-                return;
-            }
 
             test.pass();
         });

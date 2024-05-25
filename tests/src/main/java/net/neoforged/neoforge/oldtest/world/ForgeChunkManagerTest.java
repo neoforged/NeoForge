@@ -38,7 +38,7 @@ public class ForgeChunkManagerTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.register("chunk_loader", () -> new ChunkLoaderBlock(Properties.of().mapColor(MapColor.STONE)));
     private static final DeferredItem<BlockItem> CHUNK_LOADER_ITEM = ITEMS.registerSimpleBlockItem(CHUNK_LOADER_BLOCK);
-    private static final TicketController CONTROLLER = new TicketController(new ResourceLocation(MODID, "default"), (world, ticketHelper) -> {
+    private static final TicketController CONTROLLER = new TicketController(ResourceLocation.fromNamespaceAndPath(MODID, "default"), (world, ticketHelper) -> {
         for (Map.Entry<BlockPos, TicketSet> entry : ticketHelper.getBlockTickets().entrySet()) {
             BlockPos key = entry.getKey();
             int ticketCount = entry.getValue().nonTicking().size();

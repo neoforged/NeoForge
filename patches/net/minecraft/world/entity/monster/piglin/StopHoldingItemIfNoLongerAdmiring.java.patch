@@ -3,9 +3,9 @@
 @@ -11,7 +_,7 @@
      public static BehaviorControl<Piglin> create() {
          return BehaviorBuilder.create(
-             p_259197_ -> p_259197_.group(p_259197_.absent(MemoryModuleType.ADMIRING_ITEM)).apply(p_259197_, p_259512_ -> (p_337869_, p_337870_, p_337871_) -> {
--                        if (!p_337870_.getOffhandItem().isEmpty() && !p_337870_.getOffhandItem().is(Items.SHIELD)) {
-+                        if (!p_337870_.getOffhandItem().isEmpty() && !p_337870_.getOffhandItem().canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
-                             PiglinAi.stopHoldingOffHandItem(p_337870_, true);
+             p_259197_ -> p_259197_.group(p_259197_.absent(MemoryModuleType.ADMIRING_ITEM)).apply(p_259197_, p_259512_ -> (p_352826_, p_352827_, p_352828_) -> {
+-                        if (!p_352827_.getOffhandItem().isEmpty() && !p_352827_.getOffhandItem().is(Items.SHIELD)) {
++                        if (!p_352827_.getOffhandItem().isEmpty() && !p_352827_.getOffhandItem().canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
+                             PiglinAi.stopHoldingOffHandItem(p_352827_, true);
                              return true;
                          } else {

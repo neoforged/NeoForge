@@ -24,7 +24,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         return net.minecraft.util.StringUtil.stripColor(value);
     }
 
-    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final ResourceLocation VERSION_CHECK_ICONS = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
     private final int listWidth;
 
     private ModListScreen parent;

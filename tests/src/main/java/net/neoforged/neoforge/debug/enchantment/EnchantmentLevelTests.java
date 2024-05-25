@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.enchantment;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -33,29 +34,29 @@ public class EnchantmentLevelTests {
 
             // Increase the level of sharpness by 1 in all cases.
             if (e.isTargetting(Enchantments.SHARPNESS)) {
-                enchants.set(Enchantments.SHARPNESS, enchants.getLevel(Enchantments.SHARPNESS) + 1);
+                enchants.set(e.getTargetEnchant(), enchants.getLevel(e.getTargetEnchant()) + 1);
             }
 
             // Increase the level of fire aspect by 1 if the stack contains specific NBT.
             if (e.isTargetting(Enchantments.FIRE_ASPECT)) {
                 if (e.getStack().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("boost_fire_aspect")) {
-                    enchants.set(Enchantments.FIRE_ASPECT, enchants.getLevel(Enchantments.FIRE_ASPECT) + 1);
+                    enchants.set(e.getTargetEnchant(), enchants.getLevel(e.getTargetEnchant()) + 1);
                 }
             }
         });
 
         test.onGameTest(helper -> {
-
+            var enchants = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
             ItemStack stack = new ItemStack(Items.IRON_SWORD);
 
-            helper.assertTrue(stack.getEnchantmentLevel(Enchantments.FIRE_ASPECT) == 0, "Fire Aspect level was not zero");
-            helper.assertTrue(stack.getEnchantmentLevel(Enchantments.SHARPNESS) == 1, "Sharpness level was not one");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.FIRE_ASPECT)) == 0, "Fire Aspect level was not zero");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.SHARPNESS)) == 1, "Sharpness level was not one");
 
             CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.put("boost_fire_aspect", new CompoundTag())); // Creates the sub-compound "boost_fire_aspect" which will trigger the event listener above.
-            stack.enchant(Enchantments.SHARPNESS, 5);
+            stack.enchant(enchants.getHolderOrThrow(Enchantments.SHARPNESS), 5);
 
-            helper.assertTrue(stack.getEnchantmentLevel(Enchantments.FIRE_ASPECT) == 1, "Fire Aspect level was not one");
-            helper.assertTrue(stack.getEnchantmentLevel(Enchantments.SHARPNESS) == 6, "Sharpness level was not six");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.FIRE_ASPECT)) == 1, "Fire Aspect level was not one");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.SHARPNESS)) == 6, "Sharpness level was not six");
 
             helper.succeed();
         });

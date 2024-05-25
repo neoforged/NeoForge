@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -132,10 +133,10 @@ public interface IItemExtension {
 
     /**
      * Determines the amount of durability the mending enchantment
-     * will repair, on average, per point of experience.
+     * will repair, on average, per 0.5 points of experience.
      */
     default float getXpRepairRatio(ItemStack stack) {
-        return 2f;
+        return 1f;
     }
 
     /**
@@ -282,8 +283,8 @@ public interface IItemExtension {
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
-        return Mob.getEquipmentSlotForItem(stack) == armorType;
+    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+        return entity.getEquipmentSlotForItem(stack) == armorType;
     }
 
     /**
@@ -431,7 +432,7 @@ public interface IItemExtension {
      * @return true if the enchantment can be applied to this item
      */
     default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return stack.getItem().builtInRegistryHolder().is(enchantment.getSupportedItems());
+        return enchantment.getSupportedItems().contains(stack.getItem().builtInRegistryHolder());
     }
 
     /**
@@ -446,7 +447,7 @@ public interface IItemExtension {
      * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel(Enchantment)}.
      */
     @ApiStatus.OverrideOnly
-    default int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
+    default int getEnchantmentLevel(ItemStack stack, Holder<Enchantment> enchantment) {
         ItemEnchantments itemenchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
         return itemenchantments.getLevel(enchantment);
     }
@@ -599,7 +600,7 @@ public interface IItemExtension {
      * @param onBroken The on-broken callback from vanilla
      * @return The amount of damage to pass to the vanilla logic
      */
-    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Runnable onBroken) {
+    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
         return amount;
     }
 

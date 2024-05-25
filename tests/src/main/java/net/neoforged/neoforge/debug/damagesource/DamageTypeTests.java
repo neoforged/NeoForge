@@ -66,7 +66,7 @@ public class DamageTypeTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom damage types function as expected")
     static void dmgTypeTests(final DynamicTest test, final RegistrationHelper reg) {
-        ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(reg.modId(), "test"));
+        ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "test"));
 
         Holder<Item> customSword = reg.registrar(Registries.ITEM).register("custom_damage_sword", () -> new Item(new Item.Properties()) {
             @Override

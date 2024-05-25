@@ -95,6 +95,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import net.minecraft.world.level.storage.ServerLevelData;
@@ -880,8 +881,8 @@ public class EventHooks {
      * @param fromEndFight    Whether the player is respawning because they jumped through the End return portal
      * @return The event
      */
-    public static PlayerRespawnPositionEvent firePlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
-        return NeoForge.EVENT_BUS.post(new PlayerRespawnPositionEvent(player, respawnLevel, respawnAngle, respawnPosition, fromEndFight));
+    public static PlayerRespawnPositionEvent firePlayerRespawnPositionEvent(ServerPlayer player, DimensionTransition dimensionTransition, boolean fromEndFight) {
+        return NeoForge.EVENT_BUS.post(new PlayerRespawnPositionEvent(player, dimensionTransition, fromEndFight));
     }
 
     /**
@@ -1034,7 +1035,7 @@ public class EventHooks {
      * @param ench  The enchantment being queried for.
      * @return The new level of the enchantment.
      */
-    public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Enchantment ench) {
+    public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Holder<Enchantment> ench) {
         var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         enchantments.set(ench, level);
         var event = new GetEnchantmentLevelEvent(stack, enchantments, ench);

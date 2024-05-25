@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
@@ -26,12 +27,12 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public abstract class RenderGuiLayerEvent extends Event {
     private final GuiGraphics guiGraphics;
-    private final float partialTick;
+    private final DeltaTracker partialTick;
     private final ResourceLocation name;
     private final LayeredDraw.Layer layer;
 
     @ApiStatus.Internal
-    protected RenderGuiLayerEvent(GuiGraphics guiGraphics, float partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+    protected RenderGuiLayerEvent(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
         this.name = name;
@@ -42,7 +43,7 @@ public abstract class RenderGuiLayerEvent extends Event {
         return guiGraphics;
     }
 
-    public float getPartialTick() {
+    public DeltaTracker getPartialTick() {
         return partialTick;
     }
 
@@ -68,7 +69,7 @@ public abstract class RenderGuiLayerEvent extends Event {
      */
     public static class Pre extends RenderGuiLayerEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(GuiGraphics guiGraphics, float partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+        public Pre(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
             super(guiGraphics, partialTick, name, layer);
         }
     }
@@ -83,7 +84,7 @@ public abstract class RenderGuiLayerEvent extends Event {
      */
     public static class Post extends RenderGuiLayerEvent {
         @ApiStatus.Internal
-        public Post(GuiGraphics guiGraphics, float partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+        public Post(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
             super(guiGraphics, partialTick, name, layer);
         }
     }

@@ -44,10 +44,10 @@ import org.jetbrains.annotations.VisibleForTesting;
  * @Override
  * protected void addDescriptions() {
  *     // Single sprite
- *     this.sprite(ParticleTypes.DRIPPING_LAVA, new ResourceLocation("drip_hang"));
+ *     this.sprite(ParticleTypes.DRIPPING_LAVA, ResourceLocation.withDefaultNamespace("drip_hang"));
  *
  *     // Multiple sprites
- *     this.spriteSet(ParticleTypes.CLOUD, new ResourceLocation("generic"), 8, true);
+ *     this.spriteSet(ParticleTypes.CLOUD, ResourceLocation.withDefaultNamespace("generic"), 8, true);
  * }
  * }</pre>
  *

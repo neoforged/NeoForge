@@ -38,10 +38,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
-import net.neoforged.neoforge.client.CreativeModeTabSearchRegistry;
-import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +46,7 @@ import org.slf4j.Logger;
 
 public final class CreativeModeTabRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final ResourceLocation CREATIVE_MODE_TAB_ORDERING_JSON = new ResourceLocation("neoforge", "creative_mode_tab_ordering.json");
+    private static final ResourceLocation CREATIVE_MODE_TAB_ORDERING_JSON = ResourceLocation.fromNamespaceAndPath("neoforge", "creative_mode_tab_ordering.json");
     private static final List<CreativeModeTab> SORTED_TABS = new ArrayList<>();
     private static final List<CreativeModeTab> SORTED_TABS_VIEW = Collections.unmodifiableList(SORTED_TABS);
     private static final List<CreativeModeTab> DEFAULT_TABS = new ArrayList<>();
@@ -112,7 +109,7 @@ public final class CreativeModeTabRegistry {
                         JsonArray order = GsonHelper.getAsJsonArray(data, "order");
                         List<CreativeModeTab> customOrder = new ArrayList<>();
                         for (JsonElement entry : order) {
-                            ResourceLocation id = new ResourceLocation(entry.getAsString());
+                            ResourceLocation id = ResourceLocation.parse(entry.getAsString());
                             CreativeModeTab CreativeModeTab = getTab(id);
                             if (CreativeModeTab == null)
                                 throw new IllegalStateException("CreativeModeTab not found with name " + id);
@@ -215,9 +212,6 @@ public final class CreativeModeTabRegistry {
         }
 
         recalculateItemCreativeModeTabs();
-
-        if (FMLEnvironment.dist.isClient() && !DatagenModLoader.isRunningDataGen())
-            CreativeModeTabSearchRegistry.createSearchTrees();
     }
 
     private static void addTabOrder(CreativeModeTab tab, ResourceLocation name) {

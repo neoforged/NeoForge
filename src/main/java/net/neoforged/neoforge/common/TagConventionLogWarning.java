@@ -534,6 +534,6 @@ public final class TagConventionLogWarning {
     }
 
     private static <T> TagKey<T> createTagKey(ResourceKey<Registry<T>> registryKey, String namespace, String tagId) {
-        return TagKey.create(registryKey, new ResourceLocation(namespace, tagId));
+        return TagKey.create(registryKey, ResourceLocation.fromNamespaceAndPath(namespace, tagId));
     }
 }

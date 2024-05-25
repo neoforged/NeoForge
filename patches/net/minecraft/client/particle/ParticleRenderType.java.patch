@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/ParticleRenderType.java
 +++ b/net/minecraft/client/particle/ParticleRenderType.java
-@@ -52,6 +_,11 @@
+@@ -43,6 +_,11 @@
          public String toString() {
              return "PARTICLE_SHEET_OPAQUE";
          }
@@ -12,7 +12,7 @@
      };
      ParticleRenderType PARTICLE_SHEET_TRANSLUCENT = new ParticleRenderType() {
          @Override
-@@ -91,6 +_,11 @@
+@@ -72,6 +_,11 @@
          public String toString() {
              return "PARTICLE_SHEET_LIT";
          }
@@ -24,10 +24,10 @@
      };
      ParticleRenderType CUSTOM = new ParticleRenderType() {
          @Override
-@@ -126,4 +_,9 @@
-     void begin(BufferBuilder p_107436_, TextureManager p_107437_);
+@@ -101,4 +_,9 @@
  
-     void end(Tesselator p_107438_);
+     @Nullable
+     BufferBuilder begin(Tesselator p_350949_, TextureManager p_107437_);
 +
 +    /** {@return whether this type renders before or after the translucent chunk layer} */
 +    default boolean isTranslucent() {

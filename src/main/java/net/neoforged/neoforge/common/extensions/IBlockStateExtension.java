@@ -11,6 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -176,7 +177,7 @@ public interface IBlockStateExtension {
      * @param orientation The angle the entity had when setting the respawn point
      * @return The spawn position or the empty optional if respawning here is not possible
      */
-    default Optional<Vec3> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation) {
+    default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation) {
         return self().getBlock().getRespawnPosition(self(), type, level, pos, orientation);
     }
 
@@ -346,9 +347,9 @@ public interface IBlockStateExtension {
      * @param silkTouchLevel silk touch enchantment level of tool being used
      * @return Amount of XP from breaking this block.
      */
-    default int getExpDrop(LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+    default int getExpDrop(LevelReader level, RandomSource randomSource, BlockPos pos) {
         // TODO: Change this method to have context of the full tool ItemStack instead of just the enchantment levels.
-        return self().getBlock().getExpDrop(self(), level, randomSource, pos, fortuneLevel, silkTouchLevel);
+        return self().getBlock().getExpDrop(self(), level, randomSource, pos);
     }
 
     default BlockState rotate(LevelAccessor level, BlockPos pos, Rotation direction) {
@@ -424,7 +425,7 @@ public interface IBlockStateExtension {
      * @return A float RGB [0.0, 1.0] array to be averaged with a beacon's existing beam color, or null to do nothing to the beam
      */
     @Nullable
-    default float[] getBeaconColorMultiplier(LevelReader level, BlockPos pos, BlockPos beacon) {
+    default Integer getBeaconColorMultiplier(LevelReader level, BlockPos pos, BlockPos beacon) {
         return self().getBlock().getBeaconColorMultiplier(self(), level, pos, beacon);
     }
 

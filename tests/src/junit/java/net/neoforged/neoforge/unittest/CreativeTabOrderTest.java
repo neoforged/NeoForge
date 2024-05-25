@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -78,10 +77,7 @@ public class CreativeTabOrderTest {
     @Test
     void testIngredientsEnchantmentExistence(MinecraftServer server) {
         final Set<ItemStack> tabEnchantments = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements()
-                .map(Holder::value)
-                .filter(enchantment -> enchantment.isEnabled(FeatureFlags.DEFAULT_FLAGS))
-                .filter(enchantment -> enchantment.allowedInCreativeTab(Items.ENCHANTED_BOOK, ENCHANTABLES))
-                .map(enchantment -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, enchantment.getMaxLevel())))
+                .map(enchantment -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, enchantment.value().getMaxLevel())))
                 .collect(() -> new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG), ObjectOpenCustomHashSet::add, ObjectOpenCustomHashSet::addAll);
         for (Map.Entry<ItemStack, CreativeModeTab.TabVisibility> entry : ingredientsTab) {
             if (entry.getValue() == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
@@ -103,11 +99,8 @@ public class CreativeTabOrderTest {
     @Test
     void testSearchEnchantmentOrder(MinecraftServer server) {
         final var tabEnchantments = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements()
-                .map(Holder::value)
-                .filter(enchantment -> enchantment.isEnabled(FeatureFlags.DEFAULT_FLAGS))
-                .filter(enchantment -> enchantment.allowedInCreativeTab(Items.ENCHANTED_BOOK, ENCHANTABLES))
                 .flatMap(
-                        enchantment -> IntStream.rangeClosed(enchantment.getMinLevel(), enchantment.getMaxLevel())
+                        enchantment -> IntStream.rangeClosed(enchantment.value().getMinLevel(), enchantment.value().getMaxLevel())
                                 .mapToObj(p_270006_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, p_270006_))))
                 .collect(() -> new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG), ObjectOpenCustomHashSet::add, ObjectOpenCustomHashSet::addAll);
 

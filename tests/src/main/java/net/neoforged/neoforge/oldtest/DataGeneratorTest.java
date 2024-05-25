@@ -80,7 +80,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.TheEndBiomeSource;
 import net.minecraft.world.level.block.BarrelBlock;
@@ -144,8 +143,8 @@ public class DataGeneratorTest {
     private static Gson GSON = null;
 
     // Datapack registry objects
-    private static final ResourceKey<NoiseGeneratorSettings> TEST_SETTINGS = ResourceKey.create(Registries.NOISE_SETTINGS, new ResourceLocation(MODID, "test_settings"));
-    private static final ResourceKey<LevelStem> TEST_LEVEL_STEM = ResourceKey.create(Registries.LEVEL_STEM, new ResourceLocation(MODID, "test_level_stem"));
+    private static final ResourceKey<NoiseGeneratorSettings> TEST_SETTINGS = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.fromNamespaceAndPath(MODID, "test_settings"));
+    private static final ResourceKey<LevelStem> TEST_LEVEL_STEM = ResourceKey.create(Registries.LEVEL_STEM, ResourceLocation.fromNamespaceAndPath(MODID, "test_level_stem"));
     private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.NOISE_SETTINGS, context -> context.register(TEST_SETTINGS, NoiseGeneratorSettings.floatingIslands(context)))
             .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
@@ -216,7 +215,7 @@ public class DataGeneratorTest {
                                             not(modLoaded("minecraft")),
                                             itemExists("minecraft", "dirt"),
                                             FALSE())),
-                            new ResourceLocation("data_gen_test", "conditional"));
+                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional"));
 
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
                     .pattern("XXX")
@@ -232,7 +231,7 @@ public class DataGeneratorTest {
                                                     not(modLoaded("minecraft")),
                                                     itemExists("minecraft", "dirt"),
                                                     FALSE()))),
-                            new ResourceLocation("data_gen_test", "conditional2"));
+                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional2"));
 
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
                     .pattern("XX")
@@ -243,7 +242,7 @@ public class DataGeneratorTest {
                     .save(
                             consumer.withConditions(
                                     tagEmpty(ItemTags.PLANKS)),
-                            new ResourceLocation("data_gen_test", "conditional3"));
+                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional3"));
 
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
                     .pattern("XX")
@@ -254,7 +253,7 @@ public class DataGeneratorTest {
                     .save(
                             consumer.withConditions(
                                     not(tagEmpty(ItemTags.PLANKS))),
-                            new ResourceLocation("data_gen_test", "conditional4"));
+                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional4"));
 
             // intersection - should match all non-flammable planks
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERRACK)
@@ -263,7 +262,7 @@ public class DataGeneratorTest {
                     .pattern(" # ")
                     .define('#', IntersectionIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                    .save(consumer, new ResourceLocation("data_gen_test", "intersection_ingredient"));
+                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "intersection_ingredient"));
 
             // difference - should match all flammable fences
             ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.FLINT_AND_STEEL)
@@ -272,7 +271,7 @@ public class DataGeneratorTest {
                     .pattern(" # ")
                     .define('#', DifferenceIngredient.of(Ingredient.of(ItemTags.FENCES), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
                     .unlockedBy("has_fence", has(Items.CRIMSON_FENCE))
-                    .save(consumer, new ResourceLocation("data_gen_test", "difference_ingredient"));
+                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "difference_ingredient"));
 
             // compound - should match planks, logs, or bedrock
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIRT)
@@ -280,7 +279,7 @@ public class DataGeneratorTest {
                     .pattern(" # ")
                     .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), Ingredient.of(Blocks.BEDROCK)))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                    .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_only_vanilla"));
+                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "compound_ingredient_only_vanilla"));
 
             // compound - should match planks, logs, or a stone pickaxe with 3 damage
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.GOLD_BLOCK)
@@ -292,7 +291,7 @@ public class DataGeneratorTest {
                         return stack;
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                    .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_custom_types"));
+                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "compound_ingredient_custom_types"));
         }
     }
 
@@ -359,7 +358,7 @@ public class DataGeneratorTest {
                     sound("item/trident/return3").pitch(1.2).volume(0.8)).subtitle("subtitles.item.trident.return"));
 
             //music_disc.blocks
-            this.add(SoundEvents.MUSIC_DISC_BLOCKS, definition().with(sound("records/blocks").stream()));
+            this.add(SoundEvents.MUSIC_DISC_BLOCKS.value(), definition().with(sound("records/blocks").stream()));
         }
 
         @Override
@@ -376,7 +375,7 @@ public class DataGeneratorTest {
             }
             final JsonObject actual;
             try {
-                List<Resource> resourceStack = this.helper.getResourceStack(new ResourceLocation("sounds.json"), PackType.CLIENT_RESOURCES);
+                List<Resource> resourceStack = this.helper.getResourceStack(ResourceLocation.withDefaultNamespace("sounds.json"), PackType.CLIENT_RESOURCES);
                 // Get the first resource in the stack
                 // This guarantees vanilla even when a forge sounds.json is present because getResourceStack reverses the list
                 // so that the lower priority resources are first (to allow overwriting data in later entries)
@@ -496,22 +495,22 @@ public class DataGeneratorTest {
 
         @Override
         protected void addTags(HolderLookup.Provider provider) {
-            tag(BlockTags.create(new ResourceLocation(MODID, "test")))
+            tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "test")))
                     .add(Blocks.DIAMOND_BLOCK)
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
-                    .addOptional(new ResourceLocation("chisel", "marble/raw"))
-                    .addOptionalTag(new ResourceLocation("neoforge", "storage_blocks/ruby"));
+                    .addOptional(ResourceLocation.fromNamespaceAndPath("chisel", "marble/raw"))
+                    .addOptionalTag(ResourceLocation.fromNamespaceAndPath("neoforge", "storage_blocks/ruby"));
 
             // Hopefully sorting issues
-            tag(BlockTags.create(new ResourceLocation(MODID, "thing/one")))
+            tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/one")))
                     .add(Blocks.COBBLESTONE);
-            tag(BlockTags.create(new ResourceLocation(MODID, "thing/two")))
+            tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/two")))
                     .add(Blocks.DIORITE);
-            tag(BlockTags.create(new ResourceLocation(MODID, "thing/three")))
+            tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/three")))
                     .add(Blocks.ANDESITE);
 
-            tag(BlockTags.create(new ResourceLocation(MODID, "things")))
+            tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "things")))
                     .add(Blocks.COBBLESTONE)
                     .add(Blocks.DIORITE)
                     .add(Blocks.ANDESITE);
@@ -529,7 +528,6 @@ public class DataGeneratorTest {
             add(Items.DIAMOND, "Diamond");
             //add(Biomes.BEACH, "Beach");
             add(MobEffects.POISON.value(), "Poison");
-            add(Enchantments.SHARPNESS, "Sharpness");
             add(EntityType.CAT, "Cat");
             add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");
         }
@@ -587,7 +585,7 @@ public class DataGeneratorTest {
         @Override
         public CompletableFuture<?> run(CachedOutput cache) {
             var output = super.run(cache);
-            List<String> errors = testModelResults(this.generatedModels, existingFileHelper, IGNORED_MODELS.stream().map(s -> new ResourceLocation(MODID, folder + "/" + s)).collect(Collectors.toSet()));
+            List<String> errors = testModelResults(this.generatedModels, existingFileHelper, IGNORED_MODELS.stream().map(s -> ResourceLocation.fromNamespaceAndPath(MODID, folder + "/" + s)).collect(Collectors.toSet()));
             if (!errors.isEmpty()) {
                 LOGGER.error("Found {} discrepancies between generated and vanilla item models: ", errors.size());
                 for (String s : errors) {
@@ -619,7 +617,7 @@ public class DataGeneratorTest {
             ModelFile birchFenceGateOpen = models().fenceGateOpen("birch_fence_gate_open", mcLoc("block/birch_planks"));
             ModelFile birchFenceGateWall = models().fenceGateWall("birch_fence_gate_wall", mcLoc("block/birch_planks"));
             ModelFile birchFenceGateWallOpen = models().fenceGateWallOpen("birch_fence_gate_wall_open", mcLoc("block/birch_planks"));
-            ModelFile invisbleModel = new UncheckedModelFile(new ResourceLocation("builtin/generated"));
+            ModelFile invisbleModel = new UncheckedModelFile(ResourceLocation.withDefaultNamespace("builtin/generated"));
             VariantBlockStateBuilder builder = getVariantBuilder(Blocks.BIRCH_FENCE_GATE);
             for (Direction dir : FenceGateBlock.FACING.getPossibleValues()) {
                 int angle = (int) dir.toYRot();
@@ -755,8 +753,8 @@ public class DataGeneratorTest {
         private static final Set<Block> IGNORED_BLOCKS = ImmutableSet.of(Blocks.BIRCH_FENCE_GATE, Blocks.STONE);
         // Vanilla doesn't generate these models yet, so they have minor discrepancies that are hard to test
         // This list should probably be cleared and investigated after each major version update
-        private static final Set<ResourceLocation> IGNORED_MODELS = ImmutableSet.of(new ResourceLocation(MODID, "block/cube"));
-        private static final Set<ResourceLocation> CUSTOM_MODELS = ImmutableSet.of(new ResourceLocation(MODID, "block/test_block"));
+        private static final Set<ResourceLocation> IGNORED_MODELS = ImmutableSet.of(ResourceLocation.fromNamespaceAndPath(MODID, "block/cube"));
+        private static final Set<ResourceLocation> CUSTOM_MODELS = ImmutableSet.of(ResourceLocation.fromNamespaceAndPath(MODID, "block/test_block"));
 
         private List<String> errors = new ArrayList<>();
 
@@ -946,63 +944,63 @@ public class DataGeneratorTest {
                     .display(Items.DIRT,
                             Component.translatable(Items.DIRT.getDescriptionId()),
                             Component.translatable("dirt_description"),
-                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                            ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
                             AdvancementType.TASK,
                             true,
                             true,
                             false)
                     .addCriterion("has_dirt", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIRT))
-                    .save(saver, new ResourceLocation(MODID, "obtain_dirt"), existingFileHelper);
+                    .save(saver, ResourceLocation.fromNamespaceAndPath(MODID, "obtain_dirt"), existingFileHelper);
 
             Advancement.Builder.advancement()
                     .parent(obtainDirt)
                     .display(Items.DIAMOND_BLOCK,
                             Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
                             Component.literal("You obtained a DiamondBlock"),
-                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                            ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
                             AdvancementType.CHALLENGE,
                             true,
                             true,
                             false)
                     .addCriterion("obtained_diamond_block", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND_BLOCK))
-                    .save(saver, new ResourceLocation("obtain_diamond_block"), existingFileHelper);
+                    .save(saver, ResourceLocation.withDefaultNamespace("obtain_diamond_block"), existingFileHelper);
 
             Advancement.Builder.advancement()
                     .display(Blocks.GRASS_BLOCK,
                             Component.translatable("advancements.story.root.title"),
                             Component.literal("Changed Description"),
-                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                            ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
                             AdvancementType.TASK,
                             false,
                             false,
                             false)
                     .addCriterion("crafting_table", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.CRAFTING_TABLE))
-                    .save(saver, new ResourceLocation("story/root"), existingFileHelper);
+                    .save(saver, ResourceLocation.withDefaultNamespace("story/root"), existingFileHelper);
 
             // This should cause an error because of the parent not existing
 /*            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
         new TranslationTextComponent(Items.COBBLESTONE.getDescriptionId()),
         new StringTextComponent("You got cobblestone"),
-        new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+        ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
         AdvancementType.TASK,
         false,
         false,
         false)
         .addCriterion("get_cobbleStone", InventoryChangeTrigger.Instance.hasItems(Items.COBBLESTONE))
-        .parent(new ResourceLocation("not_there/not_here"))
-        .save(consumer, new ResourceLocation("illegal_parent"), fileHelper);*/
+        .parent(ResourceLocation.withDefaultNamespace("not_there/not_here"))
+        .save(consumer, ResourceLocation.withDefaultNamespace("illegal_parent"), fileHelper);*/
 
-            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
-                    Component.translatable(Items.COBBLESTONE.getDescriptionId()),
-                    Component.literal("You got cobblestone"),
-                    new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                    AdvancementType.TASK,
-                    false,
-                    false,
-                    false)
-                    .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
-                    .parent(new ResourceLocation("neoforge", "dummy_parent"))
-                    .save(saver, new ResourceLocation("good_parent"), existingFileHelper);
+//            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
+//                    Component.translatable(Items.COBBLESTONE.getDescriptionId()),
+//                    Component.literal("You got cobblestone"),
+//                    ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
+//                    AdvancementType.TASK,
+//                    false,
+//                    false,
+//                    false)
+//                    .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
+//                    .parent(ResourceLocation.fromNamespaceAndPath("neoforge", "dummy_parent"))
+//                    .save(saver, ResourceLocation.withDefaultNamespace("good_parent"), existingFileHelper);
         }
     }
 
@@ -1013,18 +1011,18 @@ public class DataGeneratorTest {
 
         @Override
         protected void addDescriptions() {
-            this.sprite(ParticleTypes.DRIPPING_LAVA, new ResourceLocation("drip_hang"));
+            this.sprite(ParticleTypes.DRIPPING_LAVA, ResourceLocation.withDefaultNamespace("drip_hang"));
 
-            this.spriteSet(ParticleTypes.CLOUD, new ResourceLocation("generic"), 8, true);
+            this.spriteSet(ParticleTypes.CLOUD, ResourceLocation.withDefaultNamespace("generic"), 8, true);
 
             this.spriteSet(ParticleTypes.FISHING,
-                    new ResourceLocation("splash_0"),
-                    new ResourceLocation("splash_1"),
-                    new ResourceLocation("splash_2"),
-                    new ResourceLocation("splash_3"));
+                    ResourceLocation.withDefaultNamespace("splash_0"),
+                    ResourceLocation.withDefaultNamespace("splash_1"),
+                    ResourceLocation.withDefaultNamespace("splash_2"),
+                    ResourceLocation.withDefaultNamespace("splash_3"));
 
             this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>() {
-                private final ResourceLocation base = new ResourceLocation("sga");
+                private final ResourceLocation base = ResourceLocation.withDefaultNamespace("sga");
                 private char suffix = 'a';
 
                 @Override
@@ -1086,7 +1084,7 @@ public class DataGeneratorTest {
                 generated.addProperty("parent", toVanillaModel(generated.get("parent").getAsString()));
             }
             try {
-                Resource vanillaResource = existingFileHelper.getResource(new ResourceLocation(loc.getPath()), PackType.CLIENT_RESOURCES, ".json", "models");
+                Resource vanillaResource = existingFileHelper.getResource(ResourceLocation.parse(loc.getPath()), PackType.CLIENT_RESOURCES, ".json", "models");
                 JsonObject existing = GSON.fromJson(vanillaResource.openAsReader(), JsonObject.class);
 
                 JsonElement generatedDisplay = generated.remove("display");

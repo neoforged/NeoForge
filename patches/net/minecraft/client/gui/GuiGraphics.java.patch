@@ -9,7 +9,7 @@
      public static final float MAX_GUI_Z = 10000.0F;
      public static final float MIN_GUI_Z = -10000.0F;
      private static final int EXTRA_SPACE_AFTER_FIRST_TOOLTIP_LINE = 2;
-@@ -280,6 +_,11 @@
+@@ -268,6 +_,11 @@
      }
  
      public int drawString(Font p_283343_, @Nullable String p_281896_, int p_283569_, int p_283418_, int p_281560_, boolean p_282130_) {
@@ -21,7 +21,7 @@
          if (p_281896_ == null) {
              return 0;
          } else {
-@@ -306,6 +_,11 @@
+@@ -294,6 +_,11 @@
      }
  
      public int drawString(Font p_282636_, FormattedCharSequence p_281596_, int p_281586_, int p_282816_, int p_281743_, boolean p_282394_) {
@@ -33,7 +33,7 @@
          int i = p_282636_.drawInBatch(
              p_281596_,
              (float)p_281586_,
-@@ -879,19 +_,26 @@
+@@ -873,19 +_,26 @@
              }
  
              this.pose.popPose();
@@ -65,7 +65,7 @@
          this.renderTooltipInternal(p_283128_, list, p_283678_, p_281696_, DefaultTooltipPositioner.INSTANCE);
      }
  
-@@ -900,7 +_,15 @@
+@@ -894,7 +_,15 @@
      }
  
      public void renderComponentTooltip(Font p_282739_, List<Component> p_281832_, int p_282191_, int p_282446_) {
@@ -82,7 +82,7 @@
      }
  
      public void renderTooltip(Font p_282192_, List<? extends FormattedCharSequence> p_282297_, int p_281680_, int p_283325_) {
-@@ -921,11 +_,13 @@
+@@ -915,11 +_,13 @@
  
      private void renderTooltipInternal(Font p_282675_, List<ClientTooltipComponent> p_282615_, int p_283230_, int p_283417_, ClientTooltipPositioner p_282442_) {
          if (!p_282615_.isEmpty()) {
@@ -97,7 +97,7 @@
                  if (k > i) {
                      i = k;
                  }
-@@ -935,18 +_,19 @@
+@@ -929,18 +_,19 @@
  
              int i2 = i;
              int j2 = j;
@@ -120,7 +120,7 @@
                  k1 += clienttooltipcomponent1.getHeight() + (l1 == 0 ? 2 : 0);
              }
  
-@@ -954,7 +_,7 @@
+@@ -948,7 +_,7 @@
  
              for (int k2 = 0; k2 < p_282615_.size(); k2++) {
                  ClientTooltipComponent clienttooltipcomponent2 = p_282615_.get(k2);

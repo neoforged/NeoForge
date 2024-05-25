@@ -20,7 +20,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 
 public abstract class LanguageProvider implements DataProvider {
@@ -81,14 +80,6 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void add(ItemStack key, String name) {
-        add(key.getDescriptionId(), name);
-    }
-
-    public void addEnchantment(Supplier<? extends Enchantment> key, String name) {
-        add(key.get(), name);
-    }
-
-    public void add(Enchantment key, String name) {
         add(key.getDescriptionId(), name);
     }
 

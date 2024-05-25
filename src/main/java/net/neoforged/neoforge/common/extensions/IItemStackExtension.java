@@ -166,7 +166,7 @@ public interface IItemStackExtension {
      * @see #getAllEnchantments()
      * @see DataComponents#ENCHANTMENTS
      */
-    default int getEnchantmentLevel(Enchantment enchantment) {
+    default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
         int level = self().getItem().getEnchantmentLevel(self(), enchantment);
         return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
     }
@@ -303,7 +303,7 @@ public interface IItemStackExtension {
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(EquipmentSlot armorType, Entity entity) {
+    default boolean canEquip(EquipmentSlot armorType, LivingEntity entity) {
         return self().getItem().canEquip(self(), armorType, entity);
     }
 

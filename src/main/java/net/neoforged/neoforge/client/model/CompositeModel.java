@@ -65,7 +65,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
         Material particleLocation = context.getMaterial("particle");
         TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
 
@@ -79,7 +79,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             if (!context.isComponentVisible(name, true))
                 continue;
             var model = entry.getValue();
-            bakedPartsBuilder.put(name, model.bake(baker, model, spriteGetter, modelState, modelLocation, true));
+            bakedPartsBuilder.put(name, model.bake(baker, model, spriteGetter, modelState, true));
         }
         var bakedParts = bakedPartsBuilder.build();
 

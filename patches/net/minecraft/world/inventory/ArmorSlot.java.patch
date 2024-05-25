@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/inventory/ArmorSlot.java
++++ b/net/minecraft/world/inventory/ArmorSlot.java
+@@ -39,7 +_,7 @@
+ 
+     @Override
+     public boolean mayPlace(ItemStack p_345029_) {
+-        return this.slot == this.owner.getEquipmentSlotForItem(p_345029_);
++        return p_345029_.canEquip(slot, owner);
+     }
+ 
+     @Override

@@ -112,7 +112,6 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
@@ -180,7 +179,6 @@ import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
-import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
@@ -266,29 +264,14 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(new LivingDeathEvent(entity, src)).isCanceled();
     }
 
-    public static boolean onLivingDrops(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit) {
-        return NeoForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit)).isCanceled();
+    public static boolean onLivingDrops(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, boolean recentlyHit) {
+        return NeoForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, recentlyHit)).isCanceled();
     }
 
     @Nullable
     public static float[] onLivingFall(LivingEntity entity, float distance, float damageMultiplier) {
         LivingFallEvent event = new LivingFallEvent(entity, distance, damageMultiplier);
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? null : new float[] { event.getDistance(), event.getDamageMultiplier() });
-    }
-
-    public static int getLootingLevel(Entity target, @Nullable Entity killer, @Nullable DamageSource cause) {
-        int looting = 0;
-        if (killer instanceof LivingEntity)
-            looting = EnchantmentHelper.getMobLooting((LivingEntity) killer);
-        if (target instanceof LivingEntity)
-            looting = getLootingLevel((LivingEntity) target, cause, looting);
-        return looting;
-    }
-
-    public static int getLootingLevel(LivingEntity target, @Nullable DamageSource cause, int level) {
-        LootingLevelEvent event = new LootingLevelEvent(target, cause, level);
-        NeoForge.EVENT_BUS.post(event);
-        return event.getLootingLevel();
     }
 
     public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier) {
@@ -444,7 +427,7 @@ public class CommonHooks {
     /**
      * Fires the {@link BlockDropsEvent} when block drops (items and experience) are determined.
      * If the event is not cancelled, all drops will be added to the world, and then {@link BlockBehaviour#spawnAfterBreak} will be called.
-     * 
+     *
      * @param level       The level
      * @param pos         The broken block's position
      * @param state       The broken block's state
@@ -1149,7 +1132,7 @@ public class CommonHooks {
             return fallback;
         }
         try {
-            return BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(registryName));
+            return BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(registryName));
         } catch (ResourceLocationException e) {
             return fallback;
         }

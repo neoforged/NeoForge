@@ -82,7 +82,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
         Material particleLocation = context.hasMaterial("particle") ? context.getMaterial("particle") : null;
         Material baseLocation = context.hasMaterial("base") ? context.getMaterial("base") : null;
         Material fluidMaskLocation = context.hasMaterial("fluid") ? context.getMaterial("fluid") : null;
@@ -106,7 +106,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
         }
 
         // We need to disable GUI 3D and block lighting for this to render properly
-        var itemContext = StandaloneGeometryBakingContext.builder(context).withGui3d(false).withUseBlockLight(false).build(modelLocation);
+        var itemContext = StandaloneGeometryBakingContext.builder(context).withGui3d(false).withUseBlockLight(false).build(ResourceLocation.fromNamespaceAndPath("neoforge", "dynamic_fluid_container"));
         var modelBuilder = CompositeModel.Baked.builder(itemContext, particleSprite, new ContainedFluidOverrideHandler(overrides, baker, itemContext, this), context.getTransforms());
 
         var normalRenderTypes = getLayerRenderTypes(false);
@@ -114,7 +114,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
         if (baseLocation != null && baseSprite != null) {
             // Base texture
             var unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite);
-            var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> baseSprite, modelState, modelLocation);
+            var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> baseSprite, modelState);
             modelBuilder.addQuads(normalRenderTypes, quads);
         }
 
@@ -124,7 +124,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
                 // Fluid layer
                 var transformedState = new SimpleModelState(modelState.getRotation().compose(FLUID_TRANSFORM), modelState.isUvLocked());
                 var unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(1, templateSprite); // Use template as mask
-                var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> fluidSprite, transformedState, modelLocation); // Bake with fluid texture
+                var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> fluidSprite, transformedState); // Bake with fluid texture
 
                 var emissive = applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
                 var renderTypes = getLayerRenderTypes(emissive);
@@ -140,7 +140,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
                 // Cover/overlay
                 var transformedState = new SimpleModelState(modelState.getRotation().compose(COVER_TRANSFORM), modelState.isUvLocked());
                 var unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(2, coverSprite); // Use cover as mask
-                var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, transformedState, modelLocation); // Bake with selected texture
+                var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, transformedState); // Bake with selected texture
                 modelBuilder.addQuads(normalRenderTypes, quads);
             }
         }
@@ -160,7 +160,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
             if (!jsonObject.has("fluid"))
                 throw new RuntimeException("Bucket model requires 'fluid' value.");
 
-            ResourceLocation fluidName = new ResourceLocation(jsonObject.get("fluid").getAsString());
+            ResourceLocation fluidName = ResourceLocation.parse(jsonObject.get("fluid").getAsString());
 
             Fluid fluid = BuiltInRegistries.FLUID.get(fluidName);
 
@@ -198,7 +198,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
 
                         if (!cache.containsKey(name)) {
                             DynamicFluidContainerModel unbaked = this.parent.withFluid(fluid);
-                            BakedModel bakedModel = unbaked.bake(owner, baker, Material::sprite, BlockModelRotation.X0_Y0, this, new ResourceLocation("neoforge:bucket_override"));
+                            BakedModel bakedModel = unbaked.bake(owner, baker, Material::sprite, BlockModelRotation.X0_Y0, this);
                             cache.put(name, bakedModel);
                             return bakedModel;
                         }

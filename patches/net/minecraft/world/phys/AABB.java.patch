@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
-@@ -9,6 +_,7 @@
+@@ -10,6 +_,7 @@
  
  public class AABB {
      private static final double EPSILON = 1.0E-7;
@@ -8,7 +8,7 @@
      public final double minX;
      public final double minY;
      public final double minZ;
-@@ -511,5 +_,13 @@
+@@ -528,5 +_,13 @@
              p_165883_.y + p_165885_ / 2.0,
              p_165883_.z + p_165886_ / 2.0
          );

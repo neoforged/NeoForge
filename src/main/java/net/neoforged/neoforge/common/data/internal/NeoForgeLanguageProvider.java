@@ -433,7 +433,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         for (DyeColor color : DyeColor.values()) {
             TagKey<T> coloredTag = TagKey.create(
                     baseTagKey.registry(),
-                    new ResourceLocation(baseTagKey.location().getNamespace(), baseTagKey.location().getPath() + "/" + color.name().toLowerCase(Locale.ROOT)));
+                    ResourceLocation.fromNamespaceAndPath(baseTagKey.location().getNamespace(), baseTagKey.location().getPath() + "/" + color.name().toLowerCase(Locale.ROOT)));
 
             add(coloredTag, pattern.replace("{color}", StringUtils.capitalize(color.getName())));
         }

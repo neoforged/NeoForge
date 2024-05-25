@@ -125,7 +125,7 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
     @Override
     public int getSlotLimit(final int slot) {
         final EquipmentSlot equipmentSlot = validateSlotIndex(slot);
-        return equipmentSlot.getType() == EquipmentSlot.Type.ARMOR ? 1 : Item.ABSOLUTE_MAX_STACK_SIZE;
+        return equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ? 1 : Item.ABSOLUTE_MAX_STACK_SIZE;
     }
 
     protected int getStackLimit(final int slot, final ItemStack stack) {

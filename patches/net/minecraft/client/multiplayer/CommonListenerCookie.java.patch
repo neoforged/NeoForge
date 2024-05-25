@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/multiplayer/CommonListenerCookie.java
 +++ b/net/minecraft/client/multiplayer/CommonListenerCookie.java
-@@ -23,6 +_,26 @@
-     @Nullable Screen postDisconnectScreen,
-     Map<ResourceLocation, byte[]> serverCookies,
+@@ -26,6 +_,28 @@
      @Nullable ChatComponent.State chatState,
--    @Deprecated(forRemoval = true) boolean strictErrorHandling
-+    @Deprecated(forRemoval = true) boolean strictErrorHandling,
+     @Deprecated(forRemoval = true) boolean strictErrorHandling,
+     Map<String, String> customReportDetails,
+-    ServerLinks serverLinks
++    ServerLinks serverLinks,
 +    net.neoforged.neoforge.network.connection.ConnectionType connectionType
  ) {
 +    /**
-+     * @deprecated Use {@link #CommonListenerCookie(GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, boolean, net.neoforged.neoforge.network.connection.ConnectionType)}
++     * @deprecated Use {@link #CommonListenerCookie(GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, boolean, Map, ServerLinks, net.neoforged.neoforge.network.connection.ConnectionType)}
 +     * instead,to indicate whether the connection is modded.
 +     */
 +    @Deprecated
@@ -23,8 +23,10 @@
 +            @Nullable Screen postDisconnectScreen,
 +            Map<ResourceLocation, byte[]> serverCookies,
 +            @Nullable ChatComponent.State chatState,
-+            @Deprecated(forRemoval = true) boolean strictErrorHandling
++            @Deprecated(forRemoval = true) boolean strictErrorHandling,
++            Map<String, String> customReportDetails,
++            ServerLinks serverLinks
 +    ) {
-+        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, strictErrorHandling, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
++        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, strictErrorHandling, customReportDetails, serverLinks, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
 +    }
  }

@@ -34,8 +34,8 @@ public class CustomPlantTypeTest {
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
     private static final String CUSTOM_PLANT_BLOCK = "test_custom_plant";
 
-    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
-    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(ResourceLocation.fromNamespaceAndPath(MODID, CUSTOM_SOIL_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(ResourceLocation.fromNamespaceAndPath(MODID, CUSTOM_PLANT_BLOCK));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {

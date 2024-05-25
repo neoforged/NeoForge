@@ -26,10 +26,10 @@ public class CalculateDetachedCameraDistanceEvent extends Event {
     private final boolean cameraFlipped;
     private final float entityScale;
 
-    private double distance;
+    private float distance;
 
     @ApiStatus.Internal
-    public CalculateDetachedCameraDistanceEvent(Camera camera, boolean cameraFlipped, float entityScale, double distance) {
+    public CalculateDetachedCameraDistanceEvent(Camera camera, boolean cameraFlipped, float entityScale, float distance) {
         this.camera = camera;
         this.cameraFlipped = cameraFlipped;
         this.entityScale = entityScale;
@@ -61,7 +61,7 @@ public class CalculateDetachedCameraDistanceEvent extends Event {
     /**
      * Returns the pre-{@linkplain #getEntityScalingFactor() scaling factor} distance from the camera to the {@linkplain Camera#getEntity() camera entity}.
      */
-    public double getDistance() {
+    public float getDistance() {
         return distance;
     }
 
@@ -70,7 +70,7 @@ public class CalculateDetachedCameraDistanceEvent extends Event {
      * 
      * @param distance The new distance from the camera to the {@linkplain Camera#getEntity() camera entity}
      */
-    public void setDistance(double distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 }

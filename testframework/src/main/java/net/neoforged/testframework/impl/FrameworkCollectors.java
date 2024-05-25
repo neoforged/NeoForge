@@ -155,7 +155,7 @@ public final class FrameworkCollectors {
                     try {
                         final Object obj = ReflectionUtils.fieldHandle(field).invoke();
                         final var annotation = field.getAnnotation(RegisterStructureTemplate.class);
-                        final ResourceLocation id = new ResourceLocation(annotation.value());
+                        final ResourceLocation id = ResourceLocation.parse(annotation.value());
                         if (obj instanceof StructureTemplate template) {
                             acceptor.accept(id, () -> template);
                         } else if (obj instanceof Supplier<?> supplier) {

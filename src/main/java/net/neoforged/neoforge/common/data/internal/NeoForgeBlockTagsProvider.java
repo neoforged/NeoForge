@@ -155,62 +155,62 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tagWithOptionalLegacy(Tags.Blocks.CHESTS_ENDER);
         tagWithOptionalLegacy(Tags.Blocks.CHESTS_TRAPPED);
         tagWithOptionalLegacy(Tags.Blocks.CHESTS_WOODEN);
-        tag(Tags.Blocks.COBBLESTONES).addOptionalTag(new ResourceLocation("forge", "cobblestone"));
-        tag(Tags.Blocks.COBBLESTONES_NORMAL).addOptionalTag(new ResourceLocation("forge", "cobblestone/normal"));
-        tag(Tags.Blocks.COBBLESTONES_INFESTED).addOptionalTag(new ResourceLocation("forge", "cobblestone/infested"));
-        tag(Tags.Blocks.COBBLESTONES_MOSSY).addOptionalTag(new ResourceLocation("forge", "cobblestone/mossy"));
-        tag(Tags.Blocks.COBBLESTONES_DEEPSLATE).addOptionalTag(new ResourceLocation("forge", "cobblestone/deepslate"));
+        tag(Tags.Blocks.COBBLESTONES).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "cobblestone"));
+        tag(Tags.Blocks.COBBLESTONES_NORMAL).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "cobblestone/normal"));
+        tag(Tags.Blocks.COBBLESTONES_INFESTED).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "cobblestone/infested"));
+        tag(Tags.Blocks.COBBLESTONES_MOSSY).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "cobblestone/mossy"));
+        tag(Tags.Blocks.COBBLESTONES_DEEPSLATE).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "cobblestone/deepslate"));
         tag(Tags.Blocks.DYED_BLACK)
-                .addOptionalTag(new ResourceLocation("forge", "glass/black"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/black"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/black"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/black"));
         tag(Tags.Blocks.DYED_BLUE)
-                .addOptionalTag(new ResourceLocation("forge", "glass/blue"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/blue"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/blue"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/blue"));
         tag(Tags.Blocks.DYED_BROWN)
-                .addOptionalTag(new ResourceLocation("forge", "glass/brown"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/brown"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/brown"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/brown"));
         tag(Tags.Blocks.DYED_CYAN)
-                .addOptionalTag(new ResourceLocation("forge", "glass/cyan"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/cyan"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/cyan"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/cyan"));
         tag(Tags.Blocks.DYED_GRAY)
-                .addOptionalTag(new ResourceLocation("forge", "glass/gray"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/gray"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/gray"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/gray"));
         tag(Tags.Blocks.DYED_GREEN)
-                .addOptionalTag(new ResourceLocation("forge", "glass/green"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/green"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/green"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/green"));
         tag(Tags.Blocks.DYED_LIGHT_BLUE)
-                .addOptionalTag(new ResourceLocation("forge", "glass/light_blue"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/light_blue"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/light_blue"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/light_blue"));
         tag(Tags.Blocks.DYED_LIGHT_GRAY)
-                .addOptionalTag(new ResourceLocation("forge", "glass/light_gray"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/light_gray"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/light_gray"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/light_gray"));
         tag(Tags.Blocks.DYED_LIME)
-                .addOptionalTag(new ResourceLocation("forge", "glass/lime"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/lime"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/lime"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/lime"));
         tag(Tags.Blocks.DYED_MAGENTA)
-                .addOptionalTag(new ResourceLocation("forge", "glass/magenta"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/magenta"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/magenta"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/magenta"));
         tag(Tags.Blocks.DYED_MAGENTA)
-                .addOptionalTag(new ResourceLocation("forge", "glass/magenta"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/magenta"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/magenta"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/magenta"));
         tag(Tags.Blocks.DYED_ORANGE)
-                .addOptionalTag(new ResourceLocation("forge", "glass/orange"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/orange"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/orange"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/orange"));
         tag(Tags.Blocks.DYED_PINK)
-                .addOptionalTag(new ResourceLocation("forge", "glass/pink"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/pink"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/pink"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/pink"));
         tag(Tags.Blocks.DYED_PURPLE)
-                .addOptionalTag(new ResourceLocation("forge", "glass/purple"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/purple"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/purple"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/purple"));
         tag(Tags.Blocks.DYED_RED)
-                .addOptionalTag(new ResourceLocation("forge", "glass/red"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/red"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/red"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/red"));
         tag(Tags.Blocks.DYED_WHITE)
-                .addOptionalTag(new ResourceLocation("forge", "glass/white"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/white"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/white"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/white"));
         tag(Tags.Blocks.DYED_YELLOW)
-                .addOptionalTag(new ResourceLocation("forge", "glass/yellow"))
-                .addOptionalTag(new ResourceLocation("forge", "stained_glass/yellow"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass/yellow"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stained_glass/yellow"));
         tagWithOptionalLegacy(Tags.Blocks.END_STONES);
         tagWithOptionalLegacy(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST);
         tagWithOptionalLegacy(Tags.Blocks.FENCE_GATES);
@@ -218,14 +218,14 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tagWithOptionalLegacy(Tags.Blocks.FENCES);
         tagWithOptionalLegacy(Tags.Blocks.FENCES_NETHER_BRICK);
         tagWithOptionalLegacy(Tags.Blocks.FENCES_WOODEN);
-        tag(Tags.Blocks.GRAVELS).addOptionalTag(new ResourceLocation("forge", "gravel"));
-        tag(Tags.Blocks.GLASS_BLOCKS).addOptionalTag(new ResourceLocation("forge", "glass"));
-        tag(Tags.Blocks.GLASS_BLOCKS_COLORLESS).addOptionalTag(new ResourceLocation("forge", "glass_colorless"));
-        tag(Tags.Blocks.GLASS_BLOCKS_CHEAP).addOptionalTag(new ResourceLocation("forge", "glass_silica"));
-        tag(Tags.Blocks.GLASS_BLOCKS_TINTED).addOptionalTag(new ResourceLocation("forge", "glass_tinted"));
-        tag(Tags.Blocks.GLASS_PANES_COLORLESS).addOptionalTag(new ResourceLocation("forge", "glass_panes_colorless"));
-        tag(Tags.Blocks.NETHERRACKS).addOptionalTag(new ResourceLocation("forge", "netherrack"));
-        tag(Tags.Blocks.OBSIDIANS).addOptionalTag(new ResourceLocation("forge", "obsidian"));
+        tag(Tags.Blocks.GRAVELS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "gravel"));
+        tag(Tags.Blocks.GLASS_BLOCKS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass"));
+        tag(Tags.Blocks.GLASS_BLOCKS_COLORLESS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass_colorless"));
+        tag(Tags.Blocks.GLASS_BLOCKS_CHEAP).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass_silica"));
+        tag(Tags.Blocks.GLASS_BLOCKS_TINTED).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass_tinted"));
+        tag(Tags.Blocks.GLASS_PANES_COLORLESS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "glass_panes_colorless"));
+        tag(Tags.Blocks.NETHERRACKS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "netherrack"));
+        tag(Tags.Blocks.OBSIDIANS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "obsidian"));
         tagWithOptionalLegacy(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE);
         tagWithOptionalLegacy(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK);
         tagWithOptionalLegacy(Tags.Blocks.ORE_BEARING_GROUND_STONE);
@@ -246,7 +246,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE);
         tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_NETHERRACK);
         tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_STONE);
-        tag(Tags.Blocks.STONES).addOptionalTag(new ResourceLocation("forge", "stone"));
+        tag(Tags.Blocks.STONES).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "stone"));
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS);
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_COAL);
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_COPPER);
@@ -261,24 +261,24 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_REDSTONE);
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_NETHERITE);
         tag(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
-                .addOptionalTag(new ResourceLocation("forge", "relocation_not_supported"))
-                .addOptionalTag(new ResourceLocation("forge", "immovable"));
-        tag(Tags.Blocks.SANDSTONE_BLOCKS).addOptionalTag(new ResourceLocation("forge", "sandstone"));
-        tag(Tags.Blocks.SANDS).addOptionalTag(new ResourceLocation("forge", "sand"));
-        tag(Tags.Blocks.SANDS_COLORLESS).addOptionalTag(new ResourceLocation("forge", "sand/colorless"));
-        tag(Tags.Blocks.SANDS_RED).addOptionalTag(new ResourceLocation("forge", "sand/red"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "relocation_not_supported"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "immovable"));
+        tag(Tags.Blocks.SANDSTONE_BLOCKS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "sandstone"));
+        tag(Tags.Blocks.SANDS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "sand"));
+        tag(Tags.Blocks.SANDS_COLORLESS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "sand/colorless"));
+        tag(Tags.Blocks.SANDS_RED).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "sand/red"));
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Block> tagWithOptionalLegacy(TagKey<Block> tag) {
         IntrinsicHolderTagsProvider.IntrinsicTagAppender<Block> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+        tagAppender.addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath()));
         return tagAppender;
     }
 
     private void addColored(TagKey<Block> group, String pattern) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
         for (DyeColor color : DyeColor.values()) {
-            ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}", color.getName()));
+            ResourceLocation key = ResourceLocation.fromNamespaceAndPath("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Block> tag = getForgeTag(prefix + color.getName());
             Block block = BuiltInRegistries.BLOCK.get(key);
             if (block == null || block == Blocks.AIR)

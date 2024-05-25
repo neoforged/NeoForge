@@ -46,7 +46,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 @Mod(CustomPresetEditorTest.MODID)
 public class CustomPresetEditorTest {
     public static final String MODID = "custom_preset_editor_test";
-    public static final ResourceKey<WorldPreset> WORLD_PRESET_KEY = ResourceKey.create(Registries.WORLD_PRESET, new ResourceLocation(MODID, MODID));
+    public static final ResourceKey<WorldPreset> WORLD_PRESET_KEY = ResourceKey.create(Registries.WORLD_PRESET, ResourceLocation.fromNamespaceAndPath(MODID, MODID));
 
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     public static class CommonModEvents {

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkQueryPayload(Map<ConnectionProtocol, Set<ModdedNetworkQueryComponent>> queries) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "register");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "register");
     public static final Type<ModdedNetworkQueryPayload> TYPE = new Type<>(ID);
     public static StreamCodec<FriendlyByteBuf, ModdedNetworkQueryPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.map(IdentityHashMap::new,

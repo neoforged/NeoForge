@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -112,6 +_,17 @@
+@@ -111,6 +_,17 @@
          this.dynamicShape = p_60452_.dynamicShape;
          this.requiredFeatures = p_60452_.requiredFeatures;
          this.properties = p_60452_;
@@ -18,7 +18,7 @@
      }
  
      public BlockBehaviour.Properties properties() {
-@@ -160,7 +_,7 @@
+@@ -159,7 +_,7 @@
      }
  
      protected void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
@@ -27,7 +27,7 @@
              p_60516_.removeBlockEntity(p_60517_);
          }
      }
-@@ -169,7 +_,7 @@
+@@ -168,7 +_,7 @@
          if (!p_311951_.isAir() && p_312925_.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = p_311951_.getBlock();
              boolean flag = p_312925_.getIndirectSourceEntity() instanceof Player;
@@ -36,7 +36,7 @@
                  BlockEntity blockentity = p_311951_.hasBlockEntity() ? p_312820_.getBlockEntity(p_312489_) : null;
                  LootParams.Builder lootparams$builder = new LootParams.Builder(serverlevel)
                      .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(p_312489_))
-@@ -184,8 +_,7 @@
+@@ -183,8 +_,7 @@
                  p_311951_.getDrops(lootparams$builder).forEach(p_311752_ -> p_312073_.accept(p_311752_, p_312489_));
              }
  
@@ -46,7 +46,7 @@
          }
      }
  
-@@ -336,8 +_,8 @@
+@@ -335,8 +_,8 @@
          if (f == -1.0F) {
              return 0.0F;
          } else {
@@ -57,7 +57,7 @@
          }
      }
  
-@@ -360,8 +_,7 @@
+@@ -359,8 +_,7 @@
  
      public final ResourceKey<LootTable> getLootTable() {
          if (this.drops == null) {
@@ -67,7 +67,7 @@
          }
  
          return this.drops;
-@@ -378,6 +_,7 @@
+@@ -377,6 +_,7 @@
          return this.isRandomlyTicking;
      }
  
@@ -75,7 +75,7 @@
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
-@@ -394,6 +_,14 @@
+@@ -393,6 +_,14 @@
          return this.properties.destroyTime;
      }
  
@@ -128,7 +128,7 @@
              return this.pushReaction;
          }
  
-@@ -723,6 +_,9 @@
+@@ -724,6 +_,9 @@
          }
  
          public ItemInteractionResult useItemOn(ItemStack p_316374_, Level p_316651_, Player p_316623_, InteractionHand p_316469_, BlockHitResult p_316877_) {
@@ -138,7 +138,7 @@
              return this.getBlock().useItemOn(p_316374_, this.asState(), p_316651_, p_316877_.getBlockPos(), p_316623_, p_316469_, p_316877_);
          }
  
-@@ -824,6 +_,7 @@
+@@ -825,6 +_,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }
  
@@ -146,7 +146,7 @@
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
-@@ -958,11 +_,12 @@
+@@ -959,11 +_,12 @@
          PushReaction pushReaction = PushReaction.NORMAL;
          boolean spawnTerrainParticles = true;
          NoteBlockInstrument instrument = NoteBlockInstrument.HARP;
@@ -160,7 +160,7 @@
          BlockBehaviour.StatePredicate isRedstoneConductor = (p_284888_, p_284889_, p_284890_) -> p_284888_.isCollisionShapeFullBlock(p_284889_, p_284890_);
          BlockBehaviour.StatePredicate isSuffocating = (p_284885_, p_284886_, p_284887_) -> p_284885_.blocksMotion()
                  && p_284885_.isCollisionShapeFullBlock(p_284886_, p_284887_);
-@@ -1103,9 +_,15 @@
+@@ -1105,9 +_,15 @@
              return this;
          }
  

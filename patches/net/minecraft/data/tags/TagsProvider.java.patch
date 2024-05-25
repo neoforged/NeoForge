@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -36,26 +_,54 @@
+@@ -32,26 +_,54 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
      protected final Map<ResourceLocation, TagBuilder> builders = Maps.newLinkedHashMap();
@@ -34,13 +34,13 @@
 +        this(p_275432_, p_275476_, p_275222_, p_275565_, "vanilla", null);
 +    }
 +    protected TagsProvider(PackOutput p_275432_, ResourceKey<? extends Registry<T>> p_275476_, CompletableFuture<HolderLookup.Provider> p_275222_, CompletableFuture<TagsProvider.TagLookup<T>> p_275565_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-         this.pathProvider = p_275432_.createPathProvider(PackOutput.Target.DATA_PACK, TagManager.getTagDir(p_275476_));
+         this.pathProvider = p_275432_.createRegistryTagsPathProvider(p_275476_);
          this.registryKey = p_275476_;
          this.parentProvider = p_275565_;
          this.lookupProvider = p_275222_;
 +        this.modId = modId;
 +        this.existingFileHelper = existingFileHelper;
-+        this.resourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", TagManager.getTagDir(p_275476_));
++        this.resourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.minecraft.core.registries.Registries.tagsDirPath(p_275476_));
 +        this.elementResourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_275476_.location()));
 +    }
 +
@@ -57,7 +57,7 @@
      }
  
      protected abstract void addTags(HolderLookup.Provider p_256380_);
-@@ -88,7 +_,10 @@
+@@ -84,7 +_,10 @@
                                      ResourceLocation resourcelocation = p_323138_.getKey();
                                      TagBuilder tagbuilder = p_323138_.getValue();
                                      List<TagEntry> list = tagbuilder.build();
@@ -69,7 +69,7 @@
                                      if (!list1.isEmpty()) {
                                          throw new IllegalArgumentException(
                                              String.format(
-@@ -99,8 +_,10 @@
+@@ -95,8 +_,10 @@
                                              )
                                          );
                                      } else {
@@ -82,7 +82,7 @@
                                      }
                                  }
                              )
-@@ -110,12 +_,24 @@
+@@ -106,12 +_,24 @@
              );
      }
  
@@ -108,7 +108,7 @@
          return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
      }
  
-@@ -131,11 +_,13 @@
+@@ -127,11 +_,13 @@
          });
      }
  
@@ -125,7 +125,7 @@
          }
  
          public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
-@@ -173,6 +_,19 @@
+@@ -169,6 +_,19 @@
          public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation p_176842_) {
              this.builder.addOptionalTag(p_176842_);
              return this;
