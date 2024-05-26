@@ -72,6 +72,7 @@ tasks.register('applyAllFormatting', Task) {
 tasks.register('checkFormatting', Task) {
     dependsOn 'licenseCheck'
     dependsOn 'spotlessCheck'
+    group = 'verification'
 }
 
 tasks.register('runUnitTests', Task) {
