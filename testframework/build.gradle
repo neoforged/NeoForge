@@ -26,7 +26,7 @@ configurations {
 }
 
 dependencies {
-    compileClasspath project(':neoforge')
+    implementation project(':neoforge')
 
     localClasspath(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
     localClasspath "org.junit.jupiter:junit-jupiter-params"
