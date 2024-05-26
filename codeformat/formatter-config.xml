@@ -99,7 +99,7 @@
         <setting id="org.eclipse.jdt.core.formatter.comment.align_tags_names_descriptions" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_enum_constant" value="do not insert"/>
         <setting id="org.eclipse.jdt.core.formatter.keep_if_then_body_block_on_one_line" value="one_line_if_empty"/>
-        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration" value="-1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration" value="0"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_closing_brace_in_array_initializer" value="do not insert"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_before_comma_in_constructor_declaration_parameters" value="do not insert"/>
         <setting id="org.eclipse.jdt.core.formatter.format_guardian_clause_on_one_line" value="false"/>
@@ -342,7 +342,7 @@
         <setting id="org.eclipse.jdt.core.formatter.keep_empty_array_initializer_on_one_line" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_assertion_message" value="0"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_constructor_declaration" value="do not insert"/>
-        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_new_chunk" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_new_chunk" value="0"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_after_opening_bracket_in_array_allocation_expression" value="do not insert"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_constructor_declaration" value="do not insert"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_angle_bracket_in_parameterized_type_reference" value="do not insert"/>
