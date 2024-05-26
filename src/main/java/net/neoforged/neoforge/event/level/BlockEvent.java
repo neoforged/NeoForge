@@ -54,7 +54,7 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Event that is fired when an Block is about to be broken by a player
+     * Event that is fired when a Block is about to be broken by a player
      * Canceling this event will prevent the Block from being broken.
      */
     public static class BreakEvent extends BlockEvent implements ICancellableEvent {

@@ -39,21 +39,41 @@
          } else if (blockstate.canOcclude()) {
              Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(p_152445_, blockstate, p_152448_);
              Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> object2bytelinkedopenhashmap = OCCLUSION_CACHE.get();
-@@ -297,9 +_,12 @@
-     public static void dropResources(
-         BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
-     ) {
-+        dropResources(p_49882_, p_49883_, p_49884_, p_49885_, p_49886_, p_49887_, true);
-+    }
-+    public static void dropResources(BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_, boolean dropXp) {
-         if (p_49883_ instanceof ServerLevel) {
-             getDrops(p_49882_, (ServerLevel)p_49883_, p_49884_, p_49885_, p_49886_, p_49887_).forEach(p_49944_ -> popResource(p_49883_, p_49884_, p_49944_));
--            p_49882_.spawnAfterBreak((ServerLevel)p_49883_, p_49884_, p_49887_, true);
-+            p_49882_.spawnAfterBreak((ServerLevel)p_49883_, p_49884_, p_49887_, dropXp);
+@@ -282,15 +_,19 @@
+ 
+     public static void dropResources(BlockState p_49951_, Level p_49952_, BlockPos p_49953_) {
+         if (p_49952_ instanceof ServerLevel) {
++            beginCapturingDrops();
+             getDrops(p_49951_, (ServerLevel)p_49952_, p_49953_, null).forEach(p_152406_ -> popResource(p_49952_, p_49953_, p_152406_));
+-            p_49951_.spawnAfterBreak((ServerLevel)p_49952_, p_49953_, ItemStack.EMPTY, true);
++            List<ItemEntity> captured = stopCapturingDrops();
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) p_49952_, p_49953_, p_49951_, null, captured, null, ItemStack.EMPTY, true);
          }
      }
  
-@@ -327,7 +_,7 @@
+     public static void dropResources(BlockState p_49893_, LevelAccessor p_49894_, BlockPos p_49895_, @Nullable BlockEntity p_49896_) {
+         if (p_49894_ instanceof ServerLevel) {
++            beginCapturingDrops();
+             getDrops(p_49893_, (ServerLevel)p_49894_, p_49895_, p_49896_).forEach(p_49859_ -> popResource((ServerLevel)p_49894_, p_49895_, p_49859_));
+-            p_49893_.spawnAfterBreak((ServerLevel)p_49894_, p_49895_, ItemStack.EMPTY, true);
++            List<ItemEntity> captured = stopCapturingDrops();
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) p_49894_, p_49895_, p_49893_, p_49896_, captured, null, ItemStack.EMPTY, true);
+         }
+     }
+ 
+@@ -298,8 +_,10 @@
+         BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
+     ) {
+         if (p_49883_ instanceof ServerLevel) {
++            beginCapturingDrops();
+             getDrops(p_49882_, (ServerLevel)p_49883_, p_49884_, p_49885_, p_49886_, p_49887_).forEach(p_49944_ -> popResource(p_49883_, p_49884_, p_49944_));
+-            p_49882_.spawnAfterBreak((ServerLevel)p_49883_, p_49884_, p_49887_, true);
++            List<ItemEntity> captured = stopCapturingDrops();
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) p_49883_, p_49884_, p_49882_, p_49885_, captured, p_49886_, p_49887_, true);
+         }
+     }
+ 
+@@ -327,19 +_,26 @@
      }
  
      private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
@@ -61,8 +81,15 @@
 +        if (!p_152441_.isClientSide && !p_152443_.isEmpty() && p_152441_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !p_152441_.restoringBlockSnapshots) {
              ItemEntity itementity = p_152442_.get();
              itementity.setDefaultPickUpDelay();
-             p_152441_.addFreshEntity(itementity);
-@@ -335,11 +_,12 @@
+-            p_152441_.addFreshEntity(itementity);
++            // Neo: Add drops to the captured list if capturing is enabled.
++            if (capturedDrops != null) {
++                capturedDrops.add(itementity);
++            }
++            else {
++                p_152441_.addFreshEntity(itementity);
++            }
+         }
      }
  
      public void popExperience(ServerLevel p_49806_, BlockPos p_49807_, int p_49808_) {
@@ -76,16 +103,6 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -358,7 +_,8 @@
-     public void playerDestroy(Level p_49827_, Player p_49828_, BlockPos p_49829_, BlockState p_49830_, @Nullable BlockEntity p_49831_, ItemStack p_49832_) {
-         p_49828_.awardStat(Stats.BLOCK_MINED.get(this));
-         p_49828_.causeFoodExhaustion(0.005F);
--        dropResources(p_49830_, p_49827_, p_49829_, p_49831_, p_49828_, p_49832_);
-+        //Forge: Don't drop xp as part of the resources as it is handled by the patches in ServerPlayerGameMode#destroyBlock
-+        dropResources(p_49830_, p_49827_, p_49829_, p_49831_, p_49828_, p_49832_, false);
-     }
- 
-     public void setPlacedBy(Level p_49847_, BlockPos p_49848_, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack p_49851_) {
 @@ -386,8 +_,10 @@
  
      public void updateEntityAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
@@ -105,11 +122,40 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -486,6 +_,75 @@
+@@ -486,6 +_,104 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  
 +    /* ======================================== FORGE START =====================================*/
++
++    /**
++     * Short-lived holder of dropped item entities.
++     *
++     * When not null, records all item entities from {@link #popResource(Level, Supplier, ItemStack)} instead of adding them to the world.
++     */
++    @Nullable
++    private static List<ItemEntity> capturedDrops = null;
++
++    /**
++     * Initializes {@link #capturedDrops}, starting the drop capture process.
++     *
++     * Must only be called on the server thread.
++     */
++    private static void beginCapturingDrops() {
++        capturedDrops = new java.util.ArrayList<>();
++    }
++
++    /**
++     * Ends the drop capture process by setting {@link #capturedDrops} to null and returning the old list.
++     *
++     * Must only be called on the server thread.
++     */
++    private static List<ItemEntity> stopCapturingDrops() {
++        List<ItemEntity> drops = capturedDrops;
++        capturedDrops = null;
++        return drops;
++    }
++
 +    private Object renderProperties;
 +
 +    /*
