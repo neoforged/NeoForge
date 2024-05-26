@@ -44,7 +44,7 @@ public class IngredientTests {
             @Override
             protected void buildRecipes(RecipeOutput output) {
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.MUD)
-                        .requires(new BlockTagIngredient(BlockTags.CONVERTABLE_TO_MUD))
+                        .requires(new TestEnabledIngredient(new BlockTagIngredient(BlockTags.CONVERTABLE_TO_MUD), test.framework(), test.id()))
                         .requires(Items.WATER_BUCKET)
                         .unlockedBy("has_item", has(Items.WATER_BUCKET))
                         .save(output, new ResourceLocation(reg.modId(), "block_tag"));
