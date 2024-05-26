@@ -89,6 +89,9 @@ dependencies {
     userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"), {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
+
+    userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
+    userdevTestImplementation(project(':testframework'))
 }
 
 runTypes {
