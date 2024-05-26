@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -74,7 +75,7 @@ public class BlockTagIngredient implements ICustomIngredient {
 
         dissolve();
         for (ItemStack itemStack : itemStacks) {
-            if (itemStack != null && itemStack.is(stack.getItem())) {
+            if (itemStack.is(stack.getItem())) {
                 return true;
             }
         }
