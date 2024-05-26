@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.items;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
@@ -209,15 +210,12 @@ public class VanillaInventoryCodeHooks {
         // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
         List<Entity> list = worldIn.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
         if (!list.isEmpty()) {
-            Entity entity;
-            IItemHandler entityCap;
-            do {
-                entity = list.remove(worldIn.random.nextInt(list.size()));
-                entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+            Collections.shuffle(list);
+            for(Entity entity : list) {
+            	IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+                if (entityCap != null)
+                    return Optional.of(ImmutablePair.of(entityCap, entity));
             }
-            while (entityCap != null && !list.isEmpty());
-            if (entityCap != null)
-                return Optional.of(ImmutablePair.of(entityCap, entity));
         }
 
         return Optional.empty();
