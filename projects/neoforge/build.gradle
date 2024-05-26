@@ -91,7 +91,6 @@ dependencies {
     }
 
     userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
-    userdevTestImplementation(project(':testframework'))
 }
 
 runTypes {
@@ -193,6 +192,7 @@ userdevProfile {
         argument '--fml.neoFormVersion'
         argument project.neoform_version
     }
+    additionalTestDependencyArtifactCoordinate "net.neoforged:testframework:${project.version}"
 }
 
 tasks.withType(Javadoc.class).configureEach {
