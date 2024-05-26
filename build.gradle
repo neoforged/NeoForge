@@ -164,15 +164,8 @@ spotless {
         }
 
         //Replace any FQN versions of javax.annotation.Nullable with the jetbrains variant
-        def nullableCheck = Pattern.compile('^\\+.*javax\\.annotation\\.Nullable.*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
         custom 'jetbrainsNullablePatches', { String fileContents ->
-            Matcher matcher = nullableCheck.matcher(fileContents)
-            StringBuilder sb = new StringBuilder()
-            while (matcher.find()) {
-                matcher.appendReplacement(sb, matcher.group().replace('javax.annotation.Nullable', 'org.jetbrains.annotations.Nullable'))
-            }
-            matcher.appendTail(sb)
-            return sb.toString()
+            fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
         }
 
         bumpThisNumberIfACustomStepChanges(5)
