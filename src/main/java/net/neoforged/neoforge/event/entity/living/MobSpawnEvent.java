@@ -103,7 +103,7 @@ public abstract class MobSpawnEvent extends EntityEvent {
         private final BlockPos pos;
         private final RandomSource random;
         private final boolean defaultResult;
-        private Result result;
+        private Result result = Result.DEFAULT;
 
         /**
          * Internal.
@@ -237,7 +237,7 @@ public abstract class MobSpawnEvent extends EntityEvent {
         @Nullable
         private final BaseSpawner spawner;
         private final MobSpawnType spawnType;
-        private Result result;
+        private Result result = Result.DEFAULT;
 
         public PositionCheck(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, @Nullable BaseSpawner spawner) {
             super(mob, level, mob.getX(), mob.getY(), mob.getZ());

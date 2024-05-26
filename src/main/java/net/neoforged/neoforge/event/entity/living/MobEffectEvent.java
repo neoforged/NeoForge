@@ -92,7 +92,7 @@ public abstract class MobEffectEvent extends LivingEvent {
      * 
      */
     public static class Applicable extends MobEffectEvent {
-        protected Result result;
+        protected Result result = Result.DEFAULT;
 
         @ApiStatus.Internal
         public Applicable(LivingEntity living, MobEffectInstance effectInstance) {
@@ -123,6 +123,7 @@ public abstract class MobEffectEvent extends LivingEvent {
         /**
          * {@return If the mob effect should be applied or not, based on the current event result}
          */
+        @SuppressWarnings("deprecation") // Expected as the single call site for canBeAffected
         public boolean getApplicationResult() {
             if (this.result == Result.APPLY) {
                 return true;
