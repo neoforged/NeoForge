@@ -212,7 +212,7 @@ public class VanillaInventoryCodeHooks {
         if (!list.isEmpty()) {
             Collections.shuffle(list);
             for (Entity entity : list) {
-            	IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+                IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
                 if (entityCap != null)
                     return Optional.of(ImmutablePair.of(entityCap, entity));
             }
