@@ -21,7 +21,7 @@
  
              if (i < 3) {
                  int j = p_220913_.getValue(AGE);
-+                if(net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_220914_, blockpos, p_220913_, true)) {
++                if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_220914_, blockpos, p_220913_, true)) {
                  if (j == 15) {
                      p_220914_.setBlockAndUpdate(blockpos, this.defaultBlockState());
                      BlockState blockstate = p_220913_.setValue(AGE, Integer.valueOf(0));
@@ -29,7 +29,7 @@
                  } else {
                      p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, Integer.valueOf(j + 1)), 4);
                  }
-+                net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_220914_, p_220915_, p_220913_);
++                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_220914_, p_220915_, p_220913_);
 +                }
              }
          }

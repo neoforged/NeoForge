@@ -520,7 +520,7 @@
 +    public boolean canTrample(BlockState state, BlockPos pos, float fallDistance) {
 +        return level.random.nextFloat() < fallDistance - 0.5F
 +             && this instanceof LivingEntity
-+             && (this instanceof Player || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(level, this))
++             && (this instanceof Player || net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this))
 +             && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
 +    }
 +

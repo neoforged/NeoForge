@@ -16,45 +16,6 @@
          }
      }
  
-@@ -282,14 +_,19 @@
-                 livingentity = (LivingEntity)p_34288_.getEntity();
-             }
- 
--            if (livingentity != null
--                && this.level().getDifficulty() == Difficulty.HARD
--                && (double)this.random.nextFloat() < this.getAttributeValue(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
--                && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
--                int i = Mth.floor(this.getX());
--                int j = Mth.floor(this.getY());
--                int k = Mth.floor(this.getZ());
--                Zombie zombie = new Zombie(this.level());
-+            int i = Mth.floor(this.getX());
-+            int j = Mth.floor(this.getY());
-+            int k = Mth.floor(this.getZ());
-+
-+            net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent event = net.neoforged.neoforge.event.EventHooks.fireZombieSummonAid(this, level(), i, j, k, livingentity, this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE).getValue());
-+            if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return true;
-+            if (event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW  ||
-+                      (livingentity != null
-+                      && this.level().getDifficulty() == Difficulty.HARD
-+                      && (double)this.random.nextFloat() < this.getAttributeValue(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
-+                      && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING))) {
-+
-+                Zombie zombie = event.getCustomSummonedAid() != null && event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW ? event.getCustomSummonedAid() : EntityType.ZOMBIE.create(this.level());
- 
-                 for (int l = 0; l < 50; l++) {
-                     int i1 = i + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
-@@ -304,7 +_,9 @@
-                             && this.level().isUnobstructed(zombie)
-                             && this.level().noCollision(zombie)
-                             && !this.level().containsAnyLiquid(zombie.getBoundingBox())) {
--                            zombie.setTarget(livingentity);
-+                            if (livingentity != null) {
-+                                zombie.setTarget(livingentity);
-+                            }
-                             zombie.finalizeSpawn(serverlevel, this.level().getCurrentDifficultyAt(zombie.blockPosition()), MobSpawnType.REINFORCEMENT, null);
-                             serverlevel.addFreshEntityWithPassengers(zombie);
-                             this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
 @@ -398,7 +_,7 @@
      @Override
      public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {

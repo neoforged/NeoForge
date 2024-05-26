@@ -97,7 +97,13 @@
                  iterator.remove();
              }
  
-@@ -975,6 +_,7 @@
+@@ -970,11 +_,12 @@
+     }
+ 
+     public boolean addEffect(MobEffectInstance p_147208_, @Nullable Entity p_147209_) {
+-        if (!this.canBeAffected(p_147208_)) {
++        if (!net.neoforged.neoforge.common.CommonHooks.canMobEffectBeApplied(this, p_147208_)) {
+             return false;
          } else {
              MobEffectInstance mobeffectinstance = this.activeEffects.get(p_147208_.getEffect());
              boolean flag = false;
@@ -105,16 +111,30 @@
              if (mobeffectinstance == null) {
                  this.activeEffects.put(p_147208_.getEffect(), p_147208_);
                  this.onEffectAdded(p_147208_, p_147209_);
-@@ -991,6 +_,9 @@
+@@ -990,6 +_,14 @@
+         }
      }
  
++    /**
++     * Neo: Override-Only. Call via {@link net.neoforged.neoforge.common.CommonHooks#canMobEffectBeApplied(LivingEntity, MobEffectInstance)}
++     *
++     * @param p_21197_ A mob effect instance
++     * @return If the mob effect instance can be applied to this entity
++     */
++    @Deprecated
++    @org.jetbrains.annotations.ApiStatus.OverrideOnly
      public boolean canBeAffected(MobEffectInstance p_21197_) {
-+        net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, p_21197_);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+        if (event.getResult() != net.neoforged.bus.api.Event.Result.DEFAULT) return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
          if (this.getType().is(EntityTypeTags.IMMUNE_TO_INFESTED)) {
              return !p_21197_.is(MobEffects.INFESTED);
-         } else if (this.getType().is(EntityTypeTags.IMMUNE_TO_OOZING)) {
+@@ -1003,7 +_,7 @@
+     }
+ 
+     public void forceAddEffect(MobEffectInstance p_147216_, @Nullable Entity p_147217_) {
+-        if (this.canBeAffected(p_147216_)) {
++        if (net.neoforged.neoforge.common.CommonHooks.canMobEffectBeApplied(this, p_147216_)) {
+             MobEffectInstance mobeffectinstance = this.activeEffects.put(p_147216_.getEffect(), p_147216_);
+             if (mobeffectinstance == null) {
+                 this.onEffectAdded(p_147216_, p_147217_);
 @@ -1024,6 +_,7 @@
      }
  
@@ -221,7 +241,7 @@
              boolean flag = false;
              if (p_21269_ instanceof WitherBoss) {
 -                if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+                if (net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), p_21269_)) {
++                if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), p_21269_)) {
                      BlockPos blockpos = this.blockPosition();
                      BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
                      if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {
@@ -579,9 +599,9 @@
  
      private boolean checkBedExists() {
 -        return this.getSleepingPos().map(p_337701_ -> this.level().getBlockState(p_337701_).getBlock() instanceof BedBlock).orElse(false);
-+        return this.getSleepingPos().map((p_289310_) -> {
-+            return net.neoforged.neoforge.event.EventHooks.fireSleepingLocationCheck(this, p_289310_);
-+        }).orElse(false);
++        // Neo: Overwrite the vanilla instanceof BedBlock check with isBed and fire the CanContinueSleepingEvent.
++        boolean hasBed = this.getSleepingPos().map(pos -> this.level().getBlockState(pos).isBed(this.level(), pos, this)).orElse(false);
++        return net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, hasBed ? null : Player.BedSleepingProblem.NOT_POSSIBLE_HERE);
      }
  
      public void stopSleeping() {
