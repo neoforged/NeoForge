@@ -28,7 +28,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, byte[] additionalData) implements CustomPacketPayload {
-
     public static final Type<AdvancedOpenScreenPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_open_screen"));
     public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedOpenScreenPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
@@ -40,6 +39,7 @@ public record AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Comp
             NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,
             AdvancedOpenScreenPayload::additionalData,
             AdvancedOpenScreenPayload::new);
+
     @Override
     public Type<AdvancedOpenScreenPayload> type() {
         return TYPE;

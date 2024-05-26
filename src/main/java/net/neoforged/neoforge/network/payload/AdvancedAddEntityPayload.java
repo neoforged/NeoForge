@@ -25,7 +25,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record AdvancedAddEntityPayload(int entityId, byte[] customPayload) implements CustomPacketPayload {
-
     public static final Type<AdvancedAddEntityPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_add_entity"));
     public static final StreamCodec<FriendlyByteBuf, AdvancedAddEntityPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
@@ -33,6 +32,7 @@ public record AdvancedAddEntityPayload(int entityId, byte[] customPayload) imple
             NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,
             AdvancedAddEntityPayload::customPayload,
             AdvancedAddEntityPayload::new);
+
     public AdvancedAddEntityPayload(Entity e) {
         this(e.getId(), writeCustomData(e));
     }

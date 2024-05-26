@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
  * @param ambientOcclusion If this face has AO
  */
 public record ExtraFaceData(int color, int blockLight, int skyLight, boolean ambientOcclusion) {
-
     public static final ExtraFaceData DEFAULT = new ExtraFaceData(0xFFFFFFFF, 0, 0, true);
 
     public static final Codec<Integer> COLOR = Codec.either(Codec.INT, Codec.STRING).xmap(
@@ -41,6 +40,7 @@ public record ExtraFaceData(int color, int blockLight, int skyLight, boolean amb
                             Codec.intRange(0, 15).optionalFieldOf("sky_light", 0).forGetter(ExtraFaceData::skyLight),
                             Codec.BOOL.optionalFieldOf("ambient_occlusion", true).forGetter(ExtraFaceData::ambientOcclusion))
                     .apply(builder, ExtraFaceData::new));
+
     /**
      * Parses an ExtraFaceData from JSON
      * 

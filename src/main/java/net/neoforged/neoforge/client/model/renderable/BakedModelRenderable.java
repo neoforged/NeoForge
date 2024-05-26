@@ -76,9 +76,9 @@ public class BakedModelRenderable implements IRenderable<BakedModelRenderable.Co
     }
 
     public record Context(@Nullable BlockState state, Direction[] faces, RandomSource randomSource, long seed, ModelData data, Vector4f tint) {
-
         private static final Direction[] ALL_FACES_AND_NULL = Arrays.copyOf(Direction.values(), Direction.values().length + 1);
         private static final Vector4f WHITE = new Vector4f(1, 1, 1, 1);
+
         public Context(ModelData data) {
             this(null, ALL_FACES_AND_NULL, RandomSource.create(), 42, data, WHITE);
         }
