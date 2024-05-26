@@ -163,6 +163,11 @@ spotless {
             return sb.toString()
         }
 
-        bumpThisNumberIfACustomStepChanges(4)
+        //Replace any FQN versions of javax.annotation.Nullable with the jetbrains variant
+        custom 'jetbrainsNullablePatches', { String fileContents ->
+            fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
+        }
+
+        bumpThisNumberIfACustomStepChanges(5)
     }
 }

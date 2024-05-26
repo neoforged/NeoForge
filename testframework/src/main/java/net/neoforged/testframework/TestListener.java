@@ -7,11 +7,11 @@ package net.neoforged.testframework;
 
 import java.lang.invoke.MethodType;
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.testframework.impl.ReflectionUtils;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A listener which listens for changes in tests.
