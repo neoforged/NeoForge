@@ -81,7 +81,7 @@ import org.slf4j.Logger;
  * You can also annotate a class with {@link ExtendWith} to provide a server to all tests in that class.
  *
  * <p>
- * The server instance is lazy (only created if a test needs it) and <strong>singleton</strong>.
+ * The server instance is lazy (only created if a test needs it) and <strong>singleton</strong> for the whole JUnit session.
  *
  * @see ExtendWith
  */

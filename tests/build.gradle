@@ -3,7 +3,7 @@ plugins {
     id 'net.neoforged.gradle.platform'
     id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
-    id 'neoforged.formatting-conventions'
+    id 'neoforge.formatting-conventions'
 }
 
 def neoforgeProject = project(':neoforge')

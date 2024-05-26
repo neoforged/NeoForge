@@ -69,6 +69,11 @@ tasks.register('applyAllFormatting', Task) {
     group = 'verification'
 }
 
+tasks.register('checkFormatting', Task) {
+    dependsOn 'licenseCheck'
+    dependsOn 'spotlessCheck'
+}
+
 tasks.register('runUnitTests', Task) {
     group = 'verification'
     tasks.withType(Test).each { tsk -> it.dependsOn(tsk) }
