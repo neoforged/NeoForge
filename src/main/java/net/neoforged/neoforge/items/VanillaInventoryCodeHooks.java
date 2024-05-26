@@ -211,7 +211,7 @@ public class VanillaInventoryCodeHooks {
         List<Entity> list = worldIn.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
         if (!list.isEmpty()) {
             Collections.shuffle(list);
-            for(Entity entity : list) {
+            for (Entity entity : list) {
             	IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
                 if (entityCap != null)
                     return Optional.of(ImmutablePair.of(entityCap, entity));
