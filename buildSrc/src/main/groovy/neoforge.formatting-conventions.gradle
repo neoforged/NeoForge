@@ -50,7 +50,19 @@ spotless {
                 throw new GradleException('@NotNull and @Nonnull are disallowed.')
             }
         }
-        bumpThisNumberIfACustomStepChanges(2)
+
+//        custom 'noJavaNullableAnnotation', { String fileContents ->
+//            String disallowedLine = "import javax.annotation.Nullable;"
+//            if (fileContents.contains(disallowedLine)) {
+//                throw new GradleException("@Nullable from javax is disallowed, use the jetbrains annotation instead.")
+//            }
+//        }
+        custom 'replaceJavaNullableAnnotation', { String fileContents ->
+            String disallowedLine = "import javax.annotation.Nullable;"
+
+            fileContents.replace(disallowedLine, "import org.jetbrains.annotations.Nullable;")
+        }
+        bumpThisNumberIfACustomStepChanges(3)
     }
 }
 
