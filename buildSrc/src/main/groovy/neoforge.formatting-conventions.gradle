@@ -50,7 +50,11 @@ spotless {
                 throw new GradleException('@NotNull and @Nonnull are disallowed.')
             }
         }
-        bumpThisNumberIfACustomStepChanges(2)
+
+        custom 'jetbrainsNullable', { String fileContents ->
+            fileContents.replace('javax.annotation.Nullable', 'org.jetbrains.annotations.Nullable')
+        }
+        bumpThisNumberIfACustomStepChanges(3)
     }
 }
 
