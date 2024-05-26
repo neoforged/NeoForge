@@ -1,10 +1,12 @@
 --- a/net/minecraft/world/item/SwordItem.java
 +++ b/net/minecraft/world/item/SwordItem.java
-@@ -25,7 +_,10 @@
-         return new Tool(List.of(Tool.Rule.minesAndDrops(List.of(Blocks.COBWEB), 15.0F), Tool.Rule.overrideSpeed(BlockTags.SWORD_EFFICIENT, 1.5F)), 1.0F, 2);
+@@ -26,6 +_,13 @@
      }
  
--    public static ItemAttributeModifiers createAttributes(Tier p_330371_, int p_331976_, float p_332104_) {
+     public static ItemAttributeModifiers createAttributes(Tier p_330371_, int p_331976_, float p_332104_) {
++        return createAttributes(p_330371_, (float)p_331976_, p_332104_);
++    }
++
 +    /**
 +     * Neo: Method overload to allow giving a float for damage instead of an int.
 +     */
@@ -12,17 +14,6 @@
          return ItemAttributeModifiers.builder()
              .add(
                  Attributes.ATTACK_DAMAGE,
-@@ -45,6 +_,10 @@
-             .build();
-     }
- 
-+    public static ItemAttributeModifiers createAttributes(Tier p_330371_, int p_331976_, float p_332104_) {
-+        return createAttributes(p_330371_, (float)p_331976_, p_332104_);
-+    }
-+
-     @Override
-     public boolean canAttackBlock(BlockState p_43291_, Level p_43292_, BlockPos p_43293_, Player p_43294_) {
-         return !p_43294_.isCreative();
 @@ -54,5 +_,10 @@
      public boolean hurtEnemy(ItemStack p_43278_, LivingEntity p_43279_, LivingEntity p_43280_) {
          p_43278_.hurtAndBreak(1, p_43280_, EquipmentSlot.MAINHAND);
