@@ -1,5 +1,5 @@
 plugins {
-    id 'jvm-test-suite'
+    id 'java'
     id 'net.neoforged.gradle.platform'
     id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
@@ -101,9 +101,6 @@ runs.configureEach {
     modSource testframeworkProject.sourceSets.main
 }
 
-afterEvaluate {
-    tasks.testJunit.classpath = sourceSets.junit.runtimeClasspath
-}
 afterEvaluate {
     runs.data {
         // Override --output that forge already has

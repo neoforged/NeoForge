@@ -64,8 +64,14 @@ tasks.named('spotlessApply').configure {
 
 tasks.register('applyAllFormatting', Task) {
     dependsOn generatePackageInfos
-    dependsOn tasks.named('licenseFormat').get()
-    dependsOn tasks.named('spotlessApply').get()
+    dependsOn tasks.named('licenseFormat')
+    dependsOn tasks.named('spotlessApply')
+    group = 'verification'
 }
 
-tasks.register('')
+final runUnitTests = tasks.register('runUnitTests', Task) {
+    group = 'verification'
+}
+tasks.withType(Test.class).all {
+    runUnitTests.get().dependsOn(it)
+}
