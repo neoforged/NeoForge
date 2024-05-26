@@ -105,8 +105,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
             return ServerLifecycleHooks.getCurrentServer();
         }
 
-        if (!IN_CONSTRUCTION.get()) {
-            IN_CONSTRUCTION.set(true);
+        if (IN_CONSTRUCTION.compareAndSet(false, true)) {
             try {
                 final var tempDir = Files.createTempDirectory("test-mc-server-");
                 LevelStorageSource storage = LevelStorageSource.createDefault(tempDir.resolve("world"));

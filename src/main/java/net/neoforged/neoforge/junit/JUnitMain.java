@@ -5,17 +5,13 @@
 
 package net.neoforged.neoforge.junit;
 
-import com.mojang.logging.LogUtils;
 import cpw.mods.modlauncher.Launcher;
-import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
 import net.neoforged.api.distmarker.Dist;
-import org.slf4j.Logger;
+import net.neoforged.fml.common.asm.RuntimeDistCleaner;
 
 public class JUnitMain {
-    public static final Logger LOGGER = LogUtils.getLogger();
-
     public static void main(String[] args) {
         SharedConstants.tryDetectVersion();
         Bootstrap.bootStrap();
@@ -23,8 +19,8 @@ public class JUnitMain {
         // Load mods
         net.neoforged.neoforge.server.loading.ServerModLoader.load();
 
-        Consumer<Dist> extension = Launcher.INSTANCE.environment().findLaunchPlugin("runtimedistcleaner")
-                .orElseThrow().getExtension();
-        extension.accept(Dist.CLIENT);
+        // We launch as a server, but we want client classes available
+        ((RuntimeDistCleaner) Launcher.INSTANCE.environment().findLaunchPlugin("runtimedistcleaner").orElseThrow())
+                .getExtension().accept(Dist.CLIENT);
     }
 }

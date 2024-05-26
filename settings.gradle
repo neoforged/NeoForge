@@ -34,7 +34,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.145-pr-183-feature-junit-testing'
+    id 'net.neoforged.gradle.platform' version '7.0.146-pr-183-feature-junit-testing'
 }
 
 rootProject.name = rootDir.name
