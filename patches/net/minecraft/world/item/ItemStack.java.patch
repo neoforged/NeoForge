@@ -123,7 +123,7 @@
                  p_41624_.broadcastBreakEvent(p_319898_);
                  Item item = this.getItem();
                  this.shrink(1);
-@@ -706,7 +_,7 @@
+@@ -706,12 +_,13 @@
              return List.of();
          } else {
              List<Component> list = Lists.newArrayList();
@@ -132,11 +132,50 @@
              if (this.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
              }
-@@ -761,6 +_,7 @@
+ 
+             list.add(mutablecomponent);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterName(this, p_41652_, list, p_41653_, p_339637_));
+             if (!p_41653_.isAdvanced() && !this.has(DataComponents.CUSTOM_NAME) && this.is(Items.FILLED_MAP)) {
+                 MapId mapid = this.get(DataComponents.MAP_ID);
+                 if (mapid != null) {
+@@ -724,13 +_,17 @@
+                 this.getItem().appendHoverText(this, p_339637_, list, p_41653_);
+             }
+ 
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.BeforeComponents(this, p_41652_, list, p_41653_, p_339637_));
+             this.addToTooltip(DataComponents.TRIM, p_339637_, consumer, p_41653_);
+             this.addToTooltip(DataComponents.STORED_ENCHANTMENTS, p_339637_, consumer, p_41653_);
+             this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
+             this.addToTooltip(DataComponents.DYED_COLOR, p_339637_, consumer, p_41653_);
+             this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.BeforeAttributes(this, p_41652_, list, p_41653_, p_339637_));
+             this.addAttributeTooltips(consumer, p_41652_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterAttributes(this, p_41652_, list, p_41653_, p_339637_));
+             this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterComponents(this, p_41652_, list, p_41653_, p_339637_));
+             AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
+             if (adventuremodepredicate != null && adventuremodepredicate.showInTooltip()) {
+                 consumer.accept(CommonComponents.EMPTY);
+@@ -744,7 +_,7 @@
+                 consumer.accept(AdventureModePredicate.CAN_PLACE_HEADER);
+                 adventuremodepredicate1.addToTooltip(consumer);
+             }
+-
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.BeforeDebug(this, p_41652_, list, p_41653_, p_339637_));
+             if (p_41653_.isAdvanced()) {
+                 if (this.isDamaged()) {
+                     list.add(Component.translatable("item.durability", this.getMaxDamage() - this.getDamageValue(), this.getMaxDamage()));
+@@ -756,11 +_,12 @@
+                     list.add(Component.translatable("item.components", i).withStyle(ChatFormatting.DARK_GRAY));
+                 }
+             }
+-
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterDebug(this, p_41652_, list, p_41653_, p_339637_));
+             if (p_41652_ != null && !this.getItem().isEnabled(p_41652_.level().enabledFeatures())) {
                  list.add(DISABLED_ITEM_TOOLTIP);
              }
  
-+            net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, p_41652_, list, p_41653_, p_339637_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterAll(this, p_41652_, list, p_41653_, p_339637_));
              return list;
          }
      }
