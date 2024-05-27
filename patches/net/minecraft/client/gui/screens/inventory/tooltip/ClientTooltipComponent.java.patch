@@ -4,7 +4,7 @@
          if (p_169951_ instanceof BundleTooltip bundletooltip) {
              return new ClientBundleTooltip(bundletooltip.contents());
          } else {
-+            ClientTooltipComponent result = net.neoforged.neoforge.client.gui.ClientTooltipComponentManager.createClientTooltipComponent(p_169951_);
++            ClientTooltipComponent result = p_169951_.toComponent();
 +            if (result != null) return result;
              throw new IllegalArgumentException("Unknown TooltipComponent");
          }

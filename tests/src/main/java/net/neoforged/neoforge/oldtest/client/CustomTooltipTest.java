@@ -32,7 +32,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -51,7 +50,6 @@ public class CustomTooltipTest {
         if (ENABLED) {
             if (FMLEnvironment.dist.isClient()) {
                 NeoForge.EVENT_BUS.register(ClientEventHandler.class);
-                modEventBus.register(ClientModBusEventHandler.class);
             }
             ITEMS.register(modEventBus);
             modEventBus.addListener(this::addCreative);
@@ -63,7 +61,12 @@ public class CustomTooltipTest {
             event.accept(CUSTOM_ITEM);
     }
 
-    record CustomTooltip(int color) implements TooltipComponent {}
+    record CustomTooltip(int color) implements TooltipComponent {
+        @Override
+        public ClientTooltipComponent toComponent() {
+            return new CustomClientTooltip(this);
+        }
+    }
 
     record CustomClientTooltip(CustomTooltip tooltip) implements ClientTooltipComponent {
         @Override
@@ -104,13 +107,6 @@ public class CustomTooltipTest {
         @Override
         public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
             return Optional.of(new CustomTooltip(0xFFFF0000));
-        }
-    }
-
-    private static class ClientModBusEventHandler {
-        @SubscribeEvent
-        public static void onRegisterClientTooltipComponentFactories(RegisterClientTooltipComponentFactoriesEvent event) {
-            event.register(CustomTooltip.class, CustomClientTooltip::new);
         }
     }
 

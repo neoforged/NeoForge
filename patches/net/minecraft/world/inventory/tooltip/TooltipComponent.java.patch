@@ -1,0 +1,8 @@
+--- a/net/minecraft/world/inventory/tooltip/TooltipComponent.java
++++ b/net/minecraft/world/inventory/tooltip/TooltipComponent.java
+@@ -1,4 +_,4 @@
+ package net.minecraft.world.inventory.tooltip;
+ 
+-public interface TooltipComponent {
++public interface TooltipComponent extends net.neoforged.neoforge.client.extensions.ITooltipComponentExtension {
+ }
