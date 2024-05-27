@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/gui/font/providers/GlyphProviderType.java
++++ b/net/minecraft/client/gui/font/providers/GlyphProviderType.java
+@@ -8,20 +_,35 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public enum GlyphProviderType implements StringRepresentable {
++public enum GlyphProviderType implements StringRepresentable, net.neoforged.neoforge.common.IExtensibleEnum {
+     BITMAP("bitmap", BitmapProvider.Definition.CODEC),
+     TTF("ttf", TrueTypeGlyphProviderDefinition.CODEC),
+     SPACE("space", SpaceProvider.Definition.CODEC),
+     UNIHEX("unihex", UnihexProvider.Definition.CODEC),
+     REFERENCE("reference", ProviderReferenceDefinition.CODEC);
+ 
+-    public static final Codec<GlyphProviderType> CODEC = StringRepresentable.fromEnum(GlyphProviderType::values);
++    public static final Codec<GlyphProviderType> CODEC = net.neoforged.neoforge.common.IExtensibleEnum.createCodecForExtensibleEnum(GlyphProviderType::values, GlyphProviderType::byName);
++    private static final java.util.Map<String, GlyphProviderType> BY_NAME = java.util.Arrays.stream(values()).collect(java.util.stream.Collectors.toMap(GlyphProviderType::getSerializedName, type -> type));
+     private final String name;
+     private final MapCodec<? extends GlyphProviderDefinition> codec;
+ 
+     private GlyphProviderType(String p_286573_, MapCodec<? extends GlyphProviderDefinition> p_286248_) {
+         this.name = p_286573_;
+         this.codec = p_286248_;
++    }
++
++    public static GlyphProviderType create(String name, String id, MapCodec<? extends GlyphProviderDefinition> codec) {
++        throw new IllegalStateException("Enum not extended");
++    }
++
++    @Override
++    public void init() {
++        BY_NAME.put(this.name, this);
++    }
++
++    @org.jetbrains.annotations.Nullable
++    public static GlyphProviderType byName(String name) {
++        return BY_NAME.get(name);
+     }
+ 
+     @Override
