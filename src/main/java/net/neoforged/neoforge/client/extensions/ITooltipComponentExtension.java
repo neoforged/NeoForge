@@ -16,7 +16,7 @@ public interface ITooltipComponentExtension {
     /**
      * Allows users to provide a custom {@link ClientTooltipComponent} for their {@link TooltipComponent} types.
      */
-    default @Nullable ClientTooltipComponent toComponent() {
+    default @Nullable ClientTooltipComponent toClientComponent() {
         if (this instanceof ClientTooltipComponent component) {
             return component;
         }

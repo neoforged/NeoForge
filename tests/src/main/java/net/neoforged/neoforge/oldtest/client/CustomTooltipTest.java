@@ -63,7 +63,7 @@ public class CustomTooltipTest {
 
     record CustomTooltip(int color) implements TooltipComponent {
         @Override
-        public ClientTooltipComponent toComponent() {
+        public ClientTooltipComponent toClientComponent() {
             return new CustomClientTooltip(this);
         }
     }

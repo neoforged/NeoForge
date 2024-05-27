@@ -4,7 +4,7 @@
          if (p_169951_ instanceof BundleTooltip bundletooltip) {
              return new ClientBundleTooltip(bundletooltip.contents());
          } else {
-+            ClientTooltipComponent result = p_169951_.toComponent();
++            ClientTooltipComponent result = p_169951_.toClientComponent();
 +            if (result != null) return result;
              throw new IllegalArgumentException("Unknown TooltipComponent");
          }
