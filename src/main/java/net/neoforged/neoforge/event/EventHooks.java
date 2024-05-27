@@ -594,6 +594,12 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new ExplosionEvent.Detonate(level, explosion, list));
     }
 
+    public static Vec3 onExplosionKnockback(Level level, Explosion explosion, Entity entity, Vec3 knockbackVelocity) {
+        ExplosionEvent.Knockback event = new ExplosionEvent.Knockback(level, explosion, entity, knockbackVelocity);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getKnockbackVelocity();
+    }
+
     public static boolean onCreateWorldSpawn(Level level, ServerLevelData settings) {
         return NeoForge.EVENT_BUS.post(new LevelEvent.CreateSpawnPosition(level, settings)).isCanceled();
     }
