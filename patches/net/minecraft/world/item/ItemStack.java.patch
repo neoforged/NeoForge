@@ -156,20 +156,18 @@
              AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
              if (adventuremodepredicate != null && adventuremodepredicate.showInTooltip()) {
                  consumer.accept(CommonComponents.EMPTY);
-@@ -744,7 +_,7 @@
-                 consumer.accept(AdventureModePredicate.CAN_PLACE_HEADER);
+@@ -745,6 +_,7 @@
                  adventuremodepredicate1.addToTooltip(consumer);
              }
--
+ 
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.BeforeDebug(this, p_41652_, list, p_41653_, p_339637_));
              if (p_41653_.isAdvanced()) {
                  if (this.isDamaged()) {
                      list.add(Component.translatable("item.durability", this.getMaxDamage() - this.getDamageValue(), this.getMaxDamage()));
-@@ -756,11 +_,12 @@
-                     list.add(Component.translatable("item.components", i).withStyle(ChatFormatting.DARK_GRAY));
+@@ -757,10 +_,12 @@
                  }
              }
--
+ 
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterDebug(this, p_41652_, list, p_41653_, p_339637_));
              if (p_41652_ != null && !this.getItem().isEnabled(p_41652_.level().enabledFeatures())) {
                  list.add(DISABLED_ITEM_TOOLTIP);
