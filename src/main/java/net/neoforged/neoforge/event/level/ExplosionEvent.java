@@ -81,42 +81,4 @@ public abstract class ExplosionEvent extends Event {
             return entityList;
         }
     }
-
-    /**
-     * ExplosionEvent.Knockback is fired once the explosion has calculated the knockback velocity to give to the entity caught in blast.<br>
-     * <br>
-     * This event is not {@link ICancellableEvent}.<br>
-     * This event does not use {@link HasResult}.<br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
-     */
-    public static class Knockback extends ExplosionEvent {
-        private final Entity entity;
-        private Vec3 knockbackVelocity;
-
-        public Knockback(Level level, Explosion explosion, Entity entity, Vec3 knockbackVelocity) {
-            super(level, explosion);
-            this.entity = entity;
-            this.knockbackVelocity = knockbackVelocity;
-        }
-
-        /** return the list of blocks affected by the explosion. */
-        public List<BlockPos> getAffectedBlocks() {
-            return getExplosion().getToBlow();
-        }
-
-        /** return the entity affected by the explosion knockback. */
-        public Entity getAffectedEntity() {
-            return entity;
-        }
-
-        /** return the explosion knockback velocity to apply to entity. */
-        public Vec3 getKnockbackVelocity() {
-            return knockbackVelocity;
-        }
-
-        /** Sets the explosion knockback velocity to apply to entity. */
-        public void setKnockbackVelocity(Vec3 newKnockbackVelocity) {
-            this.knockbackVelocity = newKnockbackVelocity;
-        }
-    }
 }

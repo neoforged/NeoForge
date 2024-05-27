@@ -20,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -79,7 +80,7 @@ public class EntityEventTests {
     @EmptyTemplate(value = "15x5x15", floor = true)
     @TestHolder(description = "Tests if the pig only gets vertical knockback from explosion knockback event")
     static void entityVerticalExplosionKnockbackEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ExplosionEvent.Knockback event) -> {
+        test.eventListeners().forge().addListener((final ExplosionKnockbackEvent event) -> {
             if (event.getAffectedEntity() instanceof Pig) {
                 event.setKnockbackVelocity(new Vec3(0, event.getKnockbackVelocity().y(), 0));
             }
