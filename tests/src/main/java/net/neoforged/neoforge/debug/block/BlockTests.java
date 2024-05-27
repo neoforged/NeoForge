@@ -53,7 +53,7 @@ public class BlockTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if player breaking decorated pots with swords drops Bricks")
     static void decoratedPotBreaking(final DynamicTest test) {
-            test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 
                 // Mine pot with sword
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DECORATED_POT.defaultBlockState()))
