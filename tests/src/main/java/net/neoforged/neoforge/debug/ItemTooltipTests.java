@@ -23,9 +23,7 @@ public class ItemTooltipTests {
 
         forge.addListener((ItemTooltipEvent.AfterName event) -> event.getToolTip().add(Component.literal("After Name")));
         forge.addListener((ItemTooltipEvent.BeforeComponents event) -> event.getToolTip().add(Component.literal("Before Components")));
-        forge.addListener((ItemTooltipEvent.BeforeAttributes event) -> event.getToolTip().add(Component.literal("Before Attributes")));
         forge.addListener((ItemTooltipEvent.AfterComponents event) -> event.getToolTip().add(Component.literal("After Components")));
-        forge.addListener((ItemTooltipEvent.AfterAttributes event) -> event.getToolTip().add(Component.literal("After Attributes")));
         forge.addListener((ItemTooltipEvent.BeforeDebug event) -> event.getToolTip().add(Component.literal("Before Debug")));
         forge.addListener((ItemTooltipEvent.AfterDebug event) -> event.getToolTip().add(Component.literal("After Debug")));
         forge.addListener((ItemTooltipEvent.AfterAll event) -> event.getToolTip().add(Component.literal("After All")));
