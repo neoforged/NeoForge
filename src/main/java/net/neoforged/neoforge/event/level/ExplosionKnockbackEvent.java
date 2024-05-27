@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.level;
 
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -12,8 +13,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
-
-import java.util.List;
 
 /**
  * ExplosionKnockbackEvent is fired once the explosion has calculated the knockback velocity to add to the entity caught in blast.<br>
