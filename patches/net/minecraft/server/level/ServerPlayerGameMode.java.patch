@@ -40,7 +40,7 @@
              return false;
          } else {
              BlockEntity blockentity = this.level.getBlockEntity(p_9281_);
-@@ -235,27 +_,46 @@
+@@ -235,27 +_,47 @@
              } else if (this.player.blockActionRestricted(this.level, p_9281_, this.gameModeForPlayer)) {
                  return false;
              } else {
@@ -60,16 +60,18 @@
 -                    boolean flag = this.player.hasCorrectToolForDrops(blockstate);
 +                    boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
                      itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
+-                    if (flag1 && flag) {
+-                        block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
 +                    if (itemstack.isEmpty() && !itemstack1.isEmpty())
 +                        net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
-+                    boolean flag = removeBlock(p_9281_, blockstate, flag1);
++                    BlockState blockState = removeBlock(p_9281_, blockstate, flag1);
 +
-                     if (flag1 && flag) {
-                         block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
++                    if (flag1 && blockState != null) {
++                        block.playerDestroy(this.level, this.player, p_9281_, blockState, blockentity, itemstack1);
                      }
  
-+                    if (flag && exp > 0)
-+                        blockstate.getBlock().popExperience(level, p_9281_, exp);
++                    if (blockState != null && exp > 0)
++                        blockState.getBlock().popExperience(level, p_9281_, exp);
 +
                      return true;
                  }
@@ -83,13 +85,14 @@
 +     * @param pos The block pos of the destroyed block
 +     * @param state The state of the destroyed block
 +     * @param canHarvest If the player breaking the block can harvest the drops of the block
-+     * @return If the block was removed, as reported by {@link BlockState#onDestroyedByPlayer}.
++     * @return The new blockstate to pass to {@link Block#destroy} and {@link Block#playerDestroy} if this block was successfully replaced in world as reported by {@link BlockState#onDestroyedByPlayer}. Null if block was not replaced.
 +     */
-+    private boolean removeBlock(BlockPos pos, BlockState state, boolean canHarvest) {
-+        boolean removed = state.onDestroyedByPlayer(this.level, pos, this.player, canHarvest, this.level.getFluidState(pos));
-+        if (removed)
-+            state.getBlock().destroy(this.level, pos, state);
-+        return removed;
++    private @Nullable BlockState removeBlock(BlockPos pos, BlockState state, boolean canHarvest) {
++        BlockState blockState = state.onDestroyedByPlayer(this.level, pos, this.player, canHarvest, this.level.getFluidState(pos));
++        if (blockState != null) {
++            blockState.getBlock().destroy(this.level, pos, blockState);
++        }
++        return blockState;
      }
  
      public InteractionResult useItem(ServerPlayer p_9262_, Level p_9263_, ItemStack p_9264_, InteractionHand p_9265_) {
