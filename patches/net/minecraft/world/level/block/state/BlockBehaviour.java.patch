@@ -46,7 +46,7 @@
          }
      }
  
-@@ -336,12 +_,13 @@
+@@ -336,8 +_,8 @@
          if (f == -1.0F) {
              return 0.0F;
          } else {
@@ -57,11 +57,6 @@
          }
      }
  
-     protected void spawnAfterBreak(BlockState p_222949_, ServerLevel p_222950_, BlockPos p_222951_, ItemStack p_222952_, boolean p_222953_) {
-+        if (p_222953_) net.neoforged.neoforge.common.CommonHooks.dropXpForBlock(p_222949_, p_222950_, p_222951_, p_222952_);
-     }
- 
-     protected void attack(BlockState p_60499_, Level p_60500_, BlockPos p_60501_, Player p_60502_) {
 @@ -360,8 +_,7 @@
  
      public final ResourceKey<LootTable> getLootTable() {

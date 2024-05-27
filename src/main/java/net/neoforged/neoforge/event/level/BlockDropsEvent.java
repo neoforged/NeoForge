@@ -5,12 +5,14 @@
 
 package net.neoforged.neoforge.event.level;
 
+import com.google.common.base.Preconditions;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,7 +21,7 @@ import net.neoforged.neoforge.common.loot.LootModifier;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired when a block is broken and the drops have been determined, but before they have been added to the world. This event can be used to manipulate the dropped item entities.
+ * Fired when a block is broken and the drops have been determined, but before they have been added to the world. This event can be used to manipulate the dropped items and experience.
  * <p>
  * No guarantees can be made about the block. It will either have already been removed from the world, or will be removed after the event terminates.
  * <p>
@@ -32,13 +34,22 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
     @Nullable
     private final Entity breaker;
     private final ItemStack tool;
+    private int experience;
 
-    public BlockDropsEvent(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool) {
+    public BlockDropsEvent(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool, boolean dropXp) {
         super(level, pos, state);
         this.blockEntity = blockEntity;
         this.drops = drops;
         this.breaker = breaker;
         this.tool = tool;
+
+        if (dropXp) {
+            int fortuneLevel = tool.getEnchantmentLevel(Enchantments.FORTUNE);
+            int silkTouchLevel = tool.getEnchantmentLevel(Enchantments.SILK_TOUCH);
+            this.experience = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
+        } else {
+            this.experience = 0;
+        }
     }
 
     /**
@@ -78,6 +89,8 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
 
     /**
      * Cancels this event, preventing any drops from being spawned and preventing {@link Block#spawnAfterBreak} from being called.
+     * <p>
+     * Also prevents experience from being spawned.
      */
     @Override
     public void setCanceled(boolean canceled) {
@@ -87,5 +100,22 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
     @Override
     public ServerLevel getLevel() {
         return (ServerLevel) super.getLevel();
+    }
+
+    /**
+     * {@return the amount of experience points that will be dropped by the block}
+     */
+    public int getDroppedExperience() {
+        return experience;
+    }
+
+    /**
+     * Set the amount of experience points that will be dropped by the block
+     *
+     * @param experience The new amount. Must be a positive value.
+     */
+    public void setDroppedExperience(int experience) {
+        Preconditions.checkArgument(experience > 0, "May not set a negative experience drop.");
+        this.experience = experience;
     }
 }

@@ -14,7 +14,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseFireBlock;
@@ -25,7 +24,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockEvent extends Event {
@@ -58,44 +56,18 @@ public abstract class BlockEvent extends Event {
      * Canceling this event will prevent the Block from being broken.
      */
     public static class BreakEvent extends BlockEvent implements ICancellableEvent {
-        /** Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer */
+        /**
+         * Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer
+         */
         private final Player player;
-        private int exp;
 
         public BreakEvent(Level level, BlockPos pos, BlockState state, Player player) {
             super(level, pos, state);
             this.player = player;
-
-            if (state == null || !EventHooks.doPlayerHarvestCheck(player, state, level, pos)) // Handle empty block or player unable to break block scenario
-            {
-                this.exp = 0;
-            } else {
-                int fortuneLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.FORTUNE);
-                int silkTouchLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.SILK_TOUCH);
-                this.exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
-            }
         }
 
         public Player getPlayer() {
             return player;
-        }
-
-        /**
-         * Get the experience dropped by the block after the event has processed
-         *
-         * @return The experience to drop or 0 if the event was canceled
-         */
-        public int getExpToDrop() {
-            return this.isCanceled() ? 0 : exp;
-        }
-
-        /**
-         * Set the amount of experience dropped by the block after the event has processed
-         *
-         * @param exp 1 or higher to drop experience, else nothing will drop
-         */
-        public void setExpToDrop(int exp) {
-            this.exp = exp;
         }
     }
 

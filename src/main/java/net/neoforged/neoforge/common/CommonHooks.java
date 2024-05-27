@@ -5,6 +5,14 @@
 
 package net.neoforged.neoforge.common;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Lifecycle;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,25 +32,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.Lifecycle;
-
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.SharedConstants;
@@ -124,7 +113,6 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
@@ -208,6 +196,14 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Class for various common (i.e. client and server-side) hooks.
@@ -445,14 +441,6 @@ public class CommonHooks {
         return ichat;
     }
 
-    public static void dropXpForBlock(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack) {
-        int fortuneLevel = stack.getEnchantmentLevel(Enchantments.FORTUNE);
-        int silkTouchLevel = stack.getEnchantmentLevel(Enchantments.SILK_TOUCH);
-        int exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
-        if (exp > 0)
-            state.getBlock().popExperience(level, pos, exp);
-    }
-
     /**
      * Fires the {@link BlockDropsEvent} when block drops are determined.
      * If the event is not cancelled, all drops must be added to the world, and then {@link Block#spawnAfterBreak} must be called.
@@ -467,13 +455,17 @@ public class CommonHooks {
      * @param dropXp      The value of the patched-in dropXp parameter from dropResources.
      */
     public static void handleBlockDrops(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool, boolean dropXp) {
-        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, blockEntity, drops, breaker, tool);
+        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, blockEntity, drops, breaker, tool, dropXp);
         NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
             for (ItemEntity entity : event.getDrops()) {
                 level.addFreshEntity(entity);
             }
-            state.spawnAfterBreak((ServerLevel) level, pos, tool, dropXp);
+            // Always pass false to spawnAfterBreak since we handle XP externally.
+            state.spawnAfterBreak((ServerLevel) level, pos, tool, false);
+            if (event.getDroppedExperience() > 0) {
+                state.getBlock().popExperience(level, pos, event.getDroppedExperience());
+            }
         }
     }
 
@@ -489,7 +481,7 @@ public class CommonHooks {
      * @param state    The state of the block being broken
      * @return The experience dropped by the broken block, or -1 if the break event was canceled.
      */
-    public static int fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
+    public static BlockEvent.BreakEvent fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
         boolean preCancelEvent = false;
 
         ItemStack itemstack = player.getMainHandItem();
@@ -515,7 +507,7 @@ public class CommonHooks {
             player.connection.send(new ClientboundBlockUpdatePacket(pos, state));
         }
 
-        return event.isCanceled() ? -1 : event.getExpToDrop();
+        return event;
     }
 
     public static InteractionResult onPlaceItemIntoWorld(UseOnContext context) {
