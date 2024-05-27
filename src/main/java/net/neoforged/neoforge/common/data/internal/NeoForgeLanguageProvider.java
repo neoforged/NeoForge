@@ -219,6 +219,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.INGOTS_IRON, "Iron Ingots");
         add(Tags.Items.INGOTS_NETHERITE, "Netherite Ingots");
         add(Tags.Items.LEATHERS, "Leathers");
+        add(Tags.Items.MUSIC_DISCS, "Music Discs");
         add(Tags.Items.MUSHROOMS, "Mushrooms");
         add(Tags.Items.NETHER_STARS, "Nether Stars");
         add(Tags.Items.NETHERRACKS, "Netherracks");
@@ -248,10 +249,6 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
-        add(Tags.Items.RAW_BLOCKS, "Raw Blocks");
-        add(Tags.Items.RAW_BLOCKS_COPPER, "Copper Raw Blocks");
-        add(Tags.Items.RAW_BLOCKS_GOLD, "Gold Raw Blocks");
-        add(Tags.Items.RAW_BLOCKS_IRON, "Iron Raw Blocks");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");

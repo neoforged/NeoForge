@@ -438,6 +438,11 @@ public class Tags {
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
         public static final TagKey<Item> LEATHERS = tag("leathers");
         public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
+        /**
+         * For music disc-like materials to be used in recipes.
+         * A pancake with a JUKEBOX_PLAYABLE component attached to play in Jukeboxes as an Easter Egg is not a music disc and would not go in this tag.
+         */
+        public static final TagKey<Item> MUSIC_DISCS = tag("music_discs");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
         public static final TagKey<Item> NETHERRACKS = tag("netherracks");
         public static final TagKey<Item> NUGGETS = tag("nuggets");
@@ -493,10 +498,6 @@ public class Tags {
         public static final TagKey<Item> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
-        public static final TagKey<Item> RAW_BLOCKS = tag("raw_blocks");
-        public static final TagKey<Item> RAW_BLOCKS_COPPER = tag("raw_blocks/copper");
-        public static final TagKey<Item> RAW_BLOCKS_GOLD = tag("raw_blocks/gold");
-        public static final TagKey<Item> RAW_BLOCKS_IRON = tag("raw_blocks/iron");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
