@@ -101,26 +101,6 @@ public abstract class ItemTooltipEvent extends PlayerEvent {
     }
 
     /**
-     * Appends tooltip before attributes
-     */
-    public static class BeforeAttributes extends ItemTooltipEvent {
-        @ApiStatus.Internal
-        public BeforeAttributes(ItemStack itemStack, @Nullable Player player, List<Component> list, TooltipFlag flags, TooltipContext context) {
-            super(itemStack, player, list, flags, context);
-        }
-    }
-
-    /**
-     * Appends tooltip after attributes
-     */
-    public static class AfterAttributes extends ItemTooltipEvent {
-        @ApiStatus.Internal
-        public AfterAttributes(ItemStack itemStack, @Nullable Player player, List<Component> list, TooltipFlag flags, TooltipContext context) {
-            super(itemStack, player, list, flags, context);
-        }
-    }
-
-    /**
      * Appends tooltip before debug tooltips
      */
     public static class BeforeDebug extends ItemTooltipEvent {

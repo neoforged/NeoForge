@@ -138,7 +138,7 @@
              if (!p_41653_.isAdvanced() && !this.has(DataComponents.CUSTOM_NAME) && this.is(Items.FILLED_MAP)) {
                  MapId mapid = this.get(DataComponents.MAP_ID);
                  if (mapid != null) {
-@@ -724,13 +_,17 @@
+@@ -724,6 +_,7 @@
                  this.getItem().appendHoverText(this, p_339637_, list, p_41653_);
              }
  
@@ -146,11 +146,9 @@
              this.addToTooltip(DataComponents.TRIM, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.STORED_ENCHANTMENTS, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
-             this.addToTooltip(DataComponents.DYED_COLOR, p_339637_, consumer, p_41653_);
+@@ -731,6 +_,7 @@
              this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.BeforeAttributes(this, p_41652_, list, p_41653_, p_339637_));
              this.addAttributeTooltips(consumer, p_41652_);
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterAttributes(this, p_41652_, list, p_41653_, p_339637_));
              this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterComponents(this, p_41652_, list, p_41653_, p_339637_));
              AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
