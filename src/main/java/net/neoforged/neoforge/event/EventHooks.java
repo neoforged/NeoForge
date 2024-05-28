@@ -521,10 +521,9 @@ public class EventHooks {
      * Fires {@link ItemEntityPickupEvent.Pre} and returns the event.
      * 
      * @param itemEntity The item entity that a player collided with
-     * @param itemTarget The target that can pick up this item entity (If null, anyone can pick it up)
      * @param player     The player that collided with the item entity
      */
-    public static ItemEntityPickupEvent.Pre fireItemPickupPre(ItemEntity itemEntity, @Nullable UUID itemTarget, Player player) {
+    public static ItemEntityPickupEvent.Pre fireItemPickupPre(ItemEntity itemEntity, UUID itemTarget, Player player) {
         return NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Pre(player, itemTarget, itemEntity));
     }
 
@@ -534,11 +533,10 @@ public class EventHooks {
      * Fires {@link ItemEntityPickupEvent.Post}.
      * 
      * @param itemEntity The item entity that a player collided with
-     * @param itemTarget The target that can pick up this item entity (If null, anyone can pick it up)
      * @param player     The player that collided with the item entity
      * @param copy       A copy of the item entity's item stack before the pickup
      */
-    public static void fireItemPickupPost(ItemEntity itemEntity, @Nullable UUID itemTarget, Player player, ItemStack copy) {
+    public static void fireItemPickupPost(ItemEntity itemEntity, UUID itemTarget, Player player, ItemStack copy) {
         NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Post(player, itemTarget, itemEntity, copy));
     }
 

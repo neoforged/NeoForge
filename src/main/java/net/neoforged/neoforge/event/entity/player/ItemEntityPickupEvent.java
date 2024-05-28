@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.util.TriState;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Parent class of the two events that fire when a {@link Player} collides with an {@link ItemEntity}.
@@ -22,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ItemEntityPickupEvent extends Event {
     private final Player player;
     private final ItemEntity item;
-    private final @Nullable UUID itemTarget;
+    private final UUID itemTarget;
 
-    public ItemEntityPickupEvent(Player player, @Nullable UUID itemTarget, ItemEntity item) {
+    public ItemEntityPickupEvent(Player player, UUID itemTarget, ItemEntity item) {
         this.player = player;
         this.itemTarget = itemTarget;
         this.item = item;
@@ -51,9 +50,8 @@ public abstract class ItemEntityPickupEvent extends Event {
 
     /**
      * Returns the {@link ItemEntity#target} value from the current ItemEntity.
-     * The target is who is allowed to pick up this ItemEntity. If null, anyone can pick up this ItemEntity.
      */
-    public @Nullable UUID getItemEntityTarget() {
+    public UUID getItemEntityTarget() {
         return itemTarget;
     }
 
@@ -68,7 +66,7 @@ public abstract class ItemEntityPickupEvent extends Event {
     public static class Pre extends ItemEntityPickupEvent {
         private TriState canPickup = TriState.DEFAULT;
 
-        public Pre(Player player, @Nullable UUID itemTarget, ItemEntity item) {
+        public Pre(Player player, UUID itemTarget, ItemEntity item) {
             super(player, itemTarget, item);
         }
 
@@ -106,7 +104,7 @@ public abstract class ItemEntityPickupEvent extends Event {
     public static class Post extends ItemEntityPickupEvent {
         private final ItemStack originalStack;
 
-        public Post(Player player, @Nullable UUID itemTarget, ItemEntity item, ItemStack originalStack) {
+        public Post(Player player, UUID itemTarget, ItemEntity item, ItemStack originalStack) {
             super(player, itemTarget, item);
             this.originalStack = originalStack;
         }
