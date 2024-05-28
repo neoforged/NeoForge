@@ -107,7 +107,7 @@
 -            if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && p_32040_.getInventory().add(itemstack)) {
 +
 +            // Neo: Fire item pickup pre/post and adjust handling logic to adhere to the event result.
-+            var result = net.neoforged.neoforge.event.EventHooks.fireItemPickupPre(this, this.target, p_32040_).canPickup();
++            var result = net.neoforged.neoforge.event.EventHooks.fireItemPickupPre(this, p_32040_).canPickup();
 +            if (result.isFalse()) {
 +                return;
 +            }
@@ -117,7 +117,7 @@
 +            // Subvert the vanilla conditions (pickup delay and target check) if the result is true.
 +            if ((result.isTrue() || this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID()))) && p_32040_.getInventory().add(itemstack)) {
 +                // Fire ItemEntityPickupEvent.Post
-+                net.neoforged.neoforge.event.EventHooks.fireItemPickupPost(this, this.target, p_32040_, originalCopy);
++                net.neoforged.neoforge.event.EventHooks.fireItemPickupPost(this, p_32040_, originalCopy);
 +                // Update `i` to reflect the actual pickup amount. Vanilla is wrong here and always reports the whole stack.
 +                i = originalCopy.getCount() - itemstack.getCount();
 +

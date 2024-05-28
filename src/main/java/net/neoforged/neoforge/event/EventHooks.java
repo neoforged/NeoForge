@@ -12,7 +12,6 @@ import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
@@ -523,8 +522,8 @@ public class EventHooks {
      * @param itemEntity The item entity that a player collided with
      * @param player     The player that collided with the item entity
      */
-    public static ItemEntityPickupEvent.Pre fireItemPickupPre(ItemEntity itemEntity, UUID itemTarget, Player player) {
-        return NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Pre(player, itemTarget, itemEntity));
+    public static ItemEntityPickupEvent.Pre fireItemPickupPre(ItemEntity itemEntity, Player player) {
+        return NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Pre(player, itemEntity));
     }
 
     /**
@@ -536,8 +535,8 @@ public class EventHooks {
      * @param player     The player that collided with the item entity
      * @param copy       A copy of the item entity's item stack before the pickup
      */
-    public static void fireItemPickupPost(ItemEntity itemEntity, UUID itemTarget, Player player, ItemStack copy) {
-        NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Post(player, itemTarget, itemEntity, copy));
+    public static void fireItemPickupPost(ItemEntity itemEntity, Player player, ItemStack copy) {
+        NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Post(player, itemEntity, copy));
     }
 
     public static boolean canMountEntity(Entity entityMounting, Entity entityBeingMounted, boolean isMounting) {

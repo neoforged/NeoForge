@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import java.util.UUID;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,11 +20,9 @@ import net.neoforged.neoforge.common.util.TriState;
 public abstract class ItemEntityPickupEvent extends Event {
     private final Player player;
     private final ItemEntity item;
-    private final UUID itemTarget;
 
-    public ItemEntityPickupEvent(Player player, UUID itemTarget, ItemEntity item) {
+    public ItemEntityPickupEvent(Player player, ItemEntity item) {
         this.player = player;
-        this.itemTarget = itemTarget;
         this.item = item;
     }
 
@@ -49,13 +46,6 @@ public abstract class ItemEntityPickupEvent extends Event {
     }
 
     /**
-     * Returns the {@link ItemEntity#target} value from the current ItemEntity.
-     */
-    public UUID getItemEntityTarget() {
-        return itemTarget;
-    }
-
-    /**
      * This event is fired when a player collides with an {@link ItemEntity} on the ground.
      * It can be used to determine if the item may be picked up by the player.
      * <p>
@@ -66,8 +56,8 @@ public abstract class ItemEntityPickupEvent extends Event {
     public static class Pre extends ItemEntityPickupEvent {
         private TriState canPickup = TriState.DEFAULT;
 
-        public Pre(Player player, UUID itemTarget, ItemEntity item) {
-            super(player, itemTarget, item);
+        public Pre(Player player, ItemEntity item) {
+            super(player, item);
         }
 
         /**
@@ -104,8 +94,8 @@ public abstract class ItemEntityPickupEvent extends Event {
     public static class Post extends ItemEntityPickupEvent {
         private final ItemStack originalStack;
 
-        public Post(Player player, UUID itemTarget, ItemEntity item, ItemStack originalStack) {
-            super(player, itemTarget, item);
+        public Post(Player player, ItemEntity item, ItemStack originalStack) {
+            super(player, item);
             this.originalStack = originalStack;
         }
 
