@@ -12,32 +12,25 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.neoforged.bus.api.Event.HasResult;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This event is fired whenever a sapling, fungus, mushroom or azalea grows into a tree.
+ * This event is fired whenever a block (like a sapling) grows into a feature (like a tree).
  * <p>
- * This event is not {@linkplain ICancellableEvent cancellable} but does {@linkplain HasResult have a result}.
- * {@linkplain Result#ALLOW ALLOW} and {@linkplain Result#DEFAULT DEFAULT} will allow the sapling to grow
- * using the features set on the event.
- * {@linkplain Result#DENY DENY} will prevent the sapling from growing.
+ * In vanilla, this fires for saplings, fungi, mushrooms and azaleas. Mods may fire it for similar blocks.
  * <p>
- * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
- * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
+ * This event is only fired on the logical server.
  */
-// TODO: Rename to BlockFeatureGrowEvent in 1.20
-@HasResult
-public class SaplingGrowTreeEvent extends LevelEvent {
-    private final RandomSource randomSource;
+public class BlockGrowFeatureEvent extends LevelEvent implements ICancellableEvent {
+    private final RandomSource rand;
     private final BlockPos pos;
     @Nullable
     private Holder<ConfiguredFeature<?, ?>> feature;
 
-    public SaplingGrowTreeEvent(LevelAccessor level, RandomSource randomSource, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> feature) {
+    public BlockGrowFeatureEvent(LevelAccessor level, RandomSource rand, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> feature) {
         super(level);
-        this.randomSource = randomSource;
+        this.rand = rand;
         this.pos = pos;
         this.feature = feature;
     }
@@ -45,8 +38,8 @@ public class SaplingGrowTreeEvent extends LevelEvent {
     /**
      * {@return the random source which initiated the sapling growth}
      */
-    public RandomSource getRandomSource() {
-        return this.randomSource;
+    public RandomSource getRandom() {
+        return this.rand;
     }
 
     /**
@@ -65,16 +58,28 @@ public class SaplingGrowTreeEvent extends LevelEvent {
     }
 
     /**
-     * @param feature a {@linkplain Holder} referencing a tree feature to be placed instead of the current feature.
+     * Changes the feature that will be grown. If a null feature is set, the original block will remain in place.
+     * 
+     * @param feature a {@linkplain Holder} referencing a new feature to be placed instead of the current feature.
      */
     public void setFeature(@Nullable Holder<ConfiguredFeature<?, ?>> feature) {
         this.feature = feature;
     }
 
     /**
-     * @param featureKey a {@linkplain ResourceKey} referencing a tree feature to be placed instead of the current feature.
+     * Changes the feature that will be grown. If the holder cannot be resolved, a null feature will be set.
+     * 
+     * @param featureKey a {@linkplain ResourceKey} referencing a new feature to be placed instead of the current feature.
      */
     public void setFeature(ResourceKey<ConfiguredFeature<?, ?>> featureKey) {
         this.feature = this.getLevel().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(featureKey).orElse(null);
+    }
+
+    /**
+     * Canceling this event will prevent the feature from growing. The original block will remain in place.
+     */
+    @Override
+    public void setCanceled(boolean canceled) {
+        ICancellableEvent.super.setCanceled(canceled);
     }
 }

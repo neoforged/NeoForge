@@ -27,7 +27,7 @@
 @@ -74,7 +_,7 @@
  
      public static boolean isPathPortable(Path p_133735_) {
-         for(Path path : p_133735_) {
+         for (Path path : p_133735_) {
 -            if (RESERVED_WINDOWS_FILENAMES.matcher(path.toString()).matches()) {
 +            if ((net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(path.toString()).matches()) {
                  return false;

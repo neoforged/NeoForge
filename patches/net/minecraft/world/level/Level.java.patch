@@ -133,7 +133,7 @@
              case NONE -> Explosion.BlockInteraction.KEEP;
              case BLOCK -> this.getDestroyType(GameRules.RULE_BLOCK_EXPLOSION_DROP_DECAY);
 -            case MOB -> this.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+            case MOB -> net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this, p_311934_)
++            case MOB -> net.neoforged.neoforge.event.EventHooks.canEntityGrief(this, p_311934_)
              ? this.getDestroyType(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY)
              : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.RULE_TNT_EXPLOSION_DROP_DECAY);

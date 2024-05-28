@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.Registry;
@@ -41,7 +42,7 @@ public final class TagConventionLogWarning {
      * Old `forge` tags that we migrated to a new tag under a new convention.
      * May also contain commonly used `forge` tags that are not following convention.
      */
-    private static final Map<TagKey<?>, TagKey<?>> LEGACY_FORGE_TAGS = Map.<TagKey<?>, TagKey<?>>ofEntries(
+    private static final Map<TagKey<?>, String> LEGACY_FORGE_TAGS = Map.<TagKey<?>, String>ofEntries(
             createForgeMapEntry(Registries.BLOCK, "enderman_place_on_blacklist", Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST),
             createForgeMapEntry(Registries.BLOCK, "needs_wood_tool", Tags.Blocks.NEEDS_WOOD_TOOL),
             createForgeMapEntry(Registries.BLOCK, "needs_gold_tool", Tags.Blocks.NEEDS_GOLD_TOOL),
@@ -72,43 +73,45 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.BLOCK, "furnace", Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES),
             createForgeMapEntry(Registries.BLOCK, "furnaces", Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES),
             createForgeMapEntry(Registries.BLOCK, "glass", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/black", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/blue", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/brown", Tags.Blocks.GLASS_BLOCKS),
+            createMapEntry(Registries.BLOCK, "forge", "stained_glass", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED),
+            createMapEntry(Registries.BLOCK, "forge", "glass/black", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_BLACK),
+            createMapEntry(Registries.BLOCK, "forge", "glass/blue", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_BLUE),
+            createMapEntry(Registries.BLOCK, "forge", "glass/brown", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_BROWN),
+            createMapEntry(Registries.BLOCK, "forge", "glass/cyan", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_CYAN),
+            createMapEntry(Registries.BLOCK, "forge", "glass/gray", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_GRAY),
+            createMapEntry(Registries.BLOCK, "forge", "glass/green", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_GREEN),
+            createMapEntry(Registries.BLOCK, "forge", "glass/light_blue", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_LIGHT_BLUE),
+            createMapEntry(Registries.BLOCK, "forge", "glass/light_gray", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_LIGHT_GRAY),
+            createMapEntry(Registries.BLOCK, "forge", "glass/lime", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_LIME),
+            createMapEntry(Registries.BLOCK, "forge", "glass/magenta", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_MAGENTA),
+            createMapEntry(Registries.BLOCK, "forge", "glass/orange", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_ORANGE),
+            createMapEntry(Registries.BLOCK, "forge", "glass/pink", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_PINK),
+            createMapEntry(Registries.BLOCK, "forge", "glass/purple", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_PURPLE),
+            createMapEntry(Registries.BLOCK, "forge", "glass/red", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_RED),
+            createMapEntry(Registries.BLOCK, "forge", "glass/white", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_WHITE),
+            createMapEntry(Registries.BLOCK, "forge", "glass/yellow", Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.DYED_YELLOW),
             createForgeMapEntry(Registries.BLOCK, "glass/colorless", Tags.Blocks.GLASS_BLOCKS_COLORLESS),
-            createForgeMapEntry(Registries.BLOCK, "glass/cyan", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/gray", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/green", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/light_blue", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/light_gray", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/lime", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/magenta", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/orange", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/pink", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/purple", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/red", Tags.Blocks.GLASS_BLOCKS),
             createForgeMapEntry(Registries.BLOCK, "glass/silica", Tags.Blocks.GLASS_BLOCKS_CHEAP),
             createForgeMapEntry(Registries.BLOCK, "glass/tinted", Tags.Blocks.GLASS_BLOCKS_TINTED),
-            createForgeMapEntry(Registries.BLOCK, "glass/white", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "glass/yellow", Tags.Blocks.GLASS_BLOCKS),
             createForgeMapEntry(Registries.BLOCK, "glass_panes", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/black", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/blue", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/brown", Tags.Blocks.GLASS_PANES),
+            createMapEntry(Registries.BLOCK, "forge", "stained_glass_panes", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/black", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_BLACK),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/blue", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_BLUE),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/brown", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_BROWN),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/cyan", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_CYAN),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/gray", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_GRAY),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/green", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_GREEN),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/light_blue", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_LIGHT_BLUE),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/light_gray", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_LIGHT_GRAY),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/lime", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_LIME),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/magenta", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_MAGENTA),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/orange", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_ORANGE),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/pink", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_PINK),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/purple", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_PURPLE),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/red", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_RED),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/white", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_WHITE),
+            createMapEntry(Registries.BLOCK, "forge", "glass_panes/yellow", Tags.Blocks.GLASS_PANES, Tags.Blocks.DYED_YELLOW),
             createForgeMapEntry(Registries.BLOCK, "glass_panes/colorless", Tags.Blocks.GLASS_PANES_COLORLESS),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/cyan", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/gray", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/green", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/light_blue", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/light_gray", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/lime", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/magenta", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/orange", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/pink", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/purple", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/red", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/white", Tags.Blocks.GLASS_PANES),
-            createForgeMapEntry(Registries.BLOCK, "glass_panes/yellow", Tags.Blocks.GLASS_PANES),
             createForgeMapEntry(Registries.BLOCK, "gravel", Tags.Blocks.GRAVELS),
             createMapEntry(Registries.BLOCK, "c", "gravel", Tags.Blocks.GRAVELS),
             createForgeMapEntry(Registries.BLOCK, "heads", Tags.Blocks.SKULLS),
@@ -140,8 +143,6 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.BLOCK, "sand/colorless", Tags.Blocks.SANDS_COLORLESS),
             createForgeMapEntry(Registries.BLOCK, "sand/red", Tags.Blocks.SANDS_RED),
             createForgeMapEntry(Registries.BLOCK, "sandstone", Tags.Blocks.SANDSTONE_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "stained_glass", Tags.Blocks.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.BLOCK, "stained_glass_panes", Tags.Blocks.GLASS_PANES),
             createForgeMapEntry(Registries.BLOCK, "stone", Tags.Blocks.STONES),
             createForgeMapEntry(Registries.BLOCK, "storage_blocks", Tags.Blocks.STORAGE_BLOCKS),
             createForgeMapEntry(Registries.BLOCK, "storage_blocks/amethyst", "storage_blocks/amethyst"),
@@ -230,43 +231,45 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.ITEM, "gems/prismarine", Tags.Items.GEMS_PRISMARINE),
             createForgeMapEntry(Registries.ITEM, "gems/quartz", Tags.Items.GEMS_QUARTZ),
             createForgeMapEntry(Registries.ITEM, "glass", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/black", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/blue", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/brown", Tags.Items.GLASS_BLOCKS),
+            createMapEntry(Registries.ITEM, "forge", "stained_glass", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED),
+            createMapEntry(Registries.ITEM, "forge", "glass/black", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_BLACK),
+            createMapEntry(Registries.ITEM, "forge", "glass/blue", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_BLUE),
+            createMapEntry(Registries.ITEM, "forge", "glass/brown", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_BROWN),
+            createMapEntry(Registries.ITEM, "forge", "glass/cyan", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_CYAN),
+            createMapEntry(Registries.ITEM, "forge", "glass/gray", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_GRAY),
+            createMapEntry(Registries.ITEM, "forge", "glass/green", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_GREEN),
+            createMapEntry(Registries.ITEM, "forge", "glass/light_blue", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_LIGHT_BLUE),
+            createMapEntry(Registries.ITEM, "forge", "glass/light_gray", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_LIGHT_GRAY),
+            createMapEntry(Registries.ITEM, "forge", "glass/lime", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_LIME),
+            createMapEntry(Registries.ITEM, "forge", "glass/magenta", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_MAGENTA),
+            createMapEntry(Registries.ITEM, "forge", "glass/orange", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_ORANGE),
+            createMapEntry(Registries.ITEM, "forge", "glass/pink", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_PINK),
+            createMapEntry(Registries.ITEM, "forge", "glass/purple", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_PURPLE),
+            createMapEntry(Registries.ITEM, "forge", "glass/red", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_RED),
+            createMapEntry(Registries.ITEM, "forge", "glass/white", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_WHITE),
+            createMapEntry(Registries.ITEM, "forge", "glass/yellow", Tags.Items.GLASS_BLOCKS, Tags.Items.DYED_YELLOW),
             createForgeMapEntry(Registries.ITEM, "glass/colorless", Tags.Items.GLASS_BLOCKS_COLORLESS),
-            createForgeMapEntry(Registries.ITEM, "glass/cyan", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/gray", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/green", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/light_blue", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/light_gray", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/lime", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/magenta", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/orange", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/pink", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/purple", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/red", Tags.Items.GLASS_BLOCKS),
             createForgeMapEntry(Registries.ITEM, "glass/silica", Tags.Items.GLASS_BLOCKS_CHEAP),
             createForgeMapEntry(Registries.ITEM, "glass/tinted", Tags.Items.GLASS_BLOCKS_TINTED),
-            createForgeMapEntry(Registries.ITEM, "glass/white", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "glass/yellow", Tags.Items.GLASS_BLOCKS),
             createForgeMapEntry(Registries.ITEM, "glass_panes", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/black", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/blue", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/brown", Tags.Items.GLASS_PANES),
+            createMapEntry(Registries.ITEM, "forge", "stained_glass_panes", Tags.Items.GLASS_PANES, Tags.Items.DYED),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/black", Tags.Items.GLASS_PANES, Tags.Items.DYED_BLACK),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/blue", Tags.Items.GLASS_PANES, Tags.Items.DYED_BLUE),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/brown", Tags.Items.GLASS_PANES, Tags.Items.DYED_BROWN),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/cyan", Tags.Items.GLASS_PANES, Tags.Items.DYED_CYAN),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/gray", Tags.Items.GLASS_PANES, Tags.Items.DYED_GRAY),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/green", Tags.Items.GLASS_PANES, Tags.Items.DYED_GREEN),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/light_blue", Tags.Items.GLASS_PANES, Tags.Items.DYED_LIGHT_BLUE),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/light_gray", Tags.Items.GLASS_PANES, Tags.Items.DYED_LIGHT_GRAY),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/lime", Tags.Items.GLASS_PANES, Tags.Items.DYED_LIME),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/magenta", Tags.Items.GLASS_PANES, Tags.Items.DYED_MAGENTA),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/orange", Tags.Items.GLASS_PANES, Tags.Items.DYED_ORANGE),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/pink", Tags.Items.GLASS_PANES, Tags.Items.DYED_PINK),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/purple", Tags.Items.GLASS_PANES, Tags.Items.DYED_PURPLE),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/red", Tags.Items.GLASS_PANES, Tags.Items.DYED_RED),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/white", Tags.Items.GLASS_PANES, Tags.Items.DYED_WHITE),
+            createMapEntry(Registries.ITEM, "forge", "glass_panes/yellow", Tags.Items.GLASS_PANES, Tags.Items.DYED_YELLOW),
             createForgeMapEntry(Registries.ITEM, "glass_panes/colorless", Tags.Items.GLASS_PANES_COLORLESS),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/cyan", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/gray", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/green", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/light_blue", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/light_gray", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/lime", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/magenta", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/orange", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/pink", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/purple", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/red", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/white", Tags.Items.GLASS_PANES),
-            createForgeMapEntry(Registries.ITEM, "glass_panes/yellow", Tags.Items.GLASS_PANES),
             createForgeMapEntry(Registries.ITEM, "gravel", Tags.Items.GRAVELS),
             createMapEntry(Registries.ITEM, "c", "gravel", Tags.Items.GRAVELS),
             createForgeMapEntry(Registries.ITEM, "gunpowder", Tags.Items.GUNPOWDERS),
@@ -327,8 +330,6 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.ITEM, "seeds/wheat", Tags.Items.SEEDS_WHEAT),
             createForgeMapEntry(Registries.ITEM, "shears", Tags.Items.TOOLS_SHEARS),
             createForgeMapEntry(Registries.ITEM, "slimeballs", Tags.Items.SLIMEBALLS),
-            createForgeMapEntry(Registries.ITEM, "stained_glass", Tags.Items.GLASS_BLOCKS),
-            createForgeMapEntry(Registries.ITEM, "stained_glass_panes", Tags.Items.GLASS_PANES),
             createForgeMapEntry(Registries.ITEM, "stone", Tags.Items.STONES),
             createForgeMapEntry(Registries.ITEM, "storage_blocks", Tags.Items.STORAGE_BLOCKS),
             createForgeMapEntry(Registries.ITEM, "storage_blocks/amethyst", "storage_blocks/amethyst"),
@@ -501,8 +502,8 @@ public final class TagConventionLogWarning {
                             stringBuilder.append("\nLegacy tags:");
                             for (TagKey<?> tagKey : legacyTags) {
                                 if (LEGACY_FORGE_TAGS.containsKey(tagKey)) {
-                                    TagKey<?> replacementTagkey = LEGACY_FORGE_TAGS.get(tagKey);
-                                    stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append(replacementTagkey);
+                                    String replacementMessage = LEGACY_FORGE_TAGS.get(tagKey);
+                                    stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append(replacementMessage);
                                 } else {
                                     stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append("See similar `c` tags in NeoForge's Tags class");
                                 }
@@ -516,16 +517,20 @@ public final class TagConventionLogWarning {
         });
     }
 
-    private static <T> AbstractMap.SimpleEntry<TagKey<T>, TagKey<T>> createForgeMapEntry(ResourceKey<Registry<T>> registryKey, String tagId1, String tagId2) {
-        return new AbstractMap.SimpleEntry<>(createTagKey(registryKey, "forge", tagId1), createTagKey(registryKey, "c", tagId2));
+    private static <T> AbstractMap.SimpleEntry<TagKey<T>, String> createForgeMapEntry(ResourceKey<Registry<T>> registryKey, String tagId1, String tagId2) {
+        return new AbstractMap.SimpleEntry<>(createTagKey(registryKey, "forge", tagId1), "c:" + tagId2);
     }
 
-    private static <T, R> AbstractMap.SimpleEntry<TagKey<T>, TagKey<R>> createForgeMapEntry(ResourceKey<Registry<T>> registryKey, String tagId1, TagKey<R> tag2) {
-        return new AbstractMap.SimpleEntry<>(createTagKey(registryKey, "forge", tagId1), tag2);
+    private static <T, R> AbstractMap.SimpleEntry<TagKey<T>, String> createForgeMapEntry(ResourceKey<Registry<T>> registryKey, String tagId1, TagKey<R> tag2) {
+        return new AbstractMap.SimpleEntry<>(createTagKey(registryKey, "forge", tagId1), tag2.toString());
     }
 
-    private static <T, R> AbstractMap.SimpleEntry<TagKey<T>, TagKey<R>> createMapEntry(ResourceKey<Registry<T>> registryKey, String tagNamespace1, String tagId1, TagKey<R> tag2) {
-        return new AbstractMap.SimpleEntry<>(createTagKey(registryKey, tagNamespace1, tagId1), tag2);
+    private static <T, R> AbstractMap.SimpleEntry<TagKey<T>, String> createMapEntry(ResourceKey<Registry<T>> registryKey, String tagNamespace1, String tagId1, TagKey<R> tag2) {
+        return new AbstractMap.SimpleEntry<>(createTagKey(registryKey, tagNamespace1, tagId1), tag2.toString());
+    }
+
+    private static <T, R> AbstractMap.SimpleEntry<TagKey<T>, String> createMapEntry(ResourceKey<Registry<T>> registryKey, String tagNamespace1, String tagId1, TagKey<R>... replacementTags) {
+        return new AbstractMap.SimpleEntry<>(createTagKey(registryKey, tagNamespace1, tagId1), String.join(" and ", Arrays.stream(replacementTags).map(TagKey::toString).toList()));
     }
 
     private static <T> TagKey<T> createTagKey(ResourceKey<Registry<T>> registryKey, String namespace, String tagId) {
