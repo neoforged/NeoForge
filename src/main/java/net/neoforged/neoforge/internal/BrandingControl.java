@@ -13,8 +13,6 @@ import java.util.stream.IntStream;
 import net.minecraft.DetectedVersion;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
