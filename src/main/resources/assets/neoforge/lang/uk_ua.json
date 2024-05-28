@@ -58,7 +58,7 @@
   "fml.modmismatchscreen.homepage": "Натисніть, щоб перейти на домашню сторінку цього моду",
   "fml.modmismatchscreen.table.reason": "Причина",
   "fml.modmismatchscreen.table.visit.mod_page": "Відкрийте сторінку мода, який реєструє канал: %s",
-  "fml.modmismatchscreen.simplifiedview": "Simplified view",
+  "fml.modmismatchscreen.simplifiedview": "Спрощений вигляд",
   "fml.resources.modresources": "Ресурси для %1$s файлів модів",
   "fml.resources.moddata": "Дані для %1$s файлів модів",
   "loadwarning.neoforge.prbuild": "Ця збірка NeoForge була створена членом спільноти й тому §c§lНЕ ПІДТРИМУЄТЬСЯ§r",
@@ -178,7 +178,7 @@
   "neoforge.chatType.system": "%1$s",
   "pack.neoforge.description": "Пакет даних/ресурсів NeoForge",
   "pack.neoforge.source.child": "є дочірнім",
-  "neoforge.network.negotiation.failure.mod": "Channel of mod \"%1$s\" failed to connect: %2$s",
+  "neoforge.network.negotiation.failure.mod": "Не вдалося з'єднатися з каналом моду \"%1$s\": %2$s",
   "neoforge.network.negotiation.failure.missing.client.server": "Цей канал відсутній на стороні сервера, але необхідний на клієнті!",
   "neoforge.network.negotiation.failure.missing.server.client": "Цей канал відсутній на стороні клієнта, але необхідний на сервері!",
   "neoforge.network.negotiation.failure.flow.client.missing": "Клієнт хоче передати корисне навантаження на потік: %s, але сервер не підтримує це!",
@@ -199,6 +199,6 @@
   "neoforge.network.registries.sync.failed": "Не вдалося синхронізувати реєстри з сервера: %s",
   "neoforge.network.aux_light_data.failed": "Не вдалося опрацювати допоміжні дані для освітлення чанку %s: %s",
   "neoforge.network.data_maps.failed": "Не вдалося опрацювати синхронізацію реєстрових мап даних для реєстру %s: %s",
-  "neoforge.network.data_maps.missing_our": "Не вдається під'єднатися до сервера, оскільки на клієнті відсутні обов'язкові мапи даних реєстру: %s",
-  "neoforge.network.data_maps.missing_their": "Не вдається під'єднатися до сервера, оскільки присутні обов'язкові мапи даних реєстру, що відсутні на клієнті: %s"
+  "neoforge.network.data_maps.missing_our": "Не вдається приєднатися до сервера, оскільки на клієнті відсутні обов'язкові мапи даних реєстру: %s",
+  "neoforge.network.data_maps.missing_their": "Не вдається приєднатися до сервера, оскільки присутні обов'язкові мапи даних реєстру, що відсутні на клієнті: %s"
 }
