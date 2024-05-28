@@ -215,11 +215,10 @@ public interface IBlockExtension {
      * @param willHarvest True if Block.harvestBlock will be called after this, if the return in true.
      *                    Can be useful to delay the destruction of tile entities till after harvestBlock
      * @param fluid       The current fluid state at current position
-     * @return The new blockstate to pass to {@link Block#destroy} and {@link Block#playerDestroy} if this block was successfully replaced in world by {@link Level#setBlock}. Null if block was not replaced.
+     * @return True if the block is actually destroyed.
      */
-    default @Nullable BlockState onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        BlockState newState = self().playerWillDestroy(level, pos, state, player);
-        return level.setBlock(pos, fluid.createLegacyBlock(), level.isClientSide ? 11 : 3) ? newState : null;
+    default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        return level.setBlock(pos, fluid.createLegacyBlock(), level.isClientSide ? 11 : 3);
     }
 
     /**

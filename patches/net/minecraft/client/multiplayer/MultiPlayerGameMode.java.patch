@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
-@@ -120,14 +_,14 @@
+@@ -120,14 +_,15 @@
                  } else if (blockstate.isAir()) {
                      return false;
                  } else {
@@ -9,9 +9,10 @@
 -                    boolean flag = level.setBlock(p_105268_, fluidstate.createLegacyBlock(), 11);
 -                    if (flag) {
 -                        block.destroy(level, p_105268_, blockstate);
-+                    BlockState playerDestroyedBlock = blockstate.onDestroyedByPlayer(level, p_105268_, minecraft.player, false, fluidstate);
-+                    if (playerDestroyedBlock != null) {
-+                        block.destroy(level, p_105268_, playerDestroyedBlock);
++                    BlockState removedBlockState = block.playerWillDestroy(level, p_105268_, blockstate, minecraft.player);
++                    boolean removed = blockstate.onDestroyedByPlayer(level, p_105268_, minecraft.player, false, fluidstate);
++                    if (removed) {
++                        block.destroy(level, p_105268_, removedBlockState);
 +                        return true;
                      }
  
