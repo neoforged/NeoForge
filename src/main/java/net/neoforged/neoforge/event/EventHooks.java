@@ -521,7 +521,7 @@ public class EventHooks {
      * Fires {@link ItemEntityPickupEvent.Pre} and returns the event.
      * 
      * @param itemEntity The item entity that a player collided with
-     * @param itemTarget The target that can pick up this item entity (if {@code null}, anyone can pick it up)
+     * @param itemTarget The target that can pick up this item entity (If null, anyone can pick it up)
      * @param player     The player that collided with the item entity
      */
     public static ItemEntityPickupEvent.Pre fireItemPickupPre(ItemEntity itemEntity, @Nullable UUID itemTarget, Player player) {
