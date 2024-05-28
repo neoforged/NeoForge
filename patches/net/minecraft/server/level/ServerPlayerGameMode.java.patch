@@ -40,16 +40,14 @@
              return false;
          } else {
              BlockEntity blockentity = this.level.getBlockEntity(p_9281_);
-@@ -235,27 +_,48 @@
-             } else if (this.player.blockActionRestricted(this.level, p_9281_, this.gameModeForPlayer)) {
+@@ -236,26 +_,46 @@
                  return false;
              } else {
--                BlockState blockstate = block.playerWillDestroy(this.level, p_9281_, blockstate1, this.player);
+                 BlockState blockstate = block.playerWillDestroy(this.level, p_9281_, blockstate1, this.player);
 -                boolean flag1 = this.level.removeBlock(p_9281_, false);
 -                if (flag1) {
 -                    block.destroy(this.level, p_9281_, blockstate);
 -                }
-+                BlockState blockstate = blockstate1;
  
                  if (this.isCreative()) {
 +                    removeBlock(p_9281_, blockstate, false);
@@ -58,22 +56,19 @@
                      ItemStack itemstack = this.player.getMainHandItem();
                      ItemStack itemstack1 = itemstack.copy();
 -                    boolean flag = this.player.hasCorrectToolForDrops(blockstate);
--                    itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
++                    boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
+                     itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
 -                    if (flag1 && flag) {
--                        block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
-+                    BlockState removedBlockState = blockstate.getBlock().playerWillDestroy(this.level, p_9281_, blockstate, this.player);
-+                    boolean flag1 = removedBlockState.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
-+                    itemstack.mineBlock(this.level, removedBlockState, p_9281_, this.player);
 +                    if (itemstack.isEmpty() && !itemstack1.isEmpty())
 +                        net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
-+                    boolean flag  = removeBlock(p_9281_, removedBlockState, flag1);
++                    boolean flag  = removeBlock(p_9281_, blockstate, flag1);
 +
 +                    if (flag1 && flag ) {
-+                        block.playerDestroy(this.level, this.player, p_9281_, removedBlockState, blockentity, itemstack1);
+                         block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
                      }
  
 +                    if (flag  && exp > 0)
-+                        removedBlockState.getBlock().popExperience(level, p_9281_, exp);
++                        blockstate.getBlock().popExperience(level, p_9281_, exp);
 +
                      return true;
                  }
