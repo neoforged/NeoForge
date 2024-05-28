@@ -5,7 +5,11 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
+import java.util.Optional;
 import java.util.function.Predicate;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -22,6 +26,11 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     protected FluidStack fluid = FluidStack.EMPTY;
     protected int capacity;
 
+    public static final Codec<FluidTank> CODEC = RecordCodecBuilder.create(i -> i.group(
+        Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
+        FluidStack.CODEC.optionalFieldOf("Fluid", FluidStack.EMPTY).forGetter(x -> x.fluid)
+    ).apply(i, FluidTank::new));
+
     public FluidTank(int capacity) {
         this(capacity, e -> true);
     }
@@ -29,6 +38,11 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     public FluidTank(int capacity, Predicate<FluidStack> validator) {
         this.capacity = capacity;
         this.validator = validator;
+    }
+
+    private FluidTank(int capacity, FluidStack fluidStack) {
+        this.capacity = capacity;
+        this.fluid = fluidStack;
     }
 
     public FluidTank setCapacity(int capacity) {

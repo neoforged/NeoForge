@@ -5,6 +5,11 @@
 
 package net.neoforged.neoforge.items;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -12,9 +17,19 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.NbtListCollector;
+
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
+
+    public static Codec<ItemStackHandler> codec(HolderLookup.Provider provider) {
+        return new ItemStackHandlerCodec(provider);
+    }
 
     public ItemStackHandler() {
         this(1);
@@ -173,4 +188,49 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     protected void onLoad() {}
 
     protected void onContentsChanged(int slot) {}
+
+    public record ItemStackHandlerCodec(HolderLookup.Provider provider) implements Codec<ItemStackHandler> {
+
+        @Override
+        public <T> DataResult<Pair<ItemStackHandler, T>> decode(DynamicOps<T> ops, T input) {
+            final var map = ops.getMap(input).getOrThrow();
+
+            int maxSize = Codec.INT.fieldOf("Size")
+                .decode(ops, map)
+                .getOrThrow();
+
+            ItemStackHandler handler = new ItemStackHandler(maxSize);
+            CompoundTag.CODEC.listOf()
+                .fieldOf("Items")
+                .decode(ops, map)
+                .ifSuccess(itemTags -> {
+                    itemTags.forEach(itemTag -> {
+                        int slot = itemTag.getInt("Slot");
+                        var stack = ItemStack.parse(provider, itemTag).orElse(ItemStack.EMPTY);
+                        handler.setStackInSlot(slot, stack);
+                    });
+                });
+
+            return DataResult.success(Pair.of(handler, input));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ItemStackHandler input, DynamicOps<T> ops, T prefix) {
+            var list = ops.listBuilder();
+            for (int i = 0; i < input.stacks.size(); i++) {
+                if (!input.stacks.get(i).isEmpty()) {
+                    CompoundTag itemTag = new CompoundTag();
+                    itemTag.putInt("Slot", i);
+                    var encodedStack = input.stacks.get(i).save(provider, itemTag);
+                    if(encodedStack instanceof CompoundTag ct)
+                        list.add(CompoundTag.CODEC.encode(ct, ops, ops.empty()));
+                }
+            }
+
+            return ops.mapBuilder()
+                .add("Items", list.build(ops.empty()))
+                .add("Size", ops.createInt(input.stacks.size()))
+                .build(prefix);
+        }
+    }
 }

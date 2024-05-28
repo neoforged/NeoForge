@@ -5,9 +5,14 @@
 
 package net.neoforged.neoforge.energy;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 /**
@@ -21,6 +26,18 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     protected int capacity;
     protected int maxReceive;
     protected int maxExtract;
+
+    public static final Codec<EnergyStorage> CODEC = RecordCodecBuilder.create(i -> i.group(
+        Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
+        Codec.INT.fieldOf("maxReceive").forGetter(x -> x.maxReceive),
+        Codec.INT.fieldOf("maxExtract").forGetter(x -> x.maxExtract),
+        Codec.INT.fieldOf("energy").forGetter(x -> x.energy)
+    ).apply(i, EnergyStorage::new));
+
+    public static final StreamCodec<FriendlyByteBuf, EnergyStorage> STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.INT, x -> x.capacity, ByteBufCodecs.INT, x -> x.maxReceive,
+        ByteBufCodecs.INT, x -> x.maxExtract, ByteBufCodecs.INT, x -> x.energy,
+        EnergyStorage::new);
 
     public EnergyStorage(int capacity) {
         this(capacity, capacity, capacity, 0);
