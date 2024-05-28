@@ -135,6 +135,21 @@
          if (!this.level().isClientSide && entity instanceof ItemEntity) {
              ((ItemEntity)entity).mergeWithNeighbours();
          }
+@@ -397,6 +_,14 @@
+         this.target = p_266724_;
+     }
+ 
++    /**
++     * Neo: Add getter for ItemEntity's {@link ItemEntity#target target}.
++     * @return The {@link ItemEntity#target target} that can pick up this item entity (if {@code null}, anyone can pick it up)
++     */
++    public @org.jetbrains.annotations.Nullable UUID getTarget() {
++        return this.target;
++    }
++
+     public void setThrower(Entity p_306324_) {
+         this.thrower = p_306324_.getUUID();
+         this.cachedThrower = p_306324_;
 @@ -436,7 +_,7 @@
  
      public void makeFakeItem() {
