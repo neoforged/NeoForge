@@ -51,7 +51,7 @@ public abstract class ItemEntityPickupEvent extends Event {
 
     /**
      * {@return the {@link ItemEntity#target target} of the current {@linkplain #getItemEntity() ItemEntity}}
-     * The target is who is allowed to pick up this ItemEntity. If null, anyone can pick up this ItemEntity.
+     * The target represents the id of the entity allowed to pick up the item entity. If {@code null}, anyone can pick it up.
      */
     public @Nullable UUID getItemEntityTarget() {
         return itemTarget;
