@@ -534,7 +534,7 @@ public class EventHooks {
      * Fires {@link ItemEntityPickupEvent.Post}.
      * 
      * @param itemEntity The item entity that a player collided with
-     * @param itemTarget The target that can pick up this item entity (If null, anyone can pick it up)
+     * @param itemTarget The target that can pick up this item entity (if {@code null}, anyone can pick it up)
      * @param player     The player that collided with the item entity
      * @param copy       A copy of the item entity's item stack before the pickup
      */
