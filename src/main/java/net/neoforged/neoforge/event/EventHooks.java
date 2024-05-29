@@ -602,11 +602,11 @@ public class EventHooks {
      * @param level             The level that the explosion is in
      * @param explosion         Explosion that is happening
      * @param entity            The entity caught in the explosion's blast
-     * @param knockbackVelocity The explosion calculated velocity for the entity
+     * @param initialVelocity   The explosion calculated velocity for the entity
      * @return The new explosion velocity to add to the entity's existing velocity
      */
-    public static Vec3 onExplosionKnockback(Level level, Explosion explosion, Entity entity, Vec3 knockbackVelocity) {
-        ExplosionKnockbackEvent event = new ExplosionKnockbackEvent(level, explosion, entity, knockbackVelocity);
+    public static Vec3 getExplosionKnockback(Level level, Explosion explosion, Entity entity, Vec3 initialVelocity) {
+        ExplosionKnockbackEvent event = new ExplosionKnockbackEvent(level, explosion, entity, initialVelocity);
         NeoForge.EVENT_BUS.post(event);
         return event.getKnockbackVelocity();
     }
