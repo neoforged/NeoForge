@@ -56,10 +56,12 @@
      }
  
      @Override
-@@ -118,6 +_,12 @@
+@@ -117,7 +_,13 @@
+     public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
          PacketUtils.ensureRunningOnSameThread(p_294283_, this, this.server);
          this.finishCurrentTask(JoinWorldTask.TYPE);
-         this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())));
+-        this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())));
++        this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess(), this.connectionType)));
 +        // Packets can only be sent after the outbound protocol is set up again
 +        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
 +            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.

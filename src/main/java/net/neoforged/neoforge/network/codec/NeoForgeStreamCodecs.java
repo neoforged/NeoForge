@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
@@ -87,6 +88,29 @@ public final class NeoForgeStreamCodecs {
             @Override
             public void encode(B buf, ResourceKey<? extends Registry<?>> value) {
                 buf.writeResourceLocation(value.location());
+            }
+        };
+    }
+
+    /**
+     * Creates a stream codec that uses different implementation depending on the {@link net.neoforged.neoforge.network.connection.ConnectionType}.
+     * Should be used to keep vanilla connection compatibility.
+     */
+    public static <V> StreamCodec<RegistryFriendlyByteBuf, V> connectionAware(
+            StreamCodec<? super RegistryFriendlyByteBuf, V> neoForgeCodec,
+            StreamCodec<? super RegistryFriendlyByteBuf, V> otherCodec) {
+        return new StreamCodec<>() {
+            @Override
+            public V decode(RegistryFriendlyByteBuf buf) {
+                return buf.getConnectionType().isNeoForge() ? neoForgeCodec.decode(buf) : otherCodec.decode(buf);
+            }
+
+            @Override
+            public void encode(RegistryFriendlyByteBuf buf, V value) {
+                switch (buf.getConnectionType()) {
+                    case NEOFORGE -> neoForgeCodec.encode(buf, value);
+                    case OTHER -> otherCodec.encode(buf, value);
+                }
             }
         };
     }

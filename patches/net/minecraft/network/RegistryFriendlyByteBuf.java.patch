@@ -1,0 +1,35 @@
+--- a/net/minecraft/network/RegistryFriendlyByteBuf.java
++++ b/net/minecraft/network/RegistryFriendlyByteBuf.java
+@@ -6,10 +_,22 @@
+ 
+ public class RegistryFriendlyByteBuf extends FriendlyByteBuf {
+     private final RegistryAccess registryAccess;
++    private final net.neoforged.neoforge.network.connection.ConnectionType connectionType;
+ 
+     public RegistryFriendlyByteBuf(ByteBuf p_320951_, RegistryAccess p_319803_) {
+         super(p_320951_);
+         this.registryAccess = p_319803_;
++        this.connectionType = net.neoforged.neoforge.network.connection.ConnectionType.NEOFORGE;
++    }
++
++    public RegistryFriendlyByteBuf(ByteBuf p_320951_, RegistryAccess p_319803_, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
++        super(p_320951_);
++        this.registryAccess = p_319803_;
++        this.connectionType = connectionType;
++    }
++
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return this.connectionType;
+     }
+ 
+     public RegistryAccess registryAccess() {
+@@ -18,5 +_,9 @@
+ 
+     public static Function<ByteBuf, RegistryFriendlyByteBuf> decorator(RegistryAccess p_320166_) {
+         return p_320793_ -> new RegistryFriendlyByteBuf(p_320793_, p_320166_);
++    }
++
++    public static Function<ByteBuf, RegistryFriendlyByteBuf> decorator(RegistryAccess p_320166_, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
++        return p_320793_ -> new RegistryFriendlyByteBuf(p_320793_, p_320166_, connectionType);
+     }
+ }

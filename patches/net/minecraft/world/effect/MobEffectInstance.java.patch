@@ -87,8 +87,9 @@
                              .apply(p_324063_, MobEffectInstance.Details::create)
                  )
          );
-         public static final StreamCodec<ByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
+-        public static final StreamCodec<ByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
 -            p_329990_ -> StreamCodec.composite(
++        public static final StreamCodec<RegistryFriendlyByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
 +            p_329990_ -> net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.composite(
                      ByteBufCodecs.VAR_INT,
                      MobEffectInstance.Details::amplifier,
@@ -97,7 +98,7 @@
                      MobEffectInstance.Details::showIcon,
                      p_329990_.apply(ByteBufCodecs::optional),
                      MobEffectInstance.Details::hiddenEffect,
-+                    net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.<java.util.Set<net.neoforged.neoforge.common.EffectCure>>apply(ByteBufCodecs.collection(java.util.HashSet::new)).apply(ByteBufCodecs::optional),
++                    net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.<RegistryFriendlyByteBuf>cast().<java.util.Set<net.neoforged.neoforge.common.EffectCure>>apply(ByteBufCodecs.collection(java.util.HashSet::new)).apply(codec -> net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(ByteBufCodecs.optional(codec), StreamCodec.unit(Optional.empty()))),
 +                    MobEffectInstance.Details::cures,
                      MobEffectInstance.Details::new
                  )
