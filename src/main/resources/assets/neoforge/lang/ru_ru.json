@@ -24,7 +24,7 @@
   "fml.menu.mods.info.updateavailable": "Вышло обновление: %1$s",
   "fml.menu.mods.info.changelogheader": "Список изменений:",
   "fml.menu.multiplayer.compatible": "Compatible FML modded server\n{0,choice,1#1 mod|1<%1$s mods} present",
-  "fml.menu.multiplayer.incompatible": "Несовместимый модифицированный FML сервер",
+  "fml.menu.multiplayer.incompatible": "Несовместимый сервер на Forge",
   "fml.menu.multiplayer.incompatible.extra": "Incompatible FML modded server\n%1$s",
   "fml.menu.multiplayer.truncated": "Возможны неточности данных из-за ограничений размера протокола.",
   "fml.menu.multiplayer.vanilla": "Vanilla сервер",
