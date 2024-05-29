@@ -57,13 +57,13 @@
          }
      }
  
-+    /** @deprecated Neo: use {@link #render(LightTexture, Camera, float, net.minecraft.client.renderer.culling.Frustum)}  with Frustum as additional parameter */
++    /** @deprecated Neo: use {@link #render(LightTexture, Camera, float, net.minecraft.client.renderer.culling.Frustum, java.util.function.Predicate)} with additional parameters */
 +    @Deprecated
      public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_) {
-+        render(p_107339_, p_107340_, p_107341_, null);
++        render(p_107339_, p_107340_, p_107341_, null, type -> true);
 +    }
 +
-+    public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum) {
++    public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum, java.util.function.Predicate<ParticleRenderType> renderTypePredicate) {
          p_107339_.turnOnLightLayer();
          RenderSystem.enableDepthTest();
 +        //TODO porting: is this even needed with the particle render order fix???
@@ -72,7 +72,7 @@
  
 -        for (ParticleRenderType particlerendertype : RENDER_ORDER) {
 +        for(ParticleRenderType particlerendertype : this.particles.keySet()) { // Forge: allow custom IParticleRenderType's
-+            if (particlerendertype == ParticleRenderType.NO_RENDER) continue;
++            if (particlerendertype == ParticleRenderType.NO_RENDER || !renderTypePredicate.test(particlerendertype)) continue;
              Iterable<Particle> iterable = this.particles.get(particlerendertype);
              if (iterable != null) {
                  RenderSystem.setShader(GameRenderer::getParticleShader);

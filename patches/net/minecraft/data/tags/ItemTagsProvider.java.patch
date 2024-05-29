@@ -34,7 +34,7 @@
 +        CompletableFuture<HolderLookup.Provider> p_275729_,
 +        CompletableFuture<TagsProvider.TagLookup<Block>> p_275322_,
 +        String modId,
-+        @javax.annotation.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
++        @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
 +    ) {
 +        super(p_275343_, Registries.ITEM, p_275729_, p_255790_ -> p_255790_.builtInRegistryHolder().key(), modId, existingFileHelper);
 +        this.blockTags = p_275322_;
@@ -46,7 +46,7 @@
 +        CompletableFuture<TagsProvider.TagLookup<Item>> p_275207_,
 +        CompletableFuture<TagsProvider.TagLookup<Block>> p_275634_,
 +        String modId,
-+        @javax.annotation.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
++        @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
 +    ) {
 +        super(p_275204_, Registries.ITEM, p_275194_, p_275207_, p_274765_ -> p_274765_.builtInRegistryHolder().key(), modId, existingFileHelper);
          this.blockTags = p_275634_;

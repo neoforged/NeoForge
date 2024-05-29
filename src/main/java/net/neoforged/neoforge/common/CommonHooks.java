@@ -58,7 +58,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -79,6 +78,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -124,7 +124,7 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -140,7 +140,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
@@ -182,6 +181,7 @@ import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
@@ -190,6 +190,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
+import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -447,51 +448,44 @@ public class CommonHooks {
             state.getBlock().popExperience(level, pos, exp);
     }
 
-    public static int onBlockBreakEvent(Level level, GameType gameType, ServerPlayer entityPlayer, BlockPos pos) {
-        // Logic from tryHarvestBlock for pre-canceling the event
+    /**
+     * Fires {@link BlockEvent.BreakEvent}, pre-emptively canceling the event based on the conditions that will cause the block to not be broken anyway.
+     * <p>
+     * Note that undoing the pre-cancel will not permit breaking the block, since the vanilla conditions will always be checked.
+     * 
+     * @param level    The level
+     * @param gameType The game type of the breaking player
+     * @param player   The breaking player
+     * @param pos      The position of the block being broken
+     * @param state    The state of the block being broken
+     * @return The experience dropped by the broken block, or -1 if the break event was canceled.
+     */
+    public static int fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
         boolean preCancelEvent = false;
-        ItemStack itemstack = entityPlayer.getMainHandItem();
-        if (!itemstack.isEmpty() && !itemstack.getItem().canAttackBlock(level.getBlockState(pos), level, pos, entityPlayer)) {
+
+        ItemStack itemstack = player.getMainHandItem();
+        if (!itemstack.isEmpty() && !itemstack.getItem().canAttackBlock(state, level, pos, player)) {
             preCancelEvent = true;
         }
 
-        if (gameType.isBlockPlacingRestricted()) {
-            if (gameType == GameType.SPECTATOR)
-                preCancelEvent = true;
-
-            if (!entityPlayer.mayBuild()) {
-                AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_BREAK);
-                if (itemstack.isEmpty() || adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, pos, false))) {
-                    preCancelEvent = true;
-                }
-            }
+        if (player.blockActionRestricted(level, pos, gameType)) {
+            preCancelEvent = true;
         }
 
-        // Tell client the block is gone immediately then process events
-        if (level.getBlockEntity(pos) == null) {
-            entityPlayer.connection.send(new ClientboundBlockUpdatePacket(pos, level.getFluidState(pos).createLegacyBlock()));
+        if (state.getBlock() instanceof GameMasterBlock && !player.canUseGameMasterBlocks()) {
+            preCancelEvent = true;
         }
 
         // Post the block break event
-        BlockState state = level.getBlockState(pos);
-        BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, entityPlayer);
+        BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, player);
         event.setCanceled(preCancelEvent);
         NeoForge.EVENT_BUS.post(event);
 
-        // Handle if the event is canceled
+        // If the event is canceled, let the client know the block still exists
         if (event.isCanceled()) {
-            // Let the client know the block still exists
-            entityPlayer.connection.send(new ClientboundBlockUpdatePacket(level, pos));
-
-            // Update any tile entity data for this block
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity != null) {
-                Packet<?> pkt = blockEntity.getUpdatePacket();
-                if (pkt != null) {
-                    entityPlayer.connection.send(pkt);
-                }
-            }
+            player.connection.send(new ClientboundBlockUpdatePacket(pos, state));
         }
+
         return event.isCanceled() ? -1 : event.getExpToDrop();
     }
 
@@ -549,7 +543,7 @@ public class CommonHooks {
                 // revert back all captured blocks
                 for (BlockSnapshot blocksnapshot : Lists.reverse(blockSnapshots)) {
                     level.restoringBlockSnapshots = true;
-                    blocksnapshot.restore(true, false);
+                    blocksnapshot.restore(blocksnapshot.getFlags() | Block.UPDATE_CLIENTS);
                     level.restoringBlockSnapshots = false;
                 }
             } else {
@@ -558,8 +552,8 @@ public class CommonHooks {
                 itemstack.applyComponents(newComponents);
 
                 for (BlockSnapshot snap : blockSnapshots) {
-                    int updateFlag = snap.getFlag();
-                    BlockState oldBlock = snap.getReplacedBlock();
+                    int updateFlag = snap.getFlags();
+                    BlockState oldBlock = snap.getState();
                     BlockState newBlock = level.getBlockState(snap.getPos());
                     newBlock.onPlace(level, snap.getPos(), oldBlock, false);
 
@@ -786,24 +780,35 @@ public class CommonHooks {
         Biome apply(final Biome.ClimateSettings climate, final BiomeSpecialEffects effects, final BiomeGenerationSettings gen, final MobSpawnSettings spawns);
     }
 
-    public static boolean onCropsGrowPre(Level level, BlockPos pos, BlockState state, boolean def) {
-        BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
+    /**
+     * Checks if a crop can grow by firing {@link CropGrowEvent.Pre}.
+     * 
+     * @param level The level the crop is in
+     * @param pos   The position of the crop
+     * @param state The state of the crop
+     * @param def   The result of the default checks performed by the crop.
+     * @return true if the crop can grow
+     */
+    public static boolean canCropGrow(Level level, BlockPos pos, BlockState state, boolean def) {
+        var ev = new CropGrowEvent.Pre(level, pos, state);
         NeoForge.EVENT_BUS.post(ev);
-        return (ev.getResult() == Event.Result.ALLOW || (ev.getResult() == Event.Result.DEFAULT && def));
+        return (ev.getResult() == CropGrowEvent.Pre.Result.GROW || (ev.getResult() == CropGrowEvent.Pre.Result.DEFAULT && def));
     }
 
-    public static void onCropsGrowPost(Level level, BlockPos pos, BlockState state) {
-        NeoForge.EVENT_BUS.post(new BlockEvent.CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
+    public static void fireCropGrowPost(Level level, BlockPos pos, BlockState state) {
+        NeoForge.EVENT_BUS.post(new CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
     }
 
-    @Nullable
-    public static CriticalHitEvent getCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
-        CriticalHitEvent hitResult = new CriticalHitEvent(player, target, damageModifier, vanillaCritical);
-        NeoForge.EVENT_BUS.post(hitResult);
-        if (hitResult.getResult() == Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == Event.Result.DEFAULT)) {
-            return hitResult;
-        }
-        return null;
+    /**
+     * Fires the {@link CriticalHitEvent} and returns the resulting event.
+     * 
+     * @param player          The attacking player
+     * @param target          The attack target
+     * @param vanillaCritical If the attack would have been a critical hit by vanilla's rules in {@link Player#attack(Entity)}.
+     * @param damageModifier  The base damage modifier. Vanilla critical hits have a damage modifier of 1.5.
+     */
+    public static CriticalHitEvent fireCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
+        return NeoForge.EVENT_BUS.post(new CriticalHitEvent(player, target, damageModifier, vanillaCritical));
     }
 
     /**
@@ -901,7 +906,7 @@ public class CommonHooks {
         if (!level.isLoaded(pos))
             return false;
         BlockState state = level.getBlockState(pos);
-        return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
+        return EventHooks.canEntityGrief(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
     }
 
     /**
@@ -1359,5 +1364,17 @@ public class CommonHooks {
             long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
             poiManager.remove(sectionPosKey);
         }
+    }
+
+    /**
+     * Checks if a mob effect can be applied to an entity by firing {@link MobEffectEvent.Applicable}.
+     * 
+     * @param entity The target entity the mob effect is being applied to.
+     * @param effect The mob effect being applied.
+     * @return True if the mob effect can be applied, otherwise false.
+     */
+    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
+        var event = new MobEffectEvent.Applicable(entity, effect);
+        return NeoForge.EVENT_BUS.post(event).getApplicationResult();
     }
 }

@@ -10,11 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
+import net.neoforged.neoforge.common.util.TriState;
 
 @Mod(NameplateRenderingEventTest.MODID)
 @EventBusSubscriber(value = Dist.CLIENT)
@@ -30,7 +30,7 @@ public class NameplateRenderingEventTest {
 
         if (event.getEntity() instanceof Cow) {
             event.setContent(Component.literal("Evil Cow").withStyle(ChatFormatting.RED));
-            event.setResult(Event.Result.ALLOW);
+            event.setCanRender(TriState.TRUE);
         }
 
         if (event.getEntity() instanceof Player) {

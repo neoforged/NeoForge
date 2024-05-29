@@ -89,6 +89,8 @@ dependencies {
     userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"), {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
+
+    userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
 }
 
 runTypes {
@@ -132,6 +134,14 @@ runTypes {
         arguments.addAll '--fml.mcVersion', project.minecraft_version
         arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
+
+    junit {
+        junit true
+        arguments.addAll '--fml.neoForgeVersion', project.version
+        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
+        arguments.addAll '--fml.mcVersion', project.minecraft_version
+        arguments.addAll '--fml.neoFormVersion', project.neoform_version
+    }
 }
 
 runs {
@@ -139,9 +149,7 @@ runs {
     server { }
     gameTestServer { }
     gameTestClient { }
-    "Data" {
-        configure project.runTypes.data
-
+    data {
         programArguments.addAll '--mod', 'neoforge'
 
         modSources.add project.sourceSets.main
@@ -184,6 +192,7 @@ userdevProfile {
         argument '--fml.neoFormVersion'
         argument project.neoform_version
     }
+    additionalTestDependencyArtifactCoordinate "net.neoforged:testframework:${project.version}"
 }
 
 tasks.withType(Javadoc.class).configureEach {

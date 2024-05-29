@@ -111,10 +111,10 @@ public abstract class BlockEvent extends Event {
         private final BlockState placedAgainst;
 
         public EntityPlaceEvent(BlockSnapshot blockSnapshot, BlockState placedAgainst, @Nullable Entity entity) {
-            super(blockSnapshot.getLevel(), blockSnapshot.getPos(), !(entity instanceof Player) ? blockSnapshot.getReplacedBlock() : blockSnapshot.getCurrentBlock());
+            super(blockSnapshot.getLevel(), blockSnapshot.getPos(), !(entity instanceof Player) ? blockSnapshot.getState() : blockSnapshot.getCurrentState());
             this.entity = entity;
             this.blockSnapshot = blockSnapshot;
-            this.placedBlock = !(entity instanceof Player) ? blockSnapshot.getReplacedBlock() : blockSnapshot.getCurrentBlock();
+            this.placedBlock = !(entity instanceof Player) ? blockSnapshot.getState() : blockSnapshot.getCurrentState();
             this.placedAgainst = placedAgainst;
 
             if (DEBUG) {
@@ -204,37 +204,6 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Fired to check whether a non-source block can turn into a source block.
-     * A result of ALLOW causes a source block to be created even if the liquid
-     * usually doesn't do that (like lava), and a result of DENY prevents creation
-     * even if the liquid usually does do that (like water).
-     */
-    @HasResult
-    public static class CreateFluidSourceEvent extends Event {
-        private final Level level;
-        private final BlockPos pos;
-        private final BlockState state;
-
-        public CreateFluidSourceEvent(Level level, BlockPos pos, BlockState state) {
-            this.level = level;
-            this.pos = pos;
-            this.state = state;
-        }
-
-        public Level getLevel() {
-            return level;
-        }
-
-        public BlockPos getPos() {
-            return pos;
-        }
-
-        public BlockState getState() {
-            return state;
-        }
-    }
-
-    /**
      * Fired when a liquid places a block. Use {@link #setNewState(BlockState)} to change the result of
      * a cobblestone generator or add variants of obsidian. Alternatively, you could execute
      * arbitrary code when lava sets blocks on fire, even preventing it.
@@ -277,56 +246,6 @@ public abstract class BlockEvent extends Event {
          */
         public BlockState getOriginalState() {
             return origState;
-        }
-    }
-
-    /**
-     * Fired when a crop block grows. See subevents.
-     *
-     */
-    public static abstract class CropGrowEvent extends BlockEvent {
-        public CropGrowEvent(Level level, BlockPos pos, BlockState state) {
-            super(level, pos, state);
-        }
-
-        /**
-         * Fired when any "growing age" blocks (for example cacti, chorus plants, or crops
-         * in vanilla) attempt to advance to the next growth age state during a random tick.<br>
-         * <br>
-         * {@link Result#DEFAULT} will pass on to the vanilla growth mechanics.<br>
-         * {@link Result#ALLOW} will force the plant to advance a growth stage.<br>
-         * {@link Result#DENY} will prevent the plant from advancing a growth stage.<br>
-         * <br>
-         * This event is not {@link ICancellableEvent}.<br>
-         * <br>
-         */
-        @HasResult
-        public static class Pre extends CropGrowEvent {
-            public Pre(Level level, BlockPos pos, BlockState state) {
-                super(level, pos, state);
-            }
-        }
-
-        /**
-         * Fired when "growing age" blocks (for example cacti, chorus plants, or crops
-         * in vanilla) have successfully grown. The block's original state is available,
-         * in addition to its new state.<br>
-         * <br>
-         * This event is not {@link ICancellableEvent}.<br>
-         * <br>
-         * This event does not have a result. {@link HasResult}<br>
-         */
-        public static class Post extends CropGrowEvent {
-            private final BlockState originalState;
-
-            public Post(Level level, BlockPos pos, BlockState original, BlockState state) {
-                super(level, pos, state);
-                originalState = original;
-            }
-
-            public BlockState getOriginalState() {
-                return originalState;
-            }
         }
     }
 

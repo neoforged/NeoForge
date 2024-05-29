@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -87,7 +_,7 @@
+@@ -87,13 +_,21 @@
          BlockState blockstate = p_54881_.getBlockState(blockpos);
          return blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)
              ? true
@@ -9,15 +9,17 @@
      }
  
      public boolean growMushroom(ServerLevel p_221774_, BlockPos p_221775_, BlockState p_221776_, RandomSource p_221777_) {
-@@ -97,8 +_,10 @@
+         Optional<? extends Holder<ConfiguredFeature<?, ?>>> optional = p_221774_.registryAccess()
+             .registryOrThrow(Registries.CONFIGURED_FEATURE)
+             .getHolder(this.feature);
++
++        // Neo: Fire the BlockGrowFeatureEvent and update the result of the Optional local with the new feature.
++        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(p_221774_, p_221777_, p_221775_, optional.orElse(null));
++        if (event.isCanceled()) {
++            return false;
++        }
++        optional = Optional.ofNullable(event.getFeature());
++
          if (optional.isEmpty()) {
              return false;
          } else {
-+            var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_221774_, p_221777_, p_221775_, optional.get());
-+            if (event.getResult().equals(net.neoforged.bus.api.Event.Result.DENY)) return false;
-             p_221774_.removeBlock(p_221775_, false);
--            if (optional.get().value().place(p_221774_, p_221774_.getChunkSource().getGenerator(), p_221777_, p_221775_)) {
-+            if (event.getFeature().value().place(p_221774_, p_221774_.getChunkSource().getGenerator(), p_221777_, p_221775_)) {
-                 return true;
-             } else {
-                 p_221774_.setBlock(p_221775_, p_221776_, 3);
