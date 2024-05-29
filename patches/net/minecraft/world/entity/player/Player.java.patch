@@ -117,7 +117,7 @@
          } else if (this.abilities.invulnerable && !p_36154_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
              return false;
          } else {
-+            this.damageContainer = new net.neoforged.neoforge.common.damagesource.DamageContainer.InternalDamageContainer(p_36154_, p_36155_);
++            this.damageContainer = new net.neoforged.neoforge.common.damagesource.InternalDamageContainer(p_36154_, p_36155_);
 +            if (!net.neoforged.neoforge.common.CommonHooks.onPlayerEntityPreDamage(this, this.damageContainer)) return false;
              this.noActionTime = 0;
              if (this.isDeadOrDying()) {
@@ -133,12 +133,16 @@
                      if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
                          p_36155_ = 0.0F;
                      }
-@@ -878,7 +_,7 @@
+@@ -878,7 +_,11 @@
                      }
                  }
  
 -                return p_36155_ == 0.0F ? false : super.hurt(p_36154_, p_36155_);
-+                if (this.damageContainer.getNewDamage() == 0.0F) {this.damageContainer = null; return false;} else return super.hurt(p_36154_, this.damageContainer.getNewDamage());
++                if (this.damageContainer.getNewDamage() == 0.0F) {
++                    this.damageContainer = null;
++                    return false;
++                }
++                else return super.hurt(p_36154_, this.damageContainer.getNewDamage());
              }
          }
      }

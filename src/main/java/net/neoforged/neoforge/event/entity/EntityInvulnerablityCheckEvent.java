@@ -11,13 +11,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired when {@link Entity#hurt(DamageSource, float)} is invoked and determines if
- * downstream hurt logic should apply. This event is fired in {@link Entity#isInvulnerableTo(DamageSource)}
- * <p>
- * This event cannot be cancelled.
- * <p>
- * This event does not have a result.
- * <p>
- * This event is fired on the {@link NeoForge#EVENT_BUS}.
+ * downstream hurt logic should apply. This event is fired on both sides in
+ * {@link Entity#isInvulnerableTo(DamageSource)}
  */
 public class EntityInvulnerablityCheckEvent extends EntityEvent {
     private final boolean originallyInvulnerable;

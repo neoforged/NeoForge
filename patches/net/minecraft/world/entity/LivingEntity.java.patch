@@ -9,11 +9,15 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final String TAG_ACTIVE_EFFECTS = "active_effects";
      private static final UUID SPEED_MODIFIER_SOUL_SPEED_UUID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
-@@ -242,6 +_,7 @@
+@@ -242,6 +_,11 @@
      protected Brain<?> brain;
      private boolean skipDropExperience;
      protected float appliedScale = 1.0F;
-+    protected net.neoforged.neoforge.common.damagesource.DamageContainer.InternalDamageContainer damageContainer;
++    /**This field stores information about damage dealt to this entity.
++     * The field is instantiated via {@link #hurt(DamageSource, float)} after
++     * invulnerability checks, and is nulllified before the method's return.*/
++    @org.jetbrains.annotations.Nullable
++    protected net.neoforged.neoforge.common.damagesource.InternalDamageContainer damageContainer;
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
          super(p_20966_, p_20967_);
@@ -136,19 +140,19 @@
          float f = this.getHealth();
          if (f > 0.0F) {
              this.setHealth(f + p_21116_);
-@@ -1127,23 +_,26 @@
+@@ -1127,23 +_,28 @@
          } else if (p_21016_.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          } else {
-+            this.damageContainer = this.damageContainer == null ? new net.neoforged.neoforge.common.damagesource.DamageContainer.InternalDamageContainer(p_21016_, p_21017_) : this.damageContainer;
++            this.damageContainer = this.damageContainer == null ? new net.neoforged.neoforge.common.damagesource.InternalDamageContainer(p_21016_, p_21017_) : this.damageContainer;
 +            if (!net.neoforged.neoforge.common.CommonHooks.onEntityPreDamage(this, this.damageContainer)) return false;
              if (this.isSleeping() && !this.level().isClientSide) {
                  this.stopSleeping();
              }
  
              this.noActionTime = 0;
--            float f = p_21017_;
-+            float f = p_21017_ = this.damageContainer.getNewDamage();
++            p_21017_ = this.damageContainer.getNewDamage(); //Neo: enforce damage container as source of truth for damage amount
+             float f = p_21017_;
              boolean flag = false;
              float f1 = 0.0F;
 -            if (p_21017_ > 0.0F && this.isDamageSourceBlocked(p_21016_)) {
@@ -156,7 +160,8 @@
 -                f1 = p_21017_;
 -                p_21017_ = 0.0F;
 +            net.neoforged.neoforge.event.entity.living.DamageBlockEvent ev;
-+            if (p_21017_ > 0.0F && (ev = this.damageContainer.setBlockedDamage(net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainer, this.isDamageSourceBlocked(p_21016_)))).getBlocked()) {
++            if (p_21017_ > 0.0F && (ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainer, this.isDamageSourceBlocked(p_21016_))).getBlocked()) {
++                this.damageContainer.setBlockedDamage(ev);
 +                if(ev.shieldDamage() > 0) this.hurtCurrentlyUsedShield(ev.shieldDamage());
 +                f1 = ev.getBlockedDamage();
 +                p_21017_ = ev.getDamageContainer().getNewDamage();
@@ -169,6 +174,14 @@
              }
  
              if (p_21016_.is(DamageTypeTags.IS_FREEZING) && this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
+@@ -1159,6 +_,7 @@
+             boolean flag1 = true;
+             if ((float)this.invulnerableTime > 10.0F && !p_21016_.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
+                 if (p_21017_ <= this.lastHurt) {
++                    this.damageContainer = null;
+                     return false;
+                 }
+ 
 @@ -1167,7 +_,7 @@
                  flag1 = false;
              } else {
@@ -190,7 +203,7 @@
                          this.lastHurtByPlayer = player;
                      } else {
                          this.lastHurtByPlayer = null;
-@@ -1245,14 +_,14 @@
+@@ -1245,7 +_,7 @@
              if (this instanceof ServerPlayer) {
                  CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer)this, p_21016_, f, p_21017_, flag);
                  if (f1 > 0.0F && f1 < 3.4028235E37F) {
@@ -199,10 +212,10 @@
                  }
              }
  
-             if (entity instanceof ServerPlayer) {
+@@ -1253,6 +_,7 @@
                  CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer)entity, this, p_21016_, f, p_21017_, flag);
              }
--
+ 
 +            this.damageContainer = null;
              return flag2;
          }
@@ -342,12 +355,12 @@
                  this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
              }
          }
-@@ -1641,7 +_,7 @@
-     protected void doHurtEquipment(DamageSource p_330843_, float p_330394_, EquipmentSlot... p_331314_) {
+@@ -1642,6 +_,8 @@
          if (!(p_330394_ <= 0.0F)) {
              int i = (int)Math.max(1.0F, p_330394_ / 4.0F);
--
-+            net.neoforged.neoforge.common.CommonHooks.onArmorHurt(p_330843_, p_331314_, p_330394_, this); p_331314_ = new EquipmentSlot[0];
+ 
++            net.neoforged.neoforge.common.CommonHooks.onArmorHurt(p_330843_, p_331314_, p_330394_, this);
++            p_331314_ = new EquipmentSlot[0]; //Neo: invalidates the loop.  armor damage happens in common hook
              for (EquipmentSlot equipmentslot : p_331314_) {
                  ItemStack itemstack = this.getItemBySlot(equipmentslot);
                  if (itemstack.getItem() instanceof ArmorItem && itemstack.canBeHurtBy(p_330843_)) {

@@ -239,14 +239,43 @@ public class CommonHooks {
         return event;
     }
 
+    /**Creates and posts an {@link EntityInvulnerablityCheckEvent}.  This is invoked in
+     * {@link Entity#isInvulnerableTo(DamageSource)} and returns a post-listener result
+     * to the invulnerability status of the entity to the damage source.
+     *
+     * @param entity the entity being checked for invulnerability
+     * @param source the damage source being applied for this check
+     * @param isInvul whether this entity is invulnerable according to preceding/vanilla logic
+     * @return if this entity is invulnerable
+     */
     public static boolean onEntityInvulnerablityCheck(Entity entity, DamageSource source, boolean isInvul) {
         return NeoForge.EVENT_BUS.post(new EntityInvulnerablityCheckEvent(entity, source, isInvul)).isInvulnerable();
     }
 
+    /**Called after invulnerability checks in {@link LivingEntity#hurt(DamageSource, float)},
+     * this method creates and posts the first event in the LivingEntity damage sequence,
+     * {@link EntityPreDamageEvent}, FOR NON-PLAYER entities.
+     *
+     * @param entity the entity to receive damage
+     * @param container the newly instantiated container for damage to be dealt.  Most properties of
+     *                  the container will be empty at this stage.
+     * @return if the event is cancelled and no damage will be applied to the entity
+     */
     public static boolean onEntityPreDamage(LivingEntity entity, DamageContainer container) {
         return entity instanceof Player || !NeoForge.EVENT_BUS.post(new EntityPreDamageEvent(entity, container)).isCanceled();
     }
 
+    /**Called after invulnerability checks in {@link Player#hurt(DamageSource, float)},
+     * {@link net.minecraft.client.player.LocalPlayer#hurt(DamageSource, float)}, and
+     * {@link net.minecraft.client.player.RemotePlayer#hurt(DamageSource, float)},
+     * this method creates and posts the first event in the LivingEntity damage sequence,
+     * {@link EntityPreDamageEvent}, for player entities.
+     *
+     * @param entity the player to receive damage
+     * @param container the newly instantiated container for damage to be dealt.  Most properties of
+     *                  the container will be empty at this stage.
+     * @return if the event is cancelled and no damage will be applied to the entity
+     */
     public static boolean onPlayerEntityPreDamage(LivingEntity entity, DamageContainer container) {
         return !NeoForge.EVENT_BUS.post(new EntityPreDamageEvent(entity, container)).isCanceled();
     }
@@ -261,14 +290,43 @@ public class CommonHooks {
         return !NeoForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand)).isCanceled();
     }
 
+    /**Creates and posts an {@link IncomingDamageEvent}.  This is invoked in
+     * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
+     * and requires access to the internal field {@link LivingEntity#damageContainer} as a parameter.
+     *
+     * @param entity the entity to receive damage
+     * @param container the container object holding the final values of the damage pipeline while they are
+     *                  still mutable
+     * @return the current damage value to be applied to the entity's health
+     *
+     */
     public static float onIncomingDamage(LivingEntity entity, DamageContainer container) {
         return NeoForge.EVENT_BUS.post(new IncomingDamageEvent(entity, container)).getDamageContainer().getNewDamage();
     }
 
+    /**Creates and posts a {@link DamageTakenEvent}.  This is invoked in
+     * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
+     * and requires access to the internal field {@link LivingEntity#damageContainer} as a parameter.
+     *
+     * @param entity the entity to receive damage
+     * @param container the container object holding the truly final values of the damage pipeline.  This
+     *                  instance is immutable.
+     */
     public static void onLivingDamageTaken(LivingEntity entity, DamageContainer container) {
         NeoForge.EVENT_BUS.post(new DamageTakenEvent(entity, new DamageContainer.ResultDamageContainer(container)));
     }
 
+    /**This is invoked in {@link LivingEntity#doHurtEquipment(DamageSource, float, EquipmentSlot...)}
+     * and replaces the existing item hurt and break logic with an event-sensitive version.
+     * <br>
+     * Each armor slot is collected and passed into a {@link ArmorHurtEvent} and posted.  If not cancelled,
+     * the final durability loss values for each equipment item from the event will be applied.
+     *
+     * @param source the damage source applied to the entity and armor
+     * @param slots an array of applicable slots for damage
+     * @param damage the durability damage individual items will receive
+     * @param armoredEntity the entity wearing the armor
+     */
     public static void onArmorHurt(DamageSource source, EquipmentSlot[] slots, float damage, LivingEntity armoredEntity) {
         EnumMap<EquipmentSlot, ArmorHurtEvent.ArmorEntry> armorMap = new EnumMap<>(EquipmentSlot.class);
         for (EquipmentSlot slot : slots) {
@@ -1037,6 +1095,16 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new EntityEvent.EnteringSection(entity, packedOldPos, packedNewPos));
     }
 
+    /**Creates, posts, and returns a {@link DamageBlockEvent}.  This method is invoked in
+     * {@link LivingEntity#hurt(DamageSource, float)} and requires internal access to the
+     * protected field {@link LivingEntity#damageContainer} as a parameter.
+     *
+     * @param blocker the entity performing the block
+     * @param container the entity's internal damage container for accessing current values
+     *                  in the damage pipeline at the time of this invocation.
+     * @param originalBlocked whether this entity is blocking according to preceding/vanilla logic
+     * @return the event object after event listeners have been invoked.
+     */
     public static DamageBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, boolean originalBlocked) {
         DamageBlockEvent e = new DamageBlockEvent(blocker, container, originalBlocked);
         NeoForge.EVENT_BUS.post(e);

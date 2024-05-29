@@ -14,14 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * Fired when a {@link LivingEntity}'s armor is dealt damage in {@link LivingEntity#doHurtEquipment(DamageSource, float, EquipmentSlot...) doHurtEquipment}.
- * <p>
- * This event is {@link ICancellableEvent cancelable}. Cancelling this event will prevent all damage to armor.
- * <p>
- * This event does not have a result.
- * <p>
- * This event is fired on the {@link NeoForge#EVENT_BUS}
+/**Fired on both sides when a {@link LivingEntity}'s armor is dealt damage in
+ * {@link LivingEntity#doHurtEquipment(DamageSource, float, EquipmentSlot...) doHurtEquipment}.
  */
 public class ArmorHurtEvent extends LivingEvent implements ICancellableEvent {
     public static class ArmorEntry {
