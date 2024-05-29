@@ -14,7 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-/**Fired on both sides when a {@link LivingEntity}'s armor is dealt damage in
+/**
+ * Fired on both sides when a {@link LivingEntity}'s armor is dealt damage in
  * {@link LivingEntity#doHurtEquipment(DamageSource, float, EquipmentSlot...) doHurtEquipment}.
  */
 public class ArmorHurtEvent extends LivingEvent implements ICancellableEvent {

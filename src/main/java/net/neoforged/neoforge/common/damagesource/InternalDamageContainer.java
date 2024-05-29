@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.common.damagesource;
 
-import net.minecraft.world.damagesource.DamageSource;
-import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.function.BiFunction;
+import net.minecraft.world.damagesource.DamageSource;
+import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class InternalDamageContainer implements DamageContainer {
