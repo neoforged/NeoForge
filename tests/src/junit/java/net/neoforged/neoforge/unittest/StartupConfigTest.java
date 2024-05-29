@@ -3,17 +3,18 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.debug.fml;
+package net.neoforged.neoforge.unittest;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.testframework.annotation.TestHolder;
-import net.neoforged.testframework.gametest.EmptyTemplate;
-import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class StartupConfigTest {
     private static final String MOD_ID = "startup_config_test";
     private static boolean WasLoadedAtInitStartupConfig = false;
@@ -21,15 +22,12 @@ public class StartupConfigTest {
     private static boolean WasLoadedAtInitServerConfig = false;
     private static boolean WasLoadedAtInitClientConfig = false;
 
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Tests the initial loading state of configs")
-    static void testStartupConfigs(ExtendedGameTestHelper helper) {
-        helper.assertTrue(WasLoadedAtInitStartupConfig, "Startup Config was supposed to be loaded at mod init.");
-        helper.assertFalse(WasLoadedAtInitCommonConfig, "Common Config was NOT supposed to be loaded at mod init.");
-        helper.assertFalse(WasLoadedAtInitServerConfig, "Server Config was NOT supposed to be loaded at mod init.");
-        helper.assertFalse(WasLoadedAtInitClientConfig, "Client Config was NOT supposed to be loaded at mod init.");
-        helper.succeed();
+    @Test
+    void testStartupConfigs() {
+        Assertions.assertTrue(WasLoadedAtInitStartupConfig, "Startup Config was supposed to be loaded at mod init.");
+        Assertions.assertFalse(WasLoadedAtInitCommonConfig, "Common Config was NOT supposed to be loaded at mod init.");
+        Assertions.assertFalse(WasLoadedAtInitServerConfig, "Server Config was NOT supposed to be loaded at mod init.");
+        Assertions.assertFalse(WasLoadedAtInitClientConfig, "Client Config was NOT supposed to be loaded at mod init.");
     }
 
     @Mod(value = MOD_ID)
