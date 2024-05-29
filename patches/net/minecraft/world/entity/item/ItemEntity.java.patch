@@ -135,7 +135,7 @@
          if (!this.level().isClientSide && entity instanceof ItemEntity) {
              ((ItemEntity)entity).mergeWithNeighbours();
          }
-@@ -397,6 +_,14 @@
+@@ -397,6 +_,15 @@
          this.target = p_266724_;
      }
  
@@ -143,7 +143,8 @@
 +     * Neo: Add getter for ItemEntity's {@link ItemEntity#target target}.
 +     * @return The {@link ItemEntity#target target} that can pick up this item entity (if {@code null}, anyone can pick it up)
 +     */
-+    public @org.jetbrains.annotations.Nullable UUID getTarget() {
++    @Nullable
++    public UUID getTarget() {
 +        return this.target;
 +    }
 +
