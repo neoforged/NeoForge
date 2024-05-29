@@ -18,6 +18,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,7 @@ public class BlockTagIngredient implements ICustomIngredient {
             }
 
             if (list.isEmpty()) {
-                ItemStack itemStack = new ItemStack(net.minecraft.world.level.block.Blocks.BARRIER);
+                ItemStack itemStack = new ItemStack(Blocks.BARRIER);
                 itemStack.set(DataComponents.CUSTOM_NAME, Component.literal("Empty Tag: " + this.tag.location()));
                 list.add(itemStack);
             }
