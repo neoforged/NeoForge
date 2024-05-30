@@ -5,45 +5,45 @@ import net.neoforged.neoforge.transfer.TransferAction;
 
 public interface ISingleResourceHandler<T extends IResource> extends IResourceHandler<T> {
     @Override
-    default int getSlotCount() {
+    default int size() {
         return 1;
     }
 
     T getResource();
 
     @Override
-    default T getResource(int slot) {
+    default T getResource(int index) {
         return getResource();
     }
 
     int getAmount();
 
     @Override
-    default int getAmount(int slot) {
+    default int getAmount(int index) {
         return getAmount();
     }
 
-    int getLimit();
+    int getLimit(T resource);
 
     @Override
-    default int getSlotLimit(int slot) {
-        return getLimit();
+    default int getLimit(int index, T resource) {
+        return getLimit(resource);
     }
 
-    boolean isResourceValid(T resource);
+    boolean isValid(T resource);
 
     @Override
-    default boolean isResourceValid(int slot, T resource) {
-        return isResourceValid(resource);
+    default boolean isValid(int index, T resource) {
+        return isValid(resource);
     }
 
     @Override
-    default int insert(int slot, T resource, int amount, TransferAction action) {
+    default int insert(int index, T resource, int amount, TransferAction action) {
         return insert(resource, amount, action);
     }
 
     @Override
-    default int extract(int slot, T resource, int amount, TransferAction action) {
+    default int extract(int index, T resource, int amount, TransferAction action) {
         return extract(resource, amount, action);
     }
 }

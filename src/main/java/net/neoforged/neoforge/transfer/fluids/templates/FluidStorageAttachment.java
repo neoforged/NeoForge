@@ -38,12 +38,12 @@ public class FluidStorageAttachment implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public int getLimit() {
+    public int getLimit(FluidResource resource) {
         return limit;
     }
 
     @Override
-    public boolean isResourceValid(FluidResource resource) {
+    public boolean isValid(FluidResource resource) {
         return validator.test(resource);
     }
 
@@ -63,8 +63,8 @@ public class FluidStorageAttachment implements ISingleResourceHandler<FluidResou
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource) || (!isEmpty() && !getResource().equals(resource))) return 0;
-        int inserted = Math.min(amount, getLimit() - getAmount());
+        if (resource.isBlank() || amount <= 0 || !isValid(resource) || (!isEmpty() && !getResource().equals(resource))) return 0;
+        int inserted = Math.min(amount, getLimit(resource) - getAmount());
         if (inserted > 0 && action.isExecuting()) {
             holder.setData(attachmentType, SimpleFluidContent.of(resource, getAmount() + inserted));
         }
@@ -73,7 +73,7 @@ public class FluidStorageAttachment implements ISingleResourceHandler<FluidResou
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource) || (isEmpty() || !getResource().equals(resource))) return 0;
+        if (resource.isBlank() || amount <= 0 || !isValid(resource) || (isEmpty() || !getResource().equals(resource))) return 0;
         int extracted = Math.min(amount, getAmount());
         if (extracted > 0 && action.isExecuting()) {
             int newAmount = getAmount() - extracted;

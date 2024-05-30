@@ -21,13 +21,13 @@ public interface IEnergyHandler {
     /**
      * Adds energy to the storage. Returns quantity of energy that was accepted.
      *
-     * @param maxReceive
+     * @param maxInsert
      *                   Maximum amount of energy to be inserted.
      * @param action
      *                  If SIMULATE, the insertion will only be simulated.
      * @return Amount of energy that was (or would have been, if simulated) accepted by the storage.
      */
-    int insert(int maxReceive, TransferAction action);
+    int insert(int maxInsert, TransferAction action);
 
     /**
      * Removes energy from the storage. Returns quantity of energy that was removed.

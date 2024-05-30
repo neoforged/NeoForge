@@ -38,6 +38,11 @@ public class BucketLikeFluidStorageItem implements ISingleResourceHandler<FluidR
         return getIndividualAmount() * context.getAmount();
     }
 
+    @Override
+    public int getLimit(FluidResource resource) {
+        return getIndividualLimit() * context.getAmount();
+    }
+
     public int getIndividualAmount() {
         return context.getResource().getOrDefault(componentType, SimpleFluidContent.EMPTY).getAmount();
     }
@@ -47,16 +52,10 @@ public class BucketLikeFluidStorageItem implements ISingleResourceHandler<FluidR
     }
 
     @Override
-    public int getLimit() {
-        return getIndividualLimit() * context.getAmount();
-    }
-
-    @Override
-    public boolean isResourceValid(FluidResource resource) {
+    public boolean isValid(FluidResource resource) {
         return validator.test(resource);
     }
 
-    @Override
     public boolean isEmpty() {
         return !context.getResource().has(componentType);
     }
@@ -73,7 +72,7 @@ public class BucketLikeFluidStorageItem implements ISingleResourceHandler<FluidR
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource) || !isEmpty()) return 0;
+        if (resource.isBlank() || amount <= 0 || !isValid(resource) || !isEmpty()) return 0;
         int toFill = getIndividualLimit();
         if (amount < toFill) return 0;
         return fill(resource, amount / toFill, action) * toFill;

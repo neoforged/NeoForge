@@ -11,6 +11,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.IFluidBlock;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
 
 public class FluidBlockWrapper implements IFluidHandler {
     protected final IFluidBlock fluidBlock;
@@ -58,12 +61,12 @@ public class FluidBlockWrapper implements IFluidHandler {
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (!resource.isEmpty() && fluidBlock.canDrain(world, blockPos) && resource.is(fluidBlock.getFluid())) {
-            FluidStack simulatedDrained = fluidBlock.drain(world, blockPos, FluidAction.SIMULATE);
-            if (simulatedDrained.getAmount() <= resource.getAmount() && FluidStack.isSameFluidSameComponents(resource, simulatedDrained)) {
+            ResourceStack<FluidResource> simulatedDrained = fluidBlock.drain(world, blockPos, TransferAction.SIMULATE);
+            if (simulatedDrained.amount() <= resource.getAmount() && simulatedDrained.resource().matches(resource)) {
                 if (action.execute()) {
-                    return fluidBlock.drain(world, blockPos, FluidAction.EXECUTE).copy();
+                    return FluidStack.of(fluidBlock.drain(world, blockPos, TransferAction.EXECUTE));
                 }
-                return simulatedDrained.copy();
+                return FluidStack.of(simulatedDrained);
             }
         }
         return FluidStack.EMPTY;
@@ -72,10 +75,10 @@ public class FluidBlockWrapper implements IFluidHandler {
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (maxDrain > 0 && fluidBlock.canDrain(world, blockPos)) {
-            FluidStack simulatedDrained = fluidBlock.drain(world, blockPos, FluidAction.SIMULATE);
+            FluidStack simulatedDrained = fluidBlock.drain(world, blockPos, TransferAction.SIMULATE);
             if (simulatedDrained.getAmount() <= maxDrain) {
                 if (action.execute()) {
-                    return fluidBlock.drain(world, blockPos, FluidAction.EXECUTE).copy();
+                    return FluidStack.of(fluidBlock.drain(world, blockPos, TransferAction.SIMULATE));
                 }
                 return simulatedDrained.copy();
             }

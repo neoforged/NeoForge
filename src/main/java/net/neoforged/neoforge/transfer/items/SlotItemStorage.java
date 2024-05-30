@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.storage.IEditableResourceHandler;
+import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.storage.IResourceHandler;
 
 public class SlotItemStorage extends Slot {
@@ -20,7 +20,7 @@ public class SlotItemStorage extends Slot {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        return storage.isResourceValid(getContainerSlot(), ItemResource.of(stack));
+        return storage.isValid(getContainerSlot(), ItemResource.of(stack));
     }
 
     @Override
@@ -30,18 +30,18 @@ public class SlotItemStorage extends Slot {
 
     @Override
     public void set(ItemStack stack) {
-        ((IEditableResourceHandler<ItemResource>) storage).set(getContainerSlot(), stack.immutable());
+        ((IResourceHandlerModifiable<ItemResource>) storage).set(getContainerSlot(), ItemResource.of(stack), stack.getCount());
         this.setChanged();
     }
 
     @Override
     public int getMaxStackSize() {
-        return storage.getSlotLimit(getContainerSlot());
+        return storage.getLimit(getContainerSlot(), ItemResource.BLANK);
     }
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        return ((IEditableResourceHandler<ItemResource>) storage).getResourceLimit(getContainerSlot(), ItemResource.of(stack));
+        return storage.getLimit(getContainerSlot(), ItemResource.of(stack));
     }
 
     @Override
@@ -59,4 +59,6 @@ public class SlotItemStorage extends Slot {
     public IResourceHandler<ItemResource> getStorage() {
         return storage;
     }
+
+
 }

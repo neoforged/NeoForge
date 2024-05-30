@@ -8,11 +8,11 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 import net.neoforged.neoforge.transfer.items.ItemStorageContents;
-import net.neoforged.neoforge.transfer.storage.IEditableResourceHandler;
+import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
 
 import java.util.function.Supplier;
 
-public abstract class ItemStorage implements IEditableResourceHandler<ItemResource> {
+public abstract class ItemStorage implements IResourceHandlerModifiable<ItemResource> {
     private final int slotCount;
 
     public ItemStorage(int slotCount) {
@@ -22,27 +22,27 @@ public abstract class ItemStorage implements IEditableResourceHandler<ItemResour
     public abstract ItemStorageContents getContents();
 
     @Override
-    public int getSlotCount() {
+    public int size() {
         return slotCount;
     }
 
     @Override
-    public ItemResource getResource(int slot) {
-        return getContents().getResource(slot);
+    public ItemResource getResource(int index) {
+        return getContents().getResource(index);
     }
 
     @Override
-    public int getAmount(int slot) {
-        return getContents().getAmount(slot);
+    public int getAmount(int index) {
+        return getContents().getAmount(index);
     }
 
     @Override
-    public int getSlotLimit(int slot) {
-        return getResource(slot).getMaxStackSize();
+    public int getLimit(int index, ItemResource resource) {
+        return resource.getMaxStackSize();
     }
 
     @Override
-    public boolean isResourceValid(int slot, ItemResource resource) {
+    public boolean isValid(int index, ItemResource resource) {
         return true;
     }
 
@@ -57,8 +57,8 @@ public abstract class ItemStorage implements IEditableResourceHandler<ItemResour
     }
 
     @Override
-    public void set(int slot, ItemResource resource, int amount) {
-        ItemStorageContents contents = getContents().set(slot, resource, amount);
+    public void set(int index, ItemResource resource, int amount) {
+        ItemStorageContents contents = getContents().set(index, resource, amount);
         setAndValidate(contents, 0, TransferAction.EXECUTE);
     }
 
@@ -70,17 +70,17 @@ public abstract class ItemStorage implements IEditableResourceHandler<ItemResour
     public abstract int setAndValidate(ItemStorageContents contents, int changedAmount, TransferAction action);
 
     @Override
-    public int insert(int slot, ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank() || !isResourceValid(slot, resource)) return 0;
+    public int insert(int index, ItemResource resource, int amount, TransferAction action) {
+        if (amount <= 0 || resource.isBlank() || !isValid(index, resource)) return 0;
         ItemStorageContents contents = getContents();
-        ResourceStack<ItemResource> stack = contents.get(slot);
+        ResourceStack<ItemResource> stack = contents.get(index);
         if (stack.isEmpty()) {
             amount = Math.min(amount, resource.getMaxStackSize());
-            contents = contents.set(slot, resource, amount);
+            contents = contents.set(index, resource, amount);
         } else if (stack.resource().equals(resource) && stack.amount() < resource.getMaxStackSize()) {
             int newAmount = Math.min(stack.amount() + amount, resource.getMaxStackSize());
             amount = newAmount - stack.amount();
-            contents = contents.set(slot, resource, newAmount);
+            contents = contents.set(index, resource, newAmount);
         } else {
             return 0;
         }
@@ -114,14 +114,14 @@ public abstract class ItemStorage implements IEditableResourceHandler<ItemResour
     }
 
     @Override
-    public int extract(int slot, ItemResource resource, int amount, TransferAction action) {
+    public int extract(int index, ItemResource resource, int amount, TransferAction action) {
         if (amount <= 0 || resource.isBlank()) return 0;
         ItemStorageContents contents = getContents();
-        ResourceStack<ItemResource> stack = contents.get(slot);
+        ResourceStack<ItemResource> stack = contents.get(index);
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extracted = Math.min(stack.amount(), amount);
         int newAmount = stack.amount() - extracted;
-        contents = contents.set(slot, newAmount == 0 ? ItemResource.EMPTY : stack.resource(), newAmount);
+        contents = contents.set(index, newAmount == 0 ? ItemResource.BLANK : stack.resource(), newAmount);
         return setAndValidate(contents, extracted, action);
     }
 
@@ -134,7 +134,7 @@ public abstract class ItemStorage implements IEditableResourceHandler<ItemResour
             if (stack.isEmpty() || !stack.resource().equals(resource)) continue;
             int extracted = Math.min(remaining, stack.amount());
             int newAmount = stack.amount() - extracted;
-            contents = contents.set(slot, newAmount == 0 ? ItemResource.EMPTY : resource, newAmount);
+            contents = contents.set(slot, newAmount == 0 ? ItemResource.BLANK : resource, newAmount);
             remaining -= extracted;
             if (remaining <= 0) {
                 break;
@@ -174,7 +174,6 @@ public abstract class ItemStorage implements IEditableResourceHandler<ItemResour
             this.componentType = componentType;
             this.context = context;
         }
-
 
         @Override
         public ItemStorageContents getContents() {

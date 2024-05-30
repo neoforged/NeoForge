@@ -22,6 +22,11 @@ public interface IItemHandler extends IResourceHandler<ItemResource> {
      **/
     int getSlotCount();
 
+    @Override
+    default int size() {
+        return getSlotCount();
+    }
+
     /**
      * Returns the ItemStack in a given slot.
      *
@@ -44,13 +49,13 @@ public interface IItemHandler extends IResourceHandler<ItemResource> {
     ItemStack getStackInSlot(int slot);
 
     @Override
-    default ItemResource getResource(int slot) {
-        return ItemResource.of(getStackInSlot(slot));
+    default ItemResource getResource(int index) {
+        return ItemResource.of(getStackInSlot(index));
     }
 
     @Override
-    default int getAmount(int slot) {
-        return getStackInSlot(slot).getCount();
+    default int getAmount(int index) {
+        return getStackInSlot(index).getCount();
     }
 
     /**
@@ -70,14 +75,14 @@ public interface IItemHandler extends IResourceHandler<ItemResource> {
     ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
     @Override
-    default int insert(int slot, ItemResource resource, int amount, TransferAction action) {
-        return amount - insertItem(slot, resource.toStack(amount), action.isSimulating()).getCount();
+    default int insert(int index, ItemResource resource, int amount, TransferAction action) {
+        return amount - insertItem(index, resource.toStack(amount), action.isSimulating()).getCount();
     }
 
     @Override
     default int insert(ItemResource resource, int amount, TransferAction action) {
         int inserted = 0;
-        for (int i = 0; i < getSlotCount(); i++) {
+        for (int i = 0; i < this.getSlotCount(); i++) {
             inserted += insert(i, resource, amount - inserted, action);
             if (inserted >= amount) {
                 break;
@@ -102,15 +107,15 @@ public interface IItemHandler extends IResourceHandler<ItemResource> {
     ItemStack extractItem(int slot, int amount, boolean simulate);
 
     @Override
-    default int extract(int slot, ItemResource resource, int amount, TransferAction action) {
-        if (!resource.matches(getStackInSlot(slot))) return 0;
-        return extractItem(slot, amount, action.isSimulating()).getCount();
+    default int extract(int index, ItemResource resource, int amount, TransferAction action) {
+        if (!resource.matches(getStackInSlot(index))) return 0;
+        return extractItem(index, amount, action.isSimulating()).getCount();
     }
 
     @Override
     default int extract(ItemResource resource, int amount, TransferAction action) {
         int extracted = 0;
-        for (int i = 0; i < getSlotCount(); i++) {
+        for (int i = 0; i < this.getSlotCount(); i++) {
             extracted += extract(i, resource, amount - extracted, action);
             if (extracted >= amount) {
                 break;
@@ -126,6 +131,11 @@ public interface IItemHandler extends IResourceHandler<ItemResource> {
      * @return The maximum stack size allowed in the slot.
      */
     int getSlotLimit(int slot);
+
+    @Override
+    default int getLimit(int index, ItemResource resource) {
+        return getSlotLimit(index);
+    }
 
     /**
      * <p>
@@ -150,13 +160,8 @@ public interface IItemHandler extends IResourceHandler<ItemResource> {
     boolean isItemValid(int slot, ItemStack stack);
 
     @Override
-    default boolean isResourceValid(int slot, ItemResource resource) {
-        return isItemValid(slot, resource.toStack(1));
-    }
-
-    @Override
-    default boolean isEmpty(int slot) {
-        return getStackInSlot(slot).isEmpty();
+    default boolean isValid(int index, ItemResource resource) {
+        return isItemValid(index, resource.toStack(1));
     }
 
     @Override

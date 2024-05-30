@@ -34,7 +34,7 @@ public abstract class InfiniteStorage<T extends IResource> implements ISingleRes
     }
 
     @Override
-    public boolean isResourceValid(T resource) {
+    public boolean isValid(T resource) {
         return false;
     }
 

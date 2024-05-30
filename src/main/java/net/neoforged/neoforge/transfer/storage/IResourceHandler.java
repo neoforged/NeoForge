@@ -4,25 +4,25 @@ import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 
 public interface IResourceHandler<T extends IResource> {
-    int getSlotCount();
+    int size();
 
-    T getResource(int slot);
+    T getResource(int index);
 
-    int getAmount(int slot);
+    int getAmount(int index);
 
-    int getSlotLimit(int slot);
+    int getLimit(int index, T resource);
 
-    boolean isResourceValid(int slot, T resource);
+    boolean isValid(int index, T resource);
 
     boolean canInsert();
 
     boolean canExtract();
 
-    int insert(int slot, T resource, int amount, TransferAction action);
+    int insert(int index, T resource, int amount, TransferAction action);
 
     int insert(T resource, int amount, TransferAction action);
 
-    int extract(int slot, T resource, int amount, TransferAction action);
+    int extract(int index, T resource, int amount, TransferAction action);
 
     int extract(T resource, int amount, TransferAction action);
 
