@@ -11,6 +11,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -29,6 +32,18 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
         FluidStack.CODEC.optionalFieldOf("fluid", FluidStack.EMPTY).forGetter(x -> x.fluid)
     ).apply(i, FluidTank::new));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, FluidTank> OPTIONAL_STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.INT, FluidTank::getCapacity,
+        FluidStack.OPTIONAL_STREAM_CODEC, FluidTank::getFluid,
+        FluidTank::new
+    );
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, FluidTank> STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.INT, FluidTank::getCapacity,
+        FluidStack.STREAM_CODEC, FluidTank::getFluid,
+        FluidTank::new
+    );
 
     /**
      * Provided as an interop with the legacy NBT data created via {@link #writeToNBT(HolderLookup.Provider, CompoundTag)}.
