@@ -17,7 +17,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
  * <p>
  * A reference implementation is provided {@link TileFluidHandler}.
  */
-@Deprecated(forRemoval = true, since = "1.22")
+@Deprecated(forRemoval = true, since = "1.21")
 public interface IFluidHandler extends IResourceHandler<FluidResource> {
     enum FluidAction {
         EXECUTE, SIMULATE;
@@ -47,7 +47,7 @@ public interface IFluidHandler extends IResourceHandler<FluidResource> {
     int getTanks();
 
     @Override
-    default int getSlotCount() {
+    default int size() {
         return getTanks();
     }
 
@@ -70,13 +70,13 @@ public interface IFluidHandler extends IResourceHandler<FluidResource> {
     FluidStack getFluidInTank(int tank);
 
     @Override
-    default FluidResource getResource(int slot) {
-        return FluidResource.of(getFluidInTank(slot));
+    default FluidResource getResource(int index) {
+        return FluidResource.of(getFluidInTank(index));
     }
 
     @Override
-    default int getAmount(int slot) {
-        return getFluidInTank(slot).getAmount();
+    default int getAmount(int index) {
+        return getFluidInTank(index).getAmount();
     }
 
     /**
@@ -88,8 +88,8 @@ public interface IFluidHandler extends IResourceHandler<FluidResource> {
     int getTankCapacity(int tank);
 
     @Override
-    default int getSlotLimit(int slot) {
-        return getTankCapacity(slot);
+    default int getLimit(int index, FluidResource resource) {
+        return getTankCapacity(index);
     }
 
     /**
@@ -104,8 +104,8 @@ public interface IFluidHandler extends IResourceHandler<FluidResource> {
     boolean isFluidValid(int tank, FluidStack stack);
 
     @Override
-    default boolean isResourceValid(int slot, FluidResource resource) {
-        return isFluidValid(slot, resource.toStack(1));
+    default boolean isValid(int index, FluidResource resource) {
+        return isFluidValid(index, resource.toStack(1));
     }
 
     /**
@@ -140,7 +140,7 @@ public interface IFluidHandler extends IResourceHandler<FluidResource> {
     FluidStack drain(int maxDrain, FluidAction action);
 
     @Override
-    default int insert(int slot, FluidResource resource, int amount, TransferAction action) {
+    default int insert(int index, FluidResource resource, int amount, TransferAction action) {
         return insert(resource, amount, action);
     }
 
@@ -150,7 +150,7 @@ public interface IFluidHandler extends IResourceHandler<FluidResource> {
     }
 
     @Override
-    default int extract(int slot, FluidResource resource, int amount, TransferAction action) {
+    default int extract(int index, FluidResource resource, int amount, TransferAction action) {
         return extract(resource, amount, action);
     }
 

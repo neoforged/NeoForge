@@ -6,18 +6,13 @@ import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 
-/**
- * VoidStorage is a template storage that can be filled indefinitely without ever getting full.
- * It does not store resources that get filled into it, but "destroys" them upon receiving them.
- * @param <T> The type of resource that this storage can accept.
- */
-public class VoidResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    public static final VoidResourceHandler<ItemResource> ITEM = new VoidResourceHandler<>(ItemResource.EMPTY);
-    public static final VoidResourceHandler<FluidResource> FLUID = new VoidResourceHandler<>(FluidResource.EMPTY);
+public class EmptyHandler<T extends IResource> implements ISingleResourceHandler<T> {
+    public static final EmptyHandler<ItemResource> ITEM = new EmptyHandler<>(ItemResource.BLANK);
+    public static final EmptyHandler<FluidResource> FLUID = new EmptyHandler<>(FluidResource.BLANK);
 
     private final T emptyResource;
 
-    public VoidResourceHandler(T emptyResource) {
+    public EmptyHandler(T emptyResource) {
         this.emptyResource = emptyResource;
     }
 
@@ -33,17 +28,17 @@ public class VoidResourceHandler<T extends IResource> implements ISingleResource
 
     @Override
     public int getLimit() {
-        return Integer.MAX_VALUE;
+        return 0;
     }
 
     @Override
-    public boolean isResourceValid(T resource) {
+    public boolean isValid(T resource) {
         return true;
     }
 
     @Override
     public boolean canInsert() {
-        return true;
+        return false;
     }
 
     @Override
@@ -53,7 +48,7 @@ public class VoidResourceHandler<T extends IResource> implements ISingleResource
 
     @Override
     public int insert(T resource, int amount, TransferAction action) {
-        return amount;
+        return 0;
     }
 
     @Override

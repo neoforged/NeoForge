@@ -7,75 +7,65 @@ import net.neoforged.neoforge.transfer.storage.IResourceHandler;
 import java.util.stream.Stream;
 
 public class AggregateResourceHandler<T extends IResource> implements IResourceHandler<T> {
-    IResourceHandler<T>[] storages;
+    protected final IResourceHandler<T>[] handlers;
 
-    public AggregateResourceHandler(IResourceHandler<T>... storages) {
-        this.storages = storages;
+    @SafeVarargs
+    public AggregateResourceHandler(IResourceHandler<T>... handlers) {
+        this.handlers = handlers;
     }
 
     @Override
-    public int getSlotCount() {
-        return Stream.of(storages).mapToInt(IResourceHandler::getSlotCount).sum();
+    public int size() {
+        return Stream.of(handlers).mapToInt(IResourceHandler::size).sum();
     }
 
     @Override
-    public T getResource(int slot) {
-        for (IResourceHandler<T> storage : storages) {
-            if (slot < storage.getSlotCount()) {
-                return storage.getResource(slot);
+    public T getResource(int index) {
+        for (IResourceHandler<T> storage : handlers) {
+            if (index < storage.size()) {
+                return storage.getResource(index);
             }
-            slot -= storage.getSlotCount();
+            index -= storage.size();
         }
         throw new IndexOutOfBoundsException();
     }
 
     @Override
-    public int getAmount(int slot) {
-        for (IResourceHandler<T> storage : storages) {
-            if (slot < storage.getSlotCount()) {
-                return storage.getAmount(slot);
+    public int getAmount(int index) {
+        for (IResourceHandler<T> storage : handlers) {
+            if (index < storage.size()) {
+                return storage.getAmount(index);
             }
-            slot -= storage.getSlotCount();
+            index -= storage.size();
         }
         throw new IndexOutOfBoundsException();
     }
 
     @Override
-    public int getSlotLimit(int slot) {
-        for (IResourceHandler<T> storage : storages) {
-            if (slot < storage.getSlotCount()) {
-                return storage.getSlotLimit(slot);
+    public int getLimit(int index, T resource) {
+        for (IResourceHandler<T> storage : handlers) {
+            if (index < storage.size()) {
+                return storage.getLimit(index, resource);
             }
-            slot -= storage.getSlotCount();
+            index -= storage.size();
         }
         throw new IndexOutOfBoundsException();
     }
 
     @Override
-    public boolean isResourceValid(int slot, T resource) {
-        for (IResourceHandler<T> storage : storages) {
-            if (slot < storage.getSlotCount()) {
-                return storage.isResourceValid(slot, resource);
+    public boolean isValid(int index, T resource) {
+        for (IResourceHandler<T> storage : handlers) {
+            if (index < storage.size()) {
+                return storage.isValid(index, resource);
             }
-            slot -= storage.getSlotCount();
-        }
-        throw new IndexOutOfBoundsException();
-    }
-
-    @Override
-    public boolean isEmpty(int slot) {
-        for (IResourceHandler<T> storage : storages) {
-            if (slot < storage.getSlotCount()) {
-                return storage.isEmpty(slot);
-            }
-            slot -= storage.getSlotCount();
+            index -= storage.size();
         }
         throw new IndexOutOfBoundsException();
     }
 
     @Override
     public boolean canInsert() {
-        for (IResourceHandler<T> storage : storages) {
+        for (IResourceHandler<T> storage : handlers) {
             if (storage.canInsert()) {
                 return true;
             }
@@ -85,7 +75,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public boolean canExtract() {
-        for (IResourceHandler<T> storage : storages) {
+        for (IResourceHandler<T> storage : handlers) {
             if (storage.canExtract()) {
                 return true;
             }
@@ -94,16 +84,16 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     }
 
     @Override
-    public int insert(int slot, T resource, int amount, TransferAction action) {
-        for (IResourceHandler<T> storage : storages) {
-            if (slot < storage.getSlotCount()) {
+    public int insert(int index, T resource, int amount, TransferAction action) {
+        for (IResourceHandler<T> storage : handlers) {
+            if (index < storage.size()) {
                 if (storage.canInsert()) {
-                    return storage.insert(slot, resource, amount, action);
+                    return storage.insert(index, resource, amount, action);
                 } else {
                     return 0;
                 }
             }
-            slot -= storage.getSlotCount();
+            index -= storage.size();
         }
         throw new IndexOutOfBoundsException();
     }
@@ -111,7 +101,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     @Override
     public int insert(T resource, int amount, TransferAction action) {
         int inserted = 0;
-        for (IResourceHandler<T> storage : storages) {
+        for (IResourceHandler<T> storage : handlers) {
             if (storage.canInsert()) {
                 inserted += storage.insert(resource, amount - inserted, action);
             }
@@ -123,16 +113,16 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     }
 
     @Override
-    public int extract(int slot, T resource, int amount, TransferAction action) {
-        for (IResourceHandler<T> storage : storages) {
-            if (slot < storage.getSlotCount()) {
+    public int extract(int index, T resource, int amount, TransferAction action) {
+        for (IResourceHandler<T> storage : handlers) {
+            if (index < storage.size()) {
                 if (storage.canExtract()) {
-                    return storage.extract(slot, resource, amount, action);
+                    return storage.extract(index, resource, amount, action);
                 } else {
                     return 0;
                 }
             }
-            slot -= storage.getSlotCount();
+            index -= storage.size();
         }
         throw new IndexOutOfBoundsException();
     }
@@ -140,7 +130,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     @Override
     public int extract(T resource, int amount, TransferAction action) {
         int extracted = 0;
-        for (IResourceHandler<T> storage : storages) {
+        for (IResourceHandler<T> storage : handlers) {
             if (storage.canExtract()) {
                 extracted += storage.extract(resource, amount - extracted, action);
             }

@@ -47,12 +47,12 @@ public class FluidStorageItem implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public int getLimit() {
+    public int getLimit(FluidResource resource) {
         return getIndividualLimit() * context.getAmount();
     }
 
     @Override
-    public boolean isResourceValid(FluidResource resource) {
+    public boolean isValid(FluidResource resource) {
         return validator.test(resource);
     }
 
@@ -72,7 +72,7 @@ public class FluidStorageItem implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isResourceValid(resource)) return 0;
+        if (resource.isBlank() || amount <= 0 || !isValid(resource)) return 0;
         FluidResource presentResource = getResource();
         if (presentResource.isBlank()) {
             if (amount < getIndividualLimit()) return fill(resource, 1, amount, action) == 1 ? amount : 0;

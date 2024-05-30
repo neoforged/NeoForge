@@ -42,7 +42,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts blank resources.
      */
     public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
-            .xmap(o -> o.orElse(ItemResource.EMPTY), r -> r.isBlank() ? Optional.of(ItemResource.EMPTY) : Optional.of(r));
+            .xmap(o -> o.orElse(ItemResource.BLANK), r -> r.isBlank() ? Optional.of(ItemResource.BLANK) : Optional.of(r));
     /**
      * Codec for an item resource and an amount. Does <b>not</b> accept empty stacks.
      */
@@ -63,19 +63,19 @@ public final class ItemResource implements IResource, DataComponentHolder {
             ItemResource::getComponentsPatch,
             ItemResource::of);
 
-    public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
-    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
+    public static final ItemResource BLANK = new ItemResource(ItemStack.EMPTY);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(BLANK, 0);
 
     public static ItemResource of(ItemStack itemStack) {
-        return itemStack.isEmpty() ? EMPTY : new ItemResource(itemStack.copyWithCount(1));
+        return itemStack.isEmpty() ? BLANK : new ItemResource(itemStack.copyWithCount(1));
     }
 
     public static ItemResource of(ItemLike item) {
-        return item == Items.AIR ? EMPTY : new ItemResource(new ItemStack(item));
+        return item == Items.AIR ? BLANK : new ItemResource(new ItemStack(item));
     }
 
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
-        return item.value() == Items.AIR ? EMPTY : new ItemResource(new ItemStack(item, 1, patch));
+        return item.value() == Items.AIR ? BLANK : new ItemResource(new ItemStack(item, 1, patch));
     }
 
     /**

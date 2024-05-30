@@ -127,7 +127,7 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     protected int getStackLimit(int slot, ItemStack stack) {
-        return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+        return Math.min(this.getSlotLimit(slot), stack.getMaxStackSize());
     }
 
     @Override
