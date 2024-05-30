@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.mojang.serialization.Codec;
@@ -27,6 +26,16 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     protected int capacity;
 
     public static final Codec<FluidTank> CODEC = RecordCodecBuilder.create(i -> i.group(
+        Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
+        FluidStack.CODEC.optionalFieldOf("fluid", FluidStack.EMPTY).forGetter(x -> x.fluid)
+    ).apply(i, FluidTank::new));
+
+    /**
+     * Provided as an interop with the legacy NBT data created via {@link #writeToNBT(HolderLookup.Provider, CompoundTag)}.
+     * Prefer using {@link #CODEC} where possible.
+     */
+    @Deprecated
+    public static final Codec<FluidTank> LEGACY_NBT_CODEC = RecordCodecBuilder.create(i -> i.group(
         Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
         FluidStack.CODEC.optionalFieldOf("Fluid", FluidStack.EMPTY).forGetter(x -> x.fluid)
     ).apply(i, FluidTank::new));
