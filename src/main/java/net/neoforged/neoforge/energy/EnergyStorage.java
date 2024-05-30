@@ -13,6 +13,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 /**
@@ -58,35 +59,37 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
-        if (!canReceive())
+    public int receiveEnergy(int toReceive, boolean simulate) {
+        if (!canReceive() || toReceive <= 0) {
             return 0;
+        }
 
-        int energyReceived = Math.min(capacity - energy, Math.min(this.maxReceive, maxReceive));
+        int energyReceived = Mth.clamp(this.capacity - this.energy, 0, Math.min(this.maxReceive, toReceive));
         if (!simulate)
-            energy += energyReceived;
+            this.energy += energyReceived;
         return energyReceived;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
-        if (!canExtract())
+    public int extractEnergy(int toExtract, boolean simulate) {
+        if (!canExtract() || toExtract <= 0) {
             return 0;
+        }
 
-        int energyExtracted = Math.min(energy, Math.min(this.maxExtract, maxExtract));
+        int energyExtracted = Math.min(this.energy, Math.min(this.maxExtract, toExtract));
         if (!simulate)
-            energy -= energyExtracted;
+            this.energy -= energyExtracted;
         return energyExtracted;
     }
 
     @Override
     public int getEnergyStored() {
-        return energy;
+        return this.energy;
     }
 
     @Override
     public int getMaxEnergyStored() {
-        return capacity;
+        return this.capacity;
     }
 
     @Override

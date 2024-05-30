@@ -306,7 +306,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tagWithOptionalLegacy(Tags.Items.GEMS_LAPIS);
         tagWithOptionalLegacy(Tags.Items.GEMS_PRISMARINE);
         tagWithOptionalLegacy(Tags.Items.GEMS_QUARTZ);
-        tagWithOptionalLegacy(Tags.Items.GUNPOWDERS);
+        tag(Tags.Items.GUNPOWDERS).addOptionalTag(new ResourceLocation("forge", "gunpowder"));
         tagWithOptionalLegacy(Tags.Items.INGOTS);
         tagWithOptionalLegacy(Tags.Items.INGOTS_COPPER);
         tagWithOptionalLegacy(Tags.Items.INGOTS_GOLD);

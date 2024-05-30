@@ -15,6 +15,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.codec.NonNullListCodecs;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -145,7 +146,7 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
     @Override
     public int getSlotLimit(int slot) {
-        return 64;
+        return Item.ABSOLUTE_MAX_STACK_SIZE;
     }
 
     protected int getStackLimit(int slot, ItemStack stack) {
