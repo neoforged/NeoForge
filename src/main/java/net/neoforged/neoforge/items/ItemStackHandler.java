@@ -19,19 +19,18 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.codec.NonNullListCodecs;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
-import java.util.function.Function;
-
 public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
 
     public static final Codec<ItemStackHandler> CODEC = RecordCodecBuilder.create(i -> i.group(
-        NonNullListCodecs.withIndices(ItemStack.OPTIONAL_CODEC, ItemStack.EMPTY, "slot", ItemStack::isEmpty)
-            .fieldOf("stacks").forGetter(handler -> handler.stacks)
-    ).apply(i, ItemStackHandler::new));
+            NonNullListCodecs.withIndices(ItemStack.OPTIONAL_CODEC, ItemStack.EMPTY, "slot", ItemStack::isEmpty)
+                    .fieldOf("stacks").forGetter(handler -> handler.stacks))
+            .apply(i, ItemStackHandler::new));
 
     /**
      * Use if you require 1-to-1 support for the output of {@link #serializeNBT(HolderLookup.Provider)}.
      * Otherwise, prefer {#link CODEC} as a newer alternative to saving data to disk.
+     * 
      * @param provider
      * @return
      */
@@ -203,30 +202,29 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
      *
      * @param provider
      * @deprecated Prefer using the newer codec if you do not need support for the older NBT, and instead simply wish
-     * to transfer data over a network.
+     *             to transfer data over a network.
      */
     @Deprecated(since = "1.20.6")
     public record LegacyNbtItemStackHandlerCodec(HolderLookup.Provider provider) implements Codec<ItemStackHandler> {
-
         @Override
         public <T> DataResult<Pair<ItemStackHandler, T>> decode(DynamicOps<T> ops, T input) {
             final var map = ops.getMap(input).getOrThrow();
 
             int maxSize = Codec.INT.fieldOf("Size")
-                .decode(ops, map)
-                .getOrThrow();
+                    .decode(ops, map)
+                    .getOrThrow();
 
             ItemStackHandler handler = new ItemStackHandler(maxSize);
             CompoundTag.CODEC.listOf()
-                .fieldOf("Items")
-                .decode(ops, map)
-                .ifSuccess(itemTags -> {
-                    itemTags.forEach(itemTag -> {
-                        int slot = itemTag.getInt("Slot");
-                        var stack = ItemStack.parseOptional(provider, itemTag);
-                        handler.setStackInSlot(slot, stack);
+                    .fieldOf("Items")
+                    .decode(ops, map)
+                    .ifSuccess(itemTags -> {
+                        itemTags.forEach(itemTag -> {
+                            int slot = itemTag.getInt("Slot");
+                            var stack = ItemStack.parseOptional(provider, itemTag);
+                            handler.setStackInSlot(slot, stack);
+                        });
                     });
-                });
 
             return DataResult.success(Pair.of(handler, input));
         }
@@ -239,15 +237,15 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
                     CompoundTag itemTag = new CompoundTag();
                     itemTag.putInt("Slot", i);
                     var encodedStack = input.stacks.get(i).save(provider, itemTag);
-                    if(encodedStack instanceof CompoundTag ct)
+                    if (encodedStack instanceof CompoundTag ct)
                         list.add(CompoundTag.CODEC.encode(ct, ops, ops.empty()));
                 }
             }
 
             return ops.mapBuilder()
-                .add("Items", list.build(ops.empty()))
-                .add("Size", ops.createInt(input.stacks.size()))
-                .build(prefix);
+                    .add("Items", list.build(ops.empty()))
+                    .add("Size", ops.createInt(input.stacks.size()))
+                    .build(prefix);
         }
     }
 }

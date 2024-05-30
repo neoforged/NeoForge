@@ -28,16 +28,15 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     protected int maxExtract;
 
     public static final Codec<EnergyStorage> CODEC = RecordCodecBuilder.create(i -> i.group(
-        Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
-        Codec.INT.fieldOf("max_receive").forGetter(x -> x.maxReceive),
-        Codec.INT.fieldOf("max_extract").forGetter(x -> x.maxExtract),
-        Codec.INT.fieldOf("energy").forGetter(x -> x.energy)
-    ).apply(i, EnergyStorage::new));
+            Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
+            Codec.INT.fieldOf("max_receive").forGetter(x -> x.maxReceive),
+            Codec.INT.fieldOf("max_extract").forGetter(x -> x.maxExtract),
+            Codec.INT.fieldOf("energy").forGetter(x -> x.energy)).apply(i, EnergyStorage::new));
 
     public static final StreamCodec<FriendlyByteBuf, EnergyStorage> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.INT, x -> x.capacity, ByteBufCodecs.INT, x -> x.maxReceive,
-        ByteBufCodecs.INT, x -> x.maxExtract, ByteBufCodecs.INT, x -> x.energy,
-        EnergyStorage::new);
+            ByteBufCodecs.INT, x -> x.capacity, ByteBufCodecs.INT, x -> x.maxReceive,
+            ByteBufCodecs.INT, x -> x.maxExtract, ByteBufCodecs.INT, x -> x.energy,
+            EnergyStorage::new);
 
     public EnergyStorage(int capacity) {
         this(capacity, capacity, capacity, 0);
