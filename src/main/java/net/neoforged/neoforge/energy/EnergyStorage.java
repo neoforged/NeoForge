@@ -29,8 +29,8 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
 
     public static final Codec<EnergyStorage> CODEC = RecordCodecBuilder.create(i -> i.group(
         Codec.INT.fieldOf("capacity").forGetter(x -> x.capacity),
-        Codec.INT.fieldOf("maxReceive").forGetter(x -> x.maxReceive),
-        Codec.INT.fieldOf("maxExtract").forGetter(x -> x.maxExtract),
+        Codec.INT.fieldOf("max_receive").forGetter(x -> x.maxReceive),
+        Codec.INT.fieldOf("max_extract").forGetter(x -> x.maxExtract),
         Codec.INT.fieldOf("energy").forGetter(x -> x.energy)
     ).apply(i, EnergyStorage::new));
 
