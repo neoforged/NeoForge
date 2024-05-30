@@ -9,19 +9,35 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.codec.NonNullListCodecs;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+
+import java.util.function.Function;
 
 public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
 
-    public static Codec<ItemStackHandler> codec(HolderLookup.Provider provider) {
-        return new ItemStackHandlerCodec(provider);
+    public static final Codec<ItemStackHandler> CODEC = RecordCodecBuilder.create(i -> i.group(
+        NonNullListCodecs.withIndices(ItemStack.OPTIONAL_CODEC, ItemStack.EMPTY, "slot", ItemStack::isEmpty)
+            .fieldOf("stacks").forGetter(handler -> handler.stacks)
+    ).apply(i, ItemStackHandler::new));
+
+    /**
+     * Use if you require 1-to-1 support for the output of {@link #serializeNBT(HolderLookup.Provider)}.
+     * Otherwise, prefer {#link CODEC} as a newer alternative to saving data to disk.
+     * @param provider
+     * @return
+     */
+    @Deprecated
+    public static Codec<ItemStackHandler> nbtCompatibleCodec(HolderLookup.Provider provider) {
+        return new LegacyNbtItemStackHandlerCodec(provider);
     }
 
     public ItemStackHandler() {
@@ -182,7 +198,15 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
     protected void onContentsChanged(int slot) {}
 
-    public record ItemStackHandlerCodec(HolderLookup.Provider provider) implements Codec<ItemStackHandler> {
+    /**
+     * This codec provides support for the current NBT implementation provided by {@link ItemStackHandler#serializeNBT(HolderLookup.Provider)}.
+     *
+     * @param provider
+     * @deprecated Prefer using the newer codec if you do not need support for the older NBT, and instead simply wish
+     * to transfer data over a network.
+     */
+    @Deprecated(since = "1.20.6")
+    public record LegacyNbtItemStackHandlerCodec(HolderLookup.Provider provider) implements Codec<ItemStackHandler> {
 
         @Override
         public <T> DataResult<Pair<ItemStackHandler, T>> decode(DynamicOps<T> ops, T input) {
@@ -199,7 +223,7 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
                 .ifSuccess(itemTags -> {
                     itemTags.forEach(itemTag -> {
                         int slot = itemTag.getInt("Slot");
-                        var stack = ItemStack.parse(provider, itemTag).orElse(ItemStack.EMPTY);
+                        var stack = ItemStack.parseOptional(provider, itemTag);
                         handler.setStackInSlot(slot, stack);
                     });
                 });

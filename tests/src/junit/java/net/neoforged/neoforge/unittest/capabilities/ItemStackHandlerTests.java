@@ -20,7 +20,7 @@ public class ItemStackHandlerTests {
 	  final var handler = new ItemStackHandler(5);
 	  handler.setStackInSlot(3, new ItemStack(Items.GOLD_INGOT, 7));
 
-	  var encodeResult = ItemStackHandler.codec(server.registryAccess())
+	  var encodeResult = ItemStackHandler.nbtCompatibleCodec(server.registryAccess())
 		  .encodeStart(NbtOps.INSTANCE, handler);
 
 	  var originalResult = handler.serializeNBT(server.registryAccess());
@@ -48,7 +48,7 @@ public class ItemStackHandlerTests {
 	  final var handler = new ItemStackHandler(5);
 	  handler.setStackInSlot(3, new ItemStack(Items.GOLD_INGOT, 7));
 
-	  var encodeResult = ItemStackHandler.codec(server.registryAccess())
+	  var encodeResult = ItemStackHandler.nbtCompatibleCodec(server.registryAccess())
 		  .encodeStart(JsonOps.INSTANCE, handler);
 
 	  Assertions.assertThat(encodeResult.isSuccess()).isTrue();
@@ -71,7 +71,7 @@ public class ItemStackHandlerTests {
 
 	  var originalResult = handler.serializeNBT(server.registryAccess());
 
-	  var decodeResult = ItemStackHandler.codec(server.registryAccess())
+	  var decodeResult = ItemStackHandler.nbtCompatibleCodec(server.registryAccess())
 		  .parse(NbtOps.INSTANCE, originalResult);
 
 	  Assertions.assertThat(decodeResult).isNotNull();
