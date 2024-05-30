@@ -65,25 +65,18 @@
              && this.isAlive()
              && !this.dead
 -            && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
++            && net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), this)) {
              Vec3i vec3i = this.getPickupReach();
  
              for (ItemEntity itementity : this.level()
-@@ -736,6 +_,14 @@
+@@ -732,6 +_,7 @@
+ 
+     @Override
+     public void checkDespawn() {
++        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) return;
+         if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
-             Entity entity = this.level().getNearestPlayer(this, -1.0);
-+            net.neoforged.bus.api.Event.Result result = net.neoforged.neoforge.event.EventHooks.canEntityDespawn(this, (ServerLevel) this.level());
-+            if (result == net.neoforged.bus.api.Event.Result.DENY) {
-+                noActionTime = 0;
-+                entity = null;
-+            } else if (result == net.neoforged.bus.api.Event.Result.ALLOW) {
-+                this.discard();
-+                entity = null;
-+            }
-             if (entity != null) {
-                 double d0 = entity.distanceToSqr(this);
-                 int i = this.getType().getCategory().getDespawnDistance();
 @@ -1135,6 +_,11 @@
          }
      }

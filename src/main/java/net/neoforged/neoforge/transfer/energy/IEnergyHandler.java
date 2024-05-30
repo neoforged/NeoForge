@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.energy;
-
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.energy.templates.EnergyStorage;
+package net.neoforged.neoforge.energy;
 
 /**
  * An energy storage is the unit of interaction with Energy inventories.
@@ -17,38 +14,34 @@ import net.neoforged.neoforge.transfer.energy.templates.EnergyStorage;
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  *
  */
-public interface IEnergyHandler {
+public interface IEnergyStorage {
     /**
-     * Adds energy to the storage. Returns quantity of energy that was accepted.
+     * Adds energy to the storage. Returns the amount of energy that was accepted.
      *
-     * @param maxInsert
-     *                   Maximum amount of energy to be inserted.
-     * @param action
-     *                  If SIMULATE, the insertion will only be simulated.
+     * @param toReceive The amount of energy being received.
+     * @param simulate  If true, the insertion will only be simulated, meaning {@link #getEnergyStored()} will not change.
      * @return Amount of energy that was (or would have been, if simulated) accepted by the storage.
      */
-    int insert(int maxInsert, TransferAction action);
+    int receiveEnergy(int toReceive, boolean simulate);
 
     /**
-     * Removes energy from the storage. Returns quantity of energy that was removed.
+     * Removes energy from the storage. Returns the amount of energy that was removed.
      *
-     * @param maxExtract
-     *                   Maximum amount of energy to be extracted.
-     * @param action
-     *                 If SIMULATE, the extraction will only be simulated.
+     * @param toExtract The amount of energy being extracted.
+     * @param simulate  If true, the extraction will only be simulated, meaning {@link #getEnergyStored()} will not change.
      * @return Amount of energy that was (or would have been, if simulated) extracted from the storage.
      */
-    int extract(int maxExtract, TransferAction action);
+    int extractEnergy(int toExtract, boolean simulate);
 
     /**
      * Returns the amount of energy currently stored.
      */
-    int getAmount();
+    int getEnergyStored();
 
     /**
      * Returns the maximum amount of energy that can be stored.
      */
-    int getLimit();
+    int getMaxEnergyStored();
 
     /**
      * Returns if this storage can have energy extracted.
@@ -60,5 +53,5 @@ public interface IEnergyHandler {
      * Used to determine if this storage can receive energy.
      * If this is false, then any calls to receiveEnergy will return 0.
      */
-    boolean canInsert();
+    boolean canReceive();
 }

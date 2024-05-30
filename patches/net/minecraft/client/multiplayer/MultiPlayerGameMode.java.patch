@@ -1,13 +1,5 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
-@@ -106,6 +_,7 @@
-     }
- 
-     public boolean destroyBlock(BlockPos p_105268_) {
-+        if (minecraft.player.getMainHandItem().onBlockStartBreak(p_105268_, minecraft.player)) return false;
-         if (this.minecraft.player.blockActionRestricted(this.minecraft.level, p_105268_, this.localPlayerMode)) {
-             return false;
-         } else {
 @@ -120,9 +_,8 @@
                  } else if (blockstate.isAir()) {
                      return false;
@@ -38,12 +30,12 @@
                  this.startPrediction(this.minecraft.level, p_233728_ -> {
                      boolean flag = !blockstate1.isAir();
                      if (flag && this.destroyProgress == 0.0F) {
-+                        if (event.getUseBlock() != net.neoforged.bus.api.Event.Result.DENY)
++                        if (event.getUseBlock() != net.neoforged.neoforge.common.util.TriState.FALSE)
                          blockstate1.attack(this.minecraft.level, p_105270_, this.minecraft.player);
                      }
  
 +                    ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, p_105270_, p_105271_, p_233728_);
-+                    if (event.getUseItem() == net.neoforged.bus.api.Event.Result.DENY) return packet;
++                    if (event.getUseItem().isFalse()) return packet;
                      if (flag && blockstate1.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), p_105270_) >= 1.0F) {
                          this.destroyBlock(p_105270_);
                      } else {
@@ -77,7 +69,7 @@
  
                  this.destroyTicks++;
                  this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105284_, blockstate, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
-+                if (net.neoforged.neoforge.common.CommonHooks.onClientMineHold(this.minecraft.player, p_105284_, p_105285_).getUseItem() == net.neoforged.bus.api.Event.Result.DENY) return true;
++                if (net.neoforged.neoforge.common.CommonHooks.onClientMineHold(this.minecraft.player, p_105284_, p_105285_).getUseItem().isFalse()) return true;
                  if (this.destroyProgress >= 1.0F) {
                      this.isDestroying = false;
                      this.startPrediction(this.minecraft.level, p_233739_ -> {
@@ -103,7 +95,7 @@
          } else {
 -            boolean flag = !p_233747_.getMainHandItem().isEmpty() || !p_233747_.getOffhandItem().isEmpty();
 +            UseOnContext useoncontext = new UseOnContext(p_233747_, p_233748_, p_233749_);
-+            if (event.getUseItem() != net.neoforged.bus.api.Event.Result.DENY) {
++            if (event.getUseItem() != net.neoforged.neoforge.common.util.TriState.FALSE) {
 +                InteractionResult result = itemstack.onItemUseFirst(useoncontext);
 +                if (result != InteractionResult.PASS) {
 +                    return result;
@@ -112,7 +104,7 @@
 +            boolean flag = !p_233747_.getMainHandItem().doesSneakBypassUse(p_233747_.level(), blockpos, p_233747_) || !p_233747_.getOffhandItem().doesSneakBypassUse(p_233747_.level(), blockpos, p_233747_);
              boolean flag1 = p_233747_.isSecondaryUseActive() && flag;
 -            if (!flag1) {
-+            if (event.getUseBlock() == net.neoforged.bus.api.Event.Result.ALLOW || (event.getUseBlock() != net.neoforged.bus.api.Event.Result.DENY && !flag1)) {
++            if (event.getUseBlock().isTrue() || (event.getUseBlock().isDefault() && !flag1)) {
                  BlockState blockstate = this.minecraft.level.getBlockState(blockpos);
                  if (!this.connection.isFeatureEnabled(blockstate.getBlock().requiredFeatures())) {
                      return InteractionResult.FAIL;
@@ -122,10 +114,10 @@
  
 -            if (!itemstack.isEmpty() && !p_233747_.getCooldowns().isOnCooldown(itemstack.getItem())) {
 -                UseOnContext useoncontext = new UseOnContext(p_233747_, p_233748_, p_233749_);
-+            if (event.getUseItem() == net.neoforged.bus.api.Event.Result.DENY) {
++            if (event.getUseItem().isFalse()) {
 +                return InteractionResult.PASS;
 +            }
-+            if (event.getUseItem() == net.neoforged.bus.api.Event.Result.ALLOW || (!itemstack.isEmpty() && !p_233747_.getCooldowns().isOnCooldown(itemstack.getItem()))) {
++            if (event.getUseItem().isTrue() || (!itemstack.isEmpty() && !p_233747_.getCooldowns().isOnCooldown(itemstack.getItem()))) {
                  InteractionResult interactionresult1;
                  if (this.localPlayerMode.isCreative()) {
                      int i = itemstack.getCount();

@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -42,6 +_,8 @@
-         BlockHitResult blockhitresult = getPlayerPOVHitResult(
-             p_40703_, p_40704_, this.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE
-         );
-+        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onBucketUse(p_40704_, p_40703_, itemstack, blockhitresult);
-+        if (ret != null) return ret;
-         if (blockhitresult.getType() == HitResult.Type.MISS) {
-             return InteractionResultHolder.pass(itemstack);
-         } else if (blockhitresult.getType() != HitResult.Type.BLOCK) {
 @@ -58,7 +_,7 @@
                      ItemStack itemstack2 = bucketpickup.pickupBlock(p_40704_, p_40703_, blockpos, blockstate1);
                      if (!itemstack2.isEmpty()) {

@@ -3,22 +3,21 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.energy.templates;
+package net.neoforged.neoforge.energy;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 
 /**
- * Reference implementation of {@link IEnergyHandler}. Use/extend this or implement your own.
+ * Reference implementation of {@link IEnergyStorage}. Use/extend this or implement your own.
  *
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  */
-public class EnergyStorage implements IEnergyHandler, INBTSerializable<Tag> {
+public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     protected int energy;
     protected int capacity;
     protected int maxReceive;
@@ -44,35 +43,37 @@ public class EnergyStorage implements IEnergyHandler, INBTSerializable<Tag> {
     }
 
     @Override
-    public int insert(int maxReceive, TransferAction action) {
-        if (!canInsert())
+    public int receiveEnergy(int toReceive, boolean simulate) {
+        if (!canReceive() || toReceive <= 0) {
             return 0;
+        }
 
-        int energyReceived = Math.min(capacity - energy, Math.min(this.maxReceive, maxReceive));
-        if (action.isExecuting())
-            energy += energyReceived;
+        int energyReceived = Mth.clamp(this.capacity - this.energy, 0, Math.min(this.maxReceive, toReceive));
+        if (!simulate)
+            this.energy += energyReceived;
         return energyReceived;
     }
 
     @Override
-    public int extract(int maxExtract, TransferAction action) {
-        if (!canExtract())
+    public int extractEnergy(int toExtract, boolean simulate) {
+        if (!canExtract() || toExtract <= 0) {
             return 0;
+        }
 
-        int energyExtracted = Math.min(energy, Math.min(this.maxExtract, maxExtract));
-        if (action.isExecuting())
-            energy -= energyExtracted;
+        int energyExtracted = Math.min(this.energy, Math.min(this.maxExtract, toExtract));
+        if (!simulate)
+            this.energy -= energyExtracted;
         return energyExtracted;
     }
 
     @Override
-    public int getAmount() {
-        return energy;
+    public int getEnergyStored() {
+        return this.energy;
     }
 
     @Override
-    public int getLimit() {
-        return capacity;
+    public int getMaxEnergyStored() {
+        return this.capacity;
     }
 
     @Override
@@ -81,13 +82,13 @@ public class EnergyStorage implements IEnergyHandler, INBTSerializable<Tag> {
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean canReceive() {
         return this.maxReceive > 0;
     }
 
     @Override
     public Tag serializeNBT(HolderLookup.Provider provider) {
-        return IntTag.valueOf(this.getAmount());
+        return IntTag.valueOf(this.getEnergyStored());
     }
 
     @Override

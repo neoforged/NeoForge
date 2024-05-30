@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -124,7 +125,7 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
     @Override
     public int getSlotLimit(final int slot) {
         final EquipmentSlot equipmentSlot = validateSlotIndex(slot);
-        return equipmentSlot.getType() == EquipmentSlot.Type.ARMOR ? 1 : 64;
+        return equipmentSlot.getType() == EquipmentSlot.Type.ARMOR ? 1 : Item.ABSOLUTE_MAX_STACK_SIZE;
     }
 
     protected int getStackLimit(final int slot, final ItemStack stack) {

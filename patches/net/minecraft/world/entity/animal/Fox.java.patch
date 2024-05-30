@@ -41,7 +41,7 @@
  
          protected void onReachedTarget() {
 -            if (Fox.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            if (net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(Fox.this.level(), Fox.this)) {
++            if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(Fox.this.level(), Fox.this)) {
                  BlockState blockstate = Fox.this.level().getBlockState(this.blockPos);
                  if (blockstate.is(Blocks.SWEET_BERRY_BUSH)) {
                      this.pickSweetBerries(blockstate);

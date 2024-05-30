@@ -100,22 +100,27 @@
  
          if (p_32034_.hasUUID("Owner")) {
              this.target = p_32034_.getUUID("Owner");
-@@ -339,10 +_,17 @@
-     @Override
-     public void playerTouch(Player p_32040_) {
-         if (!this.level().isClientSide) {
-+            if (this.pickupDelay > 0) return;
+@@ -342,7 +_,22 @@
              ItemStack itemstack = this.getItem();
              Item item = itemstack.getItem();
              int i = itemstack.getCount();
 -            if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && p_32040_.getInventory().add(itemstack)) {
-+            int hook = net.neoforged.neoforge.event.EventHooks.onItemPickup(this, p_32040_);
-+            if (hook < 0) return;
-+            ItemStack copy = itemstack.copy();
-+            if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && (hook == 1 || i <= 0 || p_32040_.getInventory().add(itemstack))) {
-+                i = copy.getCount() - itemstack.getCount();
-+                copy.setCount(i);
-+                net.neoforged.neoforge.event.EventHooks.firePlayerItemPickupEvent(p_32040_, this, copy);
++
++            // Neo: Fire item pickup pre/post and adjust handling logic to adhere to the event result.
++            var result = net.neoforged.neoforge.event.EventHooks.fireItemPickupPre(this, p_32040_).canPickup();
++            if (result.isFalse()) {
++                return;
++            }
++
++            // Make a copy of the original stack for use in ItemEntityPickupEvent.Post
++            ItemStack originalCopy = itemstack.copy();
++            // Subvert the vanilla conditions (pickup delay and target check) if the result is true.
++            if ((result.isTrue() || this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID()))) && p_32040_.getInventory().add(itemstack)) {
++                // Fire ItemEntityPickupEvent.Post
++                net.neoforged.neoforge.event.EventHooks.fireItemPickupPost(this, p_32040_, originalCopy);
++                // Update `i` to reflect the actual pickup amount. Vanilla is wrong here and always reports the whole stack.
++                i = originalCopy.getCount() - itemstack.getCount();
++
                  p_32040_.take(this, i);
                  if (itemstack.isEmpty()) {
                      this.discard();
@@ -130,6 +135,22 @@
          if (!this.level().isClientSide && entity instanceof ItemEntity) {
              ((ItemEntity)entity).mergeWithNeighbours();
          }
+@@ -397,6 +_,15 @@
+         this.target = p_266724_;
+     }
+ 
++    /**
++     * Neo: Add getter for ItemEntity's {@link ItemEntity#target target}.
++     * @return The {@link ItemEntity#target target} that can pick up this item entity (if {@code null}, anyone can pick it up)
++     */
++    @Nullable
++    public UUID getTarget() {
++        return this.target;
++    }
++
+     public void setThrower(Entity p_306324_) {
+         this.thrower = p_306324_.getUUID();
+         this.cachedThrower = p_306324_;
 @@ -436,7 +_,7 @@
  
      public void makeFakeItem() {

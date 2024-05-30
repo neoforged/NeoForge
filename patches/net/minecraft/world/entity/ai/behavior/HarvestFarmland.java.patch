@@ -5,7 +5,7 @@
  
      protected boolean checkExtraStartConditions(ServerLevel p_23174_, Villager p_23175_) {
 -        if (!p_23174_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+        if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(p_23174_, p_23175_)) {
++        if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_23174_, p_23175_)) {
              return false;
          } else if (p_23175_.getVillagerData().getProfession() != VillagerProfession.FARMER) {
              return false;

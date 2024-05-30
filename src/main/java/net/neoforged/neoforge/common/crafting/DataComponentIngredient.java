@@ -58,7 +58,7 @@ public class DataComponentIngredient implements ICustomIngredient {
     public boolean test(ItemStack stack) {
         if (strict) {
             for (ItemStack stack2 : this.stacks) {
-                if (ItemStack.matches(stack, stack2)) return true;
+                if (ItemStack.isSameItemSameComponents(stack, stack2)) return true;
             }
             return false;
         } else {

@@ -30,18 +30,20 @@ public class ItemHandlerHelper {
         return stack;
     }
 
+    /**
+     * @deprecated Use {@link ItemStack#isSameItemSameComponents(ItemStack, ItemStack)}
+     */
     @Deprecated(forRemoval = true, since = "1.20.5")
     public static boolean canItemStacksStack(ItemStack a, ItemStack b) {
         return ItemStack.isSameItemSameComponents(a, b);
     }
 
+    /**
+     * @deprecated Use {@link ItemStack#copyWithCount(int)}
+     */
     @Deprecated(forRemoval = true, since = "1.20.5")
-    public static ItemStack copyStackWithSize(ItemStack itemStack, int size) {
-        if (size == 0)
-            return ItemStack.EMPTY;
-        ItemStack copy = itemStack.copy();
-        copy.setCount(size);
-        return copy;
+    public static ItemStack copyStackWithSize(ItemStack stack, int count) {
+        return stack.copyWithCount(count);
     }
 
     /**

@@ -4,7 +4,8 @@ import java.util.regex.Pattern
 plugins {
     id 'net.neoforged.gradleutils' version '3.0.0-alpha.10' apply false
     id 'com.diffplug.spotless' version '6.22.0' apply false
-    id 'net.neoforged.licenser' version '0.7.2' apply false
+    id 'net.neoforged.licenser' version '0.7.2'
+    id 'neoforge.formatting-conventions'
 }
 
 apply plugin: 'net.neoforged.gradleutils'
@@ -50,9 +51,6 @@ subprojects {
 
     java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
 }
-
-apply plugin: 'com.diffplug.spotless'
-apply plugin: 'net.neoforged.licenser'
 
 repositories {
     mavenCentral()
@@ -114,6 +112,45 @@ spotless {
             return fileContents
         }
 
+        //Note: This doesn't detect changing access level to or from package private
+        //TODO: Eventually try and make this support checking package private access level changes?
+        def accessLevelChange = Pattern.compile('^[-+]\\s*(public|private|protected)\\s.*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
+        custom 'noAccessWidening', { String fileContents ->
+            def accessChanges = fileContents.findAll(accessLevelChange)
+            if (accessChanges.isEmpty()) return fileContents
+            Set<String> privateRemovals = new HashSet<>()
+            Set<String> protectedRemovals = new HashSet<>()
+            accessChanges.each { String change ->
+                //Get the type of match
+                String[] data = change.substring(1).trim().split(" ", 2)
+                String lineStart = data[1].substring(0, Math.min(10, data[1].length()))
+                if (change.startsWith('-')) {//Removal
+                    if (data[0] == 'private') {
+                        privateRemovals.add(lineStart)
+                    } else if (data[0] == 'protected') {
+                        protectedRemovals.add(lineStart)
+                    }
+                } else if (!privateRemovals.isEmpty() || !protectedRemovals.isEmpty()) {//Addition and we know of at least one removal
+                    if (data[0] == 'public') {
+                        if (privateRemovals.remove(lineStart) || protectedRemovals.remove(lineStart)) {
+                            throw new GradleException("Widening access level via patches is not allowed, use an AT! Changed line: " + change)
+                        }
+                    } else if (data[0] == 'protected') {
+                        if (privateRemovals.remove(lineStart)) {
+                            throw new GradleException("Widening access level via patches is not allowed, use an AT! Changed line: " + change)
+                        }
+                        //Remove any protected ones that we have a match for
+                        protectedRemovals.remove(lineStart)
+                    } else if (data[0] == 'private') {
+                        //Remove any private ones that we have a match for
+                        privateRemovals.remove(lineStart)
+                    }
+                }
+            }
+            //Note: We allow mismatched counts in case we are removing a method entirely for some reason
+            return fileContents
+        }
+
         //Trim any trailing whitespace from patch additions
         def trailingWhitespace = Pattern.compile('^\\+.*[ \t]+\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
         custom 'trimTrailingWhitespacePatches', { String fileContents ->
@@ -126,10 +163,11 @@ spotless {
             return sb.toString()
         }
 
-        bumpThisNumberIfACustomStepChanges(3)
+        //Replace any FQN versions of javax.annotation.Nullable with the jetbrains variant
+        custom 'jetbrainsNullablePatches', { String fileContents ->
+            fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
+        }
+
+        bumpThisNumberIfACustomStepChanges(5)
     }
 }
-
-apply from: rootProject.file('buildscript/spotless-rules.gradle')
-apply from: rootProject.file('buildscript/generate-package-infos.gradle')
-apply from: rootProject.file('buildscript/apply-all-formatting.gradle')
