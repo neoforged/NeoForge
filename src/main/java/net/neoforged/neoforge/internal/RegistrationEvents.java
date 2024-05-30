@@ -11,6 +11,7 @@ import net.neoforged.neoforge.common.world.chunk.ForcedChunkManager;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforge.tooltip.TooltipManager;
 
 public class RegistrationEvents {
     static void init() {
@@ -19,6 +20,7 @@ public class RegistrationEvents {
         ForcedChunkManager.init();
         RegistryManager.initDataMaps();
         modifyComponents();
+        TooltipManager.ITEM.gather();
     }
 
     private static boolean canModifyComponents;

@@ -123,55 +123,67 @@
                  p_41624_.broadcastBreakEvent(p_319898_);
                  Item item = this.getItem();
                  this.shrink(1);
-@@ -706,12 +_,13 @@
+@@ -706,61 +_,8 @@
              return List.of();
          } else {
              List<Component> list = Lists.newArrayList();
 -            MutableComponent mutablecomponent = Component.empty().append(this.getHoverName()).withStyle(this.getRarity().color());
-+            MutableComponent mutablecomponent = Component.empty().append(this.getHoverName()).withStyle(this.getRarity().getStyleModifier());
-             if (this.has(DataComponents.CUSTOM_NAME)) {
-                 mutablecomponent.withStyle(ChatFormatting.ITALIC);
-             }
- 
-             list.add(mutablecomponent);
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterName(this, p_41652_, list, p_41653_, p_339637_));
-             if (!p_41653_.isAdvanced() && !this.has(DataComponents.CUSTOM_NAME) && this.is(Items.FILLED_MAP)) {
-                 MapId mapid = this.get(DataComponents.MAP_ID);
-                 if (mapid != null) {
-@@ -724,6 +_,7 @@
-                 this.getItem().appendHoverText(this, p_339637_, list, p_41653_);
-             }
- 
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.BeforeComponents(this, p_41652_, list, p_41653_, p_339637_));
-             this.addToTooltip(DataComponents.TRIM, p_339637_, consumer, p_41653_);
-             this.addToTooltip(DataComponents.STORED_ENCHANTMENTS, p_339637_, consumer, p_41653_);
-             this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
-@@ -731,6 +_,7 @@
-             this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
-             this.addAttributeTooltips(consumer, p_41652_);
-             this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterComponents(this, p_41652_, list, p_41653_, p_339637_));
-             AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
-             if (adventuremodepredicate != null && adventuremodepredicate.showInTooltip()) {
-                 consumer.accept(CommonComponents.EMPTY);
-@@ -745,6 +_,7 @@
-                 adventuremodepredicate1.addToTooltip(consumer);
-             }
- 
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.BeforeDebug(this, p_41652_, list, p_41653_, p_339637_));
-             if (p_41653_.isAdvanced()) {
-                 if (this.isDamaged()) {
-                     list.add(Component.translatable("item.durability", this.getMaxDamage() - this.getDamageValue(), this.getMaxDamage()));
-@@ -757,10 +_,12 @@
-                 }
-             }
- 
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterDebug(this, p_41652_, list, p_41653_, p_339637_));
-             if (p_41652_ != null && !this.getItem().isEnabled(p_41652_.level().enabledFeatures())) {
-                 list.add(DISABLED_ITEM_TOOLTIP);
-             }
- 
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.AfterAll(this, p_41652_, list, p_41653_, p_339637_));
+-            if (this.has(DataComponents.CUSTOM_NAME)) {
+-                mutablecomponent.withStyle(ChatFormatting.ITALIC);
+-            }
+-
+-            list.add(mutablecomponent);
+-            if (!p_41653_.isAdvanced() && !this.has(DataComponents.CUSTOM_NAME) && this.is(Items.FILLED_MAP)) {
+-                MapId mapid = this.get(DataComponents.MAP_ID);
+-                if (mapid != null) {
+-                    list.add(MapItem.getTooltipForId(mapid));
+-                }
+-            }
+-
+-            Consumer<Component> consumer = list::add;
+-            if (!this.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)) {
+-                this.getItem().appendHoverText(this, p_339637_, list, p_41653_);
+-            }
+-
+-            this.addToTooltip(DataComponents.TRIM, p_339637_, consumer, p_41653_);
+-            this.addToTooltip(DataComponents.STORED_ENCHANTMENTS, p_339637_, consumer, p_41653_);
+-            this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
+-            this.addToTooltip(DataComponents.DYED_COLOR, p_339637_, consumer, p_41653_);
+-            this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
+-            this.addAttributeTooltips(consumer, p_41652_);
+-            this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
+-            AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
+-            if (adventuremodepredicate != null && adventuremodepredicate.showInTooltip()) {
+-                consumer.accept(CommonComponents.EMPTY);
+-                consumer.accept(AdventureModePredicate.CAN_BREAK_HEADER);
+-                adventuremodepredicate.addToTooltip(consumer);
+-            }
+-
+-            AdventureModePredicate adventuremodepredicate1 = this.get(DataComponents.CAN_PLACE_ON);
+-            if (adventuremodepredicate1 != null && adventuremodepredicate1.showInTooltip()) {
+-                consumer.accept(CommonComponents.EMPTY);
+-                consumer.accept(AdventureModePredicate.CAN_PLACE_HEADER);
+-                adventuremodepredicate1.addToTooltip(consumer);
+-            }
+-
+-            if (p_41653_.isAdvanced()) {
+-                if (this.isDamaged()) {
+-                    list.add(Component.translatable("item.durability", this.getMaxDamage() - this.getDamageValue(), this.getMaxDamage()));
+-                }
+-
+-                list.add(Component.literal(BuiltInRegistries.ITEM.getKey(this.getItem()).toString()).withStyle(ChatFormatting.DARK_GRAY));
+-                int i = this.components.size();
+-                if (i > 0) {
+-                    list.add(Component.translatable("item.components", i).withStyle(ChatFormatting.DARK_GRAY));
+-                }
+-            }
+-
+-            if (p_41652_ != null && !this.getItem().isEnabled(p_41652_.level().enabledFeatures())) {
+-                list.add(DISABLED_ITEM_TOOLTIP);
+-            }
+-
++            net.neoforged.neoforge.tooltip.TooltipManager.ITEM.provide(this, p_41652_, p_339637_, list::add, p_41653_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ItemTooltipEvent(this, p_41652_, list, p_41653_, p_339637_));
              return list;
          }
      }
