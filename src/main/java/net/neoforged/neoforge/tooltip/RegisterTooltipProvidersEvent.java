@@ -38,9 +38,9 @@ public abstract class RegisterTooltipProvidersEvent<T extends DataComponentHolde
 
     /**
      *
-     * @param other A identifier for the provider to register above
+     * @param other      A identifier for the provider to register above
      * @param identifier A unique identifier for this provider
-     * @param provider This tooltip provider
+     * @param provider   This tooltip provider
      */
     public final void registerAbove(ResourceLocation other, ResourceLocation identifier, TooltipManager.Provider<T> provider) {
         register(Ordering.ABOVE, other, identifier, provider);
@@ -48,9 +48,9 @@ public abstract class RegisterTooltipProvidersEvent<T extends DataComponentHolde
 
     /**
      *
-     * @param other A identifier for the provider to register below
+     * @param other      A identifier for the provider to register below
      * @param identifier A unique identifier for this provider
-     * @param provider This tooltip provider
+     * @param provider   This tooltip provider
      */
     public final void registerBelow(ResourceLocation other, ResourceLocation identifier, TooltipManager.Provider<T> provider) {
         register(Ordering.BELOW, other, identifier, provider);
@@ -60,7 +60,7 @@ public abstract class RegisterTooltipProvidersEvent<T extends DataComponentHolde
      * Registers tooltip provider below all others
      *
      * @param identifier A unique identifier for this provider
-     * @param provider This tooltip provider
+     * @param provider   This tooltip provider
      */
     public final void registerBelowAll(ResourceLocation identifier, TooltipManager.Provider<T> provider) {
         register(Ordering.BELOW, null, identifier, provider);
