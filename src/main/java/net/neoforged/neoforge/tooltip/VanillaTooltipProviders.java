@@ -215,48 +215,50 @@ public interface VanillaTooltipProviders {
 
     private static void addModifierTooltip(ItemStack stack, Consumer<Component> adder, @Nullable Player player, Holder<Attribute> attribute, AttributeModifier attributeModifier) {
         // Copied from ItemStack | private in vanilla
-        var d0 = attributeModifier.amount();
+        var amount = attributeModifier.amount();
         var flag = false;
 
         if (player != null) {
             if (attributeModifier.id() == Item.BASE_ATTACK_DAMAGE_UUID) {
-                d0 += player.getAttributeBaseValue(Attributes.ATTACK_DAMAGE);
-                d0 += EnchantmentHelper.getDamageBonus(stack, null);
+                amount += player.getAttributeBaseValue(Attributes.ATTACK_DAMAGE);
+                amount += EnchantmentHelper.getDamageBonus(stack, null);
                 flag = true;
             } else if (attributeModifier.id() == Item.BASE_ATTACK_SPEED_UUID) {
-                d0 += player.getAttributeBaseValue(Attributes.ATTACK_SPEED);
+                amount += player.getAttributeBaseValue(Attributes.ATTACK_SPEED);
                 flag = true;
             }
         }
 
-        double d1;
+        double actualAmount;
         var operation = attributeModifier.operation();
 
-        if (operation == AttributeModifier.Operation.ADD_MULTIPLIED_BASE || operation == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
-            d1 = d0 * 100D;
-        else if (attribute.is(Attributes.KNOCKBACK_RESISTANCE))
-            d1 = d0 * 10D;
-        else
-            d1 = d0;
+        if (operation == AttributeModifier.Operation.ADD_MULTIPLIED_BASE || operation == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
+            actualAmount = amount * 100D;
+        } else if (attribute.is(Attributes.KNOCKBACK_RESISTANCE)) {
+            actualAmount = amount * 10D;
+        } else {
+            actualAmount = amount;
+        }
 
         Component component = null;
 
-        if (flag)
+        if (flag) {
             component = CommonComponents.space().append(
                     Component.translatable(
                             "attribute.modifier.equals." + operation.id(),
-                            ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
+                            ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(actualAmount),
                             Component.translatable(attribute.value().getDescriptionId())).withStyle(ChatFormatting.DARK_GREEN));
-        else if (d0 > 0D)
+        } else if (amount > 0D) {
             component = Component.translatable(
                     "attribute.modifier.plus." + operation.id(),
-                    ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
+                    ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(actualAmount),
                     Component.translatable(attribute.value().getDescriptionId())).withStyle(ChatFormatting.BLUE);
-        else if (d0 < 0D)
+        } else if (amount < 0D) {
             component = Component.translatable(
                     "attribute.modifier.take." + operation.id(),
-                    ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
+                    ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(actualAmount),
                     Component.translatable(attribute.value().getDescriptionId())).withStyle(ChatFormatting.RED);
+        }
 
         adder.accept(component);
     }
