@@ -18,23 +18,50 @@ import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Allows users to register custom tooltip providers for easier tooltip organization.
+ */
 public abstract class RegisterTooltipProvidersEvent<T extends DataComponentHolder> extends Event implements IModBusEvent {
     private final List<TooltipManager.NamedTooltip<T>> registrations = Lists.newArrayList();
 
     protected RegisterTooltipProvidersEvent() {}
 
+    /**
+     * Registers tooltip provider above all other providers
+     *
+     * @param identifier A unique identifier for this provider
+     * @param provider
+     */
     public final void registerAboveAll(ResourceLocation identifier, TooltipManager.Provider<T> provider) {
         register(Ordering.ABOVE, null, identifier, provider);
     }
 
+    /**
+     *
+     * @param other A identifier for the provider to register above
+     * @param identifier A unique identifier for this provider
+     * @param provider This tooltip provider
+     */
     public final void registerAbove(ResourceLocation other, ResourceLocation identifier, TooltipManager.Provider<T> provider) {
         register(Ordering.ABOVE, other, identifier, provider);
     }
 
+    /**
+     *
+     * @param other A identifier for the provider to register below
+     * @param identifier A unique identifier for this provider
+     * @param provider This tooltip provider
+     */
     public final void registerBelow(ResourceLocation other, ResourceLocation identifier, TooltipManager.Provider<T> provider) {
         register(Ordering.BELOW, other, identifier, provider);
     }
 
+    /**
+     * Registers tooltip provider below all others
+     *
+     * @param identifier A unique identifier for this provider
+     * @param provider This tooltip provider
+     */
     public final void registerBelowAll(ResourceLocation identifier, TooltipManager.Provider<T> provider) {
         register(Ordering.BELOW, null, identifier, provider);
     }

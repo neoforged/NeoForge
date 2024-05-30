@@ -20,6 +20,9 @@ import net.neoforged.fml.ModLoader;
 import org.jetbrains.annotations.Nullable;
 
 public final class TooltipManager<T extends DataComponentHolder> {
+    /**
+     * Tooltip manager for ItemStack providers
+     */
     public static final TooltipManager<ItemStack> ITEM = new TooltipManager<>(RegisterTooltipProvidersEvent.Item::new);
 
     @Nullable
@@ -30,6 +33,9 @@ public final class TooltipManager<T extends DataComponentHolder> {
         this.eventFactory = eventFactory;
     }
 
+    /**
+     * Invokes all registered providers and passes along the tooltips to the caller
+     */
     public void provide(T holder, @Nullable Player player, Item.TooltipContext context, Consumer<Component> adder, TooltipFlag flag) {
         if (tooltips == null || tooltips.isEmpty() || holder.has(DataComponents.HIDE_TOOLTIP))
             return;
@@ -42,6 +48,9 @@ public final class TooltipManager<T extends DataComponentHolder> {
         }
     }
 
+    /**
+     * Must be called during mod setup to gather all tooltip providers
+     */
     public void gather() {
         var event = eventFactory.get();
 

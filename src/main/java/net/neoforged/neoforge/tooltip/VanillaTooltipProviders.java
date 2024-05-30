@@ -32,16 +32,74 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public interface VanillaTooltipProviders {
+    /**
+     * Display name
+     *
+     * Registered above all other providers
+     */
     ResourceLocation NAME = key("name");
+
+    /**
+     * Additional tooltips
+     *
+     * Registered below {@linkplain #ITEM_MAP_ID}
+     */
     ResourceLocation ADDITIONAL_TOOLTIPS = key("additional_tooltip");
+
+    /**
+     * Data components
+     *
+     * Registered below {@linkplain #ADDITIONAL_TOOLTIPS}
+     */
     ResourceLocation DATA_COMPONENTS = key("data_components");
+
+    /**
+     * Data component count
+     *
+     * Registered above {@linkplain #DISABLED}
+     */
     ResourceLocation DATA_COMPONENT_COUNT = key("data_component_count");
+
+    /**
+     * Feature flag status
+     *
+     * Registered below other providers
+     */
     ResourceLocation DISABLED = key("disabled");
 
+    /**
+     * Map ID (Item)
+     *
+     * Registered below {@linkplain #NAME}
+     */
     ResourceLocation ITEM_MAP_ID = key("item/map_id");
+
+    /**
+     * Attributes (Item)
+     *
+     * Registered below {@linkplain #DATA_COMPONENTS}
+     */
     ResourceLocation ITEM_ATTRIBUTES = key("item/data_components");
+
+    /**
+     * Adventure mode predicates (Item)
+     *
+     * Registered below {@linkplain #ITEM_ATTRIBUTES}
+     */
     ResourceLocation ITEM_ADVENTURE_MODE_PREDICATES = key("item/adventure_mode_predicates");
+
+    /**
+     * Durability (Item)
+     *
+     * Registered above {@linkplain #ITEM_ID}
+     */
     ResourceLocation ITEM_DURABILITY = key("item/durability");
+
+    /**
+     * ID (Item)
+     *
+     * Registered above {@linkplain #DATA_COMPONENT_COUNT}
+     */
     ResourceLocation ITEM_ID = key("item/id");
 
     @ApiStatus.Internal
