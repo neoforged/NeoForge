@@ -10,7 +10,7 @@
  ) {
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
          p_337519_ -> p_337519_.group(
-@@ -29,7 +_,8 @@
+@@ -29,10 +_,21 @@
                      ServerStatus.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerStatus::players),
                      ServerStatus.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerStatus::version),
                      ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
