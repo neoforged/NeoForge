@@ -246,7 +246,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE);
         tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_NETHERRACK);
         tagWithOptionalLegacy(Tags.Blocks.ORES_IN_GROUND_STONE);
-        tagWithOptionalLegacy(Tags.Blocks.STONES);
+        tag(Tags.Blocks.STONES).addOptionalTag(new ResourceLocation("forge", "stone"));
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS);
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_COAL);
         tagWithOptionalLegacy(Tags.Blocks.STORAGE_BLOCKS_COPPER);
