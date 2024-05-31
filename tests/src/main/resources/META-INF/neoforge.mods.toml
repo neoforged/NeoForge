@@ -35,6 +35,9 @@ license="LGPL v2.1"
     modId="finalize_spawn_fix_test"
 
 [[mods]]
+    modId="block_entity_type_valid_blocks_event_test"
+
+[[mods]]
     modId="multiple_entrypoints_test"
 
 [[mods]]
