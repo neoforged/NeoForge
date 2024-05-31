@@ -35,7 +35,7 @@ public final class EffectCure {
      * This collection can be kept around, and will update itself in response to changes to the map.
      * See {@link ConcurrentHashMap#values()} for details.
      */
-    public static Collection<EffectCure> getActions() {
+    public static Collection<EffectCure> getAllCures() {
         return Collections.unmodifiableCollection(CURES.values());
     }
 
