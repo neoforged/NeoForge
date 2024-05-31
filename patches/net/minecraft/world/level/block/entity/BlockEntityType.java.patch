@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -301,6 +_,22 @@
+@@ -301,6 +_,13 @@
          return this.validBlocks.contains(p_155263_.getBlock());
      }
  
@@ -9,15 +9,6 @@
 +     */
 +    public Set<Block> getValidBlocks() {
 +        return java.util.Collections.unmodifiableSet(this.validBlocks);
-+    }
-+
-+    /**
-+     * Neo: Add block setter.
-+     * Please use {@link net.neoforged.neoforge.event.BlockEntityTypesValidBlocksEvent} to add to the valid blocks for this BlockEntityType.
-+     * This setter is only for this event.
-+     */
-+    public void setValidBlocks(Set<Block> validBlocks) {
-+        this.validBlocks = validBlocks;
 +    }
 +
      @Nullable

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.event;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,14 +24,14 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEvent {
     private final ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey;
     private final BlockEntityType<?> blockEntityType;
     private final Set<Block> currentValidBlocks;
-    @Nullable
-    private Class<?> baseClass = null;
+    private final Supplier<? extends Class<?>> baseClass = Suppliers.memoize(this::setCommonSuperClassForExistingValidBlocks);
 
     protected BlockEntityTypesValidBlocksEvent(ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey, BlockEntityType<?> blockEntityType) {
         this.blockEntityTypeResourceKey = blockEntityTypeResourceKey;
@@ -68,27 +70,28 @@ public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEv
      * @param block The block to add as a valid block for the current {@link BlockEntityType}
      */
     public void addValidBlock(Block block) {
-        setCommonSuperClassForExistingValidBlocks();
-
-        if (this.baseClass == null || this.baseClass.isAssignableFrom(block.getClass())) {
+        if (this.baseClass.get() == null || this.baseClass.get().isAssignableFrom(block.getClass())) {
             this.currentValidBlocks.add(block);
         } else {
             throw new IllegalArgumentException("Given block " + block + " does not derive from existing valid block's common superclass of " + this.baseClass);
         }
     }
 
-    private void setCommonSuperClassForExistingValidBlocks() {
-        if (this.baseClass == null) {
-            for (Block existingBlock : this.currentValidBlocks) {
-                if (this.baseClass != null) {
-                    if (!existingBlock.getClass().isAssignableFrom(this.baseClass)) {
-                        this.baseClass = findClosestCommonSuper(existingBlock.getClass(), this.baseClass);
-                    }
-                } else {
-                    this.baseClass = existingBlock.getClass();
+    @Nullable
+    private Class<?> setCommonSuperClassForExistingValidBlocks() {
+        Class<?> calculatedBaseClass = null;
+
+        for (Block existingBlock : this.currentValidBlocks) {
+            if (calculatedBaseClass != null) {
+                if (!calculatedBaseClass.isAssignableFrom(existingBlock.getClass())) {
+                    calculatedBaseClass = findClosestCommonSuper(existingBlock.getClass(), calculatedBaseClass);
                 }
+            } else {
+                calculatedBaseClass = existingBlock.getClass();
             }
         }
+
+        return calculatedBaseClass;
     }
 
     private static Class<?> findClosestCommonSuper(Class<?> a, Class<?> b) {
@@ -101,11 +104,11 @@ public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEv
     @EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
     private static class CommonHandler {
         @SubscribeEvent
-        private static void onCommonSetup(FMLCommonSetupEvent event) {
+        private static void onCommonSetup(FMLCommonSetupEvent event) throws Throwable {
             for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
                 BlockEntityTypesValidBlocksEvent blockEntityTypesValidBlocksEvent = new BlockEntityTypesValidBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
                 ModLoader.postEventWrapContainerInModOrder(blockEntityTypesValidBlocksEvent); // Allow modders to add to the list in the events.
-                blockEntityTypeEntry.getValue().setValidBlocks(blockEntityTypesValidBlocksEvent.getCurrentValidBlocks()); // Update the block entity type's valid blocks to the new modified list.
+                FieldUtils.writeField(blockEntityTypeEntry.getValue(), "validBlocks", blockEntityTypesValidBlocksEvent.getCurrentValidBlocks(), true);
             }
         }
     }
