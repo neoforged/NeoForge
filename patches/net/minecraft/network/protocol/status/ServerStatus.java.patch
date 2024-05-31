@@ -20,3 +20,16 @@
                  )
                  .apply(p_337519_, ServerStatus::new)
      );
++
++    public ServerStatus(
++        Component description,
++        Optional<ServerStatus.Players> players,
++        Optional<ServerStatus.Version> version,
++        Optional<ServerStatus.Favicon> favicon,
++        boolean enforcesSecureChat
++    ) {
++        this(description, players, version, favicon, enforcesSecureChat, false);
++    }
+ 
+     public static record Favicon(byte[] iconBytes) {
+         private static final String PREFIX = "data:image/png;base64,";
