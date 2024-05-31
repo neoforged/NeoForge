@@ -1,26 +1,20 @@
 --- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
 +++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
-@@ -120,14 +_,15 @@
+@@ -120,11 +_,12 @@
                  } else if (blockstate.isAir()) {
                      return false;
                  } else {
--                    block.playerWillDestroy(level, p_105268_, blockstate, this.minecraft.player);
++                    BlockState removedBlockState =
+                     block.playerWillDestroy(level, p_105268_, blockstate, this.minecraft.player);
                      FluidState fluidstate = level.getFluidState(p_105268_);
 -                    boolean flag = level.setBlock(p_105268_, fluidstate.createLegacyBlock(), 11);
--                    if (flag) {
++                    boolean flag = blockstate.onDestroyedByPlayer(level, p_105268_, this.minecraft.player, false, fluidstate);
+                     if (flag) {
 -                        block.destroy(level, p_105268_, blockstate);
-+                    BlockState removedBlockState = block.playerWillDestroy(level, p_105268_, blockstate, minecraft.player);
-+                    boolean removed = blockstate.onDestroyedByPlayer(level, p_105268_, minecraft.player, false, fluidstate);
-+                    if (removed) {
 +                        block.destroy(level, p_105268_, removedBlockState);
-+                        return true;
                      }
  
--                    return flag;
-+                    return false;
-                 }
-             }
-         }
+                     return flag;
 @@ -143,6 +_,7 @@
                  BlockState blockstate = this.minecraft.level.getBlockState(p_105270_);
                  this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105270_, blockstate, 1.0F);
