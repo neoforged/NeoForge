@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.energy.templates;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
@@ -44,35 +45,37 @@ public class EnergyStorage implements IEnergyHandler, INBTSerializable<Tag> {
     }
 
     @Override
-    public int insert(int maxReceive, TransferAction action) {
-        if (!canInsert())
+    public int insert(int toReceive, TransferAction action) {
+        if (!canInsert() || toReceive <= 0) {
             return 0;
+        }
 
-        int energyReceived = Math.min(capacity - energy, Math.min(this.maxReceive, maxReceive));
+        int energyReceived = Mth.clamp(this.capacity - this.energy, 0, Math.min(this.maxReceive, toReceive));
         if (action.isExecuting())
-            energy += energyReceived;
+            this.energy += energyReceived;
         return energyReceived;
     }
 
     @Override
-    public int extract(int maxExtract, TransferAction action) {
-        if (!canExtract())
+    public int extract(int toExtract, TransferAction action) {
+        if (!canExtract() || toExtract <= 0) {
             return 0;
+        }
 
-        int energyExtracted = Math.min(energy, Math.min(this.maxExtract, maxExtract));
+        int energyExtracted = Math.min(this.energy, Math.min(this.maxExtract, toExtract));
         if (action.isExecuting())
-            energy -= energyExtracted;
+            this.energy -= energyExtracted;
         return energyExtracted;
     }
 
     @Override
     public int getAmount() {
-        return energy;
+        return this.energy;
     }
 
     @Override
     public int getLimit() {
-        return capacity;
+        return this.capacity;
     }
 
     @Override

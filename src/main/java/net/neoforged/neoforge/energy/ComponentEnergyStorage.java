@@ -11,6 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 
 /**
  * Variant of {@link EnergyStorage} for use with data components.
@@ -20,7 +22,7 @@ import net.neoforged.neoforge.common.MutableDataComponentHolder;
  * To use this class, register a new {@link DataComponentType} which holds an {@link Integer} for your item.
  * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
  */
-public class ComponentEnergyStorage implements IEnergyStorage {
+public class ComponentEnergyStorage implements IEnergyHandler {
     protected final MutableDataComponentHolder parent;
     protected final DataComponentType<Integer> energyComponent;
     protected final int capacity;
@@ -63,41 +65,41 @@ public class ComponentEnergyStorage implements IEnergyStorage {
     }
 
     @Override
-    public int receiveEnergy(int toReceive, boolean simulate) {
-        if (!canReceive() || toReceive <= 0) {
+    public int insert(int toReceive, TransferAction action) {
+        if (!canInsert() || toReceive <= 0) {
             return 0;
         }
 
-        int energy = this.getEnergyStored();
+        int energy = this.getAmount();
         int energyReceived = Mth.clamp(this.capacity - energy, 0, Math.min(this.maxReceive, toReceive));
-        if (!simulate && energyReceived > 0) {
+        if (action.isExecuting() && energyReceived > 0) {
             this.setEnergy(energy + energyReceived);
         }
         return energyReceived;
     }
 
     @Override
-    public int extractEnergy(int toExtract, boolean simulate) {
+    public int extract(int toExtract, TransferAction action) {
         if (!canExtract() || toExtract <= 0) {
             return 0;
         }
 
-        int energy = this.getEnergyStored();
+        int energy = this.getAmount();
         int energyExtracted = Math.min(energy, Math.min(this.maxExtract, toExtract));
-        if (!simulate && energyExtracted > 0) {
+        if (action.isExecuting() && energyExtracted > 0) {
             this.setEnergy(energy - energyExtracted);
         }
         return energyExtracted;
     }
 
     @Override
-    public int getEnergyStored() {
+    public int getAmount() {
         int rawEnergy = this.parent.getOrDefault(this.energyComponent, 0);
         return Mth.clamp(rawEnergy, 0, this.capacity);
     }
 
     @Override
-    public int getMaxEnergyStored() {
+    public int getLimit() {
         return this.capacity;
     }
 
@@ -107,7 +109,7 @@ public class ComponentEnergyStorage implements IEnergyStorage {
     }
 
     @Override
-    public boolean canReceive() {
+    public boolean canInsert() {
         return this.maxReceive > 0;
     }
 

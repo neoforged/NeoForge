@@ -62,11 +62,6 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
         setAndValidate(contents, 0, TransferAction.EXECUTE);
     }
 
-    @Override
-    public int getResourceLimit(int slot, ItemResource resource) {
-        return resource.getMaxStackSize();
-    }
-
     public abstract int setAndValidate(ItemStorageContents contents, int changedAmount, TransferAction action);
 
     @Override
