@@ -83,9 +83,7 @@ public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEv
 
         for (Block existingBlock : this.currentValidBlocks) {
             if (calculatedBaseClass != null) {
-                if (!calculatedBaseClass.isAssignableFrom(existingBlock.getClass())) {
-                    calculatedBaseClass = findClosestCommonSuper(existingBlock.getClass(), calculatedBaseClass);
-                }
+                calculatedBaseClass = findClosestCommonSuper(calculatedBaseClass, existingBlock.getClass());
             } else {
                 calculatedBaseClass = existingBlock.getClass();
             }
