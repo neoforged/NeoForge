@@ -7,8 +7,8 @@
 +    /**
 +     * Neo: Allow modded Swords to set exactly what Tool data component to use for their sword.
 +     */
-+    public SwordItem(Tier p_43269_, Item.Properties p_43272_, Tool toolComponentData) {
-+        super(p_43269_, p_43272_.component(DataComponents.TOOL, toolComponentData));
++    public SwordItem(Tier tier, Item.Properties properties, Tool toolComponentData) {
++        super(tier, properties.component(DataComponents.TOOL, toolComponentData));
 +    }
 +
      private static Tool createToolProperties() {
