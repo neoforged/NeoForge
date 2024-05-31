@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -74,6 +77,18 @@ public class CreativeModeTabTest {
                     })
                     .withTabFactory(CreativeModeColorTab::new)
                     .withTabsBefore(CreativeModeTabs.COLORED_BLOCKS)
+                    .build());
+
+            helper.register(new ResourceLocation(MOD_ID, "damaged_swords"), CreativeModeTab.builder().title(Component.literal("Damaged Wooden Swords"))
+                    .displayItems((params, output) -> {
+                        output.accept(new ItemStack(Items.WOODEN_SWORD));
+                        output.accept(new ItemStack(Items.WOODEN_SWORD)); // Should just overwrite the present entry
+                        for (int i = 1; i <= 59; i++) {
+                            // Each should be added since they have different data component values
+                            output.accept(new ItemStack(Items.WOODEN_SWORD.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.DAMAGE, i).build()));
+                        }
+                    })
+                    .icon(() -> new ItemStack(Items.WOODEN_SWORD))
                     .build());
 
             List<Block> blocks = List.of(Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.COBBLESTONE);
