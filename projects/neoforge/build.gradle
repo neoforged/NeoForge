@@ -364,6 +364,12 @@ configurations {
 }
 
 dependencies {
+    modDevBundle("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform'
+        }
+        endorseStrictVersions()
+    }
     modDevApiElements("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
         capabilities {
             requireCapability 'net.neoforged:neoform-dependencies'
