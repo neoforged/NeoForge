@@ -102,7 +102,10 @@ public final class NeoForgeStreamCodecs {
         return new StreamCodec<>() {
             @Override
             public V decode(RegistryFriendlyByteBuf buf) {
-                return buf.getConnectionType().isNeoForge() ? neoForgeCodec.decode(buf) : otherCodec.decode(buf);
+                return switch (buf.getConnectionType()) {
+                    case NEOFORGE -> neoForgeCodec.decode(buf);
+                    case OTHER -> otherCodec.decode(buf);
+                };
             }
 
             @Override

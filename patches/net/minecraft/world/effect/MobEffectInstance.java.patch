@@ -76,13 +76,12 @@
          public static final MapCodec<MobEffectInstance.Details> MAP_CODEC = MapCodec.recursive(
              "MobEffectInstance.Details",
              p_323465_ -> RecordCodecBuilder.mapCodec(
-@@ -408,13 +_,14 @@
-                                 Codec.BOOL.optionalFieldOf("ambient", Boolean.valueOf(false)).forGetter(MobEffectInstance.Details::ambient),
+@@ -409,12 +_,14 @@
                                  Codec.BOOL.optionalFieldOf("show_particles", Boolean.valueOf(true)).forGetter(MobEffectInstance.Details::showParticles),
                                  Codec.BOOL.optionalFieldOf("show_icon").forGetter(p_323788_ -> Optional.of(p_323788_.showIcon())),
--                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
-+                                p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect),
-+                                net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
+                                 p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
++                                // Neo: Add additional serialization logic for custom EffectCure(s)
++                                , net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC).optionalFieldOf("neoforge:cures").forGetter(MobEffectInstance.Details::cures)
                              )
                              .apply(p_324063_, MobEffectInstance.Details::create)
                  )
@@ -94,11 +93,12 @@
                      ByteBufCodecs.VAR_INT,
                      MobEffectInstance.Details::amplifier,
                      ByteBufCodecs.VAR_INT,
-@@ -427,14 +_,16 @@
+@@ -427,14 +_,17 @@
                      MobEffectInstance.Details::showIcon,
                      p_329990_.apply(ByteBufCodecs::optional),
                      MobEffectInstance.Details::hiddenEffect,
-+                    net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.<RegistryFriendlyByteBuf>cast().<java.util.Set<net.neoforged.neoforge.common.EffectCure>>apply(ByteBufCodecs.collection(java.util.HashSet::new)).apply(codec -> net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(ByteBufCodecs.optional(codec), StreamCodec.unit(Optional.empty()))),
++                    // Neo: Add additional serialization logic for custom EffectCure(s)
++                    net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(ByteBufCodecs.optional(net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.apply(ByteBufCodecs.collection(java.util.HashSet::new))), StreamCodec.unit(Optional.empty())),
 +                    MobEffectInstance.Details::cures,
                      MobEffectInstance.Details::new
                  )
