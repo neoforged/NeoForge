@@ -4,6 +4,10 @@
     {
       "id": "#forge:tools/tridents",
       "required": false
+    },
+    {
+      "id": "#c:tools/tridents",
+      "required": false
     }
   ]
 }

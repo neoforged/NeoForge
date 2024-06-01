@@ -4,6 +4,10 @@
     {
       "id": "#forge:shears",
       "required": false
+    },
+    {
+      "id": "#c:tools/shears",
+      "required": false
     }
   ]
 }

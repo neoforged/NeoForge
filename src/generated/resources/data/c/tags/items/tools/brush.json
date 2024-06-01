@@ -1,8 +1,8 @@
 {
   "values": [
-    "minecraft:bow",
+    "minecraft:brush",
     {
-      "id": "#forge:tools/bows",
+      "id": "#c:tools/brushes",
       "required": false
     }
   ]
