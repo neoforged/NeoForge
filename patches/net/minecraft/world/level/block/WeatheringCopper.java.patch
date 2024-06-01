@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/WeatheringCopper.java
 +++ b/net/minecraft/world/level/block/WeatheringCopper.java
-@@ -1,3 +_,8 @@
-+/*
-+ * Copyright (c) NeoForged and contributors
-+ * SPDX-License-Identifier: LGPL-2.1-only
-+ */
-+
- package net.minecraft.world.level.block;
- 
- import com.google.common.base.Suppliers;
 @@ -10,8 +_,10 @@
  import net.minecraft.world.level.block.state.BlockState;
  
