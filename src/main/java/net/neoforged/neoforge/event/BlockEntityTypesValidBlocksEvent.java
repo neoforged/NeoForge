@@ -7,6 +7,8 @@ package net.neoforged.neoforge.event;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,7 +26,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEvent {
@@ -101,12 +102,22 @@ public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEv
 
     @EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
     private static class CommonHandler {
+        private static final MethodHandle METHOD_HANDLE;
+
+        static {
+            try {
+                METHOD_HANDLE = MethodHandles.privateLookupIn(BlockEntityType.class, MethodHandles.lookup()).findSetter(BlockEntityType.class, "validBlocks", Set.class);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         @SubscribeEvent
         private static void onCommonSetup(FMLCommonSetupEvent event) throws Throwable {
             for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
                 BlockEntityTypesValidBlocksEvent blockEntityTypesValidBlocksEvent = new BlockEntityTypesValidBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
                 ModLoader.postEventWrapContainerInModOrder(blockEntityTypesValidBlocksEvent); // Allow modders to add to the list in the events.
-                FieldUtils.writeField(blockEntityTypeEntry.getValue(), "validBlocks", blockEntityTypesValidBlocksEvent.getCurrentValidBlocks(), true);
+                METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), blockEntityTypesValidBlocksEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
             }
         }
     }
