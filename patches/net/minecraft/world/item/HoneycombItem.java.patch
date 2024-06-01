@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/item/HoneycombItem.java
 +++ b/net/minecraft/world/item/HoneycombItem.java
-@@ -1,3 +_,8 @@
-+/*
-+ * Copyright (c) NeoForged and contributors
-+ * SPDX-License-Identifier: LGPL-2.1-only
-+ */
-+
- package net.minecraft.world.item;
- 
- import com.google.common.base.Suppliers;
 @@ -20,8 +_,10 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
