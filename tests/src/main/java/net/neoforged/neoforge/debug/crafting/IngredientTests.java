@@ -31,6 +31,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -47,6 +48,7 @@ import net.minecraft.world.level.block.CrafterBlock;
 import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
@@ -66,6 +68,37 @@ import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "crafting.ingredient")
 public class IngredientTests {
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if BlockTagIngredient works")
+    static void blockTagIngredient(final DynamicTest test, final RegistrationHelper reg) {
+        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void buildRecipes(RecipeOutput output) {
+                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.MUD)
+                        .requires(new TestEnabledIngredient(new BlockTagIngredient(BlockTags.CONVERTABLE_TO_MUD).toVanilla(), test.framework(), test.id()).toVanilla())
+                        .requires(Items.WATER_BUCKET)
+                        .unlockedBy("has_item", has(Items.WATER_BUCKET))
+                        .save(output, new ResourceLocation(reg.modId(), "block_tag"));
+            }
+        });
+
+        test.onGameTest(helper -> helper
+                .startSequence()
+                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.CRAFTER.defaultBlockState().setValue(BlockStateProperties.ORIENTATION, FrontAndTop.UP_NORTH).setValue(CrafterBlock.CRAFTING, true)))
+                .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST))
+
+                .thenMap(() -> helper.requireBlockEntity(1, 1, 1, CrafterBlockEntity.class))
+                .thenExecute(crafter -> crafter.setItem(0, Items.DIRT.getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(1, Items.WATER_BUCKET.getDefaultInstance()))
+                .thenIdle(3)
+
+                .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
+                .thenExecuteAfter(7, () -> helper.assertContainerContains(1, 2, 1, Items.MUD))
+
+                .thenSucceed());
+    }
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if partial NBT ingredients match the correct stacks")
