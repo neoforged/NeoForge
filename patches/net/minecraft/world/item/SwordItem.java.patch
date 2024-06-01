@@ -11,7 +11,7 @@
 +        super(tier, properties.component(DataComponents.TOOL, toolComponentData));
 +    }
 +
-     private static Tool createToolProperties() {
+     public static Tool createToolProperties() {
          return new Tool(List.of(Tool.Rule.minesAndDrops(List.of(Blocks.COBWEB), 15.0F), Tool.Rule.overrideSpeed(BlockTags.SWORD_EFFICIENT, 1.5F)), 1.0F, 2);
      }
  
