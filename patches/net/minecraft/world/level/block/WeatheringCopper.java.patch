@@ -1,0 +1,42 @@
+--- a/net/minecraft/world/level/block/WeatheringCopper.java
++++ b/net/minecraft/world/level/block/WeatheringCopper.java
+@@ -1,3 +_,8 @@
++/*
++ * Copyright (c) NeoForged and contributors
++ * SPDX-License-Identifier: LGPL-2.1-only
++ */
++
+ package net.minecraft.world.level.block;
+ 
+ import com.google.common.base.Suppliers;
+@@ -10,8 +_,10 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ 
+ public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
++    /** @deprecated modders should use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZABLES oxidizable data map} instead. */
++    @Deprecated
+     Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
+-        () -> ImmutableBiMap.<Block, Block>builder()
++        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
+                 .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
+                 .put(Blocks.EXPOSED_COPPER, Blocks.WEATHERED_COPPER)
+                 .put(Blocks.WEATHERED_COPPER, Blocks.OXIDIZED_COPPER)
+@@ -39,7 +_,7 @@
+                 .put(Blocks.COPPER_BULB, Blocks.EXPOSED_COPPER_BULB)
+                 .put(Blocks.EXPOSED_COPPER_BULB, Blocks.WEATHERED_COPPER_BULB)
+                 .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
+-                .build()
++                .build())
+     );
+     Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
+ 
+@@ -62,7 +_,8 @@
+     }
+ 
+     static Optional<Block> getNext(Block p_154905_) {
+-        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(p_154905_));
++        var oxidized = p_154905_.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.OXIDIZABLES);
++        return Optional.ofNullable(oxidized != null ? oxidized.oxidizable() : NEXT_BY_BLOCK.get().get(p_154905_));
+     }
+ 
+     static BlockState getFirst(BlockState p_154907_) {

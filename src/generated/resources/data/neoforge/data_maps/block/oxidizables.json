@@ -1,0 +1,85 @@
+{
+  "values": {
+    "minecraft:chiseled_copper": {
+      "oxidizable": "minecraft:exposed_chiseled_copper"
+    },
+    "minecraft:copper_block": {
+      "oxidizable": "minecraft:exposed_copper"
+    },
+    "minecraft:copper_bulb": {
+      "oxidizable": "minecraft:exposed_copper_bulb"
+    },
+    "minecraft:copper_door": {
+      "oxidizable": "minecraft:exposed_copper_door"
+    },
+    "minecraft:copper_grate": {
+      "oxidizable": "minecraft:exposed_copper_grate"
+    },
+    "minecraft:copper_trapdoor": {
+      "oxidizable": "minecraft:exposed_copper_trapdoor"
+    },
+    "minecraft:cut_copper": {
+      "oxidizable": "minecraft:exposed_cut_copper"
+    },
+    "minecraft:cut_copper_slab": {
+      "oxidizable": "minecraft:exposed_cut_copper_slab"
+    },
+    "minecraft:cut_copper_stairs": {
+      "oxidizable": "minecraft:exposed_cut_copper_stairs"
+    },
+    "minecraft:exposed_chiseled_copper": {
+      "oxidizable": "minecraft:weathered_chiseled_copper"
+    },
+    "minecraft:exposed_copper": {
+      "oxidizable": "minecraft:weathered_copper"
+    },
+    "minecraft:exposed_copper_bulb": {
+      "oxidizable": "minecraft:weathered_copper_bulb"
+    },
+    "minecraft:exposed_copper_door": {
+      "oxidizable": "minecraft:weathered_copper_door"
+    },
+    "minecraft:exposed_copper_grate": {
+      "oxidizable": "minecraft:weathered_copper_grate"
+    },
+    "minecraft:exposed_copper_trapdoor": {
+      "oxidizable": "minecraft:weathered_copper_trapdoor"
+    },
+    "minecraft:exposed_cut_copper": {
+      "oxidizable": "minecraft:weathered_cut_copper"
+    },
+    "minecraft:exposed_cut_copper_slab": {
+      "oxidizable": "minecraft:weathered_cut_copper_slab"
+    },
+    "minecraft:exposed_cut_copper_stairs": {
+      "oxidizable": "minecraft:weathered_cut_copper_stairs"
+    },
+    "minecraft:weathered_chiseled_copper": {
+      "oxidizable": "minecraft:oxidized_chiseled_copper"
+    },
+    "minecraft:weathered_copper": {
+      "oxidizable": "minecraft:oxidized_copper"
+    },
+    "minecraft:weathered_copper_bulb": {
+      "oxidizable": "minecraft:oxidized_copper_bulb"
+    },
+    "minecraft:weathered_copper_door": {
+      "oxidizable": "minecraft:oxidized_copper_door"
+    },
+    "minecraft:weathered_copper_grate": {
+      "oxidizable": "minecraft:oxidized_copper_grate"
+    },
+    "minecraft:weathered_copper_trapdoor": {
+      "oxidizable": "minecraft:oxidized_copper_trapdoor"
+    },
+    "minecraft:weathered_cut_copper": {
+      "oxidizable": "minecraft:oxidized_cut_copper"
+    },
+    "minecraft:weathered_cut_copper_slab": {
+      "oxidizable": "minecraft:oxidized_cut_copper_slab"
+    },
+    "minecraft:weathered_cut_copper_stairs": {
+      "oxidizable": "minecraft:oxidized_cut_copper_stairs"
+    }
+  }
+}

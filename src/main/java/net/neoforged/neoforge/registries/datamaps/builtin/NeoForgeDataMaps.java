@@ -14,6 +14,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -73,6 +74,9 @@ public class NeoForgeDataMaps {
     public static final DataMapType<EntityType<?>, MonsterRoomMob> MONSTER_ROOM_MOBS = DataMapType.builder(
             id("monster_room_mobs"), Registries.ENTITY_TYPE, MonsterRoomMob.CODEC).synced(MonsterRoomMob.WEIGHT_CODEC, false).build();
 
+    public static final DataMapType<Block, Oxidizable> OXIDIZABLES = DataMapType.builder(
+            id("oxidizables"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.OXIDIZABLE_BLOCK_CODEC, false).build();
+
     /**
      * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
      * <p>
@@ -110,6 +114,9 @@ public class NeoForgeDataMaps {
     public static final DataMapType<GameEvent, VibrationFrequency> VIBRATION_FREQUENCIES = DataMapType.builder(
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
+    public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
+            id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_BLOCK_CODEC, false).build();
+
     private static ResourceLocation id(final String name) {
         return new ResourceLocation(NeoForgeVersion.MOD_ID, name);
     }
@@ -119,8 +126,10 @@ public class NeoForgeDataMaps {
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
+        event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
+        event.register(WAXABLES);
     }
 }

@@ -42,3 +42,30 @@
          BlockFamilies.getAllFamilies().filter(BlockFamily::shouldGenerateRecipe).forEach(p_313461_ -> generateRecipes(p_301146_, p_313461_, p_251836_));
      }
  
+@@ -598,17 +_,18 @@
+     }
+ 
+     protected static void waxRecipes(RecipeOutput p_301254_, FeatureFlagSet p_313879_) {
+-        HoneycombItem.WAXABLES
+-            .get()
++        BuiltInRegistries.BLOCK.getDataMap(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.WAXABLES)
+             .forEach(
+                 (p_337490_, p_337491_) -> {
+-                    if (p_337491_.requiredFeatures().isSubsetOf(p_313879_)) {
+-                        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, p_337491_)
+-                            .requires(p_337490_)
++                    final var block = BuiltInRegistries.BLOCK.get(p_337490_);
++                    final var waxed = block.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.WAXABLES).waxable();
++                    if (block.requiredFeatures().isSubsetOf(p_313879_)) {
++                        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, waxed)
++                            .requires(block)
+                             .requires(Items.HONEYCOMB)
+-                            .group(getItemName(p_337491_))
+-                            .unlockedBy(getHasName(p_337490_), has(p_337490_))
+-                            .save(p_301254_, getConversionRecipeName(p_337491_, Items.HONEYCOMB));
++                            .group(getItemName(waxed))
++                            .unlockedBy(getHasName(block), has(block))
++                            .save(p_301254_, getConversionRecipeName(waxed, Items.HONEYCOMB));
+                     }
+                 }
+             );

@@ -22,7 +22,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -34,9 +36,11 @@ import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
 import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
 import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
+import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
     public NeoForgeDataMapsProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
@@ -62,6 +66,9 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         ObfuscationReflectionHelper.<Map<EntityType<?>, SoundEvent>, Parrot>getPrivateValue(Parrot.class, null, "MOB_SOUND_MAP")
                 .forEach((type, sound) -> imitations.add(type.builtInRegistryHolder(), new ParrotImitation(sound), false));
 
+        final var oxidizables = builder(NeoForgeDataMaps.OXIDIZABLES);
+        WeatheringCopper.NEXT_BY_BLOCK.get().forEach((block, oxidized) -> oxidizables.add(block.builtInRegistryHolder(), new Oxidizable(oxidized), false));
+
         final var raidHeroGifts = builder(NeoForgeDataMaps.RAID_HERO_GIFTS);
         ObfuscationReflectionHelper.<Map<VillagerProfession, ResourceKey<LootTable>>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
                 .forEach((type, lootTable) -> raidHeroGifts.add(BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(type), new RaidHeroGift(lootTable), false));
@@ -70,5 +77,8 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         Arrays.stream(ObfuscationReflectionHelper.<EntityType<?>[], MonsterRoomFeature>getPrivateValue(MonsterRoomFeature.class, null, "MOBS"))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .forEach((type, weight) -> monsterRoomMobs.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(type), new MonsterRoomMob(Weight.of((int) (weight * 100))), false));
+
+        final var waxables = builder(NeoForgeDataMaps.WAXABLES);
+        HoneycombItem.WAXABLES.get().forEach((block, waxable) -> waxables.add(block.builtInRegistryHolder(), new Waxable(waxable), false));
     }
 }

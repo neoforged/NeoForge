@@ -1,0 +1,42 @@
+--- a/net/minecraft/world/item/HoneycombItem.java
++++ b/net/minecraft/world/item/HoneycombItem.java
+@@ -1,3 +_,8 @@
++/*
++ * Copyright (c) NeoForged and contributors
++ * SPDX-License-Identifier: LGPL-2.1-only
++ */
++
+ package net.minecraft.world.item;
+ 
+ import com.google.common.base.Suppliers;
+@@ -20,8 +_,10 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ 
+ public class HoneycombItem extends Item implements SignApplicator {
++    /** @deprecated modders should use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#WAXABLES waxable data map} instead. */
++    @Deprecated
+     public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
+-        () -> ImmutableBiMap.<Block, Block>builder()
++        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
+                 .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
+                 .put(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER)
+                 .put(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER)
+@@ -58,7 +_,7 @@
+                 .put(Blocks.EXPOSED_COPPER_BULB, Blocks.WAXED_EXPOSED_COPPER_BULB)
+                 .put(Blocks.WEATHERED_COPPER_BULB, Blocks.WAXED_WEATHERED_COPPER_BULB)
+                 .put(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB)
+-                .build()
++                .build())
+     );
+     public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
+ 
+@@ -87,7 +_,8 @@
+     }
+ 
+     public static Optional<BlockState> getWaxed(BlockState p_150879_) {
+-        return Optional.ofNullable(WAXABLES.get().get(p_150879_.getBlock())).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
++        var waxed = p_150879_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.WAXABLES);
++        return Optional.ofNullable(waxed.waxable()).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
+     }
+ 
+     @Override

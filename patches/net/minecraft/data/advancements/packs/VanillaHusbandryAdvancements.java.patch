@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/advancements/packs/VanillaHusbandryAdvancements.java
++++ b/net/minecraft/data/advancements/packs/VanillaHusbandryAdvancements.java
+@@ -346,7 +_,7 @@
+             .addCriterion(
+                 "wax_on",
+                 ItemUsedOnLocationTrigger.TriggerInstance.itemUsedOnBlock(
+-                    LocationPredicate.Builder.location().setBlock(BlockPredicate.Builder.block().of(HoneycombItem.WAXABLES.get().keySet())),
++                    LocationPredicate.Builder.location().setBlock(BlockPredicate.Builder.block().of(BuiltInRegistries.BLOCK.getDataMap(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.WAXABLES).keySet().stream().map(BuiltInRegistries.BLOCK::get).toList())),
+                     ItemPredicate.Builder.item().of(Items.HONEYCOMB)
+                 )
+             )
