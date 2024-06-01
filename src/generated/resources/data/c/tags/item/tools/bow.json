@@ -1,12 +1,12 @@
 {
   "values": [
-    "minecraft:shears",
+    "minecraft:bow",
     {
-      "id": "#forge:shears",
+      "id": "#forge:tools/bow",
       "required": false
     },
     {
-      "id": "#c:tools/shears",
+      "id": "#c:tools/bows",
       "required": false
     }
   ]

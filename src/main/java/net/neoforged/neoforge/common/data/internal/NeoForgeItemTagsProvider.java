@@ -219,16 +219,16 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
                 Items.LECTERN, Items.LOOM, Items.SMITHING_TABLE, Items.SMOKER, Items.STONECUTTER);
 
         // Tools and Armors
-        tag(Tags.Items.TOOLS_SHIELDS).add(Items.SHIELD);
-        tag(Tags.Items.TOOLS_BOWS).add(Items.BOW);
-        tag(Tags.Items.TOOLS_BRUSHES).add(Items.BRUSH);
-        tag(Tags.Items.TOOLS_CROSSBOWS).add(Items.CROSSBOW);
-        tag(Tags.Items.TOOLS_FISHING_RODS).add(Items.FISHING_ROD);
-        tag(Tags.Items.TOOLS_SHEARS).add(Items.SHEARS);
-        tag(Tags.Items.TOOLS_SPEARS).add(Items.TRIDENT);
+        tag(Tags.Items.TOOLS_SHIELD).add(Items.SHIELD);
+        tag(Tags.Items.TOOLS_BOW).add(Items.BOW);
+        tag(Tags.Items.TOOLS_BRUSH).add(Items.BRUSH);
+        tag(Tags.Items.TOOLS_CROSSBOW).add(Items.CROSSBOW);
+        tag(Tags.Items.TOOLS_FISHING_ROD).add(Items.FISHING_ROD);
+        tag(Tags.Items.TOOLS_SHEAR).add(Items.SHEARS);
+        tag(Tags.Items.TOOLS_SPEAR).add(Items.TRIDENT);
         tag(Tags.Items.TOOLS)
                 .addTags(ItemTags.AXES, ItemTags.HOES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.SWORDS)
-                .addTags(Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_BRUSHES, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_SHEARS, Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_SPEARS);
+                .addTags(Tags.Items.TOOLS_BOW, Tags.Items.TOOLS_BRUSH, Tags.Items.TOOLS_CROSSBOW, Tags.Items.TOOLS_FISHING_ROD, Tags.Items.TOOLS_SHEAR, Tags.Items.TOOLS_SHIELD, Tags.Items.TOOLS_SPEAR);
         tag(Tags.Items.ARMORS).addTags(ItemTags.HEAD_ARMOR, ItemTags.CHEST_ARMOR, ItemTags.LEG_ARMOR, ItemTags.FOOT_ARMOR);
         tag(Tags.Items.ENCHANTABLES).addTags(ItemTags.ARMOR_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE, ItemTags.WEAPON_ENCHANTABLE, ItemTags.SWORD_ENCHANTABLE, ItemTags.MINING_ENCHANTABLE, ItemTags.MINING_LOOT_ENCHANTABLE, ItemTags.FISHING_ENCHANTABLE, ItemTags.TRIDENT_ENCHANTABLE, ItemTags.BOW_ENCHANTABLE, ItemTags.CROSSBOW_ENCHANTABLE, ItemTags.FIRE_ASPECT_ENCHANTABLE, ItemTags.DURABILITY_ENCHANTABLE).addOptionalTag(ItemTags.MACE_ENCHANTABLE);
 
@@ -333,14 +333,21 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tagWithOptionalLegacy(Tags.Items.SEEDS_WHEAT);
         tagWithOptionalLegacy(Tags.Items.SLIMEBALLS);
         tagWithOptionalLegacy(Tags.Items.STRINGS);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_SHIELDS);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_BOWS);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_CROSSBOWS);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_FISHING_RODS);
-        tag(Tags.Items.TOOLS_SHEARS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "shears"));
-        tag(Tags.Items.TOOLS_SPEARS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/tridents"));
+        tagWithOptionalLegacy(Tags.Items.TOOLS_SHIELD);
+        tagWithOptionalLegacy(Tags.Items.TOOLS_BOW);
+        tagWithOptionalLegacy(Tags.Items.TOOLS_CROSSBOW);
+        tagWithOptionalLegacy(Tags.Items.TOOLS_FISHING_ROD);
+        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(new ResourceLocation("forge", "shears"));
+        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(new ResourceLocation("forge", "tools/tridents"));
         tagWithOptionalLegacy(Tags.Items.TOOLS);
         tagWithOptionalLegacy(Tags.Items.ARMORS);
+        tag(Tags.Items.TOOLS_SHIELD).addOptionalTag(new ResourceLocation("c", "tools/shields"));
+        tag(Tags.Items.TOOLS_BOW).addOptionalTag(new ResourceLocation("c", "tools/bows"));
+        tag(Tags.Items.TOOLS_BRUSH).addOptionalTag(new ResourceLocation("c", "tools/brushes"));
+        tag(Tags.Items.TOOLS_CROSSBOW).addOptionalTag(new ResourceLocation("c", "tools/crossbows"));
+        tag(Tags.Items.TOOLS_FISHING_ROD).addOptionalTag(new ResourceLocation("c", "tools/fishing_rods"));
+        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(new ResourceLocation("c", "tools/shears"));
+        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(new ResourceLocation("c", "tools/tridents"));
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Item> tagWithOptionalLegacy(TagKey<Item> tag) {

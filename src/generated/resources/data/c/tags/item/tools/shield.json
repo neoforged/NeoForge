@@ -1,12 +1,12 @@
 {
   "values": [
-    "minecraft:shears",
+    "minecraft:shield",
     {
-      "id": "#forge:shears",
+      "id": "#forge:tools/shield",
       "required": false
     },
     {
-      "id": "#c:tools/shears",
+      "id": "#c:tools/shields",
       "required": false
     }
   ]

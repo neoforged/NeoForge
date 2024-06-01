@@ -582,7 +582,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_SHIELDS = tag("tools/shields");
+        public static final TagKey<Item> TOOLS_SHIELD = tag("tools/shield");
         /**
          * A tag containing all existing bows. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -590,7 +590,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_BOWS = tag("tools/bows");
+        public static final TagKey<Item> TOOLS_BOW = tag("tools/bow");
         /**
          * A tag containing all existing crossbows. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -598,7 +598,7 @@ public class Tags {
          * @see net.neoforged.neoforge.common.ToolAction
          * @see net.neoforged.neoforge.common.ToolActions
          */
-        public static final TagKey<Item> TOOLS_CROSSBOWS = tag("tools/crossbows");
+        public static final TagKey<Item> TOOLS_CROSSBOW = tag("tools/crossbow");
         /**
          * A tag containing all existing fishing rods. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -606,7 +606,7 @@ public class Tags {
          * @see net.neoforged.neoforge.common.ToolAction
          * @see net.neoforged.neoforge.common.ToolActions
          */
-        public static final TagKey<Item> TOOLS_FISHING_RODS = tag("tools/fishing_rods");
+        public static final TagKey<Item> TOOLS_FISHING_ROD = tag("tools/fishing_rod");
         /**
          * A tag containing all existing spears. Other tools such as throwing knives or boomerangs
          * should not be put into this tag and should be put into their own tool tags.
@@ -616,7 +616,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_SPEARS = tag("tools/spears");
+        public static final TagKey<Item> TOOLS_SPEAR = tag("tools/spear");
         /**
          * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -624,7 +624,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_SHEARS = tag("tools/shears");
+        public static final TagKey<Item> TOOLS_SHEAR = tag("tools/shear");
         /**
          * A tag containing all existing brushes. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -632,7 +632,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_BRUSHES = tag("tools/brushes");
+        public static final TagKey<Item> TOOLS_BRUSH = tag("tools/brush");
         /**
          * Collects the 4 vanilla armor tags into one parent collection for ease.
          */
