@@ -599,10 +599,10 @@ public class EventHooks {
      * To be called when an explosion has calculated the knockback velocity
      * but has not yet added the knockback to the entity caught in blast.
      *
-     * @param level             The level that the explosion is in
-     * @param explosion         Explosion that is happening
-     * @param entity            The entity caught in the explosion's blast
-     * @param initialVelocity   The explosion calculated velocity for the entity
+     * @param level           The level that the explosion is in
+     * @param explosion       Explosion that is happening
+     * @param entity          The entity caught in the explosion's blast
+     * @param initialVelocity The explosion calculated velocity for the entity
      * @return The new explosion velocity to add to the entity's existing velocity
      */
     public static Vec3 getExplosionKnockback(Level level, Explosion explosion, Entity entity, Vec3 initialVelocity) {
