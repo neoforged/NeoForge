@@ -21,12 +21,14 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.items.ItemResource;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
@@ -84,6 +86,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * We wrap a fluid stack which must never be exposed and/or modified.
      */
     private final FluidStack innerStack;
+    private ItemResource filledBucket;
 
     private FluidResource(FluidStack innerStack) {
         this.innerStack = innerStack;
@@ -167,6 +170,14 @@ public final class FluidResource implements IResource, DataComponentHolder {
 
     public static boolean isSameFluid(FluidResource first, FluidResource other) {
         return first.is(other.getFluid());
+    }
+
+    public ItemResource getFilledBucket() {
+        ItemResource bucket = filledBucket;
+        if (bucket == null) {
+            filledBucket = bucket = ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
+        }
+        return bucket;
     }
 
     @Override

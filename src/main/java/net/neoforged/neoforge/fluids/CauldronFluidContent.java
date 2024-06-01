@@ -77,6 +77,10 @@ public final class CauldronFluidContent {
         }
     }
 
+    public int getMillibuckets(BlockState state) {
+        return totalAmount * currentLevel(state) / maxLevel;
+    }
+
     private CauldronFluidContent(Block block, Fluid fluid, int totalAmount, int maxLevel, @Nullable IntegerProperty levelProperty) {
         this.block = block;
         this.fluid = fluid;
