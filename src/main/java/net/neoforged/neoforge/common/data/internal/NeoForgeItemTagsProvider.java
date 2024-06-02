@@ -195,7 +195,13 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
-        copy(BlockTags.SHULKER_BOXES, Tags.Items.SHULKER_BOXES);
+        tag(Tags.Items.SHULKER_BOXES)
+                .add(Items.SHULKER_BOX).add(Items.WHITE_SHULKER_BOX).add(Items.ORANGE_SHULKER_BOX)
+                .add(Items.MAGENTA_SHULKER_BOX).add(Items.LIGHT_BLUE_SHULKER_BOX).add(Items.YELLOW_SHULKER_BOX)
+                .add(Items.LIME_SHULKER_BOX).add(Items.PINK_SHULKER_BOX).add(Items.GRAY_SHULKER_BOX)
+                .add(Items.LIGHT_GRAY_SHULKER_BOX).add(Items.CYAN_SHULKER_BOX).add(Items.PURPLE_SHULKER_BOX)
+                .add(Items.BLUE_SHULKER_BOX).add(Items.BROWN_SHULKER_BOX).add(Items.GREEN_SHULKER_BOX)
+                .add(Items.RED_SHULKER_BOX).add(Items.BLACK_SHULKER_BOX);
         copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
         copy(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL, Tags.Items.STORAGE_BLOCKS_BONE_MEAL);
