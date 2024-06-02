@@ -20,18 +20,6 @@ repositories {
     }
 }
 
-repositories {
-    maven {
-        name 'Maven for PR #150' // https://github.com/neoforged/FancyModLoader/pull/150
-        url 'https://prmaven.neoforged.net/FancyModLoader/pr150'
-        content {
-            includeModule('net.neoforged.fancymodloader', 'junit-fml')
-            includeModule('net.neoforged.fancymodloader', 'loader')
-            includeModule('net.neoforged.fancymodloader', 'earlydisplay')
-        }
-    }
-}
-
 dependencies {
     implementation project(':neoforge')
 
