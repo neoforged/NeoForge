@@ -21,14 +21,20 @@ import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEvent {
+    private static final MethodHandle VALID_BLOCKS_SETTER_METHOD_HANDLE;
+    static {
+        try {
+            VALID_BLOCKS_SETTER_METHOD_HANDLE = MethodHandles.privateLookupIn(BlockEntityType.class, MethodHandles.lookup()).findSetter(BlockEntityType.class, "validBlocks", Set.class);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private final ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey;
     private final BlockEntityType<?> blockEntityType;
     private final Set<Block> currentValidBlocks;
@@ -100,24 +106,15 @@ public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEven
         return a;
     }
 
-    @EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
-    private static class CommonHandler {
-        private static final MethodHandle METHOD_HANDLE;
-
-        static {
+    public static void fireBlockEntityTypeValidAdditions() {
+        for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
+            AddBlockToBlockEntityTypeEvent addBlockToBlockEntityTypeEvent = new AddBlockToBlockEntityTypeEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
+            ModLoader.postEventWrapContainerInModOrder(addBlockToBlockEntityTypeEvent); // Allow modders to add to the list in the events.
             try {
-                METHOD_HANDLE = MethodHandles.privateLookupIn(BlockEntityType.class, MethodHandles.lookup()).findSetter(BlockEntityType.class, "validBlocks", Set.class);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+                VALID_BLOCKS_SETTER_METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), addBlockToBlockEntityTypeEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
+            } catch (Throwable e) {
+                // Required catch so our unhandled exception does not need to be marked on many methods.
                 throw new RuntimeException(e);
-            }
-        }
-
-        @SubscribeEvent
-        private static void onCommonSetup(FMLCommonSetupEvent event) throws Throwable {
-            for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
-                AddBlockToBlockEntityTypeEvent addBlockToBlockEntityTypeEvent = new AddBlockToBlockEntityTypeEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
-                ModLoader.postEventWrapContainerInModOrder(addBlockToBlockEntityTypeEvent); // Allow modders to add to the list in the events.
-                METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), addBlockToBlockEntityTypeEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
             }
         }
     }
