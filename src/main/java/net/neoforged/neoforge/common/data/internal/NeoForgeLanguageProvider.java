@@ -38,6 +38,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.COBBLESTONES_INFESTED, "Infested Cobblestones");
         add(Tags.Blocks.COBBLESTONES_MOSSY, "Mossy Cobblestones");
         add(Tags.Blocks.COBBLESTONES_DEEPSLATE, "Deepslate Cobblestones");
+        add(Tags.Blocks.CONCRETE, "Concrete");
         add(Tags.Blocks.DYED, "Dyed Blocks");
         addColored(Tags.Blocks.DYED, "{color} Dyed Blocks");
         add(Tags.Blocks.END_STONES, "End Stones");
@@ -146,6 +147,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.COBBLESTONES_INFESTED, "Infested Cobblestones");
         add(Tags.Items.COBBLESTONES_MOSSY, "Mossy Cobblestones");
         add(Tags.Items.COBBLESTONES_DEEPSLATE, "Deepslate Cobblestones");
+        add(Tags.Items.CONCRETE, "Concrete");
+        add(Tags.Items.CONCRETE_POWDER, "Concrete Powder");
         add(Tags.Items.CROPS, "Crops");
         add(Tags.Items.CROPS_BEETROOT, "Beetroot Crops");
         add(Tags.Items.CROPS_CARROT, "Carrot Crops");

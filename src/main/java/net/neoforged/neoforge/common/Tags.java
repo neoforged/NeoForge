@@ -65,6 +65,7 @@ public class Tags {
         public static final TagKey<Block> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Block> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
         public static final TagKey<Block> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
+        public static final TagKey<Block> CONCRETE = tag("concrete");
 
         /**
          * Tag that holds all blocks that can be dyed a specific color.
@@ -300,6 +301,11 @@ public class Tags {
         public static final TagKey<Item> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Item> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
         public static final TagKey<Item> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
+        public static final TagKey<Item> CONCRETE = tag("concrete");
+        /**
+         * Block tag equivalent is {@link BlockTags#CONCRETE_POWDER}
+         */
+        public static final TagKey<Item> CONCRETE_POWDER = tag("concrete_powder");
         /**
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
@@ -536,6 +542,9 @@ public class Tags {
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
+        /**
+         * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
+         */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
