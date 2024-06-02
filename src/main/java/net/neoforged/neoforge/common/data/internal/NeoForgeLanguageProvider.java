@@ -97,7 +97,6 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.SANDSTONE_UNCOLORED_BLOCKS, "Uncolored Sandstone Blocks");
         add(Tags.Blocks.SANDSTONE_UNCOLORED_SLABS, "Uncolored Sandstone Slabs");
         add(Tags.Blocks.SANDSTONE_UNCOLORED_STAIRS, "Uncolored Sandstone Stairs");
-        add(Tags.Blocks.SHULKER_BOXES, "Shulker Boxes");
         add(Tags.Blocks.STONES, "Stones");
         add(Tags.Blocks.STORAGE_BLOCKS, "Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL, "Bone Meal Storage Blocks");
