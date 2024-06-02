@@ -28,13 +28,13 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEvent {
+public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEvent {
     private final ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey;
     private final BlockEntityType<?> blockEntityType;
     private final Set<Block> currentValidBlocks;
     private final Supplier<? extends Class<?>> baseClass = Suppliers.memoize(this::setCommonSuperClassForExistingValidBlocks);
 
-    protected BlockEntityTypesValidBlocksEvent(ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey, BlockEntityType<?> blockEntityType) {
+    protected AddBlockToBlockEntityTypeEvent(ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey, BlockEntityType<?> blockEntityType) {
         this.blockEntityTypeResourceKey = blockEntityTypeResourceKey;
         this.blockEntityType = blockEntityType;
         this.currentValidBlocks = new HashSet<>(blockEntityType.getValidBlocks());
@@ -115,9 +115,9 @@ public class BlockEntityTypesValidBlocksEvent extends Event implements IModBusEv
         @SubscribeEvent
         private static void onCommonSetup(FMLCommonSetupEvent event) throws Throwable {
             for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
-                BlockEntityTypesValidBlocksEvent blockEntityTypesValidBlocksEvent = new BlockEntityTypesValidBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
-                ModLoader.postEventWrapContainerInModOrder(blockEntityTypesValidBlocksEvent); // Allow modders to add to the list in the events.
-                METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), blockEntityTypesValidBlocksEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
+                AddBlockToBlockEntityTypeEvent addBlockToBlockEntityTypeEvent = new AddBlockToBlockEntityTypeEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
+                ModLoader.postEventWrapContainerInModOrder(addBlockToBlockEntityTypeEvent); // Allow modders to add to the list in the events.
+                METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), addBlockToBlockEntityTypeEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
             }
         }
     }

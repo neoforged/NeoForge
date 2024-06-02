@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.BlockEntityTypesValidBlocksEvent;
+import net.neoforged.neoforge.event.AddBlockToBlockEntityTypeEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.junit.jupiter.api.Assertions;
@@ -49,7 +49,7 @@ public class BlockEntityTypeValidBlocksEventTests {
             eventBus.addListener(BlockEntityTypeValidBlocksEventTestMod::onBlockEntityValidBlocks);
         }
 
-        public static void onBlockEntityValidBlocks(BlockEntityTypesValidBlocksEvent event) {
+        public static void onBlockEntityValidBlocks(AddBlockToBlockEntityTypeEvent event) {
             if (event.getBlockEntityType().equals(BlockEntityType.SIGN)) {
                 event.addValidBlock(TEST_SIGN_BLOCK.get());
 
