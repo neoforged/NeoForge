@@ -194,6 +194,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
+        copy(Tags.Blocks.SHULKER_BOXES, Tags.Items.SHULKER_BOXES);
         copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
         copy(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL, Tags.Items.STORAGE_BLOCKS_BONE_MEAL);

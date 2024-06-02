@@ -184,6 +184,7 @@ public class Tags {
         public static final TagKey<Block> SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
         public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
         public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
+        public static final TagKey<Block> SHULKER_BOXES = tag("shulker_boxes");
         /**
          * Tag that holds all head based blocks such as Skeleton Skull or Player Head. (Named skulls to match minecraft:skulls item tag)
          */
@@ -534,6 +535,7 @@ public class Tags {
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
+        public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
