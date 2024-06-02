@@ -35,7 +35,7 @@ license="LGPL v2.1"
     modId="finalize_spawn_fix_test"
 
 [[mods]]
-modId="multiple_entrypoints_test"
+    modId="multiple_entrypoints_test"
 
 [[mods]]
     modId="startup_config_test"
