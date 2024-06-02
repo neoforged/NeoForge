@@ -125,6 +125,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.GLASS_BLOCKS_CHEAP, Tags.Items.GLASS_BLOCKS_CHEAP);
         copy(Tags.Blocks.GLASS_PANES, Tags.Items.GLASS_PANES);
         copy(Tags.Blocks.GLASS_PANES_COLORLESS, Tags.Items.GLASS_PANES_COLORLESS);
+        copy(Tags.Blocks.GLAZED_TERRACOTTA, Tags.Items.GLAZED_TERRACOTTA);
         copy(Tags.Blocks.GRAVELS, Tags.Items.GRAVELS);
         tag(Tags.Items.GUNPOWDERS).add(Items.GUNPOWDER);
         tag(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS);

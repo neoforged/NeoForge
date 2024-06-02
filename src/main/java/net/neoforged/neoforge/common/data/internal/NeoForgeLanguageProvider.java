@@ -53,6 +53,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.GLASS_BLOCKS_TINTED, "Tinted Glass Blocks");
         add(Tags.Blocks.GLASS_PANES, "Glass Panes");
         add(Tags.Blocks.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
+        add(Tags.Blocks.GLAZED_TERRACOTTA, "Glazed Terracotta");
         add(Tags.Blocks.GRAVELS, "Gravels");
         add(Tags.Blocks.SKULLS, "Skulls");
         add(Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
@@ -210,6 +211,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Items.GLASS_PANES, "Glass Panes");
         add(Tags.Items.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
+        add(Tags.Items.GLAZED_TERRACOTTA, "Glazed Terracotta");
         add(Tags.Items.GRAVELS, "Gravels");
         add(Tags.Items.GUNPOWDERS, "Gunpowders");
         add(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
