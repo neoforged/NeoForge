@@ -5,7 +5,7 @@
      }
  
 +    /**
-+     * Neo: Add block getter that returns an immutable list of the {@link BlockEntityType#validBlocks} field.
++     * Neo: Add getter for an immutable view of the set of valid blocks.
 +     */
 +    public Set<Block> getValidBlocks() {
 +        return java.util.Collections.unmodifiableSet(this.validBlocks);
