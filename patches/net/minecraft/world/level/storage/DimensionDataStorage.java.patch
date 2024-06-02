@@ -31,7 +31,7 @@
          File file1 = this.getDataFile(p_78159_);
  
          CompoundTag compoundtag1;
-@@ -98,8 +_,25 @@
+@@ -98,9 +_,16 @@
                  }
              }
  
@@ -43,19 +43,10 @@
 +            } else {
 +                compoundtag1 = compoundtag;
 +            }
-+        }
+         }
 +
 +        // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
-+        try (var filesToDelete = java.nio.file.Files.find(
-+            file1.toPath().getParent(), 1,
-+            (file, attributes) ->
-+                file.getFileName().toString().startsWith(file1.getName())
-+                && file.getFileName().toString().endsWith("write-tmp"))) {
-+
-+            for (var file : filesToDelete.toList())
-+            {
-+                java.nio.file.Files.deleteIfExists(file);
-+            }
-         }
++        net.neoforged.neoforge.common.IOUtilities.cleanupTempFiles(this.dataFolder.toPath(), p_78159_);
  
          return compoundtag1;
+     }

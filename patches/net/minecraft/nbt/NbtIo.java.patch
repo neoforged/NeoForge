@@ -1,48 +1,5 @@
 --- a/net/minecraft/nbt/NbtIo.java
 +++ b/net/minecraft/nbt/NbtIo.java
-@@ -72,12 +_,19 @@
-     }
- 
-     public static void writeCompressed(CompoundTag p_128945_, Path p_309705_) throws IOException {
-+        // Neo: write to a temporary file and move it to the correct location instead
-+        var tempFile = Files.createTempFile(p_309705_.getParent(), p_309705_.getFileName().toString(), "write-tmp");
-         try (
--            OutputStream outputstream = Files.newOutputStream(p_309705_, SYNC_OUTPUT_OPTIONS);
-+            OutputStream outputstream = Files.newOutputStream(tempFile, SYNC_OUTPUT_OPTIONS);
-             OutputStream outputstream1 = new BufferedOutputStream(outputstream);
-         ) {
-             writeCompressed(p_128945_, outputstream1);
-         }
-+        try {
-+            Files.move(tempFile, p_309705_, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-+        } catch(java.nio.file.AtomicMoveNotSupportedException e) {
-+            Files.move(tempFile, p_309705_, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-+        }
-     }
- 
-     public static void writeCompressed(CompoundTag p_128948_, OutputStream p_128949_) throws IOException {
-@@ -87,13 +_,20 @@
-     }
- 
-     public static void write(CompoundTag p_128956_, Path p_309549_) throws IOException {
-+        // Neo: write to a temporary file and move it to the correct location instead
-+        var tempFile = Files.createTempFile(p_309549_.getParent(), p_309549_.getFileName().toString(), "write-tmp");
-         try (
--            OutputStream outputstream = Files.newOutputStream(p_309549_, SYNC_OUTPUT_OPTIONS);
-+            OutputStream outputstream = Files.newOutputStream(tempFile, SYNC_OUTPUT_OPTIONS);
-             OutputStream outputstream1 = new BufferedOutputStream(outputstream);
-             DataOutputStream dataoutputstream = new DataOutputStream(outputstream1);
-         ) {
-             write(p_128956_, dataoutputstream);
-         }
-+        try {
-+            Files.move(tempFile, p_309549_, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-+        } catch(java.nio.file.AtomicMoveNotSupportedException e) {
-+            Files.move(tempFile, p_309549_, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-+        }
-     }
- 
-     @Nullable
 @@ -178,10 +_,12 @@
  
      private static Tag readUnnamedTag(DataInput p_128931_, NbtAccounter p_128933_) throws IOException {
