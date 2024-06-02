@@ -59,6 +59,14 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.COBBLESTONES_INFESTED, Tags.Items.COBBLESTONES_INFESTED);
         copy(Tags.Blocks.COBBLESTONES_MOSSY, Tags.Items.COBBLESTONES_MOSSY);
         copy(Tags.Blocks.COBBLESTONES_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
+        copy(Tags.Blocks.CONCRETE, Tags.Items.CONCRETE);
+        tag(Tags.Items.CONCRETE_POWDER)
+                .add(Items.WHITE_CONCRETE_POWDER).add(Items.ORANGE_CONCRETE_POWDER).add(Items.MAGENTA_CONCRETE_POWDER)
+                .add(Items.LIGHT_BLUE_CONCRETE_POWDER).add(Items.YELLOW_CONCRETE_POWDER).add(Items.LIME_CONCRETE_POWDER)
+                .add(Items.PINK_CONCRETE_POWDER).add(Items.GRAY_CONCRETE_POWDER).add(Items.LIGHT_GRAY_CONCRETE_POWDER)
+                .add(Items.CYAN_CONCRETE_POWDER).add(Items.PURPLE_CONCRETE_POWDER).add(Items.BLUE_CONCRETE_POWDER)
+                .add(Items.BROWN_CONCRETE_POWDER).add(Items.GREEN_CONCRETE_POWDER).add(Items.RED_CONCRETE_POWDER)
+                .add(Items.BLACK_CONCRETE_POWDER);
         tag(Tags.Items.CROPS).addTags(Tags.Items.CROPS_BEETROOT, Tags.Items.CROPS_CARROT, Tags.Items.CROPS_NETHER_WART, Tags.Items.CROPS_POTATO, Tags.Items.CROPS_WHEAT);
         tag(Tags.Items.CROPS_BEETROOT).add(Items.BEETROOT);
         tag(Tags.Items.CROPS_CARROT).add(Items.CARROT);
