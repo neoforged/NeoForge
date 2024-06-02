@@ -104,6 +104,7 @@ public class Tags {
 
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final TagKey<Block> GLAZED_TERRACOTTA = tag("glazed_terracotta");
 
         public static final TagKey<Block> GRAVELS = tag("gravels");
         /**
@@ -424,6 +425,7 @@ public class Tags {
 
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final TagKey<Item> GLAZED_TERRACOTTA = tag("glazed_terracotta");
 
         public static final TagKey<Item> GRAVELS = tag("gravels");
         public static final TagKey<Item> GUNPOWDERS = tag("gunpowders");
