@@ -17,17 +17,17 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class StartupConfigTest {
     private static final String MOD_ID = "startup_config_test";
-    private static boolean WasLoadedAtInitStartupConfig = false;
-    private static boolean WasLoadedAtInitCommonConfig = false;
-    private static boolean WasLoadedAtInitServerConfig = false;
-    private static boolean WasLoadedAtInitClientConfig = false;
+    private static boolean wasLoadedAtInitStartupConfig = false;
+    private static boolean wasLoadedAtInitCommonConfig = false;
+    private static boolean wasLoadedAtInitServerConfig = false;
+    private static boolean wasLoadedAtInitClientConfig = false;
 
     @Test
     void testStartupConfigs() {
-        Assertions.assertTrue(WasLoadedAtInitStartupConfig, "Startup Config was supposed to be loaded at mod init.");
-        Assertions.assertFalse(WasLoadedAtInitCommonConfig, "Common Config was NOT supposed to be loaded at mod init.");
-        Assertions.assertFalse(WasLoadedAtInitServerConfig, "Server Config was NOT supposed to be loaded at mod init.");
-        Assertions.assertFalse(WasLoadedAtInitClientConfig, "Client Config was NOT supposed to be loaded at mod init.");
+        Assertions.assertTrue(wasLoadedAtInitStartupConfig, "Startup Config was supposed to be loaded at mod init.");
+        Assertions.assertFalse(wasLoadedAtInitCommonConfig, "Common Config was NOT supposed to be loaded at mod init.");
+        Assertions.assertFalse(wasLoadedAtInitServerConfig, "Server Config was NOT supposed to be loaded at mod init.");
+        Assertions.assertFalse(wasLoadedAtInitClientConfig, "Client Config was NOT supposed to be loaded at mod init.");
     }
 
     @Mod(value = MOD_ID)
@@ -37,10 +37,10 @@ public class StartupConfigTest {
             modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
             modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
             modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
-            WasLoadedAtInitStartupConfig = StartupConfig.SPEC.isLoaded();
-            WasLoadedAtInitCommonConfig = CommonConfig.SPEC.isLoaded();
-            WasLoadedAtInitServerConfig = ServerConfig.SPEC.isLoaded();
-            WasLoadedAtInitClientConfig = ClientConfig.SPEC.isLoaded();
+            wasLoadedAtInitStartupConfig = StartupConfig.SPEC.isLoaded();
+            wasLoadedAtInitCommonConfig = CommonConfig.SPEC.isLoaded();
+            wasLoadedAtInitServerConfig = ServerConfig.SPEC.isLoaded();
+            wasLoadedAtInitClientConfig = ClientConfig.SPEC.isLoaded();
         }
 
         public static class StartupConfig {
