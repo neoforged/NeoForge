@@ -47,11 +47,13 @@ dependencies {
     installer ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'
+        exclude group: 'net.neoforged', module: 'JarJarFileSystems'
     }
     installer ("net.neoforged.fancymodloader:earlydisplay:${project.fancy_mod_loader_version}") {
         exclude group: 'org.lwjgl'
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'
+        exclude group: 'net.neoforged', module: 'JarJarFileSystems'
     }
     installer "cpw.mods:securejarhandler:${project.securejarhandler_version}"
     installer "org.ow2.asm:asm:${project.asm_version}"
@@ -90,7 +92,9 @@ dependencies {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
 
-    userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
+    userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}") {
+        exclude group: 'net.neoforged', module: 'JarJarFileSystems'
+    }
 }
 
 runTypes {
