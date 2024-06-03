@@ -12,9 +12,9 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
 import net.neoforged.neoforge.event.entity.living.DamageTakenEvent;
-import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.EntityPreDamageEvent;
 import net.neoforged.neoforge.event.entity.living.IncomingDamageEvent;
 
