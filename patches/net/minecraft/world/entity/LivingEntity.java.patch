@@ -386,11 +386,10 @@
                  }
  
                  return p_21194_;
-@@ -1698,23 +_,26 @@
-     }
+@@ -1699,20 +_,25 @@
  
      protected void actuallyHurt(DamageSource p_21240_, float p_21241_) {
--        if (!this.isInvulnerableTo(p_21240_)) {
+         if (!this.isInvulnerableTo(p_21240_)) {
 -            p_21241_ = this.getDamageAfterArmorAbsorb(p_21240_, p_21241_);
 -            p_21241_ = this.getDamageAfterMagicAbsorb(p_21240_, p_21241_);
 -            float f1 = Math.max(p_21241_ - this.getAbsorptionAmount(), 0.0F);
@@ -416,10 +415,8 @@
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
 +                this.onDamageTaken(this.damageContainer);
              }
--        }
+         }
      }
- 
-     public CombatTracker getCombatTracker() {
 @@ -1767,6 +_,8 @@
      }
  
