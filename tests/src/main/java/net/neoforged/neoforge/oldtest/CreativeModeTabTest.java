@@ -34,6 +34,7 @@ public class CreativeModeTabTest {
 
     private static final ResourceKey<CreativeModeTab> LOGS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "logs"));
     private static final ResourceKey<CreativeModeTab> STONE = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "stone"));
+    private static final ResourceKey<CreativeModeTab> DAMAGED_SWORDS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "damaged_swords"));
 
     public CreativeModeTabTest(IEventBus modEventBus) {
         if (!ENABLED)
@@ -79,10 +80,10 @@ public class CreativeModeTabTest {
                     .withTabsBefore(CreativeModeTabs.COLORED_BLOCKS)
                     .build());
 
-            helper.register(new ResourceLocation(MOD_ID, "damaged_swords"), CreativeModeTab.builder().title(Component.literal("Damaged Wooden Swords"))
+            helper.register(DAMAGED_SWORDS, CreativeModeTab.builder().title(Component.literal("Damaged Wooden Swords"))
                     .displayItems((params, output) -> {
                         output.accept(new ItemStack(Items.WOODEN_SWORD));
-                        output.accept(new ItemStack(Items.WOODEN_SWORD)); // Should just overwrite the present entry
+                        output.accept(new ItemStack(Items.WOODEN_SWORD), TabVisibility.SEARCH_TAB_ONLY); // Should still be added
                         for (int i = 1; i <= 59; i++) {
                             // Each should be added since they have different data component values
                             output.accept(new ItemStack(Items.WOODEN_SWORD.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.DAMAGE, i).build()));
@@ -133,6 +134,11 @@ public class CreativeModeTabTest {
             entries.putBefore(i(Blocks.DIORITE), i(Blocks.POLISHED_DIORITE), vis);
             entries.putBefore(i(Blocks.ANDESITE), i(Blocks.POLISHED_ANDESITE), vis);
         }
+
+        // Adding this causes a crash (as it should) when opening the creative inventory
+//        if (event.getTabKey() == DAMAGED_SWORDS) {
+//            entries.putBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
+//        }
     }
 
     private static class CreativeModeColorTab extends CreativeModeTab {

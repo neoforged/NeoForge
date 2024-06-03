@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
@@ -1036,14 +1037,30 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(ItemStackLinkedSet.TYPE_AND_TAG);
+        final var searchDupes = new ObjectLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
+        // The ItemStackLinkedSet.TYPE_AND_TAG strategy cannot be used for the MutableHashedLinkedMap due to vanilla
+        // adding multiple identical ItemStacks with different TabVisibility values. The values also cannot be merged
+        // because it does not abide by the intended order. For example, vanilla adds all max enchanted books to the
+        // "ingredient" tab with "parent only" visibility, then also adds all enchanted books again in increasing order
+        // to their max values but with the "search only" visibility. Because the parent-only is added first and then
+        // the search-only entries are added after, the max enchantments would show up first and then the enchantments
+        // in increasing order up to max-1.
+        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(MutableHashedLinkedMap.BASIC, (stack, tabVisibility) -> {
+            if (!searchDupes.add(stack) && tabVisibility != CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
+                throw new IllegalStateException(
+                        "Accidentally adding the same item stack twice "
+                                + stack.getDisplayName().getString()
+                                + " to a Creative Mode Tab: "
+                                + tab.getDisplayName().getString());
+            }
+            return true;
+        });
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
             entries.put(stack, vis);
         });
-
         ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
 
         for (var entry : entries)

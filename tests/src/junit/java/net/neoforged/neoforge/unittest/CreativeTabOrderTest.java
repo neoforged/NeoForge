@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.unittest;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.IntStream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -10,19 +18,25 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackLinkedSet;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.testframework.junit.EphemeralTestServerProvider;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.IntStream;
 
 @ExtendWith(EphemeralTestServerProvider.class)
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -47,8 +61,7 @@ public class CreativeTabOrderTest {
             ItemTags.BOW_ENCHANTABLE,
             ItemTags.EQUIPPABLE_ENCHANTABLE,
             ItemTags.CROSSBOW_ENCHANTABLE,
-            ItemTags.VANISHING_ENCHANTABLE
-    );
+            ItemTags.VANISHING_ENCHANTABLE);
     public static Iterable<Map.Entry<ItemStack, CreativeModeTab.TabVisibility>> ingredientsTab;
     public static Iterable<Map.Entry<ItemStack, CreativeModeTab.TabVisibility>> searchTab;
 
@@ -59,6 +72,7 @@ public class CreativeTabOrderTest {
 
     /**
      * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesOnlyMaxLevel(CreativeModeTab.Output, HolderLookup, Set, CreativeModeTab.TabVisibility, FeatureFlagSet)}
+     * 
      * @param server Ephemeral server from extension
      */
     @Test
@@ -83,6 +97,7 @@ public class CreativeTabOrderTest {
 
     /**
      * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesAllLevels(CreativeModeTab.Output, HolderLookup, Set, CreativeModeTab.TabVisibility, FeatureFlagSet)}
+     * 
      * @param server Ephemeral server from extension
      */
     @Test
@@ -93,8 +108,8 @@ public class CreativeTabOrderTest {
                 .filter(enchantment -> enchantment.allowedInCreativeTab(Items.ENCHANTED_BOOK, ENCHANTABLES))
                 .flatMap(
                         enchantment -> IntStream.rangeClosed(enchantment.getMinLevel(), enchantment.getMaxLevel())
-                                .mapToObj(p_270006_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, p_270006_)))
-                ).collect(() -> new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG), ObjectOpenCustomHashSet::add, ObjectOpenCustomHashSet::addAll);
+                                .mapToObj(p_270006_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, p_270006_))))
+                .collect(() -> new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG), ObjectOpenCustomHashSet::add, ObjectOpenCustomHashSet::addAll);
 
         Enchantment enchantment = null;
         int level = 0;
