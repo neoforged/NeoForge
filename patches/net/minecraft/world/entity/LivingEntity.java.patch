@@ -368,7 +368,7 @@
                  p_21194_ = Math.max(f / 25.0F, 0.0F);
                  float f2 = f1 - p_21194_;
                  if (f2 > 0.0F && f2 < 3.4028235E37F) {
-+                    this.damageContainer.setMobEffectReduction(f2);
++                    this.damageContainer.setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.MOB_EFFECTS, f2);
                      if (this instanceof ServerPlayer) {
 -                        ((ServerPlayer)this).awardStat(Stats.DAMAGE_RESISTED, Math.round(f2 * 10.0F));
 +                        ((ServerPlayer)this).awardStat(Stats.CUSTOM.get(Stats.DAMAGE_RESISTED), Math.round(f2 * 10.0F));
@@ -382,7 +382,7 @@
                  int k = EnchantmentHelper.getDamageProtection(this.getArmorAndBodyArmorSlots(), p_21193_);
                  if (k > 0) {
                      p_21194_ = CombatRules.getDamageAfterMagicAbsorb(p_21194_, (float)k);
-+                    this.damageContainer.setEnchantReduction(this.damageContainer.getNewDamage() - p_21194_);
++                    this.damageContainer.setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainer.getNewDamage() - p_21194_);
                  }
  
                  return p_21194_;
@@ -395,11 +395,11 @@
 -            float f1 = Math.max(p_21241_ - this.getAbsorptionAmount(), 0.0F);
 -            this.setAbsorptionAmount(this.getAbsorptionAmount() - (p_21241_ - f1));
 -            float f = p_21241_ - f1;
-+            this.damageContainer.setArmorReduction(this.damageContainer.getNewDamage() - this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainer.getNewDamage()));
++            this.damageContainer.setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainer.getNewDamage() - this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainer.getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(p_21240_, this.damageContainer.getNewDamage());
-+            this.damageContainer.setAbsorption(this.getAbsorptionAmount());
-+            float f1 = Math.max(this.damageContainer.getNewDamage() - this.damageContainer.getAbsorption(), 0.0F);
-+            this.setAbsorptionAmount(this.damageContainer.getAbsorption() - (this.damageContainer.getNewDamage() - f1));
++            this.damageContainer.setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
++            float f1 = Math.max(this.damageContainer.getNewDamage() - this.damageContainer.getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
++            this.setAbsorptionAmount(this.damageContainer.getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainer.getNewDamage() - f1));
 +            f1 = net.neoforged.neoforge.common.CommonHooks.onIncomingDamage(this, this.damageContainer);
 +            if (f1 <= 0) return;
 +            float f = this.damageContainer.getNewDamage() - f1;

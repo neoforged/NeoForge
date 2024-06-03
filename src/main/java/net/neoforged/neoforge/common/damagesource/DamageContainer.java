@@ -5,7 +5,11 @@
 
 package net.neoforged.neoforge.common.damagesource;
 
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import net.minecraft.world.damagesource.DamageSource;
 import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
 
@@ -36,9 +40,9 @@ public interface DamageContainer {
         /** Damage reduced from the effects of armor */
         ARMOR,
         /** Damage reduced from enchantments on armor */
-        ENCHANT,
+        ENCHANTMENTS,
         /** Damage reduced from active mob effects */
-        MOBEFFECT,
+        MOB_EFFECTS,
         /** Damage absorbed by absorption. */
         ABSORPTION
     }
@@ -105,40 +109,14 @@ public interface DamageContainer {
     int getPostAttackInvulnerabilityTicks();
 
     /**
-     * This provides a post-reduction value for armor reduction and modifiers. This will always return zero
+     * This provides a post-reduction value for the reduction and modifiers. This will always return zero
      * before {@link net.neoforged.neoforge.event.entity.living.IncomingDamageEvent} and will consume all
      * modifiers prior to the event.
      *
+     * @param type the specific source type of the damage reduction
      * @return The amount of damage reduced by armor after vanilla armor reductions and added modifiers
      */
-    float getArmorReduction();
-
-    /**
-     * This provides a post-reduction value for enchantment reduction and modifiers. This will always return zero
-     * before {@link net.neoforged.neoforge.event.entity.living.IncomingDamageEvent} and will consume all
-     * modifiers prior to the event.
-     *
-     * @return the amount of damage reduced by enchantments after vanilla enchantment reductions and added modifiers
-     */
-    float getEnchantReduction();
-
-    /**
-     * This provides a post-reduction value for mob effect reduction and modifiers. This will always return zero
-     * before {@link net.neoforged.neoforge.event.entity.living.IncomingDamageEvent} and will consume all
-     * modifiers prior to the event.
-     *
-     * @return The amount of damage reduced by mob effects after vanilla mob effect reductions and added modifiers
-     */
-    float getMobEffectReduction();
-
-    /**
-     * This provides a post-reduction value for absorption consumption and modifiers. This will always return zero
-     * before {@link net.neoforged.neoforge.event.entity.living.IncomingDamageEvent} and will consume all
-     * modifiers prior to the event.
-     *
-     * @return The amount of absorption consumed after vanilla absorption consumption and added modifiers
-     */
-    float getAbsorption();
+    float getReduction(Reduction type);
 
     public record ResultDamageContainer(
             float getOriginalDamage,
@@ -147,17 +125,15 @@ public interface DamageContainer {
             float getBlockedDamage,
             float getShieldDamage,
             int getPostAttackInvulnerabilityTicks,
-            float getArmorReduction,
-            float getEnchantReduction,
-            float getMobEffectReduction,
-            float getAbsorption
+            EnumMap<Reduction, Float> reduction
 
     ) implements DamageContainer {
         public ResultDamageContainer(DamageContainer container) {
             this(container.getOriginalDamage(), container.getSource(), container.getNewDamage(),
                     container.getBlockedDamage(), container.getShieldDamage(), container.getPostAttackInvulnerabilityTicks(),
-                    container.getArmorReduction(), container.getEnchantReduction(), container.getMobEffectReduction(),
-                    container.getAbsorption());
+                    new EnumMap<Reduction, Float>(Arrays.stream(Reduction.values())
+                            .map(type -> new AbstractMap.SimpleEntry<>(type, container.getReduction(type)))
+                            .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))));
         }
 
         @Override
@@ -168,5 +144,10 @@ public interface DamageContainer {
 
         @Override
         public void setPostAttackInvulnerabilityTicks(int ticks) {}
+
+        @Override
+        public float getReduction(Reduction type) {
+            return reduction().getOrDefault(type, 0f);
+        }
     }
 }

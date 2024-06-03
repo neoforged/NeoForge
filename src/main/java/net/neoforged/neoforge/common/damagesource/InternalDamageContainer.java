@@ -19,10 +19,7 @@ public class InternalDamageContainer implements DamageContainer {
     private final float originalDamage;
     private final DamageSource source;
     private float newDamage;
-    private float armorReduction = 0f;
-    private float absorption = 0f;
-    private float enchantReduction = 0f;
-    private float mobEffectReduction = 0f;
+    EnumMap<Reduction, Float> reductions = new EnumMap<>(Reduction.class);
     private float blockedDamage = 0f;
     private float shieldDamage = 0;
     private int invulnerabilityTicksAfterAttack = 20;
@@ -78,23 +75,8 @@ public class InternalDamageContainer implements DamageContainer {
     }
 
     @Override
-    public float getArmorReduction() {
-        return armorReduction;
-    }
-
-    @Override
-    public float getEnchantReduction() {
-        return enchantReduction;
-    }
-
-    @Override
-    public float getMobEffectReduction() {
-        return mobEffectReduction;
-    }
-
-    @Override
-    public float getAbsorption() {
-        return absorption;
+    public float getReduction(Reduction type) {
+        return reductions.getOrDefault(type, 0f);
     }
 
     //=============INTERNAL METHODS - DO NOT USE===================
@@ -109,27 +91,9 @@ public class InternalDamageContainer implements DamageContainer {
     }
 
     @ApiStatus.Internal
-    public void setAbsorption(float absorption) {
-        this.absorption = modifyReduction(Reduction.ABSORPTION, absorption);
-        this.newDamage -= Math.max(0, absorption);
-    }
-
-    @ApiStatus.Internal
-    public void setMobEffectReduction(float reduction) {
-        this.mobEffectReduction = modifyReduction(Reduction.MOBEFFECT, reduction);
-        this.newDamage -= Math.max(0, reduction);
-    }
-
-    @ApiStatus.Internal
-    public void setEnchantReduction(float reduction) {
-        this.enchantReduction = modifyReduction(Reduction.ENCHANT, reduction);
-        this.newDamage -= Math.max(0, reduction);
-    }
-
-    @ApiStatus.Internal
-    public void setArmorReduction(float reduction) {
-        this.armorReduction = modifyReduction(Reduction.ARMOR, reduction);
-        this.newDamage -= Math.max(0, this.armorReduction);
+    public void setReduction(Reduction reduction, float amount) {
+        this.reductions.put(reduction, modifyReduction(Reduction.ABSORPTION, amount));
+        this.newDamage -= Math.max(0, amount);
     }
 
     private float modifyReduction(Reduction type, float reduction) {
