@@ -64,7 +64,7 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
      * Creates a mutable linked map with a default new-value-selecting merge function.
      *
      * @param strategy the hashing strategy
-     * @param merge the function used when merging an existing value and a new value
+     * @param merge    the function used when merging an existing value and a new value
      */
     public MutableHashedLinkedMap(Strategy<? super K> strategy, MergeFunction<K, V> merge) {
         this(strategy, merge, (k, v) -> true);
@@ -73,7 +73,7 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
     /**
      * Creates a mutable linked map with a default new-value-selecting merge function.
      *
-     * @param strategy the hashing strategy
+     * @param strategy   the hashing strategy
      * @param insertTest the test to apply before inserting a key and value
      */
     public MutableHashedLinkedMap(Strategy<? super K> strategy, BiPredicate<K, V> insertTest) {
@@ -83,8 +83,8 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
     /**
      * Creates a mutable linked map with a custom merge function.
      *
-     * @param strategy the hashing strategy
-     * @param merge    the function used when merging an existing value and a new value
+     * @param strategy   the hashing strategy
+     * @param merge      the function used when merging an existing value and a new value
      * @param insertTest the test to apply before inserting a key and value
      */
     public MutableHashedLinkedMap(Strategy<? super K> strategy, MergeFunction<K, V> merge, BiPredicate<K, V> insertTest) {
