@@ -11,19 +11,19 @@ import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class FluidStorageItem implements ISingleResourceHandler<FluidResource> {
+public class ItemFluidStorage implements ISingleResourceHandler<FluidResource> {
     private final int individualLimit;
     private final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected final IItemContext context;
     private Predicate<FluidResource> validator = r -> true;
 
-    public FluidStorageItem(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
+    public ItemFluidStorage(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
         this.individualLimit = limit;
         this.componentType = componentType;
         this.context = context;
     }
 
-    public FluidStorageItem setValidator(Predicate<FluidResource> validator) {
+    public ItemFluidStorage setValidator(Predicate<FluidResource> validator) {
         this.validator = validator;
         return this;
     }
@@ -75,26 +75,25 @@ public class FluidStorageItem implements ISingleResourceHandler<FluidResource> {
         if (resource.isBlank() || amount <= 0 || !isValid(resource)) return 0;
         FluidResource presentResource = getResource();
         if (presentResource.isBlank()) {
-            if (amount < getIndividualLimit()) return fill(resource, 1, amount, action) == 1 ? amount : 0;
-            return fill(resource, amount / getIndividualLimit(), action) * getIndividualLimit();
+            if (amount < getIndividualLimit()) return setPartial(resource, amount, action) == 1 ? amount : 0;
+            return setFull(resource, amount / getIndividualLimit(), action) * getIndividualLimit();
         }
 
         if (!presentResource.equals(resource)) return 0;
 
         int containerFill = getIndividualAmount();
         int spaceLeft = getIndividualLimit() - containerFill;
-        if (amount < spaceLeft) return fill(resource, 1, amount + containerFill, action) == 1 ? amount : 0;
-        return fill(resource, amount / spaceLeft, action) * spaceLeft;
+        if (amount < spaceLeft) return setPartial(resource, amount + containerFill, action) == 1 ? amount : 0;
+        return setFull(resource, amount / spaceLeft, action) * spaceLeft;
     }
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
         if (resource.isBlank() || amount <= 0 || isEmpty() || !getResource().equals(resource)) return 0;
         int containerFill = getIndividualAmount();
-        if (amount <= containerFill) {
-            ItemResource extractedContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, containerFill - amount));
-            int exchanged = context.exchange(extractedContainer, 1, action);
-            return exchanged == 1 ? containerFill : 0;
+        if (amount < containerFill) {
+            int exchanged = setPartial(resource, containerFill - amount, action);
+            return exchanged == 1 ? amount : 0;
         } else {
             int extractedCount = amount / containerFill;
             int exchanged = empty(extractedCount, action);
@@ -107,16 +106,17 @@ public class FluidStorageItem implements ISingleResourceHandler<FluidResource> {
         return context.exchange(emptiedContainer, count, action);
     }
 
-    protected int fill(FluidResource resource, int count, TransferAction action) {
-        return fill(resource, count, getIndividualLimit(), action);
-    }
-
-    protected int fill(FluidResource resource, int count, int amount, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, amount));
+    protected int setFull(FluidResource resource, int count, TransferAction action) {
+        ItemResource filledContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, getIndividualLimit()));
         return context.exchange(filledContainer, count, action);
     }
 
-    public static class Consumable extends FluidStorageItem {
+    protected int setPartial(FluidResource resource, int amount, TransferAction action) {
+        ItemResource filledContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, amount));
+        return context.exchange(filledContainer, 1, action);
+    }
+
+    public static class Consumable extends ItemFluidStorage {
         public Consumable(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
             super(limit, componentType, context);
         }
@@ -127,7 +127,7 @@ public class FluidStorageItem implements ISingleResourceHandler<FluidResource> {
         }
     }
 
-    public static class SwapEmpty extends FluidStorageItem {
+    public static class SwapEmpty extends ItemFluidStorage {
         private final ItemResource emptyContainer;
 
         public SwapEmpty(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context, ItemResource emptyContainer) {

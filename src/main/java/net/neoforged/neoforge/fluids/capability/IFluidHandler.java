@@ -15,7 +15,6 @@ import net.neoforged.neoforge.transfer.TransferAction;
  * Implement this interface as a capability which should handle fluids, generally storing them in
  * one or more internal {@link IFluidTank} objects.
  * <p>
- * A reference implementation is provided {@link TileFluidHandler}.
  */
 @Deprecated(forRemoval = true, since = "1.21")
 public interface IFluidHandler extends IResourceHandler<FluidResource> {
@@ -157,11 +156,6 @@ public interface IFluidHandler extends IResourceHandler<FluidResource> {
     @Override
     default int extract(FluidResource resource, int amount, TransferAction action) {
         return drain(resource.toStack(amount), FluidAction.fromTransferAction(action)).getAmount();
-    }
-
-    @Override
-    default boolean isEmpty(int slot) {
-        return getFluidInTank(slot).isEmpty();
     }
 
     @Override

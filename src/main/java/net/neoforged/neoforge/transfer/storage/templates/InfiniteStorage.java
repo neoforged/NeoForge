@@ -29,7 +29,7 @@ public abstract class InfiniteStorage<T extends IResource> implements ISingleRes
     }
 
     @Override
-    public int getLimit() {
+    public int getLimit(T resource) {
         return Integer.MAX_VALUE;
     }
 

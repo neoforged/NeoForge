@@ -9,6 +9,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.fluids.FluidConstants;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.items.ItemResource;
 import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 
 import java.util.Objects;
@@ -56,19 +57,27 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
         return true;
     }
 
+    private ItemResource getFilled(FluidResource resource) {
+        return resource.getFilledBucket();
+    }
+
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
         if (amount < FluidConstants.BUCKET || resource.isBlank() || !getResource().isBlank()) return 0;
 
-        int exchanged = context.exchange(resource.getFilledBucket(), amount / FluidConstants.BUCKET, action);
+        int exchanged = context.exchange(getFilled(resource), amount / FluidConstants.BUCKET, action);
         return exchanged * FluidConstants.BUCKET;
+    }
+
+    private ItemResource getEmpty() {
+        return Items.BUCKET.getDefaultResource();
     }
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
         if (amount < FluidConstants.BUCKET || resource.isBlank() || !Objects.equals(resource, getResource())) return 0;
 
-        int exchanged = context.exchange(Items.BUCKET.getDefaultResource(), amount / FluidConstants.BUCKET, action);
+        int exchanged = context.exchange(getEmpty(), amount / FluidConstants.BUCKET, action);
         return exchanged * FluidConstants.BUCKET;
     }
 }

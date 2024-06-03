@@ -30,7 +30,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.transfer.energy.templates.EnergyStorage;
+import net.neoforged.neoforge.transfer.energy.templates.AttachmentEnergyStorage;
 import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -196,7 +196,7 @@ public class GameTestTest {
     }
 
     private static class EnergyBlockEntity extends BlockEntity {
-        private final EnergyStorage energyStorage = new EnergyStorage(1000);
+        private final AttachmentEnergyStorage energyStorage = new AttachmentEnergyStorage(1000);
 
         public EnergyBlockEntity(BlockPos pos, BlockState state) {
             super(ENERGY_BLOCK_ENTITY.get(), pos, state);

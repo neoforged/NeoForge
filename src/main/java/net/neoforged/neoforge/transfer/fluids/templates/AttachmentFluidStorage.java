@@ -10,19 +10,19 @@ import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class FluidStorageAttachment implements ISingleResourceHandler<FluidResource> {
+public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResource> {
     private final AttachmentHolder holder;
     private final Supplier<AttachmentType<SimpleFluidContent>> attachmentType;
     private final int limit;
     private Predicate<FluidResource> validator = r -> true;
 
-    public FluidStorageAttachment(AttachmentHolder holder, Supplier<AttachmentType<SimpleFluidContent>> attachmentType, int limit) {
+    public AttachmentFluidStorage(AttachmentHolder holder, Supplier<AttachmentType<SimpleFluidContent>> attachmentType, int limit) {
         this.holder = holder;
         this.attachmentType = attachmentType;
         this.limit = limit;
     }
 
-    public FluidStorageAttachment setValidator(Predicate<FluidResource> validator) {
+    public AttachmentFluidStorage setValidator(Predicate<FluidResource> validator) {
         this.validator = validator;
         return this;
     }
