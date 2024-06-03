@@ -3,6 +3,7 @@ package net.neoforged.neoforge.transfer.storage.templates;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.storage.IResourceHandler;
+import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
 
 import java.util.stream.Stream;
 
@@ -16,12 +17,12 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public int size() {
-        return Stream.of(handlers).mapToInt(IResourceHandler::size).sum();
+        return Stream.of(getHandlers()).mapToInt(IResourceHandler::size).sum();
     }
 
     @Override
     public T getResource(int index) {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
                 return storage.getResource(index);
             }
@@ -32,7 +33,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public int getAmount(int index) {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
                 return storage.getAmount(index);
             }
@@ -43,7 +44,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public int getLimit(int index, T resource) {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
                 return storage.getLimit(index, resource);
             }
@@ -54,7 +55,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public boolean isValid(int index, T resource) {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
                 return storage.isValid(index, resource);
             }
@@ -65,7 +66,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public boolean canInsert() {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (storage.canInsert()) {
                 return true;
             }
@@ -75,7 +76,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public boolean canExtract() {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (storage.canExtract()) {
                 return true;
             }
@@ -85,7 +86,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public int insert(int index, T resource, int amount, TransferAction action) {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
                 if (storage.canInsert()) {
                     return storage.insert(index, resource, amount, action);
@@ -101,7 +102,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     @Override
     public int insert(T resource, int amount, TransferAction action) {
         int inserted = 0;
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (storage.canInsert()) {
                 inserted += storage.insert(resource, amount - inserted, action);
             }
@@ -114,7 +115,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
 
     @Override
     public int extract(int index, T resource, int amount, TransferAction action) {
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
                 if (storage.canExtract()) {
                     return storage.extract(index, resource, amount, action);
@@ -130,7 +131,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     @Override
     public int extract(T resource, int amount, TransferAction action) {
         int extracted = 0;
-        for (IResourceHandler<T> storage : handlers) {
+        for (IResourceHandler<T> storage : getHandlers()) {
             if (storage.canExtract()) {
                 extracted += storage.extract(resource, amount - extracted, action);
             }
@@ -139,5 +140,33 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
             }
         }
         return extracted;
+    }
+
+    public IResourceHandler<T>[] getHandlers() {
+        return handlers;
+    }
+
+    public static class Modifiable<T extends IResource> extends AggregateResourceHandler<T> implements IResourceHandlerModifiable<T> {
+        @SafeVarargs
+        public Modifiable(IResourceHandlerModifiable<T>... handlers) {
+            super(handlers);
+        }
+
+        @Override
+        public void set(int index, T resource, int amount) {
+            for (IResourceHandlerModifiable<T> storage : getHandlers()) {
+                if (index < storage.size()) {
+                    storage.set(index, resource, amount);
+                    return;
+                }
+                index -= storage.size();
+            }
+            throw new IndexOutOfBoundsException();
+        }
+
+        @Override
+        public IResourceHandlerModifiable<T>[] getHandlers() {
+            return (IResourceHandlerModifiable<T>[]) handlers;
+        }
     }
 }

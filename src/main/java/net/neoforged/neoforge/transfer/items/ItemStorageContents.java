@@ -17,15 +17,12 @@ public class ItemStorageContents {
         this.hashCode = items.stream().map(ResourceStack::resource).toList().hashCode();
     }
 
-    private ItemStorageContents(int size) {
+    public ItemStorageContents(int size) {
         this(NonNullList.withSize(size, ItemResource.EMPTY_STACK));
     }
 
     public ItemStorageContents set(int slot, ResourceStack<ItemResource> stack) {
         NonNullList<ResourceStack<ItemResource>> newList = NonNullList.copyOf(items);
-        while (newList.size() <= slot) {
-            newList.add(ItemResource.EMPTY_STACK);
-        }
         newList.set(slot, stack);
         return new ItemStorageContents(newList);
     }
@@ -35,9 +32,6 @@ public class ItemStorageContents {
     }
 
     public ResourceStack<ItemResource> get(int slot) {
-        if (slot < 0 || slot >= items.size()) {
-            return ItemResource.EMPTY_STACK;
-        }
         return items.get(slot);
     }
 

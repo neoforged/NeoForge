@@ -172,7 +172,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
 
         @Override
         public ItemStorageContents getContents() {
-            return context.getResource().get(componentType);
+            return context.getResource().getOrDefault(componentType, new ItemStorageContents(size()));
         }
 
         @Override

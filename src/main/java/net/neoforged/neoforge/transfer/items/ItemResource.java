@@ -19,9 +19,12 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.ResourceStack;
@@ -149,6 +152,18 @@ public final class ItemResource implements IResource, DataComponentHolder {
 
     public int getMaxStackSize() {
         return innerStack.getMaxStackSize();
+    }
+
+    public boolean canEquip(EquipmentSlot slot, Entity entity) {
+        return innerStack.canEquip(slot, entity);
+    }
+
+    public int getEnchantmentLevel(Enchantment enchantment) {
+        return innerStack.getEnchantmentLevel(enchantment);
+    }
+
+    public boolean hasEnchantment(Enchantment enchantment) {
+        return getEnchantmentLevel(enchantment) > 0;
     }
 
     @Override

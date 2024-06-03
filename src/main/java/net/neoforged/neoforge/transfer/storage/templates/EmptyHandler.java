@@ -27,7 +27,7 @@ public class EmptyHandler<T extends IResource> implements ISingleResourceHandler
     }
 
     @Override
-    public int getLimit() {
+    public int getLimit(T resource) {
         return 0;
     }
 

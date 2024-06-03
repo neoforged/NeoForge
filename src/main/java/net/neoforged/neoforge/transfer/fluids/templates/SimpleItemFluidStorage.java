@@ -11,19 +11,19 @@ import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class BucketLikeFluidStorageItem implements ISingleResourceHandler<FluidResource> {
+public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResource> {
     private final int individualLimit;
     private final Supplier<DataComponentType<SimpleFluidContent>> componentType;
     protected final IItemContext context;
     private Predicate<FluidResource> validator = r -> true;
 
-    public BucketLikeFluidStorageItem(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
+    public SimpleItemFluidStorage(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
         this.individualLimit = limit;
         this.componentType = componentType;
         this.context = context;
     }
 
-    public BucketLikeFluidStorageItem setValidator(Predicate<FluidResource> validator) {
+    public SimpleItemFluidStorage setValidator(Predicate<FluidResource> validator) {
         this.validator = validator;
         return this;
     }
@@ -100,7 +100,7 @@ public class BucketLikeFluidStorageItem implements ISingleResourceHandler<FluidR
         return context.exchange(filledContainer, count, action);
     }
 
-    public static class Consumable extends BucketLikeFluidStorageItem {
+    public static class Consumable extends SimpleItemFluidStorage {
         public Consumable(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
             super(limit, componentType, context);
         }
@@ -111,7 +111,7 @@ public class BucketLikeFluidStorageItem implements ISingleResourceHandler<FluidR
         }
     }
 
-    public static class SwapEmpty extends BucketLikeFluidStorageItem {
+    public static class SwapEmpty extends SimpleItemFluidStorage {
         private final ItemResource emptyContainer;
 
         public SwapEmpty(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context, ItemResource emptyContainer) {
