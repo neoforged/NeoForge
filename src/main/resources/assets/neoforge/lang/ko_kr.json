@@ -14,7 +14,7 @@
   "fml.menu.mods.info.authors": "제작자들: %1$s",
   "fml.menu.mods.info.displayurl": "홈페이지: %1$s",
   "fml.menu.mods.info.license": "라이센스: %1$s",
-  "fml.menu.mods.info.securejardisabled": "모드 보안 기능이 비활성화됐습니다, JDK를 업데이트 해주세요",
+  "fml.menu.mods.info.securejardisabled": "보안 기능이 비활성화됐습니다, JDK를 업데이트 해주세요",
   "fml.menu.mods.info.signature": "파일 서명: %1$s",
   "fml.menu.mods.info.signature.unsigned": "서명 없음",
   "fml.menu.mods.info.trust": "신뢰성: %1$s",
@@ -133,7 +133,7 @@
   "neoforge.configgui.clumpingThreshold": "청크 전체 전송 임계값",
   "neoforge.configgui.treatEmptyTagsAsAir.tooltip": "바닐라는 빈 태그를 사용하는 제작법을 공기처럼 취급해, 해당 슬롯이 비어 있더라도 제작할 수 있도록 합니다. 이것은 BARRIER 를 아이템으로 사용하도록 빈 태그를 변경합니다. 이것으로 공기를 사용하여 제작하는 것을 방지합니다.",
   "neoforge.configgui.treatEmptyTagsAsAir": "빈 태그를 공기로 치부",
-  "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "형태가 없는 조합법을 역 직렬화 중 재료가 비어있으면 건너뛰어 복잡한 재료가 태그를 너무 일찍 캐싱하는 걸 방지합니다.",
+  "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "무형 조합법을 불러올 때 재료가 비어있는지 검사하는 것을 건너뛰어 복잡한 재료가 태그를 너무 빨리 캐싱하는 걸 방지합니다.",
   "neoforge.configgui.skipEmptyShapelessCheck": "무형 조합법을 불러올 때, 비어있는 재료를 확인하지 않습니다.",
   "neoforge.configgui.forceSystemNanoTime.tooltip": "클라이언트에서 시스템 시간을 가져올 때 glfwGetTime 말고 System.nanoTime을 대신 사용하도록 강제합니다.",
   "neoforge.configgui.forceSystemNanoTime": "System.nanoTime 강제",
@@ -189,8 +189,8 @@
   "neoforge.network.negotiation.failure.version.server.missing": "서버의 패킷 버전(%s)이 클라이언트에서 지원되지 않습니다!",
   "neoforge.network.negotiation.failure.version.mismatch": "클라이언트의 패킷 버전(%s)과 서버의 패킷 버전(%s)이 달라 처리할 수 없습니다!",
   "neoforge.network.invalid_flow": "패킷이 잘못된 방향으로 전송되어 처리할 수 없습니다: %s",
-  "neoforge.network.negotiation.failure.vanilla.client.not_supported": "서버에 접속할 수 없습니다. 접속하시려는 서버엔 네오포지가 설치되어 있지만 귀하의 클라이언트엔 없습니다. 네오포지 %s 설치 이후 다시 접속하세요.",
-  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "서버에 접속할 수 없습니다. 귀하가 설치하신 모드중 일부는 네오포지가 없는 서버에선 사용할 수 없으나 접속하시려는 서버는 네오포지가 없습니다.",
+  "neoforge.network.negotiation.failure.vanilla.client.not_supported": "서버에 접속할 수 없습니다. 접속하시려는 서버엔 네오 포지가 설치되어 있지만 귀하의 클라이언트엔 없습니다. 네오 포지 %s 설치 이후 다시 접속하세요.",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "서버에 접속할 수 없습니다. 클라이언트에 설치된 모드중 일부는 접속하는 서버에 무조건 네오 포지가 필요합니다. 그러나 접속하시려는 서버에는 네오 포지가 설치되어 있지 않습니다.",
   "neoforge.network.packet_splitter.unknown": "등록된 패킷 분할기가 없습니다!",
   "neoforge.network.advanced_add_entity.failed": "추가 엔티티 데이터 패킷을 처리하는데 실패했습니다: %s",
   "neoforge.network.advanced_open_screen.failed": "추가 스크린 데이터 패킷을 처리하는데 실패했습니다: %s",
@@ -199,6 +199,6 @@
   "neoforge.network.registries.sync.failed": "서버와 레지스트리 동기화중 오류가 발생했습니다: %s",
   "neoforge.network.aux_light_data.failed": "청크 %s의 추가 조명 데이터를 처리하는중 오류가 발생했습니다: %s",
   "neoforge.network.data_maps.failed": "%s 레지스트리 동기화중 오류가 발생했습니다: %s",
-  "neoforge.network.data_maps.missing_our": "클라이언트가 필요로 하는 데이터 맵들이 서버에 누락되어 있어 접속할 수 없습니다: %s",
-  "neoforge.network.data_maps.missing_their": "서버 접속에 필요한 데이터 맵들이 클라이언트에 누락되어 있습니다: %s"
+  "neoforge.network.data_maps.missing_our": "클라이언트에 필요한 데이터 맵들이 서버에 없어 접속할 수 없습니다: %s",
+  "neoforge.network.data_maps.missing_their": "서버 접속에 필요한 데이터 맵들이 클라이언트에 없어 접속할 수 없습니다: %s"
 }
