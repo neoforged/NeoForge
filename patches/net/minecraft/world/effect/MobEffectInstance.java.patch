@@ -98,7 +98,7 @@
                      p_329990_.apply(ByteBufCodecs::optional),
                      MobEffectInstance.Details::hiddenEffect,
 +                    // Neo: Add additional serialization logic for custom EffectCure(s)
-+                    net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(ByteBufCodecs.optional(net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.apply(ByteBufCodecs.collection(java.util.HashSet::new))), StreamCodec.unit(Optional.empty())),
++                    net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(ByteBufCodecs.optional(net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.apply(ByteBufCodecs.collection(java.util.HashSet::new))), net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.uncheckedUnit(Optional.empty())),
 +                    MobEffectInstance.Details::cures,
                      MobEffectInstance.Details::new
                  )
