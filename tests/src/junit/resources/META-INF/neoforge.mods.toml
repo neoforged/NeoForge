@@ -6,3 +6,5 @@ license="LGPL v2.1"
 modId="startup_config_test"
 [[mods]]
 modId="creative_tab_order_test"
+[[mods]]
+modId="block_entity_type_valid_blocks_event_test"
