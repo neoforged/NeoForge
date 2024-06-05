@@ -38,12 +38,6 @@ license="LGPL v2.1"
     modId="multiple_entrypoints_test"
 
 [[mods]]
-    modId="startup_config_test"
-[[mods]]
-    modId="creative_tab_order_test"
-
-
-[[mods]]
     modId="ordered_test_1"
 [[mods]]
     modId="ordered_test_2"
