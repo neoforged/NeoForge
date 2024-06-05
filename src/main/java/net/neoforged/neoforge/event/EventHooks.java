@@ -164,6 +164,7 @@ import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkTicketLevelUpdatedEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
@@ -596,6 +597,22 @@ public class EventHooks {
         }
         */
         NeoForge.EVENT_BUS.post(new ExplosionEvent.Detonate(level, explosion, list));
+    }
+
+    /**
+     * To be called when an explosion has calculated the knockback velocity
+     * but has not yet added the knockback to the entity caught in blast.
+     *
+     * @param level           The level that the explosion is in
+     * @param explosion       Explosion that is happening
+     * @param entity          The entity caught in the explosion's blast
+     * @param initialVelocity The explosion calculated velocity for the entity
+     * @return The new explosion velocity to add to the entity's existing velocity
+     */
+    public static Vec3 getExplosionKnockback(Level level, Explosion explosion, Entity entity, Vec3 initialVelocity) {
+        ExplosionKnockbackEvent event = new ExplosionKnockbackEvent(level, explosion, entity, initialVelocity);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getKnockbackVelocity();
     }
 
     public static boolean onCreateWorldSpawn(Level level, ServerLevelData settings) {
