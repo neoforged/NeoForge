@@ -10,7 +10,7 @@
  ) {
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
          p_337519_ -> p_337519_.group(
-@@ -29,7 +_,8 @@
+@@ -29,10 +_,25 @@
                      ServerStatus.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerStatus::players),
                      ServerStatus.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerStatus::version),
                      ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
@@ -20,3 +20,20 @@
                  )
                  .apply(p_337519_, ServerStatus::new)
      );
++
++    /**
++     * @deprecated Neo: Use {@link #ServerStatus(Component, Optional, Optional, Optional, boolean, boolean)}
++     */
++    @Deprecated
++    public ServerStatus(
++        Component description,
++        Optional<ServerStatus.Players> players,
++        Optional<ServerStatus.Version> version,
++        Optional<ServerStatus.Favicon> favicon,
++        boolean enforcesSecureChat
++    ) {
++        this(description, players, version, favicon, enforcesSecureChat, false);
++    }
+ 
+     public static record Favicon(byte[] iconBytes) {
+         private static final String PREFIX = "data:image/png;base64,";
