@@ -5,7 +5,7 @@
  
      public static record Factory<T extends SavedData>(
 -        Supplier<T> constructor, BiFunction<CompoundTag, HolderLookup.Provider, T> deserializer, DataFixTypes type
-+        Supplier<T> constructor, BiFunction<CompoundTag, HolderLookup.Provider, T> deserializer, @javax.annotation.Nullable DataFixTypes type // Neo: We do not have update logic compatible with DFU, several downstream patches from this record are made to support a nullable type.
++        Supplier<T> constructor, BiFunction<CompoundTag, HolderLookup.Provider, T> deserializer, @org.jetbrains.annotations.Nullable DataFixTypes type // Neo: We do not have update logic compatible with DFU, several downstream patches from this record are made to support a nullable type.
      ) {
 +        public Factory(Supplier<T> constructor, BiFunction<CompoundTag, HolderLookup.Provider, T> deserializer) {
 +            this(constructor, deserializer, null);

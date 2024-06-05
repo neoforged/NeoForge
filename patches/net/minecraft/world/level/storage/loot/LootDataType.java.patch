@@ -9,7 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(
          Registries.PREDICATE, LootItemConditions.DIRECT_CODEC, "predicates", createSimpleValidator()
-@@ -26,17 +_,32 @@
+@@ -26,17 +_,34 @@
          Registries.ITEM_MODIFIER, LootItemFunctions.ROOT_CODEC, "item_modifiers", createSimpleValidator()
      );
      public static final LootDataType<LootTable> TABLE = new LootDataType<>(
@@ -40,23 +40,10 @@
 -        return dataresult.result();
 +        return dataresult.result().map(it -> {
 +            it.ifPresent(val -> idSetter.accept(val, p_279253_));
-+            return it.orElse(defaultValue);
++            T value = it.orElse(defaultValue);
++            if (value instanceof LootTable lootTable) value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(p_279253_, lootTable);
++            return value;
 +        });
      }
  
      public static Stream<LootDataType<?>> values() {
-@@ -50,9 +_,12 @@
-     }
- 
-     private static LootDataType.Validator<LootTable> createLootTableValidator() {
--        return (p_339557_, p_339558_, p_339559_) -> p_339559_.validate(
--                p_339557_.setParams(p_339559_.getParamSet()).enterElement("{" + p_339558_.registry() + "/" + p_339558_.location() + "}", p_339558_)
-+        return (p_279333_, p_279227_, p_279406_) -> {
-+            p_279406_ = net.neoforged.neoforge.event.EventHooks.loadLootTable(p_279406_.getLootTableId(), p_279406_);
-+            p_279406_.validate(
-+                    p_279333_.setParams(p_279406_.getParamSet()).enterElement("{" + p_279227_.registry() + ":" + p_279227_.location() + "}", p_279227_)
-             );
-+        };
-     }
- 
-     @FunctionalInterface

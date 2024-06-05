@@ -22,7 +22,7 @@
              GlStateManager._vertexAttribPointer(p_167048_, p_167043_, p_167044_, false, p_167045_, p_167046_);
 @@ -186,6 +_,10 @@
          @OnlyIn(Dist.CLIENT)
-         public interface SetupState {
+         interface SetupState {
              void setupBufferState(int p_167053_, int p_167054_, int p_167055_, long p_167056_, int p_167057_, int p_167058_);
 +        }
 +

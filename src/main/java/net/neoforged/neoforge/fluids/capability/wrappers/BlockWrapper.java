@@ -17,8 +17,6 @@ import net.neoforged.neoforge.fluids.capability.templates.VoidFluidHandler;
 
 /**
  * Wrapper around any block, only accounts for fluid placement, otherwise the block acts a void.
- * If the block in question inherits from the Forge implementations,
- * consider using {@link FluidBlockWrapper}.
  */
 public class BlockWrapper extends VoidFluidHandler {
     protected final BlockState state;

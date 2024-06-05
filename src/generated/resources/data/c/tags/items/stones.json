@@ -7,7 +7,7 @@
     "minecraft:deepslate",
     "minecraft:tuff",
     {
-      "id": "#forge:stones",
+      "id": "#forge:stone",
       "required": false
     }
   ]

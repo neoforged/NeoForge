@@ -6,9 +6,7 @@
      protected void randomTick(BlockState p_222538_, ServerLevel p_222539_, BlockPos p_222540_, RandomSource p_222541_) {
 +        if (!p_222539_.isAreaLoaded(p_222540_, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
          if (p_222539_.getRawBrightness(p_222540_, 0) >= 9) {
--            float f = CropBlock.getGrowthSpeed(this, p_222539_, p_222540_);
--            if (p_222541_.nextInt((int)(25.0F / f) + 1) == 0) {
-+            float f = CropBlock.getGrowthSpeed(p_222538_, p_222539_, p_222540_);
++            float f = CropBlock.getGrowthSpeed(this, p_222539_, p_222540_);
 +            if (net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_222539_, p_222540_, p_222538_, p_222541_.nextInt((int)(25.0F / f) + 1) == 0)) {
                  int i = p_222538_.getValue(AGE);
                  if (i < 7) {
@@ -28,7 +26,7 @@
                          }
                      }
                  }
-+                net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_222539_, p_222540_, p_222538_);
++                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_222539_, p_222540_, p_222538_);
              }
          }
      }
