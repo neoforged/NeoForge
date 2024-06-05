@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -31,6 +34,7 @@ public class CreativeModeTabTest {
 
     private static final ResourceKey<CreativeModeTab> LOGS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "logs"));
     private static final ResourceKey<CreativeModeTab> STONE = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "stone"));
+    private static final ResourceKey<CreativeModeTab> DAMAGED_SWORDS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "damaged_swords"));
 
     public CreativeModeTabTest(IEventBus modEventBus) {
         if (!ENABLED)
@@ -76,6 +80,18 @@ public class CreativeModeTabTest {
                     .withTabsBefore(CreativeModeTabs.COLORED_BLOCKS)
                     .build());
 
+            helper.register(DAMAGED_SWORDS, CreativeModeTab.builder().title(Component.literal("Damaged Wooden Swords"))
+                    .displayItems((params, output) -> {
+                        output.accept(new ItemStack(Items.WOODEN_SWORD));
+                        output.accept(new ItemStack(Items.WOODEN_SWORD), TabVisibility.SEARCH_TAB_ONLY); // Should still be added
+                        for (int i = 1; i <= 59; i++) {
+                            // Each should be added since they have different data component values
+                            output.accept(new ItemStack(Items.WOODEN_SWORD.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.DAMAGE, i).build()));
+                        }
+                    })
+                    .icon(() -> new ItemStack(Items.WOODEN_SWORD))
+                    .build());
+
             List<Block> blocks = List.of(Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.COBBLESTONE);
             for (int i = 0; i < blocks.size(); i++) {
                 Block block = blocks.get(i);
@@ -118,6 +134,11 @@ public class CreativeModeTabTest {
             entries.putBefore(i(Blocks.DIORITE), i(Blocks.POLISHED_DIORITE), vis);
             entries.putBefore(i(Blocks.ANDESITE), i(Blocks.POLISHED_ANDESITE), vis);
         }
+
+        // Adding this causes a crash (as it should) when opening the creative inventory
+//        if (event.getTabKey() == DAMAGED_SWORDS) {
+//            entries.putBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
+//        }
     }
 
     private static class CreativeModeColorTab extends CreativeModeTab {
