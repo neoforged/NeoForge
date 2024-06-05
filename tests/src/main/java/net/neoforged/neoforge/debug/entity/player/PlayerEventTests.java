@@ -29,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -123,11 +124,11 @@ public class PlayerEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ItemPickupEvent fires")
     public static void itemPickupEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
-            if (event.getStack().is(Items.MELON_SEEDS)) {
+        test.eventListeners().forge().addListener((ItemEntityPickupEvent.Post event) -> {
+            if (event.getOriginalStack().is(Items.MELON_SEEDS)) {
                 // If the event is fired and detects pickup of melon seeds, the test will be considered pass
                 // and the player will get pumpkin seeds too
-                event.getEntity().addItem(new ItemStack(Items.PUMPKIN_SEEDS));
+                event.getPlayer().addItem(new ItemStack(Items.PUMPKIN_SEEDS));
                 test.pass();
             }
         });

@@ -126,20 +126,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called before a block is broken. Return true to prevent default block
-     * harvesting.
-     *
-     * Note: In SMP, this is called on both client and server sides!
-     *
-     * @param pos    Block's position in world
-     * @param player The Player that is wielding the item
-     * @return True to prevent harvesting, false to continue as normal
-     */
-    default boolean onBlockStartBreak(BlockPos pos, Player player) {
-        return !self().isEmpty() && self().getItem().onBlockStartBreak(self(), pos, player);
-    }
-
-    /**
      * Called when the player is mining a block and the item in his hand changes.
      * Allows to not reset blockbreaking if only NBT or similar changes.
      *

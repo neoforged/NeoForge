@@ -38,7 +38,7 @@
              return this.twoHanded;
          }
 +        // FORGE START
-+        @javax.annotation.Nullable
++        @org.jetbrains.annotations.Nullable
 +        private final net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose;
 +
 +        private ArmPose(boolean twoHanded, @javax.annotation.Nonnull net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {

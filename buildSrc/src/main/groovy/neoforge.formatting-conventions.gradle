@@ -1,0 +1,85 @@
+import java.util.regex.Matcher
+
+project.plugins.apply('com.diffplug.spotless')
+
+final generatePackageInfos = tasks.register('generatePackageInfos', Task) {
+    doLast {
+        fileTree('src/main/java').each { javaFile ->
+            def packageInfoFile = new File(javaFile.parent, 'package-info.java')
+            if (!packageInfoFile.exists()) {
+                def pkgName = javaFile.toString().replaceAll(Matcher.quoteReplacement(File.separator), '/')
+                pkgName = pkgName.substring(pkgName.indexOf('net/neoforged/'), pkgName.lastIndexOf('/'))
+                pkgName = pkgName.replaceAll('/', '.')
+
+                def pkgInfoText = """
+                    |@FieldsAreNonnullByDefault
+                    |@MethodsReturnNonnullByDefault
+                    |@ParametersAreNonnullByDefault
+                    |package $pkgName;
+                    |
+                    |import javax.annotation.ParametersAreNonnullByDefault;
+                    |import net.minecraft.FieldsAreNonnullByDefault;
+                    |import net.minecraft.MethodsReturnNonnullByDefault;
+                """.stripMargin().trim()
+
+                packageInfoFile.text = pkgInfoText
+            }
+        }
+    }
+}
+
+spotless {
+    java {
+        endWithNewline()
+        indentWithSpaces()
+        removeUnusedImports()
+        toggleOffOn()
+        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
+        importOrder()
+
+        // courtesy of diffplug/spotless#240
+        // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
+        custom 'noWildcardImports', { String fileContents ->
+            if (fileContents.contains('*;\n')) {
+                throw new GradleException('No wildcard imports are allowed!')
+            }
+        }
+
+        custom 'noNotNull', { String fileContents ->
+            if (fileContents.contains('@NotNull') || fileContents.contains('@Nonnull')) {
+                throw new GradleException('@NotNull and @Nonnull are disallowed.')
+            }
+        }
+
+        custom 'jetbrainsNullable', { String fileContents ->
+            fileContents.replace('javax.annotation.Nullable', 'org.jetbrains.annotations.Nullable')
+        }
+        bumpThisNumberIfACustomStepChanges(3)
+    }
+}
+
+tasks.named('licenseFormat').configure {
+    mustRunAfter generatePackageInfos
+}
+tasks.named('spotlessApply').configure {
+    mustRunAfter generatePackageInfos
+    mustRunAfter tasks.named('licenseFormat')
+}
+
+tasks.register('applyAllFormatting', Task) {
+    dependsOn generatePackageInfos
+    dependsOn tasks.named('licenseFormat')
+    dependsOn tasks.named('spotlessApply')
+    group = 'verification'
+}
+
+tasks.register('checkFormatting', Task) {
+    dependsOn 'licenseCheck'
+    dependsOn 'spotlessCheck'
+    group = 'verification'
+}
+
+tasks.register('runUnitTests', Task) {
+    group = 'verification'
+    tasks.withType(Test).each { tsk -> it.dependsOn(tsk) }
+}

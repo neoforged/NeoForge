@@ -40,8 +40,23 @@ jobs:
           arguments: setup
           cache-read-only: false
 
-      - name: Build with Gradle
+      - name: Run game tests with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: :tests:runGameTestServer
           cache-read-only: false
+
+      - name: Run JUnit tests with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :tests:runUnitTests
+          cache-read-only: false
+
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/

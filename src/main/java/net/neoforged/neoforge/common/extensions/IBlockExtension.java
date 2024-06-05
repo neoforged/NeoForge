@@ -243,36 +243,34 @@ public interface IBlockExtension {
     }
 
     /**
-     * Determines if this block is classified as a Bed, Allowing
-     * players to sleep in it, though the block has to specifically
-     * perform the sleeping functionality in it's activated event.
+     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
+     * <p>
+     * If true, players may sleep in it, though the block must manually put the player to sleep
+     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
+     * <p>
+     * If you want players to be able to respawn at your bed, you also need to override {@link #getRespawnPosition}.
      *
-     * @param state  The current state
-     * @param level  The current level
-     * @param pos    Block position in level
-     * @param player The player or camera entity, null in some cases.
+     * @param state   The current state
+     * @param level   The current level
+     * @param pos     Block position in level
+     * @param sleeper The sleeping entity.
      * @return True to treat this as a bed
      */
-    default boolean isBed(BlockState state, BlockGetter level, BlockPos pos, @Nullable Entity player) {
-        return self() instanceof BedBlock; //TODO: Forge: Keep isBed function?
+    default boolean isBed(BlockState state, BlockGetter level, BlockPos pos, LivingEntity sleeper) {
+        return self() instanceof BedBlock;
     }
 
     /**
-     * Returns the position that the entity is moved to upon
-     * respawning at this block.
+     * Returns the position that the entity is moved to upon respawning at this block.
      *
      * @param state       The current state
      * @param type        The entity type used when checking if a dismount blockstate is dangerous. Currently always PLAYER.
      * @param levelReader The current level
      * @param pos         Block position in level
      * @param orientation The angle the entity had when setting the respawn point
-     * @param entity      The entity respawning, often null
      * @return The spawn position or the empty optional if respawning here is not possible
      */
-    default Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
-        if (isBed(state, levelReader, pos, entity) && levelReader instanceof Level level && BedBlock.canSetSpawn(level)) {
-            return BedBlock.findStandUpPosition(type, levelReader, pos, state.getValue(BedBlock.FACING), orientation);
-        }
+    default Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
         return Optional.empty();
     }
 

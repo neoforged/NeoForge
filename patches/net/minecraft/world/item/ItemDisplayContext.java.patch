@@ -35,7 +35,7 @@
 +
 +    // Forge start
 +    private final boolean isModded;
-+    @javax.annotation.Nullable
++    @org.jetbrains.annotations.Nullable
 +    private final ItemDisplayContext fallback;
 +
 +    private ItemDisplayContext(net.minecraft.resources.ResourceLocation serializeName, ItemDisplayContext fallback) {
@@ -49,11 +49,11 @@
 +        return isModded;
 +    }
 +
-+    public @javax.annotation.Nullable ItemDisplayContext fallback() {
++    public @org.jetbrains.annotations.Nullable ItemDisplayContext fallback() {
 +        return fallback;
 +    }
 +
-+    public static ItemDisplayContext create(String keyName, net.minecraft.resources.ResourceLocation serializedName, @javax.annotation.Nullable ItemDisplayContext fallback) {
++    public static ItemDisplayContext create(String keyName, net.minecraft.resources.ResourceLocation serializedName, @org.jetbrains.annotations.Nullable ItemDisplayContext fallback) {
 +        throw new IllegalStateException("Enum not extended!");
 +    }
 +    public static final net.neoforged.neoforge.registries.callback.AddCallback<ItemDisplayContext> ADD_CALLBACK = (registry, id, key, obj) -> obj.id = id > Byte.MAX_VALUE ? (byte) -(id - Byte.MAX_VALUE) : (byte) id; // if the ID is > 127 start doing negative IDs

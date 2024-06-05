@@ -7,6 +7,8 @@ package net.neoforged.neoforge.event;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -38,8 +41,10 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stat;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Unit;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.Container;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -59,13 +64,14 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Player.BedSleepingProblem;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -78,11 +84,13 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
@@ -93,11 +101,11 @@ import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event.Result;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
@@ -119,49 +127,48 @@ import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
-import net.neoforged.neoforge.event.entity.living.LivingPackSizeEvent;
+import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
-import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
+import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType;
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.entity.player.BonemealEvent;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
-import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
+import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
+import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
-import net.neoforged.neoforge.event.entity.player.SleepingLocationCheckEvent;
-import net.neoforged.neoforge.event.entity.player.SleepingTimeCheckEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
-import net.neoforged.neoforge.event.level.BlockEvent.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityMultiPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.NeighborNotifyEvent;
+import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkTicketLevelUpdatedEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
-import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -213,8 +220,7 @@ public class EventHooks {
     @ApiStatus.Internal
     public static boolean checkSpawnPlacements(EntityType<?> entityType, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random, boolean defaultResult) {
         var event = new SpawnPlacementCheck(entityType, level, spawnType, pos, random, defaultResult);
-        NeoForge.EVENT_BUS.post(event);
-        return event.getResult() == Result.DEFAULT ? defaultResult : event.getResult() == Result.ALLOW;
+        return NeoForge.EVENT_BUS.post(event).getPlacementCheckResult();
     }
 
     /**
@@ -230,26 +236,26 @@ public class EventHooks {
     public static boolean checkSpawnPosition(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType) {
         var event = new PositionCheck(mob, level, spawnType, null);
         NeoForge.EVENT_BUS.post(event);
-        if (event.getResult() == Result.DEFAULT) {
+        if (event.getResult() == PositionCheck.Result.DEFAULT) {
             return mob.checkSpawnRules(level, spawnType) && mob.checkSpawnObstruction(level);
         }
-        return event.getResult() == Result.ALLOW;
+        return event.getResult() == PositionCheck.Result.SUCCEED;
     }
 
     /**
-     * Specialized variant of {@link #checkSpawnPosition} for spawners, as they have slightly different checks.
+     * Specialized variant of {@link #checkSpawnPosition} for spawners, as they have slightly different checks, and pass through the {@link BaseSpawner} to the event.
      * 
-     * @see #CheckSpawnPosition
+     * @see #checkSpawnPosition(Mob, ServerLevelAccessor, MobSpawnType)
      * @implNote See in-line comments about custom spawn rules.
      */
     public static boolean checkSpawnPositionSpawner(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, SpawnData spawnData, BaseSpawner spawner) {
-        var event = new PositionCheck(mob, level, spawnType, null);
+        var event = new PositionCheck(mob, level, spawnType, spawner);
         NeoForge.EVENT_BUS.post(event);
-        if (event.getResult() == Result.DEFAULT) {
+        if (event.getResult() == PositionCheck.Result.DEFAULT) {
             // Spawners do not evaluate Mob#checkSpawnRules if any custom rules are present. This is despite the fact that these two methods do not check the same things.
             return (spawnData.getCustomSpawnRules().isPresent() || mob.checkSpawnRules(level, spawnType)) && mob.checkSpawnObstruction(level);
         }
-        return event.getResult() == Result.ALLOW;
+        return event.getResult() == PositionCheck.Result.SUCCEED;
     }
 
     /**
@@ -343,16 +349,38 @@ public class EventHooks {
         return event;
     }
 
-    public static PlayerSpawnPhantomsEvent onPhantomSpawn(ServerPlayer player, int phantomsToSpawn) {
-        var event = new PlayerSpawnPhantomsEvent(player, phantomsToSpawn);
+    /**
+     * Called from {@link PhantomSpawner#tick} just before the spawn conditions for phantoms are evaluated.
+     * Fires the {@link PlayerSpawnPhantomsEvent} and returns the event.
+     * 
+     * @param player The player for whom a spawn attempt is being made
+     * @param level  The level of the player
+     * @param pos    The block position of the player
+     */
+    public static PlayerSpawnPhantomsEvent firePlayerSpawnPhantoms(ServerPlayer player, ServerLevel level, BlockPos pos) {
+        Difficulty difficulty = level.getCurrentDifficultyAt(pos).getDifficulty();
+        var event = new PlayerSpawnPhantomsEvent(player, 1 + level.random.nextInt(difficulty.getId() + 1));
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
-    public static Result canEntityDespawn(Mob entity, ServerLevelAccessor level) {
-        AllowDespawn event = new AllowDespawn(entity, level);
+    /**
+     * Fires {@link MobDespawnEvent} and returns true if the default logic should be ignored.
+     * 
+     * @param entity The entity being despawned.
+     * @return True if the event result is not {@link MobDespawnEvent.Result#DEFAULT}, and the vanilla logic should be ignored.
+     */
+    public static boolean checkMobDespawn(Mob mob) {
+        MobDespawnEvent event = new MobDespawnEvent(mob, (ServerLevel) mob.level());
         NeoForge.EVENT_BUS.post(event);
-        return event.getResult();
+
+        switch (event.getResult()) {
+            case ALLOW -> mob.discard();
+            case DEFAULT -> {}
+            case DENY -> mob.setNoActionTime(0);
+        }
+
+        return event.getResult() != MobDespawnEvent.Result.DEFAULT;
     }
 
     public static int getItemBurnTime(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType) {
@@ -369,10 +397,19 @@ public class EventHooks {
         return event.getDroppedExperience();
     }
 
-    public static int getMaxSpawnPackSize(Mob entity) {
-        LivingPackSizeEvent maxCanSpawnEvent = new LivingPackSizeEvent(entity);
-        NeoForge.EVENT_BUS.post(maxCanSpawnEvent);
-        return maxCanSpawnEvent.getResult() == Result.ALLOW ? maxCanSpawnEvent.getMaxPackSize() : entity.getMaxSpawnClusterSize();
+    /**
+     * Fires {@link SpawnClusterSizeEvent} and returns the size as a result of the event.
+     * <p>
+     * Called in {@link NaturalSpawner#spawnCategoryForPosition} where {@link Mob#getMaxSpawnClusterSize()} would normally be called.
+     * 
+     * @param entity The entity whose max spawn cluster size is being queried.
+     * 
+     * @return The new spawn cluster size.
+     */
+    public static int getMaxSpawnClusterSize(Mob entity) {
+        var event = new SpawnClusterSizeEvent(entity);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getSize();
     }
 
     public static Component getPlayerDisplayName(Player player, Component username) {
@@ -397,12 +434,6 @@ public class EventHooks {
         ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context);
         NeoForge.EVENT_BUS.post(event);
         return event;
-    }
-
-    public static SummonAidEvent fireZombieSummonAid(Zombie zombie, Level level, int x, int y, int z, LivingEntity attacker, double summonChance) {
-        SummonAidEvent summonEvent = new SummonAidEvent(zombie, level, x, y, z, attacker, summonChance);
-        NeoForge.EVENT_BUS.post(summonEvent);
-        return summonEvent;
     }
 
     public static boolean onEntityStruckByLightning(Entity entity, LightningBolt bolt) {
@@ -455,36 +486,18 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getFinalState();
     }
 
-    public static int onApplyBonemeal(Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        BonemealEvent event = new BonemealEvent(player, level, pos, state, stack);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
-        if (event.getResult() == Result.ALLOW) {
-            if (!level.isClientSide)
-                stack.shrink(1);
-            return 1;
-        }
-        return 0;
-    }
-
-    @Nullable
-    public static InteractionResultHolder<ItemStack> onBucketUse(Player player, Level level, ItemStack stack, @Nullable HitResult target) {
-        FillBucketEvent event = new FillBucketEvent(player, stack, level, target);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return new InteractionResultHolder<ItemStack>(InteractionResult.FAIL, stack);
-
-        if (event.getResult() == Result.ALLOW) {
-            if (player.getAbilities().instabuild)
-                return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, stack);
-
-            stack.shrink(1);
-            if (stack.isEmpty())
-                return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, event.getFilledBucket());
-
-            if (!player.getInventory().add(event.getFilledBucket()))
-                player.drop(event.getFilledBucket(), false);
-
-            return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, stack);
-        }
-        return null;
+    /**
+     * Called when bone meal (or equivalent) is used on a block. Fires the {@link BonemealEvent} and returns the event.
+     * 
+     * @param player The player who used the item, if any
+     * @param level  The level
+     * @param pos    The position of the target block
+     * @param state  The state of the target block
+     * @param stack  The bone meal item stack
+     * @return The event
+     */
+    public static BonemealEvent fireBonemealEvent(@Nullable Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
+        return NeoForge.EVENT_BUS.post(new BonemealEvent(player, level, pos, state, stack));
     }
 
     public static PlayLevelSoundEvent.AtEntity onPlaySoundAtEntity(Entity entity, Holder<SoundEvent> name, SoundSource category, float volume, float pitch) {
@@ -506,10 +519,29 @@ public class EventHooks {
         return event.getExtraLife();
     }
 
-    public static int onItemPickup(ItemEntity entityItem, Player player) {
-        var event = new EntityItemPickupEvent(player, entityItem);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
-        return event.getResult() == Result.ALLOW ? 1 : 0;
+    /**
+     * Called in {@link ItemEntity#playerTouch(Player)} before any other processing occurs.
+     * <p>
+     * Fires {@link ItemEntityPickupEvent.Pre} and returns the event.
+     * 
+     * @param itemEntity The item entity that a player collided with
+     * @param player     The player that collided with the item entity
+     */
+    public static ItemEntityPickupEvent.Pre fireItemPickupPre(ItemEntity itemEntity, Player player) {
+        return NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Pre(player, itemEntity));
+    }
+
+    /**
+     * Called in {@link ItemEntity#playerTouch(Player)} after an item was successfully picked up.
+     * <p>
+     * Fires {@link ItemEntityPickupEvent.Post}.
+     * 
+     * @param itemEntity The item entity that a player collided with
+     * @param player     The player that collided with the item entity
+     * @param copy       A copy of the item entity's item stack before the pickup
+     */
+    public static void fireItemPickupPost(ItemEntity itemEntity, Player player, ItemStack copy) {
+        NeoForge.EVENT_BUS.post(new ItemEntityPickupEvent.Post(player, itemEntity, copy));
     }
 
     public static boolean canMountEntity(Entity entityMounting, Entity entityBeingMounted, boolean isMounting) {
@@ -526,10 +558,10 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new AnimalTameEvent(animal, tamer)).isCanceled();
     }
 
-    public static Player.BedSleepingProblem onPlayerSleepInBed(Player player, Optional<BlockPos> pos) {
-        PlayerSleepInBedEvent event = new PlayerSleepInBedEvent(player, pos);
+    public static Either<BedSleepingProblem, Unit> canPlayerStartSleeping(ServerPlayer player, BlockPos pos, Either<BedSleepingProblem, Unit> vanillaResult) {
+        CanPlayerSleepEvent event = new CanPlayerSleepEvent(player, pos, vanillaResult.left().orElse(null));
         NeoForge.EVENT_BUS.post(event);
-        return event.getResultStatus();
+        return event.getProblem() != null ? Either.left(event.getProblem()) : Either.right(Unit.INSTANCE);
     }
 
     public static void onPlayerWakeup(Player player, boolean wakeImmediately, boolean updateLevel) {
@@ -565,6 +597,22 @@ public class EventHooks {
         }
         */
         NeoForge.EVENT_BUS.post(new ExplosionEvent.Detonate(level, explosion, list));
+    }
+
+    /**
+     * To be called when an explosion has calculated the knockback velocity
+     * but has not yet added the knockback to the entity caught in blast.
+     *
+     * @param level           The level that the explosion is in
+     * @param explosion       Explosion that is happening
+     * @param entity          The entity caught in the explosion's blast
+     * @param initialVelocity The explosion calculated velocity for the entity
+     * @return The new explosion velocity to add to the entity's existing velocity
+     */
+    public static Vec3 getExplosionKnockback(Level level, Explosion explosion, Entity entity, Vec3 initialVelocity) {
+        ExplosionKnockbackEvent event = new ExplosionKnockbackEvent(level, explosion, entity, initialVelocity);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getKnockbackVelocity();
     }
 
     public static boolean onCreateWorldSpawn(Level level, ServerLevelData settings) {
@@ -603,29 +651,13 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerBrewedPotionEvent(player, stack));
     }
 
-    public static boolean fireSleepingLocationCheck(LivingEntity player, BlockPos sleepingLocation) {
-        SleepingLocationCheckEvent evt = new SleepingLocationCheckEvent(player, sleepingLocation);
-        NeoForge.EVENT_BUS.post(evt);
-
-        Result canContinueSleep = evt.getResult();
-        if (canContinueSleep == Result.DEFAULT) {
-            return player.getSleepingPos().map(pos -> {
-                BlockState state = player.level().getBlockState(pos);
-                return state.getBlock().isBed(state, player.level(), pos, player);
-            }).orElse(false);
-        } else
-            return canContinueSleep == Result.ALLOW;
-    }
-
-    public static boolean fireSleepingTimeCheck(Player player, Optional<BlockPos> sleepingLocation) {
-        SleepingTimeCheckEvent evt = new SleepingTimeCheckEvent(player, sleepingLocation);
-        NeoForge.EVENT_BUS.post(evt);
-
-        Result canContinueSleep = evt.getResult();
-        if (canContinueSleep == Result.DEFAULT)
-            return !player.level().isDay();
-        else
-            return canContinueSleep == Result.ALLOW;
+    /**
+     * Checks if a sleeping entity can continue sleeping with the given sleeping problem.
+     * 
+     * @return true if the entity may continue sleeping
+     */
+    public static boolean canEntityContinueSleeping(LivingEntity sleeper, @Nullable BedSleepingProblem problem) {
+        return NeoForge.EVENT_BUS.post(new CanContinueSleepingEvent(sleeper, problem)).mayContinueSleeping();
     }
 
     public static InteractionResultHolder<ItemStack> onArrowNock(ItemStack item, Level level, Player player, InteractionHand hand, boolean hasAmmo) {
@@ -655,12 +687,12 @@ public class EventHooks {
         return event.getTable();
     }
 
-    public static boolean canCreateFluidSource(Level level, BlockPos pos, BlockState state, boolean def) {
-        CreateFluidSourceEvent evt = new CreateFluidSourceEvent(level, pos, state);
-        NeoForge.EVENT_BUS.post(evt);
-
-        Result result = evt.getResult();
-        return result == Result.DEFAULT ? def : result == Result.ALLOW;
+    /**
+     * Checks if a fluid is allowed to create a fluid source. This fires the {@link CreateFluidSourceEvent}.
+     * By default, a fluid can create a source if it returns true to {@link IFluidStateExtension#canConvertToSource(Level, BlockPos)}
+     */
+    public static boolean canCreateFluidSource(Level level, BlockPos pos, BlockState state) {
+        return NeoForge.EVENT_BUS.post(new CreateFluidSourceEvent(level, pos, state)).canConvert();
     }
 
     public static Optional<PortalShape> onTrySpawnPortal(LevelAccessor level, BlockPos pos, Optional<PortalShape> size) {
@@ -678,21 +710,33 @@ public class EventHooks {
         return !NeoForge.EVENT_BUS.post(new LivingDestroyBlockEvent(entity, pos, state)).isCanceled();
     }
 
-    public static boolean getMobGriefingEvent(Level level, @Nullable Entity entity) {
+    /**
+     * Checks if an entity can perform a griefing action.
+     * <p>
+     * If an entity is provided, this method fires {@link EntityMobGriefingEvent}.
+     * If an entity is not provided, this method returns the value of {@link GameRules#RULE_MOBGRIEFING}.
+     * 
+     * @param level  The level of the action
+     * @param entity The entity performing the action, or null if unknown.
+     * @return
+     */
+    public static boolean canEntityGrief(Level level, @Nullable Entity entity) {
         if (entity == null)
             return level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 
-        EntityMobGriefingEvent event = new EntityMobGriefingEvent(entity);
-        NeoForge.EVENT_BUS.post(event);
-
-        Result result = event.getResult();
-        return result == Result.DEFAULT ? level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) : result == Result.ALLOW;
+        return NeoForge.EVENT_BUS.post(new EntityMobGriefingEvent(level, entity)).canGrief();
     }
 
-    public static SaplingGrowTreeEvent blockGrowFeature(LevelAccessor level, RandomSource randomSource, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> holder) {
-        SaplingGrowTreeEvent event = new SaplingGrowTreeEvent(level, randomSource, pos, holder);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+    /**
+     * Fires the {@link BlockGrowFeatureEvent} and returns the event object.
+     * 
+     * @param level  The level the feature will be grown in
+     * @param rand   The random source
+     * @param pos    The position the feature will be grown at
+     * @param holder The feature to be grown, if any
+     */
+    public static BlockGrowFeatureEvent fireBlockGrowFeature(LevelAccessor level, RandomSource rand, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> holder) {
+        return NeoForge.EVENT_BUS.post(new BlockGrowFeatureEvent(level, rand, pos, holder));
     }
 
     /**
@@ -850,16 +894,24 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
     }
 
-    public static void firePlayerItemPickupEvent(Player player, ItemEntity item, ItemStack clone) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemPickupEvent(player, item, clone));
-    }
-
     public static void firePlayerCraftingEvent(Player player, ItemStack crafted, Container craftMatrix) {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, crafted, craftMatrix));
     }
 
     public static void firePlayerSmeltedEvent(Player player, ItemStack smelted) {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
+    }
+
+    /**
+     * Called by {@link Gui.HeartType#forPlayer} to allow for modification of the displayed heart type in the
+     * health bar.
+     *
+     * @param player    The local {@link Player}
+     * @param heartType The {@link Gui.HeartType} which would be displayed by vanilla
+     * @return The heart type which should be displayed
+     */
+    public static Gui.HeartType firePlayerHeartTypeEvent(Player player, Gui.HeartType heartType) {
+        return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
     }
 
     /**
@@ -1016,14 +1068,30 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>();
+        final var searchDupes = new ObjectLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
+        // The ItemStackLinkedSet.TYPE_AND_TAG strategy cannot be used for the MutableHashedLinkedMap due to vanilla
+        // adding multiple identical ItemStacks with different TabVisibility values. The values also cannot be merged
+        // because it does not abide by the intended order. For example, vanilla adds all max enchanted books to the
+        // "ingredient" tab with "parent only" visibility, then also adds all enchanted books again in increasing order
+        // to their max values but with the "search only" visibility. Because the parent-only is added first and then
+        // the search-only entries are added after, the max enchantments would show up first and then the enchantments
+        // in increasing order up to max-1.
+        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(MutableHashedLinkedMap.BASIC, (stack, tabVisibility) -> {
+            if (!searchDupes.add(stack) && tabVisibility != CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
+                throw new IllegalStateException(
+                        "Accidentally adding the same item stack twice "
+                                + stack.getDisplayName().getString()
+                                + " to a Creative Mode Tab: "
+                                + tab.getDisplayName().getString());
+            }
+            return true;
+        });
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
             entries.put(stack, vis);
         });
-
         ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
 
         for (var entry : entries)

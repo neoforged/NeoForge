@@ -44,7 +44,7 @@
              }
  
 -            if (!this.level().isClientSide && this.level().isDay()) {
-+            if (!this.level().isClientSide && !net.neoforged.neoforge.event.EventHooks.fireSleepingTimeCheck(this, getSleepingPos())) {
++            if (!this.level().isClientSide && !net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, this.level().isDay() ? BedSleepingProblem.NOT_POSSIBLE_NOW : null)) {
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
@@ -241,15 +241,17 @@
                          i += EnchantmentHelper.getKnockbackBonus(this);
                          if (this.isSprinting() && flag) {
                              this.level()
-@@ -1162,8 +_,10 @@
+@@ -1162,8 +_,12 @@
                              && !this.isPassenger()
                              && p_36347_ instanceof LivingEntity
                              && !this.isSprinting();
-+                        net.neoforged.neoforge.event.entity.player.CriticalHitEvent hitResult = net.neoforged.neoforge.common.CommonHooks.getCriticalHit(this, p_36347_, flag2, flag2 ? 1.5F : 1.0F);
-+                        flag2 = hitResult != null;
++                        // Neo: Fire the critical hit event and override the critical hit status and damage multiplier based on the event.
++                        // The boolean local above (flag2) is the vanilla critical hit result.
++                        var critEvent = net.neoforged.neoforge.common.CommonHooks.fireCriticalHit(this, p_36347_, flag2, flag2 ? 1.5F : 1.0F);
++                        flag2 = critEvent.isCriticalHit();
                          if (flag2) {
 -                            f *= 1.5F;
-+                            f *= hitResult.getDamageModifier();
++                            f *= critEvent.getDamageMultiplier();
                          }
  
                          f += f1;
@@ -326,7 +328,7 @@
              return BedBlock.findStandUpPosition(EntityType.PLAYER, p_36131_, p_36132_, blockstate.getValue(BedBlock.FACING), p_36133_);
          } else if (!p_36134_) {
 -            return Optional.empty();
-+            return blockstate.getRespawnPosition(EntityType.PLAYER, p_36131_, p_36132_, p_36133_, null);
++            return blockstate.getRespawnPosition(EntityType.PLAYER, p_36131_, p_36132_, p_36133_);
          } else {
              boolean flag = block.isPossibleToRespawnInThis(blockstate);
              BlockState blockstate1 = p_36131_.getBlockState(p_36132_.above());

@@ -17,121 +17,191 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a captured snapshot of a block which will not change
- * automatically.
+ * Represents a captured snapshot of a block, including the level, position, state, BE data, and setBlock flags.
  * <p>
- * Unlike Block, which only one object can exist per coordinate, BlockSnapshot
- * can exist multiple times for any given Block.
+ * Used to record the prior state and unwind changes if the change was denied, such as during {@link BlockEvent.BreakEvent}.
  */
 public class BlockSnapshot {
     private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("neoforge.debugBlockSnapshot", "false"));
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final ResourceKey<Level> dim;
     private final BlockPos pos;
     private final int flags;
-    private final BlockState block;
+    private final BlockState state;
     @Nullable
     private final CompoundTag nbt;
 
-    @Nullable
     private WeakReference<LevelAccessor> level;
+    @Nullable
     private String toString = null;
 
     private BlockSnapshot(ResourceKey<Level> dim, LevelAccessor level, BlockPos pos, BlockState state, @Nullable CompoundTag nbt, int flags) {
         this.dim = dim;
         this.pos = pos.immutable();
-        this.block = state;
+        this.state = state;
         this.flags = flags;
         this.nbt = nbt;
 
         this.level = new WeakReference<>(level);
 
-        if (DEBUG)
-            System.out.println("Created " + this.toString());
+        if (DEBUG) {
+            LOGGER.debug("Created " + this.toString());
+        }
     }
 
-    public static BlockSnapshot create(ResourceKey<Level> dim, LevelAccessor world, BlockPos pos) {
-        return create(dim, world, pos, 3);
+    /**
+     * Creates a new snapshot of the data at the given position.
+     * 
+     * @param dim   The dimension of the changed block
+     * @param level The level of the changed block
+     * @param pos   The position of the changed block
+     * @param flag  The {@link Level#setBlock(BlockPos, BlockState, int)} flags that the block was changed with.
+     * @return A captured block snapshot, containing the state and BE data from the given position.
+     */
+    public static BlockSnapshot create(ResourceKey<Level> dim, LevelAccessor level, BlockPos pos, int flag) {
+        return new BlockSnapshot(dim, level, pos, level.getBlockState(pos), getBlockEntityTag(level, pos), flag);
     }
 
-    public static BlockSnapshot create(ResourceKey<Level> dim, LevelAccessor world, BlockPos pos, int flag) {
-        return new BlockSnapshot(dim, world, pos, world.getBlockState(pos), getBlockEntityTag(world.getBlockEntity(pos), world.registryAccess()), flag);
+    /**
+     * Creates a new snapshot with the default block flags ({@link Block#UPDATE_NEIGHBORS and Block#UPDATE_CLIENTS}.
+     * 
+     * @see #create(ResourceKey, LevelAccessor, BlockPos, int)
+     */
+    public static BlockSnapshot create(ResourceKey<Level> dim, LevelAccessor level, BlockPos pos) {
+        return create(dim, level, pos, 3);
     }
 
+    /**
+     * {@return the recorded dimension key}
+     */
+    public ResourceKey<Level> getDimension() {
+        return this.dim;
+    }
+
+    /**
+     * {@return the recorded position}
+     */
+    public BlockPos getPos() {
+        return pos;
+    }
+
+    /**
+     * @return the recorded {@link Level#setBlock(BlockPos, BlockState, int)} flags
+     */
+    public int getFlags() {
+        return flags;
+    }
+
+    /**
+     * {@return the recorded block entity NBT data, if one was present}
+     */
     @Nullable
-    private static CompoundTag getBlockEntityTag(@Nullable BlockEntity te, HolderLookup.Provider provider) {
-        return te == null ? null : te.saveWithFullMetadata(provider);
+    public CompoundTag getTag() {
+        return nbt;
     }
 
-    public BlockState getCurrentBlock() {
-        LevelAccessor world = getLevel();
-        return world == null ? Blocks.AIR.defaultBlockState() : world.getBlockState(this.pos);
+    /**
+     * {@return the snapshot's recorded block state}
+     */
+    public BlockState getState() {
+        return this.state;
     }
 
+    /**
+     * {@return the stored level, attempting to resolve it from the current server if it has gone out of scope}
+     */
     @Nullable
     public LevelAccessor getLevel() {
-        LevelAccessor world = this.level != null ? this.level.get() : null;
-        if (world == null) {
-            world = ServerLifecycleHooks.getCurrentServer().getLevel(this.dim);
-            this.level = new WeakReference<LevelAccessor>(world);
+        LevelAccessor level = this.level.get();
+        if (level == null) {
+            level = ServerLifecycleHooks.getCurrentServer().getLevel(this.dim);
+            this.level = new WeakReference<LevelAccessor>(level);
         }
-        return world;
+        return level;
     }
 
-    public BlockState getReplacedBlock() {
-        return this.block;
+    /**
+     * {@return the current (live) block state at the recorded position, not the snapshot's recorded state}
+     */
+    public BlockState getCurrentState() {
+        LevelAccessor level = this.getLevel();
+        return level == null ? Blocks.AIR.defaultBlockState() : level.getBlockState(this.pos);
     }
 
+    /**
+     * Recreates a block entity from the stored data (pos/state/NBT) of this block snapshot.
+     * 
+     * @return The newly created block entity, or null if no NBT data was present, or it was invalid.
+     */
     @Nullable
-    public BlockEntity getBlockEntity(HolderLookup.Provider provider) {
-        return getTag() != null ? BlockEntity.loadStatic(getPos(), getReplacedBlock(), getTag(), provider) : null;
+    public BlockEntity recreateBlockEntity(HolderLookup.Provider provider) {
+        return getTag() != null ? BlockEntity.loadStatic(getPos(), getState(), getTag(), provider) : null;
     }
 
-    public boolean restore() {
-        return restore(false);
-    }
+    /**
+     * Restores this block snapshot to the target level and position with the specified flags.
+     * 
+     * @return true if the block was successfully updated, false otherwise.
+     */
+    public boolean restoreToLocation(LevelAccessor level, BlockPos pos, int flags) {
+        BlockState replaced = getState();
 
-    public boolean restore(boolean force) {
-        return restore(force, true);
-    }
-
-    public boolean restore(boolean force, boolean notifyNeighbors) {
-        return restoreToLocation(getLevel(), getPos(), force, notifyNeighbors);
-    }
-
-    public boolean restoreToLocation(LevelAccessor world, BlockPos pos, boolean force, boolean notifyNeighbors) {
-        BlockState current = getCurrentBlock();
-        BlockState replaced = getReplacedBlock();
-
-        int flags = notifyNeighbors ? Block.UPDATE_ALL : Block.UPDATE_CLIENTS;
-
-        if (current != replaced) {
-            if (force)
-                world.setBlock(pos, replaced, flags);
-            else
-                return false;
+        if (!level.setBlock(pos, replaced, flags)) {
+            return false;
         }
 
-        world.setBlock(pos, replaced, flags);
-        if (world instanceof Level)
-            ((Level) world).sendBlockUpdated(pos, current, replaced, flags);
+        if (level instanceof Level realLevel) {
+            BlockState current = getCurrentState();
+            realLevel.sendBlockUpdated(pos, current, replaced, flags);
+        }
 
-        BlockEntity te = null;
+        restoreBlockEntity(level, pos);
+
+        if (DEBUG) {
+            LOGGER.debug("Restored " + this.toString());
+        }
+
+        return true;
+    }
+
+    /**
+     * Calls {@link #restoreToLocation} with the stored level, position, but custom block flags.
+     */
+    public boolean restore(int flags) {
+        return restoreToLocation(getLevel(), getPos(), flags);
+    }
+
+    /**
+     * Calls {@link #restoreToLocation} with the stored level, position, and block flags.
+     */
+    public boolean restore() {
+        return restore(this.getFlags());
+    }
+
+    /**
+     * Loads the stored {@link BlockEntity} data if one exists at the given position.
+     * 
+     * @return true if any data was loaded
+     */
+    public boolean restoreBlockEntity(LevelAccessor level, BlockPos pos) {
+        BlockEntity be = null;
         if (getTag() != null) {
-            te = world.getBlockEntity(pos);
-            if (te != null) {
-                te.loadWithComponents(getTag(), world.registryAccess());
-                te.setChanged();
+            be = level.getBlockEntity(pos);
+            if (be != null) {
+                be.loadWithComponents(getTag(), level.registryAccess());
+                be.setChanged();
+                return true;
             }
         }
-
-        if (DEBUG)
-            System.out.println("Restored " + this.toString());
-        return true;
+        return false;
     }
 
     @Override
@@ -144,7 +214,7 @@ public class BlockSnapshot {
         final BlockSnapshot other = (BlockSnapshot) obj;
         return this.dim.equals(other.dim) &&
                 this.pos.equals(other.pos) &&
-                this.block == other.block &&
+                this.state == other.state &&
                 this.flags == other.flags &&
                 Objects.equals(this.nbt, other.nbt);
     }
@@ -154,7 +224,7 @@ public class BlockSnapshot {
         int hash = 7;
         hash = 73 * hash + this.dim.hashCode();
         hash = 73 * hash + this.pos.hashCode();
-        hash = 73 * hash + this.block.hashCode();
+        hash = 73 * hash + this.state.hashCode();
         hash = 73 * hash + this.flags;
         hash = 73 * hash + Objects.hashCode(this.getTag());
         return hash;
@@ -164,9 +234,9 @@ public class BlockSnapshot {
     public String toString() {
         if (toString == null) {
             this.toString = "BlockSnapshot[" +
-                    "World:" + this.dim.location() + ',' +
+                    "Level:" + this.dim.location() + ',' +
                     "Pos: " + this.pos + ',' +
-                    "State: " + this.block + ',' +
+                    "State: " + this.state + ',' +
                     "Flags: " + this.flags + ',' +
                     "NBT: " + (this.nbt == null ? "null" : this.nbt.toString()) +
                     ']';
@@ -174,16 +244,12 @@ public class BlockSnapshot {
         return this.toString;
     }
 
-    public BlockPos getPos() {
-        return pos;
-    }
-
-    public int getFlag() {
-        return flags;
-    }
-
+    /**
+     * Checks for a block entity at a given position, and saves it to NBT with full metadata if it exists.
+     */
     @Nullable
-    public CompoundTag getTag() {
-        return nbt;
+    private static CompoundTag getBlockEntityTag(LevelAccessor level, BlockPos pos) {
+        BlockEntity be = level.getBlockEntity(pos);
+        return be == null ? null : be.saveWithFullMetadata(level.registryAccess());
     }
 }

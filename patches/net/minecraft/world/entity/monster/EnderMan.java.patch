@@ -42,7 +42,7 @@
                  return false;
              } else {
 -                return !this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+                return !net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)
++                return !net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.enderman.level(), this.enderman)
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
              }
@@ -68,7 +68,7 @@
                  return false;
              } else {
 -                return !this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+                return !net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)
++                return !net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.enderman.level(), this.enderman)
                      ? false
                      : this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
              }

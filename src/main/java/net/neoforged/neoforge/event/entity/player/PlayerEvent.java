@@ -13,7 +13,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -385,31 +384,6 @@ public abstract class PlayerEvent extends LivingEvent {
          */
         public String getPlayerUUID() {
             return playerUUID;
-        }
-    }
-
-    public static class ItemPickupEvent extends PlayerEvent {
-        /**
-         * Original EntityItem with current remaining stack size
-         */
-        private final ItemEntity originalEntity;
-        /**
-         * Clone item stack, containing the item and amount picked up
-         */
-        private final ItemStack stack;
-
-        public ItemPickupEvent(Player player, ItemEntity entPickedUp, ItemStack stack) {
-            super(player);
-            this.originalEntity = entPickedUp;
-            this.stack = stack;
-        }
-
-        public ItemStack getStack() {
-            return stack;
-        }
-
-        public ItemEntity getOriginalEntity() {
-            return originalEntity;
         }
     }
 

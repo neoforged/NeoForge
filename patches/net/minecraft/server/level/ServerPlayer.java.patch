@@ -87,25 +87,45 @@
              }
  
              return this;
-@@ -912,6 +_,9 @@
+@@ -912,6 +_,15 @@
  
      @Override
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_9115_) {
-+        java.util.Optional<BlockPos> optAt = java.util.Optional.of(p_9115_);
-+        Player.BedSleepingProblem ret = net.neoforged.neoforge.event.EventHooks.onPlayerSleepInBed(this, optAt);
-+        if (ret != null) return Either.left(ret);
++        // Neo: Encapsulate the vanilla check logic to supply to the CanPlayerSleepEvent
++        var vanillaResult = ((java.util.function.Supplier<Either<BedSleepingProblem, Unit>>) () -> {
++        // Guard against modded beds that may not have the FACING property.
++        // We just return success (Unit) here. Modders will need to implement conditions in the CanPlayerSleepEvent
++        if (!this.level().getBlockState(p_9115_).hasProperty(HorizontalDirectionalBlock.FACING)) {
++            return Either.right(Unit.INSTANCE);
++        }
++
++        // Start vanilla code
          Direction direction = this.level().getBlockState(p_9115_).getValue(HorizontalDirectionalBlock.FACING);
          if (this.isSleeping() || !this.isAlive()) {
              return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
-@@ -923,7 +_,7 @@
-             return Either.left(Player.BedSleepingProblem.OBSTRUCTED);
-         } else {
-             this.setRespawnPosition(this.level().dimension(), p_9115_, this.getYRot(), false, true);
--            if (this.level().isDay()) {
-+            if (!net.neoforged.neoforge.event.EventHooks.fireSleepingTimeCheck(this, optAt)) {
-                 return Either.left(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
-             } else {
-                 if (!this.isCreative()) {
+@@ -940,7 +_,21 @@
+                         return Either.left(Player.BedSleepingProblem.NOT_SAFE);
+                     }
+                 }
+-
++        // End vanilla code
++            }
++        }
++        return Either.right(Unit.INSTANCE);
++        }).get();
++
++        // Fire the event. Return the error if one exists after the event, otherwise use the vanilla logic to start sleeping.
++        vanillaResult = net.neoforged.neoforge.event.EventHooks.canPlayerStartSleeping(this, p_9115_, vanillaResult);
++        if (vanillaResult.left().isPresent()) {
++            return vanillaResult;
++        }
++
++        {
++            {
++                // Start vanilla code
+                 Either<Player.BedSleepingProblem, Unit> either = super.startSleepInBed(p_9115_).ifRight(p_9029_ -> {
+                     this.awardStat(Stats.SLEEP_IN_BED);
+                     CriteriaTriggers.SLEPT_IN_BED.trigger(this);
 @@ -962,6 +_,7 @@
      }
  

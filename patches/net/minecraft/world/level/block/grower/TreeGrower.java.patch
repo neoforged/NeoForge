@@ -4,9 +4,9 @@
                  .registryOrThrow(Registries.CONFIGURED_FEATURE)
                  .getHolder(resourcekey)
                  .orElse(null);
-+            var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_304396_, p_304893_, p_304643_, holder);
++            var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(p_304396_, p_304893_, p_304643_, holder);
 +            holder = event.getFeature();
-+            if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return false;
++            if (event.isCanceled()) return false;
              if (holder != null) {
                  for (int i = 0; i >= -1; i--) {
                      for (int j = 0; j >= -1; j--) {
@@ -14,9 +14,9 @@
                  .registryOrThrow(Registries.CONFIGURED_FEATURE)
                  .getHolder(resourcekey1)
                  .orElse(null);
-+            var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_304396_, p_304893_, p_304643_, holder1);
++            var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(p_304396_, p_304893_, p_304643_, holder1);
 +            holder1 = event.getFeature();
-+            if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return false;
++            if (event.isCanceled()) return false;
              if (holder1 == null) {
                  return false;
              } else {

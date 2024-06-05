@@ -5,7 +5,7 @@
              if (this.destroyBlocksTick > 0) {
                  this.destroyBlocksTick--;
 -                if (this.destroyBlocksTick == 0 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+                if (this.destroyBlocksTick == 0 && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
++                if (this.destroyBlocksTick == 0 && net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), this)) {
                      boolean flag = false;
                      int l = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
                      int i1 = Mth.floor(this.getBbHeight());
@@ -29,3 +29,11 @@
      public static boolean canDestroy(BlockState p_31492_) {
          return !p_31492_.isAir() && !p_31492_.is(BlockTags.WITHER_IMMUNE);
      }
+@@ -493,6 +_,7 @@
+ 
+     @Override
+     public void checkDespawn() {
++        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) return;
+         if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
+             this.discard();
+         } else {
