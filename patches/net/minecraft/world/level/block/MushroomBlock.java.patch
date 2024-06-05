@@ -1,6 +1,8 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -87,13 +_,21 @@
+@@ -85,15 +_,24 @@
+     protected boolean canSurvive(BlockState p_54880_, LevelReader p_54881_, BlockPos p_54882_) {
+         BlockPos blockpos = p_54882_.below();
          BlockState blockstate = p_54881_.getBlockState(blockpos);
          return blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)
              ? true
