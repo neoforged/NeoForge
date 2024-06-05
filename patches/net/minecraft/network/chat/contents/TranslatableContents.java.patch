@@ -7,22 +7,10 @@
 +        if (!net.neoforged.fml.loading.FMLEnvironment.production) {
 +            for (Object arg : this.args) {
 +                if (!(arg instanceof Component) && !isAllowedPrimitiveArgument(arg)) {
-+                    throw new IllegalArgumentException("TranslatableContents's arguments must be a Component, Number, Boolean, or String. Was given " + arg + " for " + this.key);
++                    throw new IllegalArgumentException("TranslatableContents' arguments must be either a Component, Number, Boolean, or a String. Was given " + arg + " for " + this.key);
 +                }
 +            }
 +        }
      }
  
      @Override
-@@ -138,6 +_,11 @@
-                 }
- 
-                 j = l;
-+            }
-+
-+            if (j == 0) {
-+                // Neo has some special formatting handlers defined in I18nExtension, use those if no %s replacements present.
-+                j = net.neoforged.neoforge.internal.TextComponentMessageFormatHandler.handle(this, p_237517_, this.args, p_237516_);
-             }
- 
-             if (j < p_237516_.length()) {
