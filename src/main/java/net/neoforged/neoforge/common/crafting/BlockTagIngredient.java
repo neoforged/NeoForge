@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,16 +25,15 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 /**
- * Ingredient that matches ItemStacks of blocks from a TagKey<Block>, useful in cases
- * like "minecraft:convertable_to_mud" where there isn't an accompanying item tag
+ * {@link Ingredient} that matches {@link ItemStack}s of {@link Block}s from a {@link TagKey<Block>}, useful in cases
+ * like {@code "minecraft:convertable_to_mud"} where there isn't an accompanying item tag
  * <p>
- * Notice: This should not be used as a replacement for the normal Item Tag Ingredient,
+ * Notice: This should not be used as a replacement for the normal {@link Ingredient#of(TagKey)},
  * This should only be used when there is no way an item tag can be used in your use case
  */
 public class BlockTagIngredient extends Ingredient {
-    public static final Codec<BlockTagIngredient> CODEC = RecordCodecBuilder.create(
-            valueInstance -> valueInstance.group(TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(BlockTagIngredient::getTag))
-                    .apply(valueInstance, BlockTagIngredient::new));
+    public static final MapCodec<BlockTagIngredient> CODEC = TagKey.codec(Registries.BLOCK)
+            .xmap(BlockTagIngredient::new, BlockTagIngredient::getTag).fieldOf("tag");
 
     protected final TagKey<Block> tag;
 
@@ -54,6 +54,12 @@ public class BlockTagIngredient extends Ingredient {
                     list.add(stack);
                 }
             }
+
+            if (list.isEmpty()) {
+                ItemStack itemStack = new ItemStack(Blocks.BARRIER).setHoverName(Component.literal("Empty Tag: " + tag.location()));
+                list.add(itemStack);
+            }
+
             itemStacks = list.toArray(ItemStack[]::new);
         }
     }
