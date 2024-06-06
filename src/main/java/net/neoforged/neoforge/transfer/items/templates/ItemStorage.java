@@ -13,17 +13,19 @@ import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
 import java.util.function.Supplier;
 
 public abstract class ItemStorage implements IResourceHandlerModifiable<ItemResource> {
-    private final int slotCount;
+    protected final int size;
 
-    public ItemStorage(int slotCount) {
-        this.slotCount = slotCount;
+    public ItemStorage(int size) {
+        this.size = size;
     }
 
     public abstract ItemStorageContents getContents();
 
+    public abstract int setAndValidate(ItemStorageContents contents, int changedAmount, TransferAction action);
+
     @Override
     public int size() {
-        return slotCount;
+        return size;
     }
 
     @Override
@@ -62,8 +64,6 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
         setAndValidate(contents, 0, TransferAction.EXECUTE);
     }
 
-    public abstract int setAndValidate(ItemStorageContents contents, int changedAmount, TransferAction action);
-
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
         if (amount <= 0 || resource.isBlank() || !isValid(index, resource)) return 0;
@@ -88,14 +88,14 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
         if (amount <= 0 || resource.isBlank()) return 0;
         ItemStorageContents contents = getContents();
         int remaining = amount;
-        for (int i = 0; i < slotCount; i++) {
+        for (int i = 0; i < size; i++) {
             ResourceStack<ItemResource> stack = contents.get(i);
             if (stack.isEmpty() || !stack.resource().equals(resource) || stack.amount() >= resource.getMaxStackSize()) continue;
             int toInsert = Math.min(remaining, resource.getMaxStackSize() - stack.amount());
             contents = contents.set(i, resource, stack.amount() + toInsert);
             remaining -= toInsert;
         }
-        for (int i = 0; i < slotCount; i++) {
+        for (int i = 0; i < size; i++) {
             ResourceStack<ItemResource> stack = contents.get(i);
             if (!stack.isEmpty()) continue;
             int toInsert = Math.min(remaining, resource.getMaxStackSize());
@@ -124,7 +124,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
     public int extract(ItemResource resource, int amount, TransferAction action) {
         int remaining = amount;
         ItemStorageContents contents = getContents();
-        for (int slot = 0; slot < slotCount; slot++) {
+        for (int slot = 0; slot < size; slot++) {
             ResourceStack<ItemResource> stack = contents.get(slot);
             if (stack.isEmpty() || !stack.resource().equals(resource)) continue;
             int extracted = Math.min(remaining, stack.amount());
