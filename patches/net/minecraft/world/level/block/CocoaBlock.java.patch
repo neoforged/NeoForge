@@ -18,7 +18,7 @@
      @Override
      protected boolean canSurvive(BlockState p_51767_, LevelReader p_51768_, BlockPos p_51769_) {
          BlockState blockstate = p_51768_.getBlockState(p_51769_.relative(p_51767_.getValue(FACING)));
-+        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51768_, p_51769_.relative(p_51767_.getValue(FACING)), p_51767_.getValue(FACING), p_51767_);
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51768_, p_51769_.relative(p_51767_.getValue(FACING)), p_51767_.getValue(FACING).getOpposite(), p_51767_);
 +        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
          return blockstate.is(BlockTags.JUNGLE_LOGS);
      }
