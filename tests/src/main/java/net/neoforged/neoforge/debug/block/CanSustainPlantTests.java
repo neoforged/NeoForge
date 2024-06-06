@@ -707,6 +707,14 @@ public class CanSustainPlantTests {
 
         @Override
         public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos soilPosition, Direction facing, BlockState plant) {
+            if (level.getBlockState(soilPosition).getBlock() != this) {
+                throw new RuntimeException("Incorrect soil position param passed in");
+            }
+
+            if (level.getBlockState(soilPosition.relative(facing)).canOcclude()) {
+                throw new RuntimeException("Incorrect direction param passed in");
+            }
+
             return TriState.TRUE;
         }
     }
