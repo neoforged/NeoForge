@@ -32,7 +32,8 @@ import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = { BlockTests.GROUP + ".event", "event" })
 public class BlockEventTests {
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the BlockDropsEvent prevents dropping items and experience when cancelled.")
     public static void blockDropsEventCancel(final DynamicTest test) {
         test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
@@ -66,7 +67,8 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the BlockDropsEvent can modify dropped experience.")
     public static void blockDropsEventExperience(final DynamicTest test) {
         test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
@@ -89,7 +91,8 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the BlockDropsEvent can move dropped items.")
     public static void blockDropsEventMovement(final DynamicTest test) {
         test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
@@ -112,7 +115,8 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the entity place event is fired")
     public static void entityPlacedEvent(final DynamicTest test) {
         test.whenEnabled(listeners -> listeners.forge()
@@ -142,7 +146,8 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the block modification event is fired")
     public static void blockModificationEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final BlockEvent.BlockToolModificationEvent event) -> {
