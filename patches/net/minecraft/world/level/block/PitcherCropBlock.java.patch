@@ -5,7 +5,7 @@
      @Override
      public boolean canSurvive(BlockState p_277671_, LevelReader p_277477_, BlockPos p_278085_) {
 -        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? false : super.canSurvive(p_277671_, p_277477_, p_278085_);
-+        net.neoforged.neoforge.common.util.TriState soilDecision = p_277477_.getBlockState(p_278085_.below()).canSustainPlant(p_277477_, p_278085_.below(), Direction.UP, p_277671_);
++        net.neoforged.neoforge.common.util.TriState soilDecision = p_277477_.getBlockState(p_278085_.below()).getGroundStateForPlantChecks(p_277477_, p_278085_.below()).canSustainPlant(p_277477_, p_278085_.below(), Direction.UP, p_277671_);
 +        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE : super.canSurvive(p_277671_, p_277477_, p_278085_);
      }
  

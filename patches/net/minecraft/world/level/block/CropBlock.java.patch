@@ -17,7 +17,7 @@
                  }
              }
          }
-@@ -109,7 +_,7 @@
+@@ -109,17 +_,19 @@
          return Mth.nextInt(p_52262_.random, 2, 5);
      }
  
@@ -26,12 +26,14 @@
          float f = 1.0F;
          BlockPos blockpos = p_52275_.below();
  
-@@ -117,9 +_,10 @@
+         for (int i = -1; i <= 1; i++) {
              for (int j = -1; j <= 1; j++) {
                  float f1 = 0.0F;
-                 BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
+-                BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
 -                if (blockstate.is(Blocks.FARMLAND)) {
-+                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, p_52273_);
++                BlockPos groundPos = blockpos.offset(i, 0, j);
++                BlockState blockstate = p_52274_.getBlockState(groundPos).getGroundStateForPlantChecks(p_52274_, groundPos);
++                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_52274_, groundPos, net.minecraft.core.Direction.UP, p_52273_);
 +                if (soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? blockstate.is(Blocks.FARMLAND) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE) {
                      f1 = 1.0F;
 -                    if (blockstate.getValue(FarmBlock.MOISTURE) > 0) {
@@ -65,7 +67,7 @@
  
      @Override
      protected boolean canSurvive(BlockState p_52282_, LevelReader p_52283_, BlockPos p_52284_) {
-+        net.neoforged.neoforge.common.util.TriState soilDecision = p_52283_.getBlockState(p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
++        net.neoforged.neoforge.common.util.TriState soilDecision = p_52283_.getBlockState(p_52284_.below()).getGroundStateForPlantChecks(p_52283_, p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
 +        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
          return hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_);
      }

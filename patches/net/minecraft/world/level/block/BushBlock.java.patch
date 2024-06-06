@@ -5,7 +5,7 @@
      protected boolean canSurvive(BlockState p_51028_, LevelReader p_51029_, BlockPos p_51030_) {
          BlockPos blockpos = p_51030_.below();
 -        return this.mayPlaceOn(p_51029_.getBlockState(blockpos), p_51029_, blockpos);
-+        BlockState belowBlockState = p_51029_.getBlockState(blockpos);
++        BlockState belowBlockState = p_51029_.getBlockState(blockpos).getGroundStateForPlantChecks(p_51029_, blockpos);
 +        net.neoforged.neoforge.common.util.TriState soilDecision = belowBlockState.canSustainPlant(p_51029_, blockpos, Direction.UP, p_51028_);
 +        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
 +        return this.mayPlaceOn(belowBlockState, p_51029_, blockpos);

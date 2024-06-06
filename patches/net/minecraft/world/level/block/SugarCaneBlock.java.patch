@@ -16,7 +16,12 @@
              }
          }
      }
-@@ -83,13 +_,15 @@
+@@ -79,17 +_,19 @@
+ 
+     @Override
+     protected boolean canSurvive(BlockState p_57175_, LevelReader p_57176_, BlockPos p_57177_) {
+-        BlockState blockstate = p_57176_.getBlockState(p_57177_.below());
++        BlockState blockstate = p_57176_.getBlockState(p_57177_.below()).getGroundStateForPlantChecks(p_57176_, p_57177_.below());
          if (blockstate.is(this)) {
              return true;
          } else {

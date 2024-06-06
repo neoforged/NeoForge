@@ -1,10 +1,12 @@
 --- a/net/minecraft/world/level/block/BambooStalkBlock.java
 +++ b/net/minecraft/world/level/block/BambooStalkBlock.java
-@@ -97,7 +_,8 @@
+@@ -96,8 +_,9 @@
+         if (!fluidstate.isEmpty()) {
              return null;
          } else {
-             BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below());
+-            BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below());
 -            if (blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON)) {
++            BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below()).getGroundStateForPlantChecks(p_261764_.getLevel(), p_261764_.getClickedPos().below());
 +            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_261764_.getLevel(), p_261764_.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
 +            if (soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE) {
                  if (blockstate.is(Blocks.BAMBOO_SAPLING)) {
@@ -24,15 +26,17 @@
                  }
              }
          }
-@@ -141,6 +_,8 @@
+@@ -141,7 +_,9 @@
  
      @Override
      protected boolean canSurvive(BlockState p_261860_, LevelReader p_262154_, BlockPos p_261493_) {
+-        return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
 +        net.neoforged.neoforge.common.util.TriState soilDecision = p_262154_.getBlockState(p_261493_.below()).canSustainPlant(p_262154_, p_261493_.below(), Direction.UP, p_261860_);
 +        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
-         return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
++        return p_262154_.getBlockState(p_261493_.below()).getGroundStateForPlantChecks(p_262154_, p_261493_).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
  
+     @Override
 @@ -193,7 +_,7 @@
  
      @Override
