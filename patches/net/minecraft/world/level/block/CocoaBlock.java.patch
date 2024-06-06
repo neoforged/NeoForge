@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CocoaBlock.java
 +++ b/net/minecraft/world/level/block/CocoaBlock.java
-@@ -64,17 +_,21 @@
+@@ -64,10 +_,11 @@
  
      @Override
      protected void randomTick(BlockState p_221000_, ServerLevel p_221001_, BlockPos p_221002_, RandomSource p_221003_) {
@@ -14,13 +14,11 @@
              }
          }
      }
- 
+@@ -75,6 +_,8 @@
      @Override
      protected boolean canSurvive(BlockState p_51767_, LevelReader p_51768_, BlockPos p_51769_) {
--        BlockState blockstate = p_51768_.getBlockState(p_51769_.relative(p_51767_.getValue(FACING)));
-+        BlockPos attachmentPos = p_51769_.relative(p_51767_.getValue(FACING));
-+        BlockState blockstate = p_51768_.getBlockState(attachmentPos).getGroundStateForPlantChecks(p_51768_, attachmentPos);
-+        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51768_, attachmentPos, p_51767_.getValue(FACING).getOpposite(), p_51767_);
+         BlockState blockstate = p_51768_.getBlockState(p_51769_.relative(p_51767_.getValue(FACING)));
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51768_, p_51769_.relative(p_51767_.getValue(FACING)), p_51767_.getValue(FACING).getOpposite(), p_51767_);
 +        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
          return blockstate.is(BlockTags.JUNGLE_LOGS);
      }

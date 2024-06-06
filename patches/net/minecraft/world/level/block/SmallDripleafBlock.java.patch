@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/level/block/SmallDripleafBlock.java
 +++ b/net/minecraft/world/level/block/SmallDripleafBlock.java
-@@ -89,7 +_,9 @@
-             return super.canSurvive(p_154615_, p_154616_, p_154617_);
+@@ -90,6 +_,8 @@
          } else {
              BlockPos blockpos = p_154617_.below();
--            BlockState blockstate = p_154616_.getBlockState(blockpos);
-+            BlockState blockstate = p_154616_.getBlockState(blockpos).getGroundStateForPlantChecks(p_154616_, blockpos);
+             BlockState blockstate = p_154616_.getBlockState(blockpos);
 +            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_154616_, blockpos, Direction.UP, p_154615_);
 +            if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
              return this.mayPlaceOn(blockstate, p_154616_, blockpos);
