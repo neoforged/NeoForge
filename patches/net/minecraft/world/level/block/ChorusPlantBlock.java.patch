@@ -25,7 +25,7 @@
          }
  
 -        return blockstate.is(this) || blockstate.is(Blocks.END_STONE);
-+        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51725_, p_51726_, Direction.UP, p_51724_);
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51725_, p_51726_.below(), Direction.UP, p_51724_);
 +        return blockstate.is(this) || blockstate.is(Blocks.END_STONE) || soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
      }
  
