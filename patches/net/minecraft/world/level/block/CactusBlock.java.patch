@@ -25,10 +25,12 @@
              }
          }
      }
-@@ -99,6 +_,8 @@
+@@ -98,7 +_,9 @@
+             }
          }
  
-         BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below());
+-        BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below());
++        BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below()).getGroundStateForPlantChecks(p_51154_, p_51155_.below());
 +        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate1.canSustainPlant(p_51154_, p_51155_.below(), Direction.UP, p_51153_);
 +        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
          return (blockstate1.is(Blocks.CACTUS) || blockstate1.is(BlockTags.SAND)) && !p_51154_.getBlockState(p_51155_.above()).liquid();

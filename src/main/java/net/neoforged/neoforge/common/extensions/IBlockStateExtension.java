@@ -274,6 +274,19 @@ public interface IBlockStateExtension {
     }
 
     /**
+     * This is for plants to call on a ground blockstate to get the real blockstate to check against.
+     * Only modded blocks that pretend to be another block would override this method to return their pretend state.
+     * Example: Painted TNT with Block Entity data that makes it looks like Dirt will return Dirt here and plants will do their checks with the returned Dirt state.
+     *
+     * @param level    The current level
+     * @param position The current position of the ground block
+     * @return The blockstate plants should use for their checks.
+     */
+    default BlockState getGroundStateForPlantChecks(BlockGetter level, BlockPos position) {
+        return self().getBlock().getGroundStateForPlantChecks(self(), level, position);
+    }
+
+    /**
      * Called when a tree grows on top of this block and tries to set it to dirt by the trunk placer.
      * An override that returns true is responsible for using the place function to
      * set blocks in the world properly during generation. A modded grass block might override this method

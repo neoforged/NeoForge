@@ -1,13 +1,16 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -85,15 +_,24 @@
+@@ -84,16 +_,25 @@
+     @Override
      protected boolean canSurvive(BlockState p_54880_, LevelReader p_54881_, BlockPos p_54882_) {
          BlockPos blockpos = p_54882_.below();
-         BlockState blockstate = p_54881_.getBlockState(blockpos);
+-        BlockState blockstate = p_54881_.getBlockState(blockpos);
++        BlockState blockstate = p_54881_.getBlockState(blockpos).getGroundStateForPlantChecks(p_54881_, blockpos);
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, p_54880_);
          return blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)
              ? true
 -            : p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
-+            : p_54881_.getRawBrightness(p_54882_, 0) < 13 && blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, this);
++            : soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? (p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos)) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
      }
  
      public boolean growMushroom(ServerLevel p_221774_, BlockPos p_221775_, BlockState p_221776_, RandomSource p_221777_) {
