@@ -36,10 +36,22 @@ public class BlockTagIngredient extends Ingredient {
             .apply(i, BlockTagIngredient::new));
 
     protected final TagKey<Block> tag;
+    @Nullable protected ItemStack[] itemStacks;
 
     public BlockTagIngredient(TagKey<Block> tag) {
         super(Stream.of(new BlockTagValue(tag)), NeoForgeMod.BLOCK_TAG_INGREDIENT);
         this.tag = tag;
+    }
+
+    @Override
+    public ItemStack[] getItems() {
+        List<ItemStack> list = new ArrayList<>();
+
+        for (Value value : values) {
+            list.addAll(value.getItems());
+        }
+
+        return itemStacks = list.toArray(ItemStack[]::new);
     }
 
     @Override
@@ -48,7 +60,8 @@ public class BlockTagIngredient extends Ingredient {
             return false;
         }
 
-        for (ItemStack itemStack : super.getItems()) {
+        this.getItems();
+        for (ItemStack itemStack : itemStacks) {
             if (itemStack.is(stack.getItem())) {
                 return true;
             }
