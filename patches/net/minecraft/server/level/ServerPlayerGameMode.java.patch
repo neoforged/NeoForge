@@ -40,16 +40,14 @@
              return false;
          } else {
              BlockEntity blockentity = this.level.getBlockEntity(p_9281_);
-@@ -235,27 +_,46 @@
-             } else if (this.player.blockActionRestricted(this.level, p_9281_, this.gameModeForPlayer)) {
+@@ -236,26 +_,46 @@
                  return false;
              } else {
--                BlockState blockstate = block.playerWillDestroy(this.level, p_9281_, blockstate1, this.player);
+                 BlockState blockstate = block.playerWillDestroy(this.level, p_9281_, blockstate1, this.player);
 -                boolean flag1 = this.level.removeBlock(p_9281_, false);
 -                if (flag1) {
 -                    block.destroy(this.level, p_9281_, blockstate);
 -                }
-+                BlockState blockstate = blockstate1;
  
                  if (this.isCreative()) {
 +                    removeBlock(p_9281_, blockstate, false);
@@ -87,8 +85,9 @@
 +     */
 +    private boolean removeBlock(BlockPos pos, BlockState state, boolean canHarvest) {
 +        boolean removed = state.onDestroyedByPlayer(this.level, pos, this.player, canHarvest, this.level.getFluidState(pos));
-+        if (removed)
++        if (removed) {
 +            state.getBlock().destroy(this.level, pos, state);
++        }
 +        return removed;
      }
  

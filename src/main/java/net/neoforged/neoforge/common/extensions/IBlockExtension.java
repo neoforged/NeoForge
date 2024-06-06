@@ -218,7 +218,6 @@ public interface IBlockExtension {
      * @return True if the block is actually destroyed.
      */
     default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        self().playerWillDestroy(level, pos, state, player);
         return level.setBlock(pos, fluid.createLegacyBlock(), level.isClientSide ? 11 : 3);
     }
 
