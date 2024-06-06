@@ -442,8 +442,8 @@ public class CommonHooks {
     }
 
     /**
-     * Fires the {@link BlockDropsEvent} when block drops are determined.
-     * If the event is not cancelled, all drops must be added to the world, and then {@link Block#spawnAfterBreak} must be called.
+     * Fires the {@link BlockDropsEvent} when block drops (items and experience) are determined.
+     * If the event is not cancelled, all drops will be added to the world, and then {@link BlockBehaviour#spawnAfterBreak} will be called.
      * 
      * @param level       The level
      * @param pos         The broken block's position
@@ -452,16 +452,15 @@ public class CommonHooks {
      * @param drops       The list of all items dropped by the block
      * @param breaker     The entity who broke the block, or null if unknown
      * @param tool        The tool used when breaking the block; may be empty
-     * @param dropXp      The value of the patched-in dropXp parameter from dropResources.
      */
-    public static void handleBlockDrops(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool, boolean dropXp) {
-        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, blockEntity, drops, breaker, tool, dropXp);
+    public static void handleBlockDrops(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool) {
+        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, blockEntity, drops, breaker, tool);
         NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
             for (ItemEntity entity : event.getDrops()) {
                 level.addFreshEntity(entity);
             }
-            // Always pass false to spawnAfterBreak since we handle XP externally.
+            // Always pass false for the dropXP (last) param to spawnAfterBreak since we handle XP.
             state.spawnAfterBreak((ServerLevel) level, pos, tool, false);
             if (event.getDroppedExperience() > 0) {
                 state.getBlock().popExperience(level, pos, event.getDroppedExperience());

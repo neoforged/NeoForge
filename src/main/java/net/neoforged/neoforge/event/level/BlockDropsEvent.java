@@ -36,20 +36,16 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
     private final ItemStack tool;
     private int experience;
 
-    public BlockDropsEvent(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool, boolean dropXp) {
+    public BlockDropsEvent(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool) {
         super(level, pos, state);
         this.blockEntity = blockEntity;
         this.drops = drops;
         this.breaker = breaker;
         this.tool = tool;
 
-        if (dropXp) {
-            int fortuneLevel = tool.getEnchantmentLevel(Enchantments.FORTUNE);
-            int silkTouchLevel = tool.getEnchantmentLevel(Enchantments.SILK_TOUCH);
-            this.experience = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
-        } else {
-            this.experience = 0;
-        }
+        int fortuneLevel = tool.getEnchantmentLevel(Enchantments.FORTUNE);
+        int silkTouchLevel = tool.getEnchantmentLevel(Enchantments.SILK_TOUCH);
+        this.experience = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
     }
 
     /**
@@ -113,6 +109,7 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
      * Set the amount of experience points that will be dropped by the block
      *
      * @param experience The new amount. Must be a positive value.
+     * @apiNote When cancelled, no experience is dropped, regardless of this value.
      */
     public void setDroppedExperience(int experience) {
         Preconditions.checkArgument(experience > 0, "May not set a negative experience drop.");
