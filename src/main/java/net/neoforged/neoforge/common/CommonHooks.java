@@ -449,7 +449,7 @@ public class CommonHooks {
      * @param pos         The broken block's position
      * @param state       The broken block's state
      * @param blockEntity The block entity from the given position
-     * @param drops       The list of all items dropped by the block
+     * @param drops       The list of all items dropped by the block, captured from {@link Block#getDrops}
      * @param breaker     The entity who broke the block, or null if unknown
      * @param tool        The tool used when breaking the block; may be empty
      */

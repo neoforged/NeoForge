@@ -36,6 +36,17 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
     private final ItemStack tool;
     private int experience;
 
+    /**
+     * Constructs a new BlockDropsEvent
+     *
+     * @param level       The level of the broken block
+     * @param pos         The position of the broken block
+     * @param state       The state of the broken block
+     * @param blockEntity The block entity of the broken block, if available
+     * @param drops       The list of drops from {@link Block#getDrops}
+     * @param breaker     The entity who broke the block, if any
+     * @param tool        The tool used to break the block. May be empty
+     */
     public BlockDropsEvent(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool) {
         super(level, pos, state);
         this.blockEntity = blockEntity;
