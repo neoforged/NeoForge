@@ -10,13 +10,16 @@
              .trySetValue(UP, Boolean.valueOf(blockstate1.is(block) || blockstate1.is(Blocks.CHORUS_FLOWER)))
              .trySetValue(NORTH, Boolean.valueOf(blockstate2.is(block) || blockstate2.is(Blocks.CHORUS_FLOWER)))
              .trySetValue(EAST, Boolean.valueOf(blockstate3.is(block) || blockstate3.is(Blocks.CHORUS_FLOWER)))
-@@ -63,7 +_,8 @@
-             p_51731_.scheduleTick(p_51732_, this, 1);
+@@ -64,6 +_,12 @@
              return super.updateShape(p_51728_, p_51729_, p_51730_, p_51731_, p_51732_, p_51733_);
          } else {
--            boolean flag = p_51730_.is(this) || p_51730_.is(Blocks.CHORUS_FLOWER) || p_51729_ == Direction.DOWN && p_51730_.is(Blocks.END_STONE);
-+            net.neoforged.neoforge.common.util.TriState soilDecision = p_51730_.canSustainPlant(p_51731_, p_51733_, p_51729_.getOpposite(), p_51728_);
-+            boolean flag = soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE || p_51730_.is(this) || p_51730_.is(Blocks.CHORUS_FLOWER) || p_51729_ == Direction.DOWN && p_51730_.is(Blocks.END_STONE);
+             boolean flag = p_51730_.is(this) || p_51730_.is(Blocks.CHORUS_FLOWER) || p_51729_ == Direction.DOWN && p_51730_.is(Blocks.END_STONE);
++            if (p_51729_ == Direction.DOWN) {
++                net.neoforged.neoforge.common.util.TriState soilDecision = p_51730_.canSustainPlant(p_51731_, p_51733_.relative(p_51729_), p_51729_.getOpposite(), p_51728_);
++                if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) {
++                    flag = soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++                }
++            }
              return p_51728_.setValue(PROPERTY_BY_DIRECTION.get(p_51729_), Boolean.valueOf(flag));
          }
      }
