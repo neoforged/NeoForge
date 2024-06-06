@@ -11,7 +11,7 @@
                  BlockState blockstate = p_220981_.getBlockState(p_220982_.below());
 -                if (blockstate.is(Blocks.END_STONE)) {
 +                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_220981_, p_220982_.below(), Direction.UP, p_220980_);
-+                if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) flag = soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++                if (!soilDecision.isDefault()) flag = soilDecision.isTrue();
 +                else if (blockstate.is(Blocks.END_STONE)) {
                      flag = true;
                  } else if (blockstate.is(this.plant)) {
@@ -21,7 +21,7 @@
                          BlockState blockstate1 = p_220981_.getBlockState(p_220982_.below(j + 1));
                          if (!blockstate1.is(this.plant)) {
 +                            net.neoforged.neoforge.common.util.TriState soilDecision2 = blockstate1.canSustainPlant(p_220981_, p_220982_.below(j + 1), Direction.UP, p_220980_);
-+                            if (soilDecision2 != net.neoforged.neoforge.common.util.TriState.DEFAULT) flag1 = soilDecision2 == net.neoforged.neoforge.common.util.TriState.TRUE;
++                            if (!soilDecision2.isDefault()) flag1 = soilDecision2.isTrue();
                              if (blockstate1.is(Blocks.END_STONE)) {
                                  flag1 = true;
                              }
@@ -38,7 +38,7 @@
      protected boolean canSurvive(BlockState p_51683_, LevelReader p_51684_, BlockPos p_51685_) {
          BlockState blockstate = p_51684_.getBlockState(p_51685_.below());
 +        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51684_, p_51685_.below(), Direction.UP, p_51683_);
-+        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
          if (!blockstate.is(this.plant) && !blockstate.is(Blocks.END_STONE)) {
              if (!blockstate.isAir()) {
                  return false;

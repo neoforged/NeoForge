@@ -6,7 +6,7 @@
              BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below());
 -            if (blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON)) {
 +            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_261764_.getLevel(), p_261764_.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
-+            if (soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE) {
++            if (soilDecision.isDefault() ? blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision.isTrue()) {
                  if (blockstate.is(Blocks.BAMBOO_SAPLING)) {
                      return this.defaultBlockState().setValue(AGE, Integer.valueOf(0));
                  } else if (blockstate.is(Blocks.BAMBOO)) {
@@ -29,7 +29,7 @@
      @Override
      protected boolean canSurvive(BlockState p_261860_, LevelReader p_262154_, BlockPos p_261493_) {
 +        net.neoforged.neoforge.common.util.TriState soilDecision = p_262154_.getBlockState(p_261493_.below()).canSustainPlant(p_262154_, p_261493_.below(), Direction.UP, p_261860_);
-+        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
          return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
  

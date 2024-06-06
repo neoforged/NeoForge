@@ -21,7 +21,7 @@
              return true;
          } else {
 +            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_57176_, p_57177_.below(), Direction.UP, p_57175_);
-+            if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++            if (!soilDecision.isDefault()) return soilDecision.isTrue();
              if (blockstate.is(BlockTags.DIRT) || blockstate.is(BlockTags.SAND)) {
                  BlockPos blockpos = p_57177_.below();
  

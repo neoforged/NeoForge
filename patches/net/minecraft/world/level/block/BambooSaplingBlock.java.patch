@@ -5,7 +5,7 @@
      @Override
      protected boolean canSurvive(BlockState p_48986_, LevelReader p_48987_, BlockPos p_48988_) {
 +        net.neoforged.neoforge.common.util.TriState soilDecision = p_48987_.getBlockState(p_48988_.below()).canSustainPlant(p_48987_, p_48988_.below(), net.minecraft.core.Direction.UP, p_48986_);
-+        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
          return p_48987_.getBlockState(p_48988_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
  
