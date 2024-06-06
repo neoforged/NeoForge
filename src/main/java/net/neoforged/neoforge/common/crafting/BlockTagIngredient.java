@@ -32,8 +32,9 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * This should only be used when there is no way an item tag can be used in your use case
  */
 public class BlockTagIngredient extends Ingredient {
-    public static final MapCodec<BlockTagIngredient> CODEC = TagKey.codec(Registries.BLOCK)
-            .xmap(BlockTagIngredient::new, BlockTagIngredient::getTag).fieldOf("tag");
+    public static final Codec<BlockTagIngredient> CODEC = RecordCodecBuilder.create(i -> i
+            .group(TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(BlockTagIngredient::getTag))
+            .apply(i, BlockTagIngredient::new));
 
     protected final TagKey<Block> tag;
 
