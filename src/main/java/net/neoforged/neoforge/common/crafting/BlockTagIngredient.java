@@ -45,28 +45,9 @@ public class BlockTagIngredient extends Ingredient {
         this.tag = tag;
     }
 
-    protected void dissolve() {
-        if (itemStacks == null) {
-            List<ItemStack> list = new ArrayList<>();
-            for (Holder<Block> block : BuiltInRegistries.BLOCK.getTagOrEmpty(tag)) {
-                ItemStack stack = new ItemStack(block.value());
-                if (!stack.isEmpty()) {
-                    list.add(stack);
-                }
-            }
-
-            if (list.isEmpty()) {
-                ItemStack itemStack = new ItemStack(Blocks.BARRIER).setHoverName(Component.literal("Empty Tag: " + tag.location()));
-                list.add(itemStack);
-            }
-
-            itemStacks = list.toArray(ItemStack[]::new);
-        }
-    }
-
     @Override
     public ItemStack[] getItems() {
-        dissolve();
+        super.getItems();
         return itemStacks;
     }
 
@@ -76,7 +57,7 @@ public class BlockTagIngredient extends Ingredient {
             return false;
         }
 
-        dissolve();
+        super.getItems();
         for (ItemStack itemStack : itemStacks) {
             if (itemStack.is(stack.getItem())) {
                 return true;
@@ -105,8 +86,12 @@ public class BlockTagIngredient extends Ingredient {
         public Collection<ItemStack> getItems() {
             List<ItemStack> list = new ArrayList<>();
 
-            for (Holder<Block> holder : BuiltInRegistries.BLOCK.getTagOrEmpty(this.tag))
-                list.add(new ItemStack(holder.value().asItem()));
+            for (Holder<Block> holder : BuiltInRegistries.BLOCK.getTagOrEmpty(this.tag)) {
+                ItemStack stack = new ItemStack(holder.value());
+                if (!stack.isEmpty()) {
+                    list.add(stack);
+                }
+            }
 
             if (list.isEmpty())
                 list.add(new ItemStack(Blocks.BARRIER).setHoverName(Component.literal("Empty Tag: " + this.tag.location())));
