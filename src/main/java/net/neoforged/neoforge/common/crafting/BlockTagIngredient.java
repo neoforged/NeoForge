@@ -81,11 +81,6 @@ public class BlockTagIngredient extends Ingredient {
 
     public record BlockTagValue(TagKey<Block> tag) implements Ingredient.Value {
         @Override
-        public boolean equals(Object pOther) {
-            return pOther instanceof BlockTagValue tagValue && tagValue.tag.location().equals(this.tag.location());
-        }
-
-        @Override
         public Collection<ItemStack> getItems() {
             List<ItemStack> list = new ArrayList<>();
 
