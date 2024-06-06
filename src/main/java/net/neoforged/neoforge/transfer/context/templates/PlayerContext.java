@@ -1,33 +1,12 @@
 package net.neoforged.neoforge.transfer.context.templates;
 
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.context.IItemContext;
-import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.minecraft.world.entity.player.Player;
 
-public class PlayerContext implements IItemContext {
+public class PlayerContext extends SimpleItemContext {
+    protected final Player player;
 
-    @Override
-    public ItemResource getResource() {
-        return null;
-    }
-
-    @Override
-    public int getAmount() {
-        return 0;
-    }
-
-    @Override
-    public int insert(ItemResource resource, int amount, TransferAction action) {
-        return 0;
-    }
-
-    @Override
-    public int extract(ItemResource resource, int amount, TransferAction action) {
-        return 0;
-    }
-
-    @Override
-    public int exchange(ItemResource resource, int amount, TransferAction action) {
-        return 0;
+    public PlayerContext(Player player) {
+        super();
+        this.player = player;
     }
 }

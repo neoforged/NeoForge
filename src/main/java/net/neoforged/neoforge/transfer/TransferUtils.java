@@ -29,10 +29,6 @@ public class TransferUtils {
         return inserted;
     }
 
-    public static <T extends IResource> int insertStacking(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
-        return insertRange(handler, 0, handler.size(), resource, amount, action);
-    }
-
     public static <T extends IResource> int extractRange(IResourceHandler<T> handler, int start, int end, T resource, int amount, TransferAction action) {
         int extracted = 0;
         for (int index = start; index < end; index++) {
@@ -42,6 +38,10 @@ public class TransferUtils {
             }
         }
         return extracted;
+    }
+
+    public static <T extends IResource> int insertStacking(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
+        return insertRange(handler, 0, handler.size(), resource, amount, action);
     }
 
     public static <T extends IResource> int extractStacking(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
@@ -77,5 +77,40 @@ public class TransferUtils {
             }
         }
         return extracted;
+    }
+
+    public static <T extends IResource> int extractExcludingIndex(IResourceHandler<T> handler, int index, T resource, int amount, TransferAction action) {
+        int extracted = 0;
+        for (int i = 0; i < handler.size(); i++) {
+            if (i == index) continue;
+            extracted += handler.extract(i, resource, amount - extracted, action);
+            if (extracted >= amount) {
+                return extracted;
+            }
+        }
+        return extracted;
+    }
+
+    public static <T extends IResource> int insertExcludingIndex(IResourceHandler<T> handler, int index, T resource, int amount, TransferAction action) {
+        int inserted = 0;
+        // First try to insert into existing stacks
+        for (int i = 0; i < handler.size(); i++) {
+            if (i == index) continue;
+            if (TransferUtils.isEmpty(handler, i)) continue;
+            inserted += handler.insert(i, resource, amount - inserted, action);
+            if (inserted >= amount) {
+                return inserted;
+            }
+        }
+        // Then try to insert into empty slots
+        for (int i = 0; i < handler.size(); i++) {
+            if (i == index) continue;
+            if (!TransferUtils.isEmpty(handler, i)) continue;
+            inserted += handler.insert(i, resource, amount - inserted, action);
+            if (inserted >= amount) {
+                return inserted;
+            }
+        }
+        return inserted;
     }
 }
