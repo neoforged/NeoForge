@@ -32,7 +32,7 @@
                  BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
 -                if (blockstate.is(Blocks.FARMLAND)) {
 +                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, p_52273_);
-+                if (soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? blockstate.is(Blocks.FARMLAND) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE) {
++                if (soilDecision.isDefault() ? blockstate.is(Blocks.FARMLAND) : soilDecision.isTrue()) {
                      f1 = 1.0F;
 -                    if (blockstate.getValue(FarmBlock.MOISTURE) > 0) {
 +                    if (blockstate.isFertile(p_52274_, p_52275_.offset(i, 0, j))) {
@@ -66,7 +66,7 @@
      @Override
      protected boolean canSurvive(BlockState p_52282_, LevelReader p_52283_, BlockPos p_52284_) {
 +        net.neoforged.neoforge.common.util.TriState soilDecision = p_52283_.getBlockState(p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
-+        if (soilDecision != net.neoforged.neoforge.common.util.TriState.DEFAULT) return soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
          return hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_);
      }
  

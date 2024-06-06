@@ -1,12 +1,11 @@
 --- a/net/minecraft/world/level/block/BigDripleafBlock.java
 +++ b/net/minecraft/world/level/block/BigDripleafBlock.java
-@@ -146,7 +_,8 @@
+@@ -146,6 +_,8 @@
      protected boolean canSurvive(BlockState p_152289_, LevelReader p_152290_, BlockPos p_152291_) {
          BlockPos blockpos = p_152291_.below();
          BlockState blockstate = p_152290_.getBlockState(blockpos);
--        return blockstate.is(this) || blockstate.is(Blocks.BIG_DRIPLEAF_STEM) || blockstate.is(BlockTags.BIG_DRIPLEAF_PLACEABLE);
 +        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_152290_, blockpos, Direction.UP, p_152289_);
-+        return blockstate.is(this) || blockstate.is(Blocks.BIG_DRIPLEAF_STEM) || blockstate.is(BlockTags.BIG_DRIPLEAF_PLACEABLE) || soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
+         return blockstate.is(this) || blockstate.is(Blocks.BIG_DRIPLEAF_STEM) || blockstate.is(BlockTags.BIG_DRIPLEAF_PLACEABLE);
      }
  
-     @Override

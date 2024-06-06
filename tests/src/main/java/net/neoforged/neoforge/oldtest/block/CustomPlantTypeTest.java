@@ -76,10 +76,10 @@ public class CustomPlantTypeTest {
         public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
             BlockState soil = world.getBlockState(pos.below());
             TriState soilDecision = soil.canSustainPlant(world, pos.below(), Direction.UP, state);
-            if (soilDecision == TriState.DEFAULT) {
+            if (soilDecision.isDefault()) {
                 return soil.is(Blocks.MAGMA_BLOCK);
             }
-            return soilDecision == TriState.TRUE;
+            return soilDecision.isTrue();
         }
 
         @Override

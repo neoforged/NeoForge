@@ -8,7 +8,7 @@
          return blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)
              ? true
 -            : p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
-+            : soilDecision == net.neoforged.neoforge.common.util.TriState.DEFAULT ? (p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos)) : soilDecision == net.neoforged.neoforge.common.util.TriState.TRUE;
++            : soilDecision.isDefault() ? (p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos)) : soilDecision.isTrue();
      }
  
      public boolean growMushroom(ServerLevel p_221774_, BlockPos p_221775_, BlockState p_221776_, RandomSource p_221777_) {
