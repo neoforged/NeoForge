@@ -36,7 +36,8 @@ public class BlockTagIngredient extends Ingredient {
             .apply(i, BlockTagIngredient::new));
 
     protected final TagKey<Block> tag;
-    @Nullable protected ItemStack[] itemStacks;
+    @Nullable
+    protected ItemStack[] itemStacks;
 
     public BlockTagIngredient(TagKey<Block> tag) {
         super(Stream.of(new BlockTagValue(tag)), NeoForgeMod.BLOCK_TAG_INGREDIENT);
