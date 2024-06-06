@@ -145,10 +145,14 @@ public interface DamageContainer {
         public void addModifier(Reduction type, BiFunction<DamageContainer, Float, Float> function) {}
 
         @Override
-        public void setNewDamage(float damage) {}
+        public void setNewDamage(float damage) {
+            throw new IllegalStateException("Attempted to modify damage in an immutable context");
+        }
 
         @Override
-        public void setPostAttackInvulnerabilityTicks(int ticks) {}
+        public void setPostAttackInvulnerabilityTicks(int ticks) {
+            throw new IllegalStateException("Attempted to modify invulnerability ticks in an immutable context");
+        }
 
         @Override
         public float getReduction(Reduction type) {

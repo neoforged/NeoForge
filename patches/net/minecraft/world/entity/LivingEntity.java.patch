@@ -9,14 +9,16 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final String TAG_ACTIVE_EFFECTS = "active_effects";
      private static final UUID SPEED_MODIFIER_SOUL_SPEED_UUID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
-@@ -242,6 +_,11 @@
+@@ -242,6 +_,13 @@
      protected Brain<?> brain;
      private boolean skipDropExperience;
      protected float appliedScale = 1.0F;
-+    /**This field stores information about damage dealt to this entity.
++    /**
++     * This field stores information about damage dealt to this entity.
 +     * The field is instantiated via {@link #hurt(DamageSource, float)} after
-+     * invulnerability checks, and is nulllified before the method's return.*/
-+    @org.jetbrains.annotations.Nullable
++     * invulnerability checks, and is nulllified before the method's return.
++     * */
++    @Nullable
 +    protected net.neoforged.neoforge.common.damagesource.InternalDamageContainer damageContainer;
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
@@ -140,7 +142,7 @@
          float f = this.getHealth();
          if (f > 0.0F) {
              this.setHealth(f + p_21116_);
-@@ -1127,23 +_,28 @@
+@@ -1127,23 +_,30 @@
          } else if (p_21016_.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          } else {
@@ -162,7 +164,9 @@
 +            net.neoforged.neoforge.event.entity.living.DamageBlockEvent ev;
 +            if (p_21017_ > 0.0F && (ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainer, this.isDamageSourceBlocked(p_21016_))).getBlocked()) {
 +                this.damageContainer.setBlockedDamage(ev);
-+                if(ev.shieldDamage() > 0) this.hurtCurrentlyUsedShield(ev.shieldDamage());
++                if(ev.shieldDamage() > 0) {
++                    this.hurtCurrentlyUsedShield(ev.shieldDamage());
++                }
 +                f1 = ev.getBlockedDamage();
 +                p_21017_ = ev.getDamageContainer().getNewDamage();
                  if (!p_21016_.is(DamageTypeTags.IS_PROJECTILE) && p_21016_.getDirectEntity() instanceof LivingEntity livingentity) {

@@ -7,29 +7,23 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * LivingAttackEvent is fired when a living Entity is attacked. <br>
- * This event is fired whenever an Entity is attacked in
- * {@link LivingEntity#hurt(DamageSource, float)} and
- * {@link Player#hurt(DamageSource, float)}. <br>
+ * LivingAttackEvent is fired when a living Entity is about to receive damage.
  * <br>
- * This event is fired via the {@link CommonHooks#onLivingAttack(LivingEntity, DamageSource, float)}.<br>
+ * This event is fired in {@link LivingEntity#hurt(DamageSource, float)}
+ * after invulnerability checks but before any damage processing/mitigation.
  * <br>
- * {@link #source} contains the DamageSource of the attack. <br>
- * {@link #amount} contains the amount of damage dealt to the entity. <br>
+ * For custom posting of this event, the event expects to be fired before any
+ * damage reductions have been calculated. This event expects a mutable {@link DamageContainer}.
  * <br>
- * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
- * If this event is canceled, the Entity does not take attack damage.<br>
+ * This event is fired via the {@link CommonHooks#onEntityPreDamage(LivingEntity, DamageContainer)}.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
- * This event is fired on the {@link NeoForge#EVENT_BUS}.
+ * 
+ * @see DamageSequenceEvent
  **/
 public class EntityPreDamageEvent extends DamageSequenceEvent implements ICancellableEvent {
     public EntityPreDamageEvent(LivingEntity entity, DamageContainer container) {

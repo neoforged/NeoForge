@@ -5,31 +5,24 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * LivingDamageEvent is fired just before damage is applied to entity.<br>
- * At this point armor, potion and absorption modifiers have already been applied to damage - this is FINAL value.<br>
- * Also note that appropriate resources (like armor durability and absorption extra hearths) have already been consumed.<br>
- * This event is fired whenever an Entity is damaged in
- * {@code LivingEntity#actuallyHurt(DamageSource, float)} and
+ * DamageTakenEvent is fired just before health is modified on the entity.<br>
+ * At this point armor, potion and absorption modifiers have already been applied to damage.
+ * the {@link DamageContainer} is immutable and represents a FINAL value of what is about to
+ * be applied.
+ * <br>
+ * Also note that appropriate resources (like armor durability and absorption extra hearts) have already been consumed.<br>
+ * This event is fired whenever an Entity is damaged in {@code LivingEntity#actuallyHurt(DamageSource, float)} and
  * {@code Player#actuallyHurt(DamageSource, float)}.<br>
  * <br>
- * This event is fired via the {@link CommonHooks#onLivingDamage(LivingEntity, DamageSource, float)}.<br>
+ * This event is fired via {@link CommonHooks#onLivingDamageTaken(LivingEntity, DamageContainer)}.<br>
  * <br>
- * {@link #source} contains the DamageSource that caused this Entity to be hurt. <br>
- * {@link #amount} contains the final amount of damage that will be dealt to entity. <br>
- * <br>
- * This event is {@link ICancellableEvent}.<br>
- * If this event is canceled, the Entity is not hurt. Used resources WILL NOT be restored.<br>
- * <br>
- * This event does not have a result. {@link HasResult}<br>
  * 
- * @see IncomingDamageEvent
+ * @see DamageSequenceEvent
  **/
 public class DamageTakenEvent extends DamageSequenceEvent {
     public DamageTakenEvent(LivingEntity entity, DamageContainer container) {

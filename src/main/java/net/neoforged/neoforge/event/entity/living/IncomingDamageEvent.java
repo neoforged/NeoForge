@@ -5,31 +5,23 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * LivingHurtEvent is fired when an Entity is set to be hurt. <br>
- * This event is fired whenever an Entity is hurt in
- * {@code LivingEntity#actuallyHurt(DamageSource, float)} and
- * {@code Player#actuallyHurt(DamageSource, float)}.<br>
+ * IncomingDamageEvent is fired when an Entity is set to be hurt. <br>
+ * This event is fired in {@code LivingEntity#hurt(DamageSource, float} and
+ * {@code Player#actuallyHurt(DamageSource, float)}.
  * <br>
- * This event is fired via the {@link CommonHooks#onLivingHurt(LivingEntity, DamageSource, float)}.<br>
+ * For custom posting of this event, the event expects to be fired after
+ * damage reductions have been calculated but before any changes to the entity
+ * health has been applied. This event expects a mutable {@link DamageContainer}.
  * <br>
- * {@link #source} contains the DamageSource that caused this Entity to be hurt. <br>
+ * This event is fired via the {@link CommonHooks#onIncomingDamage(LivingEntity, DamageContainer)}.
  * <br>
- * This event is {@link ICancellableEvent}.<br>
- * If this event is canceled, the Entity is not hurt.<br>
- * <br>
- * This event does not have a result. {@link HasResult}<br>
- * <br>
- * This event is fired on the {@link NeoForge#EVENT_BUS}.
  * 
- * @see DamageTakenEvent
+ * @see DamageSequenceEvent
  **/
 public class IncomingDamageEvent extends DamageSequenceEvent {
     public IncomingDamageEvent(LivingEntity entity, DamageContainer source) {
