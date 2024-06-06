@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -69,6 +71,7 @@ import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -144,6 +147,7 @@ import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
@@ -160,6 +164,7 @@ import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkTicketLevelUpdatedEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
@@ -594,6 +599,22 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new ExplosionEvent.Detonate(level, explosion, list));
     }
 
+    /**
+     * To be called when an explosion has calculated the knockback velocity
+     * but has not yet added the knockback to the entity caught in blast.
+     *
+     * @param level           The level that the explosion is in
+     * @param explosion       Explosion that is happening
+     * @param entity          The entity caught in the explosion's blast
+     * @param initialVelocity The explosion calculated velocity for the entity
+     * @return The new explosion velocity to add to the entity's existing velocity
+     */
+    public static Vec3 getExplosionKnockback(Level level, Explosion explosion, Entity entity, Vec3 initialVelocity) {
+        ExplosionKnockbackEvent event = new ExplosionKnockbackEvent(level, explosion, entity, initialVelocity);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getKnockbackVelocity();
+    }
+
     public static boolean onCreateWorldSpawn(Level level, ServerLevelData settings) {
         return NeoForge.EVENT_BUS.post(new LevelEvent.CreateSpawnPosition(level, settings)).isCanceled();
     }
@@ -882,6 +903,18 @@ public class EventHooks {
     }
 
     /**
+     * Called by {@link Gui.HeartType#forPlayer} to allow for modification of the displayed heart type in the
+     * health bar.
+     *
+     * @param player    The local {@link Player}
+     * @param heartType The {@link Gui.HeartType} which would be displayed by vanilla
+     * @return The heart type which should be displayed
+     */
+    public static Gui.HeartType firePlayerHeartTypeEvent(Player player, Gui.HeartType heartType) {
+        return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
+    }
+
+    /**
      * Fires {@link EntityTickEvent.Pre}. Called from the head of {@link LivingEntity#tick()}.
      * 
      * @param entity The entity being ticked
@@ -1035,14 +1068,30 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>();
+        final var searchDupes = new ObjectLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
+        // The ItemStackLinkedSet.TYPE_AND_TAG strategy cannot be used for the MutableHashedLinkedMap due to vanilla
+        // adding multiple identical ItemStacks with different TabVisibility values. The values also cannot be merged
+        // because it does not abide by the intended order. For example, vanilla adds all max enchanted books to the
+        // "ingredient" tab with "parent only" visibility, then also adds all enchanted books again in increasing order
+        // to their max values but with the "search only" visibility. Because the parent-only is added first and then
+        // the search-only entries are added after, the max enchantments would show up first and then the enchantments
+        // in increasing order up to max-1.
+        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(MutableHashedLinkedMap.BASIC, (stack, tabVisibility) -> {
+            if (!searchDupes.add(stack) && tabVisibility != CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
+                throw new IllegalStateException(
+                        "Accidentally adding the same item stack twice "
+                                + stack.getDisplayName().getString()
+                                + " to a Creative Mode Tab: "
+                                + tab.getDisplayName().getString());
+            }
+            return true;
+        });
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
             entries.put(stack, vis);
         });
-
         ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
 
         for (var entry : entries)
