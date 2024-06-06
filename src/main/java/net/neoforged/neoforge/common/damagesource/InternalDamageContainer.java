@@ -10,7 +10,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.function.BiFunction;
 import net.minecraft.world.damagesource.DamageSource;
-import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -82,7 +82,7 @@ public class InternalDamageContainer implements DamageContainer {
     //=============INTERNAL METHODS - DO NOT USE===================
 
     @ApiStatus.Internal
-    public void setBlockedDamage(DamageBlockEvent event) {
+    public void setBlockedDamage(LivingShieldBlockEvent event) {
         if (event.getBlocked()) {
             this.blockedDamage = event.getBlockedDamage();
             this.shieldDamage = event.shieldDamage();

@@ -12,7 +12,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * LivingAttackEvent is fired when a living Entity is about to receive damage.
+ * LivingIncomingDamageEvent is fired when a LivingEntity is about to receive damage.
  * <br>
  * This event is fired in {@link LivingEntity#hurt(DamageSource, float)}
  * after invulnerability checks but before any damage processing/mitigation.
@@ -20,13 +20,14 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * For custom posting of this event, the event expects to be fired before any
  * damage reductions have been calculated. This event expects a mutable {@link DamageContainer}.
  * <br>
- * This event is fired via the {@link CommonHooks#onEntityPreDamage(LivingEntity, DamageContainer)}.<br>
+ * This event is fired via the {@link CommonHooks#onEntityIncomingDamage(LivingEntity, DamageContainer)}.<br>
  * <br>
+ * For more information on the damage sequence
  * 
  * @see DamageSequenceEvent
  **/
-public class EntityPreDamageEvent extends DamageSequenceEvent implements ICancellableEvent {
-    public EntityPreDamageEvent(LivingEntity entity, DamageContainer container) {
+public class LivingIncomingDamageEvent extends DamageSequenceEvent implements ICancellableEvent {
+    public LivingIncomingDamageEvent(LivingEntity entity, DamageContainer container) {
         super(entity, container);
     }
 

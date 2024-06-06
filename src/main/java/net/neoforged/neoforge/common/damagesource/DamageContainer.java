@@ -13,10 +13,9 @@ import java.util.stream.Collectors;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
-import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
-import net.neoforged.neoforge.event.entity.living.DamageTakenEvent;
-import net.neoforged.neoforge.event.entity.living.EntityPreDamageEvent;
-import net.neoforged.neoforge.event.entity.living.IncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 
 /**
  * DamageContainer encapsulates aspects of the entity damage sequence so that
@@ -27,14 +26,14 @@ import net.neoforged.neoforge.event.entity.living.IncomingDamageEvent;
  * <li>Entity is hurt by a damage source</li>
  * <li>{@link EntityInvulnerablityCheckEvent EntityInvulnerablityCheckEvent}
  * fires and determines if the sequence can commence</li>
- * <li>{@link EntityPreDamageEvent EntityPreDamageEvent} fires
+ * <li>{@link LivingIncomingDamageEvent EntityPreDamageEvent} fires
  * and gives access to this. Modifiers should be added here.</li>
- * <li>{@link DamageBlockEvent} fires</li>
+ * <li>{@link LivingShieldBlockEvent} fires</li>
  * <li>armor, enchantments, mob effect, and absorption modifiers are applied to the damage</li>
- * <li>{@link IncomingDamageEvent IncomingDamageEvent} fires and
+ * <li>{@link LivingDamageEvent.Pre IncomingDamageEvent} fires and
  * provides final values for the preceding modifiers and the last chance to negate the damage but will not
  * undo the preceding effects</li>
- * <li>{@link DamageTakenEvent DamageTakenEvent} fires and provides
+ * <li>{@link LivingDamageEvent.Post DamageTakenEvent} fires and provides
  * an immutable perspective of what the entire sequence ended with. </li>
  * </ol>
  *
@@ -71,7 +70,7 @@ public interface DamageContainer {
     /**
      * Adds a callback modifier to the vanilla damage reductions. Each function will be performed in sequence
      * on the vanilla value at the time the {@link Reduction} type is set by vanilla.
-     * <h4>Note: only the {@link EntityPreDamageEvent EntityPreDamageEvent}
+     * <h4>Note: only the {@link LivingIncomingDamageEvent EntityPreDamageEvent}
      * happens early enough in the sequence for this method to have any effect.</h4>
      *
      * @param type      The reduction type your function will apply to
@@ -91,12 +90,12 @@ public interface DamageContainer {
     void setNewDamage(float damage);
 
     /**
-     * @return The damage blocked during the {@link DamageBlockEvent}
+     * @return The damage blocked during the {@link LivingShieldBlockEvent}
      */
     float getBlockedDamage();
 
     /**
-     * @return The durability applied to the applicable shield after {@link DamageBlockEvent}
+     * @return The durability applied to the applicable shield after {@link LivingShieldBlockEvent}
      *         returned a successful block
      */
     float getShieldDamage();
@@ -115,7 +114,7 @@ public interface DamageContainer {
 
     /**
      * This provides a post-reduction value for the reduction and modifiers. This will always return zero
-     * before {@link IncomingDamageEvent} and will consume all
+     * before {@link LivingDamageEvent.Pre} and will consume all
      * modifiers prior to the event.
      *
      * @param type the specific source type of the damage reduction

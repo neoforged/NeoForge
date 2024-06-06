@@ -147,7 +147,7 @@
              return false;
          } else {
 +            this.damageContainer = this.damageContainer == null ? new net.neoforged.neoforge.common.damagesource.InternalDamageContainer(p_21016_, p_21017_) : this.damageContainer;
-+            if (!net.neoforged.neoforge.common.CommonHooks.onEntityPreDamage(this, this.damageContainer)) return false;
++            if (!net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainer)) return false;
              if (this.isSleeping() && !this.level().isClientSide) {
                  this.stopSleeping();
              }
@@ -161,7 +161,7 @@
 -                this.hurtCurrentlyUsedShield(p_21017_);
 -                f1 = p_21017_;
 -                p_21017_ = 0.0F;
-+            net.neoforged.neoforge.event.entity.living.DamageBlockEvent ev;
++            net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent ev;
 +            if (p_21017_ > 0.0F && (ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainer, this.isDamageSourceBlocked(p_21016_))).getBlocked()) {
 +                this.damageContainer.setBlockedDamage(ev);
 +                if(ev.shieldDamage() > 0) {
@@ -390,7 +390,7 @@
                  }
  
                  return p_21194_;
-@@ -1699,20 +_,25 @@
+@@ -1699,11 +_,14 @@
  
      protected void actuallyHurt(DamageSource p_21240_, float p_21241_) {
          if (!this.isInvulnerableTo(p_21240_)) {
@@ -404,20 +404,18 @@
 +            this.damageContainer.setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
 +            float f1 = Math.max(this.damageContainer.getNewDamage() - this.damageContainer.getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
 +            this.setAbsorptionAmount(this.damageContainer.getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainer.getNewDamage() - f1));
-+            f1 = net.neoforged.neoforge.common.CommonHooks.onIncomingDamage(this, this.damageContainer);
++            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainer);
 +            if (f1 <= 0) return;
 +            float f = this.damageContainer.getNewDamage() - f1;
              if (f > 0.0F && f < 3.4028235E37F && p_21240_.getEntity() instanceof ServerPlayer serverplayer) {
                  serverplayer.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(f * 10.0F));
              }
- 
-+            net.neoforged.neoforge.common.CommonHooks.onLivingDamageTaken(this, this.damageContainer);
-             if (f1 != 0.0F) {
-                 this.getCombatTracker().recordDamage(p_21240_, f1);
+@@ -1713,6 +_,8 @@
                  this.setHealth(this.getHealth() - f1);
                  this.setAbsorptionAmount(this.getAbsorptionAmount() - f1);
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
 +                this.onDamageTaken(this.damageContainer);
++                net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainer);
              }
          }
      }

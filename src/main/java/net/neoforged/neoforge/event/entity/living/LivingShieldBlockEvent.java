@@ -12,7 +12,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * The DamageBlockEvent is fired when an entity is hurt and vanilla checks if the entity is attempting
+ * LivingShieldBlockEvent is fired when an entity is hurt and vanilla checks if the entity is attempting
  * to block with a shield.<br>
  * Cancelling this event will have the same impact as if the shield was not eligible to block.<br>
  * The damage blocked cannot be set lower than zero or greater than the original value.<br>
@@ -20,16 +20,17 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * blocking logic is captured and passed into the event via {@link #getOriginalBlock()}. If this is
  * true, The shield item stack "should" be available from {@link LivingEntity#getUseItem()} at least
  * for players.</h4>
+ * For more information on the damage sequence
  * 
  * @see DamageSequenceEvent
  */
-public class DamageBlockEvent extends DamageSequenceEvent implements ICancellableEvent {
+public class LivingShieldBlockEvent extends DamageSequenceEvent implements ICancellableEvent {
     private float dmgBlocked;
     private float shieldDamage = -1;
     private final boolean originalBlocked;
     private boolean newBlocked;
 
-    public DamageBlockEvent(LivingEntity blocker, DamageContainer container, boolean originalBlockedState) {
+    public LivingShieldBlockEvent(LivingEntity blocker, DamageContainer container, boolean originalBlockedState) {
         super(blocker, container);
         this.dmgBlocked = container.getNewDamage();
         this.originalBlocked = originalBlockedState;

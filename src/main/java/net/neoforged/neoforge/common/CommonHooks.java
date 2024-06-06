@@ -166,20 +166,19 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
-import net.neoforged.neoforge.event.entity.living.DamageBlockEvent;
-import net.neoforged.neoforge.event.entity.living.DamageTakenEvent;
 import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
-import net.neoforged.neoforge.event.entity.living.EntityPreDamageEvent;
-import net.neoforged.neoforge.event.entity.living.IncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
@@ -256,15 +255,15 @@ public class CommonHooks {
     /**
      * Called after invulnerability checks in {@link LivingEntity#hurt(DamageSource, float)},
      * this method creates and posts the first event in the LivingEntity damage sequence,
-     * {@link EntityPreDamageEvent}, FOR NON-PLAYER entities.
+     * {@link LivingIncomingDamageEvent}, FOR NON-PLAYER entities.
      *
      * @param entity    the entity to receive damage
      * @param container the newly instantiated container for damage to be dealt. Most properties of
      *                  the container will be empty at this stage.
      * @return if the event is cancelled and no damage will be applied to the entity
      */
-    public static boolean onEntityPreDamage(LivingEntity entity, DamageContainer container) {
-        return entity instanceof Player || !NeoForge.EVENT_BUS.post(new EntityPreDamageEvent(entity, container)).isCanceled();
+    public static boolean onEntityIncomingDamage(LivingEntity entity, DamageContainer container) {
+        return entity instanceof Player || !NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
     }
 
     /**
@@ -272,15 +271,15 @@ public class CommonHooks {
      * {@link net.minecraft.client.player.LocalPlayer#hurt(DamageSource, float)}, and
      * {@link net.minecraft.client.player.RemotePlayer#hurt(DamageSource, float)},
      * this method creates and posts the first event in the LivingEntity damage sequence,
-     * {@link EntityPreDamageEvent}, for player entities.
+     * {@link LivingIncomingDamageEvent}, for player entities.
      *
      * @param entity    the player to receive damage
      * @param container the newly instantiated container for damage to be dealt. Most properties of
      *                  the container will be empty at this stage.
      * @return if the event is cancelled and no damage will be applied to the entity
      */
-    public static boolean onPlayerEntityPreDamage(LivingEntity entity, DamageContainer container) {
-        return !NeoForge.EVENT_BUS.post(new EntityPreDamageEvent(entity, container)).isCanceled();
+    public static boolean onPlayerIncomingDamage(LivingEntity entity, DamageContainer container) {
+        return !NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ) {
@@ -294,7 +293,7 @@ public class CommonHooks {
     }
 
     /**
-     * Creates and posts an {@link IncomingDamageEvent}. This is invoked in
+     * Creates and posts an {@link LivingDamageEvent.Pre}. This is invoked in
      * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
      * and requires access to the internal field {@link LivingEntity#damageContainer} as a parameter.
      *
@@ -304,12 +303,12 @@ public class CommonHooks {
      * @return the current damage value to be applied to the entity's health
      *
      */
-    public static float onIncomingDamage(LivingEntity entity, DamageContainer container) {
-        return NeoForge.EVENT_BUS.post(new IncomingDamageEvent(entity, container)).getDamageContainer().getNewDamage();
+    public static float onLivingDamagePre(LivingEntity entity, DamageContainer container) {
+        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getDamageContainer().getNewDamage();
     }
 
     /**
-     * Creates and posts a {@link DamageTakenEvent}. This is invoked in
+     * Creates and posts a {@link LivingDamageEvent.Post}. This is invoked in
      * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
      * and requires access to the internal field {@link LivingEntity#damageContainer} as a parameter.
      *
@@ -317,8 +316,8 @@ public class CommonHooks {
      * @param container the container object holding the truly final values of the damage pipeline. This
      *                  instance is immutable.
      */
-    public static void onLivingDamageTaken(LivingEntity entity, DamageContainer container) {
-        NeoForge.EVENT_BUS.post(new DamageTakenEvent(entity, new DamageContainer.ResultDamageContainer(container)));
+    public static void onLivingDamagePost(LivingEntity entity, DamageContainer container) {
+        NeoForge.EVENT_BUS.post(new LivingDamageEvent.Post(entity, new DamageContainer.ResultDamageContainer(container)));
     }
 
     /**
@@ -1102,7 +1101,7 @@ public class CommonHooks {
     }
 
     /**
-     * Creates, posts, and returns a {@link DamageBlockEvent}. This method is invoked in
+     * Creates, posts, and returns a {@link LivingShieldBlockEvent}. This method is invoked in
      * {@link LivingEntity#hurt(DamageSource, float)} and requires internal access to the
      * protected field {@link LivingEntity#damageContainer} as a parameter.
      *
@@ -1112,8 +1111,8 @@ public class CommonHooks {
      * @param originalBlocked whether this entity is blocking according to preceding/vanilla logic
      * @return the event object after event listeners have been invoked.
      */
-    public static DamageBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, boolean originalBlocked) {
-        DamageBlockEvent e = new DamageBlockEvent(blocker, container, originalBlocked);
+    public static LivingShieldBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, boolean originalBlocked) {
+        LivingShieldBlockEvent e = new LivingShieldBlockEvent(blocker, container, originalBlocked);
         NeoForge.EVENT_BUS.post(e);
         return e;
     }
