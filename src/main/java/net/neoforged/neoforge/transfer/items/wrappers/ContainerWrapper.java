@@ -1,6 +1,7 @@
 package net.neoforged.neoforge.transfer.items.wrappers;
 
 import net.minecraft.world.Container;
+import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.TransferUtils;
 import net.neoforged.neoforge.transfer.items.ItemResource;
@@ -15,52 +16,75 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
 
     @Override
     public void set(int index, ItemResource resource, int amount) {
-        container.setItem(index, resource.toStack(amount));
+        getContainer().setItem(index, resource.toStack(amount));
+        getContainer().setChanged();
     }
 
     @Override
     public int size() {
-        return 0;
+        return getContainer().getContainerSize();
     }
 
     @Override
     public ItemResource getResource(int index) {
-        return null;
+        return ItemResource.of(getContainer().getItem(index));
     }
 
     @Override
     public int getAmount(int index) {
-        return 0;
+        return getContainer().getItem(index).getCount();
     }
 
     @Override
     public int getLimit(int index, ItemResource resource) {
-        return 0;
+        return getContainer().getMaxStackSize(resource.toStack());
     }
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        return false;
+        return getContainer().canPlaceItem(index, resource.toStack());
     }
 
     @Override
     public boolean canInsert() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canExtract() {
-        return false;
+        return true;
     }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
+        if (amount <= 0 || resource.isBlank() || !isValid(index, resource)) return 0;
+        ResourceStack<ItemResource> stack = getContainer().getItem(index).immutable();
+        if (stack.isEmpty()) {
+            int insert = Math.min(amount, getLimit(index, resource));
+            if (action.isExecuting()) {
+                set(index, resource, insert);
+            }
+            return insert;
+        } else if (stack.resource().equals(resource)) {
+            int insert = Math.min(amount, getLimit(index, resource) - stack.amount());
+            if (action.isExecuting()) {
+                set(index, resource, stack.amount() + insert);
+            }
+            return insert;
+        }
         return 0;
     }
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransferAction action) {
-        return 0;
+        if (amount <= 0 || resource.isBlank() || !isValid(index, resource)) return 0;
+        ResourceStack<ItemResource> stack = getContainer().getItem(index).immutable();
+        if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
+        int extract = Math.min(amount, stack.amount());
+        if (action.isExecuting()) {
+            set(index, resource, stack.amount() - extract);
+        }
+        return extract;
     }
 
     @Override
@@ -71,5 +95,9 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
     @Override
     public int extract(ItemResource resource, int amount, TransferAction action) {
         return TransferUtils.extractStacking(this, resource, amount, action);
+    }
+
+    public Container getContainer() {
+        return container;
     }
 }

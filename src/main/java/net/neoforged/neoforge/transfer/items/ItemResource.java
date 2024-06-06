@@ -95,6 +95,10 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return innerStack.isEmpty();
     }
 
+    public boolean is(Item item) {
+        return innerStack.is(item);
+    }
+
     public ItemResource applyPatch(DataComponentPatch patch) {
         ItemStack stack = innerStack.copy();
         stack.applyComponents(patch);

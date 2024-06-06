@@ -47,4 +47,35 @@ public class TransferUtils {
     public static <T extends IResource> int extractStacking(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
         return extractRange(handler, 0, handler.size(), resource, amount, action);
     }
+
+    public static <T extends IResource> int insertIndices(IResourceHandler<T> handler, int[] indices, T resource, int amount, TransferAction action) {
+        int inserted = 0;
+        for (int index : indices) {
+            if (TransferUtils.isEmpty(handler, index)) continue;
+            inserted += handler.insert(index, resource, amount - inserted, action);
+            if (inserted >= amount) {
+                return inserted;
+            }
+        }
+
+        for (int index : indices) {
+            if (!TransferUtils.isEmpty(handler, index)) continue;
+            inserted += handler.insert(index, resource, amount - inserted, action);
+            if (inserted >= amount) {
+                return inserted;
+            }
+        }
+        return inserted;
+    }
+
+    public static <T extends IResource> int extractIndices(IResourceHandler<T> handler, int[] indices, T resource, int amount, TransferAction action) {
+        int extracted = 0;
+        for (int index : indices) {
+            extracted += handler.extract(index, resource, amount - extracted, action);
+            if (extracted >= amount) {
+                return extracted;
+            }
+        }
+        return extracted;
+    }
 }

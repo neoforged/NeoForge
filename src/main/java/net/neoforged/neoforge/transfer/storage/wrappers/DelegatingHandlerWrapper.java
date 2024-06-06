@@ -26,24 +26,28 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
         return getDelegate().size();
     }
 
+    protected int convertIndex(int index) {
+        return index;
+    }
+
     @Override
     public T getResource(int index) {
-        return getDelegate().getResource(index);
+        return getDelegate().getResource(convertIndex(index));
     }
 
     @Override
     public int getAmount(int index) {
-        return getDelegate().getAmount(index);
+        return getDelegate().getAmount(convertIndex(index));
     }
 
     @Override
     public int getLimit(int index, T resource) {
-        return getDelegate().getLimit(index, resource);
+        return getDelegate().getLimit(convertIndex(index), resource);
     }
 
     @Override
     public boolean isValid(int index, T resource) {
-        return getDelegate().isValid(index, resource);
+        return getDelegate().isValid(convertIndex(index), resource);
     }
 
     @Override
@@ -58,7 +62,7 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
 
     @Override
     public int insert(int index, T resource, int amount, TransferAction action) {
-        return getDelegate().insert(index, resource, amount, action);
+        return getDelegate().insert(convertIndex(index), resource, amount, action);
     }
 
     @Override
@@ -68,7 +72,7 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
 
     @Override
     public int extract(int index, T resource, int amount, TransferAction action) {
-        return getDelegate().extract(index, resource, amount, action);
+        return getDelegate().extract(convertIndex(index), resource, amount, action);
     }
 
     @Override
@@ -91,7 +95,7 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
 
         @Override
         public void set(int index, T resource, int amount) {
-            getDelegate().set(index, resource, amount);
+            getDelegate().set(convertIndex(index), resource, amount);
         }
 
         @Override
