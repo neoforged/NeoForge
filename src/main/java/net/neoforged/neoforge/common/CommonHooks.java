@@ -162,7 +162,7 @@ import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
-import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
@@ -239,7 +239,7 @@ public class CommonHooks {
     }
 
     /**
-     * Creates and posts an {@link EntityInvulnerablityCheckEvent}. This is invoked in
+     * Creates and posts an {@link EntityInvulnerabilityCheckEvent}. This is invoked in
      * {@link Entity#isInvulnerableTo(DamageSource)} and returns a post-listener result
      * to the invulnerability status of the entity to the damage source.
      *
@@ -249,7 +249,7 @@ public class CommonHooks {
      * @return if this entity is invulnerable
      */
     public static boolean onEntityInvulnerablityCheck(Entity entity, DamageSource source, boolean isInvul) {
-        return NeoForge.EVENT_BUS.post(new EntityInvulnerablityCheckEvent(entity, source, isInvul)).isInvulnerable();
+        return NeoForge.EVENT_BUS.post(new EntityInvulnerabilityCheckEvent(entity, source, isInvul)).isInvulnerable();
     }
 
     /**

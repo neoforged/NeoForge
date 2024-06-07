@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
-import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 
 /**
  * DamageSequenceEvent provides a DamageContainer to its subclasses. Subscribe to
@@ -27,7 +27,7 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
  * <ol>
  * <li>{@link LivingEntity#hurt} is invoked on the recipient from the source of
  * the attack.</li>
- * <li>{@link Entity#isInvulnerableTo} is invoked and fires {@link EntityInvulnerablityCheckEvent}</li>
+ * <li>{@link Entity#isInvulnerableTo} is invoked and fires {@link EntityInvulnerabilityCheckEvent}</li>
  * <li>After determining the entity is vulnerable, the {@link DamageContainer} in instantiated for the entity</li>
  * <li>{@link LivingIncomingDamageEvent} is fired</li>
  * <li>{@link LivingShieldBlockEvent} fires and the result determines if shield effects apply</li>

@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
@@ -24,7 +24,7 @@ import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
  * <h4>Note: certain values will be defaults until the stage in the sequence when they are set.</h4>
  * <H3>Damage Sequence and uses</H3><ol>
  * <li>Entity is hurt by a damage source</li>
- * <li>{@link EntityInvulnerablityCheckEvent EntityInvulnerablityCheckEvent}
+ * <li>{@link EntityInvulnerabilityCheckEvent EntityInvulnerablityCheckEvent}
  * fires and determines if the sequence can commence</li>
  * <li>{@link LivingIncomingDamageEvent EntityPreDamageEvent} fires
  * and gives access to this. Modifiers should be added here.</li>

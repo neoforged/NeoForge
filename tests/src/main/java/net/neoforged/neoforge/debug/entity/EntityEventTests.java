@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
-import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -84,7 +84,7 @@ public class EntityEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if EntityInvulnerabilityCheckEvent prevents damage when modified.")
     static void entityInvulnerabilityCheckEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((final EntityInvulnerablityCheckEvent event) -> {
+        test.eventListeners().forge().addListener((final EntityInvulnerabilityCheckEvent event) -> {
             if (event.getEntity() instanceof GameTestPlayer entity)
                 event.setInvulnerable(false);
         });
