@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -77,13 +78,21 @@ public class NetworkComponentNegotiator {
 
         if (!client.isEmpty()) {
             final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
-            client.forEach(c -> failureReasons.put(c.id(), Component.translatable("neoforge.network.negotiation.failure.missing.client.server")));
+            client.forEach(c -> {
+                Component channelFailureReason = Component.translatable("neoforge.network.negotiation.failure.missing.client.server");
+                String modDisplayName = ModList.get().getModContainerById(c.id().getNamespace()).map(mc -> mc.getModInfo().getDisplayName()).orElse("");
+                failureReasons.put(c.id(), modDisplayName.isEmpty() ? channelFailureReason : Component.translatable("neoforge.network.negotiation.failure.mod", modDisplayName, channelFailureReason));
+            });
             return new NegotiationResult(List.of(), false, failureReasons);
         }
 
         if (!server.isEmpty()) {
             final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
-            server.forEach(c -> failureReasons.put(c.id(), Component.translatable("neoforge.network.negotiation.failure.missing.server.client")));
+            server.forEach(c -> {
+                Component channelFailureReason = Component.translatable("neoforge.network.negotiation.failure.missing.server.client");
+                String modDisplayName = ModList.get().getModContainerById(c.id().getNamespace()).map(mc -> mc.getModInfo().getDisplayName()).orElse("");
+                failureReasons.put(c.id(), modDisplayName.isEmpty() ? channelFailureReason : Component.translatable("neoforge.network.negotiation.failure.mod", modDisplayName, channelFailureReason));
+            });
             return new NegotiationResult(List.of(), false, failureReasons);
         }
 
@@ -92,16 +101,17 @@ public class NetworkComponentNegotiator {
         for (Table.Cell<ResourceLocation, NegotiableNetworkComponent, NegotiableNetworkComponent> match : matches.cellSet()) {
             final NegotiableNetworkComponent serverComponent = match.getColumnKey();
             final NegotiableNetworkComponent clientComponent = match.getValue();
+            final String modDisplayName = ModList.get().getModContainerById(serverComponent.id().getNamespace()).map(mc -> mc.getModInfo().getDisplayName()).orElse("");
 
             Optional<ComponentNegotiationResult> serverToClientComparison = validateComponent(serverComponent, clientComponent, "client");
             if (serverToClientComparison.isPresent() && !serverToClientComparison.get().success()) {
-                failureReasons.put(serverComponent.id(), serverToClientComparison.get().failureReason());
+                failureReasons.put(serverComponent.id(), modDisplayName.isEmpty() ? serverToClientComparison.get().failureReason() : Component.translatable("neoforge.network.negotiation.failure.mod", modDisplayName, serverToClientComparison.get().failureReason()));
                 continue;
             }
 
             Optional<ComponentNegotiationResult> clientToServerComparison = validateComponent(clientComponent, serverComponent, "server");
             if (clientToServerComparison.isPresent() && !clientToServerComparison.get().success()) {
-                failureReasons.put(serverComponent.id(), clientToServerComparison.get().failureReason());
+                failureReasons.put(serverComponent.id(), modDisplayName.isEmpty() ? clientToServerComparison.get().failureReason() : Component.translatable("neoforge.network.negotiation.failure.mod", modDisplayName, clientToServerComparison.get().failureReason()));
                 continue;
             }
 
