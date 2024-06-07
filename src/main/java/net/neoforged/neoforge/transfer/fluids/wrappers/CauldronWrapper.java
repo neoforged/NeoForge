@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.fluids.wrappers;
 
 import com.google.common.math.IntMath;
@@ -5,11 +10,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 
 public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     private final Level level;

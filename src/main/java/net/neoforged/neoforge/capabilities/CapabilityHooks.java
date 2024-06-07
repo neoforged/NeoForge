@@ -33,6 +33,13 @@ import net.neoforged.neoforge.items.wrapper.ForwardingItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.transfer.fluids.wrappers.BucketHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.AggregateResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingHandlerWrapper;
+import net.neoforged.neoforge.transfer.items.wrappers.ContainerWrapper;
+import net.neoforged.neoforge.transfer.items.wrappers.EntityEquipmentItemHandler;
+import net.neoforged.neoforge.transfer.items.wrappers.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.items.wrappers.WorldlyContainerWrapper;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -59,26 +66,19 @@ public class CapabilityHooks {
             // Invalidation is taken care of by the patches to ComposterBlock
 
             // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
-            if (side == null) {
-                return new ForwardingItemHandler(() -> new InvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
-            } else {
-                return new ForwardingItemHandler(() -> new SidedInvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
-            }
+            return new DelegatingHandlerWrapper.Modifiable<>(() -> WorldlyContainerWrapper.of(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
         }, Blocks.COMPOSTER);
 
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-            return new InvWrapper(ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true));
+            return new ContainerWrapper(ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true));
         }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
 
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
             // Use custom hopper wrapper that respects cooldown
-            return new VanillaHopperItemHandler(hopper);
+            return new ContainerWrapper.Hopper(hopper);
         });
 
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.SHULKER_BOX, (shulkerBox, side) -> {
-            // Always use sided wrapper for shulker boxes, even for null direction, to call its `canPlaceItemThroughFace` override.
-            return new SidedInvWrapper(shulkerBox, null);
-        });
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.SHULKER_BOX, WorldlyContainerWrapper::of);
 
         var sidedVanillaContainers = List.of(
                 BlockEntityType.BLAST_FURNACE,
@@ -86,9 +86,7 @@ public class CapabilityHooks {
                 BlockEntityType.FURNACE,
                 BlockEntityType.SMOKER);
         for (var type : sidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (sidedContainer, side) -> {
-                return side == null ? new InvWrapper(sidedContainer) : new SidedInvWrapper(sidedContainer, side);
-            });
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, WorldlyContainerWrapper::of);
         }
 
         var nonSidedVanillaContainers = List.of(
@@ -99,7 +97,7 @@ public class CapabilityHooks {
                 BlockEntityType.JUKEBOX,
                 BlockEntityType.CRAFTER);
         for (var type : nonSidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new InvWrapper(container));
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new ContainerWrapper(container));
         }
 
         // Entities
@@ -108,17 +106,17 @@ public class CapabilityHooks {
                 EntityType.CHEST_MINECART,
                 EntityType.HOPPER_MINECART);
         for (var entityType : containerEntities) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new InvWrapper(entity));
-            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new InvWrapper(entity));
+            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new ContainerWrapper(entity));
+            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new ContainerWrapper(entity));
         }
-        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInvWrapper(player.getInventory()));
+        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInventoryHandler(player));
         // Register to all entity types to make sure we support all living entity subclasses.
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
                 if (entity instanceof AbstractHorse horse)
-                    return new InvWrapper(horse.getInventory());
+                    return new ContainerWrapper(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
-                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
+                    return new AggregateResourceHandler.Modifiable<>(EntityEquipmentItemHandler.ofHands(livingEntity), EntityEquipmentItemHandler.ofArmor(livingEntity));
 
                 return null;
             });
@@ -127,10 +125,10 @@ public class CapabilityHooks {
         // Items
         for (Item item : BuiltInRegistries.ITEM) {
             if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
+                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), item);
         }
         if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
+            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), Items.MILK_BUCKET);
         }
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ComponentItemHandler(stack, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,

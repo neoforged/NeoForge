@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.fluids.templates;
 
 import net.minecraft.core.component.DataComponentType;
@@ -6,7 +11,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;

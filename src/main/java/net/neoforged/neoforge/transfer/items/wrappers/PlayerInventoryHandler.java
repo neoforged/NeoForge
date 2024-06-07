@@ -1,6 +1,10 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.items.wrappers;
 
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -8,10 +12,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.storage.wrappers.HandlerIndexWrapper;
-import net.neoforged.neoforge.transfer.storage.wrappers.RangedHandlerWrapper;
-import net.neoforged.neoforge.transfer.storage.wrappers.ScopedHandlerWrapper;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.wrappers.HandlerIndexWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.RangedHandlerWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.ScopedHandlerWrapper;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerInventoryHandler extends ContainerWrapper {

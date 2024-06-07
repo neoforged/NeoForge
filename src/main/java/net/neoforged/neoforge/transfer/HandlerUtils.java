@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer;
 
-import net.neoforged.neoforge.transfer.storage.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 
-public class TransferUtils {
+public class HandlerUtils {
 
     public static boolean isEmpty(IResourceHandler<? extends IResource> handler, int index) {
         return handler.getResource(index).isBlank() || handler.getAmount(index) <= 0;
@@ -11,7 +16,7 @@ public class TransferUtils {
     public static <T extends IResource> int insertRange(IResourceHandler<T> handler, int start, int end, T resource, int amount, TransferAction action) {
         int inserted = 0;
         for (int index = start; index < end; index++) {
-            if (TransferUtils.isEmpty(handler, index)) continue;
+            if (HandlerUtils.isEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -19,7 +24,7 @@ public class TransferUtils {
         }
 
         for (int index = start; index < end; index++) {
-            if (!TransferUtils.isEmpty(handler, index)) continue;
+            if (!HandlerUtils.isEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -51,7 +56,7 @@ public class TransferUtils {
     public static <T extends IResource> int insertIndices(IResourceHandler<T> handler, int[] indices, T resource, int amount, TransferAction action) {
         int inserted = 0;
         for (int index : indices) {
-            if (TransferUtils.isEmpty(handler, index)) continue;
+            if (HandlerUtils.isEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -59,7 +64,7 @@ public class TransferUtils {
         }
 
         for (int index : indices) {
-            if (!TransferUtils.isEmpty(handler, index)) continue;
+            if (!HandlerUtils.isEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -96,7 +101,7 @@ public class TransferUtils {
         // First try to insert into existing stacks
         for (int i = 0; i < handler.size(); i++) {
             if (i == index) continue;
-            if (TransferUtils.isEmpty(handler, i)) continue;
+            if (HandlerUtils.isEmpty(handler, i)) continue;
             inserted += handler.insert(i, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -105,7 +110,7 @@ public class TransferUtils {
         // Then try to insert into empty slots
         for (int i = 0; i < handler.size(); i++) {
             if (i == index) continue;
-            if (!TransferUtils.isEmpty(handler, i)) continue;
+            if (!HandlerUtils.isEmpty(handler, i)) continue;
             inserted += handler.insert(i, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;

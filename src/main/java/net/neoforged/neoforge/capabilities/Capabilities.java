@@ -11,7 +11,7 @@ import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 import net.neoforged.neoforge.transfer.context.IItemContext;
-import net.neoforged.neoforge.transfer.storage.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,21 +19,21 @@ import org.jetbrains.annotations.Nullable;
  * Capabilities provided by NeoForge itself, for modders to directly reference.
  */
 public final class Capabilities {
-    public static final class EnergyStorage {
+    public static final class EnergyHandler {
         public static final BlockCapability<IEnergyHandler, @Nullable Direction> BLOCK = BlockCapability.createSided(create("energy"), IEnergyHandler.class);
         public static final EntityCapability<IEnergyHandler, @Nullable Direction> ENTITY = EntityCapability.createSided(create("energy"), IEnergyHandler.class);
         public static final ItemCapability<IEnergyHandler, IItemContext> ITEM = ItemCapability.createContextual(create("energy"), IEnergyHandler.class);
 
-        private EnergyStorage() {}
+        private EnergyHandler() {}
     }
 
-    public static final class FluidStorage {
+    public static final class FluidHandler {
         public static final BlockCapability<IResourceHandler<FluidResource>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_storage"), IResourceHandler.asClass());
         public static final EntityCapability<IResourceHandler<FluidResource>, @Nullable Direction> ENTITY = EntityCapability.createSided(create("fluid_storage"), IResourceHandler.asClass());
         public static final ItemCapability<IResourceHandler<FluidResource>, @NotNull IItemContext> ITEM = ItemCapability.createContextual(create("fluid_storage"), IResourceHandler.asClass());
     }
 
-    public static final class ItemStorage {
+    public static final class ItemHandler {
         public static final BlockCapability<IResourceHandler<ItemResource>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("item_storage"), IResourceHandler.asClass());
         /**
          * Capability for the inventory of an entity.

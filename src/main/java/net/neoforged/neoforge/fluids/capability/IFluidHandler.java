@@ -8,7 +8,7 @@ package net.neoforged.neoforge.fluids.capability;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.transfer.storage.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import net.neoforged.neoforge.transfer.TransferAction;
 
 /**

@@ -6,9 +6,11 @@
 package net.neoforged.neoforge.items;
 
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
-@Deprecated(forRemoval = true, since = "1.22")
-public interface IItemHandlerModifiable extends IItemHandler {
+@Deprecated(forRemoval = true, since = "1.21")
+public interface IItemHandlerModifiable extends IItemHandler, IResourceHandlerModifiable<ItemResource> {
     /**
      * Overrides the stack in the given slot. This method is used by the
      * standard Forge helper methods and classes. It is not intended for
@@ -21,4 +23,9 @@ public interface IItemHandlerModifiable extends IItemHandler {
      *                          was not expecting.
      **/
     void setStackInSlot(int slot, ItemStack stack);
+
+    @Override
+    default void set(int index, ItemResource resource, int amount) {
+        setStackInSlot(index, resource.toStack(amount));
+    }
 }

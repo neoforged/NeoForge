@@ -1,10 +1,15 @@
-package net.neoforged.neoforge.transfer.storage.wrappers;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.TransferUtils;
-import net.neoforged.neoforge.transfer.storage.IResourceHandler;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.HandlerUtils;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 import java.util.function.Supplier;
 
@@ -33,12 +38,12 @@ public class ScopedHandlerWrapper<T extends IResource> extends DelegatingHandler
 
     @Override
     public int insert(T resource, int amount, TransferAction action) {
-        return TransferUtils.insertIndices(getDelegate(), indices, resource, amount, action);
+        return HandlerUtils.insertIndices(getDelegate(), indices, resource, amount, action);
     }
 
     @Override
     public int extract(T resource, int amount, TransferAction action) {
-        return TransferUtils.extractIndices(getDelegate(), indices, resource, amount, action);
+        return HandlerUtils.extractIndices(getDelegate(), indices, resource, amount, action);
     }
 
     public static class Modifiable<T extends IResource> extends ScopedHandlerWrapper<T> implements IResourceHandlerModifiable<T> {

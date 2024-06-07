@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.items.wrappers;
 
 import net.minecraft.core.Direction;
@@ -7,15 +12,15 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.storage.wrappers.ScopedHandlerWrapper;
-
-import java.util.Arrays;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.wrappers.ScopedHandlerWrapper;
+import org.jetbrains.annotations.Nullable;
 
 public class WorldlyContainerWrapper extends ContainerWrapper {
+    @Nullable
     protected final Direction side;
 
-    public static IResourceHandlerModifiable<ItemResource> of(WorldlyContainer container, Direction side) {
+    public static IResourceHandlerModifiable<ItemResource> of(WorldlyContainer container, @Nullable Direction side) {
         WorldlyContainerWrapper wrapper;
 
         if (container instanceof AbstractFurnaceBlockEntity)
@@ -25,10 +30,10 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
         else
             wrapper = new WorldlyContainerWrapper(container, side);
 
-        return new ScopedHandlerWrapper.Modifiable<>(wrapper, container.getSlotsForFace(side));
+        return side == null ? wrapper : new ScopedHandlerWrapper.Modifiable<>(wrapper, container.getSlotsForFace(side));
     }
 
-    public WorldlyContainerWrapper(WorldlyContainer container, Direction side) {
+    protected WorldlyContainerWrapper(WorldlyContainer container, @Nullable Direction side) {
         super(container);
         this.side = side;
     }
@@ -40,18 +45,18 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
-        if (!getContainer().canPlaceItemThroughFace(index, resource.toStack(), side)) return 0;
+        if (side != null && !getContainer().canPlaceItemThroughFace(index, resource.toStack(), side)) return 0;
         return super.insert(index, resource, amount, action);
     }
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransferAction action) {
-        if (!getContainer().canTakeItemThroughFace(index, resource.toStack(), side)) return 0;
+        if (side != null && !getContainer().canTakeItemThroughFace(index, resource.toStack(), side)) return 0;
         return super.extract(index, resource, amount, action);
     }
 
     public static class Furnace extends WorldlyContainerWrapper {
-        public Furnace(WorldlyContainer container, Direction side) {
+        protected Furnace(WorldlyContainer container, Direction side) {
             super(container, side);
         }
 
@@ -62,7 +67,7 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
     }
 
     public static class BrewingStand extends WorldlyContainerWrapper {
-        public BrewingStand(WorldlyContainer container, Direction side) {
+        protected BrewingStand(WorldlyContainer container, Direction side) {
             super(container, side);
         }
 

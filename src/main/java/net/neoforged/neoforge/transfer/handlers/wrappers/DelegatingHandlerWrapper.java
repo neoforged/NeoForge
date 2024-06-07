@@ -1,10 +1,14 @@
-package net.neoforged.neoforge.transfer.storage.wrappers;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.items.ItemStorageContents;
-import net.neoforged.neoforge.transfer.storage.IResourceHandler;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 import java.util.Objects;
 import java.util.function.Supplier;

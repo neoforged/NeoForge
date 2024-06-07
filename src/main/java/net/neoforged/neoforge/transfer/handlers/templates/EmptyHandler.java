@@ -1,10 +1,15 @@
-package net.neoforged.neoforge.transfer.storage.templates;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.templates;
 
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 
 public class EmptyHandler<T extends IResource> implements ISingleResourceHandler<T> {
     public static final EmptyHandler<ItemResource> ITEM = new EmptyHandler<>(ItemResource.BLANK);

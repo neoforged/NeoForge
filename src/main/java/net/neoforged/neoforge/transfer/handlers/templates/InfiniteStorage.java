@@ -1,4 +1,9 @@
-package net.neoforged.neoforge.transfer.storage.templates;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.templates;
 
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
@@ -6,7 +11,7 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
-import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 
 import java.util.Objects;
 import java.util.function.Supplier;
