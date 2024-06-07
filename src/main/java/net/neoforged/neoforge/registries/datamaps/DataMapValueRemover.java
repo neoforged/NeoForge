@@ -7,10 +7,15 @@ package net.neoforged.neoforge.registries.datamaps;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+
+import java.util.Collection;
 import java.util.Optional;
+import java.util.function.BiFunction;
+
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An interface used to remove values from registry data maps. This allows "decomposing" the data
@@ -29,11 +34,11 @@ public interface DataMapValueRemover<R, T> {
      *                 if you need to
      * @param registry the registry
      * @param source   the source of the data
-     * @param object   the object to remove the data from
+     * @param object   the object to remove the data from, could be null when removing default value
      * @return the remainder. If an {@link Optional#empty() empty optional}, the value will be removed
      *         completely. Otherwise, this method returns the new value of the attached data.
      */
-    Optional<T> remove(T value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, R object);
+    Optional<T> remove(T value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, @Nullable R object);
 
     /**
      * A remover that completely removes the value.
@@ -57,6 +62,18 @@ public interface DataMapValueRemover<R, T> {
         @Override
         public Optional<T> remove(T value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, R object) {
             return Optional.empty();
+        }
+    }
+
+    record CollectionBacked<C extends Collection<?>, R>(C value, BiFunction<C, C, C> remover) implements DataMapValueRemover<R, C> {
+        public static <C extends Collection<?>, R> Codec<CollectionBacked<C, R>> codec(Codec<C> collectionCodec, BiFunction<C, C, C> remover) {
+            return collectionCodec.xmap(collection -> new CollectionBacked<>(collection, remover), CollectionBacked::value);
+        }
+
+        @Override
+        public Optional<C> remove(C value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, R object) {
+            C result = remover.apply(this.value, value);
+            return result.isEmpty() ? Optional.empty() : Optional.of(result);
         }
     }
 }

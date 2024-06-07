@@ -6,10 +6,14 @@
 package net.neoforged.neoforge.registries;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Maps;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +21,7 @@ import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
+import net.neoforged.neoforge.registries.datamaps.DataMap;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +32,7 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected final List<BakeCallback<T>> bakeCallbacks = new ArrayList<>();
     protected final List<ClearCallback<T>> clearCallbacks = new ArrayList<>();
     final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
-    final Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
+    final Map<DataMapType<T, ?>, DataMap<T, ?>> dataMaps = new IdentityHashMap<>();
 
     private int maxId = Integer.MAX_VALUE - 1;
     private boolean sync;
@@ -122,12 +127,20 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
 
     @Override
     public <A> @Nullable A getData(DataMapType<T, A> type, ResourceKey<T> key) {
-        final var innerMap = dataMaps.get(type);
-        return innerMap == null ? null : (A) innerMap.get(key);
+        final var dataMap = dataMaps.get(type);
+        return dataMap == null ? null : (A) dataMap.values().get(key);
     }
 
     @Override
     public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<T, A> type) {
-        return (Map<ResourceKey<T>, A>) dataMaps.getOrDefault(type, Map.of());
+        if (dataMaps.containsKey(type)) {
+            return ((DataMap<T, A>) dataMaps.get(type)).values();
+        }
+        return Map.of();
+    }
+
+    @Override
+    public Map<DataMapType<T, ?>, DataMap<T, ?>> getDataMapsView() {
+        return Collections.unmodifiableMap(this.dataMaps);
     }
 }

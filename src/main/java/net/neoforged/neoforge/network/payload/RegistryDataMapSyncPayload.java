@@ -5,42 +5,38 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import com.mojang.serialization.Codec;
 import java.util.Map;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.RegistryManager;
-import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMap;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({ "unchecked"})
 public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> registryKey,
-        Map<ResourceLocation, Map<ResourceKey<T>, ?>> dataMaps) implements CustomPacketPayload {
+        Map<ResourceLocation, DataMap<T, ?>> dataMaps) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<RegistryDataMapSyncPayload<?>> TYPE = new Type<>(new ResourceLocation("neoforge:registry_data_map_sync"));
-    public static final StreamCodec<FriendlyByteBuf, RegistryDataMapSyncPayload<?>> STREAM_CODEC = StreamCodec.ofMember(
+    public static final StreamCodec<RegistryFriendlyByteBuf, RegistryDataMapSyncPayload<?>> STREAM_CODEC = StreamCodec.ofMember(
             RegistryDataMapSyncPayload::write, RegistryDataMapSyncPayload::decode);
 
-    public static <T> RegistryDataMapSyncPayload<T> decode(FriendlyByteBuf buf) {
+    public static <R> RegistryDataMapSyncPayload<R> decode(RegistryFriendlyByteBuf buf) {
         //noinspection RedundantCast javac complains about this cast
-        final ResourceKey<Registry<T>> registryKey = (ResourceKey<Registry<T>>) (Object) buf.readRegistryKey();
-        final Map<ResourceLocation, Map<ResourceKey<T>, ?>> attach = buf.readMap(FriendlyByteBuf::readResourceLocation, (b1, key) -> {
-            final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
-            return b1.readMap(bf -> bf.readResourceKey(registryKey), bf -> bf.readJsonWithCodec(dataMap.networkCodec()));
-        });
+        final ResourceKey<Registry<R>> registryKey = (ResourceKey<Registry<R>>) (Object) buf.readRegistryKey();
+        final Map<ResourceLocation, DataMap<R, ?>> attach = buf.readMap(
+                FriendlyByteBuf::readResourceLocation,
+                (b, k) -> DataMap.decode(registryKey, k, (RegistryFriendlyByteBuf) b)
+        );
         return new RegistryDataMapSyncPayload<>(registryKey, attach);
     }
 
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         buf.writeResourceKey(registryKey);
-        buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceLocation, (b1, key, attach) -> {
-            final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
-            b1.writeMap(attach, FriendlyByteBuf::writeResourceKey, (bf, value) -> bf.writeJsonWithCodec((Codec) dataMap.networkCodec(), value));
-        });
+        buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceLocation, (b, dataMap) -> dataMap.write(b));
     }
 
     @Override

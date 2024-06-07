@@ -42,7 +42,7 @@ public class ClientRegistryManager {
                 final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) regAccess
                         .registryOrThrow(payload.registryKey());
                 registry.dataMaps.clear();
-                payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
+                payload.dataMaps().forEach((type, dataMap) -> registry.dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), type), dataMap));
                 NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(regAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));
             } catch (Throwable t) {
                 context.disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location().toString(), t.getMessage()));

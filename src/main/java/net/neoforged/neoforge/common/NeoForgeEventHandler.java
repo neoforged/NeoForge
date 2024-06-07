@@ -39,6 +39,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
 import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforge.registries.datamaps.DataMap;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
@@ -127,16 +129,19 @@ public class NeoForgeEventHandler {
         });
     }
 
-    private <T> void handleSync(ServerPlayer player, Registry<T> registry, Collection<ResourceLocation> attachments) {
-        if (attachments.isEmpty()) return;
-        final Map<ResourceLocation, Map<ResourceKey<T>, ?>> att = new HashMap<>();
-        attachments.forEach(key -> {
-            final var attach = RegistryManager.getDataMap(registry.key(), key);
-            if (attach == null || attach.networkCodec() == null) return;
-            att.put(key, registry.getDataMap(attach));
+    private <T> void handleSync(ServerPlayer player, Registry<T> registry, Collection<ResourceLocation> typeIds) {
+        if (typeIds.isEmpty()) return;
+        final Map<DataMapType<T, ?>, DataMap<T, ?>> allMaps = registry.getDataMapsView();
+        final Map<ResourceLocation, DataMap<T, ?>> syncedMaps = new HashMap<>();
+        typeIds.forEach(key -> {
+            final var type = RegistryManager.getDataMap(registry.key(), key);
+            if (type == null || type.networkCodec() == null) return;
+            if (!allMaps.containsKey(type))
+                throw new IllegalStateException("Unknown data map " + key + " for registry " + registry.key());
+            syncedMaps.put(key, allMaps.get(type));
         });
-        if (!att.isEmpty()) {
-            PacketDistributor.sendToPlayer(player, new RegistryDataMapSyncPayload<>(registry.key(), att));
+        if (!syncedMaps.isEmpty()) {
+            PacketDistributor.sendToPlayer(player, new RegistryDataMapSyncPayload<>(registry.key(), syncedMaps));
         }
     }
 

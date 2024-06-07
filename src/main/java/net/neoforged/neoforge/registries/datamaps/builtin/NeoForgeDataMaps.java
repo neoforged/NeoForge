@@ -5,8 +5,11 @@
 
 package net.neoforged.neoforge.registries.datamaps.builtin;
 
+import com.google.common.collect.Sets;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
@@ -20,9 +23,16 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.extensions.IMobEffectExtension;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
+import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
+
+import java.util.Set;
 
 /**
  * Holds all {@link DataMapType data maps} provided by NeoForge.
@@ -110,6 +120,25 @@ public class NeoForgeDataMaps {
     public static final DataMapType<GameEvent, VibrationFrequency> VIBRATION_FREQUENCIES = DataMapType.builder(
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
+    /**
+     * The {@linkplain MobEffect} data map that used as {@linkplain IMobEffectExtension#fillEffectCures(Set, MobEffectInstance)}'s defaults.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/mob_effect/cures.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code cure} or {@code cures}, a string or a list of string - the default cure(s) of the effect</li>
+     * </ul>
+     *
+     * The use of a string or a list of string is also possible, though discouraged in case more options are added in the future.
+     * <p>
+     * This data map supports set merger and remover, removals are of the same format as values.
+     */
+    public static final AdvancedDataMapType<MobEffect, Set<EffectCure>, DataMapValueRemover.CollectionBacked<Set<EffectCure>, MobEffect>> CURES = AdvancedDataMapType
+            .builder(id("cures"), Registries.MOB_EFFECT, EffectCure.DATA_MAP_CODEC)
+            .synced(EffectCure.DATA_MAP_CODEC, false)
+            .merger(DataMapValueMerger.setMerger())
+            .remover(DataMapValueRemover.CollectionBacked.codec(EffectCure.DATA_MAP_CODEC, Sets::intersection))
+            .build();
+
     private static ResourceLocation id(final String name) {
         return new ResourceLocation(NeoForgeVersion.MOD_ID, name);
     }
@@ -122,5 +151,6 @@ public class NeoForgeDataMaps {
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
+        event.register(CURES);
     }
 }

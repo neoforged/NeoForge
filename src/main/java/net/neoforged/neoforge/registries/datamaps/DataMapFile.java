@@ -5,8 +5,11 @@
 
 package net.neoforged.neoforge.registries.datamaps;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Map;
@@ -16,38 +19,77 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 public record DataMapFile<T, R>(
         boolean replace,
         Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>> values,
-        List<DataMapEntry.Removal<T, R>> removals) {
+        Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>> removals) {
+
     public static <T, R> Codec<DataMapFile<T, R>> codec(ResourceKey<Registry<R>> registryKey, DataMapType<R, T> dataMap) {
         final Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue = ExtraCodecs.TAG_OR_ELEMENT_ID.xmap(
                 l -> l.tag() ? Either.left(TagKey.create(registryKey, l.id())) : Either.right(ResourceKey.create(registryKey, l.id())),
                 e -> e.map(t -> new ExtraCodecs.TagOrElementLocation(t.location(), true), r -> new ExtraCodecs.TagOrElementLocation(r.location(), false)));
 
-        final Codec<List<DataMapEntry.Removal<T, R>>> removalsCodec;
+        final Codec<Optional<WithConditions<DataMapEntry<T>>>> valueCodec = ConditionalOps.createConditionalCodecWithConditions(DataMapEntry.codec(dataMap));
+        final Codec<Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>>> valuesCodec = ExtraCodecs.strictUnboundedMap(tagOrValue, valueCodec);
+
+        final Codec<Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>>> removalsCodec;
+        final Codec<Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>>> defaultRemovalCodec = NeoForgeExtraCodecs
+                .setOf(tagOrValue)
+                .flatXmap(
+                        keys -> DataResult.success(Maps.asMap(keys, key -> Optional.empty())),
+                        map -> {
+                            for (var removal : map.values()) {
+                                if (removal.isPresent()) {
+                                    if (!removal.get().conditions().isEmpty())
+                                        return DataResult.error(() -> "Data map removals with conditions can not be encoded to key set");
+                                    if (!removal.get().carrier().equals(DataMapValueRemover.Default.INSTANCE))
+                                        return DataResult.error(() -> "Data map removals with custom removers can not be encoded to key set");
+                                }
+                            }
+                            return DataResult.success(map.keySet());
+                        });
         if (dataMap instanceof AdvancedDataMapType<R, T, ?>) {
-            final var removalCodec = DataMapEntry.Removal.codec(tagOrValue, dataMap);
             final AdvancedDataMapType<R, T, DataMapValueRemover<R, T>> advanced = (AdvancedDataMapType<R, T, DataMapValueRemover<R, T>>) dataMap;
-            removalsCodec = NeoForgeExtraCodecs.withAlternative(
-                    NeoForgeExtraCodecs.withAlternative(removalCodec.listOf(), NeoForgeExtraCodecs.decodeOnly(tagOrValue.listOf()
-                            .map(l -> l.stream().map(k -> new DataMapEntry.Removal<T, R>(k, Optional.empty())).toList()))),
-                    NeoForgeExtraCodecs.decodeOnly(ExtraCodecs.strictUnboundedMap(tagOrValue, advanced.remover())
-                            .map(map -> map.entrySet().stream()
-                                    .map(entry -> new DataMapEntry.Removal<>(entry.getKey(), Optional.of(entry.getValue()))).toList())));
+            final Codec<Optional<WithConditions<DataMapValueRemover<R, T>>>> removerCodec = ConditionalOps.createConditionalCodecWithConditions(advanced.remover());
+            final Codec<Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>>> advancedRemovalsCodec = ExtraCodecs
+                    .strictUnboundedMap(tagOrValue, Codec.either(removerCodec, ICondition.LIST_CODEC))
+                    .xmap(
+                        map -> {
+                            final ImmutableMap.Builder<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>> builder = ImmutableMap.builder();
+                            map.forEach((source, either) -> {
+                                either.ifLeft(remover -> builder.put(source, remover));
+                                either.ifRight(conditions -> {
+                                    if (conditions.stream().allMatch(condition -> condition.test(ICondition.IContext.TAGS_INVALID))) {
+                                        builder.put(source, Optional.empty());
+                                    }
+                                });
+                            });
+                            return builder.build();
+                        },
+                        map -> {
+                            final ImmutableMap.Builder<Either<TagKey<R>, ResourceKey<R>>, Either<Optional<WithConditions<DataMapValueRemover<R, T>>>, List<ICondition>>> builder = ImmutableMap.builder();
+                            for (var entry : map.entrySet()) {
+                                builder.put(entry.getKey(), entry.getValue().<Either<Optional<WithConditions<DataMapValueRemover<R, T>>>, List<ICondition>>>map(with ->
+                                        with.carrier().equals(DataMapValueRemover.Default.INSTANCE)
+                                                ? Either.right(with.conditions())
+                                                : Either.left(Optional.of(with))
+                                ).orElse(Either.right(List.of())));
+                            }
+                            return builder.build();
+                        });
+            removalsCodec = NeoForgeExtraCodecs.withAlternative(defaultRemovalCodec, advancedRemovalsCodec);
         } else {
-            removalsCodec = tagOrValue.listOf()
-                    .xmap(l -> l.stream().map(k -> new DataMapEntry.Removal<T, R>(k, Optional.empty())).toList(),
-                            rm -> rm.stream().map(DataMapEntry.Removal::key).toList());
+            removalsCodec = defaultRemovalCodec;
         }
 
         return RecordCodecBuilder.create(in -> in.group(
                 Codec.BOOL.optionalFieldOf("replace", false).forGetter(DataMapFile::replace),
-                ExtraCodecs.strictUnboundedMap(tagOrValue, ConditionalOps.createConditionalCodecWithConditions(DataMapEntry.codec(dataMap))).fieldOf("values").forGetter(DataMapFile::values),
-                removalsCodec.optionalFieldOf("remove", List.of()).forGetter(DataMapFile::removals))
+                valuesCodec.optionalFieldOf("values", Map.of()).forGetter(DataMapFile::values),
+                removalsCodec.optionalFieldOf("remove", Map.of()).forGetter(DataMapFile::removals))
                 .apply(in, DataMapFile::new));
     }
 }

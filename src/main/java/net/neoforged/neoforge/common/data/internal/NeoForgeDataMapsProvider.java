@@ -8,16 +8,21 @@ package net.neoforged.neoforge.common.data.internal;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.random.Weight;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
@@ -29,7 +34,9 @@ import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.data.DataMapProvider;
+import net.neoforged.neoforge.registries.datamaps.DataMap;
 import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
@@ -70,5 +77,9 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         Arrays.stream(ObfuscationReflectionHelper.<EntityType<?>[], MonsterRoomFeature>getPrivateValue(MonsterRoomFeature.class, null, "MOBS"))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .forEach((type, weight) -> monsterRoomMobs.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(type), new MonsterRoomMob(Weight.of((int) (weight * 100))), false));
+
+        final var cures = builder(NeoForgeDataMaps.CURES)
+                .add(DataMap.defaultKey(Registries.MOB_EFFECT), EffectCures.DEFAULT_CURES, false)
+                .add(MobEffects.POISON, Set.of(EffectCures.HONEY), false);
     }
 }

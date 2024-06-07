@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.registries;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Either;
@@ -36,10 +37,13 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMap;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -76,52 +80,85 @@ public class DataMapLoader implements PreparableReloadListener {
         NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(registryAccess, registry, DataMapsUpdatedEvent.UpdateCause.SERVER_RELOAD));
     }
 
-    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<R, T> attachment, List<DataMapFile<T, R>> entries) {
-        record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
-        final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
+    private <T, R> DataMap<R, T> buildDataMap(Registry<R> registry, DataMapType<R, T> type, List<DataMapFile<T, R>> files) {
+        record WithSource<T, R>(T data, Either<TagKey<R>, ResourceKey<R>> source) {}
+
+        final DataMapValueMerger<R, T> merger = type instanceof AdvancedDataMapType<R, T, ?> advanced ? advanced.merger() : DataMapValueMerger.defaultMerger();
         final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
-        final DataMapValueMerger<R, T> merger = attachment instanceof AdvancedDataMapType<R, T, ?> adv ? adv.merger() : DataMapValueMerger.defaultMerger();
-        entries.forEach(entry -> {
-            if (entry.replace()) {
+
+        final Either<TagKey<R>, ResourceKey<R>> defaultSource = Either.right(DataMap.defaultKey(registry.key()));
+        final Mutable<T> defaultValue = new MutableObject<>();
+        for (var file : files) {
+            if (file.replace()) {
+                defaultValue.setValue(null);
+            }
+
+            var optional = file.values().get(defaultSource);
+            if (optional == null || optional.isEmpty())
+                continue;
+            final var entry = optional.get().carrier();
+            if (defaultValue.getValue() == null|| entry.replace()) {
+                defaultValue.setValue(entry.value());
+            } else {
+                defaultValue.setValue(merger.merge(registry, defaultSource, defaultValue.getValue(), defaultSource, entry.value()));
+            }
+
+            var removal = file.removals().get(defaultSource);
+            if (removal == null)
+                continue;
+            if (removal.isPresent()) {
+                final var value = removal.get().carrier().remove(defaultValue.getValue(), registry, defaultSource, null);
+                defaultValue.setValue(value.orElse(null));
+            } else {
+                defaultValue.setValue(null);
+            }
+        }
+
+        final WithSource<T, R> defaultWithSource = defaultValue.getValue() == null ? null : new WithSource<>(defaultValue.getValue(), defaultSource);
+        final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
+        for (var file : files) {
+            if (file.replace()) {
                 result.clear();
             }
 
-            entry.values().forEach((tKey, value) -> {
-                if (value.isEmpty()) return;
-
-                valueResolver.accept(tKey, holder -> {
-                    final var newValue = value.get().carrier();
+            file.values().forEach((source, optional) -> {
+                if (source.equals(defaultSource))
+                    return;
+                if (optional.isEmpty())
+                    return;
+                valueResolver.accept(source, holder -> {
+                    final var entry = optional.get().carrier();
                     final var key = holder.unwrapKey().orElseThrow();
-                    final var oldValue = result.get(key);
-                    if (oldValue == null || newValue.replace()) {
-                        result.put(key, new WithSource<>(newValue.value(), tKey));
+                    final var withSource = result.getOrDefault(key, defaultWithSource);
+                    if (withSource == null || entry.replace()) {
+                        result.put(key, new WithSource<>(entry.value(), source));
                     } else {
-                        result.put(key, new WithSource<>(merger.merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.value()), tKey));
+                        result.put(key, new WithSource<>(merger.merge(registry, withSource.source(), withSource.data(), source, entry.value()), source));
                     }
                 });
             });
 
-            entry.removals().forEach(trRemoval -> valueResolver.accept(trRemoval.key(), holder -> {
-                if (trRemoval.remover().isPresent()) {
+            file.removals().forEach((source, removal) -> valueResolver.accept(source, holder -> {
+                if (source.equals(defaultSource))
+                    return;
+                if (removal.isPresent()) {
                     final var key = holder.unwrapKey().orElseThrow();
-                    final var oldValue = result.get(key);
-                    if (oldValue != null) {
-                        final var newValue = trRemoval.remover().get().remove(oldValue.attachment(), registry, oldValue.source(), holder.value());
+                    final var withSource = result.get(key);
+                    if (withSource != null) {
+                        final var newValue = removal.get().carrier().remove(withSource.data(), registry, withSource.source(), holder.value());
                         if (newValue.isEmpty()) {
                             result.remove(key);
                         } else {
-                            result.put(key, new WithSource<>(newValue.get(), oldValue.source()));
+                            result.put(key, new WithSource<>(newValue.get(), withSource.source()));
                         }
                     }
                 } else {
                     result.remove(holder.unwrapKey().orElseThrow());
                 }
             }));
-        });
-        final Map<ResourceKey<R>, T> newMap = new IdentityHashMap<>();
-        result.forEach((key, val) -> newMap.put(key, val.attachment()));
+        }
 
-        return newMap;
+        return new DataMap<>(registryAccess, type, defaultValue.getValue(), Maps.toMap(result.keySet(), key -> result.get(key).data()));
     }
 
     private CompletableFuture<Map<ResourceKey<? extends Registry<?>>, LoadResult<?>>> load(ResourceManager manager, Executor executor, ProfilerFiller profiler) {
