@@ -1,19 +1,28 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
-@@ -86,6 +_,7 @@
+@@ -86,10 +_,14 @@
          this.visible = p_19532_;
          this.showIcon = p_19533_;
          this.hiddenEffect = p_316863_;
 +        this.effect.value().fillEffectCures(this.cures, this);
++        this.defaultCures = java.util.Set.copyOf(this.cures);
      }
  
      public MobEffectInstance(MobEffectInstance p_19543_) {
-@@ -103,6 +_,8 @@
+         this.effect = p_19543_.effect;
++        this.effect.value().fillEffectCures(this.cures, this);
++        this.defaultCures = java.util.Set.copyOf(this.cures);
+         this.setDetailsFrom(p_19543_);
+     }
+ 
+@@ -103,6 +_,10 @@
              p_324529_.showIcon(),
              p_324529_.hiddenEffect().map(p_323227_ -> new MobEffectInstance(p_324441_, p_323227_)).orElse(null)
          );
-+        this.cures.clear();
-+        p_324529_.cures().ifPresent(this.cures::addAll);
++        p_324529_.cures().ifPresent(cures -> {
++            this.cures.clear();
++            this.cures.addAll(cures);
++        });
      }
  
      private MobEffectInstance.Details asDetails() {
@@ -23,7 +32,7 @@
              this.showIcon(),
 -            Optional.ofNullable(this.hiddenEffect).map(MobEffectInstance::asDetails)
 +            Optional.ofNullable(this.hiddenEffect).map(MobEffectInstance::asDetails),
-+            Optional.of(this.getCures()).filter(cures -> !cures.isEmpty())
++            this.cures.equals(this.defaultCures) ? Optional.empty() : Optional.of(this.cures)
          );
      }
  
@@ -36,6 +45,16 @@
      }
  
      public boolean update(MobEffectInstance p_19559_) {
+@@ -174,6 +_,9 @@
+             flag = true;
+         }
+ 
++        //Neo: Update cures to be the intersection of both
++        flag |= this.cures.retainAll(p_19559_.cures);
++
+         return flag;
+     }
+ 
 @@ -326,11 +_,11 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
@@ -50,17 +69,26 @@
                  .result();
      }
  
-@@ -350,6 +_,15 @@
+@@ -350,6 +_,24 @@
          this.blendState.setImmediate(this);
      }
  
 +    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
++    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> defaultCures;
 +
 +    /**
-+     * {@return the {@link net.neoforged.neoforge.common.EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}}
++     * @return the {@link net.neoforged.neoforge.common.EffectCure EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}
 +     */
 +    public java.util.Set<net.neoforged.neoforge.common.EffectCure> getCures() {
 +        return cures;
++    }
++
++    /**
++     * @return an <a href="#unmodifiable">unmodifiable</a> view of {@link net.neoforged.neoforge.common.EffectCure EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance} by default.
++     * May differ from the set returned by {@link #getCures()} as cures may be modified.
++     */
++    public java.util.Set<net.neoforged.neoforge.common.EffectCure> getDefaultCures() {
++        return defaultCures;
 +    }
 +
      static class BlendState {
