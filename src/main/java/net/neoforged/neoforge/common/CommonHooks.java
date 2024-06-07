@@ -478,7 +478,7 @@ public class CommonHooks {
      * @param player   The breaking player
      * @param pos      The position of the block being broken
      * @param state    The state of the block being broken
-     * @return The experience dropped by the broken block, or -1 if the break event was canceled.
+     * @return The event
      */
     public static BlockEvent.BreakEvent fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
         boolean preCancelEvent = false;

@@ -12,11 +12,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalShape;
 import net.neoforged.bus.api.Event;
@@ -52,13 +54,19 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Event that is fired when a Block is about to be broken by a player
-     * Canceling this event will prevent the Block from being broken.
+     * This event is fired on the server when a player attempts to break a block, upon receipt of a block break packet.
+     *
+     * The following conditions may cause this event to fire in a cancelled state:
+     * <ul>
+     * <li>If {@link Player#blockActionRestricted} is true.</li>
+     * <li>If the target block is a {@link GameMasterBlock} and {@link Player#canUseGameMasterBlocks()} is false.</li>
+     * <li>If the the player is holding an item, and {@link Item#canAttackBlock} is false.</li>
+     * </ul>
+     *
+     * In the first two cases, un-cancelling the event will not permit the block to be broken.
+     * In the third case, un-cancelling will allow the break, bypassing the behavior of {@link Item#canAttackBlock}.
      */
     public static class BreakEvent extends BlockEvent implements ICancellableEvent {
-        /**
-         * Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer
-         */
         private final Player player;
 
         public BreakEvent(Level level, BlockPos pos, BlockState state, Player player) {
@@ -66,8 +74,19 @@ public abstract class BlockEvent extends Event {
             this.player = player;
         }
 
+        /**
+         * {@return the player who is attempting to break the block}
+         */
         public Player getPlayer() {
             return player;
+        }
+
+        /**
+         * Cancelling this event will prevent the block from being broken, and notifies the client of the refusal.
+         */
+        @Override
+        public void setCanceled(boolean canceled) {
+            ICancellableEvent.super.setCanceled(canceled);
         }
     }
 
