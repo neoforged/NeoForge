@@ -101,7 +101,8 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.DARK_FOREST)
                 .add(Biomes.OLD_GROWTH_BIRCH_FOREST)
                 .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA)
-                .add(Biomes.JUNGLE);
+                .add(Biomes.JUNGLE)
+                .add(Biomes.MANGROVE_SWAMP);
         tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER);
         tag(Tags.Biomes.IS_DENSE_VEGETATION_END);
         tag(Tags.Biomes.IS_DENSE_VEGETATION).addTag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER.location()).addOptionalTag(Tags.Biomes.IS_DENSE_VEGETATION_END.location());
