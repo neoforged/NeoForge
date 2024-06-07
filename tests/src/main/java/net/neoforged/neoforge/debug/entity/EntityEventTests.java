@@ -16,10 +16,10 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerablityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
@@ -81,25 +81,6 @@ public class EntityEventTests {
     }
 
     @GameTest
-    @EmptyTemplate(value = "15x5x15", floor = true)
-    @TestHolder(description = "Tests if the pig only gets vertical knockback from explosion knockback event")
-    static void entityVerticalExplosionKnockbackEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ExplosionKnockbackEvent event) -> {
-            if (event.getAffectedEntity() instanceof Pig) {
-                event.setKnockbackVelocity(new Vec3(0, event.getKnockbackVelocity().y(), 0));
-            }
-        });
-
-        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 8, 3, 7))
-                .thenExecute(pig -> helper.setBlock(8, 2, 7, Blocks.ACACIA_LEAVES))
-                .thenExecute(pig -> helper.getLevel().explode(null, helper.getLevel().damageSources().generic(), null, helper.absolutePos(new BlockPos(7, 2, 7)).getCenter(), 2f, false, Level.ExplosionInteraction.TNT))
-                .thenExecute(pig -> helper.assertEntityProperty(pig, p -> pig.getDeltaMovement().x() == 0 && pig.getDeltaMovement().y() != 0 && pig.getDeltaMovement().z() == 0, "Check explosion Knockback"))
-                .thenIdle(10)
-                .thenExecute(helper::killAllEntities)
-                .thenSucceed());
-    }
-
-    @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if EntityInvulnerabilityCheckEvent prevents damage when modified.")
     static void entityInvulnerabilityCheckEvent(final DynamicTest test, final RegistrationHelper reg) {
@@ -115,5 +96,24 @@ public class EntityEventTests {
                     .thenWaitUntil(player -> helper.assertTrue(!player.isInvulnerableTo(source), "Player Invulnerability not bypassed."))
                     .thenSucceed();
         });
+    }
+
+    @GameTest
+    @EmptyTemplate(value = "15x5x15", floor = true)
+    @TestHolder(description = "Tests if the pig only gets vertical knockback from explosion knockback event")
+    static void entityVerticalExplosionKnockbackEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final ExplosionKnockbackEvent event) -> {
+            if (event.getAffectedEntity() instanceof Pig) {
+                event.setKnockbackVelocity(new Vec3(0, event.getKnockbackVelocity().y(), 0));
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 8, 3, 7))
+                .thenExecute(pig -> helper.setBlock(8, 2, 7, Blocks.ACACIA_LEAVES))
+                .thenExecute(pig -> helper.getLevel().explode(null, helper.getLevel().damageSources().generic(), null, helper.absolutePos(new BlockPos(7, 2, 7)).getCenter(), 2f, false, Level.ExplosionInteraction.BLOW))
+                .thenExecute(pig -> helper.assertEntityProperty(pig, p -> pig.getDeltaMovement().x() == 0 && pig.getDeltaMovement().y() != 0 && pig.getDeltaMovement().z() == 0, "Check explosion Knockback"))
+                .thenIdle(10)
+                .thenExecute(helper::killAllEntities)
+                .thenSucceed());
     }
 }
