@@ -16,6 +16,9 @@ installerProfile {
 }
 
 minecraft {
+    // FML looks for this mod id to find the minecraft classes
+    modIdentifier 'minecraft'
+
     accessTransformers {
         file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
     }
@@ -225,10 +228,6 @@ artifacts {
     forValidation(jar.archiveFile) {
         builtBy(jar)
     }
-}
-
-minecraft {
-    modIdentifier 'minecraft'
 }
 
 publishing {
