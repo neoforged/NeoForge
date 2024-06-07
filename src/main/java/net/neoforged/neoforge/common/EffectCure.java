@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 /**
@@ -27,7 +29,11 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 public final class EffectCure {
     private static final Map<String, EffectCure> CURES = new ConcurrentHashMap<>();
 
-    public static Codec<EffectCure> CODEC = Codec.STRING.xmap(EffectCure::get, EffectCure::name);
+    public static final Codec<EffectCure> CODEC = Codec.STRING.xmap(EffectCure::get, EffectCure::name);
+    public static final Codec<Set<EffectCure>> CURES_CODEC = Codec
+            .withAlternative(NeoForgeExtraCodecs.setOf(EffectCure.CODEC), EffectCure.CODEC, Set::of);
+    public static final Codec<Set<EffectCure>> DATA_MAP_CODEC = Codec
+            .withAlternative(NeoForgeExtraCodecs.singularOrPluralCodec(EffectCure.CODEC, "cure").codec(), CURES_CODEC);
     public static final StreamCodec<ByteBuf, EffectCure> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(EffectCure::get, EffectCure::name);
 
     /**
