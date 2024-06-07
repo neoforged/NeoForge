@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.fluids.wrappers;
 
 import net.minecraft.world.item.BucketItem;
@@ -10,7 +15,7 @@ import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.fluids.FluidConstants;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 
 import java.util.Objects;
 

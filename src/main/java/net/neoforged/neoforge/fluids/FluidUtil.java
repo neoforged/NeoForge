@@ -36,7 +36,7 @@ import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrap
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.storage.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidUtil {
@@ -390,7 +390,7 @@ public class FluidUtil {
      * Helper method to get an IFluidHandler for at a block position.
      */
     public static Optional<IResourceHandler<FluidResource>> getFluidHandler(Level level, BlockPos blockPos, @Nullable Direction side) {
-        return Optional.ofNullable(level.getCapability(Capabilities.FluidStorage.BLOCK, blockPos, side));
+        return Optional.ofNullable(level.getCapability(Capabilities.FluidHandler.BLOCK, blockPos, side));
     }
 
     /**

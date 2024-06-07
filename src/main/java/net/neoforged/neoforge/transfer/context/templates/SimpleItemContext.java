@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.context.templates;
 
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.TransferUtils;
+import net.neoforged.neoforge.transfer.HandlerUtils;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 public class SimpleItemContext implements IItemContext {
     protected final IResourceHandlerModifiable<ItemResource> handler;
@@ -35,7 +40,7 @@ public class SimpleItemContext implements IItemContext {
     }
 
     public int insertOverflow(ItemResource resource, int amount, TransferAction action) {
-        return TransferUtils.insertExcludingIndex(handler, index, resource, amount, action);
+        return HandlerUtils.insertExcludingIndex(handler, index, resource, amount, action);
     }
 
     @Override
@@ -45,9 +50,12 @@ public class SimpleItemContext implements IItemContext {
 
     @Override
     public int exchange(ItemResource resource, int amount, TransferAction action) {
-        if (amount >= getAmount()) {
-            if (action.isExecuting()) handler.set(index, resource, amount);
-            return amount;
+        int currentAmount = getAmount();
+        if (amount >= currentAmount) {
+            if (action.isExecuting()) {
+                handler.set(index, resource, currentAmount);
+            }
+            return currentAmount;
         }
         int extracted = extract(getResource(), amount, action);
         if (extracted > 0) {

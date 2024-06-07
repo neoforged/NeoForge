@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.items;
 
 import net.minecraft.world.Container;
@@ -6,8 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.storage.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 
 public class SlotItemStorage extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);

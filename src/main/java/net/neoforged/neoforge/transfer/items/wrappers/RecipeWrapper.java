@@ -1,12 +1,17 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.items.wrappers;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.TransferUtils;
+import net.neoforged.neoforge.transfer.HandlerUtils;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 public class RecipeWrapper implements Container {
     protected final IResourceHandlerModifiable<ItemResource> handler;
@@ -23,7 +28,7 @@ public class RecipeWrapper implements Container {
     @Override
     public boolean isEmpty() {
         for (int i = 0; i < handler.size(); i++) {
-            if (!TransferUtils.isEmpty(handler, i)) return false;
+            if (!HandlerUtils.isEmpty(handler, i)) return false;
         }
         return true;
     }
@@ -35,7 +40,7 @@ public class RecipeWrapper implements Container {
 
     @Override
     public ItemStack removeItem(int index, int amount) {
-        if (TransferUtils.isEmpty(handler, index)) return ItemStack.EMPTY;
+        if (HandlerUtils.isEmpty(handler, index)) return ItemStack.EMPTY;
         ItemResource resource = handler.getResource(index);
         return resource.toStack(handler.extract(index, resource, amount, TransferAction.EXECUTE));
     }

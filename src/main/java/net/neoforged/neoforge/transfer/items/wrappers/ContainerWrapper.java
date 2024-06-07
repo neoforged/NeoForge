@@ -1,11 +1,16 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.items.wrappers;
 
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.TransferUtils;
+import net.neoforged.neoforge.transfer.HandlerUtils;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
     protected final Container container;
@@ -89,12 +94,12 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
 
     @Override
     public int insert(ItemResource resource, int amount, TransferAction action) {
-        return TransferUtils.insertStacking(this, resource, amount, action);
+        return HandlerUtils.insertStacking(this, resource, amount, action);
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransferAction action) {
-        return TransferUtils.extractStacking(this, resource, amount, action);
+        return HandlerUtils.extractStacking(this, resource, amount, action);
     }
 
     public Container getContainer() {

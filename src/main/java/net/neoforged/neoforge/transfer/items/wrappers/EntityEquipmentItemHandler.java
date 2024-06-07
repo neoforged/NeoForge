@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.items.wrappers;
 
 import net.minecraft.world.entity.EquipmentSlot;
@@ -6,9 +11,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.TransferUtils;
+import net.neoforged.neoforge.transfer.HandlerUtils;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.storage.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -101,7 +106,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public int insert(ItemResource resource, int amount, TransferAction action) {
-        return TransferUtils.insertStacking(this, resource, amount, action);
+        return HandlerUtils.insertStacking(this, resource, amount, action);
     }
 
     @Override
@@ -120,6 +125,6 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public int extract(ItemResource resource, int amount, TransferAction action) {
-        return TransferUtils.extractStacking(this, resource, amount, action);
+        return HandlerUtils.extractStacking(this, resource, amount, action);
     }
 }
