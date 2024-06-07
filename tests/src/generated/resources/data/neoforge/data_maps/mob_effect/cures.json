@@ -1,0 +1,7 @@
+{
+  "remove": {
+    "minecraft:bad_omen": {
+      "cure": "milk"
+    }
+  }
+}
