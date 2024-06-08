@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.registries.datamaps.builtin;
 
-import com.google.common.collect.Sets;
 import java.util.Set;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;

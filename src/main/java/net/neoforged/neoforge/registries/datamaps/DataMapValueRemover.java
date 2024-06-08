@@ -7,11 +7,6 @@ package net.neoforged.neoforge.registries.datamaps;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +16,10 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An interface used to remove removals from registry data maps. This allows "decomposing" the data
@@ -72,6 +71,7 @@ public interface DataMapValueRemover<R, T> {
 
     /**
      * A remover for {@link Collection}s, remove strategy can be specified with {@link #remover}.
+     * 
      * @param <C> the type of the {@link Collection}
      * @param <R> the registry type
      */
@@ -86,6 +86,7 @@ public interface DataMapValueRemover<R, T> {
 
         /**
          * Creates an instance for datagen, does not support {@link #remove(Collection, Registry, Either, Object)}.
+         * 
          * @param removals the removals
          * @return an instance for datagen
          */
@@ -97,8 +98,9 @@ public interface DataMapValueRemover<R, T> {
 
         /**
          * Creates a {@link Codec} for a specific type of {@link Collection} with custom remove strategy.
+         * 
          * @param collectionCodec the {@link Codec} of the {@link Collection}
-         * @param remover the remove strategy
+         * @param remover         the remove strategy
          * @return a {@link Codec} for {@link CollectionBacked}
          */
         public static <C extends Collection<?>, R> Codec<CollectionBacked<C, R>> codec(Codec<C> collectionCodec, BiFunction<C, C, C> remover) {
@@ -107,18 +109,18 @@ public interface DataMapValueRemover<R, T> {
 
         /**
          * Creates a {@link Codec} for a specific type of {@link Collection} with default remove strategy removing specified elements.
+         * 
          * @param collectionCodec the {@link Codec} of the {@link Collection}
-         * @param collector the collector collecting elements to {@link Collection}
+         * @param collector       the collector collecting elements to {@link Collection}
          * @return a {@link Codec} for {@link CollectionBacked}
          */
         public static <E, C extends Collection<E>, R> Codec<CollectionBacked<C, R>> codec(Codec<C> collectionCodec, Collector<E, ?, C> collector) {
-            return collectionCodec.xmap(collection -> new CollectionBacked<>(collection, (values, removals) ->
-                    values.stream().filter(Predicate.not(removals::contains)).collect(collector)
-            ), CollectionBacked::removals);
+            return collectionCodec.xmap(collection -> new CollectionBacked<>(collection, (values, removals) -> values.stream().filter(Predicate.not(removals::contains)).collect(collector)), CollectionBacked::removals);
         }
 
         /**
          * Creates a {@link Codec} for a {@link List} with default remove strategy removing specified elements.
+         * 
          * @param listCodec the {@link Codec} of the {@link List}
          * @return a {@link Codec} for {@link CollectionBacked} supporting {@link List}
          */
@@ -128,8 +130,9 @@ public interface DataMapValueRemover<R, T> {
 
         /**
          * Creates a {@link Codec} for a {@link Set} with default remove strategy removing specified elements.
+         * 
          * @param setCodec the {@link Codec} of the {@link Set}
-         * @return a {@link Codec} for {@link CollectionBacked}  supporting {@link Set}
+         * @return a {@link Codec} for {@link CollectionBacked} supporting {@link Set}
          */
         public static <E, R> Codec<CollectionBacked<Set<E>, R>> setCodec(Codec<Set<E>> setCodec) {
             return codec(setCodec, Collectors.toUnmodifiableSet());
