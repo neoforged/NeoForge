@@ -1,0 +1,60 @@
+--- a/net/minecraft/client/gui/components/EditBox.java
++++ b/net/minecraft/client/gui/components/EditBox.java
+@@ -56,6 +_,7 @@
+     @Nullable
+     private Component hint;
+     private long focusedTime = Util.getMillis();
++    private boolean shadow = true;
+ 
+     public EditBox(Font p_294485_, int p_294264_, int p_295938_, Component p_294624_) {
+         this(p_294485_, 0, 0, p_294264_, p_295938_, p_294624_);
+@@ -383,7 +_,7 @@
+             int i1 = Mth.clamp(this.highlightPos - this.displayPos, 0, s.length());
+             if (!s.isEmpty()) {
+                 String s1 = flag ? s.substring(0, i) : s;
+-                l = p_283252_.drawString(this.font, this.formatter.apply(s1, this.displayPos), j, k, l1);
++                l = p_283252_.drawString(this.font, this.formatter.apply(s1, this.displayPos), j, k, l1, this.shadow);
+             }
+ 
+             boolean flag2 = this.cursorPos < this.value.length() || this.value.length() >= this.getMaxLength();
+@@ -396,22 +_,22 @@
+             }
+ 
+             if (!s.isEmpty() && flag && i < s.length()) {
+-                p_283252_.drawString(this.font, this.formatter.apply(s.substring(i), this.cursorPos), l, k, l1);
++                p_283252_.drawString(this.font, this.formatter.apply(s.substring(i), this.cursorPos), l, k, l1, this.shadow);
+             }
+ 
+             if (this.hint != null && s.isEmpty() && !this.isFocused()) {
+-                p_283252_.drawString(this.font, this.hint, l, k, l1);
++                p_283252_.drawString(this.font, this.hint, l, k, l1, this.shadow);
+             }
+ 
+             if (!flag2 && this.suggestion != null) {
+-                p_283252_.drawString(this.font, this.suggestion, j1 - 1, k, -8355712);
++                p_283252_.drawString(this.font, this.suggestion, j1 - 1, k, -8355712, this.shadow);
+             }
+ 
+             if (flag1) {
+                 if (flag2) {
+                     p_283252_.fill(RenderType.guiOverlay(), j1, k - 1, j1 + 1, k + 1 + 9, -3092272);
+                 } else {
+-                    p_283252_.drawString(this.font, "_", j1, k, l1);
++                    p_283252_.drawString(this.font, "_", j1, k, l1, this.shadow);
+                 }
+             }
+ 
+@@ -552,5 +_,13 @@
+ 
+     public void setHint(Component p_259584_) {
+         this.hint = p_259584_;
++    }
++
++    public void setShadow(boolean shadow) {
++        this.shadow = shadow;
++    }
++
++    public boolean getShadow() {
++        return this.shadow;
+     }
+ }
