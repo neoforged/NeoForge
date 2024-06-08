@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.data;
 
-import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
