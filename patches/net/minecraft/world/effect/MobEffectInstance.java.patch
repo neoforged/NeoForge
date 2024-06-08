@@ -76,7 +76,7 @@
                  .result();
      }
  
-@@ -350,6 +_,31 @@
+@@ -350,6 +_,33 @@
          this.blendState.setImmediate(this);
      }
  
@@ -84,6 +84,8 @@
 +    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> defaultCures;
 +
 +    private void setCures(java.util.Set<net.neoforged.neoforge.common.EffectCure> cures) {
++        if (this.cures.equals(cures))
++            return;
 +        this.cures.clear();
 +        this.cures.addAll(cures);
 +        if (this.hiddenEffect != null)
