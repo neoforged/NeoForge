@@ -33,7 +33,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.144-pr-206-library-optimization'
+    id 'net.neoforged.gradle.platform' version '7.0.146-pr-206-library-optimization'
 }
 
 rootProject.name = rootDir.name
