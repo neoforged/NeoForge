@@ -143,7 +143,7 @@ public class DataMapLoader implements PreparableReloadListener {
                     return;
                 if (removal.isPresent()) {
                     final var key = holder.unwrapKey().orElseThrow();
-                    final var withSource = result.get(key);
+                    final var withSource = result.getOrDefault(key, defaultWithSource);
                     if (withSource != null) {
                         final var newValue = removal.get().carrier().remove(withSource.data(), registry, withSource.source(), holder.value());
                         if (newValue.isEmpty()) {
