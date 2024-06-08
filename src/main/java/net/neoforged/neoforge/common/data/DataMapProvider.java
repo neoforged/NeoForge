@@ -136,6 +136,21 @@ public abstract class DataMapProvider implements DataProvider {
             return this;
         }
 
+        public Builder<T, R> remove(ResourceLocation id) {
+            this.removals.put(Either.right(ResourceKey.create(registryKey, id)), Optional.empty());
+            return this;
+        }
+
+        public Builder<T, R> remove(TagKey<R> tag) {
+            this.removals.put(Either.left(tag), Optional.empty());
+            return this;
+        }
+
+        public Builder<T, R> remove(Holder<R> value) {
+            this.removals.put(Either.right(value.unwrap().orThrow()), Optional.empty());
+            return this;
+        }
+
         public Builder<T, R> remove(ResourceLocation id, ICondition... conditions) {
             this.removals.put(Either.right(ResourceKey.create(registryKey, id)), Optional.of(new WithConditions<>(DataMapValueRemover.Default.defaultRemover(), conditions)));
             return this;
