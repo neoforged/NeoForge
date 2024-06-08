@@ -146,6 +146,8 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
                 Blocks.COMPOSTER, Blocks.FLETCHING_TABLE, Blocks.GRINDSTONE, Blocks.LECTERN,
                 Blocks.LOOM, Blocks.SMITHING_TABLE, Blocks.SMOKER, Blocks.STONECUTTER);
 
+        tag(Tags.Blocks.VILLAGER_FARMLANDS).add(Blocks.FARMLAND);
+
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tagWithOptionalLegacy(Tags.Blocks.BARRELS);
