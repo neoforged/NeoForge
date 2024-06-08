@@ -93,7 +93,7 @@
                      ByteBufCodecs.VAR_INT,
                      MobEffectInstance.Details::amplifier,
                      ByteBufCodecs.VAR_INT,
-@@ -427,14 +_,20 @@
+@@ -427,10 +_,28 @@
                      MobEffectInstance.Details::showIcon,
                      p_329990_.apply(ByteBufCodecs::optional),
                      MobEffectInstance.Details::hiddenEffect,
@@ -107,12 +107,18 @@
                  )
          );
  
-         private static MobEffectInstance.Details create(
--            int p_323657_, int p_324205_, boolean p_324263_, boolean p_324000_, Optional<Boolean> p_323607_, Optional<MobEffectInstance.Details> p_324604_
++        @Deprecated
++        Details(int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect) {
++            this(amplifier, duration, ambient, showParticles, showIcon, hiddenEffect, Optional.empty());
++        }
++
++        private static MobEffectInstance.Details create(
 +            int p_323657_, int p_324205_, boolean p_324263_, boolean p_324000_, Optional<Boolean> p_323607_, Optional<MobEffectInstance.Details> p_324604_, Optional<java.util.Set<net.neoforged.neoforge.common.EffectCure>> cures
-         ) {
--            return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_);
++        ) {
 +            return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_, cures);
-         }
-     }
- }
++        }
++
++        @Deprecated
+         private static MobEffectInstance.Details create(
+             int p_323657_, int p_324205_, boolean p_324263_, boolean p_324000_, Optional<Boolean> p_323607_, Optional<MobEffectInstance.Details> p_324604_
+         ) {
