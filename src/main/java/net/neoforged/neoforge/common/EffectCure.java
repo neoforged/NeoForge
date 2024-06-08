@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.Collection;
 import java.util.Collections;

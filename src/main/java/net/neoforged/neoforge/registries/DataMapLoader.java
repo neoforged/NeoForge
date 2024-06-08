@@ -97,7 +97,7 @@ public class DataMapLoader implements PreparableReloadListener {
             if (optional == null || optional.isEmpty())
                 continue;
             final var entry = optional.get().carrier();
-            if (defaultValue.getValue() == null|| entry.replace()) {
+            if (defaultValue.getValue() == null || entry.replace()) {
                 defaultValue.setValue(entry.value());
             } else {
                 defaultValue.setValue(merger.merge(registry, defaultSource, defaultValue.getValue(), defaultSource, entry.value()));

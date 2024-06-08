@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.registries.datamaps;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.mojang.serialization.Codec;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,10 +20,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 public final class DataMap<R, T> {
     private final DataMapType<R, T> type;
@@ -58,5 +60,4 @@ public final class DataMap<R, T> {
     public Map<ResourceKey<R>, T> values() {
         return values;
     }
-
 }

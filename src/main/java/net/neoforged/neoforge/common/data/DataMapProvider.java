@@ -34,7 +34,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.registries.DataMapLoader;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
-import net.neoforged.neoforge.registries.datamaps.DataMap;
 import net.neoforged.neoforge.registries.datamaps.DataMapEntry;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -143,7 +142,7 @@ public abstract class DataMapProvider implements DataProvider {
         }
 
         public Builder<T, R> remove(TagKey<R> tag, ICondition... conditions) {
-            this.removals.put(Either.left(tag),  Optional.of(new WithConditions<>(DataMapValueRemover.Default.defaultRemover(), conditions)));
+            this.removals.put(Either.left(tag), Optional.of(new WithConditions<>(DataMapValueRemover.Default.defaultRemover(), conditions)));
             return this;
         }
 

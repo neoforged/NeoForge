@@ -7,13 +7,10 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
 import java.util.Set;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.common.EffectCure;
-import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 public interface IMobEffectExtension {

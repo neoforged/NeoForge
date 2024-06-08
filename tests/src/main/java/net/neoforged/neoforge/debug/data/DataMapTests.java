@@ -9,6 +9,14 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -51,15 +59,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 @ForEachTest(groups = "data.data_map")
 public class DataMapTests {
@@ -332,8 +331,7 @@ public class DataMapTests {
                 .thenExecute(player -> player.removeEffectsCuredBy(EffectCures.MILK))
                 .thenExecute(player -> helper.assertTrue(
                         player.hasEffect(MobEffects.BAD_OMEN),
-                        "EffectCures.MILK was not removed from " + MobEffects.BAD_OMEN.getRegisteredName() + " effect's default cures")
-                )
+                        "EffectCures.MILK was not removed from " + MobEffects.BAD_OMEN.getRegisteredName() + " effect's default cures"))
                 .thenSucceed());
     }
 

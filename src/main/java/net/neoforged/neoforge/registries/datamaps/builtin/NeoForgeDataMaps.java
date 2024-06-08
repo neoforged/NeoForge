@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import com.google.common.collect.Sets;
+import java.util.Set;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -31,8 +32,6 @@ import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
-
-import java.util.Set;
 
 /**
  * Holds all {@link DataMapType data maps} provided by NeoForge.

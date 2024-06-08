@@ -17,7 +17,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMap;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@SuppressWarnings({ "unchecked"})
+@SuppressWarnings({ "unchecked" })
 public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> registryKey,
         Map<ResourceLocation, DataMap<T, ?>> dataMaps) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<RegistryDataMapSyncPayload<?>> TYPE = new Type<>(new ResourceLocation("neoforge:registry_data_map_sync"));
@@ -29,8 +29,7 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
         final ResourceKey<Registry<R>> registryKey = (ResourceKey<Registry<R>>) (Object) buf.readRegistryKey();
         final Map<ResourceLocation, DataMap<R, ?>> attach = buf.readMap(
                 FriendlyByteBuf::readResourceLocation,
-                (b, k) -> DataMap.decode(registryKey, k, (RegistryFriendlyByteBuf) b)
-        );
+                (b, k) -> DataMap.decode(registryKey, k, (RegistryFriendlyByteBuf) b));
         return new RegistryDataMapSyncPayload<>(registryKey, attach);
     }
 

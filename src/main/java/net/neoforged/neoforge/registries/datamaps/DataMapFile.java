@@ -27,7 +27,6 @@ public record DataMapFile<T, R>(
         boolean replace,
         Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>> values,
         Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>> removals) {
-
     public static <T, R> Codec<DataMapFile<T, R>> codec(ResourceKey<Registry<R>> registryKey, DataMapType<R, T> dataMap) {
         final Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue = ExtraCodecs.TAG_OR_ELEMENT_ID.xmap(
                 l -> l.tag() ? Either.left(TagKey.create(registryKey, l.id())) : Either.right(ResourceKey.create(registryKey, l.id())),
@@ -58,29 +57,27 @@ public record DataMapFile<T, R>(
             final Codec<Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>>> advancedRemovalsCodec = ExtraCodecs
                     .strictUnboundedMap(tagOrValue, Codec.either(removerCodec, ICondition.LIST_CODEC))
                     .xmap(
-                        map -> {
-                            final ImmutableMap.Builder<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>> builder = ImmutableMap.builder();
-                            map.forEach((source, either) -> {
-                                either.ifLeft(remover -> builder.put(source, remover));
-                                either.ifRight(conditions -> {
-                                    if (conditions.stream().allMatch(condition -> condition.test(ICondition.IContext.TAGS_INVALID))) {
-                                        builder.put(source, Optional.empty());
-                                    }
+                            map -> {
+                                final ImmutableMap.Builder<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>> builder = ImmutableMap.builder();
+                                map.forEach((source, either) -> {
+                                    either.ifLeft(remover -> builder.put(source, remover));
+                                    either.ifRight(conditions -> {
+                                        if (conditions.stream().allMatch(condition -> condition.test(ICondition.IContext.TAGS_INVALID))) {
+                                            builder.put(source, Optional.empty());
+                                        }
+                                    });
                                 });
+                                return builder.build();
+                            },
+                            map -> {
+                                final ImmutableMap.Builder<Either<TagKey<R>, ResourceKey<R>>, Either<Optional<WithConditions<DataMapValueRemover<R, T>>>, List<ICondition>>> builder = ImmutableMap.builder();
+                                for (var entry : map.entrySet()) {
+                                    builder.put(entry.getKey(), entry.getValue().<Either<Optional<WithConditions<DataMapValueRemover<R, T>>>, List<ICondition>>>map(with -> with.carrier().equals(DataMapValueRemover.Default.INSTANCE)
+                                            ? Either.right(with.conditions())
+                                            : Either.left(Optional.of(with))).orElse(Either.right(List.of())));
+                                }
+                                return builder.build();
                             });
-                            return builder.build();
-                        },
-                        map -> {
-                            final ImmutableMap.Builder<Either<TagKey<R>, ResourceKey<R>>, Either<Optional<WithConditions<DataMapValueRemover<R, T>>>, List<ICondition>>> builder = ImmutableMap.builder();
-                            for (var entry : map.entrySet()) {
-                                builder.put(entry.getKey(), entry.getValue().<Either<Optional<WithConditions<DataMapValueRemover<R, T>>>, List<ICondition>>>map(with ->
-                                        with.carrier().equals(DataMapValueRemover.Default.INSTANCE)
-                                                ? Either.right(with.conditions())
-                                                : Either.left(Optional.of(with))
-                                ).orElse(Either.right(List.of())));
-                            }
-                            return builder.build();
-                        });
             removalsCodec = NeoForgeExtraCodecs.withAlternative(defaultRemovalCodec, advancedRemovalsCodec);
         } else {
             removalsCodec = defaultRemovalCodec;
