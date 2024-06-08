@@ -379,19 +379,18 @@
 +        this.layerManager.initModdedLayers();
 +    }
 +
-     public @OnlyIn(Dist.CLIENT)
--    static enum HeartType {
-+    static enum HeartType implements net.neoforged.neoforge.common.IExtensibleEnum {
+     @OnlyIn(Dist.CLIENT)
+-    public static enum HeartType {
++    public static enum HeartType implements net.neoforged.neoforge.common.IExtensibleEnum {
          CONTAINER(
              new ResourceLocation("hud/heart/container"),
              new ResourceLocation("hud/heart/container_blinking"),
-@@ -1407,7 +_,24 @@
+@@ -1406,8 +_,23 @@
+             } else {
                  gui$hearttype = NORMAL;
              }
- 
-+            // Neo: Allow mods to override the heart type with a custom one.
 +            gui$hearttype = net.neoforged.neoforge.event.EventHooks.firePlayerHeartTypeEvent(p_168733_, gui$hearttype);
-+
+ 
              return gui$hearttype;
 +        }
 +
