@@ -218,6 +218,11 @@ public class Tags {
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
+        /**
+         * Blocks tagged here will be tracked by Farmer Villagers who will attempt to plant crops on top.
+         */
+        public static final TagKey<Block> VILLAGER_FARMLANDS = neoforgeTag("villager_farmlands");
+
         private static TagKey<Block> tag(String name) {
             return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
         }

@@ -116,6 +116,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Blocks.VILLAGER_JOB_SITES, "Villager Job Sites");
+        add(Tags.Blocks.VILLAGER_FARMLANDS, "Villager Farmlands");
 
         // Items
         add(Tags.Items.BARRELS, "Barrels");
