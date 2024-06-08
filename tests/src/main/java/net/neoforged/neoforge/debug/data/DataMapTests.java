@@ -323,7 +323,7 @@ public class DataMapTests {
             @Override
             protected void gather() {
                 builder(NeoForgeDataMaps.CURES)
-                        .remove(MobEffects.BAD_OMEN, new DataMapValueRemover.CollectionBacked<>(Set.of(EffectCures.MILK), Sets::intersection));
+                        .remove(MobEffects.BAD_OMEN, DataMapValueRemover.CollectionBacked.datagen(Set.of(EffectCures.MILK)));
             }
         });
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)

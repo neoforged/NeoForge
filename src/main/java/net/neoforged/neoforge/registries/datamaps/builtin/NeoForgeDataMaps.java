@@ -135,7 +135,7 @@ public class NeoForgeDataMaps {
             .builder(id("cures"), Registries.MOB_EFFECT, EffectCure.DATA_MAP_CODEC)
             .synced(EffectCure.DATA_MAP_CODEC, false)
             .merger(DataMapValueMerger.setMerger())
-            .remover(DataMapValueRemover.CollectionBacked.codec(EffectCure.DATA_MAP_CODEC, Sets::intersection))
+            .remover(DataMapValueRemover.CollectionBacked.setCodec(EffectCure.DATA_MAP_CODEC))
             .build();
 
     private static ResourceLocation id(final String name) {
