@@ -14,7 +14,7 @@
      protected InteractionResult mobInteract(Player p_29920_, InteractionHand p_29921_) {
          ItemStack itemstack = p_29920_.getItemInHand(p_29921_);
 -        if (itemstack.is(Items.SHEARS) && this.readyForShearing()) {
-+        if (false && itemstack.getItem() == Items.SHEARS && this.readyForShearing()) { //Forge: Moved to onSheared
++        if (false && itemstack.is(Items.SHEARS) && this.readyForShearing()) { //Neo: Moved to onSheared
              this.shear(SoundSource.PLAYERS);
              this.gameEvent(GameEvent.SHEAR, p_29920_);
              if (!this.level().isClientSide) {
