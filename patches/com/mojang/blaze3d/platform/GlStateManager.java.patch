@@ -1,27 +1,9 @@
 --- a/com/mojang/blaze3d/platform/GlStateManager.java
 +++ b/com/mojang/blaze3d/platform/GlStateManager.java
-@@ -493,9 +_,16 @@
-         }
-     }
- 
-+    /* Stores the last values sent into glMultiTexCoord2f */
-+    public static float lastBrightnessX = 0.0f;
-+    public static float lastBrightnessY = 0.0f;
-     public static void _texParameter(int p_84161_, int p_84162_, float p_84163_) {
-         RenderSystem.assertOnRenderThreadOrInit();
-         GL11.glTexParameterf(p_84161_, p_84162_, p_84163_);
-+        if (p_84161_ == GL13.GL_TEXTURE1) {
-+             lastBrightnessX = p_84162_;
-+             lastBrightnessY = p_84163_;
-+         }
-     }
- 
-     public static void _texParameter(int p_84332_, int p_84333_, int p_84334_) {
-@@ -945,5 +_,54 @@
-         public static int height() {
+@@ -946,4 +_,53 @@
              return INSTANCE.height;
          }
-+    }
+     }
 +
 +    public static void _backupGlState(net.neoforged.neoforge.client.GlStateBackup state) {
 +        state.blendEnabled = BLEND.mode.enabled;
@@ -70,5 +52,5 @@
 +        _stencilOp(state.stencilFail, state.stencilZFail, state.stencilZPass);
 +        SCISSOR.mode.setEnabled(state.scissorEnabled);
 +        _colorMask(state.colorMaskRed, state.colorMaskGreen, state.colorMaskBlue, state.colorMaskAlpha);
-     }
++    }
  }
