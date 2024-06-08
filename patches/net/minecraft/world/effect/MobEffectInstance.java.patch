@@ -15,14 +15,11 @@
          this.setDetailsFrom(p_19543_);
      }
  
-@@ -103,6 +_,10 @@
+@@ -103,6 +_,7 @@
              p_324529_.showIcon(),
              p_324529_.hiddenEffect().map(p_323227_ -> new MobEffectInstance(p_324441_, p_323227_)).orElse(null)
          );
-+        p_324529_.cures().ifPresent(cures -> {
-+            this.cures.clear();
-+            this.cures.addAll(cures);
-+        });
++        p_324529_.cures().ifPresent(this::setCures);
      }
  
      private MobEffectInstance.Details asDetails() {
@@ -36,25 +33,35 @@
          );
      }
  
-@@ -130,6 +_,8 @@
+@@ -130,6 +_,7 @@
          this.ambient = p_19549_.ambient;
          this.visible = p_19549_.visible;
          this.showIcon = p_19549_.showIcon;
-+        this.cures.clear();
-+        this.cures.addAll(p_19549_.cures);
++        this.setCures(p_19549_.cures);
      }
  
      public boolean update(MobEffectInstance p_19559_) {
-@@ -174,6 +_,9 @@
+@@ -139,6 +_,7 @@
+ 
+         boolean flag = false;
+         if (p_19559_.amplifier > this.amplifier) {
++            this.setCures(p_19559_.cures);
+             if (p_19559_.isShorterDurationThan(this)) {
+                 MobEffectInstance mobeffectinstance = this.hiddenEffect;
+                 this.hiddenEffect = new MobEffectInstance(this);
+@@ -150,10 +_,12 @@
              flag = true;
-         }
- 
-+        //Neo: Update cures to be the intersection of both
-+        flag |= this.cures.retainAll(p_19559_.cures);
-+
-         return flag;
-     }
- 
+         } else if (this.isShorterDurationThan(p_19559_)) {
+             if (p_19559_.amplifier == this.amplifier) {
++                this.setCures(p_19559_.cures);
+                 this.duration = p_19559_.duration;
+                 flag = true;
+             } else if (this.hiddenEffect == null) {
+                 this.hiddenEffect = new MobEffectInstance(p_19559_);
++                this.hiddenEffect.setCures(this.cures);
+             } else {
+                 this.hiddenEffect.update(p_19559_);
+             }
 @@ -326,11 +_,11 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
@@ -69,12 +76,17 @@
                  .result();
      }
  
-@@ -350,6 +_,24 @@
+@@ -350,6 +_,29 @@
          this.blendState.setImmediate(this);
      }
  
 +    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
 +    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> defaultCures;
++
++    private void setCures(java.util.Set<net.neoforged.neoforge.common.EffectCure> cures) {
++        this.cures.clear();
++        this.cures.addAll(cures);
++    }
 +
 +    /**
 +     * @return the {@link net.neoforged.neoforge.common.EffectCure EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}
