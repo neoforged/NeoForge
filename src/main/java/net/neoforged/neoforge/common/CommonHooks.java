@@ -295,7 +295,7 @@ public class CommonHooks {
     /**
      * Creates and posts an {@link LivingDamageEvent.Pre}. This is invoked in
      * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
-     * and requires access to the internal field {@link LivingEntity#damageContainer} as a parameter.
+     * and requires access to the internal field {@link LivingEntity#damageContainers} as a parameter.
      *
      * @param entity    the entity to receive damage
      * @param container the container object holding the final values of the damage pipeline while they are
@@ -310,7 +310,7 @@ public class CommonHooks {
     /**
      * Creates and posts a {@link LivingDamageEvent.Post}. This is invoked in
      * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
-     * and requires access to the internal field {@link LivingEntity#damageContainer} as a parameter.
+     * and requires access to the internal field {@link LivingEntity#damageContainers} as a parameter.
      *
      * @param entity    the entity to receive damage
      * @param container the container object holding the truly final values of the damage pipeline. This
@@ -1103,7 +1103,7 @@ public class CommonHooks {
     /**
      * Creates, posts, and returns a {@link LivingShieldBlockEvent}. This method is invoked in
      * {@link LivingEntity#hurt(DamageSource, float)} and requires internal access to the
-     * protected field {@link LivingEntity#damageContainer} as a parameter.
+     * protected field {@link LivingEntity#damageContainers} as a parameter.
      *
      * @param blocker         the entity performing the block
      * @param container       the entity's internal damage container for accessing current values

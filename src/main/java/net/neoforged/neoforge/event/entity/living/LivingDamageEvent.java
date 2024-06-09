@@ -10,7 +10,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * LivingDamage event captures when an entity is about to receive a loss
+ * LivingDamageEvent captures when an entity is about to receive a loss
  * of health. At this stage in the damage sequence, all reduction effects
  * have been applied.
  * <br>
@@ -19,7 +19,7 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * <br>
  * {@link Post} contains an immutable representation of the entire damage sequence
  * and allows for reference to the values accrued at each step.
- *
+ * <br>
  * For more information on the damage sequence
  * 
  * @see DamageSequenceEvent
@@ -30,9 +30,10 @@ public abstract class LivingDamageEvent extends DamageSequenceEvent {
     }
 
     /**
-     * IncomingDamageEvent is fired when an Entity is set to be hurt. <br>
-     * This event is fired in {@code LivingEntity#hurt(DamageSource, float} and
-     * {@code Player#actuallyHurt(DamageSource, float)}.
+     * LivingDamageEvent.Pre is fired when an Entity is set to be hurt. <br>
+     * At this point armor, potion and absorption modifiers have already been applied to the damage value
+     * and the entity.<br>
+     * This event is fired in {@code LivingEntity#actuallyHurt(DamageSource, float}
      * <br>
      * For custom posting of this event, the event expects to be fired after
      * damage reductions have been calculated but before any changes to the entity
@@ -51,14 +52,11 @@ public abstract class LivingDamageEvent extends DamageSequenceEvent {
     }
 
     /**
-     * DamageTakenEvent is fired just before health is modified on the entity.<br>
-     * At this point armor, potion and absorption modifiers have already been applied to damage.
-     * the {@link DamageContainer} is immutable and represents a FINAL value of what is about to
-     * be applied.
+     * LivingDamageEvent.Post is fired after health is modified on the entity.<br>
+     * the {@link DamageContainer} is immutable and represents a FINAL value of what was applied to the entity.
      * <br>
      * Also note that appropriate resources (like armor durability and absorption extra hearts) have already been consumed.<br>
-     * This event is fired whenever an Entity is damaged in {@code LivingEntity#actuallyHurt(DamageSource, float)} and
-     * {@code Player#actuallyHurt(DamageSource, float)}.<br>
+     * This event is fired whenever an Entity is damaged in {@code LivingEntity#actuallyHurt(DamageSource, float)}
      * <br>
      * This event is fired via {@link CommonHooks#onLivingDamagePost(LivingEntity, DamageContainer)}.<br>
      * <br>
