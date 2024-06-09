@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/RenderStateShard.java
++++ b/net/minecraft/client/renderer/RenderStateShard.java
+@@ -23,7 +_,7 @@
+     public static final float VIEW_SCALE_Z_EPSILON = 0.99975586F;
+     public static final double MAX_ENCHANTMENT_GLINT_SPEED_MILLIS = 8.0;
+     public final String name;
+-    public final Runnable setupState;
++    protected Runnable setupState; // Neo/AT-BUG: 'protected-f' does not work as field is also made public via AT field group
+     public final Runnable clearState;
+     public static final RenderStateShard.TransparencyStateShard NO_TRANSPARENCY = new RenderStateShard.TransparencyStateShard(
+         "no_transparency", () -> RenderSystem.disableBlend(), () -> {
