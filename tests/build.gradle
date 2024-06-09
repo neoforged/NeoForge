@@ -109,6 +109,7 @@ afterEvaluate {
         args.set(outputIndex+1, file('src/generated/resources/').absolutePath);
         programArguments.set(args);
     }
+    runs.junit.modSources.all().get().values().remove(sourceSets.main)
 }
 
 license {

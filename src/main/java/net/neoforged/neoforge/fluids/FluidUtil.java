@@ -33,7 +33,6 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.wrappers.BlockWrapper;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
-import net.neoforged.neoforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
@@ -411,9 +410,7 @@ public class FluidUtil {
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
         IFluidHandler targetFluidHandler;
-        if (block instanceof IFluidBlock) {
-            targetFluidHandler = new FluidBlockWrapper((IFluidBlock) block, level, pos);
-        } else if (block instanceof BucketPickup) {
+        if (block instanceof BucketPickup) {
             targetFluidHandler = new BucketPickupHandlerWrapper(playerIn, (BucketPickup) block, level, pos);
         } else {
             Optional<IFluidHandler> fluidHandler = getFluidHandler(level, pos, side);
@@ -529,8 +526,6 @@ public class FluidUtil {
     /**
      * Destroys a block when a fluid is placed in the same position.
      * Modeled after {@link BucketItem#emptyContents(Player, Level, BlockPos, BlockHitResult)}
-     *
-     * This is a helper method for implementing {@link IFluidBlock#place(Level, BlockPos, FluidStack, IFluidHandler.FluidAction)}.
      *
      * @param level the level that the fluid will be placed in
      * @param pos   the location that the fluid will be placed
