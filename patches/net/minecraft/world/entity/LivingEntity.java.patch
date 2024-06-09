@@ -9,17 +9,18 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final String TAG_ACTIVE_EFFECTS = "active_effects";
      private static final UUID SPEED_MODIFIER_SOUL_SPEED_UUID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
-@@ -242,6 +_,13 @@
+@@ -242,6 +_,14 @@
      protected Brain<?> brain;
      private boolean skipDropExperience;
      protected float appliedScale = 1.0F;
 +    /**
 +     * This field stores information about damage dealt to this entity.
-+     * The field is instantiated via {@link #hurt(DamageSource, float)} after
-+     * invulnerability checks, and is nulllified before the method's return.
++     * a new {@link net.neoforged.neoforge.common.damagesource.DamageContainer} is instantiated
++     * via {@link #hurt(DamageSource, float)} after invulnerability checks, and is removed from
++     * the stack before the method's return.
 +     * */
 +    @Nullable
-+    protected java.util.Stack<net.neoforged.neoforge.common.damagesource.InternalDamageContainer> damageContainer = new java.util.Stack<>();
++    protected java.util.Stack<net.neoforged.neoforge.common.damagesource.InternalDamageContainer> damageContainers = new java.util.Stack<>();
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
          super(p_20966_, p_20967_);
@@ -146,14 +147,14 @@
          } else if (p_21016_.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          } else {
-+            this.damageContainer.add(new net.neoforged.neoforge.common.damagesource.InternalDamageContainer(p_21016_, p_21017_));
-+            if (!net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainer.getLast())) return false;
++            this.damageContainers.push(new net.neoforged.neoforge.common.damagesource.InternalDamageContainer(p_21016_, p_21017_));
++            if (!net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainers.peek())) return false;
              if (this.isSleeping() && !this.level().isClientSide) {
                  this.stopSleeping();
              }
  
              this.noActionTime = 0;
-+            p_21017_ = this.damageContainer.getLast().getNewDamage(); //Neo: enforce damage container as source of truth for damage amount
++            p_21017_ = this.damageContainers.peek().getNewDamage(); //Neo: enforce damage container as source of truth for damage amount
              float f = p_21017_;
              boolean flag = false;
              float f1 = 0.0F;
@@ -162,8 +163,8 @@
 -                f1 = p_21017_;
 -                p_21017_ = 0.0F;
 +            net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent ev;
-+            if (p_21017_ > 0.0F && (ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainer.getLast(), this.isDamageSourceBlocked(p_21016_))).getBlocked()) {
-+                this.damageContainer.getLast().setBlockedDamage(ev);
++            if (p_21017_ > 0.0F && (ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainers.peek(), this.isDamageSourceBlocked(p_21016_))).getBlocked()) {
++                this.damageContainers.peek().setBlockedDamage(ev);
 +                if(ev.shieldDamage() > 0) {
 +                    this.hurtCurrentlyUsedShield(ev.shieldDamage());
 +                }
@@ -178,23 +179,34 @@
              }
  
              if (p_21016_.is(DamageTypeTags.IS_FREEZING) && this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
-@@ -1159,6 +_,7 @@
+@@ -1155,10 +_,12 @@
+                 p_21017_ *= 0.75F;
+             }
+ 
++            this.damageContainers.peek().setNewDamage(p_21017_); //update container with vanilla changes
+             this.walkAnimation.setSpeed(1.5F);
              boolean flag1 = true;
              if ((float)this.invulnerableTime > 10.0F && !p_21016_.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
                  if (p_21017_ <= this.lastHurt) {
-+                    this.damageContainer.pop();
++                    this.damageContainers.pop();
                      return false;
                  }
  
-@@ -1167,7 +_,7 @@
+@@ -1167,12 +_,13 @@
                  flag1 = false;
              } else {
                  this.lastHurt = p_21017_;
 -                this.invulnerableTime = 20;
-+                this.invulnerableTime = this.damageContainer.getLast().getPostAttackInvulnerabilityTicks();
++                this.invulnerableTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
                  this.actuallyHurt(p_21016_, p_21017_);
                  this.hurtDuration = 10;
                  this.hurtTime = this.hurtDuration;
+             }
+ 
++            p_21017_ = this.damageContainers.peek().getNewDamage(); //update local with container value
+             Entity entity = p_21016_.getEntity();
+             if (entity != null) {
+                 if (entity instanceof LivingEntity livingentity1
 @@ -1184,9 +_,9 @@
                  if (entity instanceof Player player1) {
                      this.lastHurtByPlayerTime = 100;
@@ -220,7 +232,7 @@
                  CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer)entity, this, p_21016_, f, p_21017_, flag);
              }
  
-+            this.damageContainer.pop();
++            this.damageContainers.pop();
              return flag2;
          }
      }
@@ -372,7 +384,7 @@
                  p_21194_ = Math.max(f / 25.0F, 0.0F);
                  float f2 = f1 - p_21194_;
                  if (f2 > 0.0F && f2 < 3.4028235E37F) {
-+                    this.damageContainer.getLast().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.MOB_EFFECTS, f2);
++                    this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.MOB_EFFECTS, f2);
                      if (this instanceof ServerPlayer) {
 -                        ((ServerPlayer)this).awardStat(Stats.DAMAGE_RESISTED, Math.round(f2 * 10.0F));
 +                        ((ServerPlayer)this).awardStat(Stats.CUSTOM.get(Stats.DAMAGE_RESISTED), Math.round(f2 * 10.0F));
@@ -386,7 +398,7 @@
                  int k = EnchantmentHelper.getDamageProtection(this.getArmorAndBodyArmorSlots(), p_21193_);
                  if (k > 0) {
                      p_21194_ = CombatRules.getDamageAfterMagicAbsorb(p_21194_, (float)k);
-+                    this.damageContainer.getLast().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainer.getLast().getNewDamage() - p_21194_);
++                    this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainers.peek().getNewDamage() - p_21194_);
                  }
  
                  return p_21194_;
@@ -399,26 +411,27 @@
 -            float f1 = Math.max(p_21241_ - this.getAbsorptionAmount(), 0.0F);
 -            this.setAbsorptionAmount(this.getAbsorptionAmount() - (p_21241_ - f1));
 -            float f = p_21241_ - f1;
-+            this.damageContainer.getLast().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainer.getLast().getNewDamage() - this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainer.getLast().getNewDamage()));
-+            this.getDamageAfterMagicAbsorb(p_21240_, this.damageContainer.getLast().getNewDamage());
-+            this.damageContainer.getLast().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
-+            float f1 = Math.max(this.damageContainer.getLast().getNewDamage() - this.damageContainer.getLast().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
-+            this.setAbsorptionAmount(this.damageContainer.getLast().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainer.getLast().getNewDamage() - f1));
-+            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainer.getLast());
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainers.peek().getNewDamage()));
++            this.getDamageAfterMagicAbsorb(p_21240_, this.damageContainers.peek().getNewDamage());
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
++            float f1 = Math.max(this.damageContainers.peek().getNewDamage() - this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
++            this.setAbsorptionAmount(this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainers.peek().getNewDamage() - f1));
++            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
 +            if (f1 <= 0) return;
-+            float f = this.damageContainer.getLast().getNewDamage() - f1;
++            float f = this.damageContainers.peek().getNewDamage() - f1;
              if (f > 0.0F && f < 3.4028235E37F && p_21240_.getEntity() instanceof ServerPlayer serverplayer) {
                  serverplayer.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(f * 10.0F));
              }
-@@ -1713,6 +_,8 @@
+@@ -1713,7 +_,9 @@
                  this.setHealth(this.getHealth() - f1);
                  this.setAbsorptionAmount(this.getAbsorptionAmount() - f1);
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
-+                this.onDamageTaken(this.damageContainer.getLast());
-+                net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainer.getLast());
++                this.onDamageTaken(this.damageContainers.peek());
              }
++            net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
          }
      }
+ 
 @@ -1767,6 +_,8 @@
      }
  
