@@ -10,9 +10,8 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
- * LivingDamageEvent captures when an entity is about to receive a loss
- * of health. At this stage in the damage sequence, all reduction effects
- * have been applied.
+ * LivingDamageEvent captures an entity's loss of health. At this stage in
+ * the damage sequence, all reduction effects have been applied.
  * <br>
  * {@link Pre} allows for modification of the damage value before it is applied
  * to the entity's health.
