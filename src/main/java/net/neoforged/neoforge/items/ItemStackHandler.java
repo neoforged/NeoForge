@@ -24,14 +24,13 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     protected NonNullList<ItemStack> stacks;
 
     public static final Codec<ItemStackHandler> CODEC = RecordCodecBuilder.create(i -> i.group(
-            NonNullListCodecs.withIndices(ItemStack.OPTIONAL_CODEC, ItemStack.EMPTY, "slot", ItemStack::isEmpty)
-                    .fieldOf("stacks").forGetter(handler -> handler.stacks))
-            .apply(i, ItemStackHandler::new));
+            NonNullListCodecs.optionalItems().fieldOf("stacks").forGetter(handler -> handler.stacks)
+        ).apply(i, ItemStackHandler::new));
 
     /**
      * Use if you require 1-to-1 support for the output of {@link #serializeNBT(HolderLookup.Provider)}.
      * Otherwise, prefer {#link CODEC} as a newer alternative to saving data to disk.
-     * 
+     *
      * @param provider
      * @return
      */

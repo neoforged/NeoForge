@@ -15,6 +15,16 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import net.minecraft.core.NonNullList;
 
+/**
+ * This codec serializes an instance of {@code NonNullList<T>} and preserves list index information.
+ * It is particularly helpful in scenarios where "empty" values must be ignored, such as inventories.
+ *
+ * @param elementCodec  Codec for the elements of the list.
+ * @param defaultValue  A default value, used to fill empty lists on creation.
+ * @param skipPredicate A predicate used to skip serialization of default/empty list items.
+ * @param indexKey      A key used for serializing list index information.
+ * @param <E>           Type of elements in list.
+ */
 public record IndexedNonNullListCodec<E>(MapCodec<E> elementCodec, E defaultValue, Predicate<E> skipPredicate, String indexKey) implements Codec<NonNullList<E>> {
     public IndexedNonNullListCodec(MapCodec<E> elementCodec, E defaultValue, Predicate<E> skipPredicate) {
         this(elementCodec, defaultValue, skipPredicate, "index");
