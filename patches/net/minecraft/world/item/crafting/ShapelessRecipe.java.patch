@@ -20,7 +20,7 @@
          if (p_346123_.ingredientCount() != this.ingredients.size()) {
              return false;
 +        } else if (!isSimple) {
-+            var nonEmptyItems = new java.util.ArrayList<ItemStack>(this.ingredients.size());
++            var nonEmptyItems = new java.util.ArrayList<ItemStack>(p_346123_.ingredientCount());
 +            for (var item : p_346123_.items())
 +                if (!item.isEmpty())
 +                    nonEmptyItems.add(item);
