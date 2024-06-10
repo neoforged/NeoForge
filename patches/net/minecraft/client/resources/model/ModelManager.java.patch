@@ -16,17 +16,6 @@
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
          this.blockColors = p_119407_;
-@@ -78,6 +_,10 @@
-         this.atlases = new AtlasSet(VANILLA_ATLASES, p_119406_);
-     }
- 
-+    public BakedModel getModel(ResourceLocation modelLocation) {
-+        return this.bakedRegistry.getOrDefault(modelLocation, this.missingModel);
-+    }
-+
-     public BakedModel getModel(ModelResourceLocation p_119423_) {
-         return this.bakedRegistry.getOrDefault(p_119423_, this.missingModel);
-     }
 @@ -100,6 +_,7 @@
          Executor p_249221_
      ) {

@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -66,7 +67,8 @@ public class RenderableTest {
     }
 
     private static class Client {
-        private static ResourceLocation MODEL_LOC = ResourceLocation.fromNamespaceAndPath("minecraft", "block/blue_stained_glass");
+        private static ModelResourceLocation MODEL_LOC = ModelResourceLocation.neoforgeSpecial(
+                ResourceLocation.fromNamespaceAndPath("minecraft", "block/blue_stained_glass"));
 
         private static IRenderable<CompositeRenderable.Transforms> renderable;
         private static IRenderable<ModelData> bakedRenderable;

@@ -1,16 +1,15 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -117,6 +_,14 @@
+@@ -117,6 +_,13 @@
          p_252014_.popPush("special");
          this.loadSpecialItemModelAndDependencies(ItemRenderer.TRIDENT_IN_HAND_MODEL);
          this.loadSpecialItemModelAndDependencies(ItemRenderer.SPYGLASS_IN_HAND_MODEL);
-+        Set<ResourceLocation> additionalModels = new HashSet<>();
++        Set<ModelResourceLocation> additionalModels = new HashSet<>();
 +        net.neoforged.neoforge.client.ClientHooks.onRegisterAdditionalModels(additionalModels);
-+        for (ResourceLocation rl : additionalModels) {
-+            UnbakedModel unbakedmodel = this.getModel(rl); // loadTopLevel(...), but w/o ModelResourceLocation limitation
-+            this.unbakedCache.put(rl, unbakedmodel);
-+            // TODO 1.21 - Port model loading to handle MRLs
-+            //this.topLevelModels.put(rl, unbakedmodel);
++        for (ModelResourceLocation rl : additionalModels) {
++            UnbakedModel unbakedmodel = this.getModel(rl.id());
++            this.unbakedCache.put(rl.id(), unbakedmodel);
++            this.registerModelAndLoadDependencies(rl, unbakedmodel);
 +        }
          this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
          p_252014_.pop();

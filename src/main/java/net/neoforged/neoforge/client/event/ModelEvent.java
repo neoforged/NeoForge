@@ -136,17 +136,20 @@ public abstract class ModelEvent extends Event {
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterAdditional extends ModelEvent implements IModBusEvent {
-        private final Set<ResourceLocation> models;
+        private final Set<ModelResourceLocation> models;
 
         @ApiStatus.Internal
-        public RegisterAdditional(Set<ResourceLocation> models) {
+        public RegisterAdditional(Set<ModelResourceLocation> models) {
             this.models = models;
         }
 
         /**
          * Registers a model to be loaded, along with its dependencies.
          */
-        public void register(ResourceLocation model) {
+        public void register(ModelResourceLocation model) {
+            Preconditions.checkArgument(
+                    model.getVariant().equals(ModelResourceLocation.NEOFORGE_SPECIAL_VARIANT),
+                    "Side-loaded models must use the '" + ModelResourceLocation.NEOFORGE_SPECIAL_VARIANT + "' variant");
             models.add(model);
         }
     }
