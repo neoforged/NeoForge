@@ -15,12 +15,16 @@
      }
  
      @Override
-@@ -54,6 +_,8 @@
+@@ -54,6 +_,12 @@
      public boolean matches(CraftingInput p_346123_, Level p_44263_) {
          if (p_346123_.ingredientCount() != this.ingredients.size()) {
              return false;
 +        } else if (!isSimple) {
-+            return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(p_346123_.items(), this.ingredients) != null;
++            var nonEmptyItems = new java.util.ArrayList<ItemStack>(this.ingredients.size());
++            for (var item : p_346123_.items())
++                if (!item.isEmpty())
++                    nonEmptyItems.add(item);
++            return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(nonEmptyItems, this.ingredients) != null;
          } else {
              return p_346123_.size() == 1 && this.ingredients.size() == 1
                  ? this.ingredients.getFirst().test(p_346123_.getItem(0))
