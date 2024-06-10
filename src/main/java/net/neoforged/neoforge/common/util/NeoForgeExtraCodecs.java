@@ -122,13 +122,16 @@ public class NeoForgeExtraCodecs {
      * @param names the aliases
      */
     public static <T> MapCodec<T> aliasedFieldOf(final Codec<T> codec, final String... names) {
-        if (names.length == 0)
-            throw new IllegalArgumentException("Must have at least one name!");
-        return new AliasedFieldMapCodec<>(List.of(names), names[0], codec) {
-            @Override
-            Decoder<T> decoder(String name) {
-                return codec;
-            }
+        return switch (names.length) {
+            case 0 -> throw new IllegalArgumentException("Must have at least one name!");
+            case 1 -> codec.fieldOf(names[0]);
+            case 2 -> mapWithAlternative(codec.fieldOf(names[0]), codec.fieldOf(names[1]));
+            default -> new AliasedFieldMapCodec<>(List.of(names), names[0], codec) {
+                @Override
+                Decoder<T> decoder(String name) {
+                    return codec;
+                }
+            };
         };
     }
 
