@@ -129,7 +129,8 @@ public abstract class ModelEvent extends Event {
 
     /**
      * Fired when the {@link net.minecraft.client.resources.model.ModelBakery} is notified of the resource manager reloading.
-     * Allows developers to register models to be loaded, along with their dependencies.
+     * Allows developers to register models to be loaded, along with their dependencies. Models registered through this
+     * event must use the {@link ModelResourceLocation#NEOFORGE_STANDALONE_VARIANT} variant
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
@@ -148,8 +149,8 @@ public abstract class ModelEvent extends Event {
          */
         public void register(ModelResourceLocation model) {
             Preconditions.checkArgument(
-                    model.getVariant().equals(ModelResourceLocation.NEOFORGE_SPECIAL_VARIANT),
-                    "Side-loaded models must use the '" + ModelResourceLocation.NEOFORGE_SPECIAL_VARIANT + "' variant");
+                    model.getVariant().equals(ModelResourceLocation.NEOFORGE_STANDALONE_VARIANT),
+                    "Side-loaded models must use the '" + ModelResourceLocation.NEOFORGE_STANDALONE_VARIANT + "' variant");
             models.add(model);
         }
     }

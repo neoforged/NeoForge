@@ -4,18 +4,21 @@
  @OnlyIn(Dist.CLIENT)
  public record ModelResourceLocation(ResourceLocation id, String variant) {
      public static final String INVENTORY_VARIANT = "inventory";
-+    public static final String NEOFORGE_SPECIAL_VARIANT = "neoforge_special";
++    public static final String NEOFORGE_STANDALONE_VARIANT = "neoforge_standalone";
  
      public ModelResourceLocation(ResourceLocation id, String variant) {
          variant = lowercaseVariant(variant);
-@@ -21,6 +_,10 @@
+@@ -21,6 +_,13 @@
  
      public static ModelResourceLocation inventory(ResourceLocation p_352141_) {
          return new ModelResourceLocation(p_352141_, "inventory");
 +    }
 +
-+    public static ModelResourceLocation neoforgeSpecial(ResourceLocation id) {
-+        return new ModelResourceLocation(id, NEOFORGE_SPECIAL_VARIANT);
++    /**
++     * Construct a {@code ModelResourceLocation} for use in the {@link net.neoforged.neoforge.client.event.ModelEvent.RegisterAdditional}
++     */
++    public static ModelResourceLocation neoForgeStandalone(ResourceLocation id) {
++        return new ModelResourceLocation(id, NEOFORGE_STANDALONE_VARIANT);
      }
  
      private static String lowercaseVariant(String p_248567_) {
