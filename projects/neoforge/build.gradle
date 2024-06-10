@@ -411,7 +411,6 @@ afterEvaluate {
             builtBy(signInstallerJar)
             setClassifier("installer")
         }
-        // Only publish a changelog for releases
         changelog(createChangelog.outputFile) {
             builtBy(createChangelog)
             setClassifier("changelog")
