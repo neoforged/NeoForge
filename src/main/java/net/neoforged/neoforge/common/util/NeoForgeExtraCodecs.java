@@ -240,7 +240,7 @@ public class NeoForgeExtraCodecs {
                 if (singular != null) {
                     final DataResult<C> result = codec.parse(ops, singular).map(fromSingleton);
                     // Prevent silent decode error when plural is not present in input
-                    if (result.isSuccess() || input.get(pluralName) != null)
+                    if (result.isSuccess() || input.get(pluralName) == null)
                         return result;
                 }
                 return this.alternative.decode(ops, input);
