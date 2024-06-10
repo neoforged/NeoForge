@@ -274,11 +274,14 @@ configurations {
         canBeResolved = false
         canBeConsumed = true
         attributes {
-            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, "installer"))
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
-            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.SHADOWED))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EMBEDDED))
             // The installer targets JDK 8
             attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+        }
+        outgoing {
+            capability("net.neoforged:neoforge-installer:${project.version}")
         }
         // Publish it
         javaComponent.addVariantsFromConfiguration(it) {}
