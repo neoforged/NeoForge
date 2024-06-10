@@ -228,7 +228,7 @@ public class NeoForgeExtraCodecs {
             final Codec<C> collectionCodec, final String pluralName,
             final Function<? super T, ? extends C> fromSingleton,
             final C emptyCollection) {
-        return mapWithAlternative(codec.fieldOf(singularName).flatXmap(
+        return withAlternative(codec.fieldOf(singularName).flatXmap(
                 t -> DataResult.success(fromSingleton.apply(t)),
                 collection -> collection.size() == 1
                         ? DataResult.success(Iterables.getOnlyElement(collection))
