@@ -67,7 +67,7 @@ public class RenderableTest {
     }
 
     private static class Client {
-        private static ModelResourceLocation MODEL_LOC = ModelResourceLocation.neoForgeStandalone(
+        private static ModelResourceLocation MODEL_LOC = ModelResourceLocation.standalone(
                 ResourceLocation.fromNamespaceAndPath("minecraft", "block/blue_stained_glass"));
 
         private static IRenderable<CompositeRenderable.Transforms> renderable;
