@@ -130,7 +130,7 @@ public abstract class ModelEvent extends Event {
     /**
      * Fired when the {@link net.minecraft.client.resources.model.ModelBakery} is notified of the resource manager reloading.
      * Allows developers to register models to be loaded, along with their dependencies. Models registered through this
-     * event must use the {@link ModelResourceLocation#STANDALONE_VARIANT} variant
+     * event must use the {@link ModelResourceLocation#STANDALONE_VARIANT} variant.
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
@@ -146,6 +146,8 @@ public abstract class ModelEvent extends Event {
 
         /**
          * Registers a model to be loaded, along with its dependencies.
+         * <p>
+         * The {@link ModelResourceLocation} passed to this method must later be used to recover the loaded model.
          */
         public void register(ModelResourceLocation model) {
             Preconditions.checkArgument(
