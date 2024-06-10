@@ -228,12 +228,24 @@ public class NeoForgeExtraCodecs {
             final Codec<C> collectionCodec, final String pluralName,
             final Function<? super T, ? extends C> fromSingleton,
             final C emptyCollection) {
-        return withAlternative(codec.fieldOf(singularName).flatXmap(
+        return new AlternativeMapCodec<>(codec.fieldOf(singularName).flatXmap(
                 t -> DataResult.success(fromSingleton.apply(t)),
                 collection -> collection.size() == 1
                         ? DataResult.success(Iterables.getOnlyElement(collection))
                         : DataResult.error(() -> "Can not convert element from non-singleton collection: " + collection)),
-                collectionCodec.optionalFieldOf(pluralName, emptyCollection));
+                collectionCodec.optionalFieldOf(pluralName, emptyCollection)) {
+            @Override
+            public <T1> DataResult<C> decode(DynamicOps<T1> ops, MapLike<T1> input) {
+                final T1 singular = input.get(singularName);
+                if (singular != null) {
+                    final DataResult<C> result = codec.parse(ops, singular).map(fromSingleton);
+                    // Prevent silent decode error when plural is not present in input
+                    if (result.isSuccess() || input.get(pluralName) != null)
+                        return result;
+                }
+                return this.alternative.decode(ops, input);
+            }
+        };
     }
 
     public static <T> MapCodec<Set<T>> singularOrPluralCodecNotEmpty(final Codec<T> codec, final String singularName) {
@@ -521,17 +533,17 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Creates a codec from a decoder.
-     * The returned codec can only decode, and will throw on any attempt to encode.
+     * Creates a mapCodec from a decoder.
+     * The returned mapCodec can only decode, and will throw on any attempt to encode.
      */
     public static <A> Codec<A> decodeOnly(Decoder<A> decoder) {
         return Codec.of(Codec.unit(() -> {
-            throw new UnsupportedOperationException("Cannot encode with decode-only codec! Decoder:" + decoder);
+            throw new UnsupportedOperationException("Cannot encode with decode-only mapCodec! Decoder:" + decoder);
         }), decoder, "DecodeOnly[" + decoder + "]");
     }
 
     /**
-     * Creates a codec for a list from a codec of optional elements.
+     * Creates a mapCodec for a list from a mapCodec of optional elements.
      * The empty optionals are removed from the list when decoding.
      */
     public static <A> Codec<List<A>> listWithOptionalElements(Codec<Optional<A>> elementCodec) {
@@ -539,7 +551,7 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Creates a codec for a list of optional elements, that removes empty values when decoding.
+     * Creates a mapCodec for a list of optional elements, that removes empty values when decoding.
      */
     public static <A> Codec<List<A>> listWithoutEmpty(Codec<List<Optional<A>>> codec) {
         return codec.xmap(
@@ -551,9 +563,9 @@ public class NeoForgeExtraCodecs {
      * Codec with two alternatives.
      * <p>
      * The vanilla {@link Codec#withAlternative(Codec, Codec)} will try
-     * the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
+     * the first mapCodec and then the second mapCodec for decoding, <b>but only the first for encoding</b>.
      * <p>
-     * Unlike vanilla, this alternative codec also tries to encode with the second codec if the first encode fails.
+     * Unlike vanilla, this alternative mapCodec also tries to encode with the second mapCodec if the first encode fails.
      * 
      * @see #withAlternative(MapCodec, MapCodec) for keeping {@link com.mojang.serialization.MapCodec MapCodecs} as MapCodecs.
      */
@@ -564,9 +576,9 @@ public class NeoForgeExtraCodecs {
     /**
      * MapCodec with two alternatives.
      * <p>
-     * {@link #mapWithAlternative(MapCodec, MapCodec)} will try the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
+     * {@link #mapWithAlternative(MapCodec, MapCodec)} will try the first mapCodec and then the second mapCodec for decoding, <b>but only the first for encoding</b>.
      * <p>
-     * Unlike {@link #mapWithAlternative(MapCodec, MapCodec)}, this alternative codec also tries to encode with the second codec if the first encode fails.
+     * Unlike {@link #mapWithAlternative(MapCodec, MapCodec)}, this alternative mapCodec also tries to encode with the second mapCodec if the first encode fails.
      */
     public static <T> MapCodec<T> withAlternative(final MapCodec<T> codec, final MapCodec<T> alternative) {
         return new AlternativeMapCodec<>(codec, alternative);
@@ -600,22 +612,22 @@ public class NeoForgeExtraCodecs {
     }
 
     private static class AlternativeMapCodec<T> extends MapCodec<T> {
-        private final MapCodec<T> codec;
-        private final MapCodec<T> alternative;
+        final MapCodec<T> mapCodec;
+        final MapCodec<T> alternative;
 
-        private AlternativeMapCodec(MapCodec<T> codec, MapCodec<T> alternative) {
-            this.codec = codec;
+        AlternativeMapCodec(MapCodec<T> mapCodec, MapCodec<T> alternative) {
+            this.mapCodec = mapCodec;
             this.alternative = alternative;
         }
 
         @Override
         public <T1> Stream<T1> keys(DynamicOps<T1> ops) {
-            return Stream.concat(codec.keys(ops), alternative.keys(ops)).distinct();
+            return Stream.concat(mapCodec.keys(ops), alternative.keys(ops)).distinct();
         }
 
         @Override
         public <T1> DataResult<T> decode(DynamicOps<T1> ops, MapLike<T1> input) {
-            DataResult<T> result = codec.decode(ops, input);
+            DataResult<T> result = mapCodec.decode(ops, input);
             if (result.error().isEmpty()) {
                 return result;
             }
@@ -625,29 +637,29 @@ public class NeoForgeExtraCodecs {
         @Override
         public <T1> RecordBuilder<T1> encode(T input, DynamicOps<T1> ops, RecordBuilder<T1> prefix) {
             //Build it to see if there is an error
-            DataResult<T1> result = codec.encode(input, ops, prefix).build(ops.empty());
+            DataResult<T1> result = mapCodec.encode(input, ops, prefix).build(ops.empty());
             if (result.error().isEmpty()) {
                 //But then we even if there isn't we have to encode it again so that we can actually allow the building to apply
                 // as our earlier build consumes the result
-                return codec.encode(input, ops, prefix);
+                return mapCodec.encode(input, ops, prefix);
             }
             return alternative.encode(input, ops, prefix);
         }
 
         @Override
         public String toString() {
-            return "AlternativeMapCodec[" + codec + ", " + alternative + "]";
+            return "AlternativeMapCodec[" + mapCodec + ", " + alternative + "]";
         }
     }
 
     /**
-     * Map dispatch codec with an alternative.
+     * Map dispatch mapCodec with an alternative.
      *
      * <p>The alternative will only be used if there is no {@code "type"} key in the serialized object.
      *
-     * @param typeCodec     codec for the dispatch type
+     * @param typeCodec     mapCodec for the dispatch type
      * @param type          function to retrieve the dispatch type from the dispatched type
-     * @param codec         function to retrieve the dispatched type map codec from the dispatch type
+     * @param codec         function to retrieve the dispatched type map mapCodec from the dispatch type
      * @param fallbackCodec fallback to use when the deserialized object does not have a {@code "type"} key
      * @param <A>           dispatch type
      * @param <E>           dispatched type
