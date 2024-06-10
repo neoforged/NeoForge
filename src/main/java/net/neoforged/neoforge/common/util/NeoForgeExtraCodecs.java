@@ -182,50 +182,55 @@ public class NeoForgeExtraCodecs {
     }
 
     public static <T> MapCodec<Set<T>> singularOrPluralCodec(final Codec<T> codec, final String singularName) {
-        return singularOrPluralCodec(codec, singularName, setOf(codec), "%ss".formatted(singularName), ImmutableSet::of);
+        return singularOrPluralCodec(codec, singularName, setOf(codec), "%ss".formatted(singularName), ImmutableSet::of, ImmutableSet.of());
     }
 
     public static <T> MapCodec<Set<T>> singularOrPluralCodec(final Codec<T> codec, final Codec<Set<T>> setCodec, final String singularName) {
-        return singularOrPluralCodec(codec, singularName, setCodec, "%ss".formatted(singularName), ImmutableSet::of);
+        return singularOrPluralCodec(codec, singularName, setCodec, "%ss".formatted(singularName), ImmutableSet::of, ImmutableSet.of());
     }
 
     public static <T> MapCodec<Set<T>> singularOrPluralCodec(final Codec<T> codec, final String singularName, final String pluralName) {
-        return singularOrPluralCodec(codec, singularName, setOf(codec), pluralName, ImmutableSet::of);
+        return singularOrPluralCodec(codec, singularName, setOf(codec), pluralName, ImmutableSet::of, ImmutableSet.of());
     }
 
     public static <T> MapCodec<Set<T>> singularOrPluralCodec(final Codec<T> codec, final String singularName, final Codec<Set<T>> setCodec, final String pluralName) {
-        return singularOrPluralCodec(codec, singularName, setCodec, pluralName, ImmutableSet::of);
+        return singularOrPluralCodec(codec, singularName, setCodec, pluralName, ImmutableSet::of, ImmutableSet.of());
     }
 
     public static <T> MapCodec<List<T>> singularOrPluralListCodec(final Codec<T> codec, final String singularName) {
-        return singularOrPluralCodec(codec, singularName, codec.listOf(), "%ss".formatted(singularName), ImmutableList::of);
+        return singularOrPluralCodec(codec, singularName, codec.listOf(), "%ss".formatted(singularName), ImmutableList::of, ImmutableList.of());
     }
 
     public static <T> MapCodec<List<T>> singularOrPluralListCodec(final Codec<T> codec, final Codec<List<T>> listCodec, final String singularName) {
-        return singularOrPluralCodec(codec, singularName, listCodec, "%ss".formatted(singularName), ImmutableList::of);
+        return singularOrPluralCodec(codec, singularName, listCodec, "%ss".formatted(singularName), ImmutableList::of, ImmutableList.of());
     }
 
     public static <T> MapCodec<List<T>> singularOrPluralListCodec(final Codec<T> codec, final String singularName, final String pluralName) {
-        return singularOrPluralCodec(codec, singularName, codec.listOf(), pluralName, ImmutableList::of);
+        return singularOrPluralCodec(codec, singularName, codec.listOf(), pluralName, ImmutableList::of, ImmutableList.of());
     }
 
     public static <T> MapCodec<List<T>> singularOrPluralListCodec(final Codec<T> codec, final String singularName, final Codec<List<T>> listCodec, final String pluralName) {
-        return singularOrPluralCodec(codec, singularName, listCodec, pluralName, ImmutableList::of);
+        return singularOrPluralCodec(codec, singularName, listCodec, pluralName, ImmutableList::of, ImmutableList.of());
     }
 
     public static <T, C extends Collection<T>> MapCodec<C> singularOrPluralCodec(
-            final Codec<T> codec, final Codec<C> collectionCodec,
-            final String singularName, final Function<? super T, ? extends C> fromSingleton) {
-        return singularOrPluralCodec(codec, singularName, collectionCodec, "%ss".formatted(singularName), fromSingleton);
+            final Codec<T> codec, final Codec<C> collectionCodec, final String singularName,
+            final Function<? super T, ? extends C> fromSingleton,
+            final C emptyCollection) {
+        return singularOrPluralCodec(codec, singularName, collectionCodec, "%ss".formatted(singularName), fromSingleton, emptyCollection);
     }
 
     public static <T, C extends Collection<T>> MapCodec<C> singularOrPluralCodec(
             final Codec<T> codec, final String singularName,
             final Codec<C> collectionCodec, final String pluralName,
-            final Function<? super T, ? extends C> fromSingleton) {
-        return Codec.mapEither(codec.fieldOf(singularName), collectionCodec.fieldOf(pluralName)).xmap(
-                either -> either.map(fromSingleton, Function.identity()),
-                collection -> collection.size() == 1 ? Either.left(Iterables.getOnlyElement(collection)) : Either.right(collection));
+            final Function<? super T, ? extends C> fromSingleton,
+            final C emptyCollection) {
+        return mapWithAlternative(codec.fieldOf(singularName).flatXmap(
+                t -> DataResult.success(fromSingleton.apply(t)),
+                collection -> collection.size() == 1
+                        ? DataResult.success(Iterables.getOnlyElement(collection))
+                        : DataResult.error(() -> "Can not convert element from non-singleton collection: " + collection)),
+                collectionCodec.optionalFieldOf(pluralName, emptyCollection));
     }
 
     public static <T> MapCodec<Set<T>> singularOrPluralCodecNotEmpty(final Codec<T> codec, final String singularName) {
