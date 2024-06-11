@@ -61,7 +61,6 @@ import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -114,7 +113,7 @@ public class GlobalLootModifiersTest {
             return context.getLevel().getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), context.getLevel())
                     .map(smeltingRecipe -> smeltingRecipe.value().getResultItem(context.getLevel().registryAccess()))
                     .filter(itemStack -> !itemStack.isEmpty())
-                    .map(itemStack -> ItemHandlerHelper.copyStackWithSize(itemStack, stack.getCount() * itemStack.getCount()))
+                    .map(itemStack -> itemStack.copyWithCount(stack.getCount() * itemStack.getCount()))
                     .orElse(stack);
         }
 
