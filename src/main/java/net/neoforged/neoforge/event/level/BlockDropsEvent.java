@@ -117,11 +117,11 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
     /**
      * Set the amount of experience points that will be dropped by the block
      *
-     * @param experience The new amount. Must be a positive value.
+     * @param experience The new amount. Must not be negative.
      * @apiNote When cancelled, no experience is dropped, regardless of this value.
      */
     public void setDroppedExperience(int experience) {
-        Preconditions.checkArgument(experience > 0, "May not set a negative experience drop.");
+        Preconditions.checkArgument(experience >= 0, "May not set a negative experience drop.");
         this.experience = experience;
     }
 }
