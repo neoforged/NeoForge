@@ -34,12 +34,14 @@
              return getImitatedSound(list.get(p_218240_.nextInt(list.size())));
          } else {
              return SoundEvents.PARROT_AMBIENT;
-@@ -329,6 +_,8 @@
+@@ -329,7 +_,9 @@
      }
  
      private static SoundEvent getImitatedSound(EntityType<?> p_29409_) {
+-        return MOB_SOUND_MAP.getOrDefault(p_29409_, SoundEvents.PARROT_AMBIENT);
 +        var imitation = p_29409_.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS);
 +        if (imitation != null) return imitation.sound();
-         return MOB_SOUND_MAP.getOrDefault(p_29409_, SoundEvents.PARROT_AMBIENT);
++        return SoundEvents.PARROT_AMBIENT;
      }
  
+     @Override

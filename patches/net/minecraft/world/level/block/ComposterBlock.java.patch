@@ -4,7 +4,7 @@
      public static final int MIN_LEVEL = 0;
      public static final int MAX_LEVEL = 7;
      public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_COMPOSTER;
-+    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#COMPOSTABLES compostable} data map instead, as this field will be ignored starting with 1.20.5. */
++    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#COMPOSTABLES compostable} data map instead */
 +    @Deprecated
      public static final Object2FloatMap<ItemLike> COMPOSTABLES = new Object2FloatOpenHashMap<>();
      private static final int AABB_SIDE_THICKNESS = 2;
@@ -70,6 +70,6 @@
 +    public static float getValue(ItemStack item) {
 +        var value = item.getItemHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
 +        if (value != null) return value.chance();
-+        return COMPOSTABLES.getFloat(item.getItem());
++        return -1f;
      }
  }
