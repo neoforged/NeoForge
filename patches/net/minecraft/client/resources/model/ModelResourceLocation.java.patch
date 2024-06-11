@@ -1,0 +1,25 @@
+--- a/net/minecraft/client/resources/model/ModelResourceLocation.java
++++ b/net/minecraft/client/resources/model/ModelResourceLocation.java
+@@ -8,6 +_,7 @@
+ @OnlyIn(Dist.CLIENT)
+ public record ModelResourceLocation(ResourceLocation id, String variant) {
+     public static final String INVENTORY_VARIANT = "inventory";
++    public static final String STANDALONE_VARIANT = "standalone";
+ 
+     public ModelResourceLocation(ResourceLocation id, String variant) {
+         variant = lowercaseVariant(variant);
+@@ -21,6 +_,14 @@
+ 
+     public static ModelResourceLocation inventory(ResourceLocation p_352141_) {
+         return new ModelResourceLocation(p_352141_, "inventory");
++    }
++
++    /**
++     * Construct a {@code ModelResourceLocation} for use in the {@link net.neoforged.neoforge.client.event.ModelEvent.RegisterAdditional}
++     * to load a model at the given path directly instead of going through blockstates or item model auto-prefixing.
++     */
++    public static ModelResourceLocation standalone(ResourceLocation id) {
++        return new ModelResourceLocation(id, STANDALONE_VARIANT);
+     }
+ 
+     private static String lowercaseVariant(String p_248567_) {

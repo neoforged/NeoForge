@@ -129,24 +129,30 @@ public abstract class ModelEvent extends Event {
 
     /**
      * Fired when the {@link net.minecraft.client.resources.model.ModelBakery} is notified of the resource manager reloading.
-     * Allows developers to register models to be loaded, along with their dependencies.
+     * Allows developers to register models to be loaded, along with their dependencies. Models registered through this
+     * event must use the {@link ModelResourceLocation#STANDALONE_VARIANT} variant.
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterAdditional extends ModelEvent implements IModBusEvent {
-        private final Set<ResourceLocation> models;
+        private final Set<ModelResourceLocation> models;
 
         @ApiStatus.Internal
-        public RegisterAdditional(Set<ResourceLocation> models) {
+        public RegisterAdditional(Set<ModelResourceLocation> models) {
             this.models = models;
         }
 
         /**
          * Registers a model to be loaded, along with its dependencies.
+         * <p>
+         * The {@link ModelResourceLocation} passed to this method must later be used to recover the loaded model.
          */
-        public void register(ResourceLocation model) {
+        public void register(ModelResourceLocation model) {
+            Preconditions.checkArgument(
+                    model.getVariant().equals(ModelResourceLocation.STANDALONE_VARIANT),
+                    "Side-loaded models must use the '" + ModelResourceLocation.STANDALONE_VARIANT + "' variant");
             models.add(model);
         }
     }

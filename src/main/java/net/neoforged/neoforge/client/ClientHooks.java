@@ -719,7 +719,7 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterKeyMappingsEvent(options));
     }
 
-    public static void onRegisterAdditionalModels(Set<ResourceLocation> additionalModels) {
+    public static void onRegisterAdditionalModels(Set<ModelResourceLocation> additionalModels) {
         ModLoader.postEvent(new ModelEvent.RegisterAdditional(additionalModels));
     }
 
