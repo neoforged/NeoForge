@@ -9,12 +9,13 @@
      }
  
      protected static List<ItemStack> draw(ItemStack p_331565_, ItemStack p_330406_, LivingEntity p_330823_) {
-@@ -115,7 +_,7 @@
+@@ -115,7 +_,8 @@
      }
  
      protected static ItemStack useAmmo(ItemStack p_331207_, ItemStack p_331434_, LivingEntity p_330302_, boolean p_330934_) {
 -        int i = !p_330934_ && !p_330302_.hasInfiniteMaterials() && p_330302_.level() instanceof ServerLevel serverlevel
-+        int i = !p_330934_ && !(p_330302_.hasInfiniteMaterials() || (p_331434_.getItem() instanceof ArrowItem && ((ArrowItem) p_331434_.getItem()).isInfinite(p_331434_, p_331207_, p_330302_))) && p_330302_.level() instanceof ServerLevel serverlevel
++        // Neo: Adjust this check to respect ArrowItem#isInfinite, bypassing processAmmoUse if true.
++        int i = !p_330934_ && p_330302_.level() instanceof ServerLevel serverlevel && !(p_330302_.hasInfiniteMaterials() || (p_331434_.getItem() instanceof ArrowItem && ((ArrowItem) p_331434_.getItem()).isInfinite(p_331434_, p_331207_, p_330302_)))
              ? EnchantmentHelper.processAmmoUse(serverlevel, p_331207_, p_331434_, 1)
              : 0;
          if (i > p_331434_.getCount()) {

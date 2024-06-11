@@ -1,14 +1,19 @@
 --- a/net/minecraft/advancements/critereon/ItemEnchantmentsPredicate.java
 +++ b/net/minecraft/advancements/critereon/ItemEnchantmentsPredicate.java
-@@ -48,6 +_,11 @@
-             super(p_333967_);
-         }
- 
-+        @Override // Neo: use getAllEnchantments for enchantments
-+        public boolean matches(ItemStack p_333958_) {
-+            return matches(p_333958_, p_333958_.getAllEnchantments());
-+        }
-+
-         @Override
+@@ -52,6 +_,16 @@
          public DataComponentType<ItemEnchantments> componentType() {
              return DataComponents.ENCHANTMENTS;
+         }
++
++        // Neo: use IItemExtension#getAllEnchantments for enchantments when testing this predicate.
++        @Override
++        public boolean matches(ItemStack p_333958_) {
++            var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
++            if (lookup != null) {
++                matches(p_333958_, p_333958_.getAllEnchantments(lookup));
++            }
++            return super.matches(p_333958_);
++        }
+     }
+ 
+     public static class StoredEnchantments extends ItemEnchantmentsPredicate {

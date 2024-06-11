@@ -10,21 +10,27 @@
      }
  
      public static ItemEnchantments updateEnchantments(ItemStack p_331034_, Consumer<ItemEnchantments.Mutable> p_332031_) {
-@@ -120,7 +_,7 @@
-     }
- 
+@@ -122,6 +_,12 @@
      private static void runIterationOnItem(ItemStack p_345425_, EnchantmentHelper.EnchantmentVisitor p_345023_) {
--        ItemEnchantments itemenchantments = p_345425_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-+        ItemEnchantments itemenchantments = p_345425_.getAllEnchantments(); // Neo: Allow gameplay enchantments to run too.
+         ItemEnchantments itemenchantments = p_345425_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
++        // Neo: Respect gameplay-only enchantments when doing iterations
++        var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
++        if (lookup != null) {
++            itemenchantments = p_345425_.getAllEnchantments(lookup);
++        }
++
          for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
              p_345023_.accept(entry.getKey(), entry.getIntValue());
-@@ -131,7 +_,7 @@
-         ItemStack p_44852_, EquipmentSlot p_345566_, LivingEntity p_345792_, EnchantmentHelper.EnchantmentInSlotVisitor p_345683_
+         }
+@@ -132,6 +_,10 @@
      ) {
          if (!p_44852_.isEmpty()) {
--            ItemEnchantments itemenchantments = p_44852_.get(DataComponents.ENCHANTMENTS);
-+            ItemEnchantments itemenchantments = p_44852_.getAllEnchantments(); // Neo: Allow gameplay enchantments to run too.
+             ItemEnchantments itemenchantments = p_44852_.get(DataComponents.ENCHANTMENTS);
++
++            // Neo: Respect gameplay-only enchantments when doing iterations
++            itemenchantments = p_44852_.getAllEnchantments(p_345792_.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT));
++
              if (itemenchantments != null && !itemenchantments.isEmpty()) {
                  EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
  

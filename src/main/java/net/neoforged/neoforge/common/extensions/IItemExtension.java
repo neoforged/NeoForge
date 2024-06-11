@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -457,13 +458,14 @@ public interface IItemExtension {
      * Used in several places in code including armor enchantment hooks.
      * The returned value(s) must have the same level as {@link #getEnchantmentLevel(ItemStack, Enchantment)}.
      *
-     * @param stack The item stack being checked
+     * @param stack  The item stack being checked
+     * @param lookup A registry lookup, used to resolve enchantment {@link Holder}s.
      * @return Map of all enchantments on the stack, empty if no enchantments are present
      * @see #getEnchantmentLevel(ItemStack, Enchantment)
      * @apiNote Call via {@link IItemStackExtension#getAllEnchantments()}.
      */
     @ApiStatus.OverrideOnly
-    default ItemEnchantments getAllEnchantments(ItemStack stack) {
+    default ItemEnchantments getAllEnchantments(ItemStack stack, RegistryLookup<Enchantment> lookup) {
         return stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
     }
 

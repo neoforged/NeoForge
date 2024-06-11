@@ -9,10 +9,12 @@
      T value();
  
      boolean isBound();
-@@ -41,6 +_,15 @@
+@@ -41,6 +_,29 @@
          return this.unwrapKey().map(p_316542_ -> p_316542_.location().toString()).orElse("[unregistered]");
      }
  
++    // Neo Start
++    
 +    /**
 +     * {@return the holder that this holder wraps}
 +     *
@@ -21,6 +23,18 @@
 +    default Holder<T> getDelegate() {
 +        return this;
 +    }
++
++    /**
++     * Attempts to resolve the underlying {@link HolderLookup.RegistryLookup} from a {@link Holder}.
++     * <p>
++     * This will only succeed if the underlying holder is a {@link Holder.Reference}.
++     */
++    @org.jetbrains.annotations.Nullable
++    default HolderLookup.RegistryLookup<T> unwrapLookup() {
++        return null;
++    }
++
++    // Neo End
 +
      static <T> Holder<T> direct(T p_205710_) {
          return new Holder.Direct<>(p_205710_);
@@ -40,11 +54,12 @@
          public void bindTags(Collection<TagKey<T>> p_205770_) {
              this.tags = Set.copyOf(p_205770_);
          }
-@@ -232,6 +_,18 @@
-         @Override
+@@ -233,6 +_,28 @@
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";
-+        }
+         }
++
++        // Neo Start
 +
 +        // Neo: Add DeferredHolder-compatible hashCode() and equals() overrides
 +        @Override
@@ -56,6 +71,15 @@
 +        public boolean equals(Object obj) {
 +            if (this == obj) return true;
 +            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key();
-         }
++        }
++
++        @Override
++        @org.jetbrains.annotations.Nullable
++        public HolderLookup.RegistryLookup<T> unwrapLookup() {
++            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
++        }
++
++        // Neo End
  
          public static enum Type {
+             STAND_ALONE,

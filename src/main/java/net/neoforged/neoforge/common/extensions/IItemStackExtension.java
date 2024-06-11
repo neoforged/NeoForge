@@ -9,6 +9,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -182,9 +183,9 @@ public interface IItemStackExtension {
      * @see #getEnchantmentLevel(Enchantment)
      * @see DataComponents#ENCHANTMENTS
      */
-    default ItemEnchantments getAllEnchantments() {
-        var enchantments = self().getItem().getAllEnchantments(self());
-        return EventHooks.getEnchantmentLevel(enchantments, self());
+    default ItemEnchantments getAllEnchantments(RegistryLookup<Enchantment> lookup) {
+        var enchantments = self().getItem().getAllEnchantments(self(), lookup);
+        return EventHooks.getAllEnchantmentLevels(enchantments, self(), lookup);
     }
 
     /**

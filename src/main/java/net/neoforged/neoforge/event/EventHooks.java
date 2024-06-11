@@ -25,6 +25,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -1038,8 +1039,11 @@ public class EventHooks {
     public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Holder<Enchantment> ench) {
         var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         enchantments.set(ench, level);
-        var event = new GetEnchantmentLevelEvent(stack, enchantments, ench);
-        NeoForge.EVENT_BUS.post(event);
+        RegistryLookup<Enchantment> lookup = ench.unwrapLookup();
+        if (lookup != null) { // Pretty sure this is never null, but I can't *prove* that it isn't.
+            var event = new GetEnchantmentLevelEvent(stack, enchantments, ench, ench.unwrapLookup());
+            NeoForge.EVENT_BUS.post(event);
+        }
         return enchantments.getLevel(ench);
     }
 
@@ -1050,9 +1054,9 @@ public class EventHooks {
      * @param stack        The stack being queried against.
      * @return The new enchantment map.
      */
-    public static ItemEnchantments getEnchantmentLevel(ItemEnchantments enchantments, ItemStack stack) {
+    public static ItemEnchantments getAllEnchantmentLevels(ItemEnchantments enchantments, ItemStack stack, RegistryLookup<Enchantment> lookup) {
         var mutableEnchantments = new ItemEnchantments.Mutable(enchantments);
-        var event = new GetEnchantmentLevelEvent(stack, mutableEnchantments, null);
+        var event = new GetEnchantmentLevelEvent(stack, mutableEnchantments, null, lookup);
         NeoForge.EVENT_BUS.post(event);
         return mutableEnchantments.toImmutable();
     }
