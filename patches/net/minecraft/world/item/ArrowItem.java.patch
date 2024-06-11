@@ -9,7 +9,7 @@
 +     * Called to determine if this arrow will be infinite when fired. If an arrow is infinite, then the arrow will never be consumed (regardless of enchantments).
 +     * <p>
 +     * Only called on the logical server.
-+     * 
++     *
 +     * @param ammo The ammo stack (containing this item)
 +     * @param bow  The bow stack
 +     * @param livingEntity The entity who is firing the bow
