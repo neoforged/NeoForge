@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,6 +117,13 @@ public final class BlockCapability<T, C> extends BaseCapability<T, C> {
      */
     public static <T> BlockCapability<T, @Nullable Direction> createSided(ResourceLocation name, Class<T> typeClass) {
         return create(name, typeClass, Direction.class);
+    }
+
+    /**
+     * Creates a new block capability with a {@code BlockHitResult} context, or gets it if it already exists.
+     */
+    public static <T> BlockCapability<T, BlockHitResult> createHitResult(ResourceLocation name, Class<T> typeClass) {
+        return create(name, typeClass, BlockHitResult.class);
     }
 
     /**

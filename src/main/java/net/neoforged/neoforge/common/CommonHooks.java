@@ -66,6 +66,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -1385,22 +1387,28 @@ public class CommonHooks {
     }
 
     /**
-     * Dye is being used on a living entity (ie Sheep).
-     * @param target
-     * @param dyeColor
+     * Dye is being used on a living entity (ie Sheep). This is only for a DyeItem patch - modded implementations
+     * should not use this, and favor handling the result of the colorable capability.
+     *
+     * @param player   The player using the dye on the entity.
+     * @param target   The entity being dyed.
+     * @param dyeColor The dye color being used.
      * @return DEFAULT = vanilla logic, TRUE = InteractionResult.SUCCESS, FALSE = InteractionResult.PASS
      */
-    public static TriState useDyeOnEntity(LivingEntity target, DyeColor dyeColor) {
+    public static TriState vanillaUseDyeOnEntity(Player player, LivingEntity target, DyeColor dyeColor) {
         final var colorable = target.getCapability(Capabilities.Colorable.ENTITY);
-        if(colorable == null) {
+        if (colorable == null) {
             return TriState.DEFAULT;
         }
 
         final var result = colorable.apply(dyeColor);
         return switch (result) {
             case ALREADY_APPLIED -> TriState.TRUE;
-		    case APPLIED -> TriState.TRUE;
-		    case CANNOT_APPLY -> TriState.FALSE;
-		};
+            case APPLIED -> {
+                target.level().playSound(player, target, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                yield TriState.TRUE;
+            }
+            case CANNOT_APPLY -> TriState.FALSE;
+        };
     }
 }
