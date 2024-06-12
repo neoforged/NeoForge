@@ -27,14 +27,14 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class BlockEntityTypeValidBlocksEventTests {
     private static final String MOD_ID = "block_entity_type_valid_blocks_event_test";
-    private static boolean WasArgumentExceptionThrownForInvalidBlockClass = false;
+    private static boolean wasArgumentExceptionThrownForInvalidBlockClass = false;
 
     @Test
     void testStartupConfigs() {
-        Assertions.assertTrue(BlockEntityType.SIGN.isValid(BuiltInRegistries.BLOCK.get(new ResourceLocation(MOD_ID, "test_sign_block")).defaultBlockState()),
+        Assertions.assertTrue(BlockEntityType.SIGN.isValid(BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(MOD_ID, "test_sign_block")).defaultBlockState()),
                 "Adding modded Sign to Signs Block Entity Type's valid blocks should had succeeded.");
 
-        Assertions.assertTrue(WasArgumentExceptionThrownForInvalidBlockClass,
+        Assertions.assertTrue(wasArgumentExceptionThrownForInvalidBlockClass,
                 "Exception should have been thrown for attempting to add Bed Block to Signs Block Entity Type's valid blocks.");
     }
 
@@ -56,7 +56,7 @@ public class BlockEntityTypeValidBlocksEventTests {
                 try {
                     event.addValidBlock(TEST_BED_BLOCK.get());
                 } catch (IllegalArgumentException illegalArgumentException) {
-                    WasArgumentExceptionThrownForInvalidBlockClass = true;
+                    wasArgumentExceptionThrownForInvalidBlockClass = true;
                 }
             }
         }

@@ -40,7 +40,7 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
     private final Set<Block> currentValidBlocks;
     private final Supplier<? extends @Nullable Class<?>> baseClass = Suppliers.memoize(this::getCommonSuperClassForExistingValidBlocks);
 
-    protected BlockEntityTypeAddBlocksEvent(ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey, BlockEntityType<?> blockEntityType) {
+    private BlockEntityTypeAddBlocksEvent(ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey, BlockEntityType<?> blockEntityType) {
         this.blockEntityTypeResourceKey = blockEntityTypeResourceKey;
         this.blockEntityType = blockEntityType;
         this.currentValidBlocks = new HashSet<>(blockEntityType.getValidBlocks());
@@ -108,10 +108,10 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
 
     public static void fireBlockEntityTypeValidAdditions() {
         for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
-            BlockEntityTypeAddBlocksEvent blockEntityTypeAddBlocksEvent = new BlockEntityTypeAddBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
-            ModLoader.postEvent(blockEntityTypeAddBlocksEvent); // Allow modders to add to the list in the events.
+            BlockEntityTypeAddBlocksEvent event = new BlockEntityTypeAddBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
+            ModLoader.postEvent(event); // Allow modders to add to the list in the events.
             try {
-                VALID_BLOCKS_SETTER_METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), blockEntityTypeAddBlocksEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
+                VALID_BLOCKS_SETTER_METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), event.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
             } catch (Throwable e) {
                 // Required catch so our unhandled exception does not need to be marked on many methods.
                 throw new RuntimeException(e);
