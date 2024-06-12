@@ -65,7 +65,7 @@ public class Tags {
         public static final TagKey<Block> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Block> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
         public static final TagKey<Block> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
-        public static final TagKey<Block> CONCRETE = tag("concrete");
+        public static final TagKey<Block> CONCRETES = tag("concretes");
 
         /**
          * Tag that holds all blocks that can be dyed a specific color.
@@ -105,7 +105,7 @@ public class Tags {
 
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
-        public static final TagKey<Block> GLAZED_TERRACOTTA = tag("glazed_terracotta");
+        public static final TagKey<Block> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
         public static final TagKey<Block> GRAVELS = tag("gravels");
         /**
@@ -301,11 +301,11 @@ public class Tags {
         public static final TagKey<Item> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Item> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
         public static final TagKey<Item> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
-        public static final TagKey<Item> CONCRETE = tag("concrete");
+        public static final TagKey<Item> CONCRETES = tag("concretes");
         /**
          * Block tag equivalent is {@link BlockTags#CONCRETE_POWDER}
          */
-        public static final TagKey<Item> CONCRETE_POWDER = tag("concrete_powder");
+        public static final TagKey<Item> CONCRETE_POWDERS = tag("concrete_powders");
         /**
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
@@ -431,7 +431,7 @@ public class Tags {
 
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
-        public static final TagKey<Item> GLAZED_TERRACOTTA = tag("glazed_terracotta");
+        public static final TagKey<Item> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
         public static final TagKey<Item> GRAVELS = tag("gravels");
         public static final TagKey<Item> GUNPOWDERS = tag("gunpowders");
