@@ -13,7 +13,7 @@
  
      @Override
      public InteractionResult interactLivingEntity(ItemStack p_41085_, Player p_41086_, LivingEntity p_41087_, InteractionHand p_41088_) {
-+        var capResult = vanillaUseDyeOnEntity(p_41086_, p_41087_, this.dyeColor);
++        var capResult = vanillaUseDyeOnEntity(p_41086_, p_41087_, p_41085_, this.dyeColor);
 +        if(capResult.isDefault()) {
          if (p_41087_ instanceof Sheep sheep && sheep.isAlive() && !sheep.isSheared() && sheep.getColor() != this.dyeColor) {
              sheep.level().playSound(p_41086_, sheep, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
