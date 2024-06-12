@@ -1,20 +1,32 @@
 --- a/net/minecraft/world/item/DyeItem.java
 +++ b/net/minecraft/world/item/DyeItem.java
+@@ -13,7 +_,7 @@
+ import net.minecraft.world.level.block.entity.SignBlockEntity;
+ import net.minecraft.world.level.block.entity.SignText;
+ 
+-public class DyeItem extends Item implements SignApplicator {
++public class DyeItem extends Item implements SignApplicator, net.neoforged.neoforge.common.extensions.IDyeItemExtension {
+     private static final Map<DyeColor, DyeItem> ITEM_BY_COLOR = Maps.newEnumMap(DyeColor.class);
+     private final DyeColor dyeColor;
+ 
 @@ -25,6 +_,8 @@
  
      @Override
      public InteractionResult interactLivingEntity(ItemStack p_41085_, Player p_41086_, LivingEntity p_41087_, InteractionHand p_41088_) {
-+        var capResult = net.neoforged.neoforge.common.CommonHooks.useDyeOnEntity(p_41087_, this.dyeColor);
++        var capResult = vanillaUseDyeOnEntity(p_41086_, p_41087_, this.dyeColor);
 +        if(capResult.isDefault()) {
          if (p_41087_ instanceof Sheep sheep && sheep.isAlive() && !sheep.isSheared() && sheep.getColor() != this.dyeColor) {
              sheep.level().playSound(p_41086_, sheep, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
              if (!p_41086_.level().isClientSide) {
-@@ -36,6 +_,8 @@
+@@ -36,7 +_,11 @@
          }
  
          return InteractionResult.PASS;
 +        }
 +        return capResult.isTrue() ? InteractionResult.sidedSuccess(p_41086_.level().isClientSide) : InteractionResult.PASS;
      }
++
++    @Override public InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) { return vanillaUseOn(context); }
  
      public DyeColor getDyeColor() {
+         return this.dyeColor;

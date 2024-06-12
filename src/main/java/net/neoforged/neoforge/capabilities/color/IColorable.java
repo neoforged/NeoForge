@@ -5,12 +5,26 @@
 
 package net.neoforged.neoforge.capabilities.color;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.Tags;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a colorable object in-game.
  */
 public interface IColorable {
+    /**
+     * Suggests to an applicator whether applying color to the target should consume some quantity
+     * of dye/ink/etc. Implementation of consumption is left as an exercise to the applicator.
+     *
+     * @return True if dye should be considered consumed on success; false otherwise.
+     */
+    default boolean consumesDye(@Nullable LivingEntity entity, ItemStack source) {
+        return source.is(Tags.Items.DYES);
+    }
+
     /**
      * Apply a packed RGB value to the object.
      * For implementations that support alpha values, see {@link #apply(int, int)}.

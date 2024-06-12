@@ -66,8 +66,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -103,7 +101,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -145,7 +142,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -153,7 +149,6 @@ import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.DifficultyChangeEvent;
 import net.neoforged.neoforge.event.EventHooks;
@@ -1384,31 +1379,5 @@ public class CommonHooks {
     public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
         var event = new MobEffectEvent.Applicable(entity, effect);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
-    }
-
-    /**
-     * Dye is being used on a living entity (ie Sheep). This is only for a DyeItem patch - modded implementations
-     * should not use this, and favor handling the result of the colorable capability.
-     *
-     * @param player   The player using the dye on the entity.
-     * @param target   The entity being dyed.
-     * @param dyeColor The dye color being used.
-     * @return DEFAULT = vanilla logic, TRUE = InteractionResult.SUCCESS, FALSE = InteractionResult.PASS
-     */
-    public static TriState vanillaUseDyeOnEntity(Player player, LivingEntity target, DyeColor dyeColor) {
-        final var colorable = target.getCapability(Capabilities.Colorable.ENTITY);
-        if (colorable == null) {
-            return TriState.DEFAULT;
-        }
-
-        final var result = colorable.apply(dyeColor);
-        return switch (result) {
-            case ALREADY_APPLIED -> TriState.TRUE;
-            case APPLIED -> {
-                target.level().playSound(player, target, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
-                yield TriState.TRUE;
-            }
-            case CANNOT_APPLY -> TriState.FALSE;
-        };
     }
 }
