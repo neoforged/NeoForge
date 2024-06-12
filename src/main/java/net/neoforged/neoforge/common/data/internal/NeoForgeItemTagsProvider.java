@@ -349,21 +349,24 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tagWithOptionalLegacy(Tags.Items.SEEDS_WHEAT);
         tagWithOptionalLegacy(Tags.Items.SLIMEBALLS);
         tagWithOptionalLegacy(Tags.Items.STRINGS);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_SHIELD);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_BOW);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_CROSSBOW);
-        tagWithOptionalLegacy(Tags.Items.TOOLS_FISHING_ROD);
-        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(new ResourceLocation("forge", "shears"));
-        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(new ResourceLocation("forge", "tools/tridents"));
+        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "shears"));
+        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/tridents"));
         tagWithOptionalLegacy(Tags.Items.TOOLS);
         tagWithOptionalLegacy(Tags.Items.ARMORS);
-        tag(Tags.Items.TOOLS_SHIELD).addOptionalTag(new ResourceLocation("c", "tools/shields"));
-        tag(Tags.Items.TOOLS_BOW).addOptionalTag(new ResourceLocation("c", "tools/bows"));
-        tag(Tags.Items.TOOLS_BRUSH).addOptionalTag(new ResourceLocation("c", "tools/brushes"));
-        tag(Tags.Items.TOOLS_CROSSBOW).addOptionalTag(new ResourceLocation("c", "tools/crossbows"));
-        tag(Tags.Items.TOOLS_FISHING_ROD).addOptionalTag(new ResourceLocation("c", "tools/fishing_rods"));
-        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(new ResourceLocation("c", "tools/shears"));
-        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(new ResourceLocation("c", "tools/tridents"));
+        tag(Tags.Items.TOOLS_SHIELD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/shields"));
+        tag(Tags.Items.TOOLS_BOW).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/bows"));
+        tag(Tags.Items.TOOLS_BRUSH).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/brushes"));
+        tag(Tags.Items.TOOLS_CROSSBOW).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/crossbows"));
+        tag(Tags.Items.TOOLS_FISHING_ROD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/fishing_rods"));
+        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/shears"));
+        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "tools/tridents"));
+        tag(Tags.Items.TOOLS_SHIELD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "tools/shields"));
+        tag(Tags.Items.TOOLS_BOW).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "tools/bows"));
+        tag(Tags.Items.TOOLS_BRUSH).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "tools/brushes"));
+        tag(Tags.Items.TOOLS_CROSSBOW).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "tools/crossbows"));
+        tag(Tags.Items.TOOLS_FISHING_ROD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "tools/fishing_rods"));
+        tag(Tags.Items.TOOLS_SHEAR).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "tools/shears"));
+        tag(Tags.Items.TOOLS_SPEAR).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "tools/tridents"));
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Item> tagWithOptionalLegacy(TagKey<Item> tag) {

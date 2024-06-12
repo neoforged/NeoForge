@@ -2,7 +2,7 @@
   "values": [
     "minecraft:shield",
     {
-      "id": "#forge:tools/shield",
+      "id": "#forge:tools/shields",
       "required": false
     },
     {

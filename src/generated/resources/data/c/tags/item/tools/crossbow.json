@@ -2,7 +2,7 @@
   "values": [
     "minecraft:crossbow",
     {
-      "id": "#forge:tools/crossbow",
+      "id": "#forge:tools/crossbows",
       "required": false
     },
     {
