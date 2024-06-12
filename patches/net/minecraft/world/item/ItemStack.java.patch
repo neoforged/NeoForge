@@ -140,6 +140,28 @@
              return list;
          }
      }
+@@ -897,10 +_,21 @@
+         return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
+     }
+ 
++    /**
++     * @deprecated Neo: Use {@link #getTagEnchantments()} for NBT enchantments, or {@link #getAllEnchantments} for gameplay.
++     */
++    @Deprecated
+     public ItemEnchantments getEnchantments() {
+         return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+     }
+ 
++    /**
++     * Gets all enchantments from NBT. Use {@link ItemStack#getAllEnchantments} for gameplay logic.
++     */
++    public ItemEnchantments getTagEnchantments() {
++        return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
++    }
++
+     public boolean isFramed() {
+         return this.entityRepresentation instanceof ItemFrame;
+     }
 @@ -933,6 +_,8 @@
      }
  
