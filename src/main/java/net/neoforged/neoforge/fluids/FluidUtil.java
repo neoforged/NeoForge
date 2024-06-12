@@ -110,7 +110,7 @@ public class FluidUtil {
      * @return a {@link FluidActionResult} holding the filled container if successful.
      */
     public static FluidActionResult tryFillContainer(ItemStack container, IFluidHandler fluidSource, int maxAmount, @Nullable Player player, boolean doFill) {
-        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
                 .map(containerFluidHandler -> {
                     FluidStack simulatedTransfer = tryFluidTransfer(containerFluidHandler, fluidSource, maxAmount, false);
@@ -152,7 +152,7 @@ public class FluidUtil {
      *         NOTE If the container is consumable, the empty container will be null on success.
      */
     public static FluidActionResult tryEmptyContainer(ItemStack container, IFluidHandler fluidDestination, int maxAmount, @Nullable Player player, boolean doDrain) {
-        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
                 .map(containerFluidHandler -> {
                     FluidStack transfer = tryFluidTransfer(fluidDestination, containerFluidHandler, maxAmount, doDrain);
@@ -374,7 +374,7 @@ public class FluidUtil {
      */
     public static Optional<FluidStack> getFluidContained(ItemStack container) {
         if (!container.isEmpty()) {
-            container = ItemHandlerHelper.copyStackWithSize(container, 1);
+            container = container.copyWithCount(1);
             Optional<FluidStack> fluidContained = getFluidHandler(container)
                     .map(handler -> handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
             if (fluidContained.isPresent() && !fluidContained.get().isEmpty()) {
@@ -435,7 +435,7 @@ public class FluidUtil {
      * @return the container's ItemStack with the remaining amount of fluid if the placement was successful, null otherwise
      */
     public static FluidActionResult tryPlaceFluid(@Nullable Player player, Level level, InteractionHand hand, BlockPos pos, ItemStack container, FluidStack resource) {
-        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
                 .filter(handler -> tryPlaceFluid(player, level, hand, pos, handler, resource))
                 .map(IFluidHandlerItem::getContainer)

@@ -274,16 +274,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
-     * 
-     * @deprecated Use {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} by checking that the slot argument is an armor slot. Armor slots are 36, 37, 38 and 39.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.4")
-    default void onArmorTick(Level level, Player player) {
-        self().getItem().onArmorTick(self(), level, player);
-    }
-
-    /**
      * Called every tick when this item is equipped {@linkplain Mob#isBodyArmorItem(ItemStack) as an armor item} by a horse {@linkplain Mob#canWearBodyArmor()} that can wear armor}.
      * <p>
      * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
