@@ -15,13 +15,14 @@ import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -30,7 +31,91 @@ import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = { BlockTests.GROUP + ".event", "event" })
 public class BlockEventTests {
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the BlockDropsEvent prevents dropping items and experience when cancelled.")
+    public static void blockDropsEventCancel(final DynamicTest test) {
+        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
+            // Make Nether Quartz drop nothing when broken with an Iron Pickaxe.
+            if (event.getState().getBlock() == Blocks.NETHER_QUARTZ_ORE) {
+                // Set the xp drop to a nonzero value to test the positive case
+                event.setDroppedExperience(10);
+
+                if (event.getTool().is(Items.IRON_PICKAXE)) {
+                    event.setCanceled(true);
+                }
+            }
+            test.pass();
+        }));
+
+        BlockPos pos = new BlockPos(1, 1, 1);
+
+        test.onGameTest(helper -> helper
+                .startSequence() // Test cancellation with an iron pickaxe. No drops should spawn.
+                .thenExecute(() -> helper.setBlock(pos, Blocks.NETHER_QUARTZ_ORE))
+                .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.IRON_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.NETHER_QUARTZ_ORE, pos))
+                .thenExecute(() -> helper.assertItemEntityNotPresent(Items.QUARTZ))
+                .thenExecute(() -> helper.assertEntityNotPresent(EntityType.EXPERIENCE_ORB))
+                .thenIdle(5) // Test that breaking the block normally functions as expected.
+                .thenExecute(() -> helper.setBlock(pos, Blocks.NETHER_QUARTZ_ORE))
+                .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.DIAMOND_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.NETHER_QUARTZ_ORE, pos))
+                .thenExecute(() -> helper.assertItemEntityPresent(Items.QUARTZ))
+                .thenExecute(() -> helper.assertEntityPresent(EntityType.EXPERIENCE_ORB))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the BlockDropsEvent can modify dropped experience.")
+    public static void blockDropsEventExperience(final DynamicTest test) {
+        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
+            if (event.getState().getBlock() == Blocks.EMERALD_BLOCK) {
+                // Make emerald blocks drop experience, which doesn't normally occur.
+                event.setDroppedExperience(150);
+            }
+            test.pass();
+        }));
+
+        BlockPos pos = new BlockPos(1, 1, 1);
+
+        test.onGameTest(helper -> helper
+                .startSequence() // Check that experience orbs show up when breaking an emerald block.
+                .thenExecute(() -> helper.setBlock(pos, Blocks.EMERALD_BLOCK))
+                .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.DIAMOND_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.EMERALD_BLOCK, pos))
+                .thenExecute(() -> helper.assertItemEntityPresent(Items.EMERALD_BLOCK))
+                .thenExecute(() -> helper.assertEntityPresent(EntityType.EXPERIENCE_ORB))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the BlockDropsEvent can move dropped items.")
+    public static void blockDropsEventMovement(final DynamicTest test) {
+        test.whenEnabled(listeners -> listeners.forge().addListener((final BlockDropsEvent event) -> {
+            if (event.getState().getBlock() == Blocks.IRON_BLOCK) {
+                // Move the item entity by (-2, -2), which should shift it from relative (2, 1, 2) to (0, 1, 0).
+                event.getDrops().forEach(i -> i.setPos(i.position().subtract(2, 0, 2)));
+            }
+            test.pass();
+        }));
+
+        BlockPos pos = new BlockPos(2, 1, 2);
+        BlockPos newPos = new BlockPos(0, 1, 0);
+
+        test.onGameTest(helper -> helper
+                .startSequence() // Check that experience orbs show up when breaking an emerald block.
+                .thenExecute(() -> helper.setBlock(pos, Blocks.IRON_BLOCK))
+                .thenExecute(() -> helper.breakBlock(pos, new ItemStack(Items.DIAMOND_PICKAXE), helper.makeMockPlayer(GameType.SURVIVAL)))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.IRON_BLOCK, pos))
+                .thenExecute(() -> helper.assertTrue(helper.getEntities(EntityType.ITEM, newPos, 0).size() == 1, "Failed to detect moved iron block"))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the entity place event is fired")
     public static void entityPlacedEvent(final DynamicTest test) {
         test.whenEnabled(listeners -> listeners.forge()
@@ -60,7 +145,8 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the block modification event is fired")
     public static void blockModificationEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final BlockEvent.BlockToolModificationEvent event) -> {
