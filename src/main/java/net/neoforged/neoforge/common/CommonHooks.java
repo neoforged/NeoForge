@@ -101,6 +101,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -142,6 +143,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -149,6 +151,7 @@ import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.DifficultyChangeEvent;
 import net.neoforged.neoforge.event.EventHooks;
@@ -1379,5 +1382,25 @@ public class CommonHooks {
     public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
         var event = new MobEffectEvent.Applicable(entity, effect);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
+    }
+
+    /**
+     * Dye is being used on a living entity (ie Sheep).
+     * @param target
+     * @param dyeColor
+     * @return DEFAULT = vanilla logic, TRUE = InteractionResult.SUCCESS, FALSE = InteractionResult.PASS
+     */
+    public static TriState useDyeOnEntity(LivingEntity target, DyeColor dyeColor) {
+        final var colorable = target.getCapability(Capabilities.Colorable.ENTITY);
+        if(colorable == null) {
+            return TriState.DEFAULT;
+        }
+
+        final var result = colorable.apply(dyeColor);
+        return switch (result) {
+            case ALREADY_APPLIED -> TriState.TRUE;
+		    case APPLIED -> TriState.TRUE;
+		    case CANNOT_APPLY -> TriState.FALSE;
+		};
     }
 }

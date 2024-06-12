@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/item/DyeItem.java
++++ b/net/minecraft/world/item/DyeItem.java
+@@ -25,6 +_,8 @@
+ 
+     @Override
+     public InteractionResult interactLivingEntity(ItemStack p_41085_, Player p_41086_, LivingEntity p_41087_, InteractionHand p_41088_) {
++        var capResult = net.neoforged.neoforge.common.CommonHooks.useDyeOnEntity(p_41087_, this.dyeColor);
++        if(capResult.isDefault()) {
+         if (p_41087_ instanceof Sheep sheep && sheep.isAlive() && !sheep.isSheared() && sheep.getColor() != this.dyeColor) {
+             sheep.level().playSound(p_41086_, sheep, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+             if (!p_41086_.level().isClientSide) {
+@@ -36,6 +_,8 @@
+         }
+ 
+         return InteractionResult.PASS;
++        }
++        return capResult.isTrue() ? InteractionResult.sidedSuccess(p_41086_.level().isClientSide) : InteractionResult.PASS;
+     }
+ 
+     public DyeColor getDyeColor() {

@@ -7,6 +7,7 @@ package net.neoforged.neoforge.capabilities;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.color.IColorable;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -48,6 +49,10 @@ public final class Capabilities {
         public static final ItemCapability<IItemHandler, Void> ITEM = ItemCapability.createVoid(create("item_handler"), IItemHandler.class);
 
         private ItemHandler() {}
+    }
+
+    public static final class Colorable {
+        public static final EntityCapability<IColorable, Void> ENTITY = EntityCapability.createVoid(create("colorable"), IColorable.class);
     }
 
     private static ResourceLocation create(String path) {
