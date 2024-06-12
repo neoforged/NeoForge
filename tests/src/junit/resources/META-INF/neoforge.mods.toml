@@ -3,8 +3,8 @@ loaderVersion="[1,)"
 license="LGPL v2.1"
 
 [[mods]]
-modId="startup_config_test"
+modId="block_entity_type_valid_blocks_event_test"
 [[mods]]
 modId="creative_tab_order_test"
 [[mods]]
-modId="block_entity_type_valid_blocks_event_test"
+modId="startup_config_test"

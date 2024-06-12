@@ -25,7 +25,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.Nullable;
 
-public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEvent {
+public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent {
     private static final MethodHandle VALID_BLOCKS_SETTER_METHOD_HANDLE;
     static {
         try {
@@ -38,9 +38,9 @@ public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEven
     private final ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey;
     private final BlockEntityType<?> blockEntityType;
     private final Set<Block> currentValidBlocks;
-    private final Supplier<? extends Class<?>> baseClass = Suppliers.memoize(this::setCommonSuperClassForExistingValidBlocks);
+    private final Supplier<? extends @Nullable Class<?>> baseClass = Suppliers.memoize(this::getCommonSuperClassForExistingValidBlocks);
 
-    protected AddBlockToBlockEntityTypeEvent(ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey, BlockEntityType<?> blockEntityType) {
+    protected BlockEntityTypeAddBlocksEvent(ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey, BlockEntityType<?> blockEntityType) {
         this.blockEntityTypeResourceKey = blockEntityTypeResourceKey;
         this.blockEntityType = blockEntityType;
         this.currentValidBlocks = new HashSet<>(blockEntityType.getValidBlocks());
@@ -70,7 +70,7 @@ public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEven
     /**
      * Will add the given block to the list of valid blocks we will assign to the current {@link BlockEntityType}.
      * Make sure the given block is the same or derived from the highest common class of all the entries in valid blocks.
-     * <p></p>
+     * <br/><br/>
      * Example: If the valid blocks list has {@link StandingSignBlock} entry and {@link WallSignBlock} entry, the common class is SignBlock
      * and the given block must be a {@link SignBlock} or has {@link SignBlock} as a child class in its hierarchy.
      * 
@@ -85,7 +85,7 @@ public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEven
     }
 
     @Nullable
-    private Class<?> setCommonSuperClassForExistingValidBlocks() {
+    private Class<?> getCommonSuperClassForExistingValidBlocks() {
         Class<?> calculatedBaseClass = null;
 
         for (Block existingBlock : this.currentValidBlocks) {
@@ -99,19 +99,19 @@ public class AddBlockToBlockEntityTypeEvent extends Event implements IModBusEven
         return calculatedBaseClass;
     }
 
-    private static Class<?> findClosestCommonSuper(Class<?> a, Class<?> b) {
-        while (!a.isAssignableFrom(b)) {
-            a = a.getSuperclass();
+    private static Class<?> findClosestCommonSuper(Class<?> superClass, Class<?> childClass) {
+        while (!superClass.isAssignableFrom(childClass)) {
+            superClass = superClass.getSuperclass();
         }
-        return a;
+        return superClass;
     }
 
     public static void fireBlockEntityTypeValidAdditions() {
         for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
-            AddBlockToBlockEntityTypeEvent addBlockToBlockEntityTypeEvent = new AddBlockToBlockEntityTypeEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
-            ModLoader.postEventWrapContainerInModOrder(addBlockToBlockEntityTypeEvent); // Allow modders to add to the list in the events.
+            BlockEntityTypeAddBlocksEvent blockEntityTypeAddBlocksEvent = new BlockEntityTypeAddBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
+            ModLoader.postEvent(blockEntityTypeAddBlocksEvent); // Allow modders to add to the list in the events.
             try {
-                VALID_BLOCKS_SETTER_METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), addBlockToBlockEntityTypeEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
+                VALID_BLOCKS_SETTER_METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), blockEntityTypeAddBlocksEvent.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
             } catch (Throwable e) {
                 // Required catch so our unhandled exception does not need to be marked on many methods.
                 throw new RuntimeException(e);
