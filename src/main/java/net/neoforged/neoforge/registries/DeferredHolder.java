@@ -303,19 +303,4 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, RegistryObject
         bind(false);
         return this.holder != null ? this.holder.getDelegate() : this;
     }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @deprecated There is no need to call this method if you already have a {@link DeferredHolder}, just use it directly.
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public <Z> Holder<Z> asHolder(ResourceKey<? extends Registry<Z>> registryKey) {
-        if (!isFor(registryKey)) {
-            throw new UnsupportedOperationException("The holder " + this.key + " is not a member of the registry " + registryKey);
-        }
-        return (Holder<Z>) this.holder;
-    }
 }

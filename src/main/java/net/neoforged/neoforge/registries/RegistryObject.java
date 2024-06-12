@@ -72,17 +72,4 @@ public interface RegistryObject<T> extends Supplier<T> {
     default <R> boolean isFor(ResourceKey<? extends Registry<R>> registryKey) {
         return this.getKey().isFor(registryKey);
     }
-
-    /**
-     * Retrieves a {@link Holder} for the target item if it is a member of the given registry.
-     * 
-     * @param <R>         The registry type
-     * @param registryKey The registry key
-     * @return A Holder of the correct registry type
-     * 
-     * @throws UnsupportedOperationException if the type is not a member of the given registry.
-     * 
-     * @apiNote If you need frequent access to the underlying holder, use {@link DeferredHolder} instead of {@link RegistryObject}.
-     */
-    <R> Holder<R> asHolder(ResourceKey<? extends Registry<R>> registryKey);
 }
