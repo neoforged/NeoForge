@@ -9,6 +9,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -137,34 +138,22 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Checks whether an item can be enchanted with a certain enchantment. This
-     * applies specifically to enchanting an item in the enchanting table and is
-     * called when retrieving the list of possible enchantments for an item.
-     * Enchantments may additionally (or exclusively) be doing their own checks in
-     * {@link Enchantment#canApplyAtEnchantingTable(ItemStack)};
-     * check the individual implementation for reference. By default this will check
-     * if the enchantment type is valid for this item type.
-     *
-     * @param enchantment the enchantment to be applied
-     * @return true if the enchantment can be applied to this item
+     * @see {@link IItemExtension#isPrimaryItemFor(ItemStack, Holder)}
      */
-    default boolean canApplyAtEnchantingTable(Enchantment enchantment) {
-        return self().getItem().canApplyAtEnchantingTable(self(), enchantment);
+    default boolean isPrimaryItemFor(Holder<Enchantment> enchantment) {
+        return self().getItem().isPrimaryItemFor(self(), enchantment);
     }
 
     /**
      * Gets the gameplay level of the target enchantment on this stack.
      * <p>
-     * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}.
+     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel} for gameplay logic.
      * <p>
-     * Use in place of {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
-     * <p>
-     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
+     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
      *
      * @param enchantment The enchantment being checked for.
      * @return The level of the enchantment, or 0 if not present.
-     * @see #getAllEnchantments()
-     * @see DataComponents#ENCHANTMENTS
+     * @see {@link #getAllEnchantments} to get all gameplay enchantments
      */
     default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
         int level = self().getItem().getEnchantmentLevel(self(), enchantment);
@@ -174,17 +163,16 @@ public interface IItemStackExtension {
     /**
      * Gets the gameplay level of all enchantments on this stack.
      * <p>
-     * Use in place of {@link DataComponents#ENCHANTMENTS} for gameplay logic.
+     * Use in place of {@link ItemStack#getTagEnchantments()} for gameplay logic.
      * <p>
-     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
+     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
      *
      * @return Map of all enchantments on the stack, or an empty map if no enchantments are present.
-     * @see #getEnchantmentLevel(Enchantment)
-     * @see DataComponents#ENCHANTMENTS
+     * @see {@link #getEnchantmentLevel} to get the level of a single enchantment for gameplay purposes
      */
-    default ItemEnchantments getAllEnchantments() {
-        var enchantments = self().getItem().getAllEnchantments(self());
-        return EventHooks.getEnchantmentLevel(enchantments, self());
+    default ItemEnchantments getAllEnchantments(RegistryLookup<Enchantment> lookup) {
+        var enchantments = self().getItem().getAllEnchantments(self(), lookup);
+        return EventHooks.getAllEnchantmentLevels(enchantments, self(), lookup);
     }
 
     /**

@@ -90,12 +90,15 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Mth;
@@ -1047,5 +1050,15 @@ public class ClientHooks {
      */
     public static void fireClientTickPost() {
         NeoForge.EVENT_BUS.post(new ClientTickEvent.Post());
+    }
+
+    @Nullable
+    @SuppressWarnings("resource")
+    public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level != null) {
+            return level.registryAccess().lookup(key).orElse(null);
+        }
+        return null;
     }
 }

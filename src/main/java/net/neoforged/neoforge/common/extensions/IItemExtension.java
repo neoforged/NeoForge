@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -411,52 +412,56 @@ public interface IItemExtension {
     }
 
     /**
-     * Checks whether an item can be enchanted with a certain enchantment. This
-     * applies specifically to enchanting an item in the enchanting table and is
-     * called when retrieving the list of possible enchantments for an item.
-     * Enchantments may additionally (or exclusively) be doing their own checks in
-     * {@link Enchantment#canApplyAtEnchantingTable(ItemStack)};
-     * check the individual implementation for reference. By default this will check
-     * if the enchantment type is valid for this item type.
+     * Checks if an item should be treated as a primary item for a given enchantment.
+     * <p>
+     * Primary items are those that are able to receive the enchantment during enchanting,
+     * either from the enchantment table or other random enchantment mechanisms.
+     * As a special case, books are primary items for every enchantment.
+     * <p>
+     * Other application mechanisms, such as the anvil, check {@link Enchantment#isSupportedItem(ItemStack)} instead.
+     * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag.
      *
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
-     * @return true if the enchantment can be applied to this item
+     * @return true if this item should be treated as a primary item for the enchantment
+     * @apiNote Call via {@link IItemStackExtension#isPrimaryItemFor(Holder)}
      */
-    default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return enchantment.getSupportedItems().contains(stack.getItem().builtInRegistryHolder());
+    @ApiStatus.OverrideOnly
+    default boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
+        return stack.getItem() == Items.BOOK || enchantment.value().isPrimaryItem(stack);
     }
 
     /**
      * Gets the level of the enchantment currently present on the stack. By default, returns the enchantment level present in NBT.
      * Most enchantment implementations rely upon this method.
-     * The returned value must be the same as getting the enchantment from {@link #getAllEnchantments(ItemStack)}
+     * The returned value must be the same as getting the enchantment from {@link #getAllEnchantments}
      *
      * @param stack       The item stack being checked
      * @param enchantment The enchantment being checked for
      * @return Level of the enchantment, or 0 if not present
-     * @see #getAllEnchantments(ItemStack)
-     * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel(Enchantment)}.
+     * @see #getAllEnchantments
+     * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel}.
      */
     @ApiStatus.OverrideOnly
     default int getEnchantmentLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        ItemEnchantments itemenchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        ItemEnchantments itemenchantments = stack.getTagEnchantments();
         return itemenchantments.getLevel(enchantment);
     }
 
     /**
      * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT.
      * Used in several places in code including armor enchantment hooks.
-     * The returned value(s) must have the same level as {@link #getEnchantmentLevel(ItemStack, Enchantment)}.
+     * The returned value(s) must have the same level as {@link #getEnchantmentLevel}.
      *
-     * @param stack The item stack being checked
+     * @param stack  The item stack being checked
+     * @param lookup A registry lookup, used to resolve enchantment {@link Holder}s.
      * @return Map of all enchantments on the stack, empty if no enchantments are present
-     * @see #getEnchantmentLevel(ItemStack, Enchantment)
-     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments()}.
+     * @see #getEnchantmentLevel
+     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments}.
      */
     @ApiStatus.OverrideOnly
-    default ItemEnchantments getAllEnchantments(ItemStack stack) {
-        return stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+    default ItemEnchantments getAllEnchantments(ItemStack stack, RegistryLookup<Enchantment> lookup) {
+        return stack.getTagEnchantments();
     }
 
     /**
