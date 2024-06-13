@@ -36,7 +36,7 @@
 +
 +    private RecipeBookCategories(java.util.function.Supplier<List<ItemStack>> itemIconsSupplier) {
 +        this.itemIcons = List.of();
-+        this.itemIconsSupplier = itemIconsSupplier;
++        this.itemIconsSupplier = net.neoforged.neoforge.common.util.Lazy.of(itemIconsSupplier);
      }
  
      public static List<RecipeBookCategories> getCategories(RecipeBookType p_92270_) {
