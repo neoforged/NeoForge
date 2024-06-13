@@ -42,6 +42,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
@@ -63,6 +64,7 @@ import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
@@ -124,6 +126,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -142,6 +145,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -193,6 +198,7 @@ import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1379,5 +1385,25 @@ public class CommonHooks {
     public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
         var event = new MobEffectEvent.Applicable(entity, effect);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
+    }
+
+    /**
+     * Attempts to resolve a {@link RegistryLookup} using the current global state.
+     * <p>
+     * Prioritizes the server's lookup, only attempting to retrieve it from the client if the server is unavailable.
+     * 
+     * @param <T> The type of registry being looked up
+     * @param key The resource key for the target registry
+     * @return A registry access, if one was available.
+     */
+    @Nullable
+    public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            return server.registryAccess().lookup(key).orElse(null);
+        } else if (FMLEnvironment.dist.isClient()) {
+            return ClientHooks.resolveLookup(key);
+        }
+        return null;
     }
 }
