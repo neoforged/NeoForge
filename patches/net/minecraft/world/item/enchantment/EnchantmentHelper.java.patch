@@ -44,6 +44,19 @@
              if (itemenchantments != null && !itemenchantments.isEmpty()) {
                  EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
  
+@@ -417,6 +_,12 @@
+     public static boolean hasTag(ItemStack p_345665_, TagKey<Enchantment> p_345928_) {
+         ItemEnchantments itemenchantments = p_345665_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+ 
++        // Neo: Respect gameplay-only enchantments when enchantment effect tag checks
++        var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
++        if (lookup != null) {
++            itemenchantments = p_345665_.getAllEnchantments(lookup);
++        }
++
+         for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
+             Holder<Enchantment> holder = entry.getKey();
+             if (holder.is(p_345928_)) {
 @@ -484,7 +_,7 @@
  
      public static int getEnchantmentCost(RandomSource p_220288_, int p_220289_, int p_220290_, ItemStack p_220291_) {
