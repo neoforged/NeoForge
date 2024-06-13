@@ -37,7 +37,7 @@
                  p_35409_.addFreshEntityWithPassengers(witch);
                  this.releaseAllPois();
                  this.discard();
-@@ -829,7 +_,7 @@
+@@ -831,7 +_,7 @@
      @Override
      public boolean wantsToPickUp(ItemStack p_35543_) {
          Item item = p_35543_.getItem();
