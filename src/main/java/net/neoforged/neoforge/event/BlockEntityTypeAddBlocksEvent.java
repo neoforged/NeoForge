@@ -73,7 +73,6 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
      * <p>
      * Example: If the valid blocks list has {@link StandingSignBlock} entry and {@link WallSignBlock} entry, the common class is SignBlock
      * and the given block must be a {@link SignBlock} or has {@link SignBlock} as a child class in its hierarchy.
-     * </p>
      * 
      * @param block The block to add as a valid block for the current {@link BlockEntityType}
      */
