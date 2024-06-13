@@ -1,13 +1,5 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -161,6 +_,7 @@
- 
-     @Override
-     public boolean hurt(DamageSource p_108662_, float p_108663_) {
-+        net.neoforged.neoforge.common.CommonHooks.onPlayerIncomingDamage(this, this.damageContainer);
-         return false;
-     }
- 
 @@ -297,6 +_,7 @@
          ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
