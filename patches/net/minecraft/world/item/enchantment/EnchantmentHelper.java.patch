@@ -9,7 +9,7 @@
 +     */
 +    @Deprecated
      public static int getItemEnchantmentLevel(Holder<Enchantment> p_346179_, ItemStack p_44845_) {
-+        // To reduce patch size, update this method to always check gameplay enchantments, and add getTagEnchantmentLevel as a helper for mods.
++        // Neo: To reduce patch size, update this method to always check gameplay enchantments, and add getTagEnchantmentLevel as a helper for mods.
 +        return p_44845_.getEnchantmentLevel(p_346179_);
 +    }
 +

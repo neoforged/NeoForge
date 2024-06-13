@@ -1037,13 +1037,15 @@ public class EventHooks {
      * @return The new level of the enchantment.
      */
     public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Holder<Enchantment> ench) {
+        RegistryLookup<Enchantment> lookup = ench.unwrapLookup();
+        if (lookup == null) { // Pretty sure this is never null, but I can't *prove* that it isn't.
+            return level;
+        }
+
         var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         enchantments.set(ench, level);
-        RegistryLookup<Enchantment> lookup = ench.unwrapLookup();
-        if (lookup != null) { // Pretty sure this is never null, but I can't *prove* that it isn't.
-            var event = new GetEnchantmentLevelEvent(stack, enchantments, ench, ench.unwrapLookup());
-            NeoForge.EVENT_BUS.post(event);
-        }
+        var event = new GetEnchantmentLevelEvent(stack, enchantments, ench, ench.unwrapLookup());
+        NeoForge.EVENT_BUS.post(event);
         return enchantments.getLevel(ench);
     }
 

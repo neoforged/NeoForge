@@ -147,7 +147,7 @@ public interface IItemStackExtension {
     /**
      * Gets the gameplay level of the target enchantment on this stack.
      * <p>
-     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
+     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel} for gameplay logic.
      * <p>
      * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
      *
