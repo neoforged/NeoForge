@@ -10,7 +10,7 @@
 +        public boolean matches(ItemStack p_333958_) {
 +            var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
 +            if (lookup != null) {
-+                matches(p_333958_, p_333958_.getAllEnchantments(lookup));
++                return matches(p_333958_, p_333958_.getAllEnchantments(lookup));
 +            }
 +            return super.matches(p_333958_);
 +        }
