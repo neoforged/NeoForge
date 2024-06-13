@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.Util;
@@ -333,11 +334,11 @@ public enum NeoForgeRenderTypes {
     }
 
     private static class CustomizableTextureState extends TextureStateShard {
-        private final Supplier<Boolean> blurSupplier;
-        private final Supplier<Boolean> mipmapSupplier;
+        private final BooleanSupplier blurSupplier;
+        private final BooleanSupplier mipmapSupplier;
 
-        private CustomizableTextureState(ResourceLocation resLoc, Supplier<Boolean> blur, Supplier<Boolean> mipmap) {
-            super(resLoc, blur.get(), mipmap.get());
+        private CustomizableTextureState(ResourceLocation resLoc, BooleanSupplier blur, BooleanSupplier mipmap) {
+            super(resLoc, blur.getAsBoolean(), mipmap.getAsBoolean());
             blurSupplier = blur;
             mipmapSupplier = mipmap;
         }
@@ -345,8 +346,8 @@ public enum NeoForgeRenderTypes {
         @Override
         public void setupRenderState() {
             // must be done before super call as super uses the `blur` and `mipmap` fields within the `setupState` runnable | See super constructor
-            blur = blurSupplier.get();
-            mipmap = mipmapSupplier.get();
+            blur = blurSupplier.getAsBoolean();
+            mipmap = mipmapSupplier.getAsBoolean();
             super.setupRenderState();
         }
     }
