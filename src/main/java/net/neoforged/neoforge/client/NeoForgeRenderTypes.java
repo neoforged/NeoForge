@@ -5,19 +5,16 @@
 
 package net.neoforged.neoforge.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderStateShard.OutputStateShard;
 import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -336,15 +333,25 @@ public enum NeoForgeRenderTypes {
     }
 
     private static class CustomizableTextureState extends TextureStateShard {
+        private final Supplier<Boolean> blurSupplier;
+        private final Supplier<Boolean> mipmapSupplier;
+
         private CustomizableTextureState(ResourceLocation resLoc, Supplier<Boolean> blur, Supplier<Boolean> mipmap) {
             super(resLoc, blur.get(), mipmap.get());
-            this.setupState = () -> {
-                this.blur = blur.get();
-                this.mipmap = mipmap.get();
-                TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
-                texturemanager.getTexture(resLoc).setFilter(this.blur, this.mipmap);
-                RenderSystem.setShaderTexture(0, resLoc);
-            };
+            blurSupplier = blur;
+            mipmapSupplier = mipmap;
+        }
+
+        @Override
+        public void setupRenderState() {
+            // must be done before super call
+            // as super uses the `blur` and `mipmap` fields
+            // within the `setupState` runnable
+            //
+            // See super constructor
+            blur = blurSupplier.get();
+            mipmap = mipmapSupplier.get();
+            super.setupRenderState();
         }
     }
 }

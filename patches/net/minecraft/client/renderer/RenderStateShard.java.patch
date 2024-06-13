@@ -5,7 +5,7 @@
      public static final double MAX_ENCHANTMENT_GLINT_SPEED_MILLIS = 8.0;
      public final String name;
 -    public final Runnable setupState;
-+    protected Runnable setupState; // Neo/AT-BUG: 'protected-f' does not work as field is also made public via AT field group
++    public Runnable setupState;
      public final Runnable clearState;
      public static final RenderStateShard.TransparencyStateShard NO_TRANSPARENCY = new RenderStateShard.TransparencyStateShard(
          "no_transparency", () -> RenderSystem.disableBlend(), () -> {
