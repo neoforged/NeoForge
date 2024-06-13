@@ -1,17 +1,20 @@
-package net.neoforged.neoforge.common.extensions;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import org.jetbrains.annotations.Nullable;
+package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.neoforged.neoforge.registries.datamaps.IWithData;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Extension for {@link Holder}
  */
 public interface IHolderExtension<T> extends IWithData<T> {
-
     /**
      * {@return the holder that this holder wraps}
      *
@@ -30,5 +33,4 @@ public interface IHolderExtension<T> extends IWithData<T> {
     default HolderLookup.RegistryLookup<T> unwrapLookup() {
         return null;
     }
-
 }
