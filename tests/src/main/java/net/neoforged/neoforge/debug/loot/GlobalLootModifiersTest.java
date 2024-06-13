@@ -41,7 +41,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
@@ -137,8 +136,8 @@ public class GlobalLootModifiersTest {
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ItemStack ctxTool = context.getParamOrNull(LootContextParams.TOOL);
             var reg = context.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
-            //return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
-            if (ctxTool == null || EnchantmentHelper.getItemEnchantmentLevel(reg.getHolderOrThrow(Enchantments.SILK_TOUCH), ctxTool) > 0)
+            // return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
+            if (ctxTool == null || ctxTool.getEnchantmentLevel(reg.getHolderOrThrow(Enchantments.SILK_TOUCH)) > 0)
                 return generatedLoot;
             ItemStack fakeTool = ctxTool.copy();
             fakeTool.enchant(reg.getHolderOrThrow(Enchantments.SILK_TOUCH), 1);
