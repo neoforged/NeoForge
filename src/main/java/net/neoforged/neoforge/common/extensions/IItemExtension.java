@@ -420,20 +420,21 @@ public interface IItemExtension {
     }
 
     /**
-     * Checks whether an item can be enchanted with a certain enchantment. This
-     * applies specifically to enchanting an item in the enchanting table and is
-     * called when retrieving the list of possible enchantments for an item.
-     * Enchantments may additionally (or exclusively) be doing their own checks in
-     * {@link Enchantment#canApplyAtEnchantingTable(ItemStack)};
-     * check the individual implementation for reference. By default this will check
-     * if the enchantment type is valid for this item type.
+     * Checks if an item should be treated as a primary item for a given enchantment.
+     * <p>
+     * Primary items are those that are able to receive the enchantment during enchanting,
+     * either from the enchantment table or other random enchantment mechanisms.
+     * As a special case, books are primary items for every enchantment.
+     * <p>
+     * Other application mechanisms, such as the anvil, check {@link Enchantment#isSupportedItem(ItemStack)} instead.
+     * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag.
      *
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
-     * @return true if the enchantment can be applied to this item
+     * @return true if this item should be treated as a primary item for the enchantment
      */
-    default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return enchantment.getSupportedItems().contains(stack.getItem().builtInRegistryHolder());
+    default boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
+        return stack.getItem() == Items.BOOK || enchantment.value().isPrimaryItem(stack);
     }
 
     /**

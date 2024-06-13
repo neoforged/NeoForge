@@ -62,3 +62,14 @@
          if (i <= 0) {
              return list;
          } else {
+@@ -575,7 +_,9 @@
+     public static List<EnchantmentInstance> getAvailableEnchantmentResults(int p_44818_, ItemStack p_44819_, Stream<Holder<Enchantment>> p_345348_) {
+         List<EnchantmentInstance> list = Lists.newArrayList();
+         boolean flag = p_44819_.is(Items.BOOK);
+-        p_345348_.filter(p_344529_ -> p_344529_.value().isPrimaryItem(p_44819_) || flag).forEach(p_344478_ -> {
++        // Neo: Rewrite filter logic to call isPrimaryItemFor instead of hardcoded vanilla logic.
++        // The original logic is recorded in the default implementation of IItemExtension#isPrimaryItemFor.
++        p_345348_.filter(p_44819_::isPrimaryItemFor).forEach(p_344478_ -> {
+             Enchantment enchantment = p_344478_.value();
+ 
+             for (int i = enchantment.getMaxLevel(); i >= enchantment.getMinLevel(); i--) {
