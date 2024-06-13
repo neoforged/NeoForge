@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation project(':neoforge')
+    implementation project(path: ':neoforge', configuration: 'runtimeElements')
 
     compileOnly(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
     compileOnly "org.junit.jupiter:junit-jupiter-params"
