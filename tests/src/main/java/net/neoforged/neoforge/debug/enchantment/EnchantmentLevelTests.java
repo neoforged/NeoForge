@@ -33,16 +33,20 @@ public class EnchantmentLevelTests {
             ItemEnchantments.Mutable enchants = e.getEnchantments();
 
             // Increase the level of sharpness by 1 in all cases.
-            if (e.isTargetting(Enchantments.SHARPNESS)) {
-                enchants.set(e.getTargetEnchant(), enchants.getLevel(e.getTargetEnchant()) + 1);
-            }
+            e.getHolder(Enchantments.SHARPNESS).ifPresent(holder -> {
+                if (e.isTargetting(holder)) {
+                    enchants.set(holder, enchants.getLevel(holder) + 1);
+                }
+            });
 
             // Increase the level of fire aspect by 1 if the stack contains specific NBT.
-            if (e.isTargetting(Enchantments.FIRE_ASPECT)) {
-                if (e.getStack().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("boost_fire_aspect")) {
-                    enchants.set(e.getTargetEnchant(), enchants.getLevel(e.getTargetEnchant()) + 1);
+            e.getHolder(Enchantments.FIRE_ASPECT).ifPresent(holder -> {
+                if (e.isTargetting(holder)) {
+                    if (e.getStack().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("boost_fire_aspect")) {
+                        enchants.set(holder, enchants.getLevel(holder) + 1);
+                    }
                 }
-            }
+            });
         });
 
         test.onGameTest(helper -> {

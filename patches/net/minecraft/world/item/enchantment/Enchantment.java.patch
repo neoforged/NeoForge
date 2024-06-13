@@ -1,21 +1,22 @@
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -504,6 +_,26 @@
-         return new Enchantment.Builder(p_345873_);
+@@ -132,6 +_,10 @@
+         return this.definition.slots().stream().anyMatch(p_345027_ -> p_345027_.test(p_345146_));
      }
  
-+    // TODO 1.21: Make IEnchantmentExtension additions data-driven along with these methods:
++    /**
++     * @deprecated Neo: Use {@link ItemStack#isPrimaryItemFor(Holder)}
++     */
++    @Deprecated
+     public boolean isPrimaryItem(ItemStack p_336088_) {
+         return this.isSupportedItem(p_336088_) && (this.definition.primaryItems.isEmpty() || p_336088_.is(this.definition.primaryItems.get()));
+     }
+@@ -503,6 +_,15 @@
+     public static Enchantment.Builder enchantment(Enchantment.EnchantmentDefinition p_345873_) {
+         return new Enchantment.Builder(p_345873_);
+     }
 +
-+//    /**
-+//     * This applies specifically to applying at the enchanting table. The other method {@link #canEnchant(ItemStack)}
-+//     * applies for <i>all possible</i> enchantments.
-+//     * @param stack
-+//     * @return
-+//     */
-+//    public boolean canApplyAtEnchantingTable(ItemStack stack) {
-+//        return stack.canApplyAtEnchantingTable(this);
-+//    }
-+//
++//    TODO: Reimplement. Not sure if we want to patch EnchantmentDefinition or hack this in as an EnchantmentEffectComponent.
 +//    /**
 +//     * Is this enchantment allowed to be enchanted on books via Enchantment Table
 +//     * @return false to disable the vanilla feature
@@ -23,7 +24,6 @@
 +//    public boolean isAllowedOnBooks() {
 +//        return true;
 +//    }
-+
+ 
      public static class Builder {
          private final Enchantment.EnchantmentDefinition definition;
-         private HolderSet<Enchantment> exclusiveSet = HolderSet.direct();
