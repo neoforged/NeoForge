@@ -110,7 +110,7 @@ public class EntityEventTests {
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 8, 3, 7))
                 .thenExecute(pig -> helper.setBlock(8, 2, 7, Blocks.ACACIA_LEAVES))
-                .thenExecute(pig -> helper.getLevel().explode(null, helper.getLevel().damageSources().generic(), null, helper.absolutePos(new BlockPos(7, 2, 7)).getCenter(), 2f, false, Level.ExplosionInteraction.BLOW))
+                .thenExecute(pig -> helper.getLevel().explode(null, helper.getLevel().damageSources().generic(), null, helper.absolutePos(new BlockPos(7, 2, 7)).getCenter(), 2f, false, Level.ExplosionInteraction.TNT))
                 .thenExecute(pig -> helper.assertEntityProperty(pig, p -> pig.getDeltaMovement().x() == 0 && pig.getDeltaMovement().y() != 0 && pig.getDeltaMovement().z() == 0, "Check explosion Knockback"))
                 .thenIdle(10)
                 .thenExecute(helper::killAllEntities)
