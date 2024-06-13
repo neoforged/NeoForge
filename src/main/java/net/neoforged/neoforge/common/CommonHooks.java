@@ -596,10 +596,6 @@ public class CommonHooks {
         Item item = itemstack.getItem();
         int size = itemstack.getCount();
         DataComponentMap components = itemstack.getComponents();
-        // Porting 1.20.5 redo this for components?
-        //CompoundTag nbt = null;
-        //if (itemstack.getTag() != null)
-        //    nbt = itemstack.getTag().copy();
 
         if (!(itemstack.getItem() instanceof BucketItem)) // if not bucket
             level.captureBlockSnapshots = true;
@@ -1453,7 +1449,6 @@ public class CommonHooks {
             throw new RuntimeException("Failed to check for component equals and hashCode", exception);
         }
     }
-
 
     /**
      * The goal here is to fix the POI memory leak that happens due to
