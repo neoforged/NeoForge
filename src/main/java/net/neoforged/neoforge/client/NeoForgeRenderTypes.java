@@ -344,11 +344,7 @@ public enum NeoForgeRenderTypes {
 
         @Override
         public void setupRenderState() {
-            // must be done before super call
-            // as super uses the `blur` and `mipmap` fields
-            // within the `setupState` runnable
-            //
-            // See super constructor
+            // must be done before super call as super uses the `blur` and `mipmap` fields within the `setupState` runnable | See super constructor
             blur = blurSupplier.get();
             mipmap = mipmapSupplier.get();
             super.setupRenderState();
