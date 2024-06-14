@@ -45,3 +45,6 @@ build
 **/runs/
 
 **/out/
+
+# Apple
+.DS_Store

@@ -28,7 +28,7 @@ public class RecipeWrapper implements Container {
     @Override
     public boolean isEmpty() {
         for (int i = 0; i < handler.size(); i++) {
-            if (!HandlerUtils.isEmpty(handler, i)) return false;
+            if (!HandlerUtils.isIndexEmpty(handler, i)) return false;
         }
         return true;
     }
@@ -40,7 +40,7 @@ public class RecipeWrapper implements Container {
 
     @Override
     public ItemStack removeItem(int index, int amount) {
-        if (HandlerUtils.isEmpty(handler, index)) return ItemStack.EMPTY;
+        if (HandlerUtils.isIndexEmpty(handler, index)) return ItemStack.EMPTY;
         ItemResource resource = handler.getResource(index);
         return resource.toStack(handler.extract(index, resource, amount, TransferAction.EXECUTE));
     }
