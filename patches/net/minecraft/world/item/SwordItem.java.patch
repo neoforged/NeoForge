@@ -1,12 +1,27 @@
 --- a/net/minecraft/world/item/SwordItem.java
 +++ b/net/minecraft/world/item/SwordItem.java
-@@ -56,4 +_,9 @@
+@@ -21,6 +_,13 @@
+         super(p_43269_, p_43272_.component(DataComponents.TOOL, createToolProperties()));
+     }
+ 
++    /**
++     * Neo: Allow modded Swords to set exactly what Tool data component to use for their sword.
++     */
++    public SwordItem(Tier tier, Item.Properties properties, Tool toolComponentData) {
++        super(tier, properties.component(DataComponents.TOOL, toolComponentData));
++    }
++
+     public static Tool createToolProperties() {
+         return new Tool(List.of(Tool.Rule.minesAndDrops(List.of(Blocks.COBWEB), 15.0F), Tool.Rule.overrideSpeed(BlockTags.SWORD_EFFICIENT, 1.5F)), 1.0F, 2);
+     }
+@@ -55,5 +_,10 @@
+     @Override
      public void postHurtEnemy(ItemStack p_345553_, LivingEntity p_345771_, LivingEntity p_346282_) {
          p_345553_.hurtAndBreak(1, p_346282_, EquipmentSlot.MAINHAND);
-     }
++    }
 +
 +    @Override
 +    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
 +        return net.neoforged.neoforge.common.ToolActions.DEFAULT_SWORD_ACTIONS.contains(toolAction);
-+    }
+     }
  }
