@@ -55,9 +55,9 @@ class TagsCommand {
     private static final long PAGE_SIZE = 8;
     private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace("root"));
 
-    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.tags.error.unknown_registry", key));
-    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_tag", tag, registry));
-    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_element", tag, registry));
+    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.tags.error.unknown_registry", key.toString()));
+    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_tag", tag.toString(), registry.toString()));
+    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_element", tag.toString(), registry.toString()));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
