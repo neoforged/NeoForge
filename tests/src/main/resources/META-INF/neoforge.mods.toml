@@ -8,7 +8,7 @@ license="LGPL v2.1"
 [[mods]]
     modId="neotests"
     description="NeoForge tests. Change the language to fr_fr and the description should change too."
-    enumExtender="META-INF/enumextender.json"
+    enumExtensions="META-INF/enumextensions.json"
 [[mods]]
     modId="client_command_test"
 [[mods]]
