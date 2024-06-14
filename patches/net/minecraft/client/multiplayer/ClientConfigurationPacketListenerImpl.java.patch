@@ -22,7 +22,16 @@
      }
  
      @Override
-@@ -135,10 +_,17 @@
+@@ -121,7 +_,7 @@
+         );
+         this.connection
+             .setupInboundProtocol(
+-                GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)),
++                GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType)),
+                 new ClientPacketListener(
+                     this.minecraft,
+                     this.connection,
+@@ -135,12 +_,19 @@
                          this.postDisconnectScreen,
                          this.serverCookies,
                          this.chatState,
@@ -39,8 +48,11 @@
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
-         this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)));
+-        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)));
++        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType)));
      }
+ 
+     @Override
 @@ -152,5 +_,51 @@
      public void onDisconnect(Component p_314649_) {
          super.onDisconnect(p_314649_);
