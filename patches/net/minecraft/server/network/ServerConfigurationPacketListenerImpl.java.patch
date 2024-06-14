@@ -16,6 +16,15 @@
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          ServerLinks serverlinks = this.server.serverLinks();
          if (!serverlinks.isEmpty()) {
+@@ -81,6 +_,8 @@
+         LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
+         List<KnownPack> list = this.server.getResourceManager().listPacks().flatMap(p_325637_ -> p_325637_.location().knownPackInfo().stream()).toList();
+         this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
++        // Neo: we must sync the registries before vanilla sends tags in SynchronizeRegistriesTask!
++        net.neoforged.neoforge.network.ConfigurationInitialization.configureEarlyTasks(this, this.configurationTasks::add);
+         this.synchronizeRegistriesTask = new SynchronizeRegistriesTask(list, layeredregistryaccess);
+         this.configurationTasks.add(this.synchronizeRegistriesTask);
+         this.addOptionalTasks();
 @@ -95,6 +_,33 @@
  
      private void addOptionalTasks() {
