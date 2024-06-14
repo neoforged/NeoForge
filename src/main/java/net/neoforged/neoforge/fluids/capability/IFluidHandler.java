@@ -15,6 +15,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
  * Implement this interface as a capability which should handle fluids, generally storing them in
  * one or more internal {@link IFluidTank} objects.
  * <p>
+ * @deprecated Use {@link IResourceHandler<FluidResource>} instead.
  */
 @Deprecated(forRemoval = true, since = "1.21")
 public interface IFluidHandler extends IResourceHandler<FluidResource> {

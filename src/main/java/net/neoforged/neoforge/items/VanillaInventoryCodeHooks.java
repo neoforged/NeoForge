@@ -23,6 +23,11 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.HandlerUtils;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.items.wrappers.HopperWrapper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -37,14 +42,16 @@ public class VanillaInventoryCodeHooks {
     public static Boolean extractHook(Level level, Hopper dest) {
         return getSourceItemHandler(level, dest)
                 .map(itemHandlerResult -> {
-                    IItemHandler handler = itemHandlerResult.getKey();
+                    var handler = itemHandlerResult.getKey();
+                    var hopperHandler = new HopperWrapper(dest);
 
-                    for (int i = 0; i < handler.getSlotCount(); i++) {
-                        ItemStack extractItem = handler.extractItem(i, 1, true);
-                        if (!extractItem.isEmpty()) {
+                    for (int i = 0; i < handler.size(); i++) {
+                        ItemResource resource = handler.getResource(i);
+                        int extracted = handler.extract(i, resource, 1, TransferAction.EXECUTE);
+                        if (extracted > 0) {
                             for (int j = 0; j < dest.getContainerSize(); j++) {
                                 ItemStack destStack = dest.getItem(j);
-                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemHandlerHelper.canItemStacksStack(extractItem, destStack))) {
+                                if (dest.canPlaceItem(j, resource.toStack()) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && resource.matches(destStack))) {
                                     extractItem = handler.extractItem(i, 1, false);
                                     if (destStack.isEmpty())
                                         dest.setItem(j, extractItem);
@@ -71,7 +78,7 @@ public class VanillaInventoryCodeHooks {
         Direction facing = level.getBlockState(pos).getValue(DropperBlock.FACING);
         return getAttachedItemHandler(level, pos, facing)
                 .map(destinationResult -> {
-                    IItemHandler itemHandler = destinationResult.getKey();
+                    var itemHandler = destinationResult.getKey();
                     Object destination = destinationResult.getValue();
                     ItemStack dispensedStack = stack.copy().split(1);
                     ItemStack remainder = putStackInInventoryAllSlots(dropper, destination, itemHandler, dispensedStack);
@@ -96,9 +103,9 @@ public class VanillaInventoryCodeHooks {
         Direction hopperFacing = hopper.getBlockState().getValue(HopperBlock.FACING);
         return getAttachedItemHandler(hopper.getLevel(), hopper.getBlockPos(), hopperFacing)
                 .map(destinationResult -> {
-                    IItemHandler itemHandler = destinationResult.getKey();
+                    var itemHandler = destinationResult.getKey();
                     Object destination = destinationResult.getValue();
-                    if (isFull(itemHandler)) {
+                    if (HandlerUtils.isFull(itemHandler)) {
                         return false;
                     } else {
                         for (int i = 0; i < hopper.getContainerSize(); ++i) {
@@ -121,8 +128,8 @@ public class VanillaInventoryCodeHooks {
                 .orElse(false);
     }
 
-    private static ItemStack putStackInInventoryAllSlots(BlockEntity source, Object destination, IItemHandler destInventory, ItemStack stack) {
-        for (int slot = 0; slot < destInventory.getSlotCount() && !stack.isEmpty(); slot++) {
+    private static ItemStack putStackInInventoryAllSlots(BlockEntity source, Object destination, IResourceHandler<ItemResource> destInventory, ItemStack stack) {
+        for (int slot = 0; slot < destInventory.size() && !stack.isEmpty(); slot++) {
             stack = insertStack(source, destination, destInventory, stack, slot);
         }
         return stack;
@@ -131,12 +138,12 @@ public class VanillaInventoryCodeHooks {
     /**
      * Copied from TileEntityHopper#insertStack and added capability support
      */
-    private static ItemStack insertStack(BlockEntity source, Object destination, IItemHandler destInventory, ItemStack stack, int slot) {
+    private static ItemStack insertStack(BlockEntity source, Object destination, IResourceHandler<ItemResource> destInventory, ItemStack stack, int slot) {
         ItemStack itemstack = destInventory.getStackInSlot(slot);
 
         if (destInventory.insertItem(slot, stack, true).isEmpty()) {
             boolean insertedItem = false;
-            boolean inventoryWasEmpty = isEmpty(destInventory);
+            boolean inventoryWasEmpty = HandlerUtils.isEmpty(destInventory);
 
             if (itemstack.isEmpty()) {
                 destInventory.insertItem(slot, stack, false);
@@ -168,35 +175,15 @@ public class VanillaInventoryCodeHooks {
         return stack;
     }
 
-    private static boolean isFull(IItemHandler itemHandler) {
-        for (int slot = 0; slot < itemHandler.getSlotCount(); slot++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
-            if (stackInSlot.isEmpty() || stackInSlot.getCount() < itemHandler.getSlotLimit(slot)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isEmpty(IItemHandler itemHandler) {
-        for (int slot = 0; slot < itemHandler.getSlotCount(); slot++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
-            if (stackInSlot.getCount() > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static Optional<Pair<IItemHandler, Object>> getAttachedItemHandler(Level level, BlockPos pos, Direction direction) {
+    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getAttachedItemHandler(Level level, BlockPos pos, Direction direction) {
         return getItemHandlerAt(level, pos.getX() + direction.getStepX() + 0.5, pos.getY() + direction.getStepY() + 0.5, pos.getZ() + direction.getStepZ() + 0.5, direction.getOpposite());
     }
 
-    private static Optional<Pair<IItemHandler, Object>> getSourceItemHandler(Level level, Hopper hopper) {
+    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getSourceItemHandler(Level level, Hopper hopper) {
         return getItemHandlerAt(level, hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ(), Direction.DOWN);
     }
 
-    private static Optional<Pair<IItemHandler, Object>> getItemHandlerAt(Level worldIn, double x, double y, double z, final Direction side) {
+    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getItemHandlerAt(Level worldIn, double x, double y, double z, final Direction side) {
         BlockPos blockpos = BlockPos.containing(x, y, z);
         BlockState state = worldIn.getBlockState(blockpos);
         BlockEntity blockEntity = state.hasBlockEntity() ? worldIn.getBlockEntity(blockpos) : null;
@@ -212,7 +199,7 @@ public class VanillaInventoryCodeHooks {
         if (!list.isEmpty()) {
             Collections.shuffle(list);
             for (Entity entity : list) {
-                IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+                var entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
                 if (entityCap != null)
                     return Optional.of(ImmutablePair.of(entityCap, entity));
             }

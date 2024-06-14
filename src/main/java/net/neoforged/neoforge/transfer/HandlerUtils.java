@@ -9,14 +9,36 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 
 public class HandlerUtils {
 
-    public static boolean isEmpty(IResourceHandler<? extends IResource> handler, int index) {
+    public static boolean isEmpty(IResourceHandler<? extends IResource> handler) {
+        for (int i = 0; i < handler.size(); i++) {
+            if (!isIndexEmpty(handler, i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isFull(IResourceHandler<? extends IResource> handler) {
+        for (int i = 0; i < handler.size(); i++) {
+            if (!isIndexFull(handler, i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, int index) {
         return handler.getResource(index).isBlank() || handler.getAmount(index) <= 0;
+    }
+
+    public static <T extends IResource> boolean isIndexFull(IResourceHandler<T> handler, int index) {
+        return handler.getAmount(index) >= handler.getLimit(index, handler.getResource(index));
     }
 
     public static <T extends IResource> int insertRange(IResourceHandler<T> handler, int start, int end, T resource, int amount, TransferAction action) {
         int inserted = 0;
         for (int index = start; index < end; index++) {
-            if (HandlerUtils.isEmpty(handler, index)) continue;
+            if (HandlerUtils.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -24,7 +46,7 @@ public class HandlerUtils {
         }
 
         for (int index = start; index < end; index++) {
-            if (!HandlerUtils.isEmpty(handler, index)) continue;
+            if (!HandlerUtils.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -56,7 +78,7 @@ public class HandlerUtils {
     public static <T extends IResource> int insertIndices(IResourceHandler<T> handler, int[] indices, T resource, int amount, TransferAction action) {
         int inserted = 0;
         for (int index : indices) {
-            if (HandlerUtils.isEmpty(handler, index)) continue;
+            if (HandlerUtils.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -64,7 +86,7 @@ public class HandlerUtils {
         }
 
         for (int index : indices) {
-            if (!HandlerUtils.isEmpty(handler, index)) continue;
+            if (!HandlerUtils.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -101,7 +123,7 @@ public class HandlerUtils {
         // First try to insert into existing stacks
         for (int i = 0; i < handler.size(); i++) {
             if (i == index) continue;
-            if (HandlerUtils.isEmpty(handler, i)) continue;
+            if (HandlerUtils.isIndexEmpty(handler, i)) continue;
             inserted += handler.insert(i, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -110,7 +132,7 @@ public class HandlerUtils {
         // Then try to insert into empty slots
         for (int i = 0; i < handler.size(); i++) {
             if (i == index) continue;
-            if (!HandlerUtils.isEmpty(handler, i)) continue;
+            if (!HandlerUtils.isIndexEmpty(handler, i)) continue;
             inserted += handler.insert(i, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
