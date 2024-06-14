@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/Bogged.java
++++ b/net/minecraft/world/entity/monster/Bogged.java
+@@ -74,7 +_,7 @@
+     @Override
+     protected InteractionResult mobInteract(Player p_330736_, InteractionHand p_331786_) {
+         ItemStack itemstack = p_330736_.getItemInHand(p_331786_);
+-        if (itemstack.is(Items.SHEARS) && this.readyForShearing()) {
++        if (false && itemstack.is(Items.SHEARS) && this.readyForShearing()) { //Neo: Moved to onSheared
+             this.shear(SoundSource.PLAYERS);
+             this.gameEvent(GameEvent.SHEAR, p_330736_);
+             if (!this.level().isClientSide) {

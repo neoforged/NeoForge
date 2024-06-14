@@ -205,21 +205,24 @@ public interface IBlockExtension {
      *
      * Return true if the block is actually destroyed.
      *
-     * Note: When used in multiplayer, this is called on both client and
-     * server sides!
+     * This function is called on both the logical client and logical server.
      *
      * @param state       The current state.
      * @param level       The current level
      * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
-     * @param willHarvest True if Block.harvestBlock will be called after this, if the return in true.
-     *                    Can be useful to delay the destruction of tile entities till after harvestBlock
+     * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid state at current position
      * @return True if the block is actually destroyed.
      */
     default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        self().playerWillDestroy(level, pos, state, player);
-        return level.setBlock(pos, fluid.createLegacyBlock(), level.isClientSide ? 11 : 3);
+        if (level.isClientSide()) {
+            // On the client, vanilla calls Level#setBlock, per MultiPlayerGameMode#destroyBlock
+            return level.setBlock(pos, fluid.createLegacyBlock(), 11);
+        } else {
+            // On the server, vanilla calls Level#removeBlock, per ServerPlayerGameMode#destroyBlock
+            return level.removeBlock(pos, false);
+        }
     }
 
     /**
