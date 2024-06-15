@@ -7,13 +7,18 @@ package net.neoforged.neoforge.fluids.capability;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Implement this interface as a capability which should handle fluids, generally storing them in
  * one or more internal {@link IFluidTank} objects.
- * <p>
- * A reference implementation is provided {@link TileFluidHandler}.
+ * @deprecated Use {@link IResourceHandler} of {@link FluidResource} instead
  */
+
+@Deprecated(forRemoval = true, since = "1.21")
+@ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IFluidHandler {
     enum FluidAction {
         EXECUTE, SIMULATE;

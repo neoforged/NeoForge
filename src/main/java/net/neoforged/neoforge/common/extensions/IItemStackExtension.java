@@ -47,6 +47,8 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.items.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -475,6 +477,11 @@ public interface IItemStackExtension {
     default <T> T getCapability(ItemCapability<T, Void> capability) {
         return capability.getCapability(self(), null);
     }
+
+    default ResourceStack<ItemResource> immutable() {
+        return new ResourceStack<>(ItemResource.of(self()), self().getCount());
+    }
+
 
     /**
      * {@return the attribute modifiers for the given equipment slot}

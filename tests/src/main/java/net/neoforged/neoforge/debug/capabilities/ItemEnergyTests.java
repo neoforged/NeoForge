@@ -13,7 +13,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities.EnergyHandler;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.energy.ComponentEnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -48,7 +48,7 @@ public class ItemEnergyTests {
         COMPONENTS.register(framework.modEventBus());
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
-            e.registerItem(EnergyStorage.ITEM, (stack, ctx) -> {
+            e.registerItem(EnergyHandler.ITEM, (stack, ctx) -> {
                 return new ComponentEnergyStorage(stack, ENERGY_COMPONENT.get(), MAX_CAPACITY);
             }, BATTERY);
         });
@@ -60,7 +60,7 @@ public class ItemEnergyTests {
     public static void testItemEnergy(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
             ItemStack stack = BATTERY.toStack();
-            IEnergyStorage energy = stack.getCapability(EnergyStorage.ITEM);
+            IEnergyStorage energy = stack.getCapability(EnergyHandler.ITEM);
             helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
 
             helper.assertValueEqual(energy.extractEnergy(MAX_CAPACITY, false), MAX_CAPACITY, "Extracted energy should be equal to the target value.");

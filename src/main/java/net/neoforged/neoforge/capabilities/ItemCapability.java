@@ -11,6 +11,7 @@ import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.context.IItemContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,6 +56,16 @@ public final class ItemCapability<T, C> extends BaseCapability<T, C> {
      */
     public static <T, C> ItemCapability<T, C> create(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
         return (ItemCapability<T, C>) registry.create(name, typeClass, contextClass);
+    }
+
+    /**
+     * Creates a new item capability with {@link IItemContext} context, or gets it if it already exists.
+     * This should be used for capabilities that require an {@link IItemContext} as additional context.
+     *
+     * @see #create(ResourceLocation, Class, Class)
+     */
+    public static <T> ItemCapability<T, IItemContext> createContextual(ResourceLocation name, Class<T> typeClass) {
+        return create(name, typeClass, IItemContext.class);
     }
 
     /**
