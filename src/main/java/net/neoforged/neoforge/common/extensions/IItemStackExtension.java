@@ -482,7 +482,6 @@ public interface IItemStackExtension {
         return new ResourceStack<>(ItemResource.of(self()), self().getCount());
     }
 
-
     /**
      * {@return the attribute modifiers for the given equipment slot}
      * <p>

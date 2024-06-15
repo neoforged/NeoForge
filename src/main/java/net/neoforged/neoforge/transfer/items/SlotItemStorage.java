@@ -17,6 +17,7 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 public class SlotItemStorage extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
     private final IResourceHandler<ItemResource> storage;
+    private ItemStack cachedStack = null;
 
     public SlotItemStorage(IResourceHandler<ItemResource> storage, int index, int xPosition, int yPosition) {
         super(EMPTY, index, xPosition, yPosition);
@@ -30,13 +31,12 @@ public class SlotItemStorage extends Slot {
 
     @Override
     public ItemStack getItem() {
-        return storage.getResource(getContainerSlot()).toStack(storage.getAmount(getContainerSlot()));
+        return cachedStack = storage.getResource(getContainerSlot()).toStack(storage.getAmount(getContainerSlot()));
     }
 
     @Override
     public void set(ItemStack stack) {
         ((IResourceHandlerModifiable<ItemResource>) storage).set(getContainerSlot(), ItemResource.of(stack), stack.getCount());
-        this.setChanged();
     }
 
     @Override
@@ -65,5 +65,10 @@ public class SlotItemStorage extends Slot {
         return storage;
     }
 
-
+    @Override
+    public void setChanged() {
+        if (cachedStack != null) {
+            set(cachedStack);
+        }
+    }
 }

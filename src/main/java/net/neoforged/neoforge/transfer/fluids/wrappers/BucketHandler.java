@@ -30,9 +30,9 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     public FluidResource getResource() {
         Item item = context.getResource().getItem();
         if (item instanceof BucketItem bucket) {
-            return bucket.content.getDefaultResource();
+            return bucket.content.defaultResource;
         } else if (item instanceof MilkBucketItem && NeoForgeMod.MILK.isBound()) {
-            return NeoForgeMod.MILK.get().getDefaultResource();
+            return NeoForgeMod.MILK.get().defaultResource;
         }
         return FluidResource.BLANK;
     }
@@ -75,7 +75,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     }
 
     private ItemResource getEmpty() {
-        return Items.BUCKET.getDefaultResource();
+        return Items.BUCKET.defaultResource;
     }
 
     @Override

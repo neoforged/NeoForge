@@ -156,7 +156,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
     }
 
     public ItemStack toStack(int count) {
-        return this.innerStack.copyWithCount(count);
+        return count == 0 || this.isBlank() ? ItemStack.EMPTY : this.innerStack.copyWithCount(count);
     }
 
     public List<ItemStack> toStacks(int count) {
