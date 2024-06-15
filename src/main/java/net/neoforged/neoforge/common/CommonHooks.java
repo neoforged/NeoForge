@@ -265,23 +265,7 @@ public class CommonHooks {
      * @return if the event is cancelled and no damage will be applied to the entity
      */
     public static boolean onEntityIncomingDamage(LivingEntity entity, DamageContainer container) {
-        return entity instanceof Player || !NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
-    }
-
-    /**
-     * Called after invulnerability checks in {@link Player#hurt(DamageSource, float)},
-     * {@link net.minecraft.client.player.LocalPlayer#hurt(DamageSource, float)}, and
-     * {@link net.minecraft.client.player.RemotePlayer#hurt(DamageSource, float)},
-     * this method creates and posts the first event in the LivingEntity damage sequence,
-     * {@link LivingIncomingDamageEvent}, for player entities.
-     *
-     * @param entity    the player to receive damage
-     * @param container the newly instantiated container for damage to be dealt. Most properties of
-     *                  the container will be empty at this stage.
-     * @return if the event is cancelled and no damage will be applied to the entity
-     */
-    public static boolean onPlayerIncomingDamage(LivingEntity entity, DamageContainer container) {
-        return !NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ) {
@@ -306,7 +290,7 @@ public class CommonHooks {
      *
      */
     public static float onLivingDamagePre(LivingEntity entity, DamageContainer container) {
-        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getDamageContainer().getNewDamage();
+        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getContainer().getNewDamage();
     }
 
     /**
@@ -319,7 +303,7 @@ public class CommonHooks {
      *                  instance is immutable.
      */
     public static void onLivingDamagePost(LivingEntity entity, DamageContainer container) {
-        NeoForge.EVENT_BUS.post(new LivingDamageEvent.Post(entity, new DamageContainer.ResultDamageContainer(container)));
+        NeoForge.EVENT_BUS.post(new LivingDamageEvent.Post(entity, container));
     }
 
     /**

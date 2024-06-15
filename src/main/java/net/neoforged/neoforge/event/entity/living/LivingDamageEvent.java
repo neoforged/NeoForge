@@ -5,6 +5,11 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.stream.Collectors;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
@@ -21,11 +26,11 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * <br>
  * For more information on the damage sequence
  * 
- * @see DamageSequenceEvent
+ * @see DamageContainer
  */
-public abstract class LivingDamageEvent extends DamageSequenceEvent {
-    private LivingDamageEvent(LivingEntity entity, DamageContainer container) {
-        super(entity, container);
+public abstract class LivingDamageEvent extends LivingEvent {
+    private LivingDamageEvent(LivingEntity entity) {
+        super(entity);
     }
 
     /**
@@ -42,17 +47,24 @@ public abstract class LivingDamageEvent extends DamageSequenceEvent {
      * <br>
      * For more information on the damage sequence
      * 
-     * @see DamageSequenceEvent
+     * @see DamageContainer
      **/
     public static class Pre extends LivingDamageEvent {
-        public Pre(LivingEntity entity, DamageContainer source) {
-            super(entity, source);
+        private final DamageContainer container;
+
+        public Pre(LivingEntity entity, DamageContainer container) {
+            super(entity);
+            this.container = container;
+        }
+
+        public DamageContainer getContainer() {
+            return container;
         }
     }
 
     /**
      * LivingDamageEvent.Post is fired after health is modified on the entity.<br>
-     * the {@link DamageContainer} is immutable and represents a FINAL value of what was applied to the entity.
+     * The fields in this event represent the FINAL values of what was applied to the entity.
      * <br>
      * Also note that appropriate resources (like armor durability and absorption extra hearts) have already been consumed.<br>
      * This event is fired whenever an Entity is damaged in {@code LivingEntity#actuallyHurt(DamageSource, float)}
@@ -61,11 +73,79 @@ public abstract class LivingDamageEvent extends DamageSequenceEvent {
      * <br>
      * For more information on the damage sequence
      * 
-     * @see DamageSequenceEvent
+     * @see DamageContainer
      **/
     public static class Post extends LivingDamageEvent {
+        private final float originalDamage;
+        private final DamageSource source;
+        private final float newDamage;
+        private final float blockedDamage;
+        private final float shieldDamage;
+        private final int postAttackInvulnerabilityTicks;
+        private final EnumMap<DamageContainer.Reduction, Float> reductions;
+
         public Post(LivingEntity entity, DamageContainer container) {
-            super(entity, container);
+            super(entity);
+            this.originalDamage = container.getOriginalDamage();
+            this.source = container.getSource();
+            this.newDamage = container.getNewDamage();
+            this.blockedDamage = container.getBlockedDamage();
+            this.shieldDamage = container.getShieldDamage();
+            this.postAttackInvulnerabilityTicks = container.getPostAttackInvulnerabilityTicks();
+            this.reductions = new EnumMap<DamageContainer.Reduction, Float>(Arrays.stream(DamageContainer.Reduction.values())
+                    .map(type -> new AbstractMap.SimpleEntry<>(type, container.getReduction(type)))
+                    .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
+        }
+
+        /**
+         * @return the original damage when {@link LivingEntity#hurt} was invoked
+         */
+        public float getOriginalDamage() {
+            return originalDamage;
+        }
+
+        /**
+         * @return the {@link DamageSource} for this damage sequence
+         */
+        public DamageSource getSource() {
+            return source;
+        }
+
+        /**
+         * @return the amount of health this entity lost during this sequence
+         */
+        public float getNewDamage() {
+            return newDamage;
+        }
+
+        /**
+         * @return the amount of damage reduced by a blocking action
+         */
+        public float getBlockedDamage() {
+            return blockedDamage;
+        }
+
+        /**
+         * @return the amount of shield durability this entity lost if a blocking action was
+         *         captured and the entity was holding a shield
+         */
+        public float getShieldDamage() {
+            return shieldDamage;
+        }
+
+        /**
+         * @return the number of ticks this entity will be invulnerable after this sequence
+         */
+        public int getPostAttackInvulnerabilityTicks() {
+            return postAttackInvulnerabilityTicks;
+        }
+
+        /**
+         * @param reduction the type of reduction to obtain
+         * @return the amount of damage reduced by this reduction type.
+         */
+        public float getReduction(DamageContainer.Reduction reduction) {
+            return reductions.getOrDefault(reduction, 0f);
         }
     }
 }

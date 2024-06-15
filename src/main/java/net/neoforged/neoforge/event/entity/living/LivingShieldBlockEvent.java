@@ -22,20 +22,26 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * for players.</h4>
  * For more information on the damage sequence
  * 
- * @see DamageSequenceEvent
+ * @see DamageContainer
  */
-public class LivingShieldBlockEvent extends DamageSequenceEvent implements ICancellableEvent {
+public class LivingShieldBlockEvent extends LivingEvent implements ICancellableEvent {
+    private final DamageContainer container;
     private float dmgBlocked;
     private float shieldDamage = -1;
     private final boolean originalBlocked;
     private boolean newBlocked;
 
     public LivingShieldBlockEvent(LivingEntity blocker, DamageContainer container, boolean originalBlockedState) {
-        super(blocker, container);
+        super(blocker);
+        this.container = container;
         this.dmgBlocked = container.getNewDamage();
         this.originalBlocked = originalBlockedState;
         this.newBlocked = originalBlockedState;
         this.shieldDamage = container.getNewDamage();
+    }
+
+    public DamageContainer getDamageContainer() {
+        return this.container;
     }
 
     /**

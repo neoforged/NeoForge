@@ -20,7 +20,7 @@
 +     * the stack before the method's return.
 +    **/
 +    @Nullable
-+    protected java.util.Stack<net.neoforged.neoforge.common.damagesource.InternalDamageContainer> damageContainers = new java.util.Stack<>();
++    protected java.util.Stack<net.neoforged.neoforge.common.damagesource.DamageContainer> damageContainers = new java.util.Stack<>();
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
          super(p_20966_, p_20967_);
@@ -171,8 +171,8 @@
          } else if (p_21016_.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          } else {
-+            this.damageContainers.push(new net.neoforged.neoforge.common.damagesource.InternalDamageContainer(p_21016_, p_21017_));
-+            if (!net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainers.peek())) return false;
++            this.damageContainers.push(new net.neoforged.neoforge.common.damagesource.DamageContainer(p_21016_, p_21017_));
++            if (net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainers.peek())) return false;
              if (this.isSleeping() && !this.level().isClientSide) {
                  this.stopSleeping();
              }

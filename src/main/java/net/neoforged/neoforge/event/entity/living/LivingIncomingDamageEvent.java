@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import java.util.function.BiFunction;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.common.damagesource.IReductionFunction;
 
 /**
  * LivingIncomingDamageEvent is fired when a LivingEntity is about to receive damage.
@@ -25,11 +25,18 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * <br>
  * For more information on the damage sequence
  * 
- * @see DamageSequenceEvent
+ * @see DamageContainer
  **/
-public class LivingIncomingDamageEvent extends DamageSequenceEvent implements ICancellableEvent {
+public class LivingIncomingDamageEvent extends LivingEvent implements ICancellableEvent {
+    private final DamageContainer container;
+
     public LivingIncomingDamageEvent(LivingEntity entity, DamageContainer container) {
-        super(entity, container);
+        super(entity);
+        this.container = container;
+    }
+
+    public DamageContainer getContainer() {
+        return this.container;
     }
 
     public DamageSource getSource() {
@@ -58,7 +65,7 @@ public class LivingIncomingDamageEvent extends DamageSequenceEvent implements IC
      * @param type          the reduction type to be modified
      * @param reductionFunc the function to apply to the reduction value.
      */
-    public void addReductionModifier(DamageContainer.Reduction type, BiFunction<DamageContainer, Float, Float> reductionFunc) {
+    public void addReductionModifier(DamageContainer.Reduction type, IReductionFunction reductionFunc) {
         this.container.addModifier(type, reductionFunc);
     }
 
