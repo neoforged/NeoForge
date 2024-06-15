@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.transfer.items.templates;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -147,7 +149,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
         private final AttachmentType<ItemContainerContents> attachmentType;
         private final AttachmentHolder holder;
 
-        public Attachment(int slotCount, AttachmentType<ItemContainerContents> attachmentType, AttachmentHolder holder) {
+        public Attachment(AttachmentHolder holder, AttachmentType<ItemContainerContents> attachmentType, int slotCount) {
             super(slotCount);
             this.attachmentType = attachmentType;
             this.holder = holder;
@@ -169,7 +171,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
         private final DataComponentType<ItemContainerContents> componentType;
         private final IItemContext context;
 
-        public Item(int slotCount, DataComponentType<ItemContainerContents> componentType, IItemContext context) {
+        public Item(IItemContext context, DataComponentType<ItemContainerContents> componentType, int slotCount) {
             super(slotCount);
             this.componentType = componentType;
             this.context = context;
@@ -177,7 +179,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
 
         @Override
         public ItemContainerContents getContents() {
-            return context.getResource().getOrDefault(componentType, new ItemContainerContents(size()));
+            return context.getResource().getOrDefault(componentType, ItemContainerContents.fromItems(NonNullList.withSize(size(), ItemStack.EMPTY)));
         }
 
         @Override

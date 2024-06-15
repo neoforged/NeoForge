@@ -1,6 +1,16 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -146,6 +_,39 @@
+@@ -13,6 +_,8 @@
+ import net.minecraft.network.codec.ByteBufCodecs;
+ import net.minecraft.network.codec.StreamCodec;
+ import net.minecraft.world.item.ItemStack;
++import net.neoforged.neoforge.transfer.ResourceStack;
++import net.neoforged.neoforge.transfer.items.ItemResource;
+ 
+ public final class ItemContainerContents {
+     private static final int NO_SLOT = -1;
+@@ -145,6 +_,79 @@
+     public int hashCode() {
          return this.hashCode;
      }
  
@@ -23,6 +33,46 @@
 +    public ItemStack getStackInSlot(int slot) {
 +        validateSlotIndex(slot);
 +        return this.items.get(slot).copy();
++    }
++
++    /**
++     * Gets an immutable resource stack of the stack at a particular slot.
++     *
++     * @param slot The slot to check. Must be within [0, {@link #getSlots()}]
++     * @return An immutable resource stack of the stack in that slot
++     * @throws UnsupportedOperationException if the provided slot index is out-of-bounds.
++     */
++    public ResourceStack<ItemResource> getImmutableStackInSlot(int slot) {
++        validateSlotIndex(slot);
++        return this.items.get(slot).immutable();
++    }
++
++    /**
++     * Returns a copy of this container with the stack at the specified slot replaced with the provided stack.
++     *
++     * @param slot The slot to set. Must be within [0, {@link #getSlots()}]
++     * @param stack The stack to set. Must not be null.
++     * @return A copy of this container with the stack at the specified slot replaced with the provided stack.
++     */
++    public ItemContainerContents set(int slot, ItemStack stack) {
++        validateSlotIndex(slot);
++        NonNullList<ItemStack> newItems = NonNullList.withSize(this.items.size(), ItemStack.EMPTY);
++        for (int i = 0; i < this.items.size(); i++) {
++            newItems.set(i, i == slot ? stack : this.items.get(i));
++        }
++        return new ItemContainerContents(newItems);
++    }
++
++    /**
++     * Returns a copy of this container with the stack at the specified slot replaced with the provided resource and amount.
++     *
++     * @param slot The slot to set. Must be within [0, {@link #getSlots()}]
++     * @param resource The resource to set. Must not be null.
++     * @param amount The amount to set. Must be greater than or equal to 0.
++     * @return A copy of this container with the stack at the specified slot replaced with the provided resource and amount.
++     */
++    public ItemContainerContents set(int slot, ItemResource resource, int amount) {
++        return set(slot, resource.toStack(amount));
 +    }
 +
 +    /**
