@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.items.templates.AutoDroppingHandler;
 import net.neoforged.neoforge.transfer.items.wrappers.PlayerInventoryHandler;
 
 public class PlayerContext implements IItemContext {

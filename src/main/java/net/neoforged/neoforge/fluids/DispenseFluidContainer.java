@@ -13,8 +13,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.HandlerUtils;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.context.templates.DispenserContext;
+import net.neoforged.neoforge.transfer.fluids.FluidConstants;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 
 /**
  * Fills or drains a fluid container item using a Dispenser.
@@ -61,14 +68,13 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
      * Drains a filled container and places the fluid in front of the Dispenser.
      */
     private ItemStack dumpContainer(BlockSource source, ItemStack stack) {
-        ItemStack singleStack = stack.copy();
-        singleStack.setCount(1);
-        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(singleStack).orElse(null);
-        if (fluidHandler == null) {
+        DispenserContext context = new DispenserContext(stack);
+        IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
+        if (handler == null) {
             return super.execute(source, stack);
         }
 
-        FluidStack fluidStack = fluidHandler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
+        ResourceStack<FluidResource> resourceStack = HandlerUtils.extractAny(handler, FluidConstants.BUCKET, TransferAction.EXECUTE);
         Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
         BlockPos blockpos = source.pos().relative(dispenserFacing);
         FluidActionResult result = FluidUtil.tryPlaceFluid(null, source.level(), InteractionHand.MAIN_HAND, blockpos, stack, fluidStack);

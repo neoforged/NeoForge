@@ -10,9 +10,11 @@ import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -30,11 +32,17 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.wrappers.BlockWrapper;
-import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.HandlerUtils;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.TransferResult;
+import net.neoforged.neoforge.transfer.context.IItemContext;
+import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.fluids.wrappers.BlockFluidHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidUtil {
@@ -76,25 +84,12 @@ public class FluidUtil {
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
 
-        ItemStack heldItem = player.getItemInHand(hand);
-        if (heldItem.isEmpty()) {
+        IItemContext itemContext = PlayerContext.ofHand(player, hand);
+        IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
+        if (handHandler == null) {
             return false;
         }
 
-        var playerInventory = player.getCapability(Capabilities.ItemHandler.ENTITY);
-        Objects.requireNonNull(playerInventory, "Player item handler is null");
-
-        FluidActionResult fluidActionResult = tryFillContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
-        if (!fluidActionResult.isSuccess()) {
-            fluidActionResult = tryEmptyContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
-        }
-
-        if (fluidActionResult.isSuccess()) {
-            player.setItemInHand(hand, fluidActionResult.getResult());
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -109,33 +104,22 @@ public class FluidUtil {
      * @param doFill      true if the container should actually be filled, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the filled container if successful.
      */
-    public static FluidActionResult tryFillContainer(ItemStack container, IFluidHandler fluidSource, int maxAmount, @Nullable Player player, boolean doFill) {
-        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
-        return getFluidHandler(containerCopy)
-                .map(containerFluidHandler -> {
-                    FluidStack simulatedTransfer = tryFluidTransfer(containerFluidHandler, fluidSource, maxAmount, false);
-                    if (!simulatedTransfer.isEmpty()) {
-                        if (doFill) {
-                            tryFluidTransfer(containerFluidHandler, fluidSource, maxAmount, true);
-                            if (player != null) {
-                                SoundEvent soundevent = simulatedTransfer.getFluidType().getSound(simulatedTransfer, SoundActions.BUCKET_FILL);
+    public static TransferResult tryFillContainer(@Nullable Level level, @Nullable Vec3i pos, IResourceHandler<FluidResource> from, IItemContext to, int maxAmount, TransferAction action) {
+        IResourceHandler<FluidResource> receiver = to.getCapability(Capabilities.FluidHandler.ITEM);
+        if (receiver == null) return TransferResult.FAIL;
 
-                                if (soundevent != null) {
-                                    player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
-                                }
-                            }
-                        } else {
-                            // We are acting on a COPY of the stack, so performing changes on the source is acceptable even if we are simulating.
-                            // We need to perform the change otherwise the call to getContainer() will be incorrect.
-                            containerFluidHandler.fill(simulatedTransfer, IFluidHandler.FluidAction.EXECUTE);
-                        }
+        ResourceStack<FluidResource> moved = HandlerUtils.moveAny(from, receiver, maxAmount, action);
+        if (moved == null || moved.isEmpty()) return TransferResult.PASS;
 
-                        ItemStack resultContainer = containerFluidHandler.getContainer();
-                        return new FluidActionResult(resultContainer);
-                    }
-                    return FluidActionResult.FAILURE;
-                })
-                .orElse(FluidActionResult.FAILURE);
+        if (action == TransferAction.EXECUTE) {
+            SoundEvent soundevent = moved.resource().getSound(SoundActions.BUCKET_FILL);
+
+            if (soundevent != null) {
+                level.playSound(null, pos.getX(), pos.getY() + 0.5, pos.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+        }
+
+        return TransferResult.SUCCESS;
     }
 
     /**
@@ -518,9 +502,8 @@ public class FluidUtil {
      * Modders: Instead of this method, use {@link #tryPlaceFluid(Player, Level, InteractionHand, BlockPos, ItemStack, FluidStack)}
      * or {@link #tryPlaceFluid(Player, Level, InteractionHand, BlockPos, IFluidHandler, FluidStack)}
      */
-    private static IFluidHandler getFluidBlockHandler(Fluid fluid, Level level, BlockPos pos) {
-        BlockState state = fluid.getFluidType().getBlockForFluidState(level, pos, fluid.defaultFluidState());
-        return new BlockWrapper(state, level, pos);
+    private static IResourceHandler<FluidResource> getFluidBlockHandler(Fluid fluid, Level level, BlockPos pos) {
+        return new BlockFluidHandler(level, pos);
     }
 
     /**

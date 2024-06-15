@@ -44,7 +44,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     @Override
     public FluidResource getResource() {
         FluidState fluidState = level.getFluidState(blockPos);
-        return fluidState.getType().getDefaultResource();
+        return fluidState.getType().defaultResource;
     }
 
     @Override
@@ -77,9 +77,13 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
         if (amount < FluidConstants.BUCKET) return 0;
         BlockState state = level.getBlockState(blockPos);
         if (action.isExecuting()) {
-            if (state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(null, level, blockPos, state, resource.getFluid())) {
-                container.placeLiquid(level, blockPos, state, resource.getFluid().defaultFluidState());
-            } else if (state.canBeReplaced(resource.getFluid())) {
+            boolean waterLoggable = state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(null, level, blockPos, state, resource.getFluid());
+            boolean replaceable = state.canBeReplaced(resource.getFluid());
+            if ((waterLoggable || replaceable) && resource.isVaporizedOnPlacement(level, blockPos)) {
+                resource.onVaporize(player, level, blockPos);
+            } else if (waterLoggable) {
+                ((LiquidBlockContainer) state.getBlock()).placeLiquid(level, blockPos, state, resource.getFluid().defaultFluidState());
+            } else if (replaceable) {
                 level.destroyBlock(blockPos, true);
                 level.setBlock(blockPos, state, Block.UPDATE_ALL_IMMEDIATE);
             } else {
@@ -93,7 +97,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     public int extract(FluidResource resource, int amount, TransferAction action) {
         BlockState state = level.getBlockState(blockPos);
         FluidState fluidState = level.getFluidState(blockPos);
-        if (amount < FluidConstants.BUCKET || resource.isBlank() || !resource.equals(fluidState.getType().getDefaultResource())) return 0;
+        if (amount < FluidConstants.BUCKET || resource.isBlank() || !resource.equals(fluidState.getType().defaultResource)) return 0;
         if (!state.getFluidState().isEmpty()) {
             if (!(state.getBlock() instanceof BucketPickup pickupHandler)) return 0;
             if (action.isSimulating()) {
@@ -101,7 +105,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
             }
             ItemStack stack = pickupHandler.pickupBlock(player, level, blockPos, state);
             if (!stack.isEmpty()) {
-                if (stack.getItem() instanceof BucketItem bucket && !resource.equals(bucket.content.getDefaultResource())) {
+                if (stack.getItem() instanceof BucketItem bucket && !resource.equals(bucket.content.defaultResource)) {
                     LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
                             BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, level.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.content));
                     return 0;

@@ -10,6 +10,9 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 
+import javax.annotation.Nullable;
+import java.util.function.Predicate;
+
 public class HandlerUtils {
 
     /**
@@ -109,7 +112,7 @@ public class HandlerUtils {
      * @param amount   the desired amount of the resource to insert
      * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return the amount of the resource that was inserted
+     * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
     public static <T extends IResource> int insertStacking(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
         int inserted = 0;
@@ -143,7 +146,7 @@ public class HandlerUtils {
      * @param amount   the desired amount of the resource to insert
      * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return the amount of the resource that was inserted
+     * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
     public static <T extends IResource> int insert(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
         int inserted = 0;
@@ -168,7 +171,7 @@ public class HandlerUtils {
      * @param amount   the desired amount of the resource to extract
      * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return the amount of the resource that was extracted
+     * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
     public static <T extends IResource> int extract(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
         int extracted = 0;
@@ -181,5 +184,99 @@ public class HandlerUtils {
         }
 
         return extracted;
+    }
+
+
+    /**
+     * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
+     *
+     * @param <T>      the type of resource handled by the handler
+     * @param handler  the {@link IResourceHandler} to extract the resource from
+     * @param filter   the filter to apply to the resources
+     * @param amount   the desired amount of the resource to extract
+     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @return the amount of the resource that was (or would have been, if simulated) extracted
+     */
+    @Nullable
+    public static <T extends IResource> ResourceStack<T> extractFiltered(IResourceHandler<T> handler, Predicate<T> filter, int amount, TransferAction action) {
+        int size = handler.size();
+        for (int index = 0; index < size; index++) {
+            T resource = handler.getResource(index);
+            if (!filter.test(resource)) continue;
+            int extract = handler.extract(resource, amount, action);
+            if (extract > 0) {
+                return new ResourceStack<>(resource, extract);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extracts the first resource from an {@link IResourceHandler} that is not blank.
+     *
+     * @param <T>      the type of resource handled by the handler
+     * @param handler  the {@link IResourceHandler} to extract the resource from
+     * @param amount   the desired amount of the resource to extract
+     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
+     */
+    @Nullable
+    public static <T extends IResource> ResourceStack<T> extractAny(IResourceHandler<T> handler, int amount, TransferAction action) {
+        return extractFiltered(handler, Predicate.not(IResource::isBlank), amount, action);
+    }
+
+    /**
+     * Moves a resource from one {@link IResourceHandler} to another.
+     *
+     * @param <T>    the type of resource handled by the handlers
+     * @param from   the {@link IResourceHandler} to move the resource from
+     * @param to     the {@link IResourceHandler} to move the resource to
+     * @param amount the desired amount of the resource to move
+     * @param action the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *               while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @return the amount of the resource and the resource itself that was (or would have been, if simulated) moved
+     */
+    @Nullable
+    public static <T extends IResource> ResourceStack<T> moveFiltered(IResourceHandler<T> from, IResourceHandler<T> to, Predicate<T> filter, int amount, TransferAction action) {
+        for (int index = 0; index < from.size(); index++) {
+            T resource = from.getResource(index);
+            if (!filter.test(resource)) continue;
+            int extracted = from.extract(resource, amount, TransferAction.SIMULATE);
+            int inserted = to.insert(resource, extracted, TransferAction.SIMULATE);
+            if (extracted > 0 && inserted > 0) {
+                while (extracted != inserted) {
+                    extracted = from.extract(resource, inserted, TransferAction.SIMULATE);
+                    inserted = to.insert(resource, extracted, TransferAction.SIMULATE);
+                    if (extracted == 0 || inserted == 0) {
+                        break;
+                    }
+                }
+                if (inserted == 0) continue;
+                if (action.isExecuting()) {
+                    from.extract(resource, inserted, TransferAction.EXECUTE);
+                    to.insert(resource, inserted, TransferAction.EXECUTE);
+                }
+                return new ResourceStack<>(resource, inserted);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Moves a resource from one {@link IResourceHandler} to another.
+     *
+     * @param <T>    the type of resource handled by the handlers
+     * @param from   the {@link IResourceHandler} to move the resource from
+     * @param to     the {@link IResourceHandler} to move the resource to
+     * @param amount the desired amount of the resource to move
+     * @param action the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *               while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @return the amount of the resource and the resource itself that was (or would have been, if simulated) moved
+     */
+    @Nullable
+    public static <T extends IResource> ResourceStack<T> moveAny(IResourceHandler<T> from, IResourceHandler<T> to, int amount, TransferAction action) {
+        return moveFiltered(from, to, Predicate.not(IResource::isBlank), amount, action);
     }
 }

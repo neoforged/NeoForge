@@ -479,7 +479,7 @@ public interface IItemStackExtension {
     }
 
     default ResourceStack<ItemResource> immutable() {
-        return new ResourceStack<>(ItemResource.of(self()), self().getCount());
+        return self().isEmpty() ? ItemResource.EMPTY_STACK : new ResourceStack<>(ItemResource.of(self()), self().getCount());
     }
 
     /**

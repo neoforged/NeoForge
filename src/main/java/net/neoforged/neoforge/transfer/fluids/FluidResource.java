@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.fluids;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentHolder;
@@ -16,15 +17,20 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.items.ItemResource;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -143,6 +149,10 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return this.innerStack.copyWithAmount(amount);
     }
 
+    public FluidStack toStack() {
+        return toStack(FluidType.BUCKET_VOLUME);
+    }
+
     public boolean is(TagKey<Fluid> tag) {
         return innerStack.is(tag);
     }
@@ -167,6 +177,14 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.is(fluidType);
     }
 
+    public boolean isVaporizedOnPlacement(Level level, BlockPos pos) {
+        return innerStack.getFluidType().isVaporizedOnPlacement(level, pos, innerStack);
+    }
+
+    public void onVaporize(Player player, Level level, BlockPos pos) {
+        innerStack.getFluidType().onVaporize(player, level, pos, innerStack);
+    }
+
     public static boolean isSameFluid(FluidResource first, FluidResource other) {
         return first.is(other.getFluid());
     }
@@ -177,6 +195,10 @@ public final class FluidResource implements IResource, DataComponentHolder {
             filledBucket = bucket = ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
         }
         return bucket;
+    }
+
+    public @Nullable SoundEvent getSound(SoundAction action) {
+        return innerStack.getFluidType().getSound(innerStack, action);
     }
 
     @Override
