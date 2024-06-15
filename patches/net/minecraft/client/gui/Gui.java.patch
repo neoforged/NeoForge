@@ -381,11 +381,11 @@
 +
      @OnlyIn(Dist.CLIENT)
 -    public static enum HeartType {
-+    public static enum HeartType implements net.neoforged.neoforge.common.IExtensibleEnum {
++    public static enum HeartType implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          CONTAINER(
              ResourceLocation.withDefaultNamespace("hud/heart/container"),
              ResourceLocation.withDefaultNamespace("hud/heart/container_blinking"),
-@@ -1409,8 +_,23 @@
+@@ -1409,8 +_,13 @@
              } else {
                  gui$hearttype = NORMAL;
              }
@@ -394,18 +394,8 @@
              return gui$hearttype;
 +        }
 +
-+        public static HeartType create(
-+                String name,
-+                ResourceLocation full,
-+                ResourceLocation fullBlinking,
-+                ResourceLocation half,
-+                ResourceLocation halfBlinking,
-+                ResourceLocation hardcoreFull,
-+                ResourceLocation hardcoreFullBlinking,
-+                ResourceLocation hardcoreHalf,
-+                ResourceLocation hardcoreHalfBlinking
-+        ) {
-+            throw new IllegalStateException("Enum not extended");
++        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(Gui.HeartType.class);
          }
      }
  }
