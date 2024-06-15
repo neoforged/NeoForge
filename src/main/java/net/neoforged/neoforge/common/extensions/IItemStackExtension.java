@@ -491,6 +491,7 @@ public interface IItemStackExtension {
         } else {
             self().getItem().getAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
         }
+        self().getItem().adjustAttributeModifiers(self(), equipmentSlot, multimap);
         return CommonHooks.getAttributeModifiers(self(), equipmentSlot, multimap);
     }
 }
