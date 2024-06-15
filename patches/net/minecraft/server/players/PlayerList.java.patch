@@ -57,25 +57,28 @@
          ServerLevel serverlevel = p_11287_.serverLevel();
          p_11287_.awardStat(Stats.LEAVE_GAME);
          this.save(p_11287_);
-@@ -440,6 +_,8 @@
+@@ -440,13 +_,20 @@
          this.players.remove(p_11237_);
          p_11237_.serverLevel().removePlayerImmediately(p_11237_, p_348558_);
          DimensionTransition dimensiontransition = p_11237_.findRespawnPositionAndUseSpawnBlock(p_11238_, DimensionTransition.DO_NOTHING);
++
++        // Neo: Allow changing the respawn position of players. The local dimension transition is updated with the new target.
 +        var event = net.neoforged.neoforge.event.EventHooks.firePlayerRespawnPositionEvent(p_11237_, dimensiontransition, p_11238_);
 +        dimensiontransition = event.getDimensionTransition();
++
          ServerLevel serverlevel = dimensiontransition.newLevel();
          ServerPlayer serverplayer = new ServerPlayer(this.server, serverlevel, p_11237_.getGameProfile(), p_11237_.clientInformation());
          serverplayer.connection = p_11237_.connection;
-@@ -456,6 +_,9 @@
- 
-         Vec3 vec3 = dimensiontransition.pos();
-         serverplayer.moveTo(vec3.x, vec3.y, vec3.z, dimensiontransition.yRot(), dimensiontransition.xRot());
-+        if (event.changePlayerSpawnPosition()) {
-+            serverplayer.setRespawnPosition(dimensiontransition.newLevel().dimension(), BlockPos.containing(vec3), dimensiontransition.yRot(), p_11237_.isRespawnForced(), false);
-+        }
-         if (dimensiontransition.missingRespawnBlock()) {
-             serverplayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.NO_RESPAWN_BLOCK_AVAILABLE, 0.0F));
+         serverplayer.restoreFrom(p_11237_, p_11238_);
+         serverplayer.setId(p_11237_.getId());
+         serverplayer.setMainArm(p_11237_.getMainArm());
+-        if (!dimensiontransition.missingRespawnBlock()) {
++
++        // Neo: Allow the event to control if the original spawn position is copied
++        if (event.copyOriginalSpawnPosition()) {
+             serverplayer.copyRespawnPosition(p_11237_);
          }
+ 
 @@ -477,6 +_,7 @@
          this.playersByUUID.put(serverplayer.getUUID(), serverplayer);
          serverplayer.initInventoryMenu();
