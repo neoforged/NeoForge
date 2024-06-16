@@ -301,7 +301,7 @@
              || this.invulnerable && !p_20122_.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !p_20122_.isCreativePlayer()
              || p_20122_.is(DamageTypeTags.IS_FIRE) && this.fireImmune()
              || p_20122_.is(DamageTypeTags.IS_FALL) && this.getType().is(EntityTypeTags.FALL_DAMAGE_IMMUNE);
-+        return net.neoforged.neoforge.common.CommonHooks.onEntityInvulnerablityCheck(this, p_20122_, isVanillaInvulnerable);
++        return net.neoforged.neoforge.common.CommonHooks.onEntityInvulnerabilityCheck(this, p_20122_, isVanillaInvulnerable);
      }
  
      public boolean isInvulnerable() {
