@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.context;
 
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.items.ItemResource;
@@ -25,4 +26,8 @@ public interface IItemContext {
     int extract(ItemResource resource, int amount, TransferAction action);
 
     int exchange(ItemResource resource, int amount, TransferAction action);
+
+    default ItemStack toStack() {
+        return getResource().toStack(getAmount());
+    }
 }

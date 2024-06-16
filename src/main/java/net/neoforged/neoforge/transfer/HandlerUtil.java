@@ -13,7 +13,7 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
-public class HandlerUtils {
+public class HandlerUtil {
 
     /**
      * Checks if an {@link IResourceHandler} is empty.
@@ -118,7 +118,7 @@ public class HandlerUtils {
         int inserted = 0;
         int size = handler.size();
         for (int index = 0; index < size; index++) {
-            if (HandlerUtils.isIndexEmpty(handler, index)) continue;
+            if (HandlerUtil.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -126,7 +126,7 @@ public class HandlerUtils {
         }
 
         for (int index = 0; index < size; index++) {
-            if (!HandlerUtils.isIndexEmpty(handler, index)) continue;
+            if (!HandlerUtil.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;

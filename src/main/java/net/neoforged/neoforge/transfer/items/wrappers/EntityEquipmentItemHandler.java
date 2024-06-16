@@ -8,8 +8,7 @@ package net.neoforged.neoforge.transfer.items.wrappers;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.transfer.HandlerUtils;
+import net.neoforged.neoforge.transfer.HandlerUtil;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
@@ -107,7 +106,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public int insert(ItemResource resource, int amount, TransferAction action) {
-        return HandlerUtils.insertStacking(this, resource, amount, action);
+        return HandlerUtil.insertStacking(this, resource, amount, action);
     }
 
     @Override
@@ -126,6 +125,6 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public int extract(ItemResource resource, int amount, TransferAction action) {
-        return HandlerUtils.extract(this, resource, amount, action);
+        return HandlerUtil.extract(this, resource, amount, action);
     }
 }

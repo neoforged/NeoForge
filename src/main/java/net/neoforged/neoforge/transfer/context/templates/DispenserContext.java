@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DispenserContext implements IItemContext {
-    ItemResource resource;
-    int amount;
+    protected ItemResource resource;
+    protected int amount;
     protected final Object2IntMap<ItemResource> resources = new Object2IntOpenHashMap<>();
 
     public DispenserContext(ItemStack stack) {
@@ -52,8 +52,8 @@ public class DispenserContext implements IItemContext {
                 this.amount += inserted;
             }
         }
-        if (action.isExecuting()) resources.put(resource, resources.getInt(resource) + inserted);
-        return amount - inserted;
+        if (action.isExecuting()) resources.put(resource, resources.getInt(resource) + amount - inserted);
+        return amount;
     }
 
     @Override
@@ -100,6 +100,7 @@ public class DispenserContext implements IItemContext {
             Position position = DispenserBlock.getDispensePosition(source);
             overflow.forEach(stack -> DefaultDispenseItemBehavior.spawnItem(source.level(), stack, 6, direction, position));
         }
+        resources.clear();
         return res;
     }
 }

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.context.templates;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.items.ItemResource;
@@ -17,11 +18,19 @@ public class PlayerContext implements IItemContext {
     protected final PlayerInventoryHandler handler;
     protected final int index;
 
-    public static PlayerContext ofHand(Player player, InteractionHand hand) {
+    public static IItemContext ofHand(Player player, InteractionHand hand) {
+        if (player.getAbilities().instabuild) {
+            ItemStack itemInHand = player.getItemInHand(hand);
+            return new CreativePlayerContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
+        }
         return new PlayerContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : player.getInventory().getContainerSize() - 1);
     }
 
-    public static PlayerContext ofArmor(Player player, EquipmentSlot slot) {
+    public static IItemContext ofArmor(Player player, EquipmentSlot slot) {
+        if (player.getAbilities().instabuild) {
+            ItemStack itemInSlot = player.getItemBySlot(slot);
+            return new CreativePlayerContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
+        }
         return new PlayerContext(player, player.getInventory().getContainerSize() + slot.getIndex());
     }
 

@@ -40,6 +40,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.fluids.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 

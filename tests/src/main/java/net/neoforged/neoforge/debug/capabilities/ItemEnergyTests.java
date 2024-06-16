@@ -11,6 +11,8 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities.EnergyHandler;
@@ -19,6 +21,11 @@ import net.neoforged.neoforge.energy.ComponentEnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.context.IItemContext;
+import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
+import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
+import net.neoforged.neoforge.transfer.energy.templates.ItemEnergyStorage;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -49,7 +56,7 @@ public class ItemEnergyTests {
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
             e.registerItem(EnergyHandler.ITEM, (stack, ctx) -> {
-                return new ComponentEnergyStorage(stack, ENERGY_COMPONENT.get(), MAX_CAPACITY);
+                return new ItemEnergyStorage(ctx, ENERGY_COMPONENT.get(), MAX_CAPACITY);
             }, BATTERY);
         });
     }
@@ -60,17 +67,17 @@ public class ItemEnergyTests {
     public static void testItemEnergy(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
             ItemStack stack = BATTERY.toStack();
-            IEnergyStorage energy = stack.getCapability(EnergyHandler.ITEM);
-            helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
+            Player player = helper.makeMockPlayer();
+            player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+            IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
+            IEnergyHandler energy = context.getCapability(EnergyHandler.ITEM);
+            helper.assertValueEqual(energy.getAmount(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
 
-            helper.assertValueEqual(energy.extractEnergy(MAX_CAPACITY, false), MAX_CAPACITY, "Extracted energy should be equal to the target value.");
-            helper.assertValueEqual(energy.getEnergyStored(), 0, "Post-extraction energy stored should be zero.");
+            helper.assertValueEqual(energy.extract(MAX_CAPACITY, TransferAction.EXECUTE), MAX_CAPACITY, "Extracted energy should be equal to the target value.");
+            helper.assertValueEqual(energy.getAmount(), 0, "Post-extraction energy stored should be zero.");
 
-            // Sanity check the real component here
-            helper.assertValueEqual(stack.get(ENERGY_COMPONENT), 0, "Post-extraction data component value should be zero.");
-
-            helper.assertValueEqual(energy.receiveEnergy(MAX_CAPACITY, false), MAX_CAPACITY, "Received energy should be equal to the target value.");
-            helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Post-insertion energy stored should be max capacity.");
+            helper.assertValueEqual(energy.insert(MAX_CAPACITY, TransferAction.EXECUTE), MAX_CAPACITY, "Received energy should be equal to the target value.");
+            helper.assertValueEqual(energy.getAmount(), MAX_CAPACITY, "Post-insertion energy stored should be max capacity.");
 
             helper.succeed();
         });
