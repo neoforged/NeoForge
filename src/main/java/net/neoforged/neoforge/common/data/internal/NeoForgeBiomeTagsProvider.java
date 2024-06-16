@@ -83,7 +83,6 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
         tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD)
                 .add(Biomes.WOODED_BADLANDS)
-                .add(Biomes.ERODED_BADLANDS)
                 .add(Biomes.SAVANNA)
                 .add(Biomes.SAVANNA_PLATEAU)
                 .add(Biomes.WINDSWEPT_SAVANNA)
