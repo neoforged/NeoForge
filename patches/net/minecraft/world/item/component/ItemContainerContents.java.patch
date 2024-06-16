@@ -3,7 +3,7 @@
 @@ -146,6 +_,39 @@
          return this.hashCode;
      }
-
+ 
 +    // Neo Start
 +
 +    /**
