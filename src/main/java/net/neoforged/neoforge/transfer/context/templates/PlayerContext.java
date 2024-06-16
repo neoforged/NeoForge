@@ -14,6 +14,9 @@ import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 import net.neoforged.neoforge.transfer.items.wrappers.PlayerInventoryHandler;
 
+/**
+ * A context that represents a player's inventory slot.
+ */
 public class PlayerContext implements IItemContext {
     protected final PlayerInventoryHandler handler;
     protected final int index;

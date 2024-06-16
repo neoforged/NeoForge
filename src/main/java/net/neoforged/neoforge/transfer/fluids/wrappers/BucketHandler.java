@@ -10,15 +10,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MilkBucketItem;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
-import net.neoforged.neoforge.transfer.fluids.FluidConstants;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
 import java.util.Objects;
 
+/**
+ * A handler for empty and filled buckets. This handler makes the assumption that the item in the main context is a bucket
+ * and will use an instance of check to determine the fluid resource.
+ */
 public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     private final IItemContext context;
 
@@ -39,12 +43,12 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int getAmount() {
-        return FluidConstants.BUCKET;
+        return FluidType.BUCKET_VOLUME;
     }
 
     @Override
     public int getLimit(FluidResource resource) {
-        return FluidConstants.BUCKET;
+        return FluidType.BUCKET_VOLUME;
     }
 
     @Override
@@ -68,10 +72,10 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (amount < FluidConstants.BUCKET || resource.isBlank() || !getResource().isBlank()) return 0;
+        if (amount < FluidType.BUCKET_VOLUME || resource.isBlank() || !getResource().isBlank()) return 0;
 
-        int exchanged = context.exchange(getFilled(resource), amount / FluidConstants.BUCKET, action);
-        return exchanged * FluidConstants.BUCKET;
+        int exchanged = context.exchange(getFilled(resource), amount / FluidType.BUCKET_VOLUME, action);
+        return exchanged * FluidType.BUCKET_VOLUME;
     }
 
     private ItemResource getEmpty() {
@@ -80,9 +84,9 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
-        if (amount < FluidConstants.BUCKET || resource.isBlank() || !Objects.equals(resource, getResource())) return 0;
+        if (amount < FluidType.BUCKET_VOLUME || resource.isBlank() || !Objects.equals(resource, getResource())) return 0;
 
-        int exchanged = context.exchange(getEmpty(), amount / FluidConstants.BUCKET, action);
-        return exchanged * FluidConstants.BUCKET;
+        int exchanged = context.exchange(getEmpty(), amount / FluidType.BUCKET_VOLUME, action);
+        return exchanged * FluidType.BUCKET_VOLUME;
     }
 }

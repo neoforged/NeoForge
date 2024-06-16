@@ -7,6 +7,10 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
 
 import java.util.Objects;
 
+/**
+ * A static context that holds a fixed amount of a single item. Operations on this context will still perform as if the
+ * item is mutable, but the amount or resource will never change.
+ */
 public class StaticContext implements IItemContext {
     private final ItemResource resource;
     private final int amount;

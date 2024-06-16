@@ -16,6 +16,11 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * A simple fluid storage handler that uses a single item context to store a fluid resource.
+ * An item with this handler can only ever be full or empty, and will not allow for partial fills or extractions.
+ * This handler is designed to support stack
+ */
 public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResource> {
     private final int individualLimit;
     private final Supplier<DataComponentType<SimpleFluidContent>> componentType;
@@ -28,6 +33,12 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
         this.context = context;
     }
 
+    /**
+     * Set a validator for the input fluid resource. This value will be used for {@link #isValid(FluidResource)} checks.
+     * This method uses a builder pattern and will return the current instance for usage in a capability provider.
+     * @param validator The validator to use for input fluid resources.
+     * @return The current instance of this class.
+     */
     public SimpleItemFluidStorage setValidator(Predicate<FluidResource> validator) {
         this.validator = validator;
         return this;

@@ -16,6 +16,9 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Stock data component class to hold a {@link FluidStack}.
@@ -31,6 +34,9 @@ public class SimpleFluidContent implements DataComponentHolder {
 
     private final FluidStack fluidStack;
 
+    @Nullable
+    private ResourceStack<FluidResource> immutable;
+
     private SimpleFluidContent(FluidStack fluidStack) {
         this.fluidStack = fluidStack;
     }
@@ -41,6 +47,14 @@ public class SimpleFluidContent implements DataComponentHolder {
 
     public FluidStack copy() {
         return this.fluidStack.copy();
+    }
+
+    public static SimpleFluidContent of(FluidResource resource, int amount) {
+        return resource.isBlank() || amount <= 0 ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
+    }
+
+    public static SimpleFluidContent of(ResourceStack<FluidResource> resourceStack) {
+        return resourceStack.isEmpty() ? EMPTY : SimpleFluidContent.of(resourceStack.resource(), resourceStack.amount());
     }
 
     public boolean isEmpty() {
@@ -81,6 +95,18 @@ public class SimpleFluidContent implements DataComponentHolder {
 
     public FluidType getFluidType() {
         return fluidStack.getFluidType();
+    }
+
+    public ResourceStack<FluidResource> getImmutableStack() {
+        ResourceStack<FluidResource> stack = immutable;
+        if (stack == null) {
+            stack = this.immutable = fluidStack.immutable();
+        }
+        return stack;
+    }
+
+    public FluidResource getResource() {
+        return getImmutableStack().resource();
     }
 
     public boolean is(FluidType fluidType) {

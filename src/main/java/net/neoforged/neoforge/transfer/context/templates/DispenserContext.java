@@ -15,6 +15,13 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A context that represents a dispenser's inventory.
+ * <p>
+ * Note: This context does <strong>not</strong> modify the underlying dispenser inventory.
+ * The intended usage is to wrap the stack provided in {@link DefaultDispenseItemBehavior#execute(BlockSource, ItemStack)}.
+ * You can then use {@link #finalizeResult(BlockSource)} to return the result to the dispenser and handle overflow.
+ */
 public class DispenserContext implements IItemContext {
     protected ItemResource resource;
     protected int amount;

@@ -11,6 +11,13 @@ import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
+/**
+ * An {@link ISingleResourceHandler} that represents a handler that rejects all operations.
+ * You should use the static instances {@link #ITEM} and {@link #FLUID} instead of creating new instances.
+ * If you're using this with a different resource type, you should create a new static instance.
+ *
+ * @param <T> The type of resource
+ */
 public class EmptyHandler<T extends IResource> implements ISingleResourceHandler<T> {
     public static final EmptyHandler<ItemResource> ITEM = new EmptyHandler<>(ItemResource.BLANK);
     public static final EmptyHandler<FluidResource> FLUID = new EmptyHandler<>(FluidResource.BLANK);

@@ -48,20 +48,29 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
     }
 
     /**
-     * Returns a copy of this instance with an updated amount.
+     * @return a copy of this instance with an updated amount.
      */
     public ResourceStack<T> withAmount(int newAmount) {
         return new ResourceStack<>(resource, newAmount);
     }
 
+    /**
+     * @return a copy of this instance with an updated resource.
+     */
     public ResourceStack<T> shrink(int amount) {
         return withAmount(Math.max(this.amount - amount, 0));
     }
 
+    /**
+     * @return a copy of this instance with an updated resource.
+     */
     public ResourceStack<T> grow(int amount) {
         return withAmount(this.amount + amount);
     }
 
+    /**
+     * @return a copy of this instance with an updated resource.
+     */
     public ResourceStack<T> with(UnaryOperator<T> operator) {
         return new ResourceStack<>(operator.apply(resource), amount);
     }

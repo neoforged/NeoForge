@@ -81,4 +81,18 @@ public class PlayerInventoryHandler extends ContainerWrapper {
             drop(resource, amount - inserted);
         }
     }
+
+    public static class AutoDrop extends PlayerInventoryHandler {
+        public AutoDrop(Player player) {
+            super(player);
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransferAction action) {
+            if (resource.isBlank() || amount <= 0) return 0;
+            if (action.isSimulating()) return amount;
+            insertOrDrop(resource, amount);
+            return amount;
+        }
+    }
 }

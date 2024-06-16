@@ -12,6 +12,10 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 import java.util.stream.Stream;
 
+/**
+ * An {@link IResourceHandler} that aggregates multiple handlers into one.
+ * @param <T> The type of resource
+ */
 public class AggregateResourceHandler<T extends IResource> implements IResourceHandler<T> {
     protected final IResourceHandler<T>[] handlers;
 

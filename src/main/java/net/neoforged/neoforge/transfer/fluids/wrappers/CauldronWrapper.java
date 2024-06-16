@@ -15,6 +15,9 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 
+/**
+ * A handler for cauldrons. This handler is used to interact with the fluid content of a cauldron.
+ */
 public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     private final Level level;
     private final BlockPos pos;
@@ -35,7 +38,7 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     @Override
     public FluidResource getResource() {
         BlockState state = level.getBlockState(pos);
-        return getContent(state).fluid.getDefaultResource();
+        return getContent(state).fluid.defaultResource;
     }
 
     @Override
@@ -80,7 +83,7 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
         BlockState state = level.getBlockState(pos);
         CauldronFluidContent currentContent = getContent(state);
 
-        if (resource.isBlank() || amount <= 0 || !resource.equals(currentContent.fluid.getDefaultResource())) return 0;
+        if (resource.isBlank() || amount <= 0 || !resource.equals(currentContent.fluid.defaultResource)) return 0;
 
         CauldronFluidContent insertContent = CauldronFluidContent.getForFluid(resource.getFluid());
         if (insertContent == null) {
@@ -105,7 +108,7 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     public int extract(FluidResource resource, int amount, TransferAction action) {
         BlockState state = level.getBlockState(pos);
         CauldronFluidContent content = getContent(state);
-        if (amount < content.getMillibuckets(state) || resource.isBlank() || !resource.equals(content.fluid.getDefaultResource())) {
+        if (amount < content.getMillibuckets(state) || resource.isBlank() || !resource.equals(content.fluid.defaultResource)) {
             return 0;
         }
 

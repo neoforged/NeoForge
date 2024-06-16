@@ -12,8 +12,10 @@ import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
 /**
- * VoidStorage is a template storage that can be filled indefinitely without ever getting full.
- * It does not store resources that get filled into it, but "destroys" them upon receiving them.
+ * An {@link ISingleResourceHandler} that automatically destroys any resources that are inserted into it.
+ * You should use the static instances {@link #ITEM} and {@link #FLUID} instead of creating new instances.
+ * If you're using this with a different resource type, you should create a new static instance.
+ *
  * @param <T> The type of resource that this storage can accept.
  */
 public class VoidHandler<T extends IResource> implements ISingleResourceHandler<T> {

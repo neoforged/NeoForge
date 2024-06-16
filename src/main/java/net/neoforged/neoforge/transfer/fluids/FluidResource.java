@@ -97,37 +97,67 @@ public final class FluidResource implements IResource, DataComponentHolder {
         this.innerStack = innerStack;
     }
 
+    /**
+     * Checks if this resource is blank. The resource will be blank if the fluid is {@link Fluids#EMPTY}.
+     * @return if this resource is blank
+     */
     @Override
     public boolean isBlank() {
         return innerStack.isEmpty();
     }
 
+    /**
+     * Returns a copy of this resource with the patch applied.
+     * @param patch the patch to apply
+     * @return the new resource
+     */
     public FluidResource applyPatch(DataComponentPatch patch) {
         FluidStack stack = innerStack.copy();
         stack.applyComponents(patch);
         return new FluidResource(stack);
     }
 
+    /**
+     * Returns a copy of this resource with the set data component.
+     * @param type the type of data component
+     * @param data the data to set
+     * @return the new resource
+     * @param <D> the type of data component
+     */
     public <D> FluidResource set(DataComponentType<D> type, D data) {
         FluidStack stack = innerStack.copy();
         stack.set(type, data);
         return new FluidResource(stack);
     }
 
+    /**
+     * Returns a copy of this resource with the data component removed.
+     * @param type the type of data component
+     * @return the new resource
+     */
     public FluidResource remove(DataComponentType<?> type) {
         FluidStack stack = innerStack.copy();
         stack.remove(type);
         return new FluidResource(stack);
     }
 
+    /**
+     * @return the fluid of this resource
+     */
     public Fluid getFluid() {
         return innerStack.getFluid();
     }
 
+    /**
+     * @return the fluid holder of this resource
+     */
     public Holder<Fluid> getFluidHolder() {
         return innerStack.getFluidHolder();
     }
 
+    /**
+     * @return the fluid type of this resource
+     */
     public FluidType getFluidType() {
         return innerStack.getFluidType();
     }

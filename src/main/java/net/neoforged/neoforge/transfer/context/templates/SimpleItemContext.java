@@ -12,6 +12,13 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.wrappers.ScopedHandlerWrapper;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
+/**
+ * A simple implementation of {@link IItemContext} that delegates to a main handler and an overflow handler.
+ * <br>
+ * The main handler is used for the main item, while the overflow handler is used for any extra items. You can optionally
+ * provide an index to exclude from the overflow handler, and a scoped handler will be created to exclude that index for
+ * overflow operations.
+ */
 public class SimpleItemContext implements IItemContext {
     protected final IResourceHandlerModifiable<ItemResource> mainHandler;
     protected final IResourceHandler<ItemResource> overflowHandler;

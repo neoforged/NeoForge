@@ -16,14 +16,17 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.fluids.FluidConstants;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A handler for placing and picking up fluid blocks in the world.
+ */
 public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -49,12 +52,12 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
 
     @Override
     public int getAmount() {
-        return getResource().isBlank() ? 0 : FluidConstants.BUCKET;
+        return getResource().isBlank() ? 0 : FluidType.BUCKET_VOLUME;
     }
 
     @Override
     public int getLimit(FluidResource ignored) {
-        return FluidConstants.BUCKET;
+        return FluidType.BUCKET_VOLUME;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (amount < FluidConstants.BUCKET) return 0;
+        if (amount < FluidType.BUCKET_VOLUME) return 0;
         BlockState state = level.getBlockState(blockPos);
         if (action.isExecuting()) {
             boolean waterLoggable = state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(null, level, blockPos, state, resource.getFluid());
@@ -90,18 +93,18 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
                 return 0;
             }
         }
-        return FluidConstants.BUCKET;
+        return FluidType.BUCKET_VOLUME;
     }
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
         BlockState state = level.getBlockState(blockPos);
         FluidState fluidState = level.getFluidState(blockPos);
-        if (amount < FluidConstants.BUCKET || resource.isBlank() || !resource.equals(fluidState.getType().defaultResource)) return 0;
+        if (amount < FluidType.BUCKET_VOLUME || resource.isBlank() || !resource.equals(fluidState.getType().defaultResource)) return 0;
         if (!state.getFluidState().isEmpty()) {
             if (!(state.getBlock() instanceof BucketPickup pickupHandler)) return 0;
             if (action.isSimulating()) {
-                return FluidConstants.BUCKET;
+                return FluidType.BUCKET_VOLUME;
             }
             ItemStack stack = pickupHandler.pickupBlock(player, level, blockPos, state);
             if (!stack.isEmpty()) {
@@ -110,7 +113,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
                             BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, level.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.content));
                     return 0;
                 }
-                return FluidConstants.BUCKET;
+                return FluidType.BUCKET_VOLUME;
             }
         }
         return 0;
