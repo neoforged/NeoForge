@@ -20,10 +20,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
-import
-
-net.neoforged.bus.api.Event;
 
 /**
  * This event is fired when the attributes for an item stack are queried (for any reason) through {@link ItemStack#getAttributeModifiers()}.
