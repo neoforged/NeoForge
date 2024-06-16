@@ -64,6 +64,8 @@ public interface IItemExtension {
 
     /**
      * ItemStack sensitive version of getDefaultAttributeModifiers. Used when a stack has no {@link DataComponents#ATTRIBUTE_MODIFIERS} component.
+     * 
+     * @see {@link IItemStackExtension#getAttributeModifiers()} for querying effective attribute modifiers.
      */
     @SuppressWarnings("deprecation")
     default ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {

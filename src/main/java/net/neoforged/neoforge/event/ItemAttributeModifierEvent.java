@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event;
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -19,8 +20,10 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
+import
+
+net.neoforged.bus.api.Event;
 
 /**
  * This event is fired when the attributes for an item stack are queried (for any reason) through {@link ItemStack#getAttributeModifiers()}.
@@ -153,9 +156,12 @@ public class ItemAttributeModifierEvent extends Event {
      */
     private static class ItemAttributeModifiersBuilder {
         private List<ItemAttributeModifiers.Entry> entries;
-        private Map<Key, ItemAttributeModifiers.Entry> entriesByKey = new HashMap<>();
+        private Map<Key, ItemAttributeModifiers.Entry> entriesByKey;
 
         ItemAttributeModifiersBuilder(ItemAttributeModifiers defaultModifiers) {
+            this.entries = new LinkedList<>();
+            this.entriesByKey = new HashMap<>(defaultModifiers.modifiers().size());
+
             defaultModifiers.modifiers().forEach(entry -> {
                 entries.add(entry);
                 entriesByKey.put(new Key(entry.attribute(), entry.modifier().id()), entry);

@@ -824,7 +824,7 @@ public class CommonHooks {
     public static ItemAttributeModifiers computeModifiedAttributes(ItemStack stack, ItemAttributeModifiers defaultModifiers) {
         ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, defaultModifiers);
         NeoForge.EVENT_BUS.post(event);
-        return event.getBuilder().build();
+        return event.build();
     }
 
     /**

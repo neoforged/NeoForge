@@ -69,6 +69,17 @@
              Vec3i vec3i = this.getPickupReach();
  
              for (ItemEntity itementity : this.level()
+@@ -666,6 +_,10 @@
+ 
+     private double getApproximateAttackDamageWithItem(ItemStack p_330413_) {
+         ItemAttributeModifiers itemattributemodifiers = p_330413_.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
++
++        // Neo: Respect gameplay modifiers
++        itemattributemodifiers = p_330413_.getAttributeModifiers();
++
+         return itemattributemodifiers.compute(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE), EquipmentSlot.MAINHAND);
+     }
+ 
 @@ -701,6 +_,7 @@
  
      @Override
