@@ -43,6 +43,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
@@ -250,7 +251,7 @@ public class CommonHooks {
      * @param isInvul whether this entity is invulnerable according to preceding/vanilla logic
      * @return if this entity is invulnerable
      */
-    public static boolean onEntityInvulnerablityCheck(Entity entity, DamageSource source, boolean isInvul) {
+    public static boolean onEntityInvulnerabilityCheck(Entity entity, DamageSource source, boolean isInvul) {
         return NeoForge.EVENT_BUS.post(new EntityInvulnerabilityCheckEvent(entity, source, isInvul)).isInvulnerable();
     }
 
@@ -299,8 +300,8 @@ public class CommonHooks {
      * and requires access to the internal field {@link LivingEntity#damageContainers} as a parameter.
      *
      * @param entity    the entity to receive damage
-     * @param container the container object holding the truly final values of the damage pipeline. This
-     *                  instance is immutable.
+     * @param container the container object holding the truly final values of the damage pipeline. The values
+     *                  of this container and used to instantiate final fields in the event.
      */
     public static void onLivingDamagePost(LivingEntity entity, DamageContainer container) {
         NeoForge.EVENT_BUS.post(new LivingDamageEvent.Post(entity, container));
@@ -1069,8 +1070,8 @@ public class CommonHooks {
 
     /**
      * Creates, posts, and returns a {@link LivingShieldBlockEvent}. This method is invoked in
-     * {@link LivingEntity#hurt(DamageSource, float)} and requires internal access to the
-     * protected field {@link LivingEntity#damageContainers} as a parameter.
+     * {@link LivingEntity#hurt(DamageSource, float)} and requires internal access to the top entry
+     * in the protected field {@link LivingEntity#damageContainers} as a parameter.
      *
      * @param blocker         the entity performing the block
      * @param container       the entity's internal damage container for accessing current values
@@ -1474,7 +1475,7 @@ public class CommonHooks {
      * @return A registry access, if one was available.
      */
     @Nullable
-    public static <T> HolderLookup.RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
+    public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) {
             return server.registryAccess().lookup(key).orElse(null);
