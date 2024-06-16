@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
@@ -20,8 +18,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -477,21 +473,23 @@ public interface IItemStackExtension {
     }
 
     /**
-     * {@return the attribute modifiers for the given equipment slot}
+     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents.ATTRIBUTE_MODIFIERS}
+     * or {@link Item#getDefaultAttributeModifiers(ItemStack)} when querying attributes for gameplay purposes.
      * <p>
-     * Fires ItemAttributeModifierEvent to compute the final attribute modifiers.
-     * 
-     * @param equipmentSlot the equipment slot to get the attribute modifiers for
+     * This method first computes the default modifiers, using {@link DataComponents.ATTRIBUTE_MODIFIERS} if present, otherwise
+     * falling back to {@link Item#getDefaultAttributeModifiers(ItemStack)}.
+     * <p>
+     * The underlying item is given a chance to first adjust the defaults via {@link Item#adjustAttributeModifiers},
+     * and finally the {@link ItemAttributeModifiersEvent} is fired to allow external adjustments.
      */
-    default Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
-        ItemAttributeModifiers itemattributemodifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        Multimap<Holder<Attribute>, AttributeModifier> multimap = LinkedHashMultimap.create();
-        if (!itemattributemodifiers.modifiers().isEmpty()) {
-            itemattributemodifiers.forEach(equipmentSlot, multimap::put);
-        } else {
-            self().getItem().getDefaultAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
+    default ItemAttributeModifiers getAttributeModifiers() {
+        ItemAttributeModifiers defaultModifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+
+        if (defaultModifiers.modifiers().isEmpty()) {
+            defaultModifiers = self().getItem().getDefaultAttributeModifiers(self());
         }
-        self().getItem().adjustAttributeModifiers(self(), equipmentSlot, multimap);
-        return CommonHooks.getAttributeModifiers(self(), equipmentSlot, multimap);
+
+        defaultModifiers = self().getItem().adjustAttributeModifiers(self(), defaultModifiers);
+        return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
 }

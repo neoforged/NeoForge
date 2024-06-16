@@ -118,12 +118,14 @@
      public int getEnchantmentValue() {
          return 0;
      }
-@@ -307,13 +_,20 @@
+@@ -307,13 +_,23 @@
          return false;
      }
  
--    @Deprecated
-+    @Deprecated // Use ItemStack sensitive version or data components. (deprecated by vanilla too)
++    /**
++     * @deprecated Neo: Use {@link Item#getDefaultAttributeModifiers(ItemStack)}
++     */
+     @Deprecated
      public ItemAttributeModifiers getDefaultAttributeModifiers() {
          return ItemAttributeModifiers.EMPTY;
      }

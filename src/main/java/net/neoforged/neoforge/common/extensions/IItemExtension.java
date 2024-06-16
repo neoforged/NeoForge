@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import com.google.common.collect.Multimap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -25,8 +24,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -76,10 +73,11 @@ public interface IItemExtension {
     /**
      * Called to allow items to modify the attributes on them.
      *
-     * @param slot      The slot to adjust the attributes for.
-     * @param modifiers Modifiers currently on the stack either because of a {@link DataComponents#ATTRIBUTE_MODIFIERS} component, or the default attribute modifiers
+     * @param modifiers The default attribute modifiers, either from {@link DataComponent#ATTRIBUTE_MODIFIERS} or {@link #getDefaultAttributeModifiers(ItemStack)}.
      */
-    default void adjustAttributeModifiers(ItemStack stack, EquipmentSlot slot, Multimap<Holder<Attribute>, AttributeModifier> modifiers) {}
+    default ItemAttributeModifiers adjustAttributeModifiers(ItemStack stack, ItemAttributeModifiers modifiers) {
+        return modifiers;
+    }
 
     /**
      * Called when a player drops the item into the world, returning false from this
