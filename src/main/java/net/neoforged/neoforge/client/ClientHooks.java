@@ -393,8 +393,8 @@ public class ClientHooks {
     }
 
     @Nullable
-    public static Music selectMusic(Music music) {
-        SelectMusicEvent e = new SelectMusicEvent(music);
+    public static Music selectMusic(Music situational, @Nullable SoundInstance playing) {
+        SelectMusicEvent e = new SelectMusicEvent(situational, playing);
         NeoForge.EVENT_BUS.post(e);
         return e.getMusic();
     }

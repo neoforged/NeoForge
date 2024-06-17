@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.Music;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
@@ -14,45 +15,51 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired when the {@link net.minecraft.client.sounds.MusicManager} checks what situational music should be used. This fires before the music begins playing.
- * This can be used to change or prevent (by passing {@code null)} any {@link Music} from being selected, which will
- * either change what the music will be next time it plays based on the situation, or prevent it from playing any if {@code null} is passed in.
- *
- * <p>Note that you should listen to a different {@link EventPriority} based on what music you are using for the replacement.</p>
- *
- * <p>Somewhat counterintuitively, you should listen with a *lower* {@link EventPriority} for music tracks you want to have higher priority.</p>
- * This is because higher event priorities will fire before lower ones, meaning that the *lower* priority listeners end up setting the value <i>later,</i>
- * therefore making the last listener to set the music the one that gets used.</p>
- *
- * <p>Generally, you should listen with lower event priorities if you want your music to take priority over others. For instance, high priority might be used for biome or dimension-based music,
- * whereas normal might be used for structures, and low might be used for combat or boss battles. This may of course vary based on use case.</p>
- * 
- * <p>Note as well that if you want your music track to <i>instantly</i> start and cancel any other playing music, it should be {@linkplain Music#replaceCurrentMusic() set up to do so.}</p>
- *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
- *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+ * Fired when the {@link net.minecraft.client.sounds.MusicManager} checks what situational music should be used. This fires before the music begins playing.<br>
+ * If the music is set to {@code null} by a modder, it will cancel any music that was already playing.<br>
+ * <br>
+ * Note that the higher priority you make your event listener, the earlier the music will be set.<br>
+ * Because of this, if you want your music to take precedence over others (perhaps you want to have seperate nighttime music for a biome for instance) then you may want it to have a lower priority.<br>
+ * <br>
+ * To make your music instantly play rather than waiting for the playing music to stop, set the music to one that {@linkplain Music#replaceCurrentMusic() is set to replace the current music.}<br>
+ * <br>
+ * Higher priorities would likely be better suited for biome-based or dimension-based musics, whereas lower priority is likely good for specific structures or situations.<br>
+ * <br>
+ * This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.<br>
+ * If the event is cancelled, then no further modification to the {@link Music} value will be allowed. This should only be used if your music should take priority over others, such as for boss music.<br>
+ * <br>
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},<br>
+ * only on the {@linkplain LogicalSide#CLIENT logical client}.
  *
  */
-public class SelectMusicEvent extends Event {
+public class SelectMusicEvent extends Event implements ICancellableEvent {
     private @Nullable Music music;
     private final Music originalMusic;
+    private final @Nullable SoundInstance playingMusic;
 
-    public SelectMusicEvent(Music music) {
+    public SelectMusicEvent(Music music, @Nullable SoundInstance playingMusic) {
         this.music = music;
         this.originalMusic = music;
+        this.playingMusic = playingMusic;
     }
 
     /**
-     * {@return the original music that was to be played}
+     * {@return the original situational music that was selected}
      */
     public Music getOriginalMusic() {
         return originalMusic;
     }
 
     /**
-     * {@return the Music to be played, or {@code null} if there should be no music based on the situation}
+     * {@return the current track that the {@link net.minecraft.client.sounds.MusicManager} is playing, or {@code null} if there is none.}
+     */
+    @Nullable
+    public SoundInstance getPlayingMusic() {
+        return playingMusic;
+    }
+
+    /**
+     * {@return the Music to be played, or {@code null} if any playing music should be cancelled}
      */
     @Nullable
     public Music getMusic() {
@@ -60,11 +67,14 @@ public class SelectMusicEvent extends Event {
     }
 
     /**
-     * Changes what music should be selected, which may be {@code null} to keep the music from being played
-     *
-     * @param newMusic the new {@link Music} to be played, or {@code null} for no music
+     * Changes the situational music. If this is set to {@code null}, any currently playing music will be cancelled.<br>
+     * If this <i>was</i> {@code null} but on the next tick isn't, the muisc given will be immediately played.<br>
+     * <br>
+     * Note that if {@link #isCanceled()} is {@code true}, this method will do nothing, as it is meant to override other musics.
      */
     public void setMusic(@Nullable Music newMusic) {
-        this.music = newMusic;
+        if (!this.isCanceled()) {
+            this.music = newMusic;
+        }
     }
 }
