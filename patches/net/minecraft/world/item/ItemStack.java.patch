@@ -158,15 +158,27 @@
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
      }
-@@ -933,6 +_,8 @@
+@@ -933,11 +_,15 @@
      }
  
      public void forEachModifier(EquipmentSlot p_332001_, BiConsumer<Holder<Attribute>, AttributeModifier> p_330882_) {
+-        ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+-        if (!itemattributemodifiers.modifiers().isEmpty()) {
+-            itemattributemodifiers.forEach(p_332001_, p_330882_);
+-        } else {
+-            this.getItem().getDefaultAttributeModifiers().forEach(p_332001_, p_330882_);
++        // Neo: Use ItemStack extension method, which fires an event for mod-added attributes modifiers
 +        this.getAttributeModifiers(p_332001_).forEach(p_330882_);
-+        if (true) return;
-         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-         if (!itemattributemodifiers.modifiers().isEmpty()) {
-             itemattributemodifiers.forEach(p_332001_, p_330882_);
++        if (false) {
++            ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
++            if (!itemattributemodifiers.modifiers().isEmpty()) {
++                itemattributemodifiers.forEach(p_332001_, p_330882_);
++            } else {
++                this.getItem().getDefaultAttributeModifiers().forEach(p_332001_, p_330882_);
++            }
+         }
+ 
+         EnchantmentHelper.forEachModifier(this, p_332001_, p_330882_);
 @@ -951,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
