@@ -65,7 +65,7 @@
          }
  
          this.resetProjectionMatrix(matrix4f);
-+        net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, camera, f);
++        net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, camera, f, camera.getYRot(), camera.getXRot());
 +        camera.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
          Quaternionf quaternionf = camera.rotation().conjugate(new Quaternionf());
          Matrix4f matrix4f1 = new Matrix4f().rotation(quaternionf);

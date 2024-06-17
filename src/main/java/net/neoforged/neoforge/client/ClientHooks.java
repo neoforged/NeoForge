@@ -435,8 +435,8 @@ public class ClientHooks {
         }
     }
 
-    public static ViewportEvent.ComputeCameraAngles onCameraSetup(GameRenderer renderer, Camera camera, float partial) {
-        ViewportEvent.ComputeCameraAngles event = new ViewportEvent.ComputeCameraAngles(renderer, camera, partial, camera.getYRot(), camera.getXRot(), 0);
+    public static ViewportEvent.ComputeCameraAngles onCameraSetup(GameRenderer renderer, Camera camera, float partial, float yaw, float pitch) {
+        ViewportEvent.ComputeCameraAngles event = new ViewportEvent.ComputeCameraAngles(renderer, camera, partial, yaw, pitch, 0);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
