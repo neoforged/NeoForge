@@ -87,12 +87,24 @@ public class FluidUtil {
         return tryExtract != null && !tryExtract.isEmpty();
     }
 
+    /**
+     * Moves fluid between two fluid handlers, playing a sound if the action is executed.
+     *
+     * @param level     The level where the sound should be played
+     * @param pos       The position of the fluid handlers in the level
+     * @param soundAction The sound action to play if the action is executed.
+     * @param from      The fluid handler to move fluid from.
+     * @param to        The fluid handler to move fluid to.
+     * @param amount    The amount of fluid to move.
+     * @param action    The action to perform.
+     * @return The fluid stack that was moved, or null if no fluid was moved.
+     */
     @Nullable
-    public static ResourceStack<FluidResource> moveFluidWithSound(@Nullable Level level, @Nullable Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int maxAmount, TransferAction action) {
-        ResourceStack<FluidResource> moved = HandlerUtil.moveAny(from, to, maxAmount, action);
-        if (moved == null || moved.isEmpty()) return moved;
+    public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, TransferAction action) {
+        ResourceStack<FluidResource> moved = HandlerUtil.moveAny(from, to, amount, action);
+        if (moved == null || moved.isEmpty()) return null;
 
-        if (action == TransferAction.EXECUTE && level != null && pos != null) {
+        if (action == TransferAction.EXECUTE) {
             SoundEvent soundevent = moved.resource().getSound(soundAction);
 
             if (soundevent != null) {
@@ -103,28 +115,73 @@ public class FluidUtil {
         return moved;
     }
 
-    public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Level level, BlockPos pos) {
+    /**
+     * Attempts to pickup the fluid placed in world at the given location in the given level and insert it into the provided handler.
+     * If pickup is successful, the fluid is moved to the given fluid handler and a sound is played at the given position.
+     *
+     * @param handler The fluid handler to move the fluid to.
+     * @param soundPos The position to play the sound at.
+     * @param level The level where the fluid is placed.
+     * @param pos The position of the fluid in the level.
+     * @return true if the fluid was picked up and moved to the handler, false otherwise.
+     */
+    public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, null, SoundActions.BUCKET_FILL, blockHandler, handler, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
+        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_FILL, blockHandler, handler, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
         return pickedUp != null && !pickedUp.isEmpty();
     }
 
-    public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Level level, BlockPos pos) {
+    /**
+     * Attempts to place the fluid held in the fluid handler at the given position in the given level. If placement is successful, the
+     * fluid is extracted from the given fluid handler and a sound is played at the given position.
+     *
+     * @param handler The fluid handler to move the fluid from.
+     * @param soundPos The position to play the sound at.
+     * @param level The level where the fluid is placed.
+     * @param pos The position to place the fluid in the level.
+     * @return true if the fluid was placed and moved from the handler, false otherwise.
+     */
+    public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> placed = moveFluidWithSound(level, null, SoundActions.BUCKET_EMPTY, handler, blockHandler, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
+        ResourceStack<FluidResource> placed = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_EMPTY, handler, blockHandler, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
         return placed != null && !placed.isEmpty();
     }
 
+    /**
+     * Attempts to pickup the fluid placed in world at the given location in the given level and insert it into a handler
+     * that is attached to the item in the player's hand. If pickup is successful, the fluid is inserted into the item's fluid handler.
+     *
+     * @param playerIn The player picking up the fluid.
+     * @param hand The hand holding the item that should pickup the fluid.
+     * @param level The level where the fluid is placed.
+     * @param pos The position of the fluid in the level.
+     * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
+     */
     public static boolean tryPickUpFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
         var handHandler = PlayerContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPickupFluid(handHandler, level, pos);
+        return handHandler != null && tryPickupFluid(handHandler, playerIn.position(), level, pos);
     }
 
+    /**
+     * Attempts to place the fluid held in the fluid handler found in the given player's hand at the given position in the
+     * given level. If placement is successful, the fluid is extracted from the item's fluid handler.
+     *
+     * @param playerIn The player placing the fluid.
+     * @param hand The hand holding the item that should place the fluid.
+     * @param level The level where the fluid is placed.
+     * @param pos The position to place the fluid in the level.
+     * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
+     */
     public static boolean tryPlaceFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
         var handHandler = PlayerContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPlaceFluid(handHandler, level, pos);
+        return handHandler != null && tryPlaceFluid(handHandler, playerIn.position(), level, pos);
     }
 
+    /**
+     * Destroys the block at the given position if it is not solid and not a liquid.
+     * @param level The level where the block is located.
+     * @param pos The position of the block to destroy.
+     */
     public static void destroyBlockOnFluidPlacement(Level level, BlockPos pos) {
         if (!level.isClientSide) {
             BlockState destBlockState = level.getBlockState(pos);
@@ -136,18 +193,37 @@ public class FluidUtil {
         }
     }
 
-    public static Optional<FluidStack> getFluidContained(IItemContext context) {
+    /**
+     * Gets the fluid resource and amount contained in the given item context.
+     * @param context The item context to get the fluid from.
+     * @return The fluid contained in the item context, or empty if no fluid is contained.
+     */
+    public static Optional<ResourceStack<FluidResource>> getResourceContained(IItemContext context) {
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return Optional.empty();
         for (int index = 0; index < handler.size(); index++) {
             FluidResource resource = handler.getResource(index);
             int amount = handler.getAmount(index);
             if (resource.isBlank() || amount <= 0) continue;
-            return Optional.of(resource.toStack(amount));
+            return Optional.of(new ResourceStack(resource, amount));
         }
         return Optional.empty();
     }
 
+    /**
+     * Gets the fluid contained in the given item context.
+     * @param context The item context to get the fluid from.
+     * @return The fluid contained in the item context, or empty if no fluid is contained.
+     */
+    public static Optional<FluidStack> getFluidContained(IItemContext context) {
+        return getResourceContained(context).map(stack -> stack.resource().toStack(stack.amount()));
+    }
+
+    /**
+     * Gets the fluid contained in the given item stack.
+     * @param stack The item stack to get the fluid from.
+     * @return The fluid contained in the item stack, or empty if no fluid is contained.
+     */
     public static Optional<FluidStack> getFluidContained(ItemStack stack) {
         return getFluidContained(new StaticContext(stack));
     }

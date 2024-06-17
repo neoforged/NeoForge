@@ -50,7 +50,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
         DispenserContext context = new DispenserContext(stack);
         var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
 
-        if (handler == null || !FluidUtil.tryPickupFluid(handler, source.level(), blockpos)) {
+        if (handler == null || !FluidUtil.tryPickupFluid(handler, source.center(), source.level(), blockpos)) {
             return super.execute(source, stack);
         }
 
@@ -66,7 +66,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
         DispenserContext context = new DispenserContext(stack);
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
-        if (handler == null || !FluidUtil.tryPlaceFluid(handler, source.level(), blockpos)) {
+        if (handler == null || !FluidUtil.tryPlaceFluid(handler, source.center(), source.level(), blockpos)) {
             return super.execute(source, stack);
         }
 
