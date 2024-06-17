@@ -17,11 +17,11 @@ import java.util.function.Supplier;
 
 public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResource> {
     private final AttachmentHolder holder;
-    private final Supplier<AttachmentType<SimpleFluidContent>> attachmentType;
+    private final AttachmentType<SimpleFluidContent> attachmentType;
     private final int limit;
     private Predicate<FluidResource> validator = r -> true;
 
-    public AttachmentFluidStorage(AttachmentHolder holder, Supplier<AttachmentType<SimpleFluidContent>> attachmentType, int limit) {
+    public AttachmentFluidStorage(AttachmentHolder holder, AttachmentType<SimpleFluidContent> attachmentType, int limit) {
         this.holder = holder;
         this.attachmentType = attachmentType;
         this.limit = limit;

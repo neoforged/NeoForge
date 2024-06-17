@@ -157,7 +157,7 @@ public class FluidUtil {
      * @param pos The position of the fluid in the level.
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
-    public static boolean tryPickUpFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
+    public static boolean tryPickupFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
         var handHandler = PlayerContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPickupFluid(handHandler, playerIn.position(), level, pos);
     }

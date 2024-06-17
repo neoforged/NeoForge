@@ -93,7 +93,7 @@ public class CustomFluidContainerTest {
             var fluidStack = FluidUtil.getFluidContained(context);
             if (fluidStack.isEmpty()) {
                 var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
-                if (FluidUtil.tryPickUpFluid(player, hand, level, blockHitResult.getBlockPos())) {
+                if (FluidUtil.tryPickupFluid(player, hand, level, blockHitResult.getBlockPos())) {
                     return InteractionResultHolder.success(context.toStack());
                 }
             } else {
