@@ -8,7 +8,6 @@ package net.neoforged.neoforge.client.event;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.Music;
 import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
