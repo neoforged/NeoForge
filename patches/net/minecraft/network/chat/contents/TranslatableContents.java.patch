@@ -28,3 +28,62 @@
              String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
  
              try {
+@@ -170,28 +_,46 @@
+     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_237521_, Style p_237522_) {
+         this.decompose();
+ 
+-        for (FormattedText formattedtext : this.decomposedParts) {
+-            Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
+-            if (optional.isPresent()) {
+-                return optional;
++        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
++            // Reference cycle.
++            return Optional.empty();
++        }
++
++        try {
++            for (FormattedText formattedtext : this.decomposedParts) {
++                Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
++                if (optional.isPresent()) {
++                    return optional;
++                }
+             }
+-        }
+ 
+-        return Optional.empty();
++            return Optional.empty();
++        } finally {
++            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
++        }
+     }
+ 
+     @Override
+     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> p_237519_) {
+         this.decompose();
+ 
+-        for (FormattedText formattedtext : this.decomposedParts) {
+-            Optional<T> optional = formattedtext.visit(p_237519_);
+-            if (optional.isPresent()) {
+-                return optional;
++        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
++            // Reference cycle.
++            return Optional.empty();
++        }
++
++        try {
++            for (FormattedText formattedtext : this.decomposedParts) {
++                Optional<T> optional = formattedtext.visit(p_237519_);
++                if (optional.isPresent()) {
++                    return optional;
++                }
+             }
+-        }
+ 
+-        return Optional.empty();
++            return Optional.empty();
++        } finally {
++            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
++        }
+     }
+ 
+     @Override
