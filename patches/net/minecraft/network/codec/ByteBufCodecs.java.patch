@@ -40,7 +40,7 @@
              }
  
              public void encode(RegistryFriendlyByteBuf p_341009_, HolderSet<T> p_340834_) {
-+                if (p_340834_ instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> customHolderSet) {
++                if (p_341009_.getConnectionType().isNeoForge() && p_340834_ instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> customHolderSet) {
 +                    VarInt.write(p_341009_, -1 - net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.getId(customHolderSet.type()));
 +                    this.holderSetCodec(customHolderSet.type()).encode(p_341009_, cast(customHolderSet));
 +                    return;
