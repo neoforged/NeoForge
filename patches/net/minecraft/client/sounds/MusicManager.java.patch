@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/sounds/MusicManager.java
 +++ b/net/minecraft/client/sounds/MusicManager.java
-@@ -24,7 +_,14 @@
+@@ -24,7 +_,15 @@
      }
  
      public void tick() {
@@ -13,6 +13,7 @@
 +            this.nextSongDelay = 0;
 +            return;
 +        }
++
          if (this.currentMusic != null) {
              if (!music.getEvent().value().getLocation().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
                  this.minecraft.getSoundManager().stop(this.currentMusic);
