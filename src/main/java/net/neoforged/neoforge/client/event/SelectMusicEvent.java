@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  * Higher priorities would likely be better suited for biome-based or dimension-based musics, whereas lower priority is likely good for specific structures or situations.<br>
  * <br>
  * This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.<br>
- * If the event is cancelled, then no further modification to the {@link Music} value will be allowed. This should only be used if your music should take priority over others, such as for boss music.<br>
+ * If the event is canceled, then whatever the latest music set was will be used as the music.
  * <br>
  * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},<br>
  * only on the {@linkplain LogicalSide#CLIENT logical client}.
@@ -69,11 +69,16 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
      * Changes the situational music. If this is set to {@code null}, any currently playing music will be cancelled.<br>
      * If this <i>was</i> {@code null} but on the next tick isn't, the muisc given will be immediately played.<br>
      * <br>
-     * Note that if {@link #isCanceled()} is {@code true}, this method will do nothing, as it is meant to override other musics.
      */
     public void setMusic(@Nullable Music newMusic) {
-        if (!this.isCanceled()) {
-            this.music = newMusic;
-        }
+        this.music = newMusic;
+    }
+
+    /**
+     * Sets the music and cancels the event, using this as the final music
+     */
+    public void overrideMusic(@Nullable Music newMusic) {
+        this.music = newMusic;
+        this.setCanceled(true);
     }
 }
