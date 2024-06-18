@@ -1,0 +1,17 @@
+{
+  "values": [
+    "minecraft:trident",
+    {
+      "id": "#forge:tools/tridents",
+      "required": false
+    },
+    {
+      "id": "#forge:tools/tridents",
+      "required": false
+    },
+    {
+      "id": "#c:tools/tridents",
+      "required": false
+    }
+  ]
+}

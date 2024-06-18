@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.item;
 
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
@@ -13,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -140,11 +142,21 @@ public class ItemTests {
                 .thenSucceed());
     }
 
+    @SuppressWarnings("unused") // Referenced by enumextender.json
+    public static Object getRarityEnumParameter(int idx, Class<?> type) {
+        return type.cast(switch (idx) {
+            case 0 -> -1;
+            case 1 -> "neotests:custom";
+            case 2 -> (UnaryOperator<Style>) style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA);
+            default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
+        });
+    }
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if custom rarities (with custom styles) work on items")
     static void itemCustomRarity(final DynamicTest test, final RegistrationHelper reg) {
-        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", ResourceLocation.fromNamespaceAndPath(reg.modId(), "custom"), style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
+        final Rarity rarity = Rarity.valueOf("NEOTESTS_CUSTOM");
         final Supplier<Item> item = reg.items().registerSimpleItem("test", new Item.Properties().rarity(rarity))
                 .withLang("Custom rarity test");
 

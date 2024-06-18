@@ -1,0 +1,112 @@
+{
+    "entries": [
+        {
+            "enum": "com/mojang/blaze3d/vertex/VertexFormatElement$Usage",
+            "name": "NEOTESTS_TEST_USAGE",
+            "constructor": "(Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormatElement$Usage$SetupState;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/client/RenderTests",
+                "field": "USAGE_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/damagesource/DamageEffects",
+            "name": "NEOTESTS_TEST_EFFECTS",
+            "constructor": "(Ljava/lang/String;Ljava/util/function/Supplier;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/damagesource/DamageTypeTests",
+                "field": "EFFECTS_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/damagesource/DamageScaling",
+            "name": "NEOTESTS_TEST_SCALING",
+            "constructor": "(Ljava/lang/String;Lnet/neoforged/neoforge/common/damagesource/IScalingFunction;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/damagesource/DamageTypeTests",
+                "field": "SCALING_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/damagesource/DeathMessageType",
+            "name": "NEOTESTS_TEST_MSGTYPE",
+            "constructor": "(Ljava/lang/String;Lnet/neoforged/neoforge/common/damagesource/IDeathMessageProvider;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/damagesource/DamageTypeTests",
+                "field": "MSGTYPE_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/item/Rarity",
+            "name": "NEOTESTS_CUSTOM",
+            "constructor": "(ILjava/lang/String;Ljava/util/function/UnaryOperator;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/item/ItemTests",
+                "method": "getRarityEnumParameter"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/item/ItemDisplayContext",
+            "name": "NEOTESTS_HANGING",
+            "constructor": "(ILjava/lang/String;Ljava/lang/String;)V",
+            "parameters": [ -1, "neotests:hanging", null ]
+        },
+        {
+            "enum": "net/minecraft/world/entity/MobCategory",
+            "name": "NEOTESTS_TEST",
+            "constructor": "(Ljava/lang/String;IZZI)V",
+            "parameters": [ "neotests:test", 1, true, true, 128 ]
+        },
+        {
+            "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+            "name": "NEOTESTS_SWING",
+            "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/oldtest/entity/player/ItemUseAnimationTest$EnumParams",
+                "field": "ARM_POSE_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/client/RecipeBookCategories",
+            "name": "NEOTESTS_TESTING_SEARCH",
+            "constructor": "(Ljava/util/function/Supplier;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/oldtest/recipebook/RecipeBookExtensionClientHelper",
+                "field": "CAT_SEARCH_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/client/RecipeBookCategories",
+            "name": "NEOTESTS_TESTING_CAT_1",
+            "constructor": "(Ljava/util/function/Supplier;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/oldtest/recipebook/RecipeBookExtensionClientHelper",
+                "field": "CAT_1_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/client/RecipeBookCategories",
+            "name": "NEOTESTS_TESTING_CAT_2",
+            "constructor": "(Ljava/util/function/Supplier;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/oldtest/recipebook/RecipeBookExtensionClientHelper",
+                "field": "CAT_2_ENUM_PARAMS"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/inventory/RecipeBookType",
+            "name": "NEOTESTS_TESTING",
+            "constructor": "()V",
+            "parameters": [ ]
+        },
+        {
+            "enum": "net/minecraft/world/entity/raid/Raid$RaiderType",
+            "name": "NEOTESTS_THEBLUEMENGROUP",
+            "constructor": "(Ljava/util/function/Supplier;[I)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/oldtest/world/RaidEnumTest",
+                "field": "RAIDER_ENUM_PARAMS"
+            }
+        }
+    ]
+}

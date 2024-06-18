@@ -13,7 +13,7 @@
                      int j = armormaterial$layer.dyeable() ? i : -1;
 -                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, armormaterial$layer.texture(flag));
 +                    var texture = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_117121_, itemstack, armormaterial$layer, flag, p_117122_);
-+                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, texture);
++                    this.renderModel(p_117119_, p_117120_, p_117123_, model, j, texture);
                  }
  
                  ArmorTrim armortrim = itemstack.get(DataComponents.TRIM);
