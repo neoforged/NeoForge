@@ -120,7 +120,7 @@ public class NeoForgeEventHandler {
                     // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
                     return;
                 }
-                final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
+                final var playerMaps = player.connection.getConnection().channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
                 if (playerMaps == null) return; // Skip gametest players for instance
                 handleSync(player, regOpt.get(), playerMaps.getOrDefault(registry, List.of()));
             });
