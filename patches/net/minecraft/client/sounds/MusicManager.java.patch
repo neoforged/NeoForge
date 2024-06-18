@@ -1,43 +1,32 @@
 --- a/net/minecraft/client/sounds/MusicManager.java
 +++ b/net/minecraft/client/sounds/MusicManager.java
-@@ -24,22 +_,28 @@
+@@ -24,7 +_,12 @@
      }
  
      public void tick() {
 -        Music music = this.minecraft.getSituationalMusic();
 +        Music music = net.neoforged.neoforge.client.ClientHooks.selectMusic(this.minecraft.getSituationalMusic(), this.currentMusic);
++        if (music == null && this.currentMusic != null) {
++            this.stopPlaying();
++            this.nextSongDelay = 0;
++            return;
++        }
          if (this.currentMusic != null) {
--            if (!music.getEvent().value().getLocation().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
--                this.minecraft.getSoundManager().stop(this.currentMusic);
--                this.nextSongDelay = Mth.nextInt(this.random, 0, music.getMinDelay() / 2);
--            }
-+            if (music == null) {
-+                this.stopPlaying();
-+                this.nextSongDelay = 0;
-+            } else {
-+                if (!music.getEvent().value().getLocation().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
-+                    this.minecraft.getSoundManager().stop(this.currentMusic);
-+                    this.nextSongDelay = Mth.nextInt(this.random, 0, music.getMinDelay() / 2);
-+                }
- 
--            if (!this.minecraft.getSoundManager().isActive(this.currentMusic)) {
--                this.currentMusic = null;
--                this.nextSongDelay = Math.min(this.nextSongDelay, Mth.nextInt(this.random, music.getMinDelay(), music.getMaxDelay()));
-+                if (!this.minecraft.getSoundManager().isActive(this.currentMusic)) {
-+                    this.currentMusic = null;
-+                    this.nextSongDelay = Math.min(this.nextSongDelay, Mth.nextInt(this.random, music.getMinDelay(), music.getMaxDelay()));
-+                }
+             if (!music.getEvent().value().getLocation().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
+                 this.minecraft.getSoundManager().stop(this.currentMusic);
+@@ -37,10 +_,15 @@
              }
          }
--
--        this.nextSongDelay = Math.min(this.nextSongDelay, music.getMaxDelay());
--        if (this.currentMusic == null && this.nextSongDelay-- <= 0) {
--            this.startPlaying(music);
-+        if (music != null) {
-+            this.nextSongDelay = Math.min(this.nextSongDelay, music.getMaxDelay());
-+            if (this.currentMusic == null && this.nextSongDelay-- <= 0) {
-+                this.startPlaying(music);
-+            }
+ 
++        if (music == null) {
++            return;
++        }
++
+         this.nextSongDelay = Math.min(this.nextSongDelay, music.getMaxDelay());
+         if (this.currentMusic == null && this.nextSongDelay-- <= 0) {
+             this.startPlaying(music);
          }
++
      }
  
+     public void startPlaying(Music p_120185_) {
