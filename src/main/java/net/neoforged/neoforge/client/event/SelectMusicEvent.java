@@ -9,6 +9,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.Music;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +76,8 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
     }
 
     /**
-     * Sets the music and cancels the event, using this as the final music
+     * Sets the music and then cancels the event so that other listeners will not be invoked.<br>
+     * Note that listeners using {@link SubscribeEvent#receiveCanceled()} will still be able to override this, but by default they will not
      */
     public void overrideMusic(@Nullable Music newMusic) {
         this.music = newMusic;
