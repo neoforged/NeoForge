@@ -9,7 +9,7 @@
          ItemStack itemstack1 = this.getProjectile(itemstack);
          AbstractArrow abstractarrow = ProjectileUtil.getMobArrow(this, itemstack1, p_32919_, itemstack);
 +        if (itemstack.getItem() instanceof net.minecraft.world.item.BowItem bowItem)
-+            abstractarrow = bowItem.customArrow(abstractarrow, itemstack1);
++            abstractarrow = bowItem.customArrow(abstractarrow, itemstack1, itemstack);
          double d0 = p_32918_.getX() - this.getX();
          double d1 = p_32918_.getY(0.3333333333333333) - abstractarrow.getY();
          double d2 = p_32918_.getZ() - this.getZ();
