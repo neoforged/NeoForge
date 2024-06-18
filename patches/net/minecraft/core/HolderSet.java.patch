@@ -11,7 +11,7 @@
      int size();
 @@ -174,6 +_,9 @@
  
-         public void bind(List<Holder<T>> p_205836_) {
+         void bind(List<Holder<T>> p_205836_) {
              this.contents = List.copyOf(p_205836_);
 +            for (Runnable runnable : this.invalidationCallbacks) {
 +                runnable.run(); // FORGE: invalidate listeners when tags rebind
