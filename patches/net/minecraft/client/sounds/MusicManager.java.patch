@@ -1,32 +1,18 @@
 --- a/net/minecraft/client/sounds/MusicManager.java
 +++ b/net/minecraft/client/sounds/MusicManager.java
-@@ -24,7 +_,12 @@
+@@ -24,7 +_,14 @@
      }
  
      public void tick() {
 -        Music music = this.minecraft.getSituationalMusic();
 +        Music music = net.neoforged.neoforge.client.ClientHooks.selectMusic(this.minecraft.getSituationalMusic(), this.currentMusic);
-+        if (music == null && this.currentMusic != null) {
-+            this.stopPlaying();
++        if (music == null) {
++            if (this.currentMusic != null) {
++                this.stopPlaying();
++            }
 +            this.nextSongDelay = 0;
 +            return;
 +        }
          if (this.currentMusic != null) {
              if (!music.getEvent().value().getLocation().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
                  this.minecraft.getSoundManager().stop(this.currentMusic);
-@@ -37,10 +_,15 @@
-             }
-         }
- 
-+        if (music == null) {
-+            return;
-+        }
-+
-         this.nextSongDelay = Math.min(this.nextSongDelay, music.getMaxDelay());
-         if (this.currentMusic == null && this.nextSongDelay-- <= 0) {
-             this.startPlaying(music);
-         }
-+
-     }
- 
-     public void startPlaying(Music p_120185_) {
