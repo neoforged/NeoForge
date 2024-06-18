@@ -20,7 +20,7 @@
 +        ItemStack itemstack1 = this.getProjectile(weapon);
 +        AbstractArrow abstractarrow = this.getArrow(itemstack1, p_32142_, weapon);
 +        if (weapon.getItem() instanceof net.minecraft.world.item.ProjectileWeaponItem weaponItem)
-+            abstractarrow = weaponItem.customArrow(abstractarrow, weapon);
++            abstractarrow = weaponItem.customArrow(abstractarrow, itemstack1, weapon);
          double d0 = p_32141_.getX() - this.getX();
          double d1 = p_32141_.getY(0.3333333333333333) - abstractarrow.getY();
          double d2 = p_32141_.getZ() - this.getZ();
