@@ -5,7 +5,7 @@
          int j = this.width - i - 2;
          int k = 24;
 -        int l = this.height / 4 + 48;
-+        int l = this.height / 4 + 36;
++        int l = this.height / 4 + 42;
          if (this.minecraft.isDemo()) {
              this.createDemoMenuOptions(l, 24);
          } else {
