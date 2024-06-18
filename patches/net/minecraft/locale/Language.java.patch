@@ -1,16 +1,20 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -37,7 +_,8 @@
+@@ -36,8 +_,11 @@
+     private static Language loadDefault() {
          Builder<String, String> builder = ImmutableMap.builder();
          BiConsumer<String, String> biconsumer = builder::put;
-         parseTranslations(biconsumer, "/assets/minecraft/lang/en_us.json");
+-        parseTranslations(biconsumer, "/assets/minecraft/lang/en_us.json");
 -        final Map<String, String> map = builder.build();
++        Builder<String, net.minecraft.network.chat.Component> componentBuilder = ImmutableMap.builder();
++        parseTranslations(biconsumer, componentBuilder::put, "/assets/minecraft/lang/en_us.json");
 +        final Map<String, String> map = new java.util.HashMap<>(builder.build());
++        Map<String, net.minecraft.network.chat.Component> componentMap = componentBuilder.build();
 +        net.neoforged.neoforge.server.LanguageHook.captureLanguageMap(map);
          return new Language() {
              @Override
              public String getOrDefault(String p_128127_, String p_265421_) {
-@@ -64,6 +_,11 @@
+@@ -64,21 +_,40 @@
                          )
                          .isPresent();
              }
@@ -19,16 +23,52 @@
 +            public Map<String, String> getLanguageData() {
 +                return map;
 +            }
++
++            @Override
++            public @org.jetbrains.annotations.Nullable net.minecraft.network.chat.Component getComponent(String key) {
++                return componentMap.get(key);
++            }
          };
      }
  
-@@ -91,6 +_,9 @@
+-    private static void parseTranslations(BiConsumer<String, String> p_282031_, String p_283638_) {
++    private static void parseTranslations(BiConsumer<String, String> p_282031_, BiConsumer<String, net.minecraft.network.chat.Component> componentConsumer, String p_283638_) {
+         try (InputStream inputstream = Language.class.getResourceAsStream(p_283638_)) {
+-            loadFromJson(inputstream, p_282031_);
++            loadFromJson(inputstream, p_282031_, componentConsumer);
+         } catch (JsonParseException | IOException ioexception) {
+             LOGGER.error("Couldn't read strings from {}", p_283638_, ioexception);
+         }
+     }
+ 
+-    public static void loadFromJson(InputStream p_128109_, BiConsumer<String, String> p_128110_) {
++    public static void loadFromJson(InputStream p_128109_, BiConsumer<String, String> p_128110_, BiConsumer<String, net.minecraft.network.chat.Component> componentConsumer) {
+         JsonObject jsonobject = GSON.fromJson(new InputStreamReader(p_128109_, StandardCharsets.UTF_8), JsonObject.class);
+ 
+         for (Entry<String, JsonElement> entry : jsonobject.entrySet()) {
++            if (entry.getValue().isJsonArray()) {
++                var component = net.minecraft.network.chat.ComponentSerialization.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, entry.getValue()).getOrThrow(com.google.gson.JsonParseException::new);
++
++                p_128110_.accept(entry.getKey(), component.getString());
++                componentConsumer.accept(entry.getKey(), component);
++
++                continue;
++            }
++
+             String s = UNSUPPORTED_FORMAT_PATTERN.matcher(GsonHelper.convertToString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
+             p_128110_.accept(entry.getKey(), s);
+         }
+@@ -90,6 +_,13 @@
+ 
      public static void inject(Language p_128115_) {
          instance = p_128115_;
-     }
++    }
 +
 +    // FORGE START
 +    public Map<String, String> getLanguageData() { return ImmutableMap.of(); }
++
++    public @org.jetbrains.annotations.Nullable net.minecraft.network.chat.Component getComponent(String key) {
++        return null;
+     }
  
      public String getOrDefault(String p_128111_) {
-         return this.getOrDefault(p_128111_, p_128111_);

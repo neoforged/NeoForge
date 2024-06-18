@@ -14,3 +14,17 @@
      }
  
      @Override
+@@ -92,6 +_,13 @@
+         Language language = Language.getInstance();
+         if (language != this.decomposedWith) {
+             this.decomposedWith = language;
++
++            Component langComponent = language.getComponent(this.key);
++            if (langComponent != null) {
++                this.decomposedParts = ImmutableList.of(langComponent);
++                return;
++            }
++
+             String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
+ 
+             try {

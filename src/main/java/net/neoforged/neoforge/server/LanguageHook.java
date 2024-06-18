@@ -55,7 +55,7 @@ public class LanguageHook {
                 ResourceLocation langResource = ResourceLocation.fromNamespaceAndPath(namespace, langFile);
                 for (Resource resource : clientResources.getResourceStack(langResource)) {
                     try (InputStream stream = resource.open()) {
-                        Language.loadFromJson(stream, (key, value) -> modTable.put(key, value));
+                        Language.loadFromJson(stream, (key, value) -> modTable.put(key, value), (key, value) -> {});
                     }
                 }
                 loaded++;
@@ -72,14 +72,14 @@ public class LanguageHook {
 
         try (InputStream input = classLoader.getResourceAsStream("assets/minecraft/lang/en_us.json")) {
             assert input != null;
-            Language.loadFromJson(input, (key, value) -> modTable.put(key, value));
+            Language.loadFromJson(input, (key, value) -> modTable.put(key, value), (key, value) -> {});
         } catch (Exception exception) {
             LOGGER.warn("Failed to load built-in language file for Minecraft", exception);
         }
 
         try (InputStream input = classLoader.getResourceAsStream("assets/neoforge/lang/en_us.json")) {
             assert input != null;
-            Language.loadFromJson(input, (key, value) -> modTable.put(key, value));
+            Language.loadFromJson(input, (key, value) -> modTable.put(key, value), (key, value) -> {});
         } catch (Exception exception) {
             LOGGER.warn("Failed to load built-in language file for NeoForge", exception);
         }
