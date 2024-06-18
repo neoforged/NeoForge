@@ -65,8 +65,11 @@ import org.jetbrains.annotations.Nullable;
 public class FluidType {
     /**
      * The number of fluid units that a bucket represents.
+     *
+     * @deprecated Use {@link FluidConstants#BUCKET} instead.
      */
-    public static final int BUCKET_VOLUME = 1000;
+    @Deprecated(forRemoval = true)
+    public static final int BUCKET_VOLUME = FluidConstants.BUCKET;
 
     /**
      * A lazy value which computes the number of fluid types within the
