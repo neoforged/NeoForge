@@ -65,6 +65,7 @@ public class Tags {
         public static final TagKey<Block> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Block> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
         public static final TagKey<Block> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
+        public static final TagKey<Block> CONCRETES = tag("concretes");
 
         /**
          * Tag that holds all blocks that can be dyed a specific color.
@@ -104,6 +105,7 @@ public class Tags {
 
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final TagKey<Block> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
         public static final TagKey<Block> GRAVELS = tag("gravels");
         /**
@@ -219,11 +221,11 @@ public class Tags {
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         private static TagKey<Block> tag(String name) {
-            return BlockTags.create(new ResourceLocation("c", name));
+            return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
         }
 
         private static TagKey<Block> neoforgeTag(String name) {
-            return BlockTags.create(new ResourceLocation("neoforge", name));
+            return BlockTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", name));
         }
     }
 
@@ -247,7 +249,7 @@ public class Tags {
         public static final TagKey<EntityType<?>> TELEPORTING_NOT_SUPPORTED = tag("teleporting_not_supported");
 
         private static TagKey<EntityType<?>> tag(String name) {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c", name));
+            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -299,6 +301,11 @@ public class Tags {
         public static final TagKey<Item> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Item> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
         public static final TagKey<Item> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
+        public static final TagKey<Item> CONCRETES = tag("concretes");
+        /**
+         * Block tag equivalent is {@link BlockTags#CONCRETE_POWDER}
+         */
+        public static final TagKey<Item> CONCRETE_POWDERS = tag("concrete_powders");
         /**
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
@@ -424,6 +431,7 @@ public class Tags {
 
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final TagKey<Item> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
         public static final TagKey<Item> GRAVELS = tag("gravels");
         public static final TagKey<Item> GUNPOWDERS = tag("gunpowders");
@@ -438,6 +446,11 @@ public class Tags {
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
         public static final TagKey<Item> LEATHERS = tag("leathers");
         public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
+        /**
+         * For music disc-like materials to be used in recipes.
+         * A pancake with a JUKEBOX_PLAYABLE component attached to play in Jukeboxes as an Easter Egg is not a music disc and would not go in this tag.
+         */
+        public static final TagKey<Item> MUSIC_DISCS = tag("music_discs");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
         public static final TagKey<Item> NETHERRACKS = tag("netherracks");
         public static final TagKey<Item> NUGGETS = tag("nuggets");
@@ -493,10 +506,6 @@ public class Tags {
         public static final TagKey<Item> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
-        public static final TagKey<Item> RAW_BLOCKS = tag("raw_blocks");
-        public static final TagKey<Item> RAW_BLOCKS_COPPER = tag("raw_blocks/copper");
-        public static final TagKey<Item> RAW_BLOCKS_GOLD = tag("raw_blocks/gold");
-        public static final TagKey<Item> RAW_BLOCKS_IRON = tag("raw_blocks/iron");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
@@ -533,6 +542,10 @@ public class Tags {
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
+        /**
+         * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
+         */
+        public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
@@ -581,7 +594,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_SHIELDS = tag("tools/shields");
+        public static final TagKey<Item> TOOLS_SHIELD = tag("tools/shield");
         /**
          * A tag containing all existing bows. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -589,7 +602,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_BOWS = tag("tools/bows");
+        public static final TagKey<Item> TOOLS_BOW = tag("tools/bow");
         /**
          * A tag containing all existing crossbows. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -597,7 +610,7 @@ public class Tags {
          * @see net.neoforged.neoforge.common.ToolAction
          * @see net.neoforged.neoforge.common.ToolActions
          */
-        public static final TagKey<Item> TOOLS_CROSSBOWS = tag("tools/crossbows");
+        public static final TagKey<Item> TOOLS_CROSSBOW = tag("tools/crossbow");
         /**
          * A tag containing all existing fishing rods. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -605,7 +618,7 @@ public class Tags {
          * @see net.neoforged.neoforge.common.ToolAction
          * @see net.neoforged.neoforge.common.ToolActions
          */
-        public static final TagKey<Item> TOOLS_FISHING_RODS = tag("tools/fishing_rods");
+        public static final TagKey<Item> TOOLS_FISHING_ROD = tag("tools/fishing_rod");
         /**
          * A tag containing all existing spears. Other tools such as throwing knives or boomerangs
          * should not be put into this tag and should be put into their own tool tags.
@@ -615,7 +628,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_SPEARS = tag("tools/spears");
+        public static final TagKey<Item> TOOLS_SPEAR = tag("tools/spear");
         /**
          * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -623,7 +636,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_SHEARS = tag("tools/shears");
+        public static final TagKey<Item> TOOLS_SHEAR = tag("tools/shear");
         /**
          * A tag containing all existing brushes. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
@@ -631,7 +644,7 @@ public class Tags {
          * @see ToolAction
          * @see ToolActions
          */
-        public static final TagKey<Item> TOOLS_BRUSHES = tag("tools/brushes");
+        public static final TagKey<Item> TOOLS_BRUSH = tag("tools/brush");
         /**
          * Collects the 4 vanilla armor tags into one parent collection for ease.
          */
@@ -642,11 +655,11 @@ public class Tags {
         public static final TagKey<Item> ENCHANTABLES = tag("enchantables");
 
         private static TagKey<Item> tag(String name) {
-            return ItemTags.create(new ResourceLocation("c", name));
+            return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
         }
 
         private static TagKey<Item> neoforgeTag(String name) {
-            return ItemTags.create(new ResourceLocation("neoforge", name));
+            return ItemTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", name));
         }
     }
 
@@ -713,7 +726,7 @@ public class Tags {
         public static final TagKey<Fluid> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
 
         private static TagKey<Fluid> tag(String name) {
-            return FluidTags.create(new ResourceLocation("c", name));
+            return FluidTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -747,7 +760,7 @@ public class Tags {
         public static final TagKey<Enchantment> ENTITY_DEFENSE_ENHANCEMENTS = tag("entity_defense_enhancements");
 
         private static TagKey<Enchantment> tag(String name) {
-            return TagKey.create(Registries.ENCHANTMENT, new ResourceLocation("c", name));
+            return TagKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -965,7 +978,7 @@ public class Tags {
         public static final TagKey<Biome> IS_OUTER_END_ISLAND = tag("is_outer_end_island");
 
         private static TagKey<Biome> tag(String name) {
-            return TagKey.create(Registries.BIOME, new ResourceLocation("c", name));
+            return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -983,7 +996,7 @@ public class Tags {
         public static final TagKey<Structure> HIDDEN_FROM_LOCATOR_SELECTION = tag("hidden_from_locator_selection");
 
         private static TagKey<Structure> tag(String name) {
-            return TagKey.create(Registries.STRUCTURE, new ResourceLocation("c", name));
+            return TagKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -1030,7 +1043,7 @@ public class Tags {
         public static final TagKey<DamageType> NO_FLINCH = neoforgeTag("no_flinch");
 
         private static TagKey<DamageType> neoforgeTag(String name) {
-            return TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("neoforge", name));
+            return TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", name));
         }
     }
 

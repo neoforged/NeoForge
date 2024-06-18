@@ -28,10 +28,10 @@ jobs:
         run:
           git switch -C pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.ref }}
 
-      - name: Setup JDK 17
+      - name: Setup JDK 21
         uses: actions/setup-java@v2
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Setup with Gradle
@@ -40,8 +40,23 @@ jobs:
           arguments: setup
           cache-read-only: false
 
-      - name: Build with Gradle
+      - name: Run game tests with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: :tests:runGameTestServer
           cache-read-only: false
+
+      - name: Run JUnit tests with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :tests:runUnitTests
+          cache-read-only: false
+
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/

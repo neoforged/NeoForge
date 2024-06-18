@@ -12,7 +12,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -38,11 +37,6 @@ public class NeoForgeRegistries {
     public static final Registry<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.STRUCTURE_MODIFIER_SERIALIZERS).create();
     public static final Registry<FluidType> FLUID_TYPES = new RegistryBuilder<>(Keys.FLUID_TYPES).sync(true).create();
     public static final Registry<HolderSetType> HOLDER_SET_TYPES = new RegistryBuilder<>(Keys.HOLDER_SET_TYPES).sync(true).create();
-    public static final Registry<ItemDisplayContext> DISPLAY_CONTEXTS = new RegistryBuilder<>(Keys.DISPLAY_CONTEXTS)
-            .sync(true)
-            .maxId(128 * 2) // 0 -> 127 gets positive ID, 128 -> 256 gets negative ID
-            .defaultKey(new ResourceLocation("none"))
-            .create();
     public static final Registry<IngredientType<?>> INGREDIENT_TYPES = new RegistryBuilder<>(Keys.INGREDIENT_TYPES).sync(true).create();
     public static final Registry<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = new RegistryBuilder<>(Keys.FLUID_INGREDIENT_TYPES).sync(true).create();
     public static final Registry<MapCodec<? extends ICondition>> CONDITION_SERIALIZERS = new RegistryBuilder<>(Keys.CONDITION_CODECS).create();
@@ -58,7 +52,6 @@ public class NeoForgeRegistries {
         public static final ResourceKey<Registry<MapCodec<? extends StructureModifier>>> STRUCTURE_MODIFIER_SERIALIZERS = key("structure_modifier_serializers");
         public static final ResourceKey<Registry<FluidType>> FLUID_TYPES = key("fluid_type");
         public static final ResourceKey<Registry<HolderSetType>> HOLDER_SET_TYPES = key("holder_set_type");
-        public static final ResourceKey<Registry<ItemDisplayContext>> DISPLAY_CONTEXTS = key("display_contexts");
         public static final ResourceKey<Registry<IngredientType<?>>> INGREDIENT_TYPES = key("ingredient_serializer");
         public static final ResourceKey<Registry<FluidIngredientType<?>>> FLUID_INGREDIENT_TYPES = key("fluid_ingredient_type");
         public static final ResourceKey<Registry<MapCodec<? extends ICondition>>> CONDITION_CODECS = key("condition_codecs");
@@ -69,7 +62,7 @@ public class NeoForgeRegistries {
         public static final ResourceKey<Registry<StructureModifier>> STRUCTURE_MODIFIERS = key("structure_modifier");
 
         private static <T> ResourceKey<Registry<T>> key(String name) {
-            return ResourceKey.createRegistryKey(new ResourceLocation(NeoForgeVersion.MOD_ID, name));
+            return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name));
         }
     }
 }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1281,10 +_,35 @@
+@@ -1292,10 +_,35 @@
          Schema schema199 = p_14514_.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
          p_14514_.addFixer(ItemRenameFix.create(schema199, "Rename scute item to turtle_scute", unaryoperator2));
@@ -36,7 +36,7 @@
          Schema schema201 = p_14514_.addSchema(3807, V3807::new);
          p_14514_.addFixer(new AddNewChoices(schema201, "Added Vault", References.BLOCK_ENTITY));
          Schema schema202 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1305,6 +_,18 @@
+@@ -1316,6 +_,18 @@
          p_14514_.addFixer(
              new AttributesRename(schema209, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
          );

@@ -36,7 +36,7 @@ public class FluidTemplatesTests {
 
     @OnInit
     static void register(final TestFramework framework) {
-        REG_HELPER.register(framework.modEventBus());
+        REG_HELPER.register(framework.modEventBus(), framework.container());
     }
 
     @GameTest

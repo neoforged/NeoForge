@@ -17,6 +17,22 @@
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
+@@ -157,10 +_,15 @@
+     @Override
+     public boolean setBlock(BlockPos p_233643_, BlockState p_233644_, int p_233645_, int p_233646_) {
+         if (this.blockStatePredictionHandler.isPredicting()) {
++            // Neo: Record and store a snapshot in the prediction so that BE data can be restored if the break is denied.
++            // Fixes MC-36093 and permits correct server-side only cancellation of block changes.
++            var snapshot = net.neoforged.neoforge.common.util.BlockSnapshot.create(this.dimension(), this, p_233643_, p_233645_);
++
+             BlockState blockstate = this.getBlockState(p_233643_);
+             boolean flag = super.setBlock(p_233643_, p_233644_, p_233645_, p_233646_);
+             if (flag) {
+                 this.blockStatePredictionHandler.retainKnownServerState(p_233643_, blockstate, this.minecraft.player);
++                this.blockStatePredictionHandler.retainSnapshot(p_233643_, snapshot);
+             }
+ 
+             return flag;
 @@ -192,6 +_,7 @@
          this.serverSimulationDistance = p_205510_;
          this.updateSkyBrightness();

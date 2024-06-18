@@ -17,8 +17,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -33,7 +34,6 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.testframework.DynamicTest;
@@ -43,7 +43,6 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = BlockTests.GROUP)
 public class BlockTests {
@@ -51,11 +50,37 @@ public class BlockTests {
 
     @GameTest
     @EmptyTemplate
+    @TestHolder(description = "Tests if player breaking decorated pots with swords drops Bricks")
+    static void decoratedPotBreaking(final DynamicTest test) {
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+
+                // Mine pot with sword
+                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DECORATED_POT.defaultBlockState()))
+                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DIAMOND_SWORD.getDefaultInstance()))
+                .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 1, 1))))
+                .thenExecute(player -> helper.assertTrue(
+                        helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().expandTowards(2, 2, 2)).stream().anyMatch(itemEntity -> itemEntity.getItem().is(Items.BRICK)),
+                        "Decorated Pot should had dropped Bricks"))
+                .thenExecute(player -> helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().expandTowards(2, 2, 2)).forEach(itemEntity -> itemEntity.remove(Entity.RemovalReason.DISCARDED)))
+
+                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DECORATED_POT.defaultBlockState()))
+                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DANDELION.getDefaultInstance()))
+                .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 1, 1))))
+                .thenExecute(player -> helper.assertTrue(
+                        helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().expandTowards(2, 2, 2)).stream().anyMatch(itemEntity -> itemEntity.getItem().is(Items.DECORATED_POT)),
+                        "Decorated Pot should had dropped the Decorated Pot"))
+                .thenExecute(player -> helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().expandTowards(2, 2, 2)).forEach(itemEntity -> itemEntity.remove(Entity.RemovalReason.DISCARDED)))
+
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = "Tests if custom fence gates without wood types work, allowing for the use of the vanilla block for non-wooden gates")
     static void woodlessFenceGate(final DynamicTest test, final RegistrationHelper reg) {
         final var gate = reg.blocks().register("gate", () -> new FenceGateBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.ACACIA_FENCE_GATE), SoundEvents.BARREL_OPEN, SoundEvents.CHEST_CLOSE))
                 .withLang("Woodless Fence Gate").withBlockItem();
-        reg.provider(BlockStateProvider.class, prov -> prov.fenceGateBlock(gate.get(), new ResourceLocation("block/iron_block")));
+        reg.provider(BlockStateProvider.class, prov -> prov.fenceGateBlock(gate.get(), ResourceLocation.withDefaultNamespace("block/iron_block")));
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(() -> helper.setBlock(1, 1, 1, gate.get().defaultBlockState().setValue(FenceGateBlock.OPEN, true)))
 
@@ -89,9 +114,9 @@ public class BlockTests {
             }
 
             @Override
-            public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
+            public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
                 // have the player respawn a block north to the location of the anchor
-                return Optional.of(pos.getCenter().add(0, 1, 1));
+                return Optional.of(ServerPlayer.RespawnPosAngle.of(pos.getCenter().add(0, 1, 1), pos));
             }
         }).withBlockItem().withLang("Respawn").withDefaultWhiteModel();
 
@@ -100,7 +125,7 @@ public class BlockTests {
                 .thenExecute(() -> helper.setBlock(1, 2, 2, Blocks.IRON_BLOCK))
 
                 .thenExecute(player -> helper.useBlock(new BlockPos(1, 2, 1), player))
-                .thenExecute(player -> player.getServer().getPlayerList().respawn(player, false))
+                .thenExecute(player -> player.getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.CHANGED_DIMENSION))
                 .thenExecute(() -> helper.assertEntityPresent(
                         EntityType.PLAYER,
                         1, 3, 2))

@@ -1,7 +1,10 @@
-apply plugin: 'net.neoforged.gradle.platform'
-apply plugin: 'java'
-apply plugin: 'com.diffplug.spotless'
-apply plugin: 'net.neoforged.licenser'
+plugins {
+    id 'java'
+    id 'net.neoforged.gradle.platform'
+    id 'com.diffplug.spotless'
+    id 'net.neoforged.licenser'
+    id 'neoforge.formatting-conventions'
+}
 
 def neoforgeProject = project(':neoforge')
 def testframeworkProject = project(':testframework')
@@ -24,16 +27,23 @@ sourceSets {
             srcDir file('src/generated/resources')
         }
     }
+    junit {}
+}
+
+configurations {
+    junitImplementation.extendsFrom(implementation)
 }
 
 dependencies {
-    implementation neoforgeProject
-    implementation testframeworkProject
+    implementation project(path: ':neoforge', configuration: 'runtimeElements')
+    implementation(testframeworkProject)
 
-    implementation "org.junit.jupiter:junit-jupiter-api:${project.jupiter_api_version}"
-    implementation "org.junit.vintage:junit-vintage-engine:${project.vintage_engine_version}"
-    implementation "org.opentest4j:opentest4j:${project.opentest4j_version}"
-    implementation "org.hamcrest:hamcrest-all:${project.hamcrest_version}"
+    junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
+    junitImplementation "org.junit.jupiter:junit-jupiter-params"
+    junitRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+
+    junitImplementation("org.assertj:assertj-core:${project.assertj_core}")
+    junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 }
@@ -41,6 +51,10 @@ dependencies {
 runs {
     client {
         configure neoforgeProject.runTypes.client
+    }
+    junit {
+        configure neoforgeProject.runTypes.junit
+        unitTestSource sourceSets.junit
     }
     server {
         configure neoforgeProject.runTypes.server
@@ -95,6 +109,7 @@ afterEvaluate {
         args.set(outputIndex+1, file('src/generated/resources/').absolutePath);
         programArguments.set(args);
     }
+    runs.junit.modSources.all().get().values().remove(sourceSets.main)
 }
 
 license {
@@ -102,7 +117,3 @@ license {
     skipExistingHeaders = true
     include '**/*.java'
 }
-
-apply from: rootProject.file('buildscript/spotless-rules.gradle')
-apply from: rootProject.file('buildscript/generate-package-infos.gradle')
-apply from: rootProject.file('buildscript/apply-all-formatting.gradle')

@@ -5,11 +5,14 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import com.google.common.collect.Multimap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -22,6 +25,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -61,12 +66,20 @@ public interface IItemExtension {
     }
 
     /**
-     * ItemStack sensitive version of getItemAttributeModifiers
+     * ItemStack sensitive version of getDefaultAttributeModifiers. Used when a stack has no {@link DataComponents#ATTRIBUTE_MODIFIERS} component.
      */
     @SuppressWarnings("deprecation")
-    default ItemAttributeModifiers getAttributeModifiers(ItemStack stack) {
+    default ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         return self().getDefaultAttributeModifiers();
     }
+
+    /**
+     * Called to allow items to modify the attributes on them.
+     *
+     * @param slot      The slot to adjust the attributes for.
+     * @param modifiers Modifiers currently on the stack either because of a {@link DataComponents#ATTRIBUTE_MODIFIERS} component, or the default attribute modifiers
+     */
+    default void adjustAttributeModifiers(ItemStack stack, EquipmentSlot slot, Multimap<Holder<Attribute>, AttributeModifier> modifiers) {}
 
     /**
      * Called when a player drops the item into the world, returning false from this
@@ -132,25 +145,10 @@ public interface IItemExtension {
 
     /**
      * Determines the amount of durability the mending enchantment
-     * will repair, on average, per point of experience.
+     * will repair, on average, per 0.5 points of experience.
      */
     default float getXpRepairRatio(ItemStack stack) {
-        return 2f;
-    }
-
-    /**
-     * Called before a block is broken. Return true to prevent default block
-     * harvesting.
-     *
-     * Note: In SMP, this is called on both client and server sides!
-     *
-     * @param itemstack The current ItemStack
-     * @param pos       Block's position in world
-     * @param player    The Player that is wielding the item
-     * @return True to prevent harvesting, false to continue as normal
-     */
-    default boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
-        return false;
+        return 1f;
     }
 
     /**
@@ -281,14 +279,6 @@ public interface IItemExtension {
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
-     * 
-     * @deprecated Use {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} by checking that the slot argument is an armor slot. Armor slots are 36, 37, 38 and 39.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.4")
-    default void onArmorTick(ItemStack stack, Level level, Player player) {}
-
-    /**
      * Determines if the specific ItemStack can be placed in the specified armor
      * slot, for the entity.
      *
@@ -297,8 +287,8 @@ public interface IItemExtension {
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
-        return Mob.getEquipmentSlotForItem(stack) == armorType;
+    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+        return entity.getEquipmentSlotForItem(stack) == armorType;
     }
 
     /**
@@ -433,52 +423,56 @@ public interface IItemExtension {
     }
 
     /**
-     * Checks whether an item can be enchanted with a certain enchantment. This
-     * applies specifically to enchanting an item in the enchanting table and is
-     * called when retrieving the list of possible enchantments for an item.
-     * Enchantments may additionally (or exclusively) be doing their own checks in
-     * {@link Enchantment#canApplyAtEnchantingTable(ItemStack)};
-     * check the individual implementation for reference. By default this will check
-     * if the enchantment type is valid for this item type.
+     * Checks if an item should be treated as a primary item for a given enchantment.
+     * <p>
+     * Primary items are those that are able to receive the enchantment during enchanting,
+     * either from the enchantment table or other random enchantment mechanisms.
+     * As a special case, books are primary items for every enchantment.
+     * <p>
+     * Other application mechanisms, such as the anvil, check {@link Enchantment#isSupportedItem(ItemStack)} instead.
+     * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag.
      *
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
-     * @return true if the enchantment can be applied to this item
+     * @return true if this item should be treated as a primary item for the enchantment
+     * @apiNote Call via {@link IItemStackExtension#isPrimaryItemFor(Holder)}
      */
-    default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return stack.getItem().builtInRegistryHolder().is(enchantment.getSupportedItems());
+    @ApiStatus.OverrideOnly
+    default boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
+        return stack.getItem() == Items.BOOK || enchantment.value().isPrimaryItem(stack);
     }
 
     /**
      * Gets the level of the enchantment currently present on the stack. By default, returns the enchantment level present in NBT.
      * Most enchantment implementations rely upon this method.
-     * The returned value must be the same as getting the enchantment from {@link #getAllEnchantments(ItemStack)}
+     * The returned value must be the same as getting the enchantment from {@link #getAllEnchantments}
      *
      * @param stack       The item stack being checked
      * @param enchantment The enchantment being checked for
      * @return Level of the enchantment, or 0 if not present
-     * @see #getAllEnchantments(ItemStack)
-     * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel(Enchantment)}.
+     * @see #getAllEnchantments
+     * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel}.
      */
     @ApiStatus.OverrideOnly
-    default int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
-        ItemEnchantments itemenchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+    default int getEnchantmentLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+        ItemEnchantments itemenchantments = stack.getTagEnchantments();
         return itemenchantments.getLevel(enchantment);
     }
 
     /**
      * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT.
      * Used in several places in code including armor enchantment hooks.
-     * The returned value(s) must have the same level as {@link #getEnchantmentLevel(ItemStack, Enchantment)}.
+     * The returned value(s) must have the same level as {@link #getEnchantmentLevel}.
      *
-     * @param stack The item stack being checked
+     * @param stack  The item stack being checked
+     * @param lookup A registry lookup, used to resolve enchantment {@link Holder}s.
      * @return Map of all enchantments on the stack, empty if no enchantments are present
-     * @see #getEnchantmentLevel(ItemStack, Enchantment)
-     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments()}.
+     * @see #getEnchantmentLevel
+     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments}.
      */
     @ApiStatus.OverrideOnly
-    default ItemEnchantments getAllEnchantments(ItemStack stack) {
-        return stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+    default ItemEnchantments getAllEnchantments(ItemStack stack, RegistryLookup<Enchantment> lookup) {
+        return stack.getTagEnchantments();
     }
 
     /**
@@ -614,7 +608,7 @@ public interface IItemExtension {
      * @param onBroken The on-broken callback from vanilla
      * @return The amount of damage to pass to the vanilla logic
      */
-    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Runnable onBroken) {
+    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
         return amount;
     }
 

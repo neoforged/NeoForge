@@ -91,10 +91,10 @@ public class FluidTypeTest {
         @Override
         public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
             consumer.accept(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation STILL = new ResourceLocation("block/water_still"),
-                        FLOW = new ResourceLocation("block/water_flow"),
-                        OVERLAY = new ResourceLocation("block/obsidian"),
-                        VIEW_OVERLAY = new ResourceLocation("textures/block/obsidian.png");
+                private static final ResourceLocation STILL = ResourceLocation.withDefaultNamespace("block/water_still"),
+                        FLOW = ResourceLocation.withDefaultNamespace("block/water_flow"),
+                        OVERLAY = ResourceLocation.withDefaultNamespace("block/obsidian"),
+                        VIEW_OVERLAY = ResourceLocation.withDefaultNamespace("textures/block/obsidian.png");
 
                 @Override
                 public ResourceLocation getStillTexture() {
@@ -148,8 +148,8 @@ public class FluidTypeTest {
                     if (pos.getY() == 100) {
                         vertexConsumer = new VertexConsumerWrapper(vertexConsumer) {
                             @Override
-                            public VertexConsumer color(int r, int g, int b, int a) {
-                                return super.color(b, g, r, a);
+                            public VertexConsumer setColor(int r, int g, int b, int a) {
+                                return super.setColor(b, g, r, a);
                             }
                         };
                     }

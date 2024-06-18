@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/food/FoodProperties.java
 +++ b/net/minecraft/world/food/FoodProperties.java
-@@ -68,18 +_,25 @@
+@@ -77,11 +_,18 @@
              return this;
          }
  
@@ -16,9 +16,10 @@
 +            return this;
 +        }
 +
-         public FoodProperties build() {
-             float f = FoodConstants.saturationByModifier(this.nutrition, this.saturationModifier);
-             return new FoodProperties(this.nutrition, f, this.canAlwaysEat, this.eatSeconds, this.effects.build());
+         public FoodProperties.Builder usingConvertsTo(ItemLike p_347650_) {
+             this.usingConvertsTo = Optional.of(new ItemStack(p_347650_));
+             return this;
+@@ -93,7 +_,7 @@
          }
      }
  
@@ -27,7 +28,7 @@
          public static final Codec<FoodProperties.PossibleEffect> CODEC = RecordCodecBuilder.create(
              p_337893_ -> p_337893_.group(
                          MobEffectInstance.CODEC.fieldOf("effect").forGetter(FoodProperties.PossibleEffect::effect),
-@@ -95,8 +_,12 @@
+@@ -109,8 +_,12 @@
              FoodProperties.PossibleEffect::new
          );
  

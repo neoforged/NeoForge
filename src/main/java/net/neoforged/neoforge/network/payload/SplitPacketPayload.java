@@ -23,7 +23,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record SplitPacketPayload(byte[] payload) implements CustomPacketPayload {
-    public static final Type<SplitPacketPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "split"));
+    public static final Type<SplitPacketPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "split"));
     public static final StreamCodec<FriendlyByteBuf, SplitPacketPayload> STREAM_CODEC = StreamCodec.composite(
             NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,
             SplitPacketPayload::payload,

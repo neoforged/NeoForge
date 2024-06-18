@@ -11,6 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -205,21 +206,24 @@ public interface IBlockExtension {
      *
      * Return true if the block is actually destroyed.
      *
-     * Note: When used in multiplayer, this is called on both client and
-     * server sides!
+     * This function is called on both the logical client and logical server.
      *
      * @param state       The current state.
      * @param level       The current level
      * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
-     * @param willHarvest True if Block.harvestBlock will be called after this, if the return in true.
-     *                    Can be useful to delay the destruction of tile entities till after harvestBlock
+     * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid state at current position
      * @return True if the block is actually destroyed.
      */
     default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        self().playerWillDestroy(level, pos, state, player);
-        return level.setBlock(pos, fluid.createLegacyBlock(), level.isClientSide ? 11 : 3);
+        if (level.isClientSide()) {
+            // On the client, vanilla calls Level#setBlock, per MultiPlayerGameMode#destroyBlock
+            return level.setBlock(pos, fluid.createLegacyBlock(), 11);
+        } else {
+            // On the server, vanilla calls Level#removeBlock, per ServerPlayerGameMode#destroyBlock
+            return level.removeBlock(pos, false);
+        }
     }
 
     /**
@@ -243,36 +247,34 @@ public interface IBlockExtension {
     }
 
     /**
-     * Determines if this block is classified as a Bed, Allowing
-     * players to sleep in it, though the block has to specifically
-     * perform the sleeping functionality in it's activated event.
+     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
+     * <p>
+     * If true, players may sleep in it, though the block must manually put the player to sleep
+     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
+     * <p>
+     * If you want players to be able to respawn at your bed, you also need to override {@link #getRespawnPosition}.
      *
-     * @param state  The current state
-     * @param level  The current level
-     * @param pos    Block position in level
-     * @param player The player or camera entity, null in some cases.
+     * @param state   The current state
+     * @param level   The current level
+     * @param pos     Block position in level
+     * @param sleeper The sleeping entity.
      * @return True to treat this as a bed
      */
-    default boolean isBed(BlockState state, BlockGetter level, BlockPos pos, @Nullable Entity player) {
-        return self() instanceof BedBlock; //TODO: Forge: Keep isBed function?
+    default boolean isBed(BlockState state, BlockGetter level, BlockPos pos, LivingEntity sleeper) {
+        return self() instanceof BedBlock;
     }
 
     /**
-     * Returns the position that the entity is moved to upon
-     * respawning at this block.
+     * Returns the position that the entity is moved to upon respawning at this block.
      *
      * @param state       The current state
      * @param type        The entity type used when checking if a dismount blockstate is dangerous. Currently always PLAYER.
      * @param levelReader The current level
      * @param pos         Block position in level
      * @param orientation The angle the entity had when setting the respawn point
-     * @param entity      The entity respawning, often null
      * @return The spawn position or the empty optional if respawning here is not possible
      */
-    default Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
-        if (isBed(state, levelReader, pos, entity) && levelReader instanceof Level level && BedBlock.canSetSpawn(level)) {
-            return BedBlock.findStandUpPosition(type, levelReader, pos, state.getValue(BedBlock.FACING), orientation);
-        }
+    default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
         return Optional.empty();
     }
 
@@ -445,15 +447,13 @@ public interface IBlockExtension {
     /**
      * Gathers how much experience this block drops when broken.
      *
-     * @param state          The current state
-     * @param level          The level
-     * @param randomSource   Random source to use for experience randomness
-     * @param pos            Block position
-     * @param fortuneLevel   fortune enchantment level of tool being used
-     * @param silkTouchLevel silk touch enchantment level of tool being used
+     * @param state        The current state
+     * @param level        The level
+     * @param randomSource Random source to use for experience randomness
+     * @param pos          Block position
      * @return Amount of XP from breaking this block.
      */
-    default int getExpDrop(BlockState state, LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+    default int getExpDrop(BlockState state, LevelReader level, RandomSource randomSource, BlockPos pos) {
         return 0;
     }
 
@@ -527,12 +527,12 @@ public interface IBlockExtension {
      * @param level     The level
      * @param pos       The position of this state
      * @param beaconPos The position of the beacon
-     * @return A float RGB [0.0, 1.0] array to be averaged with a beacon's existing beam color, or null to do nothing to the beam
+     * @return An Integer ARGB value to be averaged with a beacon's existing beam color, or null to do nothing to the beam
      */
     @Nullable
-    default float[] getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
+    default Integer getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
         if (self() instanceof BeaconBeamBlock)
-            return ((BeaconBeamBlock) self()).getColor().getTextureDiffuseColors();
+            return ((BeaconBeamBlock) self()).getColor().getTextureDiffuseColor();
         return null;
     }
 

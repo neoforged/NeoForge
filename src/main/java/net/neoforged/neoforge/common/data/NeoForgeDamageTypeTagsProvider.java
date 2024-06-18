@@ -101,7 +101,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
 
     private TagAppender<DamageType> tagWithOptionalLegacy(TagKey<DamageType> tag) {
         TagAppender<DamageType> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+        tagAppender.addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath()));
         return tagAppender;
     }
 

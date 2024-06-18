@@ -83,7 +83,7 @@ public class ClientTests {
 
     private static final class SineSound extends AbstractSoundInstance {
         SineSound(Vec3 position) {
-            super(new ResourceLocation("neotests_audio_stream_test", "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
+            super(ResourceLocation.fromNamespaceAndPath("neotests_audio_stream_test", "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
             x = position.x;
             y = position.y;
             z = position.z;

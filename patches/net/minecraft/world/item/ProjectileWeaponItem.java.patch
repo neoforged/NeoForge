@@ -1,24 +1,25 @@
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
-@@ -108,7 +_,7 @@
-             abstractarrow.setPierceLevel((byte)j);
+@@ -92,7 +_,7 @@
+             abstractarrow.setCritArrow(true);
          }
  
 -        return abstractarrow;
 +        return customArrow(abstractarrow, p_330846_);
      }
  
-     protected static boolean hasInfiniteArrows(ItemStack p_330642_, ItemStack p_332202_, boolean p_331512_) {
-@@ -133,7 +_,7 @@
+     protected static List<ItemStack> draw(ItemStack p_331565_, ItemStack p_330406_, LivingEntity p_330823_) {
+@@ -115,7 +_,8 @@
      }
  
      protected static ItemStack useAmmo(ItemStack p_331207_, ItemStack p_331434_, LivingEntity p_330302_, boolean p_330934_) {
--        boolean flag = !p_330934_ && !hasInfiniteArrows(p_331207_, p_331434_, p_330302_.hasInfiniteMaterials());
-+        boolean flag = !p_330934_ && !(p_330302_.hasInfiniteMaterials() || (p_331434_.getItem() instanceof ArrowItem && ((ArrowItem)p_331434_.getItem()).isInfinite(p_331434_, p_331207_, p_330302_)));
-         if (!flag) {
-             ItemStack itemstack1 = p_331434_.copyWithCount(1);
-             itemstack1.set(DataComponents.INTANGIBLE_PROJECTILE, Unit.INSTANCE);
-@@ -146,5 +_,9 @@
+-        int i = !p_330934_ && !p_330302_.hasInfiniteMaterials() && p_330302_.level() instanceof ServerLevel serverlevel
++        // Neo: Adjust this check to respect ArrowItem#isInfinite, bypassing processAmmoUse if true.
++        int i = !p_330934_ && p_330302_.level() instanceof ServerLevel serverlevel && !(p_330302_.hasInfiniteMaterials() || (p_331434_.getItem() instanceof ArrowItem ai && ai.isInfinite(p_331434_, p_331207_, p_330302_)))
+             ? EnchantmentHelper.processAmmoUse(serverlevel, p_331207_, p_331434_, 1)
+             : 0;
+         if (i > p_331434_.getCount()) {
+@@ -132,5 +_,9 @@
  
              return itemstack;
          }

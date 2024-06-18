@@ -54,8 +54,8 @@
 +        this.getRandomItems(p_79149_).forEach(p_79150_);
      }
  
-     public ObjectArrayList<ItemStack> getRandomItems(LootParams p_287574_, long p_287773_) {
-@@ -120,7 +_,8 @@
+     public ObjectArrayList<ItemStack> getRandomItems(LootParams p_347545_, RandomSource p_347680_) {
+@@ -124,7 +_,8 @@
  
      private ObjectArrayList<ItemStack> getRandomItems(LootContext p_230923_) {
          ObjectArrayList<ItemStack> objectarraylist = new ObjectArrayList<>();
@@ -65,7 +65,7 @@
          return objectarraylist;
      }
  
-@@ -210,6 +_,50 @@
+@@ -214,6 +_,50 @@
      public static LootTable.Builder lootTable() {
          return new LootTable.Builder();
      }

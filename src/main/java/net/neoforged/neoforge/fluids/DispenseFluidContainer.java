@@ -54,15 +54,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
             return super.execute(source, stack);
         }
 
-        if (stack.getCount() == 1) {
-            return resultStack;
-        } else if (source.blockEntity().addItem(resultStack) < 0) {
-            this.dispenseBehavior.dispense(source, resultStack);
-        }
-
-        ItemStack stackCopy = stack.copy();
-        stackCopy.shrink(1);
-        return stackCopy;
+        return this.consumeWithRemainder(source, stack, resultStack);
     }
 
     /**
@@ -83,16 +75,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
         if (result.isSuccess()) {
             ItemStack drainedStack = result.getResult();
-
-            if (drainedStack.getCount() == 1) {
-                return drainedStack;
-            } else if (!drainedStack.isEmpty() && source.blockEntity().addItem(drainedStack) < 0) {
-                this.dispenseBehavior.dispense(source, drainedStack);
-            }
-
-            ItemStack stackCopy = drainedStack.copy();
-            stackCopy.shrink(1);
-            return stackCopy;
+            return this.consumeWithRemainder(source, stack, drainedStack);
         } else {
             return this.dispenseBehavior.dispense(source, stack);
         }

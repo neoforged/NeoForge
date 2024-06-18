@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
@@ -91,6 +92,47 @@ public final class NeoForgeStreamCodecs {
         };
     }
 
+    /**
+     * Creates a stream codec that uses different implementation depending on the {@link net.neoforged.neoforge.network.connection.ConnectionType}.
+     * Should be used to keep vanilla connection compatibility.
+     */
+    public static <V> StreamCodec<RegistryFriendlyByteBuf, V> connectionAware(
+            StreamCodec<? super RegistryFriendlyByteBuf, V> neoForgeCodec,
+            StreamCodec<? super RegistryFriendlyByteBuf, V> otherCodec) {
+        return new StreamCodec<>() {
+            @Override
+            public V decode(RegistryFriendlyByteBuf buf) {
+                return switch (buf.getConnectionType()) {
+                    case NEOFORGE -> neoForgeCodec.decode(buf);
+                    case OTHER -> otherCodec.decode(buf);
+                };
+            }
+
+            @Override
+            public void encode(RegistryFriendlyByteBuf buf, V value) {
+                switch (buf.getConnectionType()) {
+                    case NEOFORGE -> neoForgeCodec.encode(buf, value);
+                    case OTHER -> otherCodec.encode(buf, value);
+                }
+            }
+        };
+    }
+
+    /**
+     * Similar to {@link StreamCodec#unit(Object)}, but without checks for the value to be encoded.
+     */
+    public static <B, V> StreamCodec<B, V> uncheckedUnit(final V defaultValue) {
+        return new StreamCodec<>() {
+            @Override
+            public V decode(B buf) {
+                return defaultValue;
+            }
+
+            @Override
+            public void encode(B buf, V value) {}
+        };
+    }
+
     public static <B, C, T1, T2, T3, T4, T5, T6, T7> StreamCodec<B, C> composite(
             final StreamCodec<? super B, T1> codec1,
             final Function<C, T1> getter1,
@@ -107,7 +149,7 @@ public final class NeoForgeStreamCodecs {
             final StreamCodec<? super B, T7> codec7,
             final Function<C, T7> getter7,
             final Function7<T1, T2, T3, T4, T5, T6, T7, C> p_331335_) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B p_330310_) {
                 T1 t1 = codec1.decode(p_330310_);

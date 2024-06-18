@@ -20,11 +20,11 @@ public class ItemExistsCondition implements ICondition {
     private final ResourceLocation item;
 
     public ItemExistsCondition(String location) {
-        this(new ResourceLocation(location));
+        this(ResourceLocation.parse(location));
     }
 
     public ItemExistsCondition(String namespace, String path) {
-        this(new ResourceLocation(namespace, path));
+        this(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
 
     public ItemExistsCondition(ResourceLocation item) {

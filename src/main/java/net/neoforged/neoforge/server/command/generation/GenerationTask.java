@@ -157,7 +157,7 @@ public class GenerationTask {
                 continue;
             }
 
-            holder.getOrScheduleFuture(ChunkStatus.FULL, chunkMap).whenCompleteAsync((result, throwable) -> {
+            holder.scheduleChunkGenerationTask(ChunkStatus.FULL, chunkMap).whenCompleteAsync((result, throwable) -> {
                 if (throwable == null) {
                     this.acceptChunkResult(chunkLongPos, result);
                 } else {

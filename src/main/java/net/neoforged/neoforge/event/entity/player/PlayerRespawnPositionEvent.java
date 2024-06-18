@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import java.util.Objects;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -18,7 +17,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.portal.DimensionTransition;
 
 /**
  * Fired by {@link PlayerList#respawn(ServerPlayer, boolean)} before the server respawns a player.
@@ -28,40 +27,32 @@ import net.minecraft.world.phys.Vec3;
  * This event is only fired on the logical server.
  */
 public class PlayerRespawnPositionEvent extends PlayerEvent {
-    private ServerLevel respawnLevel;
-    private @Nullable Vec3 respawnPosition;
-    private float respawnAngle;
-    private final ServerLevel originalRespawnLevel;
-    private final @Nullable Vec3 originalRespawnPosition;
-    private final float originalRespawnAngle;
+    private DimensionTransition dimensionTransition;
+    private final DimensionTransition originalDimensionTransition;
     private final boolean fromEndFight;
     private boolean changePlayerSpawnPosition = true;
 
-    public PlayerRespawnPositionEvent(ServerPlayer player, ServerLevel respawnLevel, float respawnAngle, @Nullable Vec3 respawnPosition, boolean fromEndFight) {
+    public PlayerRespawnPositionEvent(ServerPlayer player, DimensionTransition dimensionTransition, boolean fromEndFight) {
         super(player);
-        this.respawnLevel = respawnLevel;
-        this.respawnPosition = respawnPosition;
-        this.respawnAngle = respawnAngle;
-        this.originalRespawnLevel = respawnLevel;
-        this.originalRespawnPosition = respawnPosition;
-        this.originalRespawnAngle = respawnAngle;
+        this.dimensionTransition = dimensionTransition;
+        this.originalDimensionTransition = dimensionTransition;
         this.fromEndFight = fromEndFight;
     }
 
     /**
-     * @return The level the player will respawn into.
+     * @return The dimension transition for where the player will respawn
      */
-    public ServerLevel getRespawnLevel() {
-        return respawnLevel;
+    public DimensionTransition getDimensionTransition() {
+        return dimensionTransition;
     }
 
     /**
-     * Set the level the player will respawn into.
+     * Set the dimension transition for where the player will respawn
      * 
-     * @param respawnLevel The new level.
+     * @param dimensionTransition The new dimension transition.
      */
-    public void setRespawnLevel(ServerLevel respawnLevel) {
-        this.respawnLevel = respawnLevel;
+    public void setDimensionTransition(DimensionTransition dimensionTransition) {
+        this.dimensionTransition = dimensionTransition;
     }
 
     /**
@@ -74,64 +65,15 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
                 getEntity().getServer(), "The player is not in a ServerLevel somehow?");
         ServerLevel level = Objects.requireNonNull(
                 server.getLevel(respawnLevelResourceKey), "Level " + respawnLevelResourceKey + " does not exist!");
-        setRespawnLevel(level);
+        DimensionTransition dt = getDimensionTransition();
+        setDimensionTransition(new DimensionTransition(level, dt.pos(), dt.speed(), dt.yRot(), dt.xRot(), dt.postDimensionTransition()));
     }
 
     /**
-     * @return The level the server originally intended to respawn the player into.
+     * @return The dimension transition the server originally intended to respawn the player to.
      */
-    public ServerLevel getOriginalRespawnLevel() {
-        return originalRespawnLevel;
-    }
-
-    /**
-     * @return The position in the target level where the player will respawn, before any adjustments by the server.
-     */
-    @Nullable
-    public Vec3 getRespawnPosition() {
-        return respawnPosition;
-    }
-
-    /**
-     * Set the player's respawn position within the respawn level. The server automatically adjusts this position
-     * to not be inside blocks. If {@code null}, the server will use the default spawn position for the level.
-     * 
-     * @param respawnPosition
-     */
-    public void setRespawnPosition(@Nullable Vec3 respawnPosition) {
-        this.respawnPosition = respawnPosition;
-    }
-
-    /**
-     * @return The original position the server intended to respawn the player at.
-     */
-    @Nullable
-    public Vec3 getOriginalRespawnPosition() {
-        return originalRespawnPosition;
-    }
-
-    /**
-     * @return The angle the player will face when they respawn, before any modifications made by the server.
-     */
-    public float getRespawnAngle() {
-        return respawnAngle;
-    }
-
-    /**
-     * Set the angle the player will face when they respawn. The server may adjust the angle, for example to face
-     * a bed if the player respawns there.
-     * 
-     * @param respawnAngle The angle the player will face when they respawn.
-     */
-    public void setRespawnAngle(float respawnAngle) {
-        this.respawnAngle = respawnAngle;
-    }
-
-    /**
-     * @return The original angle the server intended for the player to face when they respawn.
-     */
-    public float getOriginalRespawnAngle() {
-        return originalRespawnAngle;
+    public DimensionTransition getOriginalDimensionTransition() {
+        return originalDimensionTransition;
     }
 
     /**

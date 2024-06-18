@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -56,7 +_,7 @@
-         Level level = p_40529_.getLevel();
-         BlockPos blockpos = p_40529_.getClickedPos();
-         Player player = p_40529_.getPlayer();
--        Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos));
-+        Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos), p_40529_);
-         if (optional.isEmpty()) {
+@@ -60,7 +_,7 @@
+         if (playerHasShieldUseIntent(p_40529_)) {
              return InteractionResult.PASS;
          } else {
-@@ -75,20 +_,19 @@
-         }
+-            Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos));
++            Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos), p_40529_);
+             if (optional.isEmpty()) {
+                 return InteractionResult.PASS;
+             } else {
+@@ -85,20 +_,19 @@
+         return p_345141_.getHand().equals(InteractionHand.MAIN_HAND) && player.getOffhandItem().is(Items.SHIELD) && !player.isSecondaryUseActive();
      }
  
 -    private Optional<BlockState> evaluateNewBlockState(Level p_308922_, BlockPos p_308899_, @Nullable Player p_309192_, BlockState p_308900_) {
@@ -34,7 +34,7 @@
                  if (optional2.isPresent()) {
                      p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
                      p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
-@@ -100,8 +_,19 @@
+@@ -110,8 +_,19 @@
          }
      }
  

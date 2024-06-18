@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/RepairItemRecipe.java
 +++ b/net/minecraft/world/item/crafting/RepairItemRecipe.java
-@@ -48,7 +_,9 @@
+@@ -47,7 +_,9 @@
              && p_336139_.has(DataComponents.MAX_DAMAGE)
              && p_335795_.has(DataComponents.MAX_DAMAGE)
              && p_336139_.has(DataComponents.DAMAGE)
@@ -10,4 +10,4 @@
 +            && p_335795_.isRepairable();
      }
  
-     public boolean matches(CraftingContainer p_44138_, Level p_44139_) {
+     public boolean matches(CraftingInput p_345243_, Level p_44139_) {

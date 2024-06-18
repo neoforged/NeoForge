@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.item;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -33,7 +35,8 @@ public class MayFlyAttributeTest {
     protected static final String MODID = "may_fly_attribute_item";
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final AttributeModifier MODIFIER = new AttributeModifier(MODID, 1D, AttributeModifier.Operation.ADD_VALUE);
+    private static final ResourceLocation MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(MODID, "add_flight");
+    private static final AttributeModifier MODIFIER = new AttributeModifier(MODIFIER_ID, 1D, AttributeModifier.Operation.ADD_VALUE);
 
     public MayFlyAttributeTest(IEventBus modEventBus) {
         ITEMS.register(modEventBus);
@@ -55,9 +58,9 @@ public class MayFlyAttributeTest {
         }
 
         @Override
-        public ItemAttributeModifiers getAttributeModifiers(ItemStack stack) {
+        public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
             return ItemAttributeModifiers.builder()
-                    .add(net.neoforged.neoforge.common.NeoForgeMod.CREATIVE_FLIGHT, MODIFIER, EquipmentSlotGroup.ANY)
+                    .add(NeoForgeMod.CREATIVE_FLIGHT, MODIFIER, EquipmentSlotGroup.ANY)
                     .build();
         }
     }

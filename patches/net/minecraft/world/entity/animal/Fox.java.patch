@@ -3,8 +3,8 @@
 @@ -677,13 +_,16 @@
  
      @Override
-     protected void dropAllDeathLoot(DamageSource p_28536_) {
-+        super.dropAllDeathLoot(p_28536_);
+     protected void dropAllDeathLoot(ServerLevel p_348640_, DamageSource p_28536_) {
++        super.dropAllDeathLoot(p_348640_, p_28536_);
 +    }
 +    protected void dropEquipment() { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
 +        super.dropEquipment();
@@ -14,7 +14,7 @@
              this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
          }
  
--        super.dropAllDeathLoot(p_28536_);
+-        super.dropAllDeathLoot(p_348640_, p_28536_);
      }
  
      public static boolean isPathClear(Fox p_28472_, LivingEntity p_28473_) {
@@ -41,7 +41,7 @@
  
          protected void onReachedTarget() {
 -            if (Fox.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            if (net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(Fox.this.level(), Fox.this)) {
++            if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(Fox.this.level(), Fox.this)) {
                  BlockState blockstate = Fox.this.level().getBlockState(this.blockPos);
                  if (blockstate.is(Blocks.SWEET_BERRY_BUSH)) {
                      this.pickSweetBerries(blockstate);

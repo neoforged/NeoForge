@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
-@@ -93,9 +_,14 @@
+@@ -92,9 +_,14 @@
      public ChunkGenerator(BiomeSource p_255838_, Function<Holder<Biome>, BiomeGenerationSettings> p_256216_) {
          this.biomeSource = p_255838_;
          this.generationSettingsGetter = p_256216_;

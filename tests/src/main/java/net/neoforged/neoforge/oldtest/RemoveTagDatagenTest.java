@@ -26,7 +26,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 @Mod(RemoveTagDatagenTest.MODID)
 public class RemoveTagDatagenTest {
     public static final String MODID = "remove_tag_datagen_test";
-    public static final TagKey<Block> TEST_TAG = BlockTags.create(new ResourceLocation("test_tag"));
+    public static final TagKey<Block> TEST_TAG = BlockTags.create(ResourceLocation.withDefaultNamespace("test_tag"));
 
     public RemoveTagDatagenTest(IEventBus modBus) {
         modBus.addListener(this::onGatherData);
@@ -58,10 +58,9 @@ public class RemoveTagDatagenTest {
                 // This is for testing if it is functional, remove spruce_planks from planks, which makes us unable to craft beds with them.
                 this.tag(ItemTags.PLANKS).remove(key(Blocks.SPRUCE_PLANKS));
                 // This is for testing deep values, removing a entry in a tag that is referenced by another tag
-                // Remove MUSIC_DISC_CAT from the MUSIC_DISCS tag, which is added by MUSIC_DISCS reference to the CREEPER_DROP_MUSIC_DISCS tag
-                // This will make MUSIC_DISK_CAT unable to be played in a jukebox.
-                // It will still remove the record from the player because RecordItem just blindly deletes, but it won't play music.
-                this.tag(ItemTags.MUSIC_DISCS).remove(key(Items.MUSIC_DISC_CAT));
+                // Remove GOLD_ORE from the PIGLIN_LOVED tag, which is added by PIGLIN_LOVED reference to the GOLD_ORES tag
+                // This will make GOLD_ORE unable to be loved by piglins.
+                this.tag(ItemTags.PIGLIN_LOVED).remove(key(Items.GOLD_ORE));
             }
         });
     }

@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -186,14 +187,13 @@ public class ScreenUtils {
         final float vScale = 1f / 0x100;
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder wr = tessellator.getBuilder();
-        wr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder wr = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         Matrix4f matrix = guiGraphics.pose().last().pose();
-        wr.vertex(matrix, x, y + height, zLevel).uv(u * uScale, ((v + height) * vScale)).endVertex();
-        wr.vertex(matrix, x + width, y + height, zLevel).uv((u + width) * uScale, ((v + height) * vScale)).endVertex();
-        wr.vertex(matrix, x + width, y, zLevel).uv((u + width) * uScale, (v * vScale)).endVertex();
-        wr.vertex(matrix, x, y, zLevel).uv(u * uScale, (v * vScale)).endVertex();
-        tessellator.end();
+        wr.addVertex(matrix, x, y + height, zLevel).setUv(u * uScale, ((v + height) * vScale));
+        wr.addVertex(matrix, x + width, y + height, zLevel).setUv((u + width) * uScale, ((v + height) * vScale));
+        wr.addVertex(matrix, x + width, y, zLevel).setUv((u + width) * uScale, (v * vScale));
+        wr.addVertex(matrix, x, y, zLevel).setUv(u * uScale, (v * vScale));
+        BufferUploader.drawWithShader(wr.buildOrThrow());
     }
 
     /**
@@ -216,14 +216,12 @@ public class ScreenUtils {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        buffer.vertex(mat, right, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
-        buffer.vertex(mat, left, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
-        buffer.vertex(mat, left, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
-        buffer.vertex(mat, right, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
-        tessellator.end();
-
+        BufferBuilder buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        buffer.addVertex(mat, right, top, zLevel).setColor(startRed, startGreen, startBlue, startAlpha);
+        buffer.addVertex(mat, left, top, zLevel).setColor(startRed, startGreen, startBlue, startAlpha);
+        buffer.addVertex(mat, left, bottom, zLevel).setColor(endRed, endGreen, endBlue, endAlpha);
+        buffer.addVertex(mat, right, bottom, zLevel).setColor(endRed, endGreen, endBlue, endAlpha);
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
         RenderSystem.disableBlend();
     }
 

@@ -44,7 +44,7 @@ public class CustomSignsTest {
     public static final boolean ENABLE = false; // TODO fix
     public static final String MODID = "custom_signs_test";
 
-    public static final WoodType TEST_WOOD_TYPE = WoodType.register(new WoodType(new ResourceLocation(MODID, "test").toString(), BlockSetType.ACACIA));
+    public static final WoodType TEST_WOOD_TYPE = WoodType.register(new WoodType(ResourceLocation.fromNamespaceAndPath(MODID, "test").toString(), BlockSetType.ACACIA));
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredBlock<CustomStandingSignBlock> TEST_STANDING_SIGN = BLOCKS.register("test_sign", () -> new CustomStandingSignBlock(Properties.of().noCollission().strength(1.0F).sound(SoundType.WOOD), CustomSignsTest.TEST_WOOD_TYPE));

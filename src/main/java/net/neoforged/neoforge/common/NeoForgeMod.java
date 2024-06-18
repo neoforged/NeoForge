@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import net.minecraft.DetectedVersion;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
@@ -31,8 +29,6 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -56,7 +52,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
@@ -78,7 +73,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
@@ -104,6 +98,7 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
+import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
@@ -376,6 +371,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<DataComponentIngredient>> DATA_COMPONENT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("components", () -> new IngredientType<>(DataComponentIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<BlockTagIngredient>> BLOCK_TAG_INGREDIENT = INGREDIENT_TYPES.register("block_tag", () -> new IngredientType<>(BlockTagIngredient.CODEC));
 
     private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SingleFluidIngredient>> SINGLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("single", () -> new FluidIngredientType<>(SingleFluidIngredient.CODEC));
@@ -450,10 +446,10 @@ public class NeoForgeMod {
         @Override
         public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
             consumer.accept(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation UNDERWATER_LOCATION = new ResourceLocation("textures/misc/underwater.png"),
-                        WATER_STILL = new ResourceLocation("block/water_still"),
-                        WATER_FLOW = new ResourceLocation("block/water_flow"),
-                        WATER_OVERLAY = new ResourceLocation("block/water_overlay");
+                private static final ResourceLocation UNDERWATER_LOCATION = ResourceLocation.withDefaultNamespace("textures/misc/underwater.png"),
+                        WATER_STILL = ResourceLocation.withDefaultNamespace("block/water_still"),
+                        WATER_FLOW = ResourceLocation.withDefaultNamespace("block/water_flow"),
+                        WATER_OVERLAY = ResourceLocation.withDefaultNamespace("block/water_overlay");
 
                 @Override
                 public ResourceLocation getStillTexture() {
@@ -523,8 +519,8 @@ public class NeoForgeMod {
         @Override
         public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
             consumer.accept(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation LAVA_STILL = new ResourceLocation("block/lava_still"),
-                        LAVA_FLOW = new ResourceLocation("block/lava_flow");
+                private static final ResourceLocation LAVA_STILL = ResourceLocation.withDefaultNamespace("block/lava_still"),
+                        LAVA_FLOW = ResourceLocation.withDefaultNamespace("block/lava_flow");
 
                 @Override
                 public ResourceLocation getStillTexture() {
@@ -541,11 +537,11 @@ public class NeoForgeMod {
 
     private static boolean enableProperFilenameValidation = false;
     private static boolean enableMilkFluid = false;
-    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.empty_milk"));
-    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.fill_milk"));
-    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, new ResourceLocation("milk"));
-    public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, new ResourceLocation("milk"));
-    public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, new ResourceLocation("flowing_milk"));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.empty_milk"));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.fill_milk"));
+    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, ResourceLocation.withDefaultNamespace("milk"));
+    public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("milk"));
+    public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_milk"));
 
     /**
      * Used in place of {@link DamageSources#magic()} for damage dealt by {@link MobEffects#POISON}.
@@ -554,7 +550,7 @@ public class NeoForgeMod {
      *
      * @see {@link Tags.DamageTypes#IS_POISON}
      */
-    public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(NeoForgeVersion.MOD_ID, "poison"));
+    public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "poison"));
 
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
@@ -597,7 +593,6 @@ public class NeoForgeMod {
         modEventBus.addListener(this::gatherData);
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
-        modEventBus.addListener(EventPriority.HIGHEST, this::registerVanillaDisplayContexts);
         modEventBus.addListener(this::registerLootData);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
@@ -699,8 +694,8 @@ public class NeoForgeMod {
                 @Override
                 public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
                     consumer.accept(new IClientFluidTypeExtensions() {
-                        private static final ResourceLocation MILK_STILL = new ResourceLocation(NeoForgeVersion.MOD_ID, "block/milk_still"),
-                                MILK_FLOW = new ResourceLocation(NeoForgeVersion.MOD_ID, "block/milk_flowing");
+                        private static final ResourceLocation MILK_STILL = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_still"),
+                                MILK_FLOW = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_flowing");
 
                         @Override
                         public ResourceLocation getStillTexture() {
@@ -726,24 +721,12 @@ public class NeoForgeMod {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void registerVanillaDisplayContexts(RegisterEvent event) {
-        if (!event.getRegistryKey().equals(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
-            return;
-        }
-        MappedRegistry<ItemDisplayContext> forgeRegistry = (MappedRegistry<ItemDisplayContext>) event.getRegistry();
-
-        Arrays.stream(ItemDisplayContext.values())
-                .filter(Predicate.not(ItemDisplayContext::isModded))
-                .forEach(ctx -> forgeRegistry.register(ctx.getId(), ResourceKey.create(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, new ResourceLocation("minecraft", ctx.getSerializedName())), ctx, RegistrationInfo.BUILT_IN));
-    }
-
     public void registerLootData(RegisterEvent event) {
         if (!event.getRegistryKey().equals(Registries.LOOT_CONDITION_TYPE))
             return;
 
-        event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("neoforge:loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
-        event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("neoforge:can_tool_perform_action"), () -> CanToolPerformAction.LOOT_CONDITION_TYPE);
+        event.register(Registries.LOOT_CONDITION_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", "loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
+        event.register(Registries.LOOT_CONDITION_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", "can_tool_perform_action"), () -> CanToolPerformAction.LOOT_CONDITION_TYPE);
     }
 
     public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(NeoForgeVersion.MOD_ID, "use_entity_selectors",

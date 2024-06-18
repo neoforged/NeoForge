@@ -24,7 +24,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -58,8 +57,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -77,16 +74,11 @@ public class CustomItemDisplayContextTest {
 
     @EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     private static class RendererEvents {
-        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", new ResourceLocation("custom_transformtype_test", "hanging"), null);
+        public static final ItemDisplayContext HANGING = ItemDisplayContext.valueOf("NEOTESTS_HANGING");
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ITEM_HANGER_BE.get(), ItemHangerBlockEntityRenderer::new);
-        }
-
-        @SubscribeEvent
-        public static void registerContext(final RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register(new ResourceLocation(MODID, "hanging"), HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer

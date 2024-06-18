@@ -9,6 +9,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -126,20 +127,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called before a block is broken. Return true to prevent default block
-     * harvesting.
-     *
-     * Note: In SMP, this is called on both client and server sides!
-     *
-     * @param pos    Block's position in world
-     * @param player The Player that is wielding the item
-     * @return True to prevent harvesting, false to continue as normal
-     */
-    default boolean onBlockStartBreak(BlockPos pos, Player player) {
-        return !self().isEmpty() && self().getItem().onBlockStartBreak(self(), pos, player);
-    }
-
-    /**
      * Called when the player is mining a block and the item in his hand changes.
      * Allows to not reset blockbreaking if only NBT or similar changes.
      *
@@ -151,36 +138,24 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Checks whether an item can be enchanted with a certain enchantment. This
-     * applies specifically to enchanting an item in the enchanting table and is
-     * called when retrieving the list of possible enchantments for an item.
-     * Enchantments may additionally (or exclusively) be doing their own checks in
-     * {@link Enchantment#canApplyAtEnchantingTable(ItemStack)};
-     * check the individual implementation for reference. By default this will check
-     * if the enchantment type is valid for this item type.
-     *
-     * @param enchantment the enchantment to be applied
-     * @return true if the enchantment can be applied to this item
+     * @see {@link IItemExtension#isPrimaryItemFor(ItemStack, Holder)}
      */
-    default boolean canApplyAtEnchantingTable(Enchantment enchantment) {
-        return self().getItem().canApplyAtEnchantingTable(self(), enchantment);
+    default boolean isPrimaryItemFor(Holder<Enchantment> enchantment) {
+        return self().getItem().isPrimaryItemFor(self(), enchantment);
     }
 
     /**
      * Gets the gameplay level of the target enchantment on this stack.
      * <p>
-     * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}.
+     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel} for gameplay logic.
      * <p>
-     * Use in place of {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
-     * <p>
-     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
+     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
      *
      * @param enchantment The enchantment being checked for.
      * @return The level of the enchantment, or 0 if not present.
-     * @see #getAllEnchantments()
-     * @see DataComponents#ENCHANTMENTS
+     * @see {@link #getAllEnchantments} to get all gameplay enchantments
      */
-    default int getEnchantmentLevel(Enchantment enchantment) {
+    default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
         int level = self().getItem().getEnchantmentLevel(self(), enchantment);
         return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
     }
@@ -188,17 +163,16 @@ public interface IItemStackExtension {
     /**
      * Gets the gameplay level of all enchantments on this stack.
      * <p>
-     * Use in place of {@link DataComponents#ENCHANTMENTS} for gameplay logic.
+     * Use in place of {@link ItemStack#getTagEnchantments()} for gameplay logic.
      * <p>
-     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
+     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
      *
      * @return Map of all enchantments on the stack, or an empty map if no enchantments are present.
-     * @see #getEnchantmentLevel(Enchantment)
-     * @see DataComponents#ENCHANTMENTS
+     * @see {@link #getEnchantmentLevel} to get the level of a single enchantment for gameplay purposes
      */
-    default ItemEnchantments getAllEnchantments() {
-        var enchantments = self().getItem().getAllEnchantments(self());
-        return EventHooks.getEnchantmentLevel(enchantments, self());
+    default ItemEnchantments getAllEnchantments(RegistryLookup<Enchantment> lookup) {
+        var enchantments = self().getItem().getAllEnchantments(self(), lookup);
+        return EventHooks.getAllEnchantmentLevels(enchantments, self(), lookup);
     }
 
     /**
@@ -288,16 +262,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
-     * 
-     * @deprecated Use {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} by checking that the slot argument is an armor slot. Armor slots are 36, 37, 38 and 39.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.4")
-    default void onArmorTick(Level level, Player player) {
-        self().getItem().onArmorTick(self(), level, player);
-    }
-
-    /**
      * Called every tick when this item is equipped {@linkplain Mob#isBodyArmorItem(ItemStack) as an armor item} by a horse {@linkplain Mob#canWearBodyArmor()} that can wear armor}.
      * <p>
      * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
@@ -317,7 +281,7 @@ public interface IItemStackExtension {
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(EquipmentSlot armorType, Entity entity) {
+    default boolean canEquip(EquipmentSlot armorType, LivingEntity entity) {
         return self().getItem().canEquip(self(), armorType, entity);
     }
 
@@ -525,8 +489,9 @@ public interface IItemStackExtension {
         if (!itemattributemodifiers.modifiers().isEmpty()) {
             itemattributemodifiers.forEach(equipmentSlot, multimap::put);
         } else {
-            self().getItem().getAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
+            self().getItem().getDefaultAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
         }
+        self().getItem().adjustAttributeModifiers(self(), equipmentSlot, multimap);
         return CommonHooks.getAttributeModifiers(self(), equipmentSlot, multimap);
     }
 }

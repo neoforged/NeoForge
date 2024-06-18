@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -54,9 +_,9 @@
+@@ -56,9 +_,9 @@
  import net.minecraft.world.phys.Vec3;
  import org.slf4j.Logger;
  
@@ -9,10 +9,10 @@
      private static final Logger LOGGER = LogUtils.getLogger();
 -    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
 +    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
-     public static final UUID BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
-     public static final UUID BASE_ATTACK_SPEED_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
+     public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
+     public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -87,12 +_,14 @@
+@@ -89,12 +_,14 @@
          this.components = p_41383_.buildAndValidateComponents();
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
@@ -28,7 +28,7 @@
      }
  
      @Deprecated
-@@ -104,6 +_,15 @@
+@@ -106,6 +_,15 @@
          return this.components;
      }
  
@@ -44,7 +44,7 @@
      public int getDefaultMaxStackSize() {
          return this.components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
      }
-@@ -111,6 +_,8 @@
+@@ -113,6 +_,8 @@
      public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
      }
  
@@ -53,7 +53,7 @@
      public void onDestroyed(ItemEntity p_150887_) {
      }
  
-@@ -137,7 +_,7 @@
+@@ -139,7 +_,7 @@
  
      public InteractionResultHolder<ItemStack> use(Level p_41432_, Player p_41433_, InteractionHand p_41434_) {
          ItemStack itemstack = p_41433_.getItemInHand(p_41434_);
@@ -62,7 +62,16 @@
          if (foodproperties != null) {
              if (p_41433_.canEat(foodproperties.canAlwaysEat())) {
                  p_41433_.startUsingItem(p_41434_);
-@@ -159,12 +_,13 @@
+@@ -153,7 +_,7 @@
+     }
+ 
+     public ItemStack finishUsingItem(ItemStack p_41409_, Level p_41410_, LivingEntity p_41411_) {
+-        FoodProperties foodproperties = p_41409_.get(DataComponents.FOOD);
++        FoodProperties foodproperties = p_41409_.getFoodProperties(p_41411_);
+         return foodproperties != null ? p_41411_.eat(p_41410_, p_41409_, foodproperties) : p_41409_;
+     }
+ 
+@@ -162,12 +_,13 @@
      }
  
      public int getBarWidth(ItemStack p_150900_) {
@@ -78,16 +87,7 @@
          return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
      }
  
-@@ -214,7 +_,7 @@
- 
-     @Override
-     public String toString() {
--        return BuiltInRegistries.ITEM.getKey(this).getPath();
-+        return BuiltInRegistries.ITEM.getKey(this).toString();
-     }
- 
-     protected String getOrCreateDescriptionId() {
-@@ -234,10 +_,12 @@
+@@ -240,10 +_,12 @@
      }
  
      @Nullable
@@ -100,16 +100,16 @@
      public boolean hasCraftingRemainingItem() {
          return this.craftingRemainingItem != null;
      }
-@@ -261,7 +_,7 @@
+@@ -267,7 +_,7 @@
      }
  
-     public int getUseDuration(ItemStack p_41454_) {
+     public int getUseDuration(ItemStack p_41454_, LivingEntity p_344979_) {
 -        FoodProperties foodproperties = p_41454_.get(DataComponents.FOOD);
 +        FoodProperties foodproperties = p_41454_.getFoodProperties(null);
          return foodproperties != null ? foodproperties.eatDurationTicks() : 0;
      }
  
-@@ -293,6 +_,8 @@
+@@ -299,6 +_,8 @@
          return p_41436_.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, p_41438_, p_41437_));
      }
  
@@ -118,7 +118,7 @@
      public int getEnchantmentValue() {
          return 0;
      }
-@@ -301,13 +_,20 @@
+@@ -307,13 +_,20 @@
          return false;
      }
  
@@ -141,7 +141,7 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -335,13 +_,40 @@
+@@ -341,13 +_,40 @@
          return this.requiredFeatures;
      }
  
@@ -183,8 +183,8 @@
  
          public Item.Properties food(FoodProperties p_41490_) {
              return this.component(DataComponents.FOOD, p_41490_);
-@@ -371,12 +_,18 @@
-             return this.component(DataComponents.FIRE_RESISTANT, Unit.INSTANCE);
+@@ -381,12 +_,18 @@
+             return this.component(DataComponents.JUKEBOX_PLAYABLE, new JukeboxPlayable(new EitherHolder<>(p_350862_), true));
          }
  
 +        public Item.Properties setNoRepair() {
@@ -202,7 +202,7 @@
              if (this.components == null) {
                  this.components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
              }
-@@ -391,6 +_,10 @@
+@@ -401,6 +_,10 @@
  
          DataComponentMap buildAndValidateComponents() {
              DataComponentMap datacomponentmap = this.buildComponents();

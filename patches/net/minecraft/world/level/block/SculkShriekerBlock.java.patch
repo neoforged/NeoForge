@@ -11,8 +11,8 @@
 +    }
 +
 +    @Override
-+    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
-+        return silkTouchLevel == 0 ? 5 : 0;
++    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, RandomSource randomSource, BlockPos pos) {
++        return 5;
      }
  
      @Nullable

@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
-@@ -152,4 +_,10 @@
-             p_273495_.render(p_272899_, p_273173_.buffer(p_273582_, RenderType::entitySolid), p_273242_, p_273108_);
-         }
+@@ -141,4 +_,10 @@
+     private void renderSide(ModelPart p_273495_, PoseStack p_272899_, MultiBufferSource p_273582_, int p_273242_, int p_273108_, Material p_273173_) {
+         p_273495_.render(p_272899_, p_273173_.buffer(p_273582_, RenderType::entitySolid), p_273242_, p_273108_);
      }
 +
 +    @Override

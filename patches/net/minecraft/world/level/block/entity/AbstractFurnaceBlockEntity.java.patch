@@ -100,12 +100,12 @@
          ContainerHelper.saveAllItems(p_187452_, this.items, p_323656_);
          CompoundTag compoundtag = new CompoundTag();
          this.recipesUsed.forEach((p_187449_, p_187450_) -> compoundtag.putInt(p_187449_.toString(), p_187450_));
-@@ -268,28 +_,30 @@
+@@ -269,28 +_,30 @@
              }
  
              int i = p_155017_.getMaxStackSize();
 -            if (!p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
-+            if (!p_155017_.isLit() && p_155017_.canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
++            if (!p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i, p_155017_)) {
                  p_155017_.litTime = p_155017_.getBurnDuration(itemstack);
                  p_155017_.litDuration = p_155017_.litTime;
                  if (p_155017_.isLit()) {
@@ -126,29 +126,29 @@
              }
  
 -            if (p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
-+            if (p_155017_.isLit() && p_155017_.canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
++            if (p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i, p_155017_)) {
                  p_155017_.cookingProgress++;
                  if (p_155017_.cookingProgress == p_155017_.cookingTotalTime) {
                      p_155017_.cookingProgress = 0;
                      p_155017_.cookingTotalTime = getTotalCookTime(p_155014_, p_155017_);
 -                    if (burn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
-+                    if (p_155017_.burn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
++                    if (burn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i, p_155017_)) {
                          p_155017_.setRecipeUsed(recipeholder);
                      }
  
-@@ -313,9 +_,9 @@
+@@ -314,9 +_,9 @@
          }
      }
  
 -    private static boolean canBurn(RegistryAccess p_266924_, @Nullable RecipeHolder<?> p_301107_, NonNullList<ItemStack> p_155007_, int p_155008_) {
-+    private boolean canBurn(RegistryAccess p_266924_, @Nullable RecipeHolder<?> p_301107_, NonNullList<ItemStack> p_155007_, int p_155008_) {
++    private static boolean canBurn(RegistryAccess p_266924_, @Nullable RecipeHolder<?> p_301107_, NonNullList<ItemStack> p_155007_, int p_155008_, AbstractFurnaceBlockEntity furnace) {
          if (!p_155007_.get(0).isEmpty() && p_301107_ != null) {
 -            ItemStack itemstack = p_301107_.value().getResultItem(p_266924_);
-+            ItemStack itemstack = ((RecipeHolder<net.minecraft.world.item.crafting.Recipe<WorldlyContainer>>) p_301107_).value().assemble(this, p_266924_);
++            ItemStack itemstack = ((RecipeHolder<? extends AbstractCookingRecipe>) p_301107_).value().assemble(new SingleRecipeInput(furnace.getItem(0)), p_266924_);
              if (itemstack.isEmpty()) {
                  return false;
              } else {
-@@ -325,9 +_,9 @@
+@@ -326,9 +_,9 @@
                  } else if (!ItemStack.isSameItemSameComponents(itemstack1, itemstack)) {
                      return false;
                  } else {
@@ -160,17 +160,17 @@
                  }
              }
          } else {
-@@ -335,15 +_,15 @@
+@@ -336,15 +_,15 @@
          }
      }
  
 -    private static boolean burn(RegistryAccess p_266740_, @Nullable RecipeHolder<?> p_300910_, NonNullList<ItemStack> p_267073_, int p_267157_) {
 -        if (p_300910_ != null && canBurn(p_266740_, p_300910_, p_267073_, p_267157_)) {
-+    private boolean burn(RegistryAccess p_266740_, @Nullable RecipeHolder<?> p_300910_, NonNullList<ItemStack> p_267073_, int p_267157_) {
-+        if (p_300910_ != null && this.canBurn(p_266740_, p_300910_, p_267073_, p_267157_)) {
++    private static boolean burn(RegistryAccess p_266740_, @Nullable RecipeHolder<?> p_300910_, NonNullList<ItemStack> p_267073_, int p_267157_, AbstractFurnaceBlockEntity furnace) {
++        if (p_300910_ != null && canBurn(p_266740_, p_300910_, p_267073_, p_267157_, furnace)) {
              ItemStack itemstack = p_267073_.get(0);
 -            ItemStack itemstack1 = p_300910_.value().getResultItem(p_266740_);
-+            ItemStack itemstack1 = ((RecipeHolder<net.minecraft.world.item.crafting.Recipe<WorldlyContainer>>) p_300910_).value().assemble(this, p_266740_);
++            ItemStack itemstack1 = ((RecipeHolder<? extends AbstractCookingRecipe>) p_300910_).value().assemble(new SingleRecipeInput(furnace.getItem(0)), p_266740_);
              ItemStack itemstack2 = p_267073_.get(2);
              if (itemstack2.isEmpty()) {
                  p_267073_.set(2, itemstack1.copy());
@@ -180,7 +180,7 @@
              }
  
              if (itemstack.is(Blocks.WET_SPONGE.asItem()) && !p_267073_.get(1).isEmpty() && p_267073_.get(1).is(Items.BUCKET)) {
-@@ -361,8 +_,7 @@
+@@ -362,8 +_,7 @@
          if (p_58343_.isEmpty()) {
              return 0;
          } else {
@@ -190,7 +190,7 @@
          }
      }
  
-@@ -371,7 +_,7 @@
+@@ -373,7 +_,7 @@
      }
  
      public static boolean isFuel(ItemStack p_58400_) {
@@ -199,7 +199,7 @@
      }
  
      @Override
-@@ -429,7 +_,7 @@
+@@ -431,7 +_,7 @@
              return true;
          } else {
              ItemStack itemstack = this.items.get(1);

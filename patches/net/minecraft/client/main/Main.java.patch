@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/main/Main.java
 +++ b/net/minecraft/client/main/Main.java
-@@ -154,7 +_,7 @@
-         CrashReport.preload();
- 
-         try {
+@@ -111,7 +_,7 @@
+             CrashReport.preload();
+             logger = LogUtils.getLogger();
+             s1 = "Bootstrap";
 -            Bootstrap.bootStrap();
 +            net.neoforged.fml.loading.BackgroundWaiter.runAndTick(()->Bootstrap.bootStrap(), net.neoforged.fml.loading.FMLLoader.progressWindowTick);
              GameLoadTimesEvent.INSTANCE.setBootstrapTime(Bootstrap.bootstrapDuration.get());
              Bootstrap.validate();
-         } catch (Throwable throwable2) {
+             s1 = "Argument parsing";

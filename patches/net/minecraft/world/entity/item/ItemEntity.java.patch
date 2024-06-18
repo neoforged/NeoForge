@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -48,6 +_,10 @@
+@@ -49,6 +_,10 @@
      @Nullable
      private UUID target;
      public final float bobOffs;
@@ -11,7 +11,7 @@
  
      public ItemEntity(EntityType<? extends ItemEntity> p_31991_, Level p_31992_) {
          super(p_31991_, p_31992_);
-@@ -66,6 +_,7 @@
+@@ -67,6 +_,7 @@
          this.setPos(p_149664_, p_149665_, p_149666_);
          this.setDeltaMovement(p_149668_, p_149669_, p_149670_);
          this.setItem(p_149667_);
@@ -19,7 +19,7 @@
      }
  
      private ItemEntity(ItemEntity p_31994_) {
-@@ -74,6 +_,7 @@
+@@ -75,6 +_,7 @@
          this.copyPosition(p_31994_);
          this.age = p_31994_.age;
          this.bobOffs = p_31994_.bobOffs;
@@ -27,7 +27,7 @@
      }
  
      @Override
-@@ -119,6 +_,7 @@
+@@ -120,6 +_,7 @@
  
      @Override
      public void tick() {
@@ -35,7 +35,7 @@
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
-@@ -131,6 +_,9 @@
+@@ -132,6 +_,9 @@
              this.yo = this.getY();
              this.zo = this.getZ();
              Vec3 vec3 = this.getDeltaMovement();
@@ -45,7 +45,7 @@
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();
              } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
-@@ -152,7 +_,8 @@
+@@ -153,7 +_,8 @@
                  this.move(MoverType.SELF, this.getDeltaMovement());
                  float f = 0.98F;
                  if (this.onGround()) {
@@ -55,7 +55,7 @@
                  }
  
                  this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -184,7 +_,16 @@
+@@ -185,7 +_,16 @@
                  }
              }
  
@@ -73,7 +73,7 @@
                  this.discard();
              }
          }
-@@ -281,7 +_,7 @@
+@@ -282,7 +_,7 @@
              this.health = (int)((float)this.health - p_32014_);
              this.gameEvent(GameEvent.ENTITY_DAMAGE, p_32013_.getEntity());
              if (this.health <= 0) {
@@ -82,7 +82,7 @@
                  this.discard();
              }
  
-@@ -294,6 +_,7 @@
+@@ -295,6 +_,7 @@
          p_32050_.putShort("Health", (short)this.health);
          p_32050_.putShort("Age", (short)this.age);
          p_32050_.putShort("PickupDelay", (short)this.pickupDelay);
@@ -90,7 +90,7 @@
          if (this.thrower != null) {
              p_32050_.putUUID("Thrower", this.thrower);
          }
-@@ -314,6 +_,9 @@
+@@ -315,6 +_,9 @@
          if (p_32034_.contains("PickupDelay")) {
              this.pickupDelay = p_32034_.getShort("PickupDelay");
          }
@@ -100,37 +100,47 @@
  
          if (p_32034_.hasUUID("Owner")) {
              this.target = p_32034_.getUUID("Owner");
-@@ -339,10 +_,17 @@
-     @Override
-     public void playerTouch(Player p_32040_) {
-         if (!this.level().isClientSide) {
-+            if (this.pickupDelay > 0) return;
+@@ -343,7 +_,22 @@
              ItemStack itemstack = this.getItem();
              Item item = itemstack.getItem();
              int i = itemstack.getCount();
 -            if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && p_32040_.getInventory().add(itemstack)) {
-+            int hook = net.neoforged.neoforge.event.EventHooks.onItemPickup(this, p_32040_);
-+            if (hook < 0) return;
-+            ItemStack copy = itemstack.copy();
-+            if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && (hook == 1 || i <= 0 || p_32040_.getInventory().add(itemstack))) {
-+                i = copy.getCount() - itemstack.getCount();
-+                copy.setCount(i);
-+                net.neoforged.neoforge.event.EventHooks.firePlayerItemPickupEvent(p_32040_, this, copy);
++
++            // Neo: Fire item pickup pre/post and adjust handling logic to adhere to the event result.
++            var result = net.neoforged.neoforge.event.EventHooks.fireItemPickupPre(this, p_32040_).canPickup();
++            if (result.isFalse()) {
++                return;
++            }
++
++            // Make a copy of the original stack for use in ItemEntityPickupEvent.Post
++            ItemStack originalCopy = itemstack.copy();
++            // Subvert the vanilla conditions (pickup delay and target check) if the result is true.
++            if ((result.isTrue() || this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID()))) && p_32040_.getInventory().add(itemstack)) {
++                // Fire ItemEntityPickupEvent.Post
++                net.neoforged.neoforge.event.EventHooks.fireItemPickupPost(this, p_32040_, originalCopy);
++                // Update `i` to reflect the actual pickup amount. Vanilla is wrong here and always reports the whole stack.
++                i = originalCopy.getCount() - itemstack.getCount();
++
                  p_32040_.take(this, i);
                  if (itemstack.isEmpty()) {
                      this.discard();
-@@ -368,8 +_,8 @@
+@@ -398,6 +_,15 @@
+         this.target = p_266724_;
+     }
  
-     @Nullable
-     @Override
--    public Entity changeDimension(ServerLevel p_32042_) {
--        Entity entity = super.changeDimension(p_32042_);
-+    public Entity changeDimension(ServerLevel p_32042_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
-+        Entity entity = super.changeDimension(p_32042_, teleporter);
-         if (!this.level().isClientSide && entity instanceof ItemEntity) {
-             ((ItemEntity)entity).mergeWithNeighbours();
-         }
-@@ -436,7 +_,7 @@
++    /**
++     * Neo: Add getter for ItemEntity's {@link ItemEntity#target target}.
++     * @return The {@link ItemEntity#target target} that can pick up this item entity (if {@code null}, anyone can pick it up)
++     */
++    @Nullable
++    public UUID getTarget() {
++        return this.target;
++    }
++
+     public void setThrower(Entity p_306324_) {
+         this.thrower = p_306324_.getUUID();
+         this.cachedThrower = p_306324_;
+@@ -437,7 +_,7 @@
  
      public void makeFakeItem() {
          this.setNeverPickUp();

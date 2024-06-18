@@ -17,6 +17,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,7 +32,7 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 
 public final class TestsOverlay implements LayeredDraw.Layer {
     public static final int MAX_DISPLAYED = 5;
-    public static final ResourceLocation BG_TEXTURE = new ResourceLocation("testframework", "textures/gui/background.png");
+    public static final ResourceLocation BG_TEXTURE = ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/background.png");
 
     private final MutableTestFramework impl;
     private final BooleanSupplier enabled;
@@ -46,7 +47,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
     }
 
     @Override
-    public void render(GuiGraphics poseStack, float partialTick) {
+    public void render(GuiGraphics poseStack, DeltaTracker deltaTracker) {
         if (!enabled.getAsBoolean()) return;
 
         List<Test> enabled = impl.tests().enabled().collect(Collectors.toCollection(ArrayList::new));
@@ -182,9 +183,9 @@ public final class TestsOverlay implements LayeredDraw.Layer {
     }
 
     static final Map<Test.Result, ResourceLocation> ICON_BY_RESULT = new EnumMap<>(Map.of(
-            Test.Result.FAILED, new ResourceLocation("testframework", "textures/gui/test_failed.png"),
-            Test.Result.PASSED, new ResourceLocation("testframework", "textures/gui/test_passed.png"),
-            Test.Result.NOT_PROCESSED, new ResourceLocation("testframework", "textures/gui/test_not_processed.png")));
+            Test.Result.FAILED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_failed.png"),
+            Test.Result.PASSED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_passed.png"),
+            Test.Result.NOT_PROCESSED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_not_processed.png")));
 
     // TODO - maybe "group" together tests in the same group?
     private XY renderTest(Font font, Test test, GuiGraphics stack, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {

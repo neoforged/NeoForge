@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
-@@ -271,7 +_,7 @@
+@@ -284,7 +_,7 @@
          Entity entity = this.getOwner();
          return entity instanceof Player
              ? entity.mayInteract(p_150167_, p_150168_)
 -            : entity == null || p_150167_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-+            : entity == null || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(p_150167_, entity);
++            : entity == null || net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_150167_, entity);
      }
  
      public boolean mayBreak(Level p_307481_) {

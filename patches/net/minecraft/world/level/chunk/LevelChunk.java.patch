@@ -63,7 +63,7 @@
          }
      }
  
-@@ -381,6 +_,7 @@
+@@ -398,6 +_,7 @@
              BlockEntity blockentity = this.blockEntities.put(blockpos.immutable(), p_156374_);
              if (blockentity != null && blockentity != p_156374_) {
                  blockentity.setRemoved();
@@ -71,7 +71,7 @@
              }
          }
      }
-@@ -390,9 +_,14 @@
+@@ -407,9 +_,14 @@
      public CompoundTag getBlockEntityNbtForSaving(BlockPos p_62932_, HolderLookup.Provider p_323699_) {
          BlockEntity blockentity = this.getBlockEntity(p_62932_);
          if (blockentity != null && !blockentity.isRemoved()) {
@@ -86,7 +86,7 @@
          } else {
              CompoundTag compoundtag = this.pendingBlockEntities.get(p_62932_);
              if (compoundtag != null) {
-@@ -414,6 +_,7 @@
+@@ -431,6 +_,7 @@
                  }
  
                  blockentity.setRemoved();
@@ -94,7 +94,7 @@
              }
          }
  
-@@ -474,7 +_,7 @@
+@@ -491,7 +_,7 @@
          p_187974_.accept((p_338077_, p_338078_, p_338079_) -> {
              BlockEntity blockentity = this.getBlockEntity(p_338077_, LevelChunk.EntityCreationType.IMMEDIATE);
              if (blockentity != null && p_338079_ != null && blockentity.getType() == p_338078_) {
@@ -103,7 +103,7 @@
              }
          });
      }
-@@ -582,6 +_,7 @@
+@@ -599,6 +_,7 @@
      }
  
      public void clearAllBlockEntities() {
@@ -111,7 +111,7 @@
          this.blockEntities.values().forEach(BlockEntity::setRemoved);
          this.blockEntities.clear();
          this.tickersInLevel.values().forEach(p_187966_ -> p_187966_.rebind(NULL_TICKER));
-@@ -589,6 +_,7 @@
+@@ -606,6 +_,7 @@
      }
  
      public void registerAllBlockEntitiesAfterLevelLoad() {
@@ -119,7 +119,7 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              if (this.level instanceof ServerLevel serverlevel) {
                  this.addGameEventListener(p_187988_, serverlevel);
-@@ -640,6 +_,15 @@
+@@ -657,6 +_,15 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
@@ -135,7 +135,7 @@
      class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
          private final T blockEntity;
          private final BlockEntityTicker<T> ticker;
-@@ -657,6 +_,7 @@
+@@ -674,6 +_,7 @@
                  if (LevelChunk.this.isTicking(blockpos)) {
                      try {
                          ProfilerFiller profilerfiller = LevelChunk.this.level.getProfiler();
@@ -143,13 +143,13 @@
                          profilerfiller.push(this::getType);
                          BlockState blockstate = LevelChunk.this.getBlockState(blockpos);
                          if (this.blockEntity.getType().isValid(blockstate)) {
-@@ -678,7 +_,15 @@
+@@ -695,7 +_,15 @@
                          CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking block entity");
                          CrashReportCategory crashreportcategory = crashreport.addCategory("Block entity being ticked");
                          this.blockEntity.fillCrashReportCategory(crashreportcategory);
 +
 +                        if (net.neoforged.neoforge.common.NeoForgeConfig.SERVER.removeErroringBlockEntities.get()) {
-+                            LOGGER.error("{}", crashreport.getFriendlyReport());
++                            LOGGER.error("{}", crashreport.getFriendlyReport(net.minecraft.ReportType.CRASH));
 +                            blockEntity.setRemoved();
 +                            LevelChunk.this.removeBlockEntity(blockEntity.getBlockPos());
 +                        } else

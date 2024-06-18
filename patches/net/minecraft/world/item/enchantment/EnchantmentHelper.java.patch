@@ -1,53 +1,63 @@
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-@@ -33,9 +_,10 @@
+@@ -47,7 +_,19 @@
+ import org.apache.commons.lang3.mutable.MutableObject;
+ 
  public class EnchantmentHelper {
-     private static final float SWIFT_SNEAK_EXTRA_FACTOR = 0.15F;
- 
-+    /** @deprecated Neo: Use {@link ItemStack#getEnchantmentLevel(Enchantment)} for gameplay logic. Use the data component when modifying the enchantments. */
++    /**
++     * @deprecated Neo: Use {@link #getTagEnchantmentLevel(Holder, ItemStack)} for NBT enchantments, or {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay.
++     */
 +    @Deprecated
-     public static int getItemEnchantmentLevel(Enchantment p_44844_, ItemStack p_44845_) {
--        ItemEnchantments itemenchantments = p_44845_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
--        return itemenchantments.getLevel(p_44844_);
-+        return p_44845_.getEnchantmentLevel(p_44844_);
+     public static int getItemEnchantmentLevel(Holder<Enchantment> p_346179_, ItemStack p_44845_) {
++        // Neo: To reduce patch size, update this method to always check gameplay enchantments, and add getTagEnchantmentLevel as a helper for mods.
++        return p_44845_.getEnchantmentLevel(p_346179_);
++    }
++
++    /**
++     * Gets the level of an enchantment from NBT. Use {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay logic.
++     */
++    public static int getTagEnchantmentLevel(Holder<Enchantment> p_346179_, ItemStack p_44845_) {
+         ItemEnchantments itemenchantments = p_44845_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+         return itemenchantments.getLevel(p_346179_);
      }
+@@ -122,6 +_,12 @@
+     private static void runIterationOnItem(ItemStack p_345425_, EnchantmentHelper.EnchantmentVisitor p_345023_) {
+         ItemEnchantments itemenchantments = p_345425_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
-     public static ItemEnchantments updateEnchantments(ItemStack p_331034_, Consumer<ItemEnchantments.Mutable> p_332031_) {
-@@ -78,7 +_,7 @@
-     }
- 
-     private static void runIterationOnItem(EnchantmentHelper.EnchantmentVisitor p_44851_, ItemStack p_44852_) {
--        ItemEnchantments itemenchantments = p_44852_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-+        ItemEnchantments itemenchantments = p_44852_.getAllEnchantments(); // Neo: Allow gameplay enchantments to run too.
- 
++        // Neo: Respect gameplay-only enchantments when doing iterations
++        var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
++        if (lookup != null) {
++            itemenchantments = p_345425_.getAllEnchantments(lookup);
++        }
++
          for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
-             p_44851_.accept(entry.getKey().value(), entry.getIntValue());
-@@ -99,7 +_,7 @@
- 
-     public static float getDamageBonus(ItemStack p_44834_, @Nullable EntityType<?> p_320195_) {
-         MutableFloat mutablefloat = new MutableFloat();
--        runIterationOnItem((p_319741_, p_319742_) -> mutablefloat.add(p_319741_.getDamageBonus(p_319742_, p_320195_)), p_44834_);
-+        runIterationOnItem((p_44887_, p_44888_) -> mutablefloat.add(p_44887_.getDamageBonus(p_44888_, p_320195_, p_44834_)), p_44834_);
-         return mutablefloat.floatValue();
-     }
- 
-@@ -125,6 +_,7 @@
-             runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44824_.getAllSlots());
+             p_345023_.accept(entry.getKey(), entry.getIntValue());
          }
+@@ -132,6 +_,10 @@
+     ) {
+         if (!p_44852_.isEmpty()) {
+             ItemEnchantments itemenchantments = p_44852_.get(DataComponents.ENCHANTMENTS);
++
++            // Neo: Respect gameplay-only enchantments when doing iterations
++            itemenchantments = p_44852_.getAllEnchantments(p_345792_.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT));
++
+             if (itemenchantments != null && !itemenchantments.isEmpty()) {
+                 EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
  
-+        if(false) // Forge: Fix MC-248272
-         if (p_44825_ instanceof Player) {
-             runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44824_.getMainHandItem());
-         }
-@@ -136,6 +_,7 @@
-             runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44897_.getAllSlots());
-         }
+@@ -417,6 +_,12 @@
+     public static boolean hasTag(ItemStack p_345665_, TagKey<Enchantment> p_345928_) {
+         ItemEnchantments itemenchantments = p_345665_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
-+        if(false) // Forge: Fix MC-248272
-         if (p_44897_ instanceof Player) {
-             runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44897_.getMainHandItem());
-         }
-@@ -263,7 +_,7 @@
++        // Neo: Respect gameplay-only enchantments when enchantment effect tag checks
++        var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
++        if (lookup != null) {
++            itemenchantments = p_345665_.getAllEnchantments(lookup);
++        }
++
+         for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
+             Holder<Enchantment> holder = entry.getKey();
+             if (holder.is(p_345928_)) {
+@@ -484,7 +_,7 @@
  
      public static int getEnchantmentCost(RandomSource p_220288_, int p_220289_, int p_220290_, ItemStack p_220291_) {
          Item item = p_220291_.getItem();
@@ -56,8 +66,8 @@
          if (i <= 0) {
              return 0;
          } else {
-@@ -298,7 +_,7 @@
-     ) {
+@@ -529,7 +_,7 @@
+     public static List<EnchantmentInstance> selectEnchantment(RandomSource p_220298_, ItemStack p_220299_, int p_220300_, Stream<Holder<Enchantment>> p_346061_) {
          List<EnchantmentInstance> list = Lists.newArrayList();
          Item item = p_220299_.getItem();
 -        int i = item.getEnchantmentValue();
@@ -65,12 +75,14 @@
          if (i <= 0) {
              return list;
          } else {
-@@ -355,7 +_,7 @@
-             if (enchantment.isEnabled(p_338712_)
-                 && (!enchantment.isTreasureOnly() || p_44820_)
-                 && enchantment.isDiscoverable()
--                && (flag || enchantment.canEnchant(p_44819_) && enchantment.isPrimaryItem(p_44819_))) {
-+                    && ((flag && enchantment.isAllowedOnBooks()) || enchantment.canApplyAtEnchantingTable(p_44819_) && enchantment.isPrimaryItem(p_44819_))) {
-                 for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; i--) {
-                     if (p_44818_ >= enchantment.getMinCost(i) && p_44818_ <= enchantment.getMaxCost(i)) {
-                         list.add(new EnchantmentInstance(enchantment, i));
+@@ -575,7 +_,9 @@
+     public static List<EnchantmentInstance> getAvailableEnchantmentResults(int p_44818_, ItemStack p_44819_, Stream<Holder<Enchantment>> p_345348_) {
+         List<EnchantmentInstance> list = Lists.newArrayList();
+         boolean flag = p_44819_.is(Items.BOOK);
+-        p_345348_.filter(p_344529_ -> p_344529_.value().isPrimaryItem(p_44819_) || flag).forEach(p_344478_ -> {
++        // Neo: Rewrite filter logic to call isPrimaryItemFor instead of hardcoded vanilla logic.
++        // The original logic is recorded in the default implementation of IItemExtension#isPrimaryItemFor.
++        p_345348_.filter(p_44819_::isPrimaryItemFor).forEach(p_344478_ -> {
+             Enchantment enchantment = p_344478_.value();
+ 
+             for (int i = enchantment.getMaxLevel(); i >= enchantment.getMinLevel(); i--) {

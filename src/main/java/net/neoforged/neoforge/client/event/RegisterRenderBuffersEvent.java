@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import java.util.SortedMap;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import java.util.SequencedMap;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -25,10 +26,10 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterRenderBuffersEvent extends Event implements IModBusEvent {
-    private final SortedMap<RenderType, BufferBuilder> renderBuffers;
+    private final SequencedMap<RenderType, ByteBufferBuilder> renderBuffers;
 
     @ApiStatus.Internal
-    public RegisterRenderBuffersEvent(SortedMap<RenderType, BufferBuilder> renderBuffers) {
+    public RegisterRenderBuffersEvent(SequencedMap<RenderType, ByteBufferBuilder> renderBuffers) {
         this.renderBuffers = renderBuffers;
     }
 
@@ -38,7 +39,7 @@ public class RegisterRenderBuffersEvent extends Event implements IModBusEvent {
      * @param renderType a render type of the render buffer
      */
     public void registerRenderBuffer(RenderType renderType) {
-        registerRenderBuffer(renderType, new BufferBuilder(renderType.bufferSize()));
+        registerRenderBuffer(renderType, new ByteBufferBuilder(renderType.bufferSize()));
     }
 
     /**
@@ -47,7 +48,7 @@ public class RegisterRenderBuffersEvent extends Event implements IModBusEvent {
      * @param renderType   a render type of the render buffer
      * @param renderBuffer a render buffer to register
      */
-    public void registerRenderBuffer(RenderType renderType, BufferBuilder renderBuffer) {
+    public void registerRenderBuffer(RenderType renderType, ByteBufferBuilder renderBuffer) {
         if (renderBuffers.containsKey(renderType)) {
             throw new IllegalStateException("Duplicate attempt to register render buffer: " + renderType);
         }

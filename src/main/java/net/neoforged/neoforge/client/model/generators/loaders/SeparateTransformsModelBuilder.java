@@ -24,7 +24,7 @@ public class SeparateTransformsModelBuilder<T extends ModelBuilder<T>> extends C
     private final Map<String, T> childModels = new LinkedHashMap<>();
 
     protected SeparateTransformsModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(new ResourceLocation("neoforge:separate_transforms"), parent, existingFileHelper, false);
+        super(ResourceLocation.fromNamespaceAndPath("neoforge", "separate_transforms"), parent, existingFileHelper, false);
     }
 
     public SeparateTransformsModelBuilder<T> base(T modelBuilder) {

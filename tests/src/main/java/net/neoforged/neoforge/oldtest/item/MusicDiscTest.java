@@ -6,11 +6,13 @@
 package net.neoforged.neoforge.oldtest.item;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.RecordItem;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -25,10 +27,13 @@ public class MusicDiscTest {
     private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
 
     private static final DeferredHolder<SoundEvent, SoundEvent> TEST_SOUND_EVENT = SOUND_EVENTS.register("test_sound_event",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MOD_ID, "test_sound_event")));
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, "test_sound_event")));
+
+    private static final ResourceKey<JukeboxSong> TEST_SONG = ResourceKey.create(
+            Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(MOD_ID, "test_song"));
 
     private static final DeferredItem<Item> TEST_MUSIC_DISC = ITEMS.register("test_music_disc",
-            () -> new RecordItem(1, TEST_SOUND_EVENT, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 20));
+            () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).jukeboxPlayable(TEST_SONG)));
 
     public MusicDiscTest(IEventBus modBus) {
         ITEMS.register(modBus);

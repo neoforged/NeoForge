@@ -19,7 +19,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record SyncRegistries() implements ICustomConfigurationTask {
-    private static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "sync_registries");
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "sync_registries");
     public static final Type TYPE = new Type(ID);
 
     @Override

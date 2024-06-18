@@ -1,20 +1,19 @@
 --- a/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
-@@ -66,6 +_,7 @@
+@@ -66,22 +_,24 @@
              if (armoritem.getEquipmentSlot() == p_117122_) {
                  this.getParentModel().copyPropertiesTo(p_117124_);
                  this.setPartVisibility(p_117124_, p_117122_);
 +                net.minecraft.client.model.Model model = getArmorModelHook(p_117121_, itemstack, p_117122_, p_117124_);
                  boolean flag = this.usesInnerModel(p_117122_);
                  ArmorMaterial armormaterial = armoritem.getMaterial().value();
-                 int i = itemstack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(itemstack, -6265536) : -1;
-@@ -84,16 +_,17 @@
-                         f2 = 1.0F;
-                     }
+                 int i = itemstack.is(ItemTags.DYEABLE) ? FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(itemstack, -6265536)) : -1;
  
--                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, f, f1, f2, armormaterial$layer.texture(flag));
+                 for (ArmorMaterial.Layer armormaterial$layer : armormaterial.layers()) {
+                     int j = armormaterial$layer.dyeable() ? i : -1;
+-                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, armormaterial$layer.texture(flag));
 +                    var texture = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_117121_, itemstack, armormaterial$layer, flag, p_117122_);
-+                    this.renderModel(p_117119_, p_117120_, p_117123_, model, f, f1, f2, texture);
++                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, texture);
                  }
  
                  ArmorTrim armortrim = itemstack.get(DataComponents.TRIM);
@@ -29,26 +28,17 @@
                  }
              }
          }
-@@ -132,6 +_,18 @@
-         float p_289693_,
-         ResourceLocation p_324344_
-     ) {
-+        renderModel(p_289664_, p_289689_, p_289681_, (net.minecraft.client.model.Model) p_289658_, p_289678_, p_289674_, p_289693_, p_324344_);
-+    }
-+    private void renderModel(
-+        PoseStack p_289664_,
-+        MultiBufferSource p_289689_,
-+        int p_289681_,
-+        net.minecraft.client.model.Model p_289658_,
-+        float p_289678_,
-+        float p_289674_,
-+        float p_289693_,
-+        ResourceLocation p_324344_
-+    ) {
-         VertexConsumer vertexconsumer = p_289689_.getBuffer(RenderType.armorCutoutNoCull(p_324344_));
-         p_289658_.renderToBuffer(p_289664_, vertexconsumer, p_289681_, OverlayTexture.NO_OVERLAY, p_289678_, p_289674_, p_289693_, 1.0F);
+@@ -111,6 +_,9 @@
      }
-@@ -139,6 +_,11 @@
+ 
+     private void renderModel(PoseStack p_289664_, MultiBufferSource p_289689_, int p_289681_, A p_289658_, int p_350798_, ResourceLocation p_324344_) {
++        renderModel(p_289664_, p_289689_, p_289681_, (net.minecraft.client.model.Model) p_289658_, p_350798_, p_324344_);
++    }
++    private void renderModel(PoseStack p_289664_, MultiBufferSource p_289689_, int p_289681_, net.minecraft.client.model.Model p_289658_, int p_350798_, ResourceLocation p_324344_) {
+         VertexConsumer vertexconsumer = p_289689_.getBuffer(RenderType.armorCutoutNoCull(p_324344_));
+         p_289658_.renderToBuffer(p_289664_, vertexconsumer, p_289681_, OverlayTexture.NO_OVERLAY, p_350798_);
+     }
+@@ -118,6 +_,11 @@
      private void renderTrim(
          Holder<ArmorMaterial> p_323506_, PoseStack p_289687_, MultiBufferSource p_289643_, int p_289683_, ArmorTrim p_289692_, A p_289663_, boolean p_289651_
      ) {
@@ -60,17 +50,17 @@
          TextureAtlasSprite textureatlassprite = this.armorTrimAtlas
              .getSprite(p_289651_ ? p_289692_.innerTexture(p_323506_) : p_289692_.outerTexture(p_323506_));
          VertexConsumer vertexconsumer = textureatlassprite.wrap(p_289643_.getBuffer(Sheets.armorTrimsSheet(p_289692_.pattern().value().decal())));
-@@ -146,6 +_,9 @@
+@@ -125,6 +_,9 @@
      }
  
      private void renderGlint(PoseStack p_289673_, MultiBufferSource p_289654_, int p_289649_, A p_289659_) {
 +        renderGlint(p_289673_, p_289654_, p_289649_, (net.minecraft.client.model.Model) p_289659_);
 +    }
 +    private void renderGlint(PoseStack p_289673_, MultiBufferSource p_289654_, int p_289649_, net.minecraft.client.model.Model p_289659_) {
-         p_289659_.renderToBuffer(p_289673_, p_289654_.getBuffer(RenderType.armorEntityGlint()), p_289649_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+         p_289659_.renderToBuffer(p_289673_, p_289654_.getBuffer(RenderType.armorEntityGlint()), p_289649_, OverlayTexture.NO_OVERLAY);
      }
  
-@@ -155,5 +_,12 @@
+@@ -134,5 +_,12 @@
  
      private boolean usesInnerModel(EquipmentSlot p_117129_) {
          return p_117129_ == EquipmentSlot.LEGS;

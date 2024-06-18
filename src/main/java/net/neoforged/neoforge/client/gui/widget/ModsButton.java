@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 public class ModsButton extends Button {
-    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final ResourceLocation VERSION_CHECK_ICONS = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
 
     @Nullable
     private VersionChecker.Status showNotification;

@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/level/GenerationChunkHolder.java
++++ b/net/minecraft/server/level/GenerationChunkHolder.java
+@@ -33,6 +_,7 @@
+     private final AtomicReferenceArray<CompletableFuture<ChunkResult<ChunkAccess>>> futures = new AtomicReferenceArray<>(CHUNK_STATUSES.size());
+     private final AtomicReference<ChunkGenerationTask> task = new AtomicReference<>();
+     private final AtomicInteger generationRefCount = new AtomicInteger();
++    public net.minecraft.world.level.chunk.LevelChunk currentlyLoading; // Forge: Used to bypass future chain when loading chunks.
+ 
+     public GenerationChunkHolder(ChunkPos p_347689_) {
+         this.pos = p_347689_;

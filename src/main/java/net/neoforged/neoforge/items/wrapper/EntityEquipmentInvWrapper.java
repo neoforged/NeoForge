@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 /**
  * Exposes the armor or hands inventory of an {@link LivingEntity} as an {@link IItemHandler} using {@link LivingEntity#getItemBySlot(EquipmentSlot)} and
@@ -70,7 +70,7 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
         int limit = getStackLimit(slot, stack);
 
         if (!existing.isEmpty()) {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+            if (!ItemStack.isSameItemSameComponents(stack, existing))
                 return stack;
 
             limit -= existing.getCount();
@@ -83,13 +83,13 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
 
         if (!simulate) {
             if (existing.isEmpty()) {
-                entity.setItemSlot(equipmentSlot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
+                entity.setItemSlot(equipmentSlot, reachedLimit ? stack.copyWithCount(limit) : stack);
             } else {
                 existing.grow(reachedLimit ? limit : stack.getCount());
             }
         }
 
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
+        return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
     @Override
@@ -114,17 +114,17 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
             return existing;
         } else {
             if (!simulate) {
-                entity.setItemSlot(equipmentSlot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+                entity.setItemSlot(equipmentSlot, existing.copyWithCount(existing.getCount() - toExtract));
             }
 
-            return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
+            return existing.copyWithCount(toExtract);
         }
     }
 
     @Override
     public int getSlotLimit(final int slot) {
         final EquipmentSlot equipmentSlot = validateSlotIndex(slot);
-        return equipmentSlot.getType() == EquipmentSlot.Type.ARMOR ? 1 : 64;
+        return equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ? 1 : Item.ABSOLUTE_MAX_STACK_SIZE;
     }
 
     protected int getStackLimit(final int slot, final ItemStack stack) {

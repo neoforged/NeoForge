@@ -55,8 +55,8 @@
 +            onCaughtFire(p_316217_, p_316520_, p_316601_, p_316532_.getDirection(), p_316770_);
              p_316520_.setBlock(p_316601_, Blocks.AIR.defaultBlockState(), 11);
              Item item = p_316149_.getItem();
-             if (!p_316770_.isCreative()) {
-@@ -121,7 +_,7 @@
+             if (p_316149_.is(Items.FLINT_AND_STEEL)) {
+@@ -119,7 +_,7 @@
              BlockPos blockpos = p_57431_.getBlockPos();
              Entity entity = p_57432_.getOwner();
              if (p_57432_.isOnFire() && p_57432_.mayInteract(p_57429_, blockpos)) {

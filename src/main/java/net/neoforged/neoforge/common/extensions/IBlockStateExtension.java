@@ -11,6 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
@@ -119,14 +121,12 @@ public interface IBlockStateExtension {
      *
      * Return true if the block is actually destroyed.
      *
-     * Note: When used in multiplayer, this is called on both client and
-     * server sides!
+     * This function is called on both the logical client and logical server.
      *
      * @param level       The current level
      * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
-     * @param willHarvest True if Block.harvestBlock will be called after this, if the return in true.
-     *                    Can be useful to delay the destruction of tile entities till after harvestBlock
+     * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid and block state for the position in the level.
      * @return True if the block is actually destroyed.
      */
@@ -153,16 +153,17 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Determines if this block is classified as a Bed, Allowing
-     * players to sleep in it, though the block has to specifically
-     * perform the sleeping functionality in it's activated event.
+     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
+     * <p>
+     * If true, players may sleep in it, though the block must manually put the player to sleep
+     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
      *
      * @param level   The current level
      * @param pos     Block position in level
-     * @param sleeper The sleeper or camera entity, null in some cases.
+     * @param sleeper The sleeping entity
      * @return True to treat this as a bed
      */
-    default boolean isBed(BlockGetter level, BlockPos pos, @Nullable LivingEntity sleeper) {
+    default boolean isBed(BlockGetter level, BlockPos pos, LivingEntity sleeper) {
         return self().getBlock().isBed(self(), level, pos, sleeper);
     }
 
@@ -174,11 +175,10 @@ public interface IBlockStateExtension {
      * @param level       The current level
      * @param pos         Block position in level
      * @param orientation The angle the entity had when setting the respawn point
-     * @param entity      The entity respawning, often null
      * @return The spawn position or the empty optional if respawning here is not possible
      */
-    default Optional<Vec3> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
-        return self().getBlock().getRespawnPosition(self(), type, level, pos, orientation, entity);
+    default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation) {
+        return self().getBlock().getRespawnPosition(self(), type, level, pos, orientation);
     }
 
     /**
@@ -347,8 +347,9 @@ public interface IBlockStateExtension {
      * @param silkTouchLevel silk touch enchantment level of tool being used
      * @return Amount of XP from breaking this block.
      */
-    default int getExpDrop(LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
-        return self().getBlock().getExpDrop(self(), level, randomSource, pos, fortuneLevel, silkTouchLevel);
+    default int getExpDrop(LevelReader level, RandomSource randomSource, BlockPos pos) {
+        // TODO: Change this method to have context of the full tool ItemStack instead of just the enchantment levels.
+        return self().getBlock().getExpDrop(self(), level, randomSource, pos);
     }
 
     default BlockState rotate(LevelAccessor level, BlockPos pos, Rotation direction) {
@@ -424,7 +425,7 @@ public interface IBlockStateExtension {
      * @return A float RGB [0.0, 1.0] array to be averaged with a beacon's existing beam color, or null to do nothing to the beam
      */
     @Nullable
-    default float[] getBeaconColorMultiplier(LevelReader level, BlockPos pos, BlockPos beacon) {
+    default Integer getBeaconColorMultiplier(LevelReader level, BlockPos pos, BlockPos beacon) {
         return self().getBlock().getBeaconColorMultiplier(self(), level, pos, beacon);
     }
 

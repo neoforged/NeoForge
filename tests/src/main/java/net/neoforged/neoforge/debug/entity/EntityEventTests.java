@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.entity;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.entity.EntityType;
@@ -13,8 +14,12 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -67,6 +72,25 @@ public class EntityEventTests {
         test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.DONKEY, 1, 2, 1))
                 .thenExecute(donkey -> helper.assertEntityProperty(
                         donkey, d -> d.getAttribute(testAttr).getValue(), "test attribute", 1.5D))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(value = "15x5x15", floor = true)
+    @TestHolder(description = "Tests if the pig only gets vertical knockback from explosion knockback event")
+    static void entityVerticalExplosionKnockbackEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final ExplosionKnockbackEvent event) -> {
+            if (event.getAffectedEntity() instanceof Pig) {
+                event.setKnockbackVelocity(new Vec3(0, event.getKnockbackVelocity().y(), 0));
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 8, 3, 7))
+                .thenExecute(pig -> helper.setBlock(8, 2, 7, Blocks.ACACIA_LEAVES))
+                .thenExecute(pig -> helper.getLevel().explode(null, helper.getLevel().damageSources().generic(), null, helper.absolutePos(new BlockPos(7, 2, 7)).getCenter(), 2f, false, Level.ExplosionInteraction.TNT))
+                .thenExecute(pig -> helper.assertEntityProperty(pig, p -> pig.getDeltaMovement().x() == 0 && pig.getDeltaMovement().y() != 0 && pig.getDeltaMovement().z() == 0, "Check explosion Knockback"))
+                .thenIdle(10)
+                .thenExecute(helper::killAllEntities)
                 .thenSucceed());
     }
 }

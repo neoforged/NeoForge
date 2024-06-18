@@ -22,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public record KnownRegistryDataMapsReplyPayload(
         Map<ResourceKey<? extends Registry<?>>, Collection<ResourceLocation>> dataMaps) implements CustomPacketPayload {
-    public static final Type<KnownRegistryDataMapsReplyPayload> TYPE = new Type<>(new ResourceLocation("neoforge:known_registry_data_maps_reply"));
+    public static final Type<KnownRegistryDataMapsReplyPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("neoforge", "known_registry_data_maps_reply"));
     public static final StreamCodec<FriendlyByteBuf, KnownRegistryDataMapsReplyPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.map(
                     Maps::newHashMapWithExpectedSize,

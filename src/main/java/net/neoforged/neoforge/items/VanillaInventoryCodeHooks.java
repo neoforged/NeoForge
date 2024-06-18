@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.items;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
@@ -43,7 +44,7 @@ public class VanillaInventoryCodeHooks {
                         if (!extractItem.isEmpty()) {
                             for (int j = 0; j < dest.getContainerSize(); j++) {
                                 ItemStack destStack = dest.getItem(j);
-                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemHandlerHelper.canItemStacksStack(extractItem, destStack))) {
+                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemStack.isSameItemSameComponents(extractItem, destStack))) {
                                     extractItem = handler.extractItem(i, 1, false);
                                     if (destStack.isEmpty())
                                         dest.setItem(j, extractItem);
@@ -141,7 +142,7 @@ public class VanillaInventoryCodeHooks {
                 destInventory.insertItem(slot, stack, false);
                 stack = ItemStack.EMPTY;
                 insertedItem = true;
-            } else if (ItemHandlerHelper.canItemStacksStack(itemstack, stack)) {
+            } else if (ItemStack.isSameItemSameComponents(itemstack, stack)) {
                 int originalSize = stack.getCount();
                 stack = destInventory.insertItem(slot, stack, false);
                 insertedItem = originalSize < stack.getCount();
@@ -209,10 +210,12 @@ public class VanillaInventoryCodeHooks {
         // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
         List<Entity> list = worldIn.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
         if (!list.isEmpty()) {
-            var entity = list.get(worldIn.random.nextInt(list.size()));
-            var entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
-            if (entityCap != null)
-                return Optional.of(ImmutablePair.of(entityCap, entity));
+            Collections.shuffle(list);
+            for (Entity entity : list) {
+                IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+                if (entityCap != null)
+                    return Optional.of(ImmutablePair.of(entityCap, entity));
+            }
         }
 
         return Optional.empty();

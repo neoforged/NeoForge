@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * A {@linkplain IGeometryBakingContext geometry baking context} that is not bound to block/item model loading.
  */
 public class StandaloneGeometryBakingContext implements IGeometryBakingContext {
-    public static final ResourceLocation LOCATION = new ResourceLocation("neoforge", "standalone");
+    public static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath("neoforge", "standalone");
 
     public static final StandaloneGeometryBakingContext INSTANCE = create(LOCATION);
 

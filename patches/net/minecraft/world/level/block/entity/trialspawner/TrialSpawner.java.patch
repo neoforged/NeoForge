@@ -22,7 +22,7 @@
  
                                  mob.setPersistenceRequired();
                                  spawndata.getEquipment().ifPresent(mob::equip);
-@@ -416,5 +_,14 @@
+@@ -405,5 +_,14 @@
          TrialSpawnerState getState();
  
          void markUpdated();

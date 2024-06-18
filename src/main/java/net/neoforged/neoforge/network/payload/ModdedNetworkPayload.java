@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkPayload(NetworkPayloadSetup setup) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "network");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "network");
     public static final Type<ModdedNetworkPayload> TYPE = new Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, ModdedNetworkPayload> STREAM_CODEC = StreamCodec.composite(
             NetworkPayloadSetup.STREAM_CODEC, ModdedNetworkPayload::setup,

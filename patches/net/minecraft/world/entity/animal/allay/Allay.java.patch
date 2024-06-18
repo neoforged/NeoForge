@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/net/minecraft/world/entity/animal/allay/Allay.java
-@@ -366,9 +_,9 @@
+@@ -368,9 +_,9 @@
      public boolean wantsToPickUp(ItemStack p_218387_) {
          ItemStack itemstack = this.getItemInHand(InteractionHand.MAIN_HAND);
          return !itemstack.isEmpty()
@@ -8,7 +8,7 @@
              && this.inventory.canAddItem(p_218387_)
 -            && this.allayConsidersItemEqual(itemstack, p_218387_);
 +            && this.allayConsidersItemEqual(itemstack, p_218387_)
-+            && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this);
++            && net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), this);
      }
  
      private boolean allayConsidersItemEqual(ItemStack p_252278_, ItemStack p_250405_) {

@@ -1,8 +1,7 @@
 {
   "entries": [
     "neotests_glm_test:dungeon_loot",
-    "neotests_glm_test:wheat_harvest",
-    "neotests_glm_test:smelting"
+    "neotests_glm_test:wheat_harvest"
   ],
   "replace": false
 }

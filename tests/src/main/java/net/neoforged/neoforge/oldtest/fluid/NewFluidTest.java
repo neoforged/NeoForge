@@ -54,9 +54,9 @@ public class NewFluidTest {
     public static final boolean ENABLE = false; // TODO fix
     public static final String MODID = "new_fluid_test";
 
-    public static final ResourceLocation FLUID_STILL = new ResourceLocation("minecraft:block/brown_mushroom_block");
-    public static final ResourceLocation FLUID_FLOWING = new ResourceLocation("minecraft:block/mushroom_stem");
-    public static final ResourceLocation FLUID_OVERLAY = new ResourceLocation("minecraft:block/obsidian");
+    public static final ResourceLocation FLUID_STILL = ResourceLocation.fromNamespaceAndPath("minecraft", "block/brown_mushroom_block");
+    public static final ResourceLocation FLUID_FLOWING = ResourceLocation.fromNamespaceAndPath("minecraft", "block/mushroom_stem");
+    public static final ResourceLocation FLUID_OVERLAY = ResourceLocation.fromNamespaceAndPath("minecraft", "block/obsidian");
 
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);

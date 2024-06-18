@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/RecipeBookMenu.java
 +++ b/net/minecraft/world/inventory/RecipeBookMenu.java
-@@ -30,6 +_,10 @@
+@@ -43,6 +_,10 @@
  
      public abstract int getSize();
  

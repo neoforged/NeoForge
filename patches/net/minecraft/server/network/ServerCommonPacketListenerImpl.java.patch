@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -41,6 +_,10 @@
+@@ -42,6 +_,10 @@
      private boolean closed = false;
      private int latency;
      private volatile boolean suspendFlushingOnServerThread = false;
@@ -11,7 +11,7 @@
  
      public ServerCommonPacketListenerImpl(MinecraftServer p_295057_, Connection p_294822_, CommonListenerCookie p_301980_) {
          this.server = p_295057_;
-@@ -48,6 +_,8 @@
+@@ -49,6 +_,8 @@
          this.keepAliveTime = Util.getMillis();
          this.latency = p_301980_.latency();
          this.transferred = p_301980_.transferred();
@@ -20,7 +20,7 @@
      }
  
      private void close() {
-@@ -82,6 +_,22 @@
+@@ -83,6 +_,22 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
@@ -43,7 +43,7 @@
      }
  
      @Override
-@@ -140,7 +_,10 @@
+@@ -141,7 +_,10 @@
          this.send(p_294278_, null);
      }
  
@@ -54,7 +54,7 @@
          if (p_295099_.isTerminal()) {
              this.close();
          }
-@@ -178,7 +_,41 @@
+@@ -183,7 +_,41 @@
          return this.latency;
      }
  

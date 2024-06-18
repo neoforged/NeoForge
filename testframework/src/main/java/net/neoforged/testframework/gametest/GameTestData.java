@@ -6,11 +6,11 @@
 package net.neoforged.testframework.gametest;
 
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Rotation;
+import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

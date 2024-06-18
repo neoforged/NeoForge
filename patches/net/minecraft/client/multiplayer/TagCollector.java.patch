@@ -1,18 +1,9 @@
 --- a/net/minecraft/client/multiplayer/TagCollector.java
 +++ b/net/minecraft/client/multiplayer/TagCollector.java
-@@ -23,7 +_,7 @@
-     }
- 
-     private static void refreshCommonTagDependentData() {
--        CreativeModeTabs.searchTab().rebuildSearchTree();
-+        CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(net.minecraft.world.item.CreativeModeTab::rebuildSearchTree);
-     }
- 
-     private static void refreshBuiltInTagDependentData() {
-@@ -51,5 +_,6 @@
+@@ -44,5 +_,6 @@
+             this.applyTags(p_326147_, p_326446_ -> true);
+             refreshBuiltInTagDependentData();
          }
- 
-         refreshCommonTagDependentData();
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(p_326147_, true, p_326486_));
      }
  }

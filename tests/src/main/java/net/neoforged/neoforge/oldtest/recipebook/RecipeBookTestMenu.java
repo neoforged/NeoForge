@@ -22,12 +22,12 @@ import net.minecraft.world.inventory.RecipeCraftingHolder;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.oldtest.recipebook.RecipeBookExtensionTest.RecipeBookTestContainer;
 
-public class RecipeBookTestMenu extends RecipeBookMenu<RecipeBookTestContainer> {
+public class RecipeBookTestMenu extends RecipeBookMenu<CraftingInput, RecipeBookTestRecipe> {
     private final RecipeBookTestContainer container = new RecipeBookTestContainer();
     private final ResultContainer resultContainer = new ResultContainer();
     private final Slot resultSlot;
@@ -41,7 +41,6 @@ public class RecipeBookTestMenu extends RecipeBookMenu<RecipeBookTestContainer> 
     public RecipeBookTestMenu(int id, Inventory inv, ContainerLevelAccess access) {
         super(RecipeBookExtensionTest.RECIPE_BOOK_TEST_MENU_TYPE.get(), id);
         this.access = access;
-        this.container.addListener(this::slotsChanged);
         this.player = inv.player;
 
         /**
@@ -60,7 +59,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu<RecipeBookTestContainer> 
                 this.checkTakeAchievements(stack);
                 Container craftingContainer = RecipeBookTestMenu.this.container;
                 NonNullList<ItemStack> remainders = player.level()
-                        .getRecipeManager().getRemainingItemsFor(RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get(), RecipeBookTestMenu.this.container, player.level());
+                        .getRecipeManager().getRemainingItemsFor(RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get(), RecipeBookTestMenu.this.container.asCraftingInput(), player.level());
                 for (int i = 0; i < remainders.size(); ++i) {
                     ItemStack toRemove = craftingContainer.getItem(i);
                     ItemStack toReplace = remainders.get(i);
@@ -148,11 +147,11 @@ public class RecipeBookTestMenu extends RecipeBookMenu<RecipeBookTestContainer> 
         this.access.execute((level, pos) -> {
             if (container == this.container) {
                 Optional<RecipeHolder<RecipeBookTestRecipe>> recipe = level.getRecipeManager()
-                        .getRecipeFor(RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get(), this.container, level);
+                        .getRecipeFor(RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get(), this.container.asCraftingInput(), level);
                 if (recipe.isEmpty())
                     this.resultContainer.setItem(0, ItemStack.EMPTY);
                 else if (player instanceof ServerPlayer sp && this.resultContainer.setRecipeUsed(level, sp, recipe.get())) {
-                    ItemStack stack = recipe.get().value().assemble(this.container, level.registryAccess());
+                    ItemStack stack = recipe.get().value().assemble(this.container.asCraftingInput(), level.registryAccess());
                     this.resultContainer.setItem(0, stack);
                 }
             }
@@ -224,8 +223,8 @@ public class RecipeBookTestMenu extends RecipeBookMenu<RecipeBookTestContainer> 
     }
 
     @Override
-    public boolean recipeMatches(RecipeHolder<? extends Recipe<RecipeBookTestContainer>> recipeHolder) {
-        return recipeHolder.value().matches(this.container, this.player.level());
+    public boolean recipeMatches(RecipeHolder<RecipeBookTestRecipe> recipeHolder) {
+        return recipeHolder.value().matches(this.container.asCraftingInput(), this.player.level());
     }
 
     @Override

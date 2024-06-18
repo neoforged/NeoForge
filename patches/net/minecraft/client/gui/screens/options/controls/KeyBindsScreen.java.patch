@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
++++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
+@@ -41,7 +_,7 @@
+     protected void addFooter() {
+         this.resetButton = Button.builder(Component.translatable("controls.resetAll"), p_346345_ -> {
+             for (KeyMapping keymapping : this.options.keyMappings) {
+-                keymapping.setKey(keymapping.getDefaultKey());
++                keymapping.setToDefault();
+             }
+ 
+             this.keyBindsList.resetMappingAndUpdateButtons();
+@@ -73,8 +_,10 @@
+     public boolean keyPressed(int p_345810_, int p_345447_, int p_344981_) {
+         if (this.selectedKey != null) {
+             if (p_345810_ == 256) {
++                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.UNKNOWN);
+                 this.options.setKey(this.selectedKey, InputConstants.UNKNOWN);
+             } else {
++                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.getKey(p_345810_, p_345447_));
+                 this.options.setKey(this.selectedKey, InputConstants.getKey(p_345810_, p_345447_));
+             }
+ 

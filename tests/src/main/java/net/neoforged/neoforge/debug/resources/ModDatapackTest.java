@@ -27,7 +27,7 @@ public class ModDatapackTest {
 
     @TestHolder(description = "Tests that mod datapacks are loaded properly on initial load and reload", enabledByDefault = true)
     static void modDatapack(final DynamicTest test) {
-        final ResourceLocation testAdvancement = new ResourceLocation(test.createModId(), "recipes/misc/test_advancement");
+        final ResourceLocation testAdvancement = ResourceLocation.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
         test.registrationHelper().addProvider(event -> {
             List<AdvancementProvider.AdvancementGenerator> generators = List.of((registries, saver, existingFileHelper) -> Advancement.Builder.recipeAdvancement()
@@ -36,7 +36,7 @@ public class ModDatapackTest {
                             new InventoryChangeTrigger.TriggerInstance(
                                     Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
                                             ItemPredicate.Builder.item().of(Items.TURTLE_SCUTE).build()))))
-                    .rewards(AdvancementRewards.Builder.recipe(new ResourceLocation("minecraft:turtle_helmet")))
+                    .rewards(AdvancementRewards.Builder.recipe(ResourceLocation.fromNamespaceAndPath("minecraft", "turtle_helmet")))
                     .save(saver, testAdvancement, existingFileHelper));
             return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper(), generators);
         });

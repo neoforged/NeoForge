@@ -78,7 +78,7 @@
      }
  
      @Override
-@@ -199,7 +_,7 @@
+@@ -204,7 +_,7 @@
      }
  
      Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> p_248831_) {
@@ -87,7 +87,7 @@
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
              } else {
-@@ -232,7 +_,7 @@
+@@ -237,7 +_,7 @@
      @Nullable
      @Override
      public T get(@Nullable ResourceLocation p_122739_) {
@@ -96,7 +96,7 @@
          return getValueFromNullable(reference);
      }
  
-@@ -316,13 +_,18 @@
+@@ -321,13 +_,18 @@
          return this.byKey.containsKey(p_175392_);
      }
  
@@ -116,7 +116,7 @@
              List<ResourceLocation> list = this.byKey
                  .entrySet()
                  .stream()
-@@ -338,8 +_,10 @@
+@@ -343,8 +_,10 @@
                          throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                      }
  
@@ -128,7 +128,7 @@
  
                  return this;
              }
-@@ -435,5 +_,53 @@
+@@ -440,5 +_,53 @@
      @Override
      public HolderLookup.RegistryLookup<T> asLookup() {
          return this.lookup;

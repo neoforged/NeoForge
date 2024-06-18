@@ -105,7 +105,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * @param type The type of sound to create.
      */
     protected static SoundDefinition.Sound sound(final String name, final SoundDefinition.SoundType type) {
-        return sound(new ResourceLocation(name), type);
+        return sound(ResourceLocation.parse(name), type);
     }
 
     /**
@@ -115,7 +115,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * @param name The name of the sound to create.
      */
     protected static SoundDefinition.Sound sound(final String name) {
-        return sound(new ResourceLocation(name));
+        return sound(ResourceLocation.parse(name));
     }
 
     // Addition methods
@@ -172,7 +172,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * @param definition The {@link SoundDefinition} that defines the given event.
      */
     protected void add(final String soundEvent, final SoundDefinition definition) {
-        this.add(new ResourceLocation(soundEvent), definition);
+        this.add(ResourceLocation.parse(soundEvent), definition);
     }
 
     private void addSounds(final String soundEvent, final SoundDefinition definition) {

@@ -34,14 +34,18 @@ public final class ParticleBoundsDebugRenderer {
 
         PoseStack poseStack = event.getPoseStack();
         poseStack.pushPose();
-        poseStack.translate(-camPos.x, -camPos.y, -camPos.z);
 
         VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
 
         Minecraft.getInstance().particleEngine.iterateParticles(particle -> {
-            var bb = particle.getRenderBoundingBox(event.getPartialTick());
+            var bb = particle.getRenderBoundingBox(event.getPartialTick().getGameTimeDeltaPartialTick(false));
             if (!bb.isInfinite() && event.getFrustum().isVisible(bb)) {
+                poseStack.pushPose();
+                var offset = particle.getPos().subtract(camPos);
+                poseStack.translate(offset.x, offset.y, offset.z);
+                bb = bb.move(-particle.getPos().x, -particle.getPos().y, -particle.getPos().z);
                 LevelRenderer.renderLineBox(poseStack, consumer, bb, 1F, 0F, 0F, 1F);
+                poseStack.popPose();
             }
         });
 

@@ -12,12 +12,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalShape;
 import net.neoforged.bus.api.Event;
@@ -25,7 +26,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockEvent extends Event {
@@ -54,48 +54,39 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Event that is fired when an Block is about to be broken by a player
-     * Canceling this event will prevent the Block from being broken.
+     * This event is fired on the server when a player attempts to break a block, upon receipt of a block break packet.
+     *
+     * The following conditions may cause this event to fire in a cancelled state:
+     * <ul>
+     * <li>If {@link Player#blockActionRestricted} is true.</li>
+     * <li>If the target block is a {@link GameMasterBlock} and {@link Player#canUseGameMasterBlocks()} is false.</li>
+     * <li>If the the player is holding an item, and {@link Item#canAttackBlock} is false.</li>
+     * </ul>
+     *
+     * In the first two cases, un-cancelling the event will not permit the block to be broken.
+     * In the third case, un-cancelling will allow the break, bypassing the behavior of {@link Item#canAttackBlock}.
      */
     public static class BreakEvent extends BlockEvent implements ICancellableEvent {
-        /** Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer */
         private final Player player;
-        private int exp;
 
         public BreakEvent(Level level, BlockPos pos, BlockState state, Player player) {
             super(level, pos, state);
             this.player = player;
-
-            if (state == null || !EventHooks.doPlayerHarvestCheck(player, state, level, pos)) // Handle empty block or player unable to break block scenario
-            {
-                this.exp = 0;
-            } else {
-                int fortuneLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.FORTUNE);
-                int silkTouchLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.SILK_TOUCH);
-                this.exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
-            }
         }
 
+        /**
+         * {@return the player who is attempting to break the block}
+         */
         public Player getPlayer() {
             return player;
         }
 
         /**
-         * Get the experience dropped by the block after the event has processed
-         *
-         * @return The experience to drop or 0 if the event was canceled
+         * Cancelling this event will prevent the block from being broken, and notifies the client of the refusal.
          */
-        public int getExpToDrop() {
-            return this.isCanceled() ? 0 : exp;
-        }
-
-        /**
-         * Set the amount of experience dropped by the block after the event has processed
-         *
-         * @param exp 1 or higher to drop experience, else nothing will drop
-         */
-        public void setExpToDrop(int exp) {
-            this.exp = exp;
+        @Override
+        public void setCanceled(boolean canceled) {
+            ICancellableEvent.super.setCanceled(canceled);
         }
     }
 
@@ -111,10 +102,10 @@ public abstract class BlockEvent extends Event {
         private final BlockState placedAgainst;
 
         public EntityPlaceEvent(BlockSnapshot blockSnapshot, BlockState placedAgainst, @Nullable Entity entity) {
-            super(blockSnapshot.getLevel(), blockSnapshot.getPos(), !(entity instanceof Player) ? blockSnapshot.getReplacedBlock() : blockSnapshot.getCurrentBlock());
+            super(blockSnapshot.getLevel(), blockSnapshot.getPos(), !(entity instanceof Player) ? blockSnapshot.getState() : blockSnapshot.getCurrentState());
             this.entity = entity;
             this.blockSnapshot = blockSnapshot;
-            this.placedBlock = !(entity instanceof Player) ? blockSnapshot.getReplacedBlock() : blockSnapshot.getCurrentBlock();
+            this.placedBlock = !(entity instanceof Player) ? blockSnapshot.getState() : blockSnapshot.getCurrentState();
             this.placedAgainst = placedAgainst;
 
             if (DEBUG) {
@@ -204,37 +195,6 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Fired to check whether a non-source block can turn into a source block.
-     * A result of ALLOW causes a source block to be created even if the liquid
-     * usually doesn't do that (like lava), and a result of DENY prevents creation
-     * even if the liquid usually does do that (like water).
-     */
-    @HasResult
-    public static class CreateFluidSourceEvent extends Event {
-        private final Level level;
-        private final BlockPos pos;
-        private final BlockState state;
-
-        public CreateFluidSourceEvent(Level level, BlockPos pos, BlockState state) {
-            this.level = level;
-            this.pos = pos;
-            this.state = state;
-        }
-
-        public Level getLevel() {
-            return level;
-        }
-
-        public BlockPos getPos() {
-            return pos;
-        }
-
-        public BlockState getState() {
-            return state;
-        }
-    }
-
-    /**
      * Fired when a liquid places a block. Use {@link #setNewState(BlockState)} to change the result of
      * a cobblestone generator or add variants of obsidian. Alternatively, you could execute
      * arbitrary code when lava sets blocks on fire, even preventing it.
@@ -277,56 +237,6 @@ public abstract class BlockEvent extends Event {
          */
         public BlockState getOriginalState() {
             return origState;
-        }
-    }
-
-    /**
-     * Fired when a crop block grows. See subevents.
-     *
-     */
-    public static abstract class CropGrowEvent extends BlockEvent {
-        public CropGrowEvent(Level level, BlockPos pos, BlockState state) {
-            super(level, pos, state);
-        }
-
-        /**
-         * Fired when any "growing age" blocks (for example cacti, chorus plants, or crops
-         * in vanilla) attempt to advance to the next growth age state during a random tick.<br>
-         * <br>
-         * {@link Result#DEFAULT} will pass on to the vanilla growth mechanics.<br>
-         * {@link Result#ALLOW} will force the plant to advance a growth stage.<br>
-         * {@link Result#DENY} will prevent the plant from advancing a growth stage.<br>
-         * <br>
-         * This event is not {@link ICancellableEvent}.<br>
-         * <br>
-         */
-        @HasResult
-        public static class Pre extends CropGrowEvent {
-            public Pre(Level level, BlockPos pos, BlockState state) {
-                super(level, pos, state);
-            }
-        }
-
-        /**
-         * Fired when "growing age" blocks (for example cacti, chorus plants, or crops
-         * in vanilla) have successfully grown. The block's original state is available,
-         * in addition to its new state.<br>
-         * <br>
-         * This event is not {@link ICancellableEvent}.<br>
-         * <br>
-         * This event does not have a result. {@link HasResult}<br>
-         */
-        public static class Post extends CropGrowEvent {
-            private final BlockState originalState;
-
-            public Post(Level level, BlockPos pos, BlockState original, BlockState state) {
-                super(level, pos, state);
-                originalState = original;
-            }
-
-            public BlockState getOriginalState() {
-                return originalState;
-            }
         }
     }
 

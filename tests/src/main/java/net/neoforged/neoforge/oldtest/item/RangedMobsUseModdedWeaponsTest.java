@@ -58,27 +58,27 @@ public class RangedMobsUseModdedWeaponsTest {
 
     private static class RangedWeaponModeLProperties {
         static void initBowModelProperties() {
-            ItemProperties.register(MODDED_BOW.get(), new ResourceLocation("pull"), (itemStack, clientWorld, livingEntity, seed) -> {
+            ItemProperties.register(MODDED_BOW.get(), ResourceLocation.withDefaultNamespace("pull"), (itemStack, clientWorld, livingEntity, seed) -> {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / 20.0F;
+                    return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / 20.0F;
                 }
             });
-            ItemProperties.register(MODDED_BOW.get(), new ResourceLocation("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F);
+            ItemProperties.register(MODDED_BOW.get(), ResourceLocation.withDefaultNamespace("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F);
         }
 
         static void initCrossbowModelProperties() {
-            ItemProperties.register(MODDED_CROSSBOW.get(), new ResourceLocation("pull"), (itemStack, clientWorld, livingEntity, seed) -> {
+            ItemProperties.register(MODDED_CROSSBOW.get(), ResourceLocation.withDefaultNamespace("pull"), (itemStack, clientWorld, livingEntity, seed) -> {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                    return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack, livingEntity);
                 }
             });
-            ItemProperties.register(MODDED_CROSSBOW.get(), new ResourceLocation("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F);
-            ItemProperties.register(MODDED_CROSSBOW.get(), new ResourceLocation("charged"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F);
-            ItemProperties.register(MODDED_CROSSBOW.get(), new ResourceLocation("firework"), (itemStack, clientWorld, livingEntity, seed) -> {
+            ItemProperties.register(MODDED_CROSSBOW.get(), ResourceLocation.withDefaultNamespace("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F);
+            ItemProperties.register(MODDED_CROSSBOW.get(), ResourceLocation.withDefaultNamespace("charged"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F);
+            ItemProperties.register(MODDED_CROSSBOW.get(), ResourceLocation.withDefaultNamespace("firework"), (itemStack, clientWorld, livingEntity, seed) -> {
                 ChargedProjectiles chargedprojectiles = itemStack.get(DataComponents.CHARGED_PROJECTILES);
                 return chargedprojectiles != null && chargedprojectiles.contains(Items.FIREWORK_ROCKET) ? 1.0F : 0.0F;
             });
