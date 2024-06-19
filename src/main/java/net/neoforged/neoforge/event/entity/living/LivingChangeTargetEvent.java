@@ -12,6 +12,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event allows you to change the target an entity has. <br>
@@ -36,10 +37,12 @@ import net.neoforged.neoforge.common.NeoForge;
  */
 public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent {
     private final ILivingTargetType targetType;
+    @Nullable
     private final LivingEntity originalTarget;
+    @Nullable
     private LivingEntity newTarget;
 
-    public LivingChangeTargetEvent(LivingEntity entity, LivingEntity originalTarget, ILivingTargetType targetType) {
+    public LivingChangeTargetEvent(LivingEntity entity, @Nullable LivingEntity originalTarget, ILivingTargetType targetType) {
         super(entity);
         this.originalTarget = originalTarget;
         this.newTarget = originalTarget;
@@ -49,6 +52,7 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
     /**
      * {@return the new target of this entity.}
      */
+    @Nullable
     public LivingEntity getNewTarget() {
         return newTarget;
     }
@@ -58,7 +62,7 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
      * 
      * @param newTarget The new target of this entity.
      */
-    public void setNewTarget(LivingEntity newTarget) {
+    public void setNewTarget(@Nullable LivingEntity newTarget) {
         this.newTarget = newTarget;
     }
 
@@ -72,6 +76,7 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
     /**
      * {@return the original entity MC intended to use as a target before firing this event.}
      */
+    @Nullable
     public LivingEntity getOriginalTarget() {
         return originalTarget;
     }
