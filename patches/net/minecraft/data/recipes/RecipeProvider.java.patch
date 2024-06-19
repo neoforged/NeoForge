@@ -5,12 +5,12 @@
              new RecipeOutput() {
                  @Override
 -                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @Nullable AdvancementHolder p_311794_) {
-+                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @Nullable AdvancementHolder p_311794_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
++                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @Nullable AdvancementHolder p_311794_, RecipeOutput other) {
                      if (!set.add(p_312039_)) {
                          throw new IllegalStateException("Duplicate recipe " + p_312039_);
                      } else {
 -                        list.add(DataProvider.saveStable(p_324494_, p_324248_, Recipe.CODEC, p_312254_, RecipeProvider.this.recipePathProvider.json(p_312039_)));
-+                        list.add(DataProvider.saveStable(p_324494_, p_324248_, Recipe.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, conditions)), RecipeProvider.this.recipePathProvider.json(p_312039_)));
++                        list.add(DataProvider.saveStable(p_324494_, p_324248_, Recipe.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, other.getConditions())), RecipeProvider.this.recipePathProvider.json(p_312039_), other));
                          if (p_311794_ != null) {
                              list.add(
                                  DataProvider.saveStable(
@@ -19,7 +19,7 @@
 -                                    Advancement.CODEC,
 -                                    p_311794_.value(),
 +                                    Advancement.CONDITIONAL_CODEC,
-+                                    Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_311794_.value(), conditions)),
++                                    Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_311794_.value(), other.getConditions())),
                                      RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
                                  )
                              );

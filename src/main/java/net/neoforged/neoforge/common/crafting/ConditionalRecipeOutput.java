@@ -35,15 +35,20 @@ public class ConditionalRecipeOutput implements RecipeOutput {
     }
 
     @Override
-    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+    public ICondition[] getConditions(ICondition... other) {
         ICondition[] innerConditions;
-        if (conditions.length == 0) {
+        if (other.length == 0) {
             innerConditions = this.conditions;
         } else if (this.conditions.length == 0) {
-            innerConditions = conditions;
+            innerConditions = other;
         } else {
-            innerConditions = ArrayUtils.addAll(this.conditions, conditions);
+            innerConditions = ArrayUtils.addAll(this.conditions, other);
         }
-        inner.accept(id, recipe, advancement, innerConditions);
+        return innerConditions;
+    }
+
+    @Override
+    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, RecipeOutput other) {
+        inner.accept(id, recipe, advancement, this);
     }
 }

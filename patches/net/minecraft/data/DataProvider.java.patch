@@ -9,3 +9,19 @@
          p_236070_.put("type", 0);
          p_236070_.put("parent", 1);
          p_236070_.defaultReturnValue(2);
+@@ -34,6 +_,15 @@
+     CompletableFuture<?> run(CachedOutput p_236071_);
+ 
+     String getName();
++
++    static <T> CompletableFuture<?> saveStable(CachedOutput p_298323_, HolderLookup.Provider p_323556_, Codec<T> p_299231_, T p_298793_, Path p_298236_, net.minecraft.data.recipes.RecipeOutput recipeOutput) {
++        RegistryOps<JsonElement> registryops = p_323556_.createSerializationContext(JsonOps.INSTANCE);
++        JsonElement jsonelement = p_299231_.encodeStart(registryops, p_298793_).getOrThrow();
++        if (recipeOutput instanceof net.neoforged.neoforge.common.crafting.OverlappingRecipeOutput overlappingRecipeOutput && jsonelement instanceof com.google.gson.JsonObject jsonObject && overlappingRecipeOutput.getOutputOverride() != null) {
++            jsonObject.addProperty("neoforge:override", overlappingRecipeOutput.getOutputOverride().toString());
++        }
++        return saveStable(p_298323_, jsonelement, p_298236_);
++    }
+ 
+     static <T> CompletableFuture<?> saveStable(CachedOutput p_298323_, HolderLookup.Provider p_323556_, Codec<T> p_299231_, T p_298793_, Path p_298236_) {
+         RegistryOps<JsonElement> registryops = p_323556_.createSerializationContext(JsonOps.INSTANCE);

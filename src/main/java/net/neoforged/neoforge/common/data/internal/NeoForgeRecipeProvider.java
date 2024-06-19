@@ -38,7 +38,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
 public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
@@ -99,10 +98,10 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
 
         super.buildRecipes(new RecipeOutput() {
             @Override
-            public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+            public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, RecipeOutput other) {
                 Recipe<?> modified = enhance(id, recipe);
                 if (modified != null)
-                    recipeOutput.accept(id, modified, null, conditions);
+                    recipeOutput.accept(id, modified, null, other);
             }
 
             @Override
