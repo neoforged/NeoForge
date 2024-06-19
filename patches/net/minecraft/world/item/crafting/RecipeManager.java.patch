@@ -21,8 +21,8 @@
 +                Recipe<?> recipe = r.carrier();
                  RecipeHolder<?> recipeholder = new RecipeHolder<>(resourcelocation, recipe);
 -                builder.put(recipe.getType(), recipeholder);
-+                if (entry.getValue() instanceof JsonObject jsonObject && jsonObject.keySet().contains("override")) { // Neo: Adds override recipes to the "overrides" map only.
-+                    overrides.put(ResourceLocation.parse(jsonObject.get("override").getAsString()), recipeholder);
++                if (entry.getValue() instanceof JsonObject jsonObject && jsonObject.keySet().contains("neoforge:override")) { // Neo: Adds override recipes to the "overrides" map only.
++                    overrides.put(ResourceLocation.parse(jsonObject.get("neoforge:override").getAsString()), recipeholder);
 +                } else {
 +                    builder.put(recipe.getType(), recipeholder);
 +                }
