@@ -9,7 +9,7 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -73,11 +_,13 @@
+@@ -73,12 +_,14 @@
      public boolean keyPressed(int p_345810_, int p_345447_, int p_344981_) {
          if (this.selectedKey != null) {
              if (p_345810_ == 256) {
@@ -19,8 +19,9 @@
 +                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.getKey(p_345810_, p_345447_));
                  this.options.setKey(this.selectedKey, InputConstants.getKey(p_345810_, p_345447_));
              }
--
-+            if(!net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(this.selectedKey.getKey()))
-             this.selectedKey = null;
+ 
+-            this.selectedKey = null;
++            if(!net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(this.selectedKey.getKey()))this.selectedKey = null;
              this.lastKeySelection = Util.getMillis();
              this.keyBindsList.resetMappingAndUpdateButtons();
+             return true;
