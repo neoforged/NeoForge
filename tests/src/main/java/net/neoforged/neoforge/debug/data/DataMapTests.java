@@ -299,7 +299,7 @@ public class DataMapTests {
             @Override
             protected void gather() {
                 builder(NeoForgeDataMaps.COMPOSTABLES)
-                        .add(ItemTags.COMPASSES, new Compostable(1f), false);
+                        .add(ItemTags.COMPASSES, new Compostable(1f, false), false);
             }
         });
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
