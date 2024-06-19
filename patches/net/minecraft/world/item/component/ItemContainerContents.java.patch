@@ -4,7 +4,7 @@
          return this.hashCode;
      }
  
-+    // Neo Start
++    // NEO START
 +
 +    /**
 +     * {@return the number of slots in this container}
@@ -34,7 +34,7 @@
 +        }
 +    }
 +
-+    // Neo End
++    // END NEO
 +
 +
      static record Slot(int index, ItemStack item) {
