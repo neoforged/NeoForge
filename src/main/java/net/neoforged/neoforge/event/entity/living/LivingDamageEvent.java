@@ -23,10 +23,8 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * <br>
  * {@link Post} contains an immutable representation of the entire damage sequence
  * and allows for reference to the values accrued at each step.
- * <br>
- * For more information on the damage sequence
  * 
- * @see DamageContainer
+ * @see DamageContainer for more information on the damage sequence
  */
 public abstract class LivingDamageEvent extends LivingEvent {
     private LivingDamageEvent(LivingEntity entity) {
@@ -44,10 +42,8 @@ public abstract class LivingDamageEvent extends LivingEvent {
      * health has been applied. This event expects a mutable {@link DamageContainer}.
      * <br>
      * This event is fired via the {@link CommonHooks#onLivingDamagePre(LivingEntity, DamageContainer)}.
-     * <br>
-     * For more information on the damage sequence
      * 
-     * @see DamageContainer
+     * @see DamageContainer for more information on the damage sequence
      **/
     public static class Pre extends LivingDamageEvent {
         private final DamageContainer container;
@@ -69,11 +65,9 @@ public abstract class LivingDamageEvent extends LivingEvent {
      * Also note that appropriate resources (like armor durability and absorption extra hearts) have already been consumed.<br>
      * This event is fired whenever an Entity is damaged in {@code LivingEntity#actuallyHurt(DamageSource, float)}
      * <br>
-     * This event is fired via {@link CommonHooks#onLivingDamagePost(LivingEntity, DamageContainer)}.<br>
-     * <br>
-     * For more information on the damage sequence
+     * This event is fired via {@link CommonHooks#onLivingDamagePost(LivingEntity, DamageContainer)}.
      * 
-     * @see DamageContainer
+     * @see DamageContainer for more information on the damage sequence
      **/
     public static class Post extends LivingDamageEvent {
         private final float originalDamage;
@@ -97,45 +91,32 @@ public abstract class LivingDamageEvent extends LivingEvent {
                     .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
         }
 
-        /**
-         * @return the original damage when {@link LivingEntity#hurt} was invoked
-         */
+        /** {@return the original damage when {@link LivingEntity#hurt} was invoked} */
         public float getOriginalDamage() {
             return originalDamage;
         }
 
-        /**
-         * @return the {@link DamageSource} for this damage sequence
-         */
+        /** {@return the {@link DamageSource} for this damage sequence} */
         public DamageSource getSource() {
             return source;
         }
 
-        /**
-         * @return the amount of health this entity lost during this sequence
-         */
+        /** {@return the amount of health this entity lost during this sequence} */
         public float getNewDamage() {
             return newDamage;
         }
 
-        /**
-         * @return the amount of damage reduced by a blocking action
-         */
+        /** {@return the amount of damage reduced by a blocking action} */
         public float getBlockedDamage() {
             return blockedDamage;
         }
 
-        /**
-         * @return the amount of shield durability this entity lost if a blocking action was
-         *         captured and the entity was holding a shield
-         */
+        /** {@return the amount of shield durability this entity lost if a blocking action was captured and the entity was holding a shield} */
         public float getShieldDamage() {
             return shieldDamage;
         }
 
-        /**
-         * @return the number of ticks this entity will be invulnerable after this sequence
-         */
+        /** {@return the number of ticks this entity will be invulnerable after this sequence} */
         public int getPostAttackInvulnerabilityTicks() {
             return postAttackInvulnerabilityTicks;
         }

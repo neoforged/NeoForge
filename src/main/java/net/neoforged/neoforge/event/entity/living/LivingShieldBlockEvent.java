@@ -20,9 +20,8 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * blocking logic is captured and passed into the event via {@link #getOriginalBlock()}. If this is
  * true, The shield item stack "should" be available from {@link LivingEntity#getUseItem()} at least
  * for players.</h4>
- * For more information on the damage sequence
  * 
- * @see DamageContainer
+ * @see DamageContainer for more information on the damage sequence
  */
 public class LivingShieldBlockEvent extends LivingEvent implements ICancellableEvent {
     private final DamageContainer container;

@@ -20,29 +20,29 @@ import org.jetbrains.annotations.ApiStatus;
  * DamageContainer encapsulates aspects of the entity damage sequence so that
  * relevant context related to damage dealt is accessible throughout the entire
  * sequence.
- * <h4>Note: certain values will be defaults until the stage in the sequence when they are set.</h4>
+ * <p>Note: certain values will be defaults until the stage in the sequence when they are set.</p>
  * <h3>The Damage Sequence</h3>
  * <ol>
  * <li>{@link LivingEntity#hurt} is invoked on the recipient from the source of
  * the attack.</li>
- * <li>{@link Entity#isInvulnerableTo} is invoked and fires {@link EntityInvulnerabilityCheckEvent}</li>
- * <li>After determining the entity is vulnerable, the {@link DamageContainer} in instantiated for the entity</li>
- * <li>{@link LivingIncomingDamageEvent} is fired</li>
- * <li>{@link LivingShieldBlockEvent} fires and the result determines if shield effects apply</li>
+ * <li>{@link Entity#isInvulnerableTo} is invoked and fires {@link EntityInvulnerabilityCheckEvent}.</li>
+ * <li>After determining the entity is vulnerable, the {@link DamageContainer} in instantiated for the entity.</li>
+ * <li>{@link LivingIncomingDamageEvent} is fired.</li>
+ * <li>{@link LivingShieldBlockEvent} fires and the result determines if shield effects apply.</li>
  * <li>{@link LivingEntity#actuallyHurt} is called.</li>
- * <li>armor, magic, mob_effect, and absorption reductions are captured in the DamageContainer</li>
- * <li>{@link LivingDamageEvent.Pre} is fired</li>
- * <li>if the damage is not zero, entity health is modified and recorded and {@link LivingDamageEvent.Post} is fired</li>
+ * <li>armor, magic, mob_effect, and absorption reductions are captured in the DamageContainer.</li>
+ * <li>{@link LivingDamageEvent.Pre} is fired.</li>
+ * <li>if the damage is not zero, entity health is modified and recorded and {@link LivingDamageEvent.Post} is fired.</li>
  * </ol>
  */
 @ApiStatus.Internal
 public class DamageContainer {
     public enum Reduction {
-        /** Damage reduced from the effects of armor */
+        /** Damage reduced from the effects of armor. */
         ARMOR,
-        /** Damage reduced from enchantments on armor */
+        /** Damage reduced from enchantments on armor. */
         ENCHANTMENTS,
-        /** Damage reduced from active mob effects */
+        /** Damage reduced from active mob effects. */
         MOB_EFFECTS,
         /** Damage absorbed by absorption. */
         ABSORPTION
@@ -63,17 +63,12 @@ public class DamageContainer {
         this.newDamage = originalDamage;
     }
 
-    /**
-     * @return the value passed into {@link LivingEntity#hurt(DamageSource, float)} before
-     *         any modifications are made.
-     */
+    /** {@return the value passed into {@link LivingEntity#hurt(DamageSource, float)} before any modifications are made} */
     public float getOriginalDamage() {
         return originalDamage;
     }
 
-    /**
-     * @return The damage source for this damage sequence
-     */
+    /** {@return the damage source for this damage sequence} */
     public DamageSource getSource() {
         return source;
     }
@@ -89,9 +84,7 @@ public class DamageContainer {
         this.newDamage = damage;
     }
 
-    /**
-     * @return the current amount expected to be applied to the entity or used in subsequent damage calculations.
-     */
+    /** {@return the current amount expected to be applied to the entity or used in subsequent damage calculations} */
     public float getNewDamage() {
         return newDamage;
     }
@@ -112,17 +105,12 @@ public class DamageContainer {
         this.reductionFunctions.computeIfAbsent(type, a -> new ArrayList<>()).add(reductionFunction);
     }
 
-    /**
-     * @return The damage blocked during the {@link LivingShieldBlockEvent}
-     */
+    /** {@return the damage blocked during the {@link LivingShieldBlockEvent}} */
     public float getBlockedDamage() {
         return blockedDamage;
     }
 
-    /**
-     * @return The durability applied to the applicable shield after {@link LivingShieldBlockEvent}
-     *         returned a successful block
-     */
+    /** {@return the durability applied to the applicable shield after {@link LivingShieldBlockEvent} returned a successful block} */
     public float getShieldDamage() {
         return shieldDamage;
     }
@@ -136,9 +124,7 @@ public class DamageContainer {
         this.invulnerabilityTicksAfterAttack = ticks;
     }
 
-    /**
-     * @return The number of ticks this entity will be invulnerable after damage is applied.
-     */
+    /** {@return the number of ticks this entity will be invulnerable after damage is applied} */
     public int getPostAttackInvulnerabilityTicks() {
         return invulnerabilityTicksAfterAttack;
     }

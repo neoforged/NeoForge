@@ -21,11 +21,9 @@ import net.neoforged.neoforge.common.damagesource.IReductionFunction;
  * For custom posting of this event, the event expects to be fired before any
  * damage reductions have been calculated. This event expects a mutable {@link DamageContainer}.
  * <br>
- * This event is fired via the {@link CommonHooks#onEntityIncomingDamage(LivingEntity, DamageContainer)}.<br>
- * <br>
- * For more information on the damage sequence
+ * This event is fired via the {@link CommonHooks#onEntityIncomingDamage(LivingEntity, DamageContainer)}.
  * 
- * @see DamageContainer
+ * @see DamageContainer for more information on the damage sequence
  **/
 public class LivingIncomingDamageEvent extends LivingEvent implements ICancellableEvent {
     private final DamageContainer container;
@@ -35,18 +33,22 @@ public class LivingIncomingDamageEvent extends LivingEvent implements ICancellab
         this.container = container;
     }
 
+    /** {@return the container for this damage sequence} */
     public DamageContainer getContainer() {
         return this.container;
     }
 
+    /** {@return the {@link DamageSource} for this damage sequence} */
     public DamageSource getSource() {
         return this.container.getSource();
     }
 
+    /** {@return the current damage to be applied to the entity} */
     public float getAmount() {
         return this.container.getNewDamage();
     }
 
+    /** {@return the damage value passed into the damage sequence before modifications} */
     public float getOriginalAmount() {
         return this.container.getOriginalDamage();
     }

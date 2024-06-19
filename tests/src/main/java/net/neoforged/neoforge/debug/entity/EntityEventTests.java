@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.debug.entity;
 
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
@@ -84,16 +86,18 @@ public class EntityEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if EntityInvulnerabilityCheckEvent prevents damage when modified.")
     static void entityInvulnerabilityCheckEvent(final DynamicTest test, final RegistrationHelper reg) {
+        final Component NAME = Component.literal("invulnerable_entity");
         test.eventListeners().forge().addListener((final EntityInvulnerabilityCheckEvent event) -> {
-            if (event.getEntity() instanceof GameTestPlayer entity)
+            if (event.getEntity() instanceof GameTestPlayer entity && entity.hasCustomName() && Objects.equals(entity.getCustomName(), NAME))
                 event.setInvulnerable(false);
         });
 
         test.onGameTest(helper -> {
             DamageSource source = new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.MOB_ATTACK));
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
+                    .thenExecute(player -> player.setCustomName(NAME))
                     .thenExecute(player -> player.setInvulnerable(true))
-                    .thenWaitUntil(player -> helper.assertTrue(!player.isInvulnerableTo(source), "Player Invulnerability not bypassed."))
+                    .thenWaitUntil(player -> helper.assertFalse(player.isInvulnerableTo(source), "Player Invulnerability not bypassed."))
                     .thenSucceed();
         });
     }
