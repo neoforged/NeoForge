@@ -31,7 +31,7 @@ public class Tags {
         // `neoforge` tags for functional behavior provided by NeoForge
         /**
          * Controls what blocks Endermen cannot place blocks onto.
-         * <p></p>
+         * <p>
          * This is patched into the following method: {@link net.minecraft.world.entity.monster.EnderMan.EndermanLeaveBlockGoal#canPlaceBlock(Level, BlockPos, BlockState, BlockState, BlockState, BlockPos)}
          */
         public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = neoforgeTag("enderman_place_on_blacklist");
@@ -197,7 +197,7 @@ public class Tags {
         /**
          * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
          * and has a mirror recipe to reverse the crafting with no loss in resources.
-         * <p></p>
+         * <p>
          * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
          * and so, it is considered a special case and not given a storage block tag.
          */
@@ -324,7 +324,7 @@ public class Tags {
          * Tag that holds all blocks and items that can be dyed a specific color.
          * (Does not include color blending items like leather armor
          * Use {@link net.minecraft.tags.ItemTags#DYEABLE} tag instead for color blending items)
-         * <p></p>
+         * <p>
          * Note: Use custom ingredients in recipes to do tag intersections and/or tag exclusions
          * to make more powerful recipes utilizing multiple tags such as dyed tags for an ingredient.
          * See {@link net.neoforged.neoforge.common.crafting.DifferenceIngredient} and {@link net.neoforged.neoforge.common.crafting.CompoundIngredient}
@@ -554,7 +554,7 @@ public class Tags {
         /**
          * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
          * and has a mirror recipe to reverse the crafting with no loss in resources.
-         * <p></p>
+         * <p>
          * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
          * and so, it is considered a special case and not given a storage block tag.
          */
@@ -810,7 +810,7 @@ public class Tags {
          * Biomes that spawn in the Overworld.
          * (This is for people who want to tag their biomes without getting
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_OVERWORLD}
-         * <p></p>
+         * <p>
          * NOTE: If you do not add to the vanilla Overworld tag, be sure to add to
          * {@link net.minecraft.tags.BiomeTags#HAS_STRONGHOLD} so some Strongholds do not go missing.)
          */

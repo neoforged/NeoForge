@@ -21,7 +21,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 /**
- * <p></p>Fires on both the client and server thread when a player interacts with a block.
+ * Fires on both the client and server thread when a player interacts with a block.
  *
  * <p>The event fires in three phases, corresponding with the three interaction behaviors:
  * {@link IItemExtension#onItemUseFirst},
