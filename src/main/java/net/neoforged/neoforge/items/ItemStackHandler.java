@@ -12,10 +12,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeInput;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag>, RecipeInput {
+public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
 
     public ItemStackHandler() {
@@ -35,11 +34,6 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     @Override
-    public int size() {
-        return stacks.size();
-    }
-
-    @Override
     public void setStackInSlot(int slot, ItemStack stack) {
         validateSlotIndex(slot);
         this.stacks.set(slot, stack);
@@ -53,12 +47,6 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        validateSlotIndex(slot);
-        return this.stacks.get(slot);
-    }
-
-    @Override
-    public ItemStack getItem(int slot) {
         validateSlotIndex(slot);
         return this.stacks.get(slot);
     }
