@@ -28,7 +28,7 @@
      @Override
      protected float getDestroyProgress(BlockState p_261691_, Player p_262171_, BlockGetter p_261621_, BlockPos p_261500_) {
 -        return p_262171_.getMainHandItem().getItem() instanceof SwordItem ? 1.0F : super.getDestroyProgress(p_261691_, p_262171_, p_261621_, p_261500_);
-+        return p_262171_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_DIG) ? 1.0F : super.getDestroyProgress(p_261691_, p_262171_, p_261621_, p_261500_);
++        return p_262171_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG) ? 1.0F : super.getDestroyProgress(p_261691_, p_262171_, p_261621_, p_261500_);
      }
  
      protected void growBamboo(BlockState p_261855_, Level p_262076_, BlockPos p_262109_, RandomSource p_261633_, int p_261759_) {

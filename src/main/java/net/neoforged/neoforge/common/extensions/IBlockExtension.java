@@ -73,8 +73,8 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.IPlantable;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
@@ -746,31 +746,31 @@ public interface IBlockExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ToolActions#AXE_STRIP an axe can strip},
-     * {@link ToolActions#SHOVEL_FLATTEN a shovel can path}, or {@link ToolActions#HOE_TILL a hoe can till}.
+     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
+     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
-     * @param state      The current state
-     * @param context    The use on context that the action was performed in
-     * @param toolAction The action being performed by the tool
-     * @param simulate   If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
+     * @param state       The current state
+     * @param context     The use on context that the action was performed in
+     * @param itemAbility The action being performed by the tool
+     * @param simulate    If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
      * @return The resulting state after the action has been performed
      */
     @Nullable
-    default BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
+    default BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!itemStack.canPerformAction(itemAbility))
             return null;
 
-        if (ToolActions.AXE_STRIP == toolAction) {
+        if (ItemAbilities.AXE_STRIP == itemAbility) {
             return AxeItem.getAxeStrippingState(state);
-        } else if (ToolActions.AXE_SCRAPE == toolAction) {
+        } else if (ItemAbilities.AXE_SCRAPE == itemAbility) {
             return WeatheringCopper.getPrevious(state).orElse(null);
-        } else if (ToolActions.AXE_WAX_OFF == toolAction) {
+        } else if (ItemAbilities.AXE_WAX_OFF == itemAbility) {
             return Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(state.getBlock())).map(block -> block.withPropertiesOf(state)).orElse(null);
-        } else if (ToolActions.SHOVEL_FLATTEN == toolAction) {
+        } else if (ItemAbilities.SHOVEL_FLATTEN == itemAbility) {
             return ShovelItem.getShovelPathingState(state);
-        } else if (ToolActions.HOE_TILL == toolAction) {
+        } else if (ItemAbilities.HOE_TILL == itemAbility) {
             // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
             Block block = state.getBlock();
             if (block == Blocks.ROOTED_DIRT) {

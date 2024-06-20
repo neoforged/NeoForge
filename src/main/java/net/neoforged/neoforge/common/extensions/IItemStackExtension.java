@@ -44,8 +44,8 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,13 +117,13 @@ public interface IItemStackExtension {
 
     /**
      * Queries if an item can perform the given action.
-     * See {@link ToolActions} for a description of each stock action
+     * See {@link ItemAbilities} for a description of each stock action
      * 
-     * @param toolAction The action being queried
+     * @param itemAbility The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ToolAction toolAction) {
-        return self().getItem().canPerformAction(self(), toolAction);
+    default boolean canPerformAction(ItemAbility itemAbility) {
+        return self().getItem().canPerformAction(self(), itemAbility);
     }
 
     /**

@@ -44,11 +44,11 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
-import net.neoforged.neoforge.common.advancements.critereon.ToolActionItemPredicate;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +60,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
 
     private static List<AdvancementGenerator> getVanillaAdvancementProviders(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers = new ArrayList<>();
-        criteriaReplacers.add(replaceMatchToolCriteria(ToolActions.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
+        criteriaReplacers.add(replaceMatchToolCriteria(ItemAbilities.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build(), PiglinAi.BARTERING_ITEM));
         criteriaReplacers.add(replaceWearingPredicate(EntityPredicate.Builder.entity().subPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE).build(), predicate -> {
             if (predicate.head().filter(item -> predicateMatches(item, Items.GOLDEN_HELMET)).isPresent()) {
@@ -79,10 +79,10 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                 .toList();
     }
 
-    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceMatchToolCriteria(ToolAction toolAction, ItemLike... targetItem) {
+    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceMatchToolCriteria(ItemAbility itemAbility, ItemLike... targetItem) {
         UnaryOperator<LootItemCondition> replacer = condition -> {
             if (condition instanceof MatchTool toolMatch && toolMatch.predicate().filter(predicate -> predicateMatches(predicate, targetItem)).isPresent()) {
-                return new MatchTool(Optional.of(ItemPredicate.Builder.item().withSubPredicate(ToolActionItemPredicate.TYPE, new ToolActionItemPredicate(toolAction)).build()));
+                return new MatchTool(Optional.of(ItemPredicate.Builder.item().withSubPredicate(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(itemAbility)).build()));
             }
             return null;
         };

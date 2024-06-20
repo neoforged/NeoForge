@@ -11,29 +11,29 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ToolAction {
-    private static final Map<String, ToolAction> actions = new ConcurrentHashMap<>();
+public final class ItemAbility {
+    private static final Map<String, ItemAbility> actions = new ConcurrentHashMap<>();
 
-    public static Codec<ToolAction> CODEC = Codec.STRING.xmap(ToolAction::get, ToolAction::name);
+    public static Codec<ItemAbility> CODEC = Codec.STRING.xmap(ItemAbility::get, ItemAbility::name);
 
     /**
      * Returns all registered actions.
      * This collection can be kept around, and will update itself in response to changes to the map.
      * See {@link ConcurrentHashMap#values()} for details.
      */
-    public static Collection<ToolAction> getActions() {
+    public static Collection<ItemAbility> getActions() {
         return Collections.unmodifiableCollection(actions.values());
     }
 
     /**
-     * Gets or creates a new ToolAction for the given name.
+     * Gets or creates a new ItemAbility for the given name.
      */
-    public static ToolAction get(String name) {
-        return actions.computeIfAbsent(name, ToolAction::new);
+    public static ItemAbility get(String name) {
+        return actions.computeIfAbsent(name, ItemAbility::new);
     }
 
     /**
-     * Returns the name of this tool action
+     * Returns the name of this item ability
      */
     public String name() {
         return name;
@@ -41,15 +41,15 @@ public final class ToolAction {
 
     @Override
     public String toString() {
-        return "ToolAction[" + name + "]";
+        return "ItemAbility[" + name + "]";
     }
 
     private final String name;
 
     /**
-     * Use {@link #get(String)} to get or create a ToolAction
+     * Use {@link #get(String)} to get or create a ItemAbility
      */
-    private ToolAction(String name) {
+    private ItemAbility(String name) {
         this.name = name;
     }
 }

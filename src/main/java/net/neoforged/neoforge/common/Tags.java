@@ -581,68 +581,68 @@ public class Tags {
         // Tools and Armors
         /**
          * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see ToolAction
-         * @see ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS = tag("tools");
         /**
          * A tag containing all existing shields. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see ToolAction
-         * @see ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_SHIELD = tag("tools/shield");
         /**
          * A tag containing all existing bows. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see ToolAction
-         * @see ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_BOW = tag("tools/bow");
         /**
          * A tag containing all existing crossbows. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see net.neoforged.neoforge.common.ToolAction
-         * @see net.neoforged.neoforge.common.ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_CROSSBOW = tag("tools/crossbow");
         /**
          * A tag containing all existing fishing rods. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see net.neoforged.neoforge.common.ToolAction
-         * @see net.neoforged.neoforge.common.ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_FISHING_ROD = tag("tools/fishing_rod");
         /**
          * A tag containing all existing spears. Other tools such as throwing knives or boomerangs
          * should not be put into this tag and should be put into their own tool tags.
          * Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see ToolAction
-         * @see ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_SPEAR = tag("tools/spear");
         /**
          * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see ToolAction
-         * @see ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_SHEAR = tag("tools/shear");
         /**
          * A tag containing all existing brushes. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
-         * @see ToolAction
-         * @see ToolActions
+         * @see ItemAbility
+         * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_BRUSH = tag("tools/brush");
         /**

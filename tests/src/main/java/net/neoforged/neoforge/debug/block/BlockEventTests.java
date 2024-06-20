@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -150,7 +150,7 @@ public class BlockEventTests {
     @TestHolder(description = "Tests if the block modification event is fired")
     public static void blockModificationEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final BlockEvent.BlockToolModificationEvent event) -> {
-            if (event.getToolAction() == ToolActions.AXE_STRIP) {
+            if (event.getItemAbility() == ItemAbilities.AXE_STRIP) {
                 if (event.getLevel().getBlockState(event.getContext().getClickedPos()).is(Blocks.ACACIA_LOG)) {
                     event.setCanceled(true);
                 } else if (event.getFinalState().is(Blocks.DIAMOND_BLOCK) && event.getContext().getClickedFace() == Direction.UP) {

@@ -140,7 +140,7 @@
      @Override
      protected void hurtCurrentlyUsedShield(float p_36383_) {
 -        if (this.useItem.is(Items.SHIELD)) {
-+        if (this.useItem.canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
++        if (this.useItem.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHIELD_BLOCK)) {
              if (!this.level().isClientSide) {
                  this.awardStat(Stats.ITEM_USED.get(this.useItem.getItem()));
              }
@@ -253,7 +253,7 @@
 -                        if (itemstack1.getItem() instanceof SwordItem) {
 -                            flag2 = true;
 -                        }
-+                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_SWEEP);
++                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_SWEEP);
                      }
  
                      float f6 = 0.0F;

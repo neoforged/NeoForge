@@ -105,8 +105,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
@@ -483,8 +483,8 @@ public class EventHooks {
     }
 
     @Nullable
-    public static BlockState onToolUse(BlockState originalState, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        BlockToolModificationEvent event = new BlockToolModificationEvent(originalState, context, toolAction, simulate);
+    public static BlockState onToolUse(BlockState originalState, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        BlockToolModificationEvent event = new BlockToolModificationEvent(originalState, context, itemAbility, simulate);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getFinalState();
     }
 

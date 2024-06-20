@@ -41,8 +41,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.IPlantable;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
@@ -627,19 +627,19 @@ public interface IBlockStateExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ToolActions#AXE_STRIP an axe can strip},
-     * {@link ToolActions#SHOVEL_FLATTEN a shovel can path}, or {@link ToolActions#HOE_TILL a hoe can till}.
+     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
+     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
-     * @param context    The use on context that the action was performed in
-     * @param toolAction The action being performed by the tool
-     * @param simulate   If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
+     * @param context     The use on context that the action was performed in
+     * @param itemAbility The action being performed by the tool
+     * @param simulate    If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
      * @return The resulting state after the action has been performed
      */
     @Nullable
-    default BlockState getToolModifiedState(UseOnContext context, ToolAction toolAction, boolean simulate) {
-        BlockState eventState = EventHooks.onToolUse(self(), context, toolAction, simulate);
-        return eventState != self() ? eventState : self().getBlock().getToolModifiedState(self(), context, toolAction, simulate);
+    default BlockState getToolModifiedState(UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        BlockState eventState = EventHooks.onToolUse(self(), context, itemAbility, simulate);
+        return eventState != self() ? eventState : self().getBlock().getToolModifiedState(self(), context, itemAbility, simulate);
     }
 
     /**

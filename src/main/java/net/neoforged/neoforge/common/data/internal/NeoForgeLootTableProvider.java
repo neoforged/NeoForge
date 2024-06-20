@@ -50,12 +50,12 @@ import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemConditi
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.common.loot.CanToolPerformAction;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Currently used only for replacing shears item to shears_dig tool action
+ * Currently used only for replacing shears item to shears_dig item ability
  */
 public final class NeoForgeLootTableProvider extends LootTableProvider {
     private final List<Function<LootItemCondition, LootItemCondition.Builder>> conditionReplacers = new ArrayList<>();
@@ -73,7 +73,7 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
     public List<LootTableProvider.SubProviderEntry> getTables() {
         replaceLootItemCondition(condition -> {
             if (condition instanceof MatchTool matchTool && checkMatchTool(matchTool, Items.SHEARS)) {
-                return CanToolPerformAction.canToolPerformAction(ToolActions.SHEARS_DIG);
+                return CanItemPerformAbility.canItemPerformAbility(ItemAbilities.SHEARS_DIG);
             }
             return null;
         });

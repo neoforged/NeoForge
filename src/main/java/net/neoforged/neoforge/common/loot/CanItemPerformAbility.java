@@ -15,24 +15,24 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 
 /**
- * This LootItemCondition "neoforge:can_tool_perform_action" can be used to check if a tool can perform a given ToolAction.
+ * This LootItemCondition "neoforge:can_item_perform_ability" can be used to check if an item can perform a given ItemAbility.
  */
-public class CanToolPerformAction implements LootItemCondition {
-    public static MapCodec<CanToolPerformAction> CODEC = RecordCodecBuilder.mapCodec(
+public class CanItemPerformAbility implements LootItemCondition {
+    public static MapCodec<CanItemPerformAbility> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            ToolAction.CODEC.fieldOf("action").forGetter(action -> action.action))
-                    .apply(builder, CanToolPerformAction::new));
+                            ItemAbility.CODEC.fieldOf("ability").forGetter(action -> action.ability))
+                    .apply(builder, CanItemPerformAbility::new));
 
     public static final LootItemConditionType LOOT_CONDITION_TYPE = new LootItemConditionType(CODEC);
 
-    final ToolAction action;
+    final ItemAbility ability;
 
-    public CanToolPerformAction(ToolAction action) {
-        this.action = action;
+    public CanItemPerformAbility(ItemAbility ability) {
+        this.ability = ability;
     }
 
     public LootItemConditionType getType() {
@@ -45,10 +45,10 @@ public class CanToolPerformAction implements LootItemCondition {
 
     public boolean test(LootContext lootContext) {
         ItemStack itemstack = lootContext.getParamOrNull(LootContextParams.TOOL);
-        return itemstack != null && itemstack.canPerformAction(this.action);
+        return itemstack != null && itemstack.canPerformAction(this.ability);
     }
 
-    public static LootItemCondition.Builder canToolPerformAction(ToolAction action) {
-        return () -> new CanToolPerformAction(action);
+    public static LootItemCondition.Builder canItemPerformAbility(ItemAbility action) {
+        return () -> new CanItemPerformAbility(action);
     }
 }

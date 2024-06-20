@@ -5,7 +5,7 @@
          } else {
              Player player = p_43119_.getPlayer();
 -            BlockState blockstate1 = FLATTENABLES.get(blockstate.getBlock());
-+            BlockState blockstate1 = blockstate.getToolModifiedState(p_43119_, net.neoforged.neoforge.common.ToolActions.SHOVEL_FLATTEN, false);
++            BlockState blockstate1 = blockstate.getToolModifiedState(p_43119_, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_FLATTEN, false);
              BlockState blockstate2 = null;
              if (blockstate1 != null && level.getBlockState(blockpos.above()).isAir()) {
                  level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -21,7 +21,7 @@
 +    }
 +
 +    @Override
-+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
-+        return net.neoforged.neoforge.common.ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SHOVEL_ACTIONS.contains(itemAbility);
      }
  }
