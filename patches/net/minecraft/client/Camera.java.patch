@@ -8,12 +8,14 @@
  
      public void setup(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_) {
          this.initialized = true;
-@@ -49,7 +_,8 @@
+@@ -49,7 +_,10 @@
          this.entity = p_90577_;
          this.detached = p_90578_;
          this.partialTickTime = p_90580_;
 -        this.setRotation(p_90577_.getViewYRot(p_90580_), p_90577_.getViewXRot(p_90580_));
-+        var cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, p_90577_.getViewYRot(p_90580_), p_90577_.getViewXRot(p_90580_), p_90580_);
++        var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
++                this, p_90580_, p_90577_.getViewYRot(p_90580_), p_90577_.getViewXRot(p_90580_), 0)
++        );
 +        this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
          this.setPosition(
              Mth.lerp((double)p_90580_, p_90577_.xo, p_90577_.getX()),
