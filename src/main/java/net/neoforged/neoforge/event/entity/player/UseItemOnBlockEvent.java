@@ -56,12 +56,12 @@ public class UseItemOnBlockEvent extends Event implements ICancellableEvent {
 
     public UseItemOnBlockEvent(UseOnContext context, UsePhase usePhase) {
         super();
+        this.level = Preconditions.checkNotNull(context.getLevel(), "Null level in UseItemOnBlockEvent!");
         this.player = context.getPlayer();
         this.heldItem = Preconditions.checkNotNull(context.getItemInHand(), "Null heldItem in UseItemOnBlockEvent!");
         this.hand = Preconditions.checkNotNull(context.getHand(), "Null hand in UseItemOnBlockEvent!");
         this.pos = Preconditions.checkNotNull(context.getClickedPos(), "Null position in UseItemOnBlockEvent!");
         this.face = context.getClickedFace();
-        this.level = context.getLevel();
         this.context = context;
         this.usePhase = usePhase;
     }
