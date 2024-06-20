@@ -435,12 +435,6 @@ public class ClientHooks {
         }
     }
 
-    public static ViewportEvent.ComputeCameraAngles onCameraSetup(GameRenderer renderer, Camera camera, float partial) {
-        ViewportEvent.ComputeCameraAngles event = new ViewportEvent.ComputeCameraAngles(renderer, camera, partial, camera.getYRot(), camera.getXRot(), 0);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
-    }
-
     public static void onModifyBakingResult(Map<ModelResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
         Function<Material, TextureAtlasSprite> textureGetter = material -> {
             AtlasSet.StitchResult stitchResult = stitchResults.get(material.atlasLocation());

@@ -257,8 +257,8 @@ public abstract class ViewportEvent extends Event {
         private float roll;
 
         @ApiStatus.Internal
-        public ComputeCameraAngles(GameRenderer renderer, Camera camera, double renderPartialTicks, float yaw, float pitch, float roll) {
-            super(renderer, camera, renderPartialTicks);
+        public ComputeCameraAngles(Camera camera, double renderPartialTicks, float yaw, float pitch, float roll) {
+            super(Minecraft.getInstance().gameRenderer, camera, renderPartialTicks);
             this.setYaw(yaw);
             this.setPitch(pitch);
             this.setRoll(roll);
