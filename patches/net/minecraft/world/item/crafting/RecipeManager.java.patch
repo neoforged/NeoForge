@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -48,24 +_,37 @@
+@@ -48,24 +_,35 @@
  
      protected void apply(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_) {
          this.hasErrors = false;
@@ -10,8 +10,7 @@
          com.google.common.collect.ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> builder1 = ImmutableMap.builder();
 -        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
 +        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
-+        net.neoforged.neoforge.common.crafting.RecipePriorityManager priorityManager = net.neoforged.neoforge.common.NeoForgeEventHandler.getRecipePriorityManager(); // Neo: get overriding recipe priorities
-+        Map<ResourceLocation, Integer> priorities = priorityManager.getRecipePriorities();
++        Map<ResourceLocation, Integer> priorities = net.neoforged.neoforge.common.NeoForgeEventHandler.getRecipePriorityManager().getRecipePriorities(); // Neo: get overriding recipe priorities
  
          for (Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
@@ -21,8 +20,7 @@
 -                Recipe<?> recipe = Recipe.CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
 +                var decoded = Recipe.CONDITIONAL_CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
 +                decoded.ifPresentOrElse(r -> {
-+                int priority = 0;
-+                if (priorities.containsKey(resourcelocation)) priority = priorities.get(resourcelocation);
++                int priority = priorities.getOrDefault(resourcelocation, 0);
 +                Recipe<?> recipe = r.carrier();
                  RecipeHolder<?> recipeholder = new RecipeHolder<>(resourcelocation, recipe);
 -                builder.put(recipe.getType(), recipeholder);

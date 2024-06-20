@@ -40,7 +40,6 @@ public class RecipePriorityManager extends SimpleJsonResourceReloadListener {
     @Override
     protected Map<ResourceLocation, JsonElement> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         Map<ResourceLocation, JsonElement> map = super.prepare(resourceManager, profilerFiller);
-        List<ResourceLocation> finalLocations = new ArrayList<>();
         for (String namespace : resourceManager.getNamespaces()) {
             ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(namespace, "recipe_priorities/recipe_priorities.json");
             Optional<Resource> resource = resourceManager.getResource(resourceLocation);
@@ -49,22 +48,17 @@ public class RecipePriorityManager extends SimpleJsonResourceReloadListener {
                     JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
                     boolean replace = GsonHelper.getAsBoolean(jsonobject, "replace", false);
                     if (replace)
-                        finalLocations.clear();
+                        map.clear();
                     JsonObject entries = GsonHelper.getAsJsonObject(jsonobject, "entries");
                     for (String entry : entries.keySet()) {
                         ResourceLocation loc = ResourceLocation.tryParse(entry);
-                        finalLocations.remove(loc); //remove and re-add if needed, to update the ordering.
-                        finalLocations.add(loc);
+                        map.remove(loc); //remove and re-add if needed, to update the ordering.
+                        map.put(loc, entries.get(entry));
                     }
                 } catch (RuntimeException | IOException ioexception) {
                     LOGGER.error("Couldn't read recipe priority list {} in data pack {}", resourceLocation, resource.get().sourcePackId(), ioexception);
                 }
             }
-        }
-        Map<ResourceLocation, JsonElement> finalMap = new HashMap<>();
-        //use layered config to fetch modifier data files (modifiers missing from config are disabled)
-        for (ResourceLocation location : finalLocations) {
-            finalMap.put(location, map.get(location));
         }
         return map;
     }
