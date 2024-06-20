@@ -680,12 +680,13 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, ray)).isCanceled();
     }
 
+    @Nullable
     public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
-            return table;
+            return null;
         LootTableLoadEvent event = new LootTableLoadEvent(name, table);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled())
-            return LootTable.EMPTY;
+        if (NeoForge.EVENT_BUS.post(event).isCanceled() || event.getTable() == LootTable.EMPTY)
+            return null;
         return event.getTable();
     }
 
