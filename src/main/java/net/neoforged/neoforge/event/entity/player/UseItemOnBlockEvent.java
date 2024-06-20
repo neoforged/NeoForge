@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -17,8 +19,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * <p></p>Fires on both the client and server thread when a player interacts with a block.
@@ -36,16 +41,78 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
  * then the normal interaction behavior for that phase will not run,
  * and the specified {@link InteractionResult} will be returned instead.</p>
  */
-// TODO 1.20.5: We want to support nullable player. Remove extends PlayerInteractEvent to support that.
-public class UseItemOnBlockEvent extends PlayerInteractEvent implements ICancellableEvent {
+public class UseItemOnBlockEvent extends Event implements ICancellableEvent {
+    private final Level level;
+    @Nullable
+    private final Player player;
+    private final InteractionHand hand;
+    private final ItemStack heldItem;
+    private final BlockPos pos;
+    @Nullable
+    private final Direction face;
     private final UseOnContext context;
     private final UsePhase usePhase;
     private ItemInteractionResult cancellationResult = ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
     public UseItemOnBlockEvent(UseOnContext context, UsePhase usePhase) {
-        super(context.getPlayer(), context.getHand(), context.getClickedPos(), context.getClickedFace());
+        super();
+        this.player = context.getPlayer();
+        this.heldItem = Preconditions.checkNotNull(context.getItemInHand(), "Null heldItem in UseItemOnBlockEvent!");
+        this.hand = Preconditions.checkNotNull(context.getHand(), "Null hand in UseItemOnBlockEvent!");
+        this.pos = Preconditions.checkNotNull(context.getClickedPos(), "Null position in UseItemOnBlockEvent!");
+        this.face = context.getClickedFace();
+        this.level = context.getLevel();
         this.context = context;
         this.usePhase = usePhase;
+    }
+
+    /**
+     * @return player or null
+     */
+    @Nullable
+    public Player getPlayer() {
+        return player;
+    }
+
+    /**
+     * @return The hand involved in this interaction. Will never be null.
+     */
+    public InteractionHand getHand() {
+        return hand;
+    }
+
+    /**
+     * @return The itemstack involved in this interaction, {@code ItemStack.EMPTY} if the hand was empty.
+     */
+    public ItemStack getItemStack() {
+        return heldItem;
+    }
+
+    /**
+     * If the interaction was on an entity, will be a BlockPos centered on the entity.
+     * If the interaction was on a block, will be the position of that block.
+     * Otherwise, will be a BlockPos centered on the player.
+     * Will never be null.
+     *
+     * @return The position involved in this interaction.
+     */
+    public BlockPos getPos() {
+        return pos;
+    }
+
+    /**
+     * @return The face involved in this interaction. For all non-block interactions, this will return null.
+     */
+    @Nullable
+    public Direction getFace() {
+        return face;
+    }
+
+    /**
+     * @return Convenience method to get the level of this interaction.
+     */
+    public Level getLevel() {
+        return level;
     }
 
     /**
@@ -57,11 +124,18 @@ public class UseItemOnBlockEvent extends PlayerInteractEvent implements ICancell
 
     /**
      * {@return The Use Phase of the interaction}
-     * 
+     *
      * @see UsePhase for semantics
      */
     public UsePhase getUsePhase() {
         return this.usePhase;
+    }
+
+    /**
+     * @return The effective, i.e. logical, side of this interaction. This will be {@link LogicalSide#CLIENT} on the client thread, and {@link LogicalSide#SERVER} on the server thread.
+     */
+    public LogicalSide getSide() {
+        return getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;
     }
 
     /**
@@ -103,7 +177,7 @@ public class UseItemOnBlockEvent extends PlayerInteractEvent implements ICancell
         this.cancellationResult = result;
     }
 
-    public static enum UsePhase {
+    public enum UsePhase {
         /**
          * The {@link IItemExtension#onItemUseFirst(ItemStack, UseOnContext)} interaction.
          * This is noop/PASS for most items, but some mods' items have interactions here.
