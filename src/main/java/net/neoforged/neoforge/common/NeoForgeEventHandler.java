@@ -20,9 +20,11 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
@@ -147,12 +149,15 @@ public class NeoForgeEventHandler {
     }
 
     private static LootModifierManager INSTANCE;
+    private static RecipePriorityManager RECIPE_PRIORITY;
     private static DataMapLoader DATA_MAPS;
 
     @SubscribeEvent
     public void onResourceReload(AddReloadListenerEvent event) {
         INSTANCE = new LootModifierManager();
+        RECIPE_PRIORITY = new RecipePriorityManager();
         event.addListener(INSTANCE);
+        event.addListenerBefore(RECIPE_PRIORITY, (listener) -> listener instanceof RecipeManager);
         event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
     }
 
@@ -160,6 +165,12 @@ public class NeoForgeEventHandler {
         if (INSTANCE == null)
             throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
         return INSTANCE;
+    }
+
+    public static RecipePriorityManager getRecipePriorityManager() {
+        if (RECIPE_PRIORITY == null)
+            throw new IllegalStateException("Can not retrieve RecipePriorityManager until resources have loaded once.");
+        return RECIPE_PRIORITY;
     }
 
     @SubscribeEvent

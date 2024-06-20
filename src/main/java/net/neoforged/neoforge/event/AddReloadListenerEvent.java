@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.event;
 
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Predicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
@@ -29,13 +29,14 @@ import net.neoforged.neoforge.resource.ContextAwareReloadListener;
  * The event is fired on the {@link NeoForge#EVENT_BUS}
  */
 public class AddReloadListenerEvent extends Event {
-    private final List<PreparableReloadListener> listeners = new ArrayList<>();
+    private final List<PreparableReloadListener> listeners;
     private final ReloadableServerResources serverResources;
     private final RegistryAccess registryAccess;
 
-    public AddReloadListenerEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
+    public AddReloadListenerEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess, List<PreparableReloadListener> listeners) {
         this.serverResources = serverResources;
         this.registryAccess = registryAccess;
+        this.listeners = listeners;
     }
 
     /**
@@ -43,6 +44,20 @@ public class AddReloadListenerEvent extends Event {
      */
     public void addListener(PreparableReloadListener listener) {
         listeners.add(new WrappedStateAwareListener(listener));
+    }
+
+    /**
+     * @param listener the listener to add to the ResourceManager on reload
+     * @param before   a predicate for what listener to add this before
+     */
+    public void addListenerBefore(PreparableReloadListener listener, Predicate<PreparableReloadListener> before) {
+        int index = listeners.size() - 1;
+        for (PreparableReloadListener listener1 : listeners) {
+            if (before.test(listener1)) {
+                index = listeners.indexOf(listener1);
+            }
+        }
+        listeners.add(index, new WrappedStateAwareListener(listener));
     }
 
     public List<PreparableReloadListener> getListeners() {

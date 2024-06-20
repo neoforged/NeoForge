@@ -1,11 +1,17 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -50,16 +_,22 @@
+@@ -48,24 +_,37 @@
+ 
+     protected void apply(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_) {
          this.hasErrors = false;
-         Builder<RecipeType<?>, RecipeHolder<?>> builder = ImmutableMultimap.builder();
+-        Builder<RecipeType<?>, RecipeHolder<?>> builder = ImmutableMultimap.builder();
++        com.google.common.collect.SetMultimap<Integer, com.mojang.datafixers.util.Pair<RecipeType<?>, RecipeHolder<?>>> builder = com.google.common.collect.MultimapBuilder.treeKeys().hashSetValues().build();
++        com.google.common.collect.LinkedListMultimap<RecipeType<?>, RecipeHolder<?>> finalBuilder = com.google.common.collect.LinkedListMultimap.create(); // Neo: Final version of "builder" that becomes "byType".
          com.google.common.collect.ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> builder1 = ImmutableMap.builder();
 -        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
 +        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
++        net.neoforged.neoforge.common.crafting.RecipePriorityManager priorityManager = net.neoforged.neoforge.common.NeoForgeEventHandler.getRecipePriorityManager(); // Neo: get overriding recipe priorities
++        Map<ResourceLocation, Integer> priorities = priorityManager.getRecipePriorities();
  
          for (Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
@@ -15,9 +21,12 @@
 -                Recipe<?> recipe = Recipe.CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
 +                var decoded = Recipe.CONDITIONAL_CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
 +                decoded.ifPresentOrElse(r -> {
++                int priority = 0;
++                if (priorities.containsKey(resourcelocation)) priority = priorities.get(resourcelocation);
 +                Recipe<?> recipe = r.carrier();
                  RecipeHolder<?> recipeholder = new RecipeHolder<>(resourcelocation, recipe);
-                 builder.put(recipe.getType(), recipeholder);
+-                builder.put(recipe.getType(), recipeholder);
++                builder.put(priority, com.mojang.datafixers.util.Pair.of(recipe.getType(), recipeholder));
                  builder1.put(resourcelocation, recipeholder);
 +                }, () -> {
 +                    LOGGER.debug("Skipping loading recipe {} as its conditions were not met", resourcelocation);
@@ -25,3 +34,12 @@
              } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
                  LOGGER.error("Parsing error loading recipe {}", resourcelocation, jsonparseexception);
              }
+         }
+ 
+-        this.byType = builder.build();
++        com.google.common.collect.Lists.reverse(new java.util.ArrayList<>(builder.entries())).forEach((e) -> finalBuilder.put(e.getValue().getFirst(), e.getValue().getSecond()));
++
++        this.byType = ImmutableMultimap.copyOf(finalBuilder);
+         this.byName = builder1.build();
+         LOGGER.info("Loaded {} recipes", this.byType.size());
+     }

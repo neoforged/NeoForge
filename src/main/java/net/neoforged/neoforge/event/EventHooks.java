@@ -788,8 +788,8 @@ public class EventHooks {
         return event.getNewTime();
     }
 
-    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
-        AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess);
+    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess, List<PreparableReloadListener> listeners) {
+        AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess, listeners);
         NeoForge.EVENT_BUS.post(event);
         return event.getListeners();
     }

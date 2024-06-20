@@ -34,12 +34,11 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -90,14 +_,27 @@
+@@ -90,14 +_,26 @@
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
                          p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
                      );
-+                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-+                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
++                    List<PreparableReloadListener> listeners = net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess(), com.google.common.collect.Lists.newArrayList(reloadableserverresources.listeners()));
 +                    listeners.forEach(rl -> {
 +                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryLookup);
 +                    });
