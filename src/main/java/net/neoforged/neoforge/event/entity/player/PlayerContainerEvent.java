@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public abstract class PlayerContainerEvent extends ServerPlayerEvent {
