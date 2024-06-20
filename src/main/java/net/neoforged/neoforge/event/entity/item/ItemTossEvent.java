@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.item;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -21,11 +22,11 @@ public class ItemTossEvent extends ItemEvent implements ICancellableEvent {
     /**
      * Creates a new event for EntityItems tossed by a player.
      * 
-     * @param entityItem The EntityItem being tossed.
+     * @param itemEntity The EntityItem being tossed.
      * @param player     The player tossing the item.
      */
-    public ItemTossEvent(ItemEntity entityItem, Player player) {
-        super(entityItem);
+    public ItemTossEvent(ItemEntity itemEntity, Player player) {
+        super(itemEntity);
         this.player = player;
     }
 

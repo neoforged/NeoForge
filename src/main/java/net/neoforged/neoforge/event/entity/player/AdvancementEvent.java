@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
@@ -17,10 +18,10 @@ import net.neoforged.neoforge.common.NeoForge;
  * @see AdvancementEarnEvent
  * @see AdvancementProgressEvent
  */
-public abstract class AdvancementEvent extends PlayerEvent {
+public abstract class AdvancementEvent extends ServerPlayerEvent {
     private final AdvancementHolder advancement;
 
-    public AdvancementEvent(Player player, AdvancementHolder advancement) {
+    public AdvancementEvent(ServerPlayer player, AdvancementHolder advancement) {
         super(player);
         this.advancement = advancement;
     }
@@ -35,7 +36,7 @@ public abstract class AdvancementEvent extends PlayerEvent {
      * <p>Note that advancements may be hidden from the player or used in background mechanics, such as recipe
      * advancements for unlocking recipes in the recipe book.</p>
      *
-     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not have a result.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
@@ -43,7 +44,7 @@ public abstract class AdvancementEvent extends PlayerEvent {
      * @see AdvancementProgress#isDone()
      */
     public static class AdvancementEarnEvent extends AdvancementEvent {
-        public AdvancementEarnEvent(Player player, AdvancementHolder earned) {
+        public AdvancementEarnEvent(ServerPlayer player, AdvancementHolder earned) {
             super(player, earned);
         }
     }
@@ -51,7 +52,7 @@ public abstract class AdvancementEvent extends PlayerEvent {
     /**
      * Fired when the player's progress on an advancement criterion is granted or revoked.
      *
-     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not have a result.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
@@ -65,7 +66,7 @@ public abstract class AdvancementEvent extends PlayerEvent {
         private final String criterionName;
         private final AdvancementEvent.AdvancementProgressEvent.ProgressType progressType;
 
-        public AdvancementProgressEvent(Player player, AdvancementHolder progressed, AdvancementProgress advancementProgress, String criterionName, AdvancementEvent.AdvancementProgressEvent.ProgressType progressType) {
+        public AdvancementProgressEvent(ServerPlayer player, AdvancementHolder progressed, AdvancementProgress advancementProgress, String criterionName, AdvancementEvent.AdvancementProgressEvent.ProgressType progressType) {
             super(player, progressed);
             this.advancementProgress = advancementProgress;
             this.criterionName = criterionName;

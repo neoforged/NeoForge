@@ -31,12 +31,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
-import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -155,7 +150,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerChangeGameModeEvent is fired and can modify the outcome")
     static void playerChangeGameModeEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerEvent.PlayerChangeGameModeEvent event) -> {
+        test.eventListeners().forge().addListener((final ServerPlayerEvent.PlayerChangeGameModeEvent event) -> {
             // Only affect the players with a custom name to not interfere with other tests
             if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("gamemode-changes"))) {
                 return;
@@ -265,7 +260,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerRespawnEvent fires correctly and can modify the player after respawning")
     static void playerRespawnEvent(final DynamicTest test, final RegistrationHelper reg) {
-        test.eventListeners().forge().addListener((final PlayerEvent.PlayerRespawnEvent event) -> {
+        test.eventListeners().forge().addListener((final ServerPlayerEvent.PlayerRespawnEvent event) -> {
             event.getEntity().setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.APPLE));
         });
 

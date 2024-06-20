@@ -12,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -20,13 +21,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.DimensionTransition;
 
 /**
- * Fired by {@link PlayerList#respawn(ServerPlayer, boolean)} before the server respawns a player.
+ * Fired by {@link PlayerList#respawn(ServerPlayer, boolean, Entity.RemovalReason)} before the server respawns a player.
  * This may be used to change the {@link ServerLevel} the player respawns in, as well as their respawn position.
- * This event is fired after {@link BlockState#getRespawnPosition(EntityType, LevelReader, BlockPos, float, LivingEntity)} is called.
+ * This event is fired after {@link BlockState#getRespawnPosition(EntityType, LevelReader, BlockPos, float)} is called.
  * <p>
  * This event is only fired on the logical server.
  */
-public class PlayerRespawnPositionEvent extends PlayerEvent {
+public class PlayerRespawnPositionEvent extends ServerPlayerEvent {
     private DimensionTransition dimensionTransition;
     private final DimensionTransition originalDimensionTransition;
     private final boolean fromEndFight;

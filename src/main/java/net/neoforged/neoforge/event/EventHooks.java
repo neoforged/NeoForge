@@ -135,25 +135,10 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType;
-import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
-import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
-import net.neoforged.neoforge.event.entity.player.BonemealEvent;
-import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
-import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider;
@@ -216,7 +201,7 @@ public class EventHooks {
 
     /**
      * Internal, should only be called via {@link SpawnPlacements#checkSpawnRules}.
-     * 
+     *
      * @see SpawnPlacementCheck
      */
     @ApiStatus.Internal
@@ -228,7 +213,7 @@ public class EventHooks {
     /**
      * Checks if the current position of the passed mob is valid for spawning, by firing {@link PositionCheck}.<br>
      * The default check is to perform the logical and of {@link Mob#checkSpawnRules} and {@link Mob#checkSpawnObstruction}.<br>
-     * 
+     *
      * @param mob       The mob being spawned.
      * @param level     The level the mob will be added to, if successful.
      * @param spawnType The spawn type of the spawn.
@@ -246,7 +231,7 @@ public class EventHooks {
 
     /**
      * Specialized variant of {@link #checkSpawnPosition} for spawners, as they have slightly different checks, and pass through the {@link BaseSpawner} to the event.
-     * 
+     *
      * @see #checkSpawnPosition(Mob, ServerLevelAccessor, MobSpawnType)
      * @implNote See in-line comments about custom spawn rules.
      */
@@ -269,7 +254,7 @@ public class EventHooks {
      * When interfacing with this event, write all code as normal, and replace the call to {@link Mob#finalizeSpawn} with a call to this method.<p>
      * As an example, the following code block:
      * <code>
-     * 
+     *
      * <pre>
      * var zombie = new Zombie(level);
      * zombie.finalizeSpawn(level, difficulty, spawnType, spawnData);
@@ -278,11 +263,11 @@ public class EventHooks {
      *     // Do stuff with your new zombie
      * }
      * </pre>
-     * 
+     *
      * </code>
      * Would become:
      * <code>
-     * 
+     *
      * <pre>
      * var zombie = new Zombie(level);
      * EventHooks.finalizeMobSpawn(zombie, level, difficulty, spawnType, spawnData);
@@ -291,22 +276,22 @@ public class EventHooks {
      *     // Do stuff with your new zombie
      * }
      * </pre>
-     * 
+     *
      * </code>
      * The only code that changes is the {@link Mob#finalizeSpawn} call.
-     * 
+     *
      * @param mob        The mob whose spawn is being finalized
      * @param level      The level the mob will be spawned in
      * @param difficulty The local difficulty at the position of the mob
      * @param spawnType  The type of spawn that is occuring
      * @param spawnData  Optional spawn data relevant to the mob being spawned
      * @return The SpawnGroupData from the finalize, or null if it was canceled. The return value of this method has no bearing on if the entity will be spawned
-     * 
+     *
      * @see FinalizeSpawnEvent
      * @see Mob#finalizeSpawn(ServerLevelAccessor, DifficultyInstance, MobSpawnType, SpawnGroupData)
-     * 
+     *
      * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
-     * 
+     *
      * @implNote Changes to the signature of this method must be reflected in the method redirector coremod.
      */
     @Nullable
@@ -328,7 +313,7 @@ public class EventHooks {
      * This method is separate since mob spawners perform special finalizeSpawn handling when NBT data is present, but we still want to fire the event.
      * <p>
      * This overload is also the only way to pass through an {@link IOwnedSpawner} instance.
-     * 
+     *
      * @param mob        The mob whose spawn is being finalized
      * @param level      The level the mob will be spawned in
      * @param difficulty The local difficulty at the position of the mob
@@ -354,7 +339,7 @@ public class EventHooks {
     /**
      * Called from {@link PhantomSpawner#tick} just before the spawn conditions for phantoms are evaluated.
      * Fires the {@link PlayerSpawnPhantomsEvent} and returns the event.
-     * 
+     *
      * @param player The player for whom a spawn attempt is being made
      * @param level  The level of the player
      * @param pos    The block position of the player
@@ -368,7 +353,7 @@ public class EventHooks {
 
     /**
      * Fires {@link MobDespawnEvent} and returns true if the default logic should be ignored.
-     * 
+     *
      * @param entity The entity being despawned.
      * @return True if the event result is not {@link MobDespawnEvent.Result#DEFAULT}, and the vanilla logic should be ignored.
      */
@@ -403,9 +388,9 @@ public class EventHooks {
      * Fires {@link SpawnClusterSizeEvent} and returns the size as a result of the event.
      * <p>
      * Called in {@link NaturalSpawner#spawnCategoryForPosition} where {@link Mob#getMaxSpawnClusterSize()} would normally be called.
-     * 
+     *
      * @param entity The entity whose max spawn cluster size is being queried.
-     * 
+     *
      * @return The new spawn cluster size.
      */
     public static int getMaxSpawnClusterSize(Mob entity) {
@@ -490,7 +475,7 @@ public class EventHooks {
 
     /**
      * Called when bone meal (or equivalent) is used on a block. Fires the {@link BonemealEvent} and returns the event.
-     * 
+     *
      * @param player The player who used the item, if any
      * @param level  The level
      * @param pos    The position of the target block
@@ -525,7 +510,7 @@ public class EventHooks {
      * Called in {@link ItemEntity#playerTouch(Player)} before any other processing occurs.
      * <p>
      * Fires {@link ItemEntityPickupEvent.Pre} and returns the event.
-     * 
+     *
      * @param itemEntity The item entity that a player collided with
      * @param player     The player that collided with the item entity
      */
@@ -537,7 +522,7 @@ public class EventHooks {
      * Called in {@link ItemEntity#playerTouch(Player)} after an item was successfully picked up.
      * <p>
      * Fires {@link ItemEntityPickupEvent.Post}.
-     * 
+     *
      * @param itemEntity The item entity that a player collided with
      * @param player     The player that collided with the item entity
      * @param copy       A copy of the item entity's item stack before the pickup
@@ -655,7 +640,7 @@ public class EventHooks {
 
     /**
      * Checks if a sleeping entity can continue sleeping with the given sleeping problem.
-     * 
+     *
      * @return true if the entity may continue sleeping
      */
     public static boolean canEntityContinueSleeping(LivingEntity sleeper, @Nullable BedSleepingProblem problem) {
@@ -717,7 +702,7 @@ public class EventHooks {
      * <p>
      * If an entity is provided, this method fires {@link EntityMobGriefingEvent}.
      * If an entity is not provided, this method returns the value of {@link GameRules#RULE_MOBGRIEFING}.
-     * 
+     *
      * @param level  The level of the action
      * @param entity The entity performing the action, or null if unknown.
      * @return
@@ -731,7 +716,7 @@ public class EventHooks {
 
     /**
      * Fires the {@link BlockGrowFeatureEvent} and returns the event object.
-     * 
+     *
      * @param level  The level the feature will be grown in
      * @param rand   The random source
      * @param pos    The position the feature will be grown at
@@ -743,7 +728,7 @@ public class EventHooks {
 
     /**
      * Fires the {@link AlterGroundEvent} and retrieves the resulting {@link StateProvider}.
-     * 
+     *
      * @param ctx       The tree decoration context for the current alteration.
      * @param positions The list of positions that are considered roots.
      * @param provider  The original {@link BlockStateProvider} from the {@link AlterGroundDecorator}.
@@ -859,27 +844,25 @@ public class EventHooks {
         return false;
     }
 
-    public static void firePlayerChangedDimensionEvent(Player player, ResourceKey<Level> fromDim, ResourceKey<Level> toDim) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerChangedDimensionEvent(player, fromDim, toDim));
+    public static void firePlayerChangedDimensionEvent(ServerPlayer player, ResourceKey<Level> originalDimension, ResourceKey<Level> newDimension) {
+        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerChangedDimensionEvent(player, originalDimension, newDimension));
     }
 
-    public static void firePlayerLoggedIn(Player player) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedInEvent(player));
+    public static void firePlayerLoggedIn(ServerPlayer player) {
+        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerLoggedInEvent(player));
     }
 
-    public static void firePlayerLoggedOut(Player player) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player));
+    public static void firePlayerLoggedOut(ServerPlayer player) {
+        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerLoggedOutEvent(player));
     }
 
     /**
-     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} before creating the new {@link ServerPlayer}
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean, Entity.RemovalReason)} before creating the new {@link ServerPlayer}
      * to fire the {@link PlayerRespawnPositionEvent}
-     * 
+     *
      * @param player          The old {@link ServerPlayer} that is being respawned
-     * @param respawnLevel    The default level the player will respawn into
-     * @param respawnAngle    The angle the player will face when they respawn
-     * @param respawnPosition The position in the level the player will respawn at
-     * @param fromEndFight    Whether the player is respawning because they jumped through the End return portal
+     * @param dimensionTransition the transition information required to teleport the player to the new dimension
+     * @param fromEndFight    If the player is being teleported after fighting the ender dragon in the end dimension
      * @return The event
      */
     public static PlayerRespawnPositionEvent firePlayerRespawnPositionEvent(ServerPlayer player, DimensionTransition dimensionTransition, boolean fromEndFight) {
@@ -887,13 +870,13 @@ public class EventHooks {
     }
 
     /**
-     * Called by {@link PlayerList#respawn(ServerPlayer, boolean)} after creating and initializing the new {@link ServerPlayer}.
-     * 
+     * Called by {@link PlayerList#respawn(ServerPlayer, boolean, Entity.RemovalReason)} after creating and initializing the new {@link ServerPlayer}.
+     *
      * @param player       The new player instance created by the respawn process
      * @param fromEndFight Whether the player is respawning because they jumped through the End return portal
      */
     public static void firePlayerRespawnEvent(ServerPlayer player, boolean fromEndFight) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(player, fromEndFight));
+        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerRespawnEvent(player, fromEndFight));
     }
 
     public static void firePlayerCraftingEvent(Player player, ItemStack crafted, Container craftMatrix) {
@@ -905,7 +888,7 @@ public class EventHooks {
     }
 
     /**
-     * Called by {@link Gui.HeartType#forPlayer} to allow for modification of the displayed heart type in the
+     * Called by {@link Gui.HeartType#forPlayer(Player)} to allow for modification of the displayed heart type in the
      * health bar.
      *
      * @param player    The local {@link Player}
@@ -918,7 +901,7 @@ public class EventHooks {
 
     /**
      * Fires {@link EntityTickEvent.Pre}. Called from the head of {@link LivingEntity#tick()}.
-     * 
+     *
      * @param entity The entity being ticked
      * @return The event
      */
@@ -928,7 +911,7 @@ public class EventHooks {
 
     /**
      * Fires {@link EntityTickEvent.Post}. Called from the tail of {@link LivingEntity#tick()}.
-     * 
+     *
      * @param entity The entity being ticked
      */
     public static void fireEntityTickPost(Entity entity) {
@@ -937,7 +920,7 @@ public class EventHooks {
 
     /**
      * Fires {@link PlayerTickEvent.Pre}. Called from the head of {@link Player#tick()}.
-     * 
+     *
      * @param player The player being ticked
      */
     public static void firePlayerTickPre(Player player) {
@@ -946,7 +929,7 @@ public class EventHooks {
 
     /**
      * Fires {@link PlayerTickEvent.Post}. Called from the tail of {@link Player#tick()}.
-     * 
+     *
      * @param player The player being ticked
      */
     public static void firePlayerTickPost(Player player) {
@@ -955,7 +938,7 @@ public class EventHooks {
 
     /**
      * Fires {@link LevelTickEvent.Pre}. Called from {@link Minecraft#tick()} and {@link MinecraftServer#tickChildren(BooleanSupplier)} just before the try block for level tick is entered.
-     * 
+     *
      * @param level    The level being ticked
      * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
      */
@@ -965,7 +948,7 @@ public class EventHooks {
 
     /**
      * Fires {@link LevelTickEvent.Post}. Called from {@link Minecraft#tick()} and {@link MinecraftServer#tickChildren(BooleanSupplier)} just after the try block for level tick is exited.
-     * 
+     *
      * @param level    The level being ticked
      * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
      */
@@ -975,7 +958,7 @@ public class EventHooks {
 
     /**
      * Fires {@link ServerTickEvent.Pre}. Called from the head of {@link MinecraftServer#tickServer(BooleanSupplier)}.
-     * 
+     *
      * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
      * @param server   The current server
      */
@@ -985,7 +968,7 @@ public class EventHooks {
 
     /**
      * Fires {@link ServerTickEvent.Post}. Called from the tail of {@link MinecraftServer#tickServer(BooleanSupplier)}.
-     * 
+     *
      * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
      * @param server   The current server
      */
@@ -1011,12 +994,12 @@ public class EventHooks {
     }
 
     @ApiStatus.Internal
-    public static void onAdvancementEarnedEvent(Player player, AdvancementHolder earned) {
+    public static void onAdvancementEarnedEvent(ServerPlayer player, AdvancementHolder earned) {
         NeoForge.EVENT_BUS.post(new AdvancementEarnEvent(player, earned));
     }
 
     @ApiStatus.Internal
-    public static void onAdvancementProgressedEvent(Player player, AdvancementHolder progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType) {
+    public static void onAdvancementProgressedEvent(ServerPlayer player, AdvancementHolder progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType) {
         NeoForge.EVENT_BUS.post(new AdvancementProgressEvent(player, progressed, advancementProgress, criterion, progressType));
     }
 
@@ -1030,7 +1013,7 @@ public class EventHooks {
 
     /**
      * Fires {@link GetEnchantmentLevelEvent} and for a single enchantment, returning the (possibly event-modified) level.
-     * 
+     *
      * @param level The original level of the enchantment as provided by the Item.
      * @param stack The stack being queried against.
      * @param ench  The enchantment being queried for.
@@ -1051,7 +1034,7 @@ public class EventHooks {
 
     /**
      * Fires {@link GetEnchantmentLevelEvent} and for all enchantments, returning the (possibly event-modified) enchantment map.
-     * 
+     *
      * @param enchantments The original enchantment map as provided by the Item.
      * @param stack        The stack being queried against.
      * @return The new enchantment map.
@@ -1107,7 +1090,7 @@ public class EventHooks {
 
     /**
      * Fires the mob split event. Returns the event for cancellation checking.
-     * 
+     *
      * @param parent   The parent mob, which is in the process of being removed.
      * @param children All child mobs that would have normally spawned.
      * @return The event object.

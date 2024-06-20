@@ -5,30 +5,31 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-public class PlayerContainerEvent extends PlayerEvent {
+public abstract class PlayerContainerEvent extends ServerPlayerEvent {
     private final AbstractContainerMenu container;
 
-    public PlayerContainerEvent(Player player, AbstractContainerMenu container) {
+    public PlayerContainerEvent(ServerPlayer player, AbstractContainerMenu container) {
         super(player);
         this.container = container;
     }
 
+    public AbstractContainerMenu getContainer() {
+        return container;
+    }
+
     public static class Open extends PlayerContainerEvent {
-        public Open(Player player, AbstractContainerMenu container) {
+        public Open(ServerPlayer player, AbstractContainerMenu container) {
             super(player, container);
         }
     }
 
     public static class Close extends PlayerContainerEvent {
-        public Close(Player player, AbstractContainerMenu container) {
+        public Close(ServerPlayer player, AbstractContainerMenu container) {
             super(player, container);
         }
-    }
-
-    public AbstractContainerMenu getContainer() {
-        return container;
     }
 }
