@@ -6,12 +6,16 @@
 package net.neoforged.neoforge.unittest;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -26,9 +30,12 @@ import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.testframework.junit.EphemeralTestServerProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +48,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class CreativeTabOrderTest {
     public static final String MOD_ID = "creative_tab_order_test";
+    private static final ResourceKey<CreativeModeTab> STONE_ORDERING = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stone_ordering"));
     private static final Set<TagKey<Item>> ENCHANTABLES = Set.of(
             ItemTags.FOOT_ARMOR_ENCHANTABLE,
             ItemTags.LEG_ARMOR_ENCHANTABLE,
@@ -61,8 +69,10 @@ public class CreativeTabOrderTest {
             ItemTags.EQUIPPABLE_ENCHANTABLE,
             ItemTags.CROSSBOW_ENCHANTABLE,
             ItemTags.VANISHING_ENCHANTABLE);
-    public static Iterable<Map.Entry<ItemStack, CreativeModeTab.TabVisibility>> ingredientsTab;
-    public static Iterable<Map.Entry<ItemStack, CreativeModeTab.TabVisibility>> searchTab;
+    public static List<ItemStack> ingredientsTab;
+    public static List<ItemStack> searchTab;
+    public static List<ItemStack> stoneParentTab;
+    public static List<ItemStack> stoneSearchTab;
 
     @BeforeAll
     static void testSetupTabs(MinecraftServer server) {
@@ -79,12 +89,9 @@ public class CreativeTabOrderTest {
         final Set<ItemStack> tabEnchantments = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements()
                 .map(enchantment -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, enchantment.value().getMaxLevel())))
                 .collect(() -> new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG), ObjectOpenCustomHashSet::add, ObjectOpenCustomHashSet::addAll);
-        for (Map.Entry<ItemStack, CreativeModeTab.TabVisibility> entry : ingredientsTab) {
-            if (entry.getValue() == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
-                continue;
-            }
-            if (entry.getKey().getItem() == Items.ENCHANTED_BOOK) {
-                Assertions.assertTrue(tabEnchantments.remove(entry.getKey()), "Enchanted book present that does not exist in the default set?");
+        for (ItemStack entry : ingredientsTab) {
+            if (entry.is(Items.ENCHANTED_BOOK)) {
+                Assertions.assertTrue(tabEnchantments.remove(entry), "Enchanted book present that does not exist in the default set?");
             }
         }
 
@@ -106,11 +113,11 @@ public class CreativeTabOrderTest {
 
         Enchantment enchantment = null;
         int level = 0;
-        for (Map.Entry<ItemStack, CreativeModeTab.TabVisibility> entry : searchTab) {
-            if (entry.getKey().getItem() != Items.ENCHANTED_BOOK) {
+        for (ItemStack entry : searchTab) {
+            if (!entry.is(Items.ENCHANTED_BOOK)) {
                 continue;
             }
-            final var enchantmentEntry = entry.getKey().get(DataComponents.STORED_ENCHANTMENTS).entrySet().iterator().next();
+            final var enchantmentEntry = entry.get(DataComponents.STORED_ENCHANTMENTS).entrySet().iterator().next();
             final var entryEnchantment = enchantmentEntry.getKey().value();
             final var entryEnchantmentLevel = enchantmentEntry.getIntValue();
             if (enchantment == null || enchantment != entryEnchantment) {
@@ -119,26 +126,97 @@ public class CreativeTabOrderTest {
             } else {
                 Assertions.assertTrue(entryEnchantmentLevel > level);
             }
-            Assertions.assertTrue(tabEnchantments.remove(entry.getKey()), "Enchanted book present that does not exist in the default set?");
+            Assertions.assertTrue(tabEnchantments.remove(entry), "Enchanted book present that does not exist in the default set?");
             level = entryEnchantmentLevel;
         }
 
         Assertions.assertTrue(tabEnchantments.isEmpty(), "Missing enchantments in Search tab.");
     }
 
+    /**
+     * Verifies that the tab sorting works properly where people can specify what item appears after what.
+     *
+     * @param server Ephemeral server from extension
+     */
+    @Test
+    void testParentStoneOrder(MinecraftServer server) {
+        List<Item> desiredOrder = setupDesiredStoneOrder();
+        for (ItemStack entry : stoneParentTab) {
+            Item currentDesiredItem = desiredOrder.removeFirst();
+            if (!entry.is(currentDesiredItem)) {
+                Assertions.assertFalse(false, entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone parent tab!");
+            }
+        }
+        Assertions.assertTrue(desiredOrder.isEmpty(), "Not all sorted stones were found in stone parent tab!");
+
+        desiredOrder = setupDesiredStoneOrder();
+        for (ItemStack entry : stoneSearchTab) {
+            Item currentDesiredItem = desiredOrder.removeFirst();
+            if (!entry.is(currentDesiredItem)) {
+                Assertions.assertFalse(false, entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone search tab!");
+            }
+        }
+        Assertions.assertTrue(desiredOrder.isEmpty(), "Not all sorted stones were found in stone search tab!");
+    }
+
+    private static List<Item> setupDesiredStoneOrder() {
+        List<Item> desiredOrder = new ArrayList<>();
+        desiredOrder.add(Items.BASALT);
+        desiredOrder.add(Items.STONE);
+        desiredOrder.add(Items.TUFF);
+        desiredOrder.add(Items.GRANITE);
+        desiredOrder.add(Items.DIORITE);
+        desiredOrder.add(Items.BLACKSTONE);
+        desiredOrder.add(Items.CALCITE);
+        desiredOrder.add(Items.ANDESITE);
+        return desiredOrder;
+    }
+
     @Mod(MOD_ID)
     public static class CreativeTabOrderTestMod {
         public CreativeTabOrderTestMod(IEventBus modBus) {
+            modBus.addListener(this::onCreativeModeTabRegister);
             modBus.addListener(this::buildCreativeTab);
         }
 
         private void buildCreativeTab(final BuildCreativeModeTabContentsEvent event) {
+            if (event.getTabKey() == STONE_ORDERING) {
+                var vis = CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
+                event.putAfter(i(Blocks.STONE), i(Blocks.TUFF), vis);
+                event.putAfter(i(Blocks.DIORITE), i(Blocks.CALCITE), vis);
+                event.putBefore(i(Blocks.CALCITE), i(Blocks.BLACKSTONE), vis);
+                event.accept(i(Blocks.CYAN_CONCRETE), vis);
+                event.remove(i(Blocks.CYAN_CONCRETE), vis);
+                event.putFirst(i(Blocks.BASALT), vis);
+                stoneParentTab = event.getParentEntries();
+                stoneSearchTab = event.getSearchEntries();
+            }
+
             if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-                ingredientsTab = event.getEntries();
+                ingredientsTab = event.getParentEntries();
             }
             if (event.getTabKey() == CreativeModeTabs.SEARCH) {
-                searchTab = event.getEntries();
+                searchTab = event.getSearchEntries();
             }
         }
+
+        private void onCreativeModeTabRegister(RegisterEvent event) {
+            event.register(Registries.CREATIVE_MODE_TAB, helper -> {
+                helper.register(STONE_ORDERING, CreativeModeTab.builder().icon(() -> new ItemStack(Blocks.STONE))
+                        .title(Component.literal("Stone Ordering"))
+                        .withLabelColor(0x0000FF)
+                        .displayItems((params, output) -> {
+                            output.accept(new ItemStack(Blocks.STONE));
+                            output.accept(new ItemStack(Blocks.GRANITE));
+                            output.accept(new ItemStack(Blocks.DIORITE));
+                            output.accept(new ItemStack(Blocks.ANDESITE));
+                        })
+                        .build());
+            });
+        }
+    }
+
+    private static ItemStack i(ItemLike item) {
+        return new ItemStack(item);
     }
 }

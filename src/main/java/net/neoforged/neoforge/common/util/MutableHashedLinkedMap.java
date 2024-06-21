@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import net.neoforged.neoforge.common.util.strategy.BasicStrategy;
+import net.neoforged.neoforge.common.util.strategy.IdentityStrategy;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -390,30 +392,6 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
         public int hashCode() {
             return (key == null ? 0 : strategy.hashCode(key)) ^
                     (value == null ? 0 : value.hashCode());
-        }
-    }
-
-    private static class BasicStrategy implements Strategy<Object> {
-        @Override
-        public int hashCode(Object o) {
-            return Objects.hashCode(o);
-        }
-
-        @Override
-        public boolean equals(Object a, Object b) {
-            return Objects.equals(a, b);
-        }
-    }
-
-    private static class IdentityStrategy implements Strategy<Object> {
-        @Override
-        public int hashCode(Object o) {
-            return System.identityHashCode(o);
-        }
-
-        @Override
-        public boolean equals(Object a, Object b) {
-            return a == b;
         }
     }
 }
