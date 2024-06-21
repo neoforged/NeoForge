@@ -160,10 +160,10 @@ public class ItemAttributeModifierEvent extends Event {
             this.entries = new LinkedList<>();
             this.entriesByKey = new HashMap<>(defaultModifiers.modifiers().size());
 
-            defaultModifiers.modifiers().forEach(entry -> {
+            for (ItemAttributeModifiers.Entry entry : defaultModifiers.modifiers()) {
                 entries.add(entry);
                 entriesByKey.put(new Key(entry.attribute(), entry.modifier().id()), entry);
-            });
+            }
         }
 
         /**
