@@ -51,13 +51,13 @@ public class AddReloadListenerEvent extends Event {
      * @param before   a predicate for what listener to add this before
      */
     public void addListenerBefore(PreparableReloadListener listener, Predicate<PreparableReloadListener> before) {
-        int index = listeners.size() - 1;
-        for (PreparableReloadListener listener1 : listeners) {
+        for (int i = 0; i < listeners.size(); i++) {
+            PreparableReloadListener listener1 = listeners.get(i);
             if (before.test(listener1)) {
-                index = listeners.indexOf(listener1);
+                listeners.add(i, new WrappedStateAwareListener(listener));
+                break;
             }
         }
-        listeners.add(index, new WrappedStateAwareListener(listener));
     }
 
     public List<PreparableReloadListener> getListeners() {
