@@ -21,11 +21,11 @@ public class ItemTossEvent extends ItemEvent implements ICancellableEvent {
     /**
      * Creates a new event for EntityItems tossed by a player.
      * 
-     * @param itemEntity The EntityItem being tossed.
+     * @param entityItem The EntityItem being tossed.
      * @param player     The player tossing the item.
      */
-    public ItemTossEvent(ItemEntity itemEntity, Player player) {
-        super(itemEntity);
+    public ItemTossEvent(ItemEntity entityItem, Player player) {
+        super(entityItem);
         this.player = player;
     }
 
