@@ -69,9 +69,9 @@ public class InsertableStrictLinkedHashSet<T> extends AbstractSet<T> {
 
         backingList.add(index, entry);
 
-        // Need to update all existing indices stored in map.
+        // Need to update existing indices stored in map that are after the current index.
         map.clear();
-        for (int i = 0; i < backingList.size(); i++) {
+        for (int i = index; i < backingList.size(); i++) {
             T curr = backingList.get(i);
             map.put(strategy.hashCode(curr), Pair.of(curr, i));
         }
