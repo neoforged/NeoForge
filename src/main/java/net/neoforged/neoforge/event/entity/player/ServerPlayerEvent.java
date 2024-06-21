@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.ICancellableEvent;
 
 public abstract class ServerPlayerEvent extends PlayerEvent {
-    public ServerPlayerEvent(ServerPlayer entity) {
+    protected ServerPlayerEvent(ServerPlayer entity) {
         super(entity);
     }
 
