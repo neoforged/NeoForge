@@ -1081,11 +1081,11 @@ public class EventHooks {
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
 
-            if (vis == CreativeModeTab.TabVisibility.PARENT_TAB_ONLY || vis == CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS) {
+            if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
                 parentEntries.add(stack);
             }
 
-            if (vis == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY || vis == CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS) {
+            if (BuildCreativeModeTabContentsEvent.isSearchTab(vis)) {
                 searchEntries.add(stack);
             }
         });

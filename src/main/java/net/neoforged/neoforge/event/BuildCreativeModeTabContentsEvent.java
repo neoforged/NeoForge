@@ -90,12 +90,11 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         if (newStack.getCount() != 1)
             throw new IllegalArgumentException("The stack count must be 1");
 
-        if (visibility == CreativeModeTab.TabVisibility.PARENT_TAB_ONLY) {
+        if (isParentTab(visibility)) {
             parentEntries.add(newStack);
-        } else if (visibility == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
-            searchEntries.add(newStack);
-        } else {
-            parentEntries.add(newStack);
+        }
+
+        if (isSearchTab(visibility)) {
             searchEntries.add(newStack);
         }
     }
@@ -191,11 +190,11 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         }
     }
 
-    private static boolean isParentTab(CreativeModeTab.TabVisibility visibility) {
+    static boolean isParentTab(CreativeModeTab.TabVisibility visibility) {
         return visibility == CreativeModeTab.TabVisibility.PARENT_TAB_ONLY || visibility == CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
     }
 
-    private static boolean isSearchTab(CreativeModeTab.TabVisibility visibility) {
+    static boolean isSearchTab(CreativeModeTab.TabVisibility visibility) {
         return visibility == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY || visibility == CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
     }
 }
