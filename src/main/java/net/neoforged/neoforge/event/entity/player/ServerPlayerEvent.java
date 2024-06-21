@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
-public abstract class ServerPlayerEvent extends LivingEvent {
+public abstract class ServerPlayerEvent extends PlayerEvent {
     public ServerPlayerEvent(ServerPlayer entity) {
         super(entity);
     }
