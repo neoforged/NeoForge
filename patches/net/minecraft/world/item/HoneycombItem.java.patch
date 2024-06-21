@@ -8,24 +8,104 @@
  import java.util.Optional;
  import java.util.function.Supplier;
  import net.minecraft.advancements.CriteriaTriggers;
-@@ -21,7 +_,7 @@
+@@ -20,47 +_,47 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
  
  public class HoneycombItem extends Item implements SignApplicator {
-     public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
+-    public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
 -        () -> ImmutableBiMap.<Block, Block>builder()
-+        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
-                 .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
-                 .put(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER)
-                 .put(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER)
-@@ -58,7 +_,7 @@
-                 .put(Blocks.EXPOSED_COPPER_BULB, Blocks.WAXED_EXPOSED_COPPER_BULB)
-                 .put(Blocks.WEATHERED_COPPER_BULB, Blocks.WAXED_WEATHERED_COPPER_BULB)
-                 .put(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB)
+-                .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
+-                .put(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER)
+-                .put(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER)
+-                .put(Blocks.OXIDIZED_COPPER, Blocks.WAXED_OXIDIZED_COPPER)
+-                .put(Blocks.CUT_COPPER, Blocks.WAXED_CUT_COPPER)
+-                .put(Blocks.EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_CUT_COPPER)
+-                .put(Blocks.WEATHERED_CUT_COPPER, Blocks.WAXED_WEATHERED_CUT_COPPER)
+-                .put(Blocks.OXIDIZED_CUT_COPPER, Blocks.WAXED_OXIDIZED_CUT_COPPER)
+-                .put(Blocks.CUT_COPPER_SLAB, Blocks.WAXED_CUT_COPPER_SLAB)
+-                .put(Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB)
+-                .put(Blocks.WEATHERED_CUT_COPPER_SLAB, Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB)
+-                .put(Blocks.OXIDIZED_CUT_COPPER_SLAB, Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB)
+-                .put(Blocks.CUT_COPPER_STAIRS, Blocks.WAXED_CUT_COPPER_STAIRS)
+-                .put(Blocks.EXPOSED_CUT_COPPER_STAIRS, Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS)
+-                .put(Blocks.WEATHERED_CUT_COPPER_STAIRS, Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS)
+-                .put(Blocks.OXIDIZED_CUT_COPPER_STAIRS, Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS)
+-                .put(Blocks.CHISELED_COPPER, Blocks.WAXED_CHISELED_COPPER)
+-                .put(Blocks.EXPOSED_CHISELED_COPPER, Blocks.WAXED_EXPOSED_CHISELED_COPPER)
+-                .put(Blocks.WEATHERED_CHISELED_COPPER, Blocks.WAXED_WEATHERED_CHISELED_COPPER)
+-                .put(Blocks.OXIDIZED_CHISELED_COPPER, Blocks.WAXED_OXIDIZED_CHISELED_COPPER)
+-                .put(Blocks.COPPER_DOOR, Blocks.WAXED_COPPER_DOOR)
+-                .put(Blocks.EXPOSED_COPPER_DOOR, Blocks.WAXED_EXPOSED_COPPER_DOOR)
+-                .put(Blocks.WEATHERED_COPPER_DOOR, Blocks.WAXED_WEATHERED_COPPER_DOOR)
+-                .put(Blocks.OXIDIZED_COPPER_DOOR, Blocks.WAXED_OXIDIZED_COPPER_DOOR)
+-                .put(Blocks.COPPER_TRAPDOOR, Blocks.WAXED_COPPER_TRAPDOOR)
+-                .put(Blocks.EXPOSED_COPPER_TRAPDOOR, Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR)
+-                .put(Blocks.WEATHERED_COPPER_TRAPDOOR, Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR)
+-                .put(Blocks.OXIDIZED_COPPER_TRAPDOOR, Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR)
+-                .put(Blocks.COPPER_GRATE, Blocks.WAXED_COPPER_GRATE)
+-                .put(Blocks.EXPOSED_COPPER_GRATE, Blocks.WAXED_EXPOSED_COPPER_GRATE)
+-                .put(Blocks.WEATHERED_COPPER_GRATE, Blocks.WAXED_WEATHERED_COPPER_GRATE)
+-                .put(Blocks.OXIDIZED_COPPER_GRATE, Blocks.WAXED_OXIDIZED_COPPER_GRATE)
+-                .put(Blocks.COPPER_BULB, Blocks.WAXED_COPPER_BULB)
+-                .put(Blocks.EXPOSED_COPPER_BULB, Blocks.WAXED_EXPOSED_COPPER_BULB)
+-                .put(Blocks.WEATHERED_COPPER_BULB, Blocks.WAXED_WEATHERED_COPPER_BULB)
+-                .put(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB)
 -                .build()
++    public static final Supplier<BiMap<Supplier<Block>, Supplier<Block>>> WAXABLES = Suppliers.memoize(
++        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Supplier<Block>, Supplier<Block>>builder()
++                .put(() -> Blocks.COPPER_BLOCK, () -> Blocks.WAXED_COPPER_BLOCK)
++                .put(() -> Blocks.EXPOSED_COPPER, () -> Blocks.WAXED_EXPOSED_COPPER)
++                .put(() -> Blocks.WEATHERED_COPPER, () -> Blocks.WAXED_WEATHERED_COPPER)
++                .put(() -> Blocks.OXIDIZED_COPPER, () -> Blocks.WAXED_OXIDIZED_COPPER)
++                .put(() -> Blocks.CUT_COPPER, () -> Blocks.WAXED_CUT_COPPER)
++                .put(() -> Blocks.EXPOSED_CUT_COPPER, () -> Blocks.WAXED_EXPOSED_CUT_COPPER)
++                .put(() -> Blocks.WEATHERED_CUT_COPPER, () -> Blocks.WAXED_WEATHERED_CUT_COPPER)
++                .put(() -> Blocks.OXIDIZED_CUT_COPPER, () -> Blocks.WAXED_OXIDIZED_CUT_COPPER)
++                .put(() -> Blocks.CUT_COPPER_SLAB, () -> Blocks.WAXED_CUT_COPPER_SLAB)
++                .put(() -> Blocks.EXPOSED_CUT_COPPER_SLAB, () -> Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB)
++                .put(() -> Blocks.WEATHERED_CUT_COPPER_SLAB, () -> Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB)
++                .put(() -> Blocks.OXIDIZED_CUT_COPPER_SLAB, () -> Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB)
++                .put(() -> Blocks.CUT_COPPER_STAIRS, () -> Blocks.WAXED_CUT_COPPER_STAIRS)
++                .put(() -> Blocks.EXPOSED_CUT_COPPER_STAIRS, () -> Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS)
++                .put(() -> Blocks.WEATHERED_CUT_COPPER_STAIRS, () -> Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS)
++                .put(() -> Blocks.OXIDIZED_CUT_COPPER_STAIRS, () -> Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS)
++                .put(() -> Blocks.CHISELED_COPPER, () -> Blocks.WAXED_CHISELED_COPPER)
++                .put(() -> Blocks.EXPOSED_CHISELED_COPPER, () -> Blocks.WAXED_EXPOSED_CHISELED_COPPER)
++                .put(() -> Blocks.WEATHERED_CHISELED_COPPER, () -> Blocks.WAXED_WEATHERED_CHISELED_COPPER)
++                .put(() -> Blocks.OXIDIZED_CHISELED_COPPER, () -> Blocks.WAXED_OXIDIZED_CHISELED_COPPER)
++                .put(() -> Blocks.COPPER_DOOR, () -> Blocks.WAXED_COPPER_DOOR)
++                .put(() -> Blocks.EXPOSED_COPPER_DOOR, () -> Blocks.WAXED_EXPOSED_COPPER_DOOR)
++                .put(() -> Blocks.WEATHERED_COPPER_DOOR, () -> Blocks.WAXED_WEATHERED_COPPER_DOOR)
++                .put(() -> Blocks.OXIDIZED_COPPER_DOOR, () -> Blocks.WAXED_OXIDIZED_COPPER_DOOR)
++                .put(() -> Blocks.COPPER_TRAPDOOR, () -> Blocks.WAXED_COPPER_TRAPDOOR)
++                .put(() -> Blocks.EXPOSED_COPPER_TRAPDOOR, () -> Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR)
++                .put(() -> Blocks.WEATHERED_COPPER_TRAPDOOR, () -> Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR)
++                .put(() -> Blocks.OXIDIZED_COPPER_TRAPDOOR, () -> Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR)
++                .put(() -> Blocks.COPPER_GRATE, () -> Blocks.WAXED_COPPER_GRATE)
++                .put(() -> Blocks.EXPOSED_COPPER_GRATE, () -> Blocks.WAXED_EXPOSED_COPPER_GRATE)
++                .put(() -> Blocks.WEATHERED_COPPER_GRATE, () -> Blocks.WAXED_WEATHERED_COPPER_GRATE)
++                .put(() -> Blocks.OXIDIZED_COPPER_GRATE, () -> Blocks.WAXED_OXIDIZED_COPPER_GRATE)
++                .put(() -> Blocks.COPPER_BULB, () -> Blocks.WAXED_COPPER_BULB)
++                .put(() -> Blocks.EXPOSED_COPPER_BULB, () -> Blocks.WAXED_EXPOSED_COPPER_BULB)
++                .put(() -> Blocks.WEATHERED_COPPER_BULB, () -> Blocks.WAXED_WEATHERED_COPPER_BULB)
++                .put(() -> Blocks.OXIDIZED_COPPER_BULB, () -> Blocks.WAXED_OXIDIZED_COPPER_BULB)
 +                .build())
      );
-     public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
+-    public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
++    public static final Supplier<BiMap<Supplier<Block>, Supplier<Block>>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
  
+     public HoneycombItem(Item.Properties p_150867_) {
+         super(p_150867_);
+@@ -87,7 +_,8 @@
+     }
+ 
+     public static Optional<BlockState> getWaxed(BlockState p_150879_) {
+-        return Optional.ofNullable(WAXABLES.get().get(p_150879_.getBlock())).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
++        Supplier<Block> wrappedBlock = () -> p_150879_.getBlock();
++        return Optional.ofNullable(WAXABLES.get().get(wrappedBlock)).map(p_150877_ -> p_150877_.get().withPropertiesOf(p_150879_));
+     }
+ 
+     @Override
 @@ -103,5 +_,20 @@
      @Override
      public boolean canApplyToSign(SignText p_277550_, Player p_277640_) {
@@ -40,7 +120,7 @@
 +     * @param before the unwaxed block
 +     * @param after  the waxed block
 +     */
-+    public static void registerWaxableBlock(Block before, Block after) {
++    public static void registerWaxableBlock(Supplier<Block> before, Supplier<Block> after) {
 +        java.util.Objects.requireNonNull(before, "Waxable before before must not be null");
 +        java.util.Objects.requireNonNull(after, "Waxable Block after must not be null");
 +

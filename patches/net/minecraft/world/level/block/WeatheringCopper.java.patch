@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/WeatheringCopper.java
 +++ b/net/minecraft/world/level/block/WeatheringCopper.java
-@@ -4,6 +_,7 @@
+@@ -4,57 +_,59 @@
  import com.google.common.collect.BiMap;
  import com.google.common.collect.ImmutableBiMap;
  import com.mojang.serialization.Codec;
@@ -8,24 +8,103 @@
  import java.util.Optional;
  import java.util.function.Supplier;
  import net.minecraft.util.StringRepresentable;
-@@ -11,7 +_,7 @@
+ import net.minecraft.world.level.block.state.BlockState;
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
-     Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
+-    Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
 -        () -> ImmutableBiMap.<Block, Block>builder()
-+        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Block, Block>builder()
-                 .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
-                 .put(Blocks.EXPOSED_COPPER, Blocks.WEATHERED_COPPER)
-                 .put(Blocks.WEATHERED_COPPER, Blocks.OXIDIZED_COPPER)
-@@ -39,7 +_,7 @@
-                 .put(Blocks.COPPER_BULB, Blocks.EXPOSED_COPPER_BULB)
-                 .put(Blocks.EXPOSED_COPPER_BULB, Blocks.WEATHERED_COPPER_BULB)
-                 .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
+-                .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
+-                .put(Blocks.EXPOSED_COPPER, Blocks.WEATHERED_COPPER)
+-                .put(Blocks.WEATHERED_COPPER, Blocks.OXIDIZED_COPPER)
+-                .put(Blocks.CUT_COPPER, Blocks.EXPOSED_CUT_COPPER)
+-                .put(Blocks.EXPOSED_CUT_COPPER, Blocks.WEATHERED_CUT_COPPER)
+-                .put(Blocks.WEATHERED_CUT_COPPER, Blocks.OXIDIZED_CUT_COPPER)
+-                .put(Blocks.CHISELED_COPPER, Blocks.EXPOSED_CHISELED_COPPER)
+-                .put(Blocks.EXPOSED_CHISELED_COPPER, Blocks.WEATHERED_CHISELED_COPPER)
+-                .put(Blocks.WEATHERED_CHISELED_COPPER, Blocks.OXIDIZED_CHISELED_COPPER)
+-                .put(Blocks.CUT_COPPER_SLAB, Blocks.EXPOSED_CUT_COPPER_SLAB)
+-                .put(Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.WEATHERED_CUT_COPPER_SLAB)
+-                .put(Blocks.WEATHERED_CUT_COPPER_SLAB, Blocks.OXIDIZED_CUT_COPPER_SLAB)
+-                .put(Blocks.CUT_COPPER_STAIRS, Blocks.EXPOSED_CUT_COPPER_STAIRS)
+-                .put(Blocks.EXPOSED_CUT_COPPER_STAIRS, Blocks.WEATHERED_CUT_COPPER_STAIRS)
+-                .put(Blocks.WEATHERED_CUT_COPPER_STAIRS, Blocks.OXIDIZED_CUT_COPPER_STAIRS)
+-                .put(Blocks.COPPER_DOOR, Blocks.EXPOSED_COPPER_DOOR)
+-                .put(Blocks.EXPOSED_COPPER_DOOR, Blocks.WEATHERED_COPPER_DOOR)
+-                .put(Blocks.WEATHERED_COPPER_DOOR, Blocks.OXIDIZED_COPPER_DOOR)
+-                .put(Blocks.COPPER_TRAPDOOR, Blocks.EXPOSED_COPPER_TRAPDOOR)
+-                .put(Blocks.EXPOSED_COPPER_TRAPDOOR, Blocks.WEATHERED_COPPER_TRAPDOOR)
+-                .put(Blocks.WEATHERED_COPPER_TRAPDOOR, Blocks.OXIDIZED_COPPER_TRAPDOOR)
+-                .put(Blocks.COPPER_GRATE, Blocks.EXPOSED_COPPER_GRATE)
+-                .put(Blocks.EXPOSED_COPPER_GRATE, Blocks.WEATHERED_COPPER_GRATE)
+-                .put(Blocks.WEATHERED_COPPER_GRATE, Blocks.OXIDIZED_COPPER_GRATE)
+-                .put(Blocks.COPPER_BULB, Blocks.EXPOSED_COPPER_BULB)
+-                .put(Blocks.EXPOSED_COPPER_BULB, Blocks.WEATHERED_COPPER_BULB)
+-                .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
 -                .build()
++    Supplier<BiMap<Supplier<Block>, Supplier<Block>>> NEXT_BY_BLOCK = Suppliers.memoize(
++        () -> com.google.common.collect.HashBiMap.create(ImmutableBiMap.<Supplier<Block>, Supplier<Block>>builder()
++                .put(() -> Blocks.COPPER_BLOCK, () -> Blocks.EXPOSED_COPPER)
++                .put(() -> Blocks.EXPOSED_COPPER, () -> Blocks.WEATHERED_COPPER)
++                .put(() -> Blocks.WEATHERED_COPPER, () -> Blocks.OXIDIZED_COPPER)
++                .put(() -> Blocks.CUT_COPPER, () -> Blocks.EXPOSED_CUT_COPPER)
++                .put(() -> Blocks.EXPOSED_CUT_COPPER, () -> Blocks.WEATHERED_CUT_COPPER)
++                .put(() -> Blocks.WEATHERED_CUT_COPPER, () -> Blocks.OXIDIZED_CUT_COPPER)
++                .put(() -> Blocks.CHISELED_COPPER, () -> Blocks.EXPOSED_CHISELED_COPPER)
++                .put(() -> Blocks.EXPOSED_CHISELED_COPPER, () -> Blocks.WEATHERED_CHISELED_COPPER)
++                .put(() -> Blocks.WEATHERED_CHISELED_COPPER, () -> Blocks.OXIDIZED_CHISELED_COPPER)
++                .put(() -> Blocks.CUT_COPPER_SLAB, () -> Blocks.EXPOSED_CUT_COPPER_SLAB)
++                .put(() -> Blocks.EXPOSED_CUT_COPPER_SLAB, () -> Blocks.WEATHERED_CUT_COPPER_SLAB)
++                .put(() -> Blocks.WEATHERED_CUT_COPPER_SLAB, () -> Blocks.OXIDIZED_CUT_COPPER_SLAB)
++                .put(() -> Blocks.CUT_COPPER_STAIRS, () -> Blocks.EXPOSED_CUT_COPPER_STAIRS)
++                .put(() -> Blocks.EXPOSED_CUT_COPPER_STAIRS, () -> Blocks.WEATHERED_CUT_COPPER_STAIRS)
++                .put(() -> Blocks.WEATHERED_CUT_COPPER_STAIRS, () -> Blocks.OXIDIZED_CUT_COPPER_STAIRS)
++                .put(() -> Blocks.COPPER_DOOR, () -> Blocks.EXPOSED_COPPER_DOOR)
++                .put(() -> Blocks.EXPOSED_COPPER_DOOR, () -> Blocks.WEATHERED_COPPER_DOOR)
++                .put(() -> Blocks.WEATHERED_COPPER_DOOR, () -> Blocks.OXIDIZED_COPPER_DOOR)
++                .put(() -> Blocks.COPPER_TRAPDOOR, () -> Blocks.EXPOSED_COPPER_TRAPDOOR)
++                .put(() -> Blocks.EXPOSED_COPPER_TRAPDOOR, () -> Blocks.WEATHERED_COPPER_TRAPDOOR)
++                .put(() -> Blocks.WEATHERED_COPPER_TRAPDOOR, () -> Blocks.OXIDIZED_COPPER_TRAPDOOR)
++                .put(() -> Blocks.COPPER_GRATE, () -> Blocks.EXPOSED_COPPER_GRATE)
++                .put(() -> Blocks.EXPOSED_COPPER_GRATE, () -> Blocks.WEATHERED_COPPER_GRATE)
++                .put(() -> Blocks.WEATHERED_COPPER_GRATE, () -> Blocks.OXIDIZED_COPPER_GRATE)
++                .put(() -> Blocks.COPPER_BULB, () -> Blocks.EXPOSED_COPPER_BULB)
++                .put(() -> Blocks.EXPOSED_COPPER_BULB, () -> Blocks.WEATHERED_COPPER_BULB)
++                .put(() -> Blocks.WEATHERED_COPPER_BULB, () -> Blocks.OXIDIZED_COPPER_BULB)
 +                .build())
      );
-     Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
+-    Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
++    Supplier<BiMap<Supplier<Block>, Supplier<Block>>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
  
+     static Optional<Block> getPrevious(Block p_154891_) {
+-        return Optional.ofNullable(PREVIOUS_BY_BLOCK.get().get(p_154891_));
++        Supplier<Block> wrapped = () -> p_154891_;
++        return Optional.ofNullable(PREVIOUS_BY_BLOCK.get().get(wrapped).get());
+     }
+ 
+     static Block getFirst(Block p_154898_) {
+-        Block block = p_154898_;
++        Supplier<Block> block = () -> p_154898_;
+ 
+-        for (Block block1 = PREVIOUS_BY_BLOCK.get().get(p_154898_); block1 != null; block1 = PREVIOUS_BY_BLOCK.get().get(block1)) {
++        for (Supplier<Block> block1 = PREVIOUS_BY_BLOCK.get().get(block); block1 != null; block1 = PREVIOUS_BY_BLOCK.get().get(block1)) {
+             block = block1;
+         }
+ 
+-        return block;
++        return block.get();
+     }
+ 
+     static Optional<BlockState> getPrevious(BlockState p_154900_) {
+@@ -62,7 +_,8 @@
+     }
+ 
+     static Optional<Block> getNext(Block p_154905_) {
+-        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(p_154905_));
++        Supplier<Block> wrapped = () -> p_154905_;
++        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(wrapped).get());
+     }
+ 
+     static BlockState getFirst(BlockState p_154907_) {
 @@ -77,6 +_,21 @@
      @Override
      default float getChanceModifier() {
@@ -40,7 +119,7 @@
 +     * @param before block with less oxidization
 +     * @param after  block with more oxidization
 +     */
-+    static void registerOxidizableBlock(Block before, Block after) {
++    static void registerOxidizableBlock(Supplier<Block> before, Supplier<Block> after) {
 +        java.util.Objects.requireNonNull(before, "Oxidizable Block before must not be null");
 +        java.util.Objects.requireNonNull(after, "Oxidizable Block after must not be null");
 +

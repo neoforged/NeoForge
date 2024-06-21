@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -767,7 +768,8 @@ public interface IBlockExtension {
         } else if (ToolActions.AXE_SCRAPE == toolAction) {
             return WeatheringCopper.getPrevious(state).orElse(null);
         } else if (ToolActions.AXE_WAX_OFF == toolAction) {
-            return Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(state.getBlock())).map(block -> block.withPropertiesOf(state)).orElse(null);
+            Supplier<Block> wrapped = () -> state.getBlock();
+            return Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(wrapped)).map(block -> block.get().withPropertiesOf(state)).orElse(null);
         } else if (ToolActions.SHOVEL_FLATTEN == toolAction) {
             return ShovelItem.getShovelPathingState(state);
         } else if (ToolActions.HOE_TILL == toolAction) {

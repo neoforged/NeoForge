@@ -42,3 +42,23 @@
          BlockFamilies.getAllFamilies().filter(BlockFamily::shouldGenerateRecipe).forEach(p_313461_ -> generateRecipes(p_301146_, p_313461_, p_251836_));
      }
  
+@@ -602,13 +_,13 @@
+             .get()
+             .forEach(
+                 (p_337490_, p_337491_) -> {
+-                    if (p_337491_.requiredFeatures().isSubsetOf(p_313879_)) {
+-                        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, p_337491_)
+-                            .requires(p_337490_)
++                    if (p_337491_.get().requiredFeatures().isSubsetOf(p_313879_)) {
++                        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, p_337491_.get())
++                            .requires(p_337490_.get())
+                             .requires(Items.HONEYCOMB)
+-                            .group(getItemName(p_337491_))
+-                            .unlockedBy(getHasName(p_337490_), has(p_337490_))
+-                            .save(p_301254_, getConversionRecipeName(p_337491_, Items.HONEYCOMB));
++                            .group(getItemName(p_337491_.get()))
++                            .unlockedBy(getHasName(p_337490_.get()), has(p_337490_.get()))
++                            .save(p_301254_, getConversionRecipeName(p_337491_.get(), Items.HONEYCOMB));
+                     }
+                 }
+             );
