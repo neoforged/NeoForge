@@ -5,7 +5,7 @@
          }
  
 -        return abstractarrow;
-+        return customArrow(abstractarrow, p_330846_);
++        return customArrow(abstractarrow, p_331497_, p_330846_);
      }
  
      protected static List<ItemStack> draw(ItemStack p_331565_, ItemStack p_330406_, LivingEntity p_330823_) {
@@ -25,7 +25,7 @@
          }
 +    }
 +
-+    public AbstractArrow customArrow(AbstractArrow arrow, net.minecraft.world.item.ItemStack stack) {
++    public AbstractArrow customArrow(AbstractArrow arrow, ItemStack projectileStack, ItemStack weaponStack) {
 +        return arrow;
      }
  }
