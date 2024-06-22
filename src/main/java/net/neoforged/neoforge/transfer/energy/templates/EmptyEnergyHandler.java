@@ -39,17 +39,17 @@ public class EmptyEnergyHandler implements IEnergyHandler {
     }
 
     @Override
-    public int getLimit() {
+    public int getCapacity() {
         return 0;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return false;
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return false;
     }
 }

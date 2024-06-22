@@ -13,7 +13,6 @@ import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResource> {
     private final AttachmentHolder holder;
@@ -43,8 +42,13 @@ public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public int getLimit(FluidResource resource) {
+    public int getCapacity(FluidResource resource) {
         return limit;
+    }
+
+    @Override
+    public int getCapacity() {
+        return 0;
     }
 
     @Override
@@ -57,19 +61,9 @@ public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public boolean canInsert() {
-        return true;
-    }
-
-    @Override
-    public boolean canExtract() {
-        return true;
-    }
-
-    @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isValid(resource) || (!isEmpty() && !getResource().equals(resource))) return 0;
-        int inserted = Math.min(amount, getLimit(resource) - getAmount());
+        if (resource.isEmpty() || amount <= 0 || !isValid(resource) || (!isEmpty() && !getResource().equals(resource))) return 0;
+        int inserted = Math.min(amount, getCapacity(resource) - getAmount());
         if (inserted > 0 && action.isExecuting()) {
             holder.setData(attachmentType, SimpleFluidContent.of(resource, getAmount() + inserted));
         }
@@ -78,12 +72,22 @@ public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResou
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isValid(resource) || (isEmpty() || !getResource().equals(resource))) return 0;
+        if (resource.isEmpty() || amount <= 0 || !isValid(resource) || (isEmpty() || !getResource().equals(resource))) return 0;
         int extracted = Math.min(amount, getAmount());
         if (extracted > 0 && action.isExecuting()) {
             int newAmount = getAmount() - extracted;
             holder.setData(attachmentType, newAmount <= 0 ? SimpleFluidContent.EMPTY : SimpleFluidContent.of(resource, newAmount));
         }
         return extracted;
+    }
+
+    @Override
+    public boolean allowsInsertion() {
+        return true;
+    }
+
+    @Override
+    public boolean allowsExtraction() {
+        return true;
     }
 }

@@ -48,17 +48,16 @@ public interface IEnergyHandler {
     /**
      * Returns the maximum amount of energy that can be stored.
      */
-    int getLimit();
+    int getCapacity();
 
     /**
      * Returns if this storage can have energy extracted.
-     * If this is false, then any calls to extractEnergy will return 0.
+     * If this is false, then any calls to insert will return 0.
      */
-    boolean canExtract();
+    boolean allowsExtraction();
 
     /**
-     * Used to determine if this storage can receive energy.
-     * If this is false, then any calls to receiveEnergy will return 0.
+     * @return True if this handler, regardless of the current contents, can receive energy.
      */
-    boolean canInsert();
+    boolean allowsInsertion();
 }

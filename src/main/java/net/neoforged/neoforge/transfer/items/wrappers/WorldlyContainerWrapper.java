@@ -16,21 +16,22 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.ScopedHandlerWrapper;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 public class WorldlyContainerWrapper extends ContainerWrapper {
     @Nullable
     protected final Direction side;
 
-    public static IResourceHandlerModifiable<ItemResource> of(WorldlyContainer container, @Nullable Direction side) {
-        WorldlyContainerWrapper wrapper;
+    public static WorldlyContainerWrapper of(WorldlyContainer container, @Nullable Direction side) {
+        if (container instanceof AbstractFurnaceBlockEntity) {
+            return new Furnace(container, side);
+        }
+        else if (container instanceof BrewingStandBlockEntity) {
+            return new BrewingStand(container, side);
+        }
 
-        if (container instanceof AbstractFurnaceBlockEntity)
-            wrapper = new Furnace(container, side);
-        else if (container instanceof BrewingStandBlockEntity)
-            wrapper = new BrewingStand(container, side);
-        else
-            wrapper = new WorldlyContainerWrapper(container, side);
-
-        return side == null ? wrapper : new ScopedHandlerWrapper.Modifiable<>(wrapper, container.getSlotsForFace(side));
+        return new WorldlyContainerWrapper(container, side);
     }
 
     protected WorldlyContainerWrapper(WorldlyContainer container, @Nullable Direction side) {
@@ -44,15 +45,23 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
     }
 
     @Override
-    public int insert(int index, ItemResource resource, int amount, TransferAction action) {
-        if (side != null && !getContainer().canPlaceItemThroughFace(index, resource.toStack(), side)) return 0;
-        return super.insert(index, resource, amount, action);
+    public boolean isValid(int index, ItemResource resource) {
+        return side == null ? super.isValid(index, resource) : getContainer().canPlaceItemThroughFace(index, resource.toStack(), side) && super.isValid(index, resource);
     }
 
     @Override
-    public int extract(int index, ItemResource resource, int amount, TransferAction action) {
-        if (side != null && !getContainer().canTakeItemThroughFace(index, resource.toStack(), side)) return 0;
-        return super.extract(index, resource, amount, action);
+    public boolean isExtractable(int index, ItemResource resource) {
+        return side == null ? super.isExtractable(index, resource) : getContainer().canTakeItemThroughFace(index, resource.toStack(), side) && super.isExtractable(index, resource);
+    }
+
+    @Override
+    public boolean allowsInsertion(int index) {
+        return side == null ? super.allowsInsertion(index) : IntStream.of(getContainer().getSlotsForFace(side)).anyMatch(i -> i == index);
+    }
+
+    @Override
+    public boolean allowsExtraction(int index) {
+        return side == null ? super.allowsExtraction(index) : Arrays.stream(getContainer().getSlotsForFace(side)).anyMatch(i -> i == index);
     }
 
     public static class Furnace extends WorldlyContainerWrapper {
@@ -61,8 +70,8 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
         }
 
         @Override
-        public int getLimit(int index, ItemResource resource) {
-            return index == 1 && resource.is(Items.BUCKET) ? 1 : super.getLimit(index, resource);
+        public int getCapacity(int index, ItemResource resource) {
+            return index == 1 && resource.is(Items.BUCKET) ? 1 : super.getCapacity(index, resource);
         }
     }
 
@@ -72,8 +81,8 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
         }
 
         @Override
-        public int getLimit(int index, ItemResource resource) {
-            return index < 3 ? 1 : super.getLimit(index, resource);
+        public int getCapacity(int index, ItemResource resource) {
+            return index < 3 ? 1 : super.getCapacity(index, resource);
         }
     }
 }

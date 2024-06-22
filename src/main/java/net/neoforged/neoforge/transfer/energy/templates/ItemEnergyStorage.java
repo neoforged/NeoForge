@@ -115,17 +115,17 @@ public class ItemEnergyStorage implements IEnergyHandler {
     }
 
     @Override
-    public int getLimit() {
+    public int getCapacity() {
         return this.capacity * this.context.getAmount();
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return this.maxExtract > 0;
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return this.maxReceive > 0;
     }
 }

@@ -9,7 +9,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.wrappers.HandlerIndexWrapper;
@@ -41,8 +40,8 @@ public class PlayerInventoryHandler extends ContainerWrapper {
     }
 
     @Override
-    public int getLimit(int index, ItemResource resource) {
-        return getEquipmentSlot(index) != null ? 1 : super.getLimit(index, resource);
+    public int getCapacity(int index, ItemResource resource) {
+        return getEquipmentSlot(index) != null ? 1 : super.getCapacity(index, resource);
     }
 
     @Override
@@ -89,7 +88,7 @@ public class PlayerInventoryHandler extends ContainerWrapper {
 
         @Override
         public int insert(int index, ItemResource resource, int amount, TransferAction action) {
-            if (resource.isBlank() || amount <= 0) return 0;
+            if (resource.isEmpty() || amount <= 0) return 0;
             if (action.isSimulating()) return amount;
             insertOrDrop(resource, amount);
             return amount;

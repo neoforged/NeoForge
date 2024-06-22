@@ -27,17 +27,17 @@ public class VoidEnergyHandler implements IEnergyHandler {
     }
 
     @Override
-    public int getLimit() {
+    public int getCapacity() {
         return Integer.MAX_VALUE;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return false;
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return true;
     }
 }

@@ -67,7 +67,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     }
 
     @Override
-    public int getLimit(int index, ItemResource resource) {
+    public int getCapacity(int index, ItemResource resource) {
         return validateSlotIndex(index).getCountLimit();
     }
 
@@ -77,25 +77,25 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return true;
     }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
         ResourceStack<ItemResource> stack = getStackInSlot(index).immutable();
-        if (resource.isBlank() || amount <= 0 || !isValid(index, resource)) return 0;
+        if (resource.isEmpty() || amount <= 0 || !isValid(index, resource)) return 0;
         if (stack.isEmpty()) {
-            amount = Math.min(amount, getLimit(index, resource));
+            amount = Math.min(amount, getCapacity(index, resource));
             set(index, resource, amount);
             return amount;
         } else if (stack.resource().equals(resource)) {
-            amount = Math.min(amount, getLimit(index, resource) - stack.amount());
+            amount = Math.min(amount, getCapacity(index, resource) - stack.amount());
             if (amount > 0 && action.isExecuting()) {
                 set(index, resource, stack.amount() + amount);
             }
@@ -113,7 +113,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     public int extract(int index, ItemResource resource, int amount, TransferAction action) {
         ResourceStack<ItemResource> stack = getStackInSlot(index).immutable();
         EquipmentSlot equipmentSlot = validateSlotIndex(index);
-        if (resource.isBlank() || amount <= 0 || !isValid(index, resource) || stack.isEmpty() || !stack.resource().equals(resource) || (resource.canUnequip() && equipmentSlot.isArmor()))
+        if (resource.isEmpty() || amount <= 0 || !isValid(index, resource) || stack.isEmpty() || !stack.resource().equals(resource) || (resource.canUnequip() && equipmentSlot.isArmor()))
             return 0;
         int extracted = Math.min(amount, stack.amount());
         if (extracted > 0 && action.isExecuting()) {

@@ -50,8 +50,13 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
     }
 
     @Override
-    public int getLimit(int index, T resource) {
-        return getDelegate().getLimit(convertIndex(index), resource);
+    public int getCapacity(int index, T resource) {
+        return getDelegate().getCapacity(convertIndex(index), resource);
+    }
+
+    @Override
+    public int getCapacity(int index) {
+        return getDelegate().getCapacity(convertIndex(index));
     }
 
     @Override
@@ -60,13 +65,23 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
     }
 
     @Override
-    public boolean canInsert() {
-        return getDelegate().canInsert();
+    public boolean allowsInsertion(int index) {
+        return getDelegate().allowsInsertion(convertIndex(index));
     }
 
     @Override
-    public boolean canExtract() {
-        return getDelegate().canExtract();
+    public boolean allowsExtraction(int index) {
+        return getDelegate().allowsExtraction(convertIndex(index));
+    }
+
+    @Override
+    public boolean allowsInsertion() {
+        return getDelegate().allowsInsertion();
+    }
+
+    @Override
+    public boolean allowsExtraction() {
+        return getDelegate().allowsExtraction();
     }
 
     @Override

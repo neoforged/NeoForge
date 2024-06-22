@@ -41,8 +41,13 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
     }
 
     @Override
-    public int getLimit(int index, ItemResource resource) {
+    public int getCapacity(int index, ItemResource resource) {
         return getContainer().getMaxStackSize(resource.toStack());
+    }
+
+    @Override
+    public int getCapacity(int index) {
+        return getContainer().getMaxStackSize();
     }
 
     @Override
@@ -50,28 +55,32 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
         return getContainer().canPlaceItem(index, resource.toStack());
     }
 
+    public boolean isExtractable(int index, ItemResource resource) {
+        return true; // canTakeItem requires the other container thats accepting the item, so it cant be used here
+    }
+
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion(int index) {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction(int index) {
         return true;
     }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank() || !isValid(index, resource)) return 0;
+        if (amount <= 0 || resource.isEmpty() || !allowsInsertion(index) || !isValid(index, resource)) return 0;
         ResourceStack<ItemResource> stack = getContainer().getItem(index).immutable();
         if (stack.isEmpty()) {
-            int insert = Math.min(amount, getLimit(index, resource));
+            int insert = Math.min(amount, getCapacity(index, resource));
             if (action.isExecuting()) {
                 set(index, resource, insert);
             }
             return insert;
         } else if (stack.resource().equals(resource)) {
-            int insert = Math.min(amount, getLimit(index, resource) - stack.amount());
+            int insert = Math.min(amount, getCapacity(index, resource) - stack.amount());
             if (action.isExecuting()) {
                 set(index, resource, stack.amount() + insert);
             }
@@ -82,7 +91,7 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank() || !isValid(index, resource)) return 0;
+        if (amount <= 0 || resource.isEmpty() || !allowsExtraction(index) ||!isExtractable(index, resource)) return 0;
         ResourceStack<ItemResource> stack = getContainer().getItem(index).immutable();
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extract = Math.min(amount, stack.amount());

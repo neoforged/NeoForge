@@ -13,6 +13,7 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 /**
  * A wrapper that delegates all calls to specific set of indices of a handler.
@@ -23,14 +24,9 @@ public class ScopedHandlerWrapper<T extends IResource> extends DelegatingHandler
     protected int[] indices;
 
     public static <T extends IResource> ScopedHandlerWrapper<T> fromHandlerExcludingIndices(IResourceHandler<T> handler, int[] exclusions) {
-        int[] indices = new int[handler.size() - exclusions.length];
-        List<Integer> exclusionList = Arrays.stream(exclusions).boxed().toList();
-        int index = 0;
-        for (int i = 0; i < handler.size(); i++) {
-            if (!exclusionList.contains(i)) {
-                indices[index++] = i;
-            }
-        }
+        int[] indices = IntStream.range(0, handler.size())
+                .filter(i -> Arrays.stream(exclusions).noneMatch(excluded -> excluded == i))
+                .toArray();
         return new ScopedHandlerWrapper<>(handler, indices);
     }
 

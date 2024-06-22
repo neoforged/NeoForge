@@ -62,7 +62,7 @@ public class HandlerUtil {
      * @return {@code true} if the resource at the specified index is empty, {@code false} otherwise
      */
     public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, int index) {
-        return handler.getResource(index).isBlank() || handler.getAmount(index) <= 0;
+        return handler.getResource(index).isEmpty() || handler.getAmount(index) <= 0;
     }
 
     /**
@@ -76,7 +76,7 @@ public class HandlerUtil {
      * @return {@code true} if the resource at the specified index is full, {@code false} otherwise
      */
     public static <T extends IResource> boolean isIndexFull(IResourceHandler<T> handler, int index) {
-        return handler.getAmount(index) >= handler.getLimit(index, handler.getResource(index));
+        return handler.getAmount(index) >= handler.getCapacity(index, handler.getResource(index));
     }
 
     /**
@@ -94,7 +94,7 @@ public class HandlerUtil {
         for (int index = 0; index < size; ++index) {
             int indexFill = handler.getAmount(index);
             if (indexFill > 0) {
-                proportion += (float) indexFill / handler.getLimit(index, handler.getResource(index));
+                proportion += (float) indexFill / handler.getCapacity(index, handler.getResource(index));
             }
         }
 
@@ -224,7 +224,7 @@ public class HandlerUtil {
      */
     @Nullable
     public static <T extends IResource> ResourceStack<T> extractAny(IResourceHandler<T> handler, int amount, TransferAction action) {
-        return extractFiltered(handler, Predicate.not(IResource::isBlank), amount, action);
+        return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, action);
     }
 
     /**
@@ -277,6 +277,6 @@ public class HandlerUtil {
      */
     @Nullable
     public static <T extends IResource> ResourceStack<T> moveAny(IResourceHandler<T> from, IResourceHandler<T> to, int amount, TransferAction action) {
-        return moveFiltered(from, to, Predicate.not(IResource::isBlank), amount, action);
+        return moveFiltered(from, to, Predicate.not(IResource::isEmpty), amount, action);
     }
 }

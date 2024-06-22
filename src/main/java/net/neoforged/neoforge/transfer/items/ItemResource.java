@@ -16,13 +16,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
@@ -50,7 +48,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts blank resources.
      */
     public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
-            .xmap(o -> o.orElse(ItemResource.BLANK), r -> r.isBlank() ? Optional.of(ItemResource.BLANK) : Optional.of(r));
+            .xmap(o -> o.orElse(ItemResource.BLANK), r -> r.isEmpty() ? Optional.of(ItemResource.BLANK) : Optional.of(r));
     /**
      * Codec for an item resource and an amount. Does <b>not</b> accept empty stacks.
      */
@@ -96,7 +94,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
     }
 
     @Override
-    public boolean isBlank() {
+    public boolean isEmpty() {
         return innerStack.isEmpty();
     }
 
@@ -156,7 +154,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
     }
 
     public ItemStack toStack(int count) {
-        return count == 0 || this.isBlank() ? ItemStack.EMPTY : this.innerStack.copyWithCount(count);
+        return count == 0 || this.isEmpty() ? ItemStack.EMPTY : this.innerStack.copyWithCount(count);
     }
 
     public List<ItemStack> toStacks(int count) {

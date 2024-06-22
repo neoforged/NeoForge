@@ -17,8 +17,6 @@ import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
-import java.util.function.Supplier;
-
 public abstract class ItemStorage implements IResourceHandlerModifiable<ItemResource> {
     protected final int size;
 
@@ -46,8 +44,13 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
     }
 
     @Override
-    public int getLimit(int index, ItemResource resource) {
+    public int getCapacity(int index, ItemResource resource) {
         return resource.getMaxStackSize();
+    }
+
+    @Override
+    public int getCapacity(int index) {
+        return 99;
     }
 
     @Override
@@ -56,12 +59,12 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion(int index) {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction(int index) {
         return true;
     }
 
@@ -73,7 +76,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank() || !isValid(index, resource)) return 0;
+        if (amount <= 0 || resource.isEmpty() || !isValid(index, resource)) return 0;
         ItemContainerContents contents = getContents();
         ResourceStack<ItemResource> stack = contents.getImmutableStackInSlot(index);
         if (stack.isEmpty()) {
@@ -92,7 +95,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
 
     @Override
     public int insert(ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank()) return 0;
+        if (amount <= 0 || resource.isEmpty()) return 0;
         ItemContainerContents contents = getContents();
         int remaining = amount;
         for (int i = 0; i < size; i++) {
@@ -117,7 +120,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank()) return 0;
+        if (amount <= 0 || resource.isEmpty()) return 0;
         ItemContainerContents contents = getContents();
         ResourceStack<ItemResource> stack = contents.getImmutableStackInSlot(index);
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;

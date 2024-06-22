@@ -44,10 +44,10 @@ public class DispenserContext implements IItemContext {
 
     @Override
     public int insert(ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank()) return 0;
+        if (amount <= 0 || resource.isEmpty()) return 0;
         if (action.isSimulating()) return amount;
         int inserted = 0;
-        if (getResource().isBlank()) {
+        if (getResource().isEmpty()) {
             inserted = Math.min(amount, resource.getMaxStackSize());
             if (action.isExecuting()) {
                 this.resource = resource;
@@ -65,7 +65,7 @@ public class DispenserContext implements IItemContext {
 
     @Override
     public int extract(ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank()) return 0;
+        if (amount <= 0 || resource.isEmpty()) return 0;
         int extracted = Math.min(amount, getAmount());
         if (action.isExecuting()) {
             this.amount -= extracted;

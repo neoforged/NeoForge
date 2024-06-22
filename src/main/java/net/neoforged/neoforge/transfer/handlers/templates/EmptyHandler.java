@@ -39,7 +39,12 @@ public class EmptyHandler<T extends IResource> implements ISingleResourceHandler
     }
 
     @Override
-    public int getLimit(T resource) {
+    public int getCapacity(T resource) {
+        return 0;
+    }
+
+    @Override
+    public int getCapacity() {
         return 0;
     }
 
@@ -49,12 +54,12 @@ public class EmptyHandler<T extends IResource> implements ISingleResourceHandler
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return false;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return false;
     }
 

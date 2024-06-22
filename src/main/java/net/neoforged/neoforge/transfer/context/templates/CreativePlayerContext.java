@@ -15,7 +15,7 @@ public class CreativePlayerContext extends StaticContext {
 
     @Override
     protected int insertOverflow(ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isBlank()) return 0;
+        if (amount <= 0 || resource.isEmpty()) return 0;
         int testIfPresent = handler.extract(resource, 1, TransferAction.SIMULATE);
         if (testIfPresent == 0) {
             return handler.insert(resource, 1, action);

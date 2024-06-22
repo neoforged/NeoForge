@@ -101,7 +101,7 @@ public class VanillaHandlersTests {
         helper.assertTrue(wrapper != null, "Expected fluid handler");
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only");
 
-        helper.assertTrue(wrapper.getTanks() == 1, "Got %d tanks".formatted(wrapper.getTanks()));
+        helper.assertTrue(wrapper.size() == 1, "Got %d tanks".formatted(wrapper.size()));
 
         // Simulate filling with water
         var fillResult = wrapper.fill(new FluidStack(Fluids.WATER, 2000), SIMULATE);

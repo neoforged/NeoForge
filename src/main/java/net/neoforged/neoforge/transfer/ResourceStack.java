@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.transfer;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,13 +41,56 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
     }
 
     /**
+     * Creates a codec with the resource being a field in the object.
+     * <pre>{@code
+     * {
+     *     "resource": {
+     *         "id": "minecraft:water",
+     *         "components": { ... }
+     *     },
+     *     "amount": 1000
+     * }
+     * }</pre>
+     * @param resourceCodec a codec for the resource
+     * @return a codec for a resource stack
+     * @param <T> the resource type
+     */
+    public static <T extends IResource> Codec<ResourceStack<T>> codec(Codec<T> resourceCodec) {
+        return RecordCodecBuilder.create(instance -> instance.group(
+                resourceCodec.fieldOf("resource").forGetter(ResourceStack::resource),
+                Codec.INT.fieldOf("amount").forGetter(ResourceStack::amount)
+        ).apply(instance, ResourceStack::new));
+    }
+
+    /**
+     * Creates a codec where the fields for the resource are at the same level as the amount
+     * <pre>{@code
+     * {
+     *    "id": "minecraft:water",
+     *    "components": { ... },
+     *    "amount": 1000
+     * }
+     * }</pre>
+     *
+     * @param resourceCodec
+     * @return
+     * @param <T>
+     */
+    public static <T extends IResource> Codec<ResourceStack<T>> flatCodec(MapCodec<T> resourceCodec) {
+        return RecordCodecBuilder.create(instance -> instance.group(
+                resourceCodec.forGetter(ResourceStack::resource),
+                Codec.INT.fieldOf("amount").forGetter(ResourceStack::amount)
+        ).apply(instance, ResourceStack::new));
+    }
+
+    /**
      * Checks if this is empty, meaning that the amount is not positive
-     * or that the resource is {@link IResource#isBlank() blank}.
+     * or that the resource is {@link IResource#isEmpty() blank}.
      *
      * @return {@code true} if empty
      */
     public boolean isEmpty() {
-        return amount <= 0 || resource.isBlank();
+        return amount <= 0 || resource.isEmpty();
     }
 
     /**

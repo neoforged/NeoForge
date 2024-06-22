@@ -44,7 +44,7 @@ public class AttachmentEnergyStorage implements IEnergyHandler {
 
     @Override
     public int insert(int toReceive, TransferAction action) {
-        if (!canInsert() || toReceive <= 0) {
+        if (!allowsInsertion() || toReceive <= 0) {
             return 0;
         }
 
@@ -57,7 +57,7 @@ public class AttachmentEnergyStorage implements IEnergyHandler {
 
     @Override
     public int extract(int toExtract, TransferAction action) {
-        if (!canExtract() || toExtract <= 0) {
+        if (!allowsExtraction() || toExtract <= 0) {
             return 0;
         }
 
@@ -79,17 +79,17 @@ public class AttachmentEnergyStorage implements IEnergyHandler {
     }
 
     @Override
-    public int getLimit() {
+    public int getCapacity() {
         return this.capacity;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return this.maxExtract > 0;
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return this.maxReceive > 0;
     }
 }

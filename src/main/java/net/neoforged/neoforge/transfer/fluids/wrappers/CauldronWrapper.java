@@ -48,7 +48,7 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public int getLimit(FluidResource resource) {
+    public int getCapacity(FluidResource resource) {
         BlockState state = level.getBlockState(pos);
         return getContent(state).totalAmount;
     }
@@ -59,12 +59,12 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return true;
     }
 
@@ -83,7 +83,7 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
         BlockState state = level.getBlockState(pos);
         CauldronFluidContent currentContent = getContent(state);
 
-        if (resource.isBlank() || amount <= 0 || !resource.equals(currentContent.fluid.defaultResource)) return 0;
+        if (resource.isEmpty() || amount <= 0 || !resource.equals(currentContent.fluid.defaultResource)) return 0;
 
         CauldronFluidContent insertContent = CauldronFluidContent.getForFluid(resource.getFluid());
         if (insertContent == null) {
@@ -108,7 +108,7 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     public int extract(FluidResource resource, int amount, TransferAction action) {
         BlockState state = level.getBlockState(pos);
         CauldronFluidContent content = getContent(state);
-        if (amount < content.getMillibuckets(state) || resource.isBlank() || !resource.equals(content.fluid.defaultResource)) {
+        if (amount < content.getMillibuckets(state) || resource.isEmpty() || !resource.equals(content.fluid.defaultResource)) {
             return 0;
         }
 

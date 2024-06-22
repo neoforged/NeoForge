@@ -52,11 +52,11 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
 
     @Override
     public int getAmount() {
-        return getResource().isBlank() ? 0 : FluidType.BUCKET_VOLUME;
+        return getResource().isEmpty() ? 0 : FluidType.BUCKET_VOLUME;
     }
 
     @Override
-    public int getLimit(FluidResource ignored) {
+    public int getCapacity(FluidResource ignored) {
         return FluidType.BUCKET_VOLUME;
     }
 
@@ -66,12 +66,12 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return true;
     }
 
@@ -100,7 +100,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     public int extract(FluidResource resource, int amount, TransferAction action) {
         BlockState state = level.getBlockState(blockPos);
         FluidState fluidState = level.getFluidState(blockPos);
-        if (amount < FluidType.BUCKET_VOLUME || resource.isBlank() || !resource.equals(fluidState.getType().defaultResource)) return 0;
+        if (amount < FluidType.BUCKET_VOLUME || resource.isEmpty() || !resource.equals(fluidState.getType().defaultResource)) return 0;
         if (!state.getFluidState().isEmpty()) {
             if (!(state.getBlock() instanceof BucketPickup pickupHandler)) return 0;
             if (action.isSimulating()) {

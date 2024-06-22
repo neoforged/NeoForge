@@ -50,7 +50,7 @@ public class SimpleFluidContent implements DataComponentHolder {
     }
 
     public static SimpleFluidContent of(FluidResource resource, int amount) {
-        return resource.isBlank() || amount <= 0 ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
+        return resource.isEmpty() || amount <= 0 ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
     }
 
     public static SimpleFluidContent of(ResourceStack<FluidResource> resourceStack) {

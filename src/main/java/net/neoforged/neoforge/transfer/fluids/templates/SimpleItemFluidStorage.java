@@ -55,7 +55,12 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public int getLimit(FluidResource resource) {
+    public int getCapacity(FluidResource resource) {
+        return getCapacity();
+    }
+
+    @Override
+    public int getCapacity() {
         return getIndividualLimit() * context.getAmount();
     }
 
@@ -77,18 +82,18 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return true;
     }
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || !isValid(resource) || !isEmpty()) return 0;
+        if (resource.isEmpty() || amount <= 0 || !isValid(resource) || !isEmpty()) return 0;
         int toFill = getIndividualLimit();
         if (amount < toFill) return 0;
         return fill(resource, amount / toFill, action) * toFill;
@@ -96,7 +101,7 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0 || isEmpty() || !getResource().equals(resource)) return 0;
+        if (resource.isEmpty() || amount <= 0 || isEmpty() || !getResource().equals(resource)) return 0;
         int containerFill = getIndividualAmount();
         if (amount > containerFill) {
             int extractedCount = amount / containerFill;

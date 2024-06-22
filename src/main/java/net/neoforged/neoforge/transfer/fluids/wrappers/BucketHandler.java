@@ -47,22 +47,22 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public int getLimit(FluidResource resource) {
+    public int getCapacity(FluidResource resource) {
         return FluidType.BUCKET_VOLUME;
     }
 
     @Override
     public boolean isValid(FluidResource resource) {
-        return !resource.getFilledBucket().isBlank();
+        return !resource.getFilledBucket().isEmpty();
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return true;
     }
 
@@ -72,7 +72,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int insert(FluidResource resource, int amount, TransferAction action) {
-        if (amount < FluidType.BUCKET_VOLUME || resource.isBlank() || !getResource().isBlank()) return 0;
+        if (amount < FluidType.BUCKET_VOLUME || resource.isEmpty() || !getResource().isEmpty()) return 0;
 
         int exchanged = context.exchange(getFilled(resource), amount / FluidType.BUCKET_VOLUME, action);
         return exchanged * FluidType.BUCKET_VOLUME;
@@ -84,7 +84,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int extract(FluidResource resource, int amount, TransferAction action) {
-        if (amount < FluidType.BUCKET_VOLUME || resource.isBlank() || !Objects.equals(resource, getResource())) return 0;
+        if (amount < FluidType.BUCKET_VOLUME || resource.isEmpty() || !Objects.equals(resource, getResource())) return 0;
 
         int exchanged = context.exchange(getEmpty(), amount / FluidType.BUCKET_VOLUME, action);
         return exchanged * FluidType.BUCKET_VOLUME;

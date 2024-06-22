@@ -15,7 +15,7 @@ public interface IResource {
     /**
      * Returns {@code true} if this represents the absence of a resource.
      *
-     * <p>Examples include item resource with air as an item.
+     * <p>Examples include item resource with air as an item, or fluid resource with empty fluid.
      */
-    boolean isBlank(); // TODO: potentially use a different name
+    boolean isEmpty();
 }

@@ -52,10 +52,21 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     }
 
     @Override
-    public int getLimit(int index, T resource) {
+    public int getCapacity(int index, T resource) {
         for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
-                return storage.getLimit(index, resource);
+                return storage.getCapacity(index, resource);
+            }
+            index -= storage.size();
+        }
+        throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public int getCapacity(int index) {
+        for (IResourceHandler<T> storage : getHandlers()) {
+            if (index < storage.size()) {
+                return storage.getCapacity(index);
             }
             index -= storage.size();
         }
@@ -74,30 +85,32 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion(int index) {
         for (IResourceHandler<T> storage : getHandlers()) {
-            if (storage.canInsert()) {
-                return true;
+            if (index < storage.size()) {
+                return storage.allowsInsertion(index);
             }
+            index -= storage.size();
         }
-        return false;
+        throw new IndexOutOfBoundsException();
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction(int index) {
         for (IResourceHandler<T> storage : getHandlers()) {
-            if (storage.canExtract()) {
-                return true;
+            if (index < storage.size()) {
+                return storage.allowsExtraction(index);
             }
+            index -= storage.size();
         }
-        return false;
+        throw new IndexOutOfBoundsException();
     }
 
     @Override
     public int insert(int index, T resource, int amount, TransferAction action) {
         for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
-                if (storage.canInsert()) {
+                if (storage.allowsInsertion()) {
                     return storage.insert(index, resource, amount, action);
                 } else {
                     return 0;
@@ -112,7 +125,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     public int insert(T resource, int amount, TransferAction action) {
         int inserted = 0;
         for (IResourceHandler<T> storage : getHandlers()) {
-            if (storage.canInsert()) {
+            if (storage.allowsInsertion()) {
                 inserted += storage.insert(resource, amount - inserted, action);
             }
             if (inserted >= amount) {
@@ -126,7 +139,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     public int extract(int index, T resource, int amount, TransferAction action) {
         for (IResourceHandler<T> storage : getHandlers()) {
             if (index < storage.size()) {
-                if (storage.canExtract()) {
+                if (storage.allowsExtraction()) {
                     return storage.extract(index, resource, amount, action);
                 } else {
                     return 0;
@@ -141,7 +154,7 @@ public class AggregateResourceHandler<T extends IResource> implements IResourceH
     public int extract(T resource, int amount, TransferAction action) {
         int extracted = 0;
         for (IResourceHandler<T> storage : getHandlers()) {
-            if (storage.canExtract()) {
+            if (storage.allowsExtraction()) {
                 extracted += storage.extract(resource, amount - extracted, action);
             }
             if (extracted >= amount) {

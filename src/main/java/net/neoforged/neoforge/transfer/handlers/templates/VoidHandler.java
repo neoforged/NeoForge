@@ -39,7 +39,7 @@ public class VoidHandler<T extends IResource> implements ISingleResourceHandler<
     }
 
     @Override
-    public int getLimit(T ignored) {
+    public int getCapacity(T ignored) {
         return Integer.MAX_VALUE;
     }
 
@@ -49,12 +49,12 @@ public class VoidHandler<T extends IResource> implements ISingleResourceHandler<
     }
 
     @Override
-    public boolean canInsert() {
+    public boolean allowsInsertion() {
         return true;
     }
 
     @Override
-    public boolean canExtract() {
+    public boolean allowsExtraction() {
         return false;
     }
 

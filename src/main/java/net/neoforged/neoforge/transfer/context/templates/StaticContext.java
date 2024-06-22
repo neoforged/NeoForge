@@ -36,7 +36,7 @@ public class StaticContext implements IItemContext {
 
     @Override
     public int insert(ItemResource resource, int amount, TransferAction action) {
-        if (resource.isBlank() || amount <= 0) return 0;
+        if (resource.isEmpty() || amount <= 0) return 0;
         return insertOverflow(resource, amount, action);
     }
 

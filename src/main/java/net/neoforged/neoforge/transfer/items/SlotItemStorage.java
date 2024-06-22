@@ -41,17 +41,17 @@ public class SlotItemStorage extends Slot {
 
     @Override
     public int getMaxStackSize() {
-        return storage.getLimit(getContainerSlot(), ItemResource.BLANK);
+        return storage.getCapacity(getContainerSlot(), ItemResource.BLANK);
     }
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        return storage.getLimit(getContainerSlot(), ItemResource.of(stack));
+        return storage.getCapacity(getContainerSlot(), ItemResource.of(stack));
     }
 
     @Override
     public boolean mayPickup(Player player) {
-        return storage.canExtract();
+        return storage.allowsExtraction();
     }
 
     @Override

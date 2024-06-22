@@ -51,7 +51,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * Codec for a fluid resource. Same format as {@link #CODEC}, and also accepts blank resources.
      */
     public static final Codec<FluidResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
-            .xmap(o -> o.orElse(FluidResource.BLANK), r -> r.isBlank() ? Optional.of(FluidResource.BLANK) : Optional.of(r));
+            .xmap(o -> o.orElse(FluidResource.BLANK), r -> r.isEmpty() ? Optional.of(FluidResource.BLANK) : Optional.of(r));
     /**
      * Codec for a fluid resource and an amount. Does <b>not</b> accept empty stacks.
      */
@@ -102,7 +102,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * @return if this resource is blank
      */
     @Override
-    public boolean isBlank() {
+    public boolean isEmpty() {
         return innerStack.isEmpty();
     }
 
