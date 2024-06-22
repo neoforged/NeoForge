@@ -12,7 +12,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.common.util.InsertableStrictLinkedHashSet;
+import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -25,12 +25,12 @@ import org.jetbrains.annotations.ApiStatus;
 public final class BuildCreativeModeTabContentsEvent extends Event implements IModBusEvent, CreativeModeTab.Output {
     private final CreativeModeTab tab;
     private final CreativeModeTab.ItemDisplayParameters parameters;
-    private final InsertableStrictLinkedHashSet<ItemStack> parentEntries;
-    private final InsertableStrictLinkedHashSet<ItemStack> searchEntries;
+    private final InsertableLinkedOpenCustomHashSet<ItemStack> parentEntries;
+    private final InsertableLinkedOpenCustomHashSet<ItemStack> searchEntries;
     private final ResourceKey<CreativeModeTab> tabKey;
 
     @ApiStatus.Internal
-    public BuildCreativeModeTabContentsEvent(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.ItemDisplayParameters parameters, InsertableStrictLinkedHashSet<ItemStack> parentEntries, InsertableStrictLinkedHashSet<ItemStack> searchEntries) {
+    public BuildCreativeModeTabContentsEvent(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.ItemDisplayParameters parameters, InsertableLinkedOpenCustomHashSet<ItemStack> parentEntries, InsertableLinkedOpenCustomHashSet<ItemStack> searchEntries) {
         this.tab = tab;
         this.tabKey = tabKey;
         this.parameters = parameters;
@@ -110,11 +110,11 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
             throw new IllegalArgumentException("The stack count must be 1");
 
         if (isParentTab(visibility)) {
-            insertAfterOperation(existingEntry, newEntry, parentEntries);
+            parentEntries.addBefore(existingEntry, newEntry);
         }
 
         if (isSearchTab(visibility)) {
-            insertAfterOperation(existingEntry, newEntry, searchEntries);
+            searchEntries.addBefore(existingEntry, newEntry);
         }
     }
 
@@ -129,11 +129,11 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
             throw new IllegalArgumentException("The stack count must be 1");
 
         if (isParentTab(visibility)) {
-            insertBeforeOperation(existingEntry, newEntry, parentEntries);
+            parentEntries.addAfter(existingEntry, newEntry);
         }
 
         if (isSearchTab(visibility)) {
-            insertBeforeOperation(existingEntry, newEntry, searchEntries);
+            searchEntries.addAfter(existingEntry, newEntry);
         }
     }
 
@@ -165,28 +165,6 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
 
         if (isSearchTab(visibility)) {
             searchEntries.remove(existingEntry);
-        }
-    }
-
-    private void insertAfterOperation(ItemStack existingEntry, ItemStack newEntry, InsertableStrictLinkedHashSet<ItemStack> searchEntries) {
-        int destinationIndex = searchEntries.indexOf(existingEntry);
-        if (destinationIndex == -1) {
-            throw new UnsupportedOperationException("Tried to put " + newEntry.getItem() + " after " + existingEntry.getItem() + " that does not exist in tab");
-        } else if (destinationIndex + 1 < searchEntries.size()) {
-            searchEntries.add(destinationIndex + 1, newEntry);
-        } else {
-            searchEntries.add(newEntry);
-        }
-    }
-
-    private void insertBeforeOperation(ItemStack existingEntry, ItemStack newEntry, InsertableStrictLinkedHashSet<ItemStack> parentEntries) {
-        int destinationIndex = parentEntries.indexOf(existingEntry);
-        if (destinationIndex == -1) {
-            throw new UnsupportedOperationException("Tried to put " + newEntry.getItem() + " before " + existingEntry.getItem() + " that does not exist in tab");
-        } else if (destinationIndex < parentEntries.size()) {
-            parentEntries.add(destinationIndex, newEntry);
-        } else {
-            parentEntries.add(newEntry);
         }
     }
 
