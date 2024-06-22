@@ -8,6 +8,10 @@
     "description": {
       "translate": "pack.neoforge.experimental.description"
     },
-    "pack_format": 48
+    "pack_format": 48,
+    "supported_formats": [
+      0,
+      2147483647
+    ]
   }
 }

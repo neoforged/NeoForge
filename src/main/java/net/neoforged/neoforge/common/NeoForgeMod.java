@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common;
 
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -32,12 +33,15 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.FeatureFlagsMetadataSection;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.Pack;
@@ -54,6 +58,8 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
@@ -686,6 +692,33 @@ public class NeoForgeMod {
         gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
         gen.addProvider(event.includeClient(), new NeoForgeLanguageProvider(packOutput));
+
+        // mod experimental pack
+        // custom impl since using PackMetadataGenerator throws "duplicate provider" (getName() is final which is used for provider id)
+        gen.addProvider(true, new DataProvider() {
+            @Override
+            public CompletableFuture<?> run(CachedOutput cache) {
+                var json = new JsonObject();
+
+                json.add(PackMetadataSection.TYPE.getMetadataSectionName(), PackMetadataSection.TYPE.toJson(new PackMetadataSection(
+                        Component.translatable("pack.neoforge.experimental.description"),
+                        DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
+                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+
+                json.add(FeatureFlagsMetadataSection.TYPE.getMetadataSectionName(), FeatureFlagsMetadataSection.TYPE.toJson(new FeatureFlagsMetadataSection(FeatureFlagSet.of(FeatureFlags.MOD_EXPERIMENTAL))));
+
+                return DataProvider.saveStable(cache, json, packOutput.getOutputFolder(PackOutput.Target.DATA_PACK)
+                        .resolve("neoforge")
+                        .resolve("datapacks")
+                        .resolve("mod_experimental")
+                        .resolve("pack.mcmeta"));
+            }
+
+            @Override
+            public String getName() {
+                return "mod_experimental_pack";
+            }
+        });
     }
 
     // done in an event instead of deferred to only enable if a mod requests it
