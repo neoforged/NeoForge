@@ -73,7 +73,7 @@ public class GameTestTest {
     }
 
     private void registerCaps(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ENERGY_BLOCK_ENTITY.get(), (be, side) -> be.energyStorage);
+        event.registerBlockEntity(Capabilities.EnergyHandler.BLOCK, ENERGY_BLOCK_ENTITY.get(), (be, side) -> be.energyStorage);
     }
 
     @SubscribeEvent
@@ -165,7 +165,7 @@ public class GameTestTest {
         helper.setBlock(energyPos, ENERGY_BLOCK.get());
 
         // Queries the energy capability
-        IEnergyStorage energyStorage = helper.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, helper.absolutePos(energyPos), null);
+        IEnergyStorage energyStorage = helper.getLevel().getCapability(Capabilities.EnergyHandler.BLOCK, helper.absolutePos(energyPos), null);
         if (energyStorage == null) {
             helper.fail("Expected energy storage", energyPos);
         }

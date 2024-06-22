@@ -1,14 +1,28 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -20,7 +_,7 @@
+@@ -19,18 +_,21 @@
+ import net.minecraft.world.level.block.state.StateDefinition;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.transfer.fluids.FluidResource;
  
 -public abstract class Fluid {
 +public abstract class Fluid implements net.neoforged.neoforge.common.extensions.IFluidExtension {
      public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
      protected final StateDefinition<Fluid, FluidState> stateDefinition;
      private FluidState defaultFluidState;
+     private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
++    public final FluidResource defaultResource;
+ 
+     protected Fluid() {
+         StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
+         this.createFluidStateDefinition(builder);
+         this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
+         this.registerDefaultState(this.stateDefinition.any());
++        this.defaultResource = FluidResource.of(this);
+     }
+ 
+     protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76121_) {
 @@ -100,6 +_,13 @@
      }
  

@@ -38,6 +38,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
+import net.neoforged.neoforge.transfer.ResourceStack;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.fluids.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -196,6 +199,10 @@ public final class FluidStack implements MutableDataComponentHolder {
         return tag.isEmpty() ? EMPTY : parse(lookupProvider, tag).orElse(EMPTY);
     }
 
+    public static FluidStack of(ResourceStack<FluidResource> stack) {
+        return stack.isEmpty() ? EMPTY : stack.resource().toStack(stack.amount());
+    }
+
     /**
      * Checks if this fluid stack is empty.
      */
@@ -316,6 +323,10 @@ public final class FluidStack implements MutableDataComponentHolder {
             fluidStack.setAmount(amount);
             return fluidStack;
         }
+    }
+
+    public ResourceStack<FluidResource> immutable() {
+        return this.isEmpty() ? FluidResource.EMPTY_STACK : new ResourceStack<>(FluidResource.of(this), this.amount);
     }
 
     /**

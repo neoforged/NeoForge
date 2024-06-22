@@ -18,7 +18,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.fluids.capability.wrappers.CauldronWrapper;
+import net.neoforged.neoforge.transfer.fluids.wrappers.CauldronWrapper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,6 +75,13 @@ public final class CauldronFluidContent {
         } else {
             return state.getValue(levelProperty);
         }
+    }
+
+    /**
+     * Return the amount of fluid, in millibuckets, in the cauldron given its block state.
+     */
+    public int getMillibuckets(BlockState state) {
+        return totalAmount * currentLevel(state) / maxLevel;
     }
 
     private CauldronFluidContent(Block block, Fluid fluid, int totalAmount, int maxLevel, @Nullable IntegerProperty levelProperty) {

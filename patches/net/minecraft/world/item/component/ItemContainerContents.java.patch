@@ -1,9 +1,19 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -146,6 +_,39 @@
+@@ -13,6 +_,8 @@
+ import net.minecraft.network.codec.ByteBufCodecs;
+ import net.minecraft.network.codec.StreamCodec;
+ import net.minecraft.world.item.ItemStack;
++import net.neoforged.neoforge.transfer.ResourceStack;
++import net.neoforged.neoforge.transfer.items.ItemResource;
+ 
+ public final class ItemContainerContents {
+     private static final int NO_SLOT = -1;
+@@ -145,6 +_,70 @@
+     public int hashCode() {
          return this.hashCode;
      }
- 
++
 +    // Neo Start
 +
 +    /**
@@ -26,6 +36,36 @@
 +    }
 +
 +    /**
++     * Gets an immutable copy of the stack at a particular slot.
++     *
++     * @param slot The slot to check. Must be within [0, {@link #getSlots()}]
++     * @return An immutable copy of the stack in that slot
++     * @throws UnsupportedOperationException if the provided slot index is out-of-bounds.
++     */
++    public ResourceStack<ItemResource> getImmutableStackInSlot(int slot) {
++        validateSlotIndex(slot);
++        return this.items.get(slot).immutable();
++    }
++
++    /**
++     * Sets the stack at a particular slot with the provided resource and amount. This change
++     * is not reflected in the original container, but rather a new container is returned.
++     *
++     * @param slot The slot to set. Must be within [0, {@link #getSlots()}]
++     * @param resource The resource to set
++     * @param amount The amount to set
++     * @return A new container with the stack at the provided slot set to the provided resource and amount
++     */
++    public ItemContainerContents set(int slot, ItemResource resource, int amount) {
++        validateSlotIndex(slot);
++        NonNullList<ItemStack> newItems = NonNullList.withSize(this.items.size(), ItemStack.EMPTY);
++        for (int i = 0; i < this.items.size(); i++) {
++            newItems.set(i, i == slot ? resource.toStack(amount) : this.items.get(i));
++        }
++        return new ItemContainerContents(newItems);
++    }
++
++    /**
 +     * Throws {@link UnsupportedOperationException} if the provided slot index is invalid.
 +     */
 +    private void validateSlotIndex(int slot) {
@@ -37,6 +77,6 @@
 +    // Neo End
 +
 +
+ 
      static record Slot(int index, ItemStack item) {
          public static final Codec<ItemContainerContents.Slot> CODEC = RecordCodecBuilder.create(
-             p_331695_ -> p_331695_.group(

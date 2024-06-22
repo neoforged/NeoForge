@@ -1,6 +1,11 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -92,7 +_,7 @@
+@@ -89,10 +_,12 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+ import net.minecraft.world.level.saveddata.maps.MapId;
++import net.neoforged.neoforge.transfer.ResourceStack;
++import net.neoforged.neoforge.transfer.items.ItemResource;
  import org.apache.commons.lang3.mutable.MutableBoolean;
  import org.slf4j.Logger;
  
@@ -19,6 +24,17 @@
 +
      public ItemStack(ItemLike p_41599_) {
          this(p_41599_, 1);
+     }
+@@ -293,6 +_,10 @@
+         return p_330539_.isEmpty() ? EMPTY : parse(p_330543_, p_330539_).orElse(EMPTY);
+     }
+ 
++    public static ItemStack of(ResourceStack<ItemResource> stack) {
++        return stack.resource().toStack(stack.amount());
++    }
++
+     public boolean isEmpty() {
+         return this == EMPTY || this.item == Items.AIR || this.count <= 0;
      }
 @@ -339,7 +_,7 @@
      }

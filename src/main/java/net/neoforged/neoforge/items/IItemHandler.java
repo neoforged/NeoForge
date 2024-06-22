@@ -9,8 +9,20 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.items.ItemResource;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Implement this interface on your Block Entity if it can be used in a Hopper.
+ * This is used to interact with Hoppers, Droppers, Vanilla automation, etc.
+ *
+ * @deprecated Use {@link IResourceHandler} of {@link ItemResource} instead
+ */
+@Deprecated(forRemoval = true, since = "1.21")
+@ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IItemHandler {
+
     /**
      * Returns the number of slots available
      *
