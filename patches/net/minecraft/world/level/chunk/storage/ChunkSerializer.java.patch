@@ -14,7 +14,7 @@
          }
  
 +        if (p_188234_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND))
-+            chunkaccess.readAttachmentsFromNBT(p_188231_.registryAccess(), p_188234_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
++            chunkaccess.dataAttachments().deserializeAttachments(p_188231_.registryAccess(), p_188234_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
          chunkaccess.setLightCorrect(flag);
          CompoundTag compoundtag2 = p_188234_.getCompound("Heightmaps");
          EnumSet<Heightmap.Types> enumset = EnumSet.noneOf(Heightmap.Types.class);
@@ -51,8 +51,8 @@
          }
  
 +        try {
-+            final CompoundTag capTag = p_63456_.writeAttachmentsToNBT(p_63455_.registryAccess());
-+            if (capTag != null) compoundtag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, capTag);
++            final CompoundTag capTag = p_63456_.dataAttachments().serializeAttachments(p_63455_.registryAccess());
++            if (!capTag.isEmpty()) compoundtag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, capTag);
 +        } catch (Exception exception) {
 +            LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
 +        }

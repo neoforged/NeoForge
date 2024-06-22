@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess {
-+public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolder {
++public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolderExtension {
      public static final int NO_FILLED_SECTION = -1;
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
@@ -42,75 +42,29 @@
                              }
                          }
                      }
-@@ -476,4 +_,71 @@
+@@ -476,4 +_,25 @@
  
      public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
      }
 +
 +    // FORGE START
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++    final net.neoforged.neoforge.attachment.AttachmentHolder attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder();
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments() { return attachmentHolder; }
 +
 +    @Override
-+    public boolean hasAttachments() {
-+        return getAttachmentHolder().hasAttachments();
-+    }
-+
-+    @Override
-+    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        return getAttachmentHolder().hasData(type);
-+    }
-+
-+    @Override
-+    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getData(type);
-+    }
-+
-+    @Override
-+    public <T> java.util.Optional<T> getExistingData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getExistingData(type);
-+    }
-+
-+    @Override
-+    @Nullable
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        setUnsaved(true);
-+        return getAttachmentHolder().setData(type, data);
++        return net.neoforged.neoforge.attachment.IAttachmentHolderExtension.super.setData(type, data);
 +    }
 +
 +    @Override
-+    @Nullable
 +    public <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
 +        setUnsaved(true);
-+        return getAttachmentHolder().removeData(type);
++        return net.neoforged.neoforge.attachment.IAttachmentHolderExtension.super.removeData(type);
 +    }
 +
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
-+     */
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    @Nullable
-+    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
-+        return (CompoundTag) net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_ENCODER.encodeStart(provider.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), getAttachmentHolder())
-+            .resultOrPartial().orElseThrow();
-+    }
-+
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
-+     *
-+     */
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
-+        getAttachmentHolder().deserializeInternal(provider, tag);
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    protected net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
-+        return attachmentHolder;
-+    }
 +    @Nullable
 +    public net.minecraft.world.level.Level getLevel() { return null; }
  }

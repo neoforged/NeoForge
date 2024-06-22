@@ -15,10 +15,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.attachment.IAttachmentHolderExtension;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.ApiStatus;
 
-public interface IBlockEntityExtension {
+public interface IBlockEntityExtension extends IAttachmentHolderExtension {
     private BlockEntity self() {
         return (BlockEntity) this;
     }

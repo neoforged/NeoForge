@@ -5,7 +5,7 @@
  import net.minecraft.world.scores.Scoreboard;
  
 -public abstract class Level implements LevelAccessor, AutoCloseable {
-+public abstract class Level extends net.neoforged.neoforge.attachment.AttachmentHolder implements LevelAccessor, AutoCloseable, net.neoforged.neoforge.common.extensions.ILevelExtension {
++public abstract class Level implements LevelAccessor, AutoCloseable, net.neoforged.neoforge.common.extensions.ILevelExtension {
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("the_nether"));
@@ -219,11 +219,10 @@
                          this.neighborChanged(blockstate, blockpos, p_46719_, p_46718_, false);
                      }
                  }
-@@ -1076,6 +_,18 @@
-     @Override
+@@ -1077,6 +_,21 @@
      public BiomeManager getBiomeManager() {
          return this.biomeManager;
-+    }
+     }
 +
 +    private double maxEntityRadius = 2.0D;
 +    @Override
@@ -235,6 +234,10 @@
 +        if (value > maxEntityRadius)
 +            maxEntityRadius = value;
 +        return maxEntityRadius;
-     }
++    }
++
++    net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder();
++    public net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments() { return dataAttachments; }
  
      public final boolean isDebug() {
+         return this.isDebug;

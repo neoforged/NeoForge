@@ -26,6 +26,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolderExtension;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -34,7 +35,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
-public interface IEntityExtension extends INBTSerializable<CompoundTag> {
+public interface IEntityExtension extends INBTSerializable<CompoundTag>, IAttachmentHolderExtension {
     private Entity self() {
         return (Entity) this;
     }

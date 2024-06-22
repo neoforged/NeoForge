@@ -193,7 +193,6 @@ public final class AttachmentType<T> {
          */
         public Builder<T> serialize(Codec<T> codec, Predicate<? super T> shouldSerialize) {
             Objects.requireNonNull(codec);
-            // TODO: better error handling
             this.shouldSerialize = shouldSerialize;
             return serialize(codec);
         }
