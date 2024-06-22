@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.item;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -26,11 +27,11 @@ public class ItemEventTests {
     @TestHolder(description = "Tests if the ItemAttributeModifierEvent allows modifying attributes")
     static void itemAttributeModifier(final DynamicTest test) {
         test.eventListeners().forge().addListener((final ItemAttributeModifierEvent event) -> {
-            if (event.getSlotType() == EquipmentSlot.MAINHAND && event.getItemStack().getItem() == Items.APPLE) {
+            if (event.getItemStack().getItem() == Items.APPLE) {
                 ResourceLocation modifierId = ResourceLocation.fromNamespaceAndPath(test.createModId(), "apple_armor");
-                event.addModifier(Attributes.ARMOR, new AttributeModifier(modifierId, 10f, AttributeModifier.Operation.ADD_VALUE));
-            } else if (event.getSlotType() == EquipmentSlot.CHEST && event.getItemStack().is(Items.GOLDEN_CHESTPLATE)) {
-                event.clearModifiers();
+                event.addModifier(Attributes.ARMOR, new AttributeModifier(modifierId, 10f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+            } else if (event.getItemStack().is(Items.GOLDEN_CHESTPLATE)) {
+                event.removeIf(entry -> entry.slot().test(EquipmentSlot.CHEST));
             }
         });
 
