@@ -258,7 +258,7 @@ public class CommonHooks {
     /**
      * Called after invulnerability checks in {@link LivingEntity#hurt(DamageSource, float)},
      * this method creates and posts the first event in the LivingEntity damage sequence,
-     * {@link LivingIncomingDamageEvent}, FOR NON-PLAYER entities.
+     * {@link LivingIncomingDamageEvent}.
      *
      * @param entity    the entity to receive damage
      * @param container the newly instantiated container for damage to be dealt. Most properties of
@@ -285,8 +285,7 @@ public class CommonHooks {
      * and requires access to the internal field {@link LivingEntity#damageContainers} as a parameter.
      *
      * @param entity    the entity to receive damage
-     * @param container the container object holding the final values of the damage pipeline while they are
-     *                  still mutable
+     * @param container the container object holding the final values of the damage pipeline while they are still mutable
      * @return the current damage value to be applied to the entity's health
      *
      */
