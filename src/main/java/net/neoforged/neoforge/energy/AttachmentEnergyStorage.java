@@ -3,23 +3,21 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.energy.templates;
+package net.neoforged.neoforge.energy;
 
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 
 import java.util.function.Supplier;
 
 /**
- * Reference implementation of {@link IEnergyHandler}. Use/extend this or implement your own.
+ * Reference implementation of {@link IEnergyStorage}. Use/extend this or implement your own.
  *
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  */
-public class AttachmentEnergyStorage implements IEnergyHandler {
+public class AttachmentEnergyStorage implements IEnergyStorage {
     protected final AttachmentHolder parent;
     protected final Supplier<AttachmentType<Integer>> attachmentType;
     protected final int capacity;
@@ -43,27 +41,27 @@ public class AttachmentEnergyStorage implements IEnergyHandler {
     }
 
     @Override
-    public int insert(int toReceive, TransferAction action) {
-        if (!allowsInsertion() || toReceive <= 0) {
+    public int receiveEnergy(int toReceive, boolean simulate) {
+        if (!canReceive() || toReceive <= 0) {
             return 0;
         }
 
-        int storedEnergy = this.getAmount();
+        int storedEnergy = this.getEnergyStored();
         int energyReceived = Mth.clamp(this.capacity - storedEnergy, 0, Math.min(this.maxReceive, toReceive));
-        if (action.isExecuting())
+        if (!simulate)
             this.setEnergy(storedEnergy + energyReceived);
         return energyReceived;
     }
 
     @Override
-    public int extract(int toExtract, TransferAction action) {
-        if (!allowsExtraction() || toExtract <= 0) {
+    public int extractEnergy(int toExtract, boolean simulate) {
+        if (!canExtract() || toExtract <= 0) {
             return 0;
         }
 
-        int storedEnergy = this.getAmount();
+        int storedEnergy = this.getEnergyStored();
         int energyExtracted = Math.min(storedEnergy, Math.min(this.maxExtract, toExtract));
-        if (action.isExecuting())
+        if (!simulate)
             this.setEnergy(storedEnergy - energyExtracted);
         return energyExtracted;
     }
@@ -74,22 +72,22 @@ public class AttachmentEnergyStorage implements IEnergyHandler {
     }
 
     @Override
-    public int getAmount() {
+    public int getEnergyStored() {
         return this.parent.getData(this.attachmentType);
     }
 
     @Override
-    public int getCapacity() {
+    public int getMaxEnergyStored() {
         return this.capacity;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean canExtract() {
         return this.maxExtract > 0;
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean canReceive() {
         return this.maxReceive > 0;
     }
 }

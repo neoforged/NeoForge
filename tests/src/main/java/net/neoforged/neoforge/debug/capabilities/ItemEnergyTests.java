@@ -17,13 +17,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities.EnergyHandler;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
 import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.energy.templates.ItemEnergyStorage;
+import net.neoforged.neoforge.energy.ItemEnergyStorage;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -68,7 +69,7 @@ public class ItemEnergyTests {
             Player player = helper.makeMockPlayer();
             player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
-            IEnergyHandler energy = context.getCapability(EnergyHandler.ITEM);
+            IEnergyStorage energy = context.getCapability(EnergyHandler.ITEM);
             helper.assertValueEqual(energy.getAmount(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
 
             helper.assertValueEqual(energy.extract(MAX_CAPACITY, TransferAction.EXECUTE), MAX_CAPACITY, "Extracted energy should be equal to the target value.");

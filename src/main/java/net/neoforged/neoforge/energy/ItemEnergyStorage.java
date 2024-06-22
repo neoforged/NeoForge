@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.energy.templates;
+package net.neoforged.neoforge.energy;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
@@ -11,7 +11,6 @@ import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
-import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
 /**
@@ -22,7 +21,7 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
  * To use this class, register a new {@link DataComponentType} which holds an {@link Integer} for your item.
  * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
  */
-public class ItemEnergyStorage implements IEnergyHandler {
+public class ItemEnergyStorage implements IEnergyStorage {
     protected final IItemContext context;
     protected final DataComponentType<Integer> energyComponent;
     protected final int capacity;
@@ -69,26 +68,26 @@ public class ItemEnergyStorage implements IEnergyHandler {
     }
 
     @Override
-    public int insert(int amount, TransferAction action) {
+    public int receiveEnergy(int amount, boolean simulate) {
         amount = Mth.clamp(amount, 0, this.maxReceive * this.context.getAmount());
         if (amount <= 0) return 0;
         int containerFill = getIndividualAmount();
         int spaceLeft = getIndividualLimit() - containerFill;
-        if (amount < spaceLeft) return setPartial(amount + containerFill, action) == 1 ? amount : 0;
-        return setFull(amount / spaceLeft, action) * spaceLeft;
+        if (amount < spaceLeft) return setPartial(amount + containerFill, simulate ? TransferAction.SIMULATE : TransferAction.EXECUTE) == 1 ? amount : 0;
+        return setFull(amount / spaceLeft, simulate ? TransferAction.SIMULATE : TransferAction.EXECUTE) * spaceLeft;
     }
 
     @Override
-    public int extract(int amount, TransferAction action) {
-        amount = Mth.clamp(amount, 0, this.maxExtract * this.context.getAmount());
-        if (amount <= 0) return 0;
+    public int extractEnergy(int maxExtract, boolean simulate) {
+        maxExtract = Mth.clamp(maxExtract, 0, this.maxExtract * this.context.getAmount());
+        if (maxExtract <= 0) return 0;
         int containerFill = getIndividualAmount();
-        if (amount < containerFill) {
-            int exchanged = setPartial(containerFill - amount, action);
-            return exchanged == 1 ? amount : 0;
+        if (maxExtract < containerFill) {
+            int exchanged = setPartial(containerFill - maxExtract, simulate ? TransferAction.SIMULATE : TransferAction.EXECUTE);
+            return exchanged == 1 ? maxExtract : 0;
         } else {
-            int extractedCount = amount / containerFill;
-            int exchanged = empty(extractedCount, action);
+            int extractedCount = maxExtract / containerFill;
+            int exchanged = empty(extractedCount, simulate ? TransferAction.SIMULATE : TransferAction.EXECUTE);
             return exchanged * containerFill;
         }
     }
@@ -109,23 +108,23 @@ public class ItemEnergyStorage implements IEnergyHandler {
     }
 
     @Override
-    public int getAmount() {
+    public int getEnergyStored() {
         int rawEnergy = getIndividualAmount();
         return Mth.clamp(rawEnergy, 0, this.capacity) * this.context.getAmount();
     }
 
     @Override
-    public int getCapacity() {
+    public int getMaxEnergyStored() {
         return this.capacity * this.context.getAmount();
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean canExtract() {
         return this.maxExtract > 0;
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean canReceive() {
         return this.maxReceive > 0;
     }
 }
