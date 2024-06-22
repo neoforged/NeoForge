@@ -115,7 +115,7 @@
              p_171716_.unRide();
              ClientLevel.this.players.remove(p_171716_);
 +
-+            p_171716_.onRemovedFromWorld();
++            p_171716_.onRemovedFromLevel();
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_171716_, ClientLevel.this));
 +
 +            if (p_171716_.isMultipartEntity()) {

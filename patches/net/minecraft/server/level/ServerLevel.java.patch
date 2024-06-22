@@ -216,7 +216,7 @@
  
              p_143375_.updateDynamicGameEventListener(DynamicGameEventListener::remove);
 +
-+            p_143375_.onRemovedFromWorld();
++            p_143375_.onRemovedFromLevel();
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_143375_, ServerLevel.this));
          }
  

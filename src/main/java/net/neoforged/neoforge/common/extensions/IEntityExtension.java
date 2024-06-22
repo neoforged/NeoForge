@@ -168,12 +168,15 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     default void onAddedToWorld() { onAddedToLevel(); }
 
     /**
-     * Called after the entity has been removed to the world's
-     * ticking list. Can be overriden, but needs to call super
-     * to prevent MC-136995.
+     * Called after the entity has been removed to the world's ticking list.
      */
-    // TODO: rename in 1.19 to onRemovedFromLevel
-    void onRemovedFromWorld();
+    void onRemovedFromLevel();
+
+    /**
+     * @deprecated Use {@link #onRemovedFromLevel()} instead.
+     */
+    @Deprecated(forRemoval = true, since = "21.0")
+    default void onRemovedFromWorld() { onRemovedFromLevel(); }
 
     /**
      * Revives an entity that has been removed from a world.
