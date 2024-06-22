@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/inventory/CrafterMenu.java
++++ b/net/minecraft/world/inventory/CrafterMenu.java
+@@ -117,9 +_,12 @@
+         if (this.player instanceof ServerPlayer serverplayer) {
+             Level level = serverplayer.level();
+             CraftingInput craftinginput = this.container.asCraftInput();
++            // using the player-free context here since the player won't be usable by the dispense method
++            net.neoforged.neoforge.common.CommonHooks.setCraftingContext(level, serverplayer, this.container);
+             ItemStack itemstack = CrafterBlock.getPotentialResults(level, craftinginput)
+                 .map(p_344359_ -> p_344359_.value().assemble(craftinginput, level.registryAccess()))
+                 .orElse(ItemStack.EMPTY);
++            net.neoforged.neoforge.common.CommonHooks.setCraftingContext(null);
+             this.resultContainer.setItem(0, itemstack);
+         }
+     }

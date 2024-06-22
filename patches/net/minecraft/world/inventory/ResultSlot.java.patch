@@ -12,9 +12,9 @@
          CraftingInput craftinginput = craftinginput$positioned.input();
          int i = craftinginput$positioned.left();
          int j = craftinginput$positioned.top();
-+        net.neoforged.neoforge.common.CommonHooks.setCraftingPlayer(p_150638_);
++        net.neoforged.neoforge.common.CommonHooks.setCraftingContext(p_150638_.level(), p_150638_, this.craftSlots, craftinginput$positioned);
          NonNullList<ItemStack> nonnulllist = p_150638_.level().getRecipeManager().getRemainingItemsFor(RecipeType.CRAFTING, craftinginput, p_150638_.level());
-+        net.neoforged.neoforge.common.CommonHooks.setCraftingPlayer(null);
++        net.neoforged.neoforge.common.CommonHooks.setCraftingContext(null);
  
          for (int k = 0; k < craftinginput.height(); k++) {
              for (int l = 0; l < craftinginput.width(); l++) {
