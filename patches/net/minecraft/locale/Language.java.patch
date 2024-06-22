@@ -14,7 +14,7 @@
          return new Language() {
              @Override
              public String getOrDefault(String p_128127_, String p_265421_) {
-@@ -64,21 +_,40 @@
+@@ -64,21 +_,49 @@
                          )
                          .isPresent();
              }
@@ -31,7 +31,11 @@
          };
      }
  
--    private static void parseTranslations(BiConsumer<String, String> p_282031_, String p_283638_) {
++    @Deprecated
+     private static void parseTranslations(BiConsumer<String, String> p_282031_, String p_283638_) {
++        parseTranslations(p_282031_, (key, value) -> {}, p_283638_);
++    }
++
 +    private static void parseTranslations(BiConsumer<String, String> p_282031_, BiConsumer<String, net.minecraft.network.chat.Component> componentConsumer, String p_283638_) {
          try (InputStream inputstream = Language.class.getResourceAsStream(p_283638_)) {
 -            loadFromJson(inputstream, p_282031_);
@@ -41,7 +45,10 @@
          }
      }
  
--    public static void loadFromJson(InputStream p_128109_, BiConsumer<String, String> p_128110_) {
+     public static void loadFromJson(InputStream p_128109_, BiConsumer<String, String> p_128110_) {
++        loadFromJson(p_128109_, p_128110_, (key, value) -> {});
++    }
++
 +    public static void loadFromJson(InputStream p_128109_, BiConsumer<String, String> p_128110_, BiConsumer<String, net.minecraft.network.chat.Component> componentConsumer) {
          JsonObject jsonobject = GSON.fromJson(new InputStreamReader(p_128109_, StandardCharsets.UTF_8), JsonObject.class);
  
