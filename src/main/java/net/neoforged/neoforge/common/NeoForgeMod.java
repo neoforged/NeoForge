@@ -38,8 +38,15 @@ import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.server.packs.repository.BuiltInPackSource;
+import net.minecraft.server.packs.repository.KnownPack;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.InclusiveRange;
@@ -136,6 +143,7 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -629,6 +637,28 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
 
         modEventBus.register(NeoForgeDataMaps.class);
+
+        modEventBus.addListener(AddPackFindersEvent.class, event -> {
+            if (event.getPackType() != PackType.SERVER_DATA) {
+                return;
+            }
+
+            var modInfo = container.getModInfo();
+            var resource = modInfo.getOwningFile().getFile().findResource("data/neoforge/datapacks/mod_experimental");
+            var version = modInfo.getVersion();
+
+            var pack = Pack.readMetaAndCreate(
+                    new PackLocationInfo(
+                            "neoforge:mod_experimental",
+                            Component.translatable("pack.neoforge.experiments.description"),
+                            PackSource.FEATURE,
+                            Optional.of(new KnownPack("neoforge", "mod_experimental", version.toString()))),
+                    BuiltInPackSource.fromName(path -> new PathPackResources(path, resource)),
+                    PackType.SERVER_DATA,
+                    new PackSelectionConfig(false, Pack.Position.BOTTOM, true));
+
+            event.addRepositorySource(consumer -> consumer.accept(pack));
+        });
 
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;

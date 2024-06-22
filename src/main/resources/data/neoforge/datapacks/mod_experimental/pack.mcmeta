@@ -1,0 +1,13 @@
+{
+  "features": {
+    "enabled": [
+      "neoforge:mod_experimental"
+    ]
+  },
+  "pack": {
+    "description": {
+      "translate": "pack.neoforge.experimental.description"
+    },
+    "pack_format": 48
+  }
+}

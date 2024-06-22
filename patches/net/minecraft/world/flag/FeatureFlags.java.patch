@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/flag/FeatureFlags.java
++++ b/net/minecraft/world/flag/FeatureFlags.java
+@@ -13,6 +_,7 @@
+     public static final Codec<FeatureFlagSet> CODEC;
+     public static final FeatureFlagSet VANILLA_SET;
+     public static final FeatureFlagSet DEFAULT_FLAGS;
++    public static final FeatureFlag MOD_EXPERIMENTAL;
+ 
+     public static String printMissingFlags(FeatureFlagSet p_250581_, FeatureFlagSet p_250326_) {
+         return printMissingFlags(REGISTRY, p_250581_, p_250326_);
+@@ -33,6 +_,7 @@
+         VANILLA = featureflagregistry$builder.createVanilla("vanilla");
+         BUNDLE = featureflagregistry$builder.createVanilla("bundle");
+         TRADE_REBALANCE = featureflagregistry$builder.createVanilla("trade_rebalance");
++        MOD_EXPERIMENTAL = featureflagregistry$builder.create(ResourceLocation.fromNamespaceAndPath("neoforge", "mod_experimental"));
+         REGISTRY = featureflagregistry$builder.build();
+         CODEC = REGISTRY.codec();
+         VANILLA_SET = FeatureFlagSet.of(VANILLA);
