@@ -14,7 +14,7 @@
 +    // Original vanilla logic passes 15 + p_222478_.random.nextInt(15) + p_222478_.random.nextInt(15) to popExperience, bypassing enchantments
 +    @Override
 +    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelAccessor level, BlockPos pos,
-+            @org.jetbrains.annotations.Nullable net.minecraft.world.level.block.entity.BlockEntity blockEntity, 
++            @org.jetbrains.annotations.Nullable net.minecraft.world.level.block.entity.BlockEntity blockEntity,
 +            @org.jetbrains.annotations.Nullable net.minecraft.world.entity.Entity breaker, ItemStack tool) {
 +        return 15 + level.getRandom().nextInt(15) + level.getRandom().nextInt(15);
      }
