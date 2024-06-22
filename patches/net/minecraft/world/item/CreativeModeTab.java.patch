@@ -151,11 +151,11 @@
  
 +        /**
 +         * Gives this tab a search bar.
-+         * <p>Note that, if using a custom {@link #withBackgroundLocation(net.minecraft.resources.ResourceLocation) background image}, you will need to make sure that your image contains the input box and the scroll bar.</p>
++         * <p>Note that, if using a custom {@link #backgroundTexture(net.minecraft.resources.ResourceLocation) background image}, you will need to make sure that your image contains the input box and the scroll bar.</p>
 +         */
 +        public CreativeModeTab.Builder withSearchBar() {
 +            this.hasSearchBar = true;
-+            if (this.backgroundTexture == null)
++            if (this.backgroundTexture == CreativeModeTab.DEFAULT_BACKGROUND)
 +                return this.backgroundTexture(CREATIVE_ITEM_SEARCH_BACKGROUND);
 +            return this;
 +        }

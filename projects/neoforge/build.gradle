@@ -73,7 +73,6 @@ dependencies {
     installer "net.neoforged:bus:${project.eventbus_version}"
     installer "net.neoforged:coremods:${project.coremods_version}"
     installer "cpw.mods:modlauncher:${project.modlauncher_version}"
-    installer "net.minecraftforge:unsafe:${project.unsafe_version}"
     installer "net.neoforged:mergetool:${project.mergetool_version}:api"
     installer "com.electronwill.night-config:core:${project.nightconfig_version}"
     installer "com.electronwill.night-config:toml:${project.nightconfig_version}"

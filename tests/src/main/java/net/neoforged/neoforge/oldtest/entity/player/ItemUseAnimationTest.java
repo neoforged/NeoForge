@@ -19,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.asm.enumextension.EnumProxy;
+import net.neoforged.neoforge.client.IArmPoseTransformer;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -48,6 +50,18 @@ public class ItemUseAnimationTest {
             event.accept(THING);
     }
 
+    @SuppressWarnings("unused") // Referenced by enumextender.json
+    public static final class EnumParams {
+        public static final EnumProxy<HumanoidModel.ArmPose> ARM_POSE_ENUM_PARAMS = new EnumProxy<>(
+                HumanoidModel.ArmPose.class, false, (IArmPoseTransformer) (model, entity, arm) -> {
+                    if (arm == HumanoidArm.RIGHT) {
+                        model.rightArm.xRot = (float) (Math.random() * Math.PI * 2);
+                    } else {
+                        model.leftArm.xRot = (float) (Math.random() * Math.PI * 2);
+                    }
+                });
+    }
+
     private static class ThingItem extends Item {
         public ThingItem(Item.Properties props) {
             super(props);
@@ -61,13 +75,7 @@ public class ItemUseAnimationTest {
         @Override
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {
-                private static final HumanoidModel.ArmPose SWING_POSE = HumanoidModel.ArmPose.create("SWING", false, (model, entity, arm) -> {
-                    if (arm == HumanoidArm.RIGHT) {
-                        model.rightArm.xRot = (float) (Math.random() * Math.PI * 2);
-                    } else {
-                        model.leftArm.xRot = (float) (Math.random() * Math.PI * 2);
-                    }
-                });
+                private static final HumanoidModel.ArmPose SWING_POSE = EnumParams.ARM_POSE_ENUM_PARAMS.getValue();
 
                 @Override
                 public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
