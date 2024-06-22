@@ -14,7 +14,7 @@
          Block block = blockstate.getBlock();
          Block block1 = p_23182_.getBlockState(p_23181_.below()).getBlock();
 -        return block instanceof CropBlock && ((CropBlock)block).isMaxAge(blockstate) || blockstate.isAir() && block1 instanceof FarmBlock;
-+        return block instanceof CropBlock && ((CropBlock)block).isMaxAge(blockstate) || blockstate.isAir() && block1.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS);
++        return block instanceof CropBlock && ((CropBlock)block).isMaxAge(blockstate) || blockstate.isAir() && (block1 instanceof FarmBlock || block1.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
      }
  
      protected void start(ServerLevel p_23177_, Villager p_23178_, long p_23179_) {
@@ -23,7 +23,7 @@
                  }
  
 -                if (blockstate.isAir() && block1 instanceof FarmBlock && p_23197_.hasFarmSeeds()) {
-+                if (blockstate.isAir() && block1.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS) && p_23197_.hasFarmSeeds()) {
++                if (blockstate.isAir() && (block1 instanceof FarmBlock || block1.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS)) && p_23197_.hasFarmSeeds()) {
                      SimpleContainer simplecontainer = p_23197_.getInventory();
  
                      for (int i = 0; i < simplecontainer.getContainerSize(); i++) {
