@@ -151,12 +151,15 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     boolean isAddedToWorld();
 
     /**
-     * Called after the entity has been added to the world's
-     * ticking list. Can be overriden, but needs to call super
-     * to prevent MC-136995.
+     * Called after the entity has been added to the world's ticking list.
      */
-    // TODO: rename in 1.19 to onAddedToLevel
-    void onAddedToWorld();
+    void onAddedToLevel();
+
+    /**
+     * @deprecated Use {@link #onAddedToLevel()} instead.
+     */
+    @Deprecated(forRemoval = true, since = "21.0")
+    default void onAddedToWorld() { onAddedToLevel(); }
 
     /**
      * Called after the entity has been removed to the world's

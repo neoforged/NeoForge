@@ -114,7 +114,7 @@
  
 -        this.entityManager.addNewEntity(p_8854_);
 +        this.entityManager.addNewEntityWithoutEvent(p_8854_);
-+        p_8854_.onAddedToWorld();
++        p_8854_.onAddedToLevel();
      }
  
      private boolean addEntity(Entity p_8873_) {
@@ -124,7 +124,7 @@
          } else {
 -            return this.entityManager.addNewEntity(p_8873_);
 +            if (this.entityManager.addNewEntity(p_8873_)) {
-+                p_8873_.onAddedToWorld();
++                p_8873_.onAddedToLevel();
 +                return true;
 +            } else {
 +                return false;

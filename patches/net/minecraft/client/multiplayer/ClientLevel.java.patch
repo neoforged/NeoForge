@@ -61,7 +61,7 @@
 +        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(p_104741_, this)).isCanceled()) return;
          this.removeEntity(p_104741_.getId(), Entity.RemovalReason.DISCARDED);
          this.entityStorage.addEntity(p_104741_);
-+        p_104741_.onAddedToWorld();
++        p_104741_.onAddedToLevel();
      }
  
      public void removeEntity(int p_171643_, Entity.RemovalReason p_171644_) {

@@ -479,16 +479,16 @@
 +     * allow guarantees that entity position changes will force a chunk load, avoiding
 +     * potential issues with entity desyncing and bad chunk data.
 +     */
-+    private boolean isAddedToWorld;
++    private boolean isAddedToLevel;
 +
 +    @Override
-+    public final boolean isAddedToWorld() { return this.isAddedToWorld; }
++    public final boolean isAddedToLevel() { return this.isAddedToLevel; }
 +
 +    @Override
-+    public void onAddedToWorld() { this.isAddedToWorld = true; }
++    public void onAddedToLevel() { this.isAddedToLevel = true; }
 +
 +    @Override
-+    public void onRemovedFromWorld() { this.isAddedToWorld = false; }
++    public void onRemovedFromLevel() { this.isAddedToLevel = false; }
 +
 +    @Override
 +    public void revive() {
