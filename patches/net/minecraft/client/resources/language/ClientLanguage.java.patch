@@ -1,13 +1,17 @@
 --- a/net/minecraft/client/resources/language/ClientLanguage.java
 +++ b/net/minecraft/client/resources/language/ClientLanguage.java
-@@ -22,36 +_,40 @@
+@@ -22,36 +_,50 @@
  public class ClientLanguage extends Language {
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Map<String, String> storage;
 +    private final Map<String, net.minecraft.network.chat.Component> componentStorage;
      private final boolean defaultRightToLeft;
  
--    private ClientLanguage(Map<String, String> p_118914_, boolean p_118915_) {
++    @Deprecated
+     private ClientLanguage(Map<String, String> p_118914_, boolean p_118915_) {
++        this(p_118914_, Map.of(), p_118915_);
++    }
++
 +    private ClientLanguage(Map<String, String> p_118914_, Map<String, net.minecraft.network.chat.Component> componentStorage, boolean p_118915_) {
          this.storage = p_118914_;
 +        this.componentStorage = componentStorage;
@@ -37,7 +41,11 @@
 +        return new ClientLanguage(ImmutableMap.copyOf(map), ImmutableMap.copyOf(componentMap), p_265470_);
      }
  
--    private static void appendFrom(String p_235036_, List<Resource> p_235037_, Map<String, String> p_235038_) {
++    @Deprecated
+     private static void appendFrom(String p_235036_, List<Resource> p_235037_, Map<String, String> p_235038_) {
++        appendFrom(p_235036_, p_235037_, p_235038_, new java.util.HashMap<>());
++    }
++
 +    private static void appendFrom(String p_235036_, List<Resource> p_235037_, Map<String, String> p_235038_, Map<String, net.minecraft.network.chat.Component> componentMap) {
          for (Resource resource : p_235037_) {
              try (InputStream inputstream = resource.open()) {
