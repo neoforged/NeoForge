@@ -147,8 +147,14 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      *
      * @return True if this entity is being tracked by a world
      */
-    // TODO: rename in 1.19 to isAddedToLevel
-    boolean isAddedToWorld();
+    boolean isAddedToLevel();
+
+    /**
+     * @deprecated Use {@link #isAddedToLevel()} instead.
+     * @return True if this entity is being tracked by a world
+     */
+    @Deprecated(forRemoval = true, since = "21.0")
+    default boolean isAddedToWorld() { return isAddedToLevel(); }
 
     /**
      * Called after the entity has been added to the world's ticking list.
