@@ -41,6 +41,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
 
     /**
      * Deserialize from a compound tag.
+     * 
      * @deprecated Use a data component/attachment to store info, or {@link Entity#load(CompoundTag)} as a replacement.
      */
     @Override
@@ -51,6 +52,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
 
     /**
      * Serialize metadata into a compound tag.
+     * 
      * @deprecated Use a data component/attachment to store info. ({@link Entity#setData(AttachmentType, Object)})
      */
     @Override
@@ -154,7 +156,9 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @return True if this entity is being tracked by a world
      */
     @Deprecated(forRemoval = true, since = "21.0")
-    default boolean isAddedToWorld() { return isAddedToLevel(); }
+    default boolean isAddedToWorld() {
+        return isAddedToLevel();
+    }
 
     /**
      * Called after the entity has been added to the world's ticking list.
@@ -165,7 +169,9 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @deprecated Use {@link #onAddedToLevel()} instead.
      */
     @Deprecated(forRemoval = true, since = "21.0")
-    default void onAddedToWorld() { onAddedToLevel(); }
+    default void onAddedToWorld() {
+        onAddedToLevel();
+    }
 
     /**
      * Called after the entity has been removed to the world's ticking list.
@@ -176,7 +182,9 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @deprecated Use {@link #onRemovedFromLevel()} instead.
      */
     @Deprecated(forRemoval = true, since = "21.0")
-    default void onRemovedFromWorld() { onRemovedFromLevel(); }
+    default void onRemovedFromWorld() {
+        onRemovedFromLevel();
+    }
 
     /**
      * Revives an entity that has been removed from a world.
