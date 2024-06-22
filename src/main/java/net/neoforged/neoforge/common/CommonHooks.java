@@ -251,7 +251,7 @@ public class CommonHooks {
      * @param isInvul whether this entity is invulnerable according to preceding/vanilla logic
      * @return if this entity is invulnerable
      */
-    public static boolean onEntityInvulnerabilityCheck(Entity entity, DamageSource source, boolean isInvul) {
+    public static boolean isEntityInvulnerableTo(Entity entity, DamageSource source, boolean isInvul) {
         return NeoForge.EVENT_BUS.post(new EntityInvulnerabilityCheckEvent(entity, source, isInvul)).isInvulnerable();
     }
 
