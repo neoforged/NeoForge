@@ -194,7 +194,8 @@
   "neoforge.chatType.system": "%1$s",
 
   "pack.neoforge.description": "NeoForge data/resource pack",
-  "pack.neoforge.experimental.description": "NeoForge mod experiments data pack",
+  "pack.neoforge.experimental.name": "NeoForge mod experiments data pack",
+  "pack.neoforge.experimental.description": "Enables experimental mod items",
   "pack.neoforge.source.child": "child",
 
   "neoforge.network.negotiation.failure.mod": "Channel of mod \"%1$s\" failed to connect: %2$s",
