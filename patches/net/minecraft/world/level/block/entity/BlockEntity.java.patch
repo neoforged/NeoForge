@@ -32,7 +32,7 @@
  
      protected void saveAdditional(CompoundTag p_187471_, HolderLookup.Provider p_323635_) {
 +        if (this.customPersistentData != null) p_187471_.put("NeoForgeData", this.customPersistentData.copy());
-+        var attachmentsTag = serializeAttachments(p_323635_);
++        var attachmentsTag = ATTACHMENTS_ENCODER.encodeStart(p_323635_.createSerializationContext(NbtOps.INSTANCE), this).resultOrPartial().orElseGet(CompoundTag::new);
 +        if (attachmentsTag != null) p_187471_.put(ATTACHMENTS_NBT_KEY, attachmentsTag);
      }
  

@@ -42,7 +42,7 @@
                              }
                          }
                      }
-@@ -476,4 +_,70 @@
+@@ -476,4 +_,71 @@
  
      public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
      }
@@ -92,7 +92,8 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    @Nullable
 +    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
-+        return getAttachmentHolder().serializeAttachments(provider);
++        return (CompoundTag) net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_ENCODER.encodeStart(provider.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), getAttachmentHolder())
++            .resultOrPartial().orElseThrow();
 +    }
 +
 +    /**

@@ -6,13 +6,17 @@
 package net.neoforged.neoforge.attachment;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.RecordBuilder;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -28,6 +32,33 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final boolean IN_DEV = !FMLLoader.isProduction();
     private static final Logger LOGGER = LogUtils.getLogger();
+
+    public static final Encoder<AttachmentHolder> ATTACHMENTS_ENCODER = new Encoder<>() {
+        private <T, AT> void encodeAttachment(DynamicOps<T> ops, RecordBuilder<T> mapBuilder, AttachmentHolder input,
+                AttachmentType<AT> attachment, Object attachmentValue) {
+            try {
+                //noinspection unchecked
+                final AT attData = (AT) attachmentValue;
+                if (attachment.shouldSerialize.test(attData) && attachment.codec != null) {
+                    final var encoded = attachment.codec.encodeStart(ops, attData);
+
+                    final var attTypeKey = NeoForgeRegistries.ATTACHMENT_TYPES.getKey(attachment);
+                    mapBuilder.add(ResourceLocation.CODEC.encodeStart(ops, attTypeKey), encoded);
+                }
+            } catch (ClassCastException cce) {
+                LOGGER.atError().setCause(cce).log("Encountered unknown or non-serializable data attachment {}. Skipping.", attachment);
+            }
+        }
+
+        @Override
+        public <T> DataResult<T> encode(AttachmentHolder input, DynamicOps<T> ops, T prefix) {
+            final RecordBuilder<T> mapBuilder = ops.mapBuilder();
+            if (input.hasAttachments() && input.attachments != null) {
+                input.attachments.forEach((attType, att) -> encodeAttachment(ops, mapBuilder, input, attType, att));
+            }
+            return mapBuilder.build(prefix);
+        }
+    };
 
     private void validateAttachmentType(AttachmentType<?> type) {
         Objects.requireNonNull(type);
@@ -110,33 +141,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     /**
-     * Writes the serializable attachments to a tag.
-     * Returns {@code null} if there are no serializable attachments.
+     * Reads serializable attachments from a tag previously created via {@link #ATTACHMENTS_ENCODER}.
      */
-    @Nullable
-    public final CompoundTag serializeAttachments(HolderLookup.Provider provider) {
-        if (attachments == null) {
-            return null;
-        }
-        CompoundTag tag = null;
-        for (var entry : attachments.entrySet()) {
-            var type = entry.getKey();
-            if (type.serializer != null) {
-                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
-                if (serialized != null) {
-                    if (tag == null)
-                        tag = new CompoundTag();
-                    tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
-                }
-            }
-        }
-        return tag;
-    }
-
-    /**
-     * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(HolderLookup.Provider)}.
-     */
-    protected final void deserializeAttachments(HolderLookup.Provider provider, CompoundTag tag) {
+    protected final void deserializeAttachments(HolderLookup.Provider lookup, CompoundTag tag) {
         for (var key : tag.getAllKeys()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             ResourceLocation keyLocation = ResourceLocation.tryParse(key);
@@ -146,13 +153,15 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             }
 
             var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
-            if (type == null || type.serializer == null) {
+            if (type == null || type.codec == null) {
                 LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
                 continue;
             }
 
             try {
-                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key), provider));
+                getAttachmentMap().put(type, type.codec.parse(lookup.createSerializationContext(NbtOps.INSTANCE), tag.get(key))
+                        .resultOrPartial(LOGGER::error)
+                        .orElseThrow());
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }

@@ -7,21 +7,20 @@ package net.neoforged.neoforge.attachment;
 
 import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.JavaOps;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.ProtoChunk;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,12 +38,6 @@ import org.jetbrains.annotations.Nullable;
  * <li>Serializable entity attachments are not copied on death by default (but they are copied when returning from the end).</li>
  * <li>Serializable entity attachments can opt into copying on death via {@link Builder#copyOnDeath()}.</li>
  * </ul>
- * <h3>{@link ItemStack}-exclusive behavior:</h3>
- * <ul>
- * <li>Serializable item stack attachments are synced between the server and the client.</li>
- * <li>Serializable item stack attachments are copied when an item stack is copied.</li>
- * <li>Serializable item stack attachments must match for item stack comparison to succeed.</li>
- * </ul>
  * <h3>{@link Level}-exclusive behavior:</h3>
  * <ul>
  * <li>(nothing)</li>
@@ -58,30 +51,36 @@ import org.jetbrains.annotations.Nullable;
 public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
-    final IAttachmentSerializer<?, T> serializer;
+    final Codec<T> codec;
+    final BiFunction<IAttachmentHolder, T, T> postDeserialize;
+    final Predicate<? super T> shouldSerialize;
     final boolean copyOnDeath;
+    @Nullable
     final IAttachmentCopyHandler<T> copyHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
-        this.serializer = builder.serializer;
+        this.shouldSerialize = builder.shouldSerialize;
         this.copyOnDeath = builder.copyOnDeath;
-        this.copyHandler = builder.copyHandler != null ? builder.copyHandler : defaultCopyHandler(serializer);
-    }
 
-    private static <T, H extends Tag> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<H, T> serializer) {
-        if (serializer == null) {
-            return (attachment, holder, provider) -> {
-                throw new UnsupportedOperationException("Cannot copy non-serializable attachments");
+        if (builder.serializer != null) {
+            final var deserializer = builder.deserializer != null ? builder.deserializer : Decoder.<T>error("invalid state -- no decoder provided");
+
+            this.codec = Codec.of(builder.serializer, deserializer);
+            this.postDeserialize = builder.postDeserialize;
+            this.copyHandler = builder.copyHandler != null ? builder.copyHandler : (attachment, holder, provider) -> {
+                var serialized = builder.serializer.encodeStart(provider.createSerializationContext(JavaOps.INSTANCE), attachment);
+                if (serialized != null) {
+                    var parsed = deserializer.parse(provider.createSerializationContext(JavaOps.INSTANCE), serialized).getOrThrow();
+                    return postDeserialize.apply(holder, parsed);
+                }
+                return null;
             };
+        } else {
+            this.codec = null;
+            this.postDeserialize = (holder, inst) -> inst;
+            this.copyHandler = null;
         }
-        return (attachment, holder, provider) -> {
-            H serialized = serializer.write(attachment, provider);
-            if (serialized != null) {
-                return serializer.read(holder, serialized, provider);
-            }
-            return null;
-        };
     }
 
     /**
@@ -109,89 +108,85 @@ public final class AttachmentType<T> {
         return new Builder<>(defaultValueConstructor);
     }
 
-    /**
-     * Create a builder for an attachment type that uses {@link INBTSerializable} for serialization.
-     * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
-     *
-     * <p>See {@link #serializable(Function)} for attachments that want to capture a reference to their holder.
-     */
-    public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Supplier<T> defaultValueSupplier) {
-        return serializable(holder -> defaultValueSupplier.get());
-    }
-
-    /**
-     * Create a builder for an attachment type that uses {@link INBTSerializable} for serialization.
-     * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
-     *
-     * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
-     * To obtain a specific subtype, the holder can be cast.
-     * If the holder is of the wrong type, the constructor should throw an exception.
-     * See {@link #serializable(Supplier)} for an overload that does not capture the holder.
-     */
-    public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
-        return builder(defaultValueConstructor).serialize(new IAttachmentSerializer<S, T>() {
-            @Override
-            public T read(IAttachmentHolder holder, S tag, HolderLookup.Provider provider) {
-                var ret = defaultValueConstructor.apply(holder);
-                ret.deserializeNBT(provider, tag);
-                return ret;
-            }
-
-            @Nullable
-            @Override
-            public S write(T attachment, HolderLookup.Provider provider) {
-                return attachment.serializeNBT(provider);
-            }
-        });
-    }
-
     public static class Builder<T> {
         private final Function<IAttachmentHolder, T> defaultValueSupplier;
         @Nullable
-        private IAttachmentSerializer<?, T> serializer;
+        private Encoder<T> serializer;
+        @Nullable
+        private Decoder<T> deserializer;
+        BiFunction<IAttachmentHolder, T, T> postDeserialize;
         private boolean copyOnDeath;
+        private Predicate<? super T> shouldSerialize;
         @Nullable
         private IAttachmentCopyHandler<T> copyHandler;
 
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
+            this.shouldSerialize = Predicates.alwaysTrue();
+            this.postDeserialize = (holder, inst) -> inst;
         }
 
         /**
-         * Requests that this attachment be persisted to disk (on the logical server side).
+         * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
          *
-         * @param serializer The serializer to use.
+         * @param codec The codec to use.
          */
-        public Builder<T> serialize(IAttachmentSerializer<?, T> serializer) {
-            Objects.requireNonNull(serializer);
+        public Builder<T> serialize(Encoder<T> codec) {
+            Objects.requireNonNull(codec);
             if (this.serializer != null)
                 throw new IllegalStateException("Serializer already set");
 
-            this.serializer = serializer;
+            this.serializer = codec;
+            return this;
+        }
+
+        /**
+         * For attachments that are serialized to disk, specifies a different codec to use for deserialization.
+         *
+         * @param deserializeCodec A codec to use to deserialize attachment data.
+         */
+        public Builder<T> deserialize(Decoder<T> deserializeCodec) {
+            if (this.serializer == null)
+                throw new IllegalStateException("Must set a serializer!");
+
+            return deserialize(deserializeCodec, postDeserialize);
+        }
+
+        /**
+         * For attachments that are serialized to disk, specifies a post-codec deserialization function.
+         * This function will be called after the codec finishes deserialization but before the attachment is
+         * considered finalized/constructed.
+         * <p>
+         * Modify and return the data object passed in as needed.
+         *
+         * @param postDeserialize A function taking the attachment holder and deserialized data.
+         * @return The fully constructed attachment data.
+         */
+        public Builder<T> deserialize(BiFunction<IAttachmentHolder, T, T> postDeserialize) {
+            if (this.serializer == null || !(this.serializer instanceof Codec<T> decoder))
+                throw new IllegalStateException("Must set a serializer to use shortcut deserialize");
+
+            return deserialize(decoder, postDeserialize);
+        }
+
+        /**
+         * For attachments that are serialized to disk, specifies a post-codec deserialization function.
+         * This function will be called after the codec finishes deserialization but before the attachment is
+         * considered finalized/constructed.
+         * <p>
+         * Modify and return the data object passed in as needed.
+         *
+         * @param postDeserialize A function taking the attachment holder and deserialized data.
+         * @return The fully constructed attachment data.
+         */
+        public Builder<T> deserialize(Decoder<T> deserializeCodec, BiFunction<IAttachmentHolder, T, T> postDeserialize) {
+            this.deserializer = deserializeCodec;
+            this.postDeserialize = postDeserialize;
             return this;
         }
 
         /**
          * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
-         *
-         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
-         * for performance reasons. Prefer one of the other options.
-         *
-         * <p>Codec-based attachments cannot capture a reference to their holder.
-         *
-         * @param codec The codec to use.
-         */
-        public Builder<T> serialize(Codec<T> codec) {
-            return serialize(codec, Predicates.alwaysTrue());
-        }
-
-        /**
-         * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
-         *
-         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
-         * for performance reasons. Prefer one of the other options.
-         *
-         * <p>Codec-based attachments cannot capture a reference to their holder.
          *
          * @param codec           The codec to use.
          * @param shouldSerialize A check that determines whether serialization of the attachment should occur.
@@ -199,18 +194,8 @@ public final class AttachmentType<T> {
         public Builder<T> serialize(Codec<T> codec, Predicate<? super T> shouldSerialize) {
             Objects.requireNonNull(codec);
             // TODO: better error handling
-            return serialize(new IAttachmentSerializer<>() {
-                @Override
-                public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
-                    return codec.parse(NbtOps.INSTANCE, tag).result().get();
-                }
-
-                @Nullable
-                @Override
-                public Tag write(T attachment, HolderLookup.Provider provider) {
-                    return shouldSerialize.test(attachment) ? codec.encodeStart(NbtOps.INSTANCE, attachment).result().get() : null;
-                }
-            });
+            this.shouldSerialize = shouldSerialize;
+            return serialize(codec);
         }
 
         /**
@@ -233,13 +218,16 @@ public final class AttachmentType<T> {
         public Builder<T> copyHandler(IAttachmentCopyHandler<T> cloner) {
             Objects.requireNonNull(cloner);
             // Check for serializer because only serializable attachments can be copied.
-            if (this.serializer == null)
-                throw new IllegalStateException("copyHandler requires a serializer");
+            if (this.serializer == null || this.deserializer == null)
+                throw new IllegalStateException("copyHandler requires a serializer and deserializer");
             this.copyHandler = cloner;
             return this;
         }
 
         public AttachmentType<T> build() {
+            if (this.serializer != null && this.deserializer == null)
+                throw new IllegalStateException("A serializer was specified but no deserializer was found.");
+
             return new AttachmentType<>(this);
         }
     }

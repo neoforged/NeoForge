@@ -28,7 +28,7 @@ public final class AttachmentInternals {
         }
         for (var entry : from.attachments.entrySet()) {
             AttachmentType<?> type = entry.getKey();
-            if (type.serializer == null) {
+            if (type.codec == null) {
                 continue;
             }
             @SuppressWarnings("unchecked")

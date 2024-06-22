@@ -202,7 +202,7 @@
                  p_20241_.put("Tags", listtag);
              }
  
-+            CompoundTag attachments = serializeAttachments(registryAccess());
++            var attachments = ATTACHMENTS_ENCODER.encodeStart(registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), this).getPartialOrThrow();
 +            if (attachments != null) p_20241_.put(ATTACHMENTS_NBT_KEY, attachments);
 +            if (persistentData != null) p_20241_.put("NeoForgeData", persistentData.copy());
 +

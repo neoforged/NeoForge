@@ -8,6 +8,7 @@ package net.neoforged.neoforge.attachment;
 import java.util.Objects;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.ApiStatus;
@@ -39,7 +40,11 @@ public class LevelAttachmentsSavedData extends SavedData {
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         // Make sure we don't return null
-        return Objects.requireNonNullElseGet(level.serializeAttachments(provider), CompoundTag::new);
+        return (CompoundTag) Objects.requireNonNullElseGet(
+                AttachmentHolder.ATTACHMENTS_ENCODER.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), level)
+                        .resultOrPartial() // TODO Log errors
+                        .orElseGet(CompoundTag::new),
+                CompoundTag::new);
     }
 
     @Override

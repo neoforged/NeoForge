@@ -11,16 +11,13 @@ import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.testframework.DynamicTest;
@@ -35,12 +32,18 @@ public class AttachmentTests {
     @EmptyTemplate
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void chunkAttachmentReferenceTest(DynamicTest test, RegistrationHelper reg) {
-        class ChunkMutableInt implements INBTSerializable<IntTag> {
-            private final LevelChunk chunk;
+        class ChunkMutableInt {
+            private LevelChunk chunk;
             private int value;
+
+            public static final Codec<ChunkMutableInt> CODEC = Codec.INT.xmap(ChunkMutableInt::new, ChunkMutableInt::getValue);
 
             public ChunkMutableInt(LevelChunk chunk, int value) {
                 this.chunk = chunk;
+                this.value = value;
+            }
+
+            public ChunkMutableInt(int value) {
                 this.value = value;
             }
 
@@ -52,20 +55,22 @@ public class AttachmentTests {
                 this.value = value;
                 chunk.setUnsaved(true);
             }
-
-            @Override
-            public IntTag serializeNBT(HolderLookup.Provider provider) {
-                return IntTag.valueOf(value);
-            }
-
-            @Override
-            public void deserializeNBT(HolderLookup.Provider provider, IntTag nbt) {
-                this.value = nbt.getAsInt();
-            }
         }
 
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.serializable(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0)).build());
+                .register("chunk_mutable_int", () -> AttachmentType.builder(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0))
+
+                        // use a codec for serialization
+                        .serialize(ChunkMutableInt.CODEC)
+
+                        // you can either use a different codec for deserializing, or omit to re-use the serializer
+                        // here, you also get a "last-chance" to pull data from the attachment holder before
+                        // the attachment is finished constructing from a codec
+                        .deserialize(ChunkMutableInt.CODEC, (holder, thing) -> {
+                            thing.chunk = (LevelChunk) holder;
+                            return thing;
+                        })
+                        .build());
 
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> {
             event.getDispatcher()
