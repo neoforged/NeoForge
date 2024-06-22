@@ -479,8 +479,7 @@ public interface IItemStackExtension {
      * This method first computes the default modifiers, using {@link DataComponents.ATTRIBUTE_MODIFIERS} if present, otherwise
      * falling back to {@link Item#getDefaultAttributeModifiers(ItemStack)}.
      * <p>
-     * The underlying item is given a chance to first adjust the defaults via {@link Item#adjustAttributeModifiers},
-     * and finally the {@link ItemAttributeModifiersEvent} is fired to allow external adjustments.
+     * The {@link ItemAttributeModifiersEvent} is then fired to allow external adjustments.
      */
     default ItemAttributeModifiers getAttributeModifiers() {
         ItemAttributeModifiers defaultModifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -489,7 +488,6 @@ public interface IItemStackExtension {
             defaultModifiers = self().getItem().getDefaultAttributeModifiers(self());
         }
 
-        defaultModifiers = self().getItem().adjustAttributeModifiers(self(), defaultModifiers);
         return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
 }

@@ -73,15 +73,6 @@ public interface IItemExtension {
     }
 
     /**
-     * Called to allow items to modify the attributes on them.
-     *
-     * @param modifiers The default attribute modifiers, either from {@link DataComponent#ATTRIBUTE_MODIFIERS} or {@link #getDefaultAttributeModifiers(ItemStack)}.
-     */
-    default ItemAttributeModifiers adjustAttributeModifiers(ItemStack stack, ItemAttributeModifiers modifiers) {
-        return modifiers;
-    }
-
-    /**
      * Called when a player drops the item into the world, returning false from this
      * will prevent the item from being removed from the players inventory and
      * spawning in the world
