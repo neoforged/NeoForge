@@ -39,12 +39,22 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         return (Entity) this;
     }
 
+    /**
+     * Deserialize from a compound tag.
+     * @deprecated Use a data component/attachment to store info, or {@link Entity#load(CompoundTag)} as a replacement.
+     */
     @Override
+    @Deprecated(forRemoval = true, since = "21.0")
     default void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         self().load(nbt);
     }
 
+    /**
+     * Serialize metadata into a compound tag.
+     * @deprecated Use a data component/attachment to store info. ({@link Entity#setData(AttachmentType, Object)})
+     */
     @Override
+    @Deprecated(forRemoval = true, since = "21.0")
     default CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag ret = new CompoundTag();
         String id = self().getEncodeId();
@@ -64,7 +74,9 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * It will be written, and read from disc, so it persists over world saves.
      * 
      * @return A NBTTagCompound
+     * @deprecated Use data attachments ({@link Entity#setData(AttachmentType, Object)}) to store additional data on entities.
      */
+    @Deprecated(forRemoval = true, since = "21.0")
     CompoundTag getPersistentData();
 
     /**
