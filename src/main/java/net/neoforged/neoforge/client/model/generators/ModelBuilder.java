@@ -341,9 +341,8 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                     if (face.tintIndex() != -1) {
                         faceObj.addProperty("tintindex", face.tintIndex());
                     }
-                    // TODO 1.21 - port properly
-                    if (false) { //if (!face.getFaceData().equals(ExtraFaceData.DEFAULT)) {
-                        faceObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.faceData()).result().get());
+                    if (!face.faceData().equals(ExtraFaceData.DEFAULT)) {
+                        faceObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.faceData()).result().orElseThrow());
                     }
                     faces.add(dir.getSerializedName(), faceObj);
                 }

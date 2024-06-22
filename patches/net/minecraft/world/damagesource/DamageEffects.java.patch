@@ -1,32 +1,39 @@
 --- a/net/minecraft/world/damagesource/DamageEffects.java
 +++ b/net/minecraft/world/damagesource/DamageEffects.java
-@@ -5,7 +_,7 @@
+@@ -5,7 +_,9 @@
  import net.minecraft.sounds.SoundEvents;
  import net.minecraft.util.StringRepresentable;
  
 -public enum DamageEffects implements StringRepresentable {
-+public enum DamageEffects implements StringRepresentable, net.neoforged.neoforge.common.IExtensibleEnum {
++@net.neoforged.fml.common.asm.enumextension.NamedEnum
++@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
++public enum DamageEffects implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      HURT("hurt", SoundEvents.PLAYER_HURT),
      THORNS("thorns", SoundEvents.THORNS_HIT),
      DROWNING("drowning", SoundEvents.PLAYER_HURT_DROWN),
-@@ -13,13 +_,13 @@
-     POKING("poking", SoundEvents.PLAYER_HURT_SWEET_BERRY_BUSH),
-     FREEZING("freezing", SoundEvents.PLAYER_HURT_FREEZE);
+@@ -15,11 +_,19 @@
  
--    public static final Codec<DamageEffects> CODEC = StringRepresentable.fromEnum(DamageEffects::values);
-+    public static final Codec<DamageEffects> CODEC = Codec.lazyInitialized(() -> StringRepresentable.fromEnum(DamageEffects::values));
+     public static final Codec<DamageEffects> CODEC = StringRepresentable.fromEnum(DamageEffects::values);
      private final String id;
 +    @Deprecated // Neo: Always set to null. Use the getter.
      private final SoundEvent sound;
++    private final java.util.function.Supplier<SoundEvent> soundSupplier;
  
++    @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
      private DamageEffects(String p_270875_, SoundEvent p_270383_) {
 -        this.id = p_270875_;
 -        this.sound = p_270383_;
 +        this(p_270875_, () -> p_270383_);
++    }
++
++    private DamageEffects(String id, java.util.function.Supplier<SoundEvent> sound) {
++        this.id = id;
++        this.soundSupplier = sound;
++        this.sound = null;
      }
  
      @Override
-@@ -28,6 +_,30 @@
+@@ -28,6 +_,10 @@
      }
  
      public SoundEvent sound() {
@@ -34,27 +41,7 @@
 +        return this.soundSupplier.get();
 +    }
 +
-+    private final java.util.function.Supplier<SoundEvent> soundSupplier;
-+
-+    private DamageEffects(String id, java.util.function.Supplier<SoundEvent> sound) {
-+        this.id = id;
-+        this.soundSupplier = sound;
-+        this.sound = null;
-+    }
-+
-+    /**
-+     * Creates a new DamageEffects with the specified ID and sound.<br>
-+     * Example usage:
-+     * <code><pre>
-+     * public static final DamageEffects ELECTRIFYING = DamageEffects.create("MYMOD_ELECTRIFYING", "mymod:electrifying", MySounds.ELECTRIFYING);
-+     * </pre></code>
-+     * @param name The {@linkplain Enum#name() true enum name}. Prefix this with your modid.
-+     * @param id The {@linkplain StringRepresentable#getSerializedName() serialized name}. Prefix this with your modid and `:`
-+     * @param sound The sound event that will play when a damage type with this effect deals damage to a player.
-+     * @return A newly created DamageEffects. Store this result in a static final field.
-+     * @apiNote This method must be called as early as possible, as if {@link #CODEC} is resolved before this is called, it will be unusable.
-+     */
-+    public static DamageEffects create(String name, String id, java.util.function.Supplier<SoundEvent> sound) {
-+        throw new IllegalStateException("Enum not extended");
++    public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++        return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(DamageEffects.class);
      }
  }
