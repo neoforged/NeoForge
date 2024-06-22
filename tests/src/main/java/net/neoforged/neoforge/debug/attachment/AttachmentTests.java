@@ -28,35 +28,35 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "attachment")
 public class AttachmentTests {
+    private static class ChunkMutableInt {
+        private LevelChunk chunk;
+        private int value;
+
+        public static final Codec<ChunkMutableInt> CODEC = Codec.INT.xmap(ChunkMutableInt::new, ChunkMutableInt::getValue);
+
+        public ChunkMutableInt(LevelChunk chunk, int value) {
+            this.chunk = chunk;
+            this.value = value;
+        }
+
+        public ChunkMutableInt(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+            chunk.setUnsaved(true);
+        }
+    }
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void chunkAttachmentReferenceTest(DynamicTest test, RegistrationHelper reg) {
-        class ChunkMutableInt {
-            private LevelChunk chunk;
-            private int value;
-
-            public static final Codec<ChunkMutableInt> CODEC = Codec.INT.xmap(ChunkMutableInt::new, ChunkMutableInt::getValue);
-
-            public ChunkMutableInt(LevelChunk chunk, int value) {
-                this.chunk = chunk;
-                this.value = value;
-            }
-
-            public ChunkMutableInt(int value) {
-                this.value = value;
-            }
-
-            public int getValue() {
-                return value;
-            }
-
-            public void setValue(int value) {
-                this.value = value;
-                chunk.setUnsaved(true);
-            }
-        }
-
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
                 .register("chunk_mutable_int", () -> AttachmentType.builder(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0))
 
