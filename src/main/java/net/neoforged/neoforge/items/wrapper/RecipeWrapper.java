@@ -7,12 +7,12 @@ package net.neoforged.neoforge.items.wrapper;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class RecipeWrapper implements RecipeInput {
-    protected final IItemHandlerModifiable inv;
+    protected final IItemHandler inv;
 
-    public RecipeWrapper(IItemHandlerModifiable inv) {
+    public RecipeWrapper(IItemHandler inv) {
         this.inv = inv;
     }
 
