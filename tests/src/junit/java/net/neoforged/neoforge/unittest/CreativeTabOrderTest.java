@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.unittest;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -69,10 +70,10 @@ public class CreativeTabOrderTest {
             ItemTags.EQUIPPABLE_ENCHANTABLE,
             ItemTags.CROSSBOW_ENCHANTABLE,
             ItemTags.VANISHING_ENCHANTABLE);
-    public static List<ItemStack> ingredientsTab;
-    public static List<ItemStack> searchTab;
-    public static List<ItemStack> stoneParentTab;
-    public static List<ItemStack> stoneSearchTab;
+    public static ObjectSortedSet<ItemStack> ingredientsTab;
+    public static ObjectSortedSet<ItemStack> searchTab;
+    public static ObjectSortedSet<ItemStack> stoneParentTab;
+    public static ObjectSortedSet<ItemStack> stoneSearchTab;
     public static boolean stackCountExceptionForAccept = false;
     public static boolean stackCountExceptionForPutAfter = false;
     public static boolean stackCountExceptionForPutBefore = false;

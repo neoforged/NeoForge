@@ -5,7 +5,8 @@
 
 package net.neoforged.neoforge.event;
 
-import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
@@ -65,19 +66,19 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
     }
 
     /**
-     * The current immutable list of the parent tab entries in the order to be added to the Creative Menu.
+     * The current immutable ordered set of the parent tab entries in the order to be added to the Creative Menu.
      * Purely for querying to see what in it. Please use the other event methods for modifications.
      */
-    public List<ItemStack> getParentEntries() {
-        return this.parentEntries.stream().toList();
+    public ObjectSortedSet<ItemStack> getParentEntries() {
+        return ObjectSortedSets.unmodifiable(this.parentEntries);
     }
 
     /**
-     * The current immutable list of the search tab entries in the order to be added to the Creative Menu.
+     * The current immutable ordered set of the search tab entries in the order to be added to the Creative Menu.
      * Purely for querying to see what in it. Please use the other event methods for modifications.
      */
-    public List<ItemStack> getSearchEntries() {
-        return this.searchEntries.stream().toList();
+    public ObjectSortedSet<ItemStack> getSearchEntries() {
+        return ObjectSortedSets.unmodifiable(this.searchEntries);
     }
 
     /**
