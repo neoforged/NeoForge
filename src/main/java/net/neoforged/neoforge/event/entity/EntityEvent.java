@@ -128,20 +128,16 @@ public abstract class EntityEvent extends Event {
         private final Pose pose;
         private final EntityDimensions oldSize;
         private EntityDimensions newSize;
-        private final float oldEyeHeight;
-        private float newEyeHeight;
 
-        public Size(Entity entity, Pose pose, EntityDimensions size, float defaultEyeHeight) {
-            this(entity, pose, size, size, defaultEyeHeight, defaultEyeHeight);
+        public Size(Entity entity, Pose pose, EntityDimensions size) {
+            this(entity, pose, size, size);
         }
 
-        public Size(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize, float oldEyeHeight, float newEyeHeight) {
+        public Size(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize) {
             super(entity);
             this.pose = pose;
             this.oldSize = oldSize;
             this.newSize = newSize;
-            this.oldEyeHeight = oldEyeHeight;
-            this.newEyeHeight = newEyeHeight;
         }
 
         public Pose getPose() {
@@ -157,29 +153,7 @@ public abstract class EntityEvent extends Event {
         }
 
         public void setNewSize(EntityDimensions size) {
-            setNewSize(size, false);
-        }
-
-        /**
-         * Set the new size of the entity. Set updateEyeHeight to true to also update the eye height according to the new size.
-         */
-        public void setNewSize(EntityDimensions size, boolean updateEyeHeight) {
             this.newSize = size;
-            if (updateEyeHeight) {
-                this.newEyeHeight = this.getEntity().getEyeHeightAccess(this.getPose());
-            }
-        }
-
-        public float getOldEyeHeight() {
-            return oldEyeHeight;
-        }
-
-        public float getNewEyeHeight() {
-            return newEyeHeight;
-        }
-
-        public void setNewEyeHeight(float newHeight) {
-            this.newEyeHeight = newHeight;
         }
     }
 }
