@@ -222,9 +222,9 @@ public class PlayerEventTests {
         test.onGameTest(helper -> {
             GameTestPlayer player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
             //Award a damage stat, which we are listening for in order to change the stat
-            player.awardStat(Stats.CUSTOM.get(Stats.DAMAGE_TAKEN), 100);
+            player.awardStat(Stats.DAMAGE_TAKEN, 100);
             //Award an animal breed stat, which we are listining for in order to multiply the value
-            player.awardStat(Stats.CUSTOM.get(Stats.ANIMALS_BRED), 1);
+            player.awardStat(Stats.ANIMALS_BRED, 1);
             ServerStatsCounter stats = player.level().getServer().getPlayerList().getPlayerStats(player);
             //if our damage stat is changed to bell ring and our animal breed stat is multiplied by ten, the test passes
             if (stats.getValue(Stats.CUSTOM.get(Stats.BELL_RING)) == 100 && stats.getValue(Stats.CUSTOM.get(Stats.ANIMALS_BRED)) == 10)

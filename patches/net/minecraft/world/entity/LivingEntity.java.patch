@@ -194,15 +194,6 @@
                          this.lastHurtByPlayer = player;
                      } else {
                          this.lastHurtByPlayer = null;
-@@ -1212,7 +_,7 @@
-             if (this instanceof ServerPlayer) {
-                 CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer)this, p_21016_, f, p_21017_, flag);
-                 if (f1 > 0.0F && f1 < 3.4028235E37F) {
--                    ((ServerPlayer)this).awardStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(f1 * 10.0F));
-+                    ((ServerPlayer)this).awardStat(Stats.CUSTOM.get(Stats.DAMAGE_BLOCKED_BY_SHIELD), Math.round(f1 * 10.0F));
-                 }
-             }
- 
 @@ -1240,7 +_,7 @@
  
              for (InteractionHand interactionhand : InteractionHand.values()) {
@@ -330,18 +321,6 @@
                  this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
              }
          }
-@@ -1649,9 +_,9 @@
-                 float f2 = f1 - p_21194_;
-                 if (f2 > 0.0F && f2 < 3.4028235E37F) {
-                     if (this instanceof ServerPlayer) {
--                        ((ServerPlayer)this).awardStat(Stats.DAMAGE_RESISTED, Math.round(f2 * 10.0F));
-+                        ((ServerPlayer)this).awardStat(Stats.CUSTOM.get(Stats.DAMAGE_RESISTED), Math.round(f2 * 10.0F));
-                     } else if (p_21193_.getEntity() instanceof ServerPlayer) {
--                        ((ServerPlayer)p_21193_.getEntity()).awardStat(Stats.DAMAGE_DEALT_RESISTED, Math.round(f2 * 10.0F));
-+                        ((ServerPlayer)p_21193_.getEntity()).awardStat(Stats.CUSTOM.get(Stats.DAMAGE_DEALT_RESISTED), Math.round(f2 * 10.0F));
-                     }
-                 }
-             }
 @@ -1679,6 +_,8 @@
  
      protected void actuallyHurt(DamageSource p_21240_, float p_21241_) {
