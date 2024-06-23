@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.util;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
-import java.util.Objects;
 import net.neoforged.neoforge.common.util.strategy.BasicStrategy;
 import net.neoforged.neoforge.common.util.strategy.IdentityStrategy;
 

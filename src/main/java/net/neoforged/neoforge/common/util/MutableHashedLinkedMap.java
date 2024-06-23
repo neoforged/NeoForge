@@ -11,10 +11,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.BiPredicate;
 import net.neoforged.neoforge.common.util.strategy.BasicStrategy;
-import net.neoforged.neoforge.common.util.strategy.IdentityStrategy;
 import org.jetbrains.annotations.Nullable;
 
 /**

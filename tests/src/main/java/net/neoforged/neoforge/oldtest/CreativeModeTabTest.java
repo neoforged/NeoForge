@@ -135,9 +135,11 @@ public class CreativeModeTabTest {
         }
 
         // Adding this causes a crash (as it should) when opening the creative inventory
-//        if (event.getTabKey() == DAMAGED_SWORDS) {
-//            event.putBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
-//        }
+        if (false) {
+            if (event.getTabKey() == DAMAGED_SWORDS) {
+                event.putBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
+            }
+        }
     }
 
     private static class CreativeModeColorTab extends CreativeModeTab {
