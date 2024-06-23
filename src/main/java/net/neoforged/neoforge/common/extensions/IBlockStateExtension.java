@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
@@ -332,18 +334,17 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Gathers how much experience this block drops when broken.
+     * Returns how many experience points this block drops when broken, before application of {@linkplain EnchantmentEffectComponents#BLOCK_EXPERIENCE enchantments}.
      *
-     * @param level          The level
-     * @param randomSource   Random source to use for experience randomness
-     * @param pos            Block position
-     * @param fortuneLevel   fortune enchantment level of tool being used
-     * @param silkTouchLevel silk touch enchantment level of tool being used
-     * @return Amount of XP from breaking this block.
+     * @param level       The level
+     * @param pos         The position of the block being broken
+     * @param blockEntity The block entity, if any
+     * @param breaker     The entity who broke the block, if known
+     * @param tool        The item stack used to break the block. May be empty
+     * @return The amount of experience points dropped by this block
      */
-    default int getExpDrop(LevelReader level, RandomSource randomSource, BlockPos pos) {
-        // TODO: Change this method to have context of the full tool ItemStack instead of just the enchantment levels.
-        return self().getBlock().getExpDrop(self(), level, randomSource, pos);
+    default int getExpDrop(LevelAccessor level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity breaker, ItemStack tool) {
+        return self().getBlock().getExpDrop(self(), level, pos, blockEntity, breaker, tool);
     }
 
     default BlockState rotate(LevelAccessor level, BlockPos pos, Rotation direction) {

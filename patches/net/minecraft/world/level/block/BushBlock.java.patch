@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/level/block/BushBlock.java
 +++ b/net/minecraft/world/level/block/BushBlock.java
-@@ -33,7 +_,10 @@
+@@ -11,7 +_,7 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.pathfinder.PathComputationType;
+ 
+-public abstract class BushBlock extends Block {
++public abstract class BushBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
+     protected BushBlock(BlockBehaviour.Properties p_51021_) {
+         super(p_51021_);
+     }
+@@ -33,6 +_,8 @@
      @Override
      protected boolean canSurvive(BlockState p_51028_, LevelReader p_51029_, BlockPos p_51030_) {
          BlockPos blockpos = p_51030_.below();

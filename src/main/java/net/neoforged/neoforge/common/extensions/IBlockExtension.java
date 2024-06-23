@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -440,15 +441,17 @@ public interface IBlockExtension {
     }
 
     /**
-     * Gathers how much experience this block drops when broken.
+     * Returns how many experience points this block drops when broken, before application of {@linkplain EnchantmentEffectComponents#BLOCK_EXPERIENCE enchantments}.
      *
-     * @param state        The current state
-     * @param level        The level
-     * @param randomSource Random source to use for experience randomness
-     * @param pos          Block position
-     * @return Amount of XP from breaking this block.
+     * @param state       The state of the block being broken
+     * @param level       The level
+     * @param pos         The position of the block being broken
+     * @param blockEntity The block entity, if any
+     * @param breaker     The entity who broke the block, if known
+     * @param tool        The item stack used to break the block. May be empty
+     * @return The amount of experience points dropped by this block
      */
-    default int getExpDrop(BlockState state, LevelReader level, RandomSource randomSource, BlockPos pos) {
+    default int getExpDrop(BlockState state, LevelAccessor level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity breaker, ItemStack tool) {
         return 0;
     }
 
