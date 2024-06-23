@@ -9,7 +9,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DynamicOps;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;

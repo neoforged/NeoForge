@@ -255,8 +255,7 @@ public class CreativeTabOrderTest {
         private static void catchSpecificExceptionForAction(Runnable action, String targetExceptionMessage, Runnable foundExceptionAction) {
             try {
                 action.run();
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 if (e.getMessage().contains(targetExceptionMessage)) {
                     foundExceptionAction.run();
                 }
