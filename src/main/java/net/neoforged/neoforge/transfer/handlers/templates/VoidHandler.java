@@ -19,8 +19,8 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
  * @param <T> The type of resource that this storage can accept.
  */
 public class VoidHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    public static final VoidHandler<ItemResource> ITEM = new VoidHandler<>(ItemResource.BLANK);
-    public static final VoidHandler<FluidResource> FLUID = new VoidHandler<>(FluidResource.BLANK);
+    public static final VoidHandler<ItemResource> ITEM = new VoidHandler<>(ItemResource.NONE);
+    public static final VoidHandler<FluidResource> FLUID = new VoidHandler<>(FluidResource.NONE);
 
     private final T emptyResource;
 
@@ -70,13 +70,13 @@ public class VoidHandler<T extends IResource> implements ISingleResourceHandler<
 
     public static class Item extends VoidHandler<ItemResource> {
         public Item() {
-            super(ItemResource.BLANK);
+            super(ItemResource.NONE);
         }
     }
 
     public static class Fluid extends VoidHandler<FluidResource> {
         public Fluid() {
-            super(FluidResource.BLANK);
+            super(FluidResource.NONE);
         }
     }
 }

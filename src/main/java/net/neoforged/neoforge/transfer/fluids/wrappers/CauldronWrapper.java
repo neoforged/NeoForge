@@ -49,8 +49,13 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int getCapacity(FluidResource resource) {
-        BlockState state = level.getBlockState(pos);
-        return getContent(state).totalAmount;
+        CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getFluid());
+        return fluidContent == null ? 0 : fluidContent.totalAmount;
+    }
+
+    @Override
+    public int getCapacity() {
+        return Integer.MAX_VALUE; // CauldronFluidContent.totalAmount does not have a maximum value
     }
 
     @Override

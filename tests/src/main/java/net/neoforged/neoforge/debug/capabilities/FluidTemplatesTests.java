@@ -8,15 +8,18 @@ package net.neoforged.neoforge.debug.capabilities;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.context.IItemContext;
+import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
+import net.neoforged.neoforge.transfer.fluids.templates.ItemFluidStorage;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
@@ -43,42 +46,40 @@ public class FluidTemplatesTests {
     @EmptyTemplate
     @TestHolder(description = "Tests that FluidHandlerItemStack works")
     public static void testFluidHandlerItemStack(ExtendedGameTestHelper helper) {
-        ItemStack stack = Items.APPLE.getDefaultInstance();
+        Player player = helper.makeMockPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance());
+        IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
-        var fluidHandler = new FluidHandlerItemStack(SIMPLE_FLUID_CONTENT, stack, capacity);
+        var fluidHandler = new ItemFluidStorage(SIMPLE_FLUID_CONTENT, context, capacity);
 
-        if (fluidHandler.getTanks() != 1) {
+        if (fluidHandler.size() != 1) {
             helper.fail("Expected a single tank");
         }
-        if (fluidHandler.getTankCapacity(0) != capacity) {
+        if (fluidHandler.getCapacity(0) != capacity) {
             helper.fail("Expected tank capacity of " + capacity);
         }
-        if (fluidHandler.getFluidInTank(0).getAmount() != 0) {
+        if (fluidHandler.getAmount(0) != 0) {
             helper.fail("Expected empty tank");
         }
-        if (stack.has(SIMPLE_FLUID_CONTENT)) {
-            helper.fail("Expected no fluid stack component");
-        }
 
-        var waterStack = new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME);
-        if (fluidHandler.fill(waterStack, IFluidHandler.FluidAction.EXECUTE) != FluidType.BUCKET_VOLUME) {
+        if (fluidHandler.insert(0, Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE) != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected to be able to fill a bucket of water");
         }
-        if (!stack.has(SIMPLE_FLUID_CONTENT)) {
+        if (!player.getMainHandItem().has(SIMPLE_FLUID_CONTENT)) {
             helper.fail("Expected fluid stack component");
         }
-        if (fluidHandler.getFluidInTank(0).getAmount() != FluidType.BUCKET_VOLUME) {
+        if (HandlerUtil.resourceAndCountMatches(fluidHandler, 0, Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME)) {
             helper.fail("Expected a bucket of water");
         }
 
-        var drained = fluidHandler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
-        if (!FluidStack.matches(drained, new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME))) {
+        var drained = fluidHandler.extract(0, Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
+        if (drained != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected to drain a bucket of water");
         }
-        if (fluidHandler.getFluidInTank(0).getAmount() != 0) {
+        if (!HandlerUtil.isIndexEmpty(fluidHandler, 0)) {
             helper.fail("Expected empty tank");
         }
-        if (stack.has(SIMPLE_FLUID_CONTENT)) {
+        if (player.getMainHandItem().has(SIMPLE_FLUID_CONTENT)) {
             helper.fail("Expected no fluid stack component");
         }
 

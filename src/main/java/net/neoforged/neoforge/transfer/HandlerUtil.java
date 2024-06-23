@@ -79,6 +79,14 @@ public class HandlerUtil {
         return handler.getAmount(index) >= handler.getCapacity(index, handler.getResource(index));
     }
 
+    public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, int index, T resource, int amount) {
+        return resourceMatches(handler, index, resource) && handler.getAmount(index) == amount;
+    }
+
+    public static <T extends IResource> boolean resourceMatches(IResourceHandler<T> handler, int index, T resource) {
+        return handler.getResource(index).equals(resource);
+    }
+
     /**
      * Calculates the redstone signal strength based on the given resource handler. This value is between 0 and 15.
      * This method is based off of {@link AbstractContainerMenu#getRedstoneSignalFromContainer(Container)}

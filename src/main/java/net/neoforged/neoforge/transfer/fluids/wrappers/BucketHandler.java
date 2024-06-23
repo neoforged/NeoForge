@@ -38,7 +38,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
         } else if (item instanceof MilkBucketItem && NeoForgeMod.MILK.isBound()) {
             return NeoForgeMod.MILK.get().defaultResource;
         }
-        return FluidResource.BLANK;
+        return FluidResource.NONE;
     }
 
     @Override
@@ -48,6 +48,11 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int getCapacity(FluidResource resource) {
+        return FluidType.BUCKET_VOLUME;
+    }
+
+    @Override
+    public int getCapacity() {
         return FluidType.BUCKET_VOLUME;
     }
 

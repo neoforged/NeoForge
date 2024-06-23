@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.fluids.templates;
 
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.fluids.SimpleFluidContent;
+import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
@@ -14,8 +14,8 @@ import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
+// todo: extract static classes to their own files
 /**
  * A simple fluid storage handler that uses a single item context to store a fluid resource.
  * An item with this handler can only ever be full or empty, and will not allow for partial fills or extractions.
@@ -23,11 +23,11 @@ import java.util.function.Supplier;
  */
 public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResource> {
     private final int individualLimit;
-    private final Supplier<DataComponentType<SimpleFluidContent>> componentType;
+    private final DataComponentType<ResourceStack<FluidResource>> componentType;
     protected final IItemContext context;
     private Predicate<FluidResource> validator = r -> true;
 
-    public SimpleItemFluidStorage(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
+    public SimpleItemFluidStorage(int limit, DataComponentType<ResourceStack<FluidResource>> componentType, IItemContext context) {
         this.individualLimit = limit;
         this.componentType = componentType;
         this.context = context;
@@ -46,7 +46,7 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
 
     @Override
     public FluidResource getResource() {
-        return context.getResource().getOrDefault(componentType, SimpleFluidContent.EMPTY).getResource();
+        return context.getResource().getOrDefault(componentType, FluidResource.EMPTY_STACK).resource();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     public int getIndividualAmount() {
-        return context.getResource().getOrDefault(componentType, SimpleFluidContent.EMPTY).getAmount();
+        return context.getResource().getOrDefault(componentType, FluidResource.EMPTY_STACK).amount();
     }
 
     public int getIndividualLimit() {
@@ -117,12 +117,12 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     protected int fill(FluidResource resource, int count, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(componentType, SimpleFluidContent.of(resource, getIndividualAmount()));
+        ItemResource filledContainer = context.getResource().set(componentType, new ResourceStack<>(resource, getIndividualAmount()));
         return context.exchange(filledContainer, count, action);
     }
 
     public static class Consumable extends SimpleItemFluidStorage {
-        public Consumable(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
+        public Consumable(int limit, DataComponentType<ResourceStack<FluidResource>> componentType, IItemContext context) {
             super(limit, componentType, context);
         }
 
@@ -135,7 +135,7 @@ public class SimpleItemFluidStorage implements ISingleResourceHandler<FluidResou
     public static class SwapEmpty extends SimpleItemFluidStorage {
         private final ItemResource emptyContainer;
 
-        public SwapEmpty(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context, ItemResource emptyContainer) {
+        public SwapEmpty(int limit, DataComponentType<ResourceStack<FluidResource>> componentType, IItemContext context, ItemResource emptyContainer) {
             super(limit, componentType, context);
             this.emptyContainer = emptyContainer;
         }

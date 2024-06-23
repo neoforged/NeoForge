@@ -23,6 +23,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.fluids.FluidUtil;
@@ -50,7 +51,7 @@ public class FluidUtilTest {
     private static final RegistrationHelper HELPER = RegistrationHelper.create("item_fluid_util_tests");
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = HELPER.attachments();
 
-    private static final Supplier<AttachmentType<SimpleFluidContent>> FLUID_COMPONENT = ATTACHMENTS.register("test_fluid", AttachmentType.builder(() -> SimpleFluidContent.EMPTY)::build);
+    private static final Supplier<AttachmentType<ResourceStack<FluidResource>>> FLUID_COMPONENT = ATTACHMENTS.register("test_fluid", AttachmentType.builder(() -> FluidResource.EMPTY_STACK)::build);
 
     @OnInit
     static void init(final TestFramework framework) {

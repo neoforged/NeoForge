@@ -126,7 +126,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extracted = Math.min(stack.amount(), amount);
         int newAmount = stack.amount() - extracted;
-        contents = contents.set(index, newAmount == 0 ? ItemResource.BLANK : stack.resource(), newAmount);
+        contents = contents.set(index, newAmount == 0 ? ItemResource.NONE : stack.resource(), newAmount);
         return setAndValidate(contents, extracted, action);
     }
 
@@ -139,7 +139,7 @@ public abstract class ItemStorage implements IResourceHandlerModifiable<ItemReso
             if (stack.isEmpty() || !stack.resource().equals(resource)) continue;
             int extracted = Math.min(remaining, stack.amount());
             int newAmount = stack.amount() - extracted;
-            contents = contents.set(slot, newAmount == 0 ? ItemResource.BLANK : resource, newAmount);
+            contents = contents.set(slot, newAmount == 0 ? ItemResource.NONE : resource, newAmount);
             remaining -= extracted;
             if (remaining <= 0) {
                 break;

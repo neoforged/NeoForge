@@ -51,7 +51,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * Codec for a fluid resource. Same format as {@link #CODEC}, and also accepts blank resources.
      */
     public static final Codec<FluidResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
-            .xmap(o -> o.orElse(FluidResource.BLANK), r -> r.isEmpty() ? Optional.of(FluidResource.BLANK) : Optional.of(r));
+            .xmap(o -> o.orElse(FluidResource.NONE), r -> r.isEmpty() ? Optional.of(FluidResource.NONE) : Optional.of(r));
     /**
      * Codec for a fluid resource and an amount. Does <b>not</b> accept empty stacks.
      */
@@ -72,19 +72,19 @@ public final class FluidResource implements IResource, DataComponentHolder {
             FluidResource::getComponentsPatch,
             FluidResource::of);
 
-    public static final FluidResource BLANK = new FluidResource(FluidStack.EMPTY);
-    public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(FluidResource.BLANK, 0);
+    public static final FluidResource NONE = new FluidResource(FluidStack.EMPTY);
+    public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(FluidResource.NONE, 0);
 
     public static FluidResource of(FluidStack fluidStack) {
-        return fluidStack.isEmpty() ? BLANK : new FluidResource(fluidStack.copyWithAmount(1));
+        return fluidStack.isEmpty() ? NONE : new FluidResource(fluidStack.copyWithAmount(1));
     }
 
     public static FluidResource of(Fluid fluid) {
-        return fluid == Fluids.EMPTY ? BLANK : new FluidResource(new FluidStack(fluid, 1));
+        return fluid == Fluids.EMPTY ? NONE : new FluidResource(new FluidStack(fluid, 1));
     }
 
     public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {
-        return fluid.value() == Fluids.EMPTY ? BLANK : new FluidResource(new FluidStack(fluid, 1, patch));
+        return fluid.value() == Fluids.EMPTY ? NONE : new FluidResource(new FluidStack(fluid, 1, patch));
     }
 
     /**

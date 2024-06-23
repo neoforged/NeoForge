@@ -66,7 +66,7 @@ public class RecipeWrapper implements Container {
     @Override
     public void clearContent() {
         for (int i = 0; i < handler.size(); i++) {
-            handler.set(i, ItemResource.BLANK, 0);
+            handler.set(i, ItemResource.NONE, 0);
         }
     }
 }

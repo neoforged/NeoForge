@@ -61,6 +61,11 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     }
 
     @Override
+    public int getCapacity() {
+        return FluidType.BUCKET_VOLUME;
+    }
+
+    @Override
     public boolean isValid(FluidResource resource) {
         return true;
     }

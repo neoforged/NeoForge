@@ -19,8 +19,8 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
  * @param <T> The type of resource
  */
 public class EmptyHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    public static final EmptyHandler<ItemResource> ITEM = new EmptyHandler<>(ItemResource.BLANK);
-    public static final EmptyHandler<FluidResource> FLUID = new EmptyHandler<>(FluidResource.BLANK);
+    public static final EmptyHandler<ItemResource> ITEM = new EmptyHandler<>(ItemResource.NONE);
+    public static final EmptyHandler<FluidResource> FLUID = new EmptyHandler<>(FluidResource.NONE);
 
     private final T emptyResource;
 

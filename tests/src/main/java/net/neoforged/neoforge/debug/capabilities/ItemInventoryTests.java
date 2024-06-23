@@ -8,15 +8,21 @@ package net.neoforged.neoforge.debug.capabilities;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.items.ComponentItemHandler;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.context.IItemContext;
+import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
+import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.items.templates.ItemStorage;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -30,6 +36,8 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 public class ItemInventoryTests {
     public static final int SLOTS = 128;
     public static final int STICK_SLOT = 64;
+    public static final int INSERT_AMOUNT = 32;
+    public static final int EXTRACT_AMOUNT = 64;
 
     private static final RegistrationHelper HELPER = RegistrationHelper.create("item_inventory_tests");
 
@@ -47,7 +55,7 @@ public class ItemInventoryTests {
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
             e.registerItem(ItemHandler.ITEM, (stack, ctx) -> {
-                return new ComponentItemHandler(stack, DataComponents.CONTAINER, SLOTS);
+                return new ItemStorage.Item(ctx, DataComponents.CONTAINER, SLOTS);
             }, BACKPACK);
         });
     }
@@ -57,35 +65,41 @@ public class ItemInventoryTests {
     @TestHolder(description = "Tests that ComponentItemHandler can read and write from a data component")
     public static void testItemInventory(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
+            Player player = helper.makeMockPlayer();
             ItemStack stack = BACKPACK.toStack();
-            IItemHandler items = stack.getCapability(ItemHandler.ITEM);
+            player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+            IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
+            var items = context.getCapability(ItemHandler.ITEM);
 
-            ItemStack storedStick = items.getStackInSlot(STICK_SLOT);
+            ItemResource storedStick = items.getResource(STICK_SLOT);
             helper.assertValueEqual(storedStick.getItem(), Items.STICK, "Default contents should contain a stick at slot " + STICK_SLOT);
 
-            ItemStack toInsert = Items.APPLE.getDefaultInstance().copyWithCount(32);
+            ItemResource appleResource = Items.APPLE.defaultResource;
             ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
 
-            ItemStack remainder = items.insertItem(STICK_SLOT, toInsert, false);
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, remainder), "Inserting an item where it does not fit should return the original item.");
+            int inserted = items.insert(STICK_SLOT, appleResource, INSERT_AMOUNT, TransferAction.EXECUTE);
+            helper.assertTrue(inserted == 0, "Inserting an item where it does not fit should return 0.");
             // Check identity equality to assert that the component object was not updated at all, even to an equivalent form.
             helper.assertTrue(contents == stack.get(DataComponents.CONTAINER), "Inserting an item where it does not fit should not change the component.");
 
-            remainder = items.insertItem(0, toInsert, false);
-            helper.assertTrue(remainder.isEmpty(), "Successfully inserting the entire item should return an empty stack.");
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, items.getStackInSlot(0)), "Successfully inserting an item should be visible via getStackInSlot");
+            inserted = items.insert(0, appleResource, INSERT_AMOUNT, TransferAction.EXECUTE);
+            helper.assertTrue(inserted == INSERT_AMOUNT, "Successfully inserting the entire item should return the amount inserted, AKA 32.");
+            helper.assertTrue(HandlerUtil.resourceAndCountMatches(items, 0, appleResource, INSERT_AMOUNT), "Successfully inserting an item should be visible via the get methods");
 
             ItemContainerContents newContents = stack.get(DataComponents.CONTAINER);
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
+            helper.assertTrue(ItemStack.isSameItemSameComponents(appleResource.toStack(INSERT_AMOUNT), newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
 
-            ItemStack extractedApple = items.extractItem(0, 64, false);
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, extractedApple), "Extracting the entire inserted item should produce the same item.");
+            ItemResource resource = items.getResource(0);
+            int extractedApple = items.extract(0, resource, INSERT_AMOUNT, TransferAction.EXECUTE);
+            helper.assertTrue(extractedApple == INSERT_AMOUNT, "Extracting the entire inserted item should produce the same item.");
+            helper.assertTrue(HandlerUtil.isIndexEmpty(items, 0), "Extracting the entire inserted item should leave the slot empty.");
 
-            ItemStack extractedStick = items.extractItem(STICK_SLOT, 64, false);
-            helper.assertTrue(extractedStick.getItem() == Items.STICK && extractedStick.getCount() == 64, "The extracted item from the stick slot should be a 64-count stick.");
+            int extractedStick = items.extract(STICK_SLOT, Items.STICK.defaultResource, EXTRACT_AMOUNT, TransferAction.EXECUTE);
+            helper.assertTrue(extractedStick == EXTRACT_AMOUNT, "The extracted item from the stick slot should be a 64-count stick.");
+            helper.assertTrue(HandlerUtil.isIndexEmpty(items, STICK_SLOT), "Extracting the entire stack should leave the slot empty.");
 
             for (int i = 0; i < SLOTS; i++) {
-                helper.assertTrue(items.getStackInSlot(i).isEmpty(), "Stack at slot " + i + " must be empty.");
+                helper.assertTrue(HandlerUtil.isIndexEmpty(items, i), "Stack at slot " + i + " must be empty.");
             }
 
             helper.succeed();

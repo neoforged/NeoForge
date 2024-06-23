@@ -22,7 +22,7 @@ public class ItemFluidStorage implements ISingleResourceHandler<FluidResource> {
     protected final IItemContext context;
     private Predicate<FluidResource> validator = r -> true;
 
-    public ItemFluidStorage(int limit, Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context) {
+    public ItemFluidStorage(Supplier<DataComponentType<SimpleFluidContent>> componentType, IItemContext context, int limit) {
         this.individualLimit = limit;
         this.componentType = componentType;
         this.context = context;

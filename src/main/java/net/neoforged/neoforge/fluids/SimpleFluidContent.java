@@ -34,9 +34,6 @@ public class SimpleFluidContent implements DataComponentHolder {
 
     private final FluidStack fluidStack;
 
-    @Nullable
-    private ResourceStack<FluidResource> immutable;
-
     private SimpleFluidContent(FluidStack fluidStack) {
         this.fluidStack = fluidStack;
     }
@@ -95,18 +92,6 @@ public class SimpleFluidContent implements DataComponentHolder {
 
     public FluidType getFluidType() {
         return fluidStack.getFluidType();
-    }
-
-    public ResourceStack<FluidResource> getImmutableStack() {
-        ResourceStack<FluidResource> stack = immutable;
-        if (stack == null) {
-            stack = this.immutable = fluidStack.immutable();
-        }
-        return stack;
-    }
-
-    public FluidResource getResource() {
-        return getImmutableStack().resource();
     }
 
     public boolean is(FluidType fluidType) {

@@ -70,7 +70,7 @@ public class DispenserContext implements IItemContext {
         if (action.isExecuting()) {
             this.amount -= extracted;
             if (getAmount() == 0) {
-                this.resource = ItemResource.BLANK;
+                this.resource = ItemResource.NONE;
             }
         }
         return extracted;

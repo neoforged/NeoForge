@@ -23,7 +23,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
-import net.neoforged.neoforge.transfer.energy.IEnergyHandler;
 import net.neoforged.neoforge.energy.ItemEnergyStorage;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
@@ -70,13 +69,13 @@ public class ItemEnergyTests {
             player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
             IEnergyStorage energy = context.getCapability(EnergyHandler.ITEM);
-            helper.assertValueEqual(energy.getAmount(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
+            helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
 
-            helper.assertValueEqual(energy.extract(MAX_CAPACITY, TransferAction.EXECUTE), MAX_CAPACITY, "Extracted energy should be equal to the target value.");
-            helper.assertValueEqual(energy.getAmount(), 0, "Post-extraction energy stored should be zero.");
+            helper.assertValueEqual(energy.extractEnergy(MAX_CAPACITY, false), MAX_CAPACITY, "Extracted energy should be equal to the target value.");
+            helper.assertValueEqual(energy.getEnergyStored(), 0, "Post-extraction energy stored should be zero.");
 
-            helper.assertValueEqual(energy.insert(MAX_CAPACITY, TransferAction.EXECUTE), MAX_CAPACITY, "Received energy should be equal to the target value.");
-            helper.assertValueEqual(energy.getAmount(), MAX_CAPACITY, "Post-insertion energy stored should be max capacity.");
+            helper.assertValueEqual(energy.receiveEnergy(MAX_CAPACITY, false), MAX_CAPACITY, "Received energy should be equal to the target value.");
+            helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Post-insertion energy stored should be max capacity.");
 
             helper.succeed();
         });
