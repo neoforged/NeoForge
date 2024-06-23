@@ -9,6 +9,11 @@ import it.unimi.dsi.fastutil.Hash;
 import java.util.Objects;
 
 public class BasicStrategy implements Hash.Strategy<Object> {
+    /**
+     * A strategy that uses {@link Objects#hashCode(Object)} and {@link Object#equals(Object)}.
+     */
+    public static final Hash.Strategy<? super Object> BASIC = new BasicStrategy();
+
     @Override
     public int hashCode(Object o) {
         return Objects.hashCode(o);

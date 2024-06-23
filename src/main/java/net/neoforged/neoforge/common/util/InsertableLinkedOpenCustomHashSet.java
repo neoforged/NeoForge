@@ -14,26 +14,16 @@ import net.neoforged.neoforge.common.util.strategy.IdentityStrategy;
 
 /**
  * Special linked hash set that allow changing the order of its entries and is strict to throw if attempting to add an entry that already exists.
- * Requires a strategy for the hashing behavior. Use {@link InsertableLinkedOpenCustomHashSet#BASIC} or {@link InsertableLinkedOpenCustomHashSet#IDENTITY} if no special hashing needed.
+ * Requires a strategy for the hashing behavior. Use {@link BasicStrategy#BASIC} or {@link IdentityStrategy#IDENTITY} if no special hashing needed.
  */
 public class InsertableLinkedOpenCustomHashSet<T> extends ObjectLinkedOpenCustomHashSet<T> {
-    /**
-     * A strategy that uses {@link Objects#hashCode(Object)} and {@link Object#equals(Object)}.
-     */
-    public static final Hash.Strategy<? super Object> BASIC = new BasicStrategy();
-
-    /**
-     * A strategy that uses {@link System#identityHashCode(Object)} and {@code a == b} comparisons.
-     */
-    public static final Hash.Strategy<? super Object> IDENTITY = new IdentityStrategy();
-
     private static final long LINK_BITS = 0xFFFFFFFFL;
     private static final long LINK_BIT_SPACE = 32L;
     private static final long NEXT_LINK = LINK_BITS;
     private static final long PREV_LINK = LINK_BITS << LINK_BIT_SPACE;
 
     public InsertableLinkedOpenCustomHashSet() {
-        super(BASIC);
+        super(BasicStrategy.BASIC);
     }
 
     public InsertableLinkedOpenCustomHashSet(Hash.Strategy<? super T> strategy) {

@@ -24,16 +24,6 @@ import org.jetbrains.annotations.Nullable;
  * @param <V> the type of mapped values
  */
 public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
-    /**
-     * A strategy that uses {@link Objects#hashCode(Object)} and {@link Object#equals(Object)}.
-     */
-    public static final Strategy<? super Object> BASIC = new BasicStrategy();
-
-    /**
-     * A strategy that uses {@link System#identityHashCode(Object)} and {@code a == b} comparisons.
-     */
-    public static final Strategy<? super Object> IDENTITY = new IdentityStrategy();
-
     private final Strategy<? super K> strategy;
     private final Map<K, Entry> entries;
     private final MergeFunction<K, V> merge;
@@ -47,10 +37,10 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
     private transient int changes = 0;
 
     /**
-     * Creates a new instance using the {@link #BASIC} strategy.
+     * Creates a new instance using the {@link BasicStrategy#BASIC} strategy.
      */
     public MutableHashedLinkedMap() {
-        this(BASIC);
+        this(BasicStrategy.BASIC);
     }
 
     /**

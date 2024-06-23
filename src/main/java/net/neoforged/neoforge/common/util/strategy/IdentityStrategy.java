@@ -8,6 +8,11 @@ package net.neoforged.neoforge.common.util.strategy;
 import it.unimi.dsi.fastutil.Hash;
 
 public class IdentityStrategy implements Hash.Strategy<Object> {
+    /**
+     * A strategy that uses {@link System#identityHashCode(Object)} and {@code a == b} comparisons.
+     */
+    public static final Hash.Strategy<? super Object> IDENTITY = new IdentityStrategy();
+
     @Override
     public int hashCode(Object o) {
         return System.identityHashCode(o);
