@@ -116,8 +116,8 @@ public abstract class EntityEvent extends Event {
     /**
      * Fired whenever the entity's {@link Pose} changes for manipulating the resulting {@link EntityDimensions}.
      *
-     * <p><strong>Note:</strong> This event is fired from the {@code Entity} constructor, and therefore the entity instance 
-     * might not be fully initialized. Be cautious in using methods and fields from the instance, and check 
+     * <p><strong>Note:</strong> This event is fired from the {@code Entity} constructor, and therefore the entity instance
+     * might not be fully initialized. Be cautious in using methods and fields from the instance, and check
      * {@link Entity#isAddedToWorld()} or {@link Entity#firstTick}.
      *
      * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
