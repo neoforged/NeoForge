@@ -1,6 +1,10 @@
+import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
+import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'net.neoforged.jarcompatibilitychecker' version '0.1.9'
 }
 
 apply plugin: 'net.neoforged.gradleutils'
@@ -16,6 +20,24 @@ dynamicProject {
     runtime("${project.minecraft_version}-${project.neoform_version}",
             rootProject.layout.projectDirectory.dir('patches'),
             rootProject.layout.projectDirectory.dir('rejects'))
+}
+
+final checkVersion = JCCPlugin.providePreviousVersion(
+        project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'} as java.util.concurrent.Callable)
+)
+final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
+    // Use the same jar that the patches were generated against
+    cleanJar.set(tasks.generateClientBinaryPatches.clean)
+    maven.set('https://maven.neoforged.net/releases')
+    artifact.set('net.neoforged:neoforge')
+    version.set(checkVersion)
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(java_version)
+    }
+}
+checkJarCompatibility {
+    isAPI = true
+    baseJar = createCompatJar.flatMap { it.output }
 }
 
 installerProfile {

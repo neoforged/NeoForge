@@ -49,5 +49,14 @@ jobs:
           arguments: assemble checkFormatting
           cache-read-only: false
 
+      - name: Run JCC
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: checkJarCompatibility
+          cache-read-only: false
+
+      - name: Upload JCC
+        uses: neoforged/action-jar-compatibility/upload@v1
+
       - name: Publish artifacts
         uses: neoforged/action-pr-publishing/upload@v1
