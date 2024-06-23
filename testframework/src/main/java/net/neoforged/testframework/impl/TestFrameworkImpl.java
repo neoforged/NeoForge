@@ -45,7 +45,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerLoggedInEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerLoggedOutEvent;
-import net.neoforged.neoforge.event.entity.player.ServerPlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;

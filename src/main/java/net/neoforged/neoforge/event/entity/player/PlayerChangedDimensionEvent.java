@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 public class PlayerChangedDimensionEvent extends ServerPlayerEvent {
     private final ResourceKey<Level> originalDimension;
     private final ResourceKey<Level> newDimension;
+
     public PlayerChangedDimensionEvent(ServerPlayer player, ResourceKey<Level> originalDimension, ResourceKey<Level> newDimension) {
         super(player);
         this.originalDimension = originalDimension;
