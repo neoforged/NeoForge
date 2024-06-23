@@ -439,7 +439,7 @@
      }
  
      public void checkDespawn() {
-@@ -3450,6 +_,117 @@
+@@ -3450,6 +_,109 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }
@@ -492,14 +492,6 @@
 +    @Override
 +    public void revive() {
 +        this.unsetRemoved();
-+    }
-+
-+    // no AT because of overrides
-+    /**
-+     * Accessor method for {@link #getEyeHeight(Pose)}
-+     */
-+    public float getEyeHeightAccess(Pose pose) {
-+        return this.getEyeHeight(pose);
 +    }
 +
 +    protected Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
