@@ -132,7 +132,7 @@
              if (this.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
              }
-@@ -784,6 +_,7 @@
+@@ -784,12 +_,14 @@
                  list.add(DISABLED_ITEM_TOOLTIP);
              }
  
@@ -140,6 +140,13 @@
              return list;
          }
      }
+ 
+     private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_) {
+         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
++        // Neo: We don't need to call IItemStackExtension#getAttributeModifiers here, since it will be done in forEachModifier.
+         if (itemattributemodifiers.showInTooltip()) {
+             for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
+                 MutableBoolean mutableboolean = new MutableBoolean(true);
 @@ -897,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
@@ -158,27 +165,49 @@
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
      }
-@@ -933,11 +_,15 @@
+@@ -922,6 +_,12 @@
+     }
+ 
+     public void forEachModifier(EquipmentSlotGroup p_348610_, BiConsumer<Holder<Attribute>, AttributeModifier> p_348516_) {
++        // Neo: Reflect real attribute modifiers when doing iteration
++        this.getAttributeModifiers().forEach(p_348610_, p_348516_);
++
++        if (false) {
++        // Start disabled vanilla code
++
+         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+         if (!itemattributemodifiers.modifiers().isEmpty()) {
+             itemattributemodifiers.forEach(p_348610_, p_348516_);
+@@ -929,10 +_,19 @@
+             this.getItem().getDefaultAttributeModifiers().forEach(p_348610_, p_348516_);
+         }
+ 
++        // end disabled vanilla code
++        }
++
+         EnchantmentHelper.forEachModifier(this, p_348610_, p_348516_);
      }
  
      public void forEachModifier(EquipmentSlot p_332001_, BiConsumer<Holder<Attribute>, AttributeModifier> p_330882_) {
--        ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
--        if (!itemattributemodifiers.modifiers().isEmpty()) {
--            itemattributemodifiers.forEach(p_332001_, p_330882_);
--        } else {
--            this.getItem().getDefaultAttributeModifiers().forEach(p_332001_, p_330882_);
-+        // Neo: Use ItemStack extension method, which fires an event for mod-added attributes modifiers
-+        this.getAttributeModifiers(p_332001_).forEach(p_330882_);
++        // Neo: Reflect real attribute modifiers when doing iteration
++        this.getAttributeModifiers().forEach(p_332001_, p_330882_);
++
 +        if (false) {
-+            ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-+            if (!itemattributemodifiers.modifiers().isEmpty()) {
-+                itemattributemodifiers.forEach(p_332001_, p_330882_);
-+            } else {
-+                this.getItem().getDefaultAttributeModifiers().forEach(p_332001_, p_330882_);
-+            }
++        // Start disabled vanilla code
++
+         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+         if (!itemattributemodifiers.modifiers().isEmpty()) {
+             itemattributemodifiers.forEach(p_332001_, p_330882_);
+@@ -940,6 +_,9 @@
+             this.getItem().getDefaultAttributeModifiers().forEach(p_332001_, p_330882_);
          }
  
++        // end disabled vanilla code
++        }
++
          EnchantmentHelper.forEachModifier(this, p_332001_, p_330882_);
+     }
+ 
 @@ -951,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
