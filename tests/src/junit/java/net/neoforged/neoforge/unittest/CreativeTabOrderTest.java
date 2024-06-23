@@ -73,6 +73,12 @@ public class CreativeTabOrderTest {
     public static List<ItemStack> searchTab;
     public static List<ItemStack> stoneParentTab;
     public static List<ItemStack> stoneSearchTab;
+    public static boolean stackCountExceptionForAccept = false;
+    public static boolean stackCountExceptionForPutAfter = false;
+    public static boolean stackCountExceptionForPutBefore = false;
+    public static boolean stackCountExceptionForPutFirst = false;
+    public static boolean targetDoesNotExistExceptionForPutAfter = false;
+    public static boolean targetDoesNotExistExceptionForPutBefore = false;
 
     @BeforeAll
     static void testSetupTabs(MinecraftServer server) {
@@ -159,6 +165,21 @@ public class CreativeTabOrderTest {
         Assertions.assertTrue(desiredOrder.isEmpty(), "Not all sorted stones were found in stone search tab!");
     }
 
+    /**
+     * Makes sure the validation checks were triggered properly for problematic inputs into {@link BuildCreativeModeTabContentsEvent}
+     *
+     * @param server Ephemeral server from extension
+     */
+    @Test
+    void testBuildCreativeModeTabContentsEventValidations(MinecraftServer server) {
+        Assertions.assertTrue(stackCountExceptionForAccept, "Accept method is missing itemstack validation where stack should be 1.");
+        Assertions.assertTrue(stackCountExceptionForPutAfter, "Put After method is missing itemstack validation where stack should be 1.");
+        Assertions.assertTrue(stackCountExceptionForPutBefore, "Put Before method is missing itemstack validation where stack should be 1.");
+        Assertions.assertTrue(stackCountExceptionForPutFirst, "Put First method is missing itemstack validation where stack should be 1.");
+        Assertions.assertTrue(targetDoesNotExistExceptionForPutAfter, "Put After method is missing target itemstack validation where target should exist.");
+        Assertions.assertTrue(targetDoesNotExistExceptionForPutBefore, "Put Before method is missing target itemstack validation where target should exist.");
+    }
+
     private static List<Item> setupDesiredStoneOrder() {
         List<Item> desiredOrder = new ArrayList<>();
         desiredOrder.add(Items.BASALT);
@@ -188,6 +209,37 @@ public class CreativeTabOrderTest {
                 event.accept(i(Blocks.CYAN_CONCRETE), vis);
                 event.remove(i(Blocks.CYAN_CONCRETE), vis);
                 event.putFirst(i(Blocks.BASALT), vis);
+
+                catchSpecificExceptionForAction(
+                        () -> event.accept(new ItemStack(Items.DIRT, 4), vis),
+                        "The stack count must be 1 for",
+                        () -> stackCountExceptionForAccept = true);
+
+                catchSpecificExceptionForAction(
+                        () -> event.putAfter(i(Blocks.STONE), new ItemStack(Items.DIRT, 4), vis),
+                        "The stack count must be 1 for",
+                        () -> stackCountExceptionForPutAfter = true);
+
+                catchSpecificExceptionForAction(
+                        () -> event.putBefore(i(Blocks.STONE), new ItemStack(Items.DIRT, 4), vis),
+                        "The stack count must be 1 for",
+                        () -> stackCountExceptionForPutBefore = true);
+
+                catchSpecificExceptionForAction(
+                        () -> event.putFirst(new ItemStack(Items.DIRT, 4), vis),
+                        "The stack count must be 1 for",
+                        () -> stackCountExceptionForPutFirst = true);
+
+                catchSpecificExceptionForAction(
+                        () -> event.putAfter(i(Blocks.LECTERN), i(Blocks.DIRT), vis),
+                        "does not exist in list",
+                        () -> targetDoesNotExistExceptionForPutAfter = true);
+
+                catchSpecificExceptionForAction(
+                        () -> event.putBefore(i(Blocks.LECTERN), i(Blocks.DIRT), vis),
+                        "does not exist in list",
+                        () -> targetDoesNotExistExceptionForPutBefore = true);
+
                 stoneParentTab = event.getParentEntries();
                 stoneSearchTab = event.getSearchEntries();
             }
@@ -197,6 +249,17 @@ public class CreativeTabOrderTest {
             }
             if (event.getTabKey() == CreativeModeTabs.SEARCH) {
                 searchTab = event.getSearchEntries();
+            }
+        }
+
+        private static void catchSpecificExceptionForAction(Runnable action, String targetExceptionMessage, Runnable foundExceptionAction) {
+            try {
+                action.run();
+            }
+            catch (IllegalArgumentException e) {
+                if (e.getMessage().contains(targetExceptionMessage)) {
+                    foundExceptionAction.run();
+                }
             }
         }
 

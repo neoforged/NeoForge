@@ -86,16 +86,15 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
      * @exception IllegalArgumentException if the new itemstack's count is not 1.
      */
     @Override
-    public void accept(ItemStack newStack, CreativeModeTab.TabVisibility visibility) {
-        if (newStack.getCount() != 1)
-            throw new IllegalArgumentException("The stack count must be 1");
+    public void accept(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
+        assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
-            parentEntries.add(newStack);
+            parentEntries.add(newEntry);
         }
 
         if (isSearchTab(visibility)) {
-            searchEntries.add(newStack);
+            searchEntries.add(newEntry);
         }
     }
 
@@ -103,17 +102,18 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
      * Inserts the new entry after the specified existing entry.
      * 
      * @exception UnsupportedOperationException if the existing entry is not found in the tab's lists.
-     * @exception IllegalArgumentException      if the new itemstack's count is not 1.
+     * @exception IllegalArgumentException      if the new itemstack's count is not 1 or target does not exist in set.
      */
     public void putAfter(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
-        if (newEntry.getCount() != 1)
-            throw new IllegalArgumentException("The stack count must be 1");
+        assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
+            assertTargetExists(parentEntries, existingEntry);
             parentEntries.addBefore(existingEntry, newEntry);
         }
 
         if (isSearchTab(visibility)) {
+            assertTargetExists(searchEntries, existingEntry);
             searchEntries.addBefore(existingEntry, newEntry);
         }
     }
@@ -122,17 +122,18 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
      * Inserts the new entry before the specified existing entry.
      * 
      * @exception UnsupportedOperationException if the existing entry is not found in the tab's lists.
-     * @exception IllegalArgumentException      if the new itemstack's count is not 1.
+     * @exception IllegalArgumentException      if the new itemstack's count is not 1 or target does not exist in set.
      */
     public void putBefore(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
-        if (newEntry.getCount() != 1)
-            throw new IllegalArgumentException("The stack count must be 1");
+        assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
+            assertTargetExists(parentEntries, existingEntry);
             parentEntries.addAfter(existingEntry, newEntry);
         }
 
         if (isSearchTab(visibility)) {
+            assertTargetExists(searchEntries, existingEntry);
             searchEntries.addAfter(existingEntry, newEntry);
         }
     }
@@ -143,8 +144,7 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
      * @exception IllegalArgumentException if the new itemstack's count is not 1.
      */
     public void putFirst(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
-        if (newEntry.getCount() != 1)
-            throw new IllegalArgumentException("The stack count must be 1");
+        assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
             parentEntries.addFirst(newEntry);
@@ -174,5 +174,17 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
 
     static boolean isSearchTab(CreativeModeTab.TabVisibility visibility) {
         return visibility == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY || visibility == CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
+    }
+
+    private void assertTargetExists(InsertableLinkedOpenCustomHashSet<ItemStack> setToCheck, ItemStack existingEntry) {
+        if (!setToCheck.contains(existingEntry)) {
+            throw new IllegalArgumentException("Itemstack " + existingEntry + " does not exist in list");
+        }
+    }
+
+    private static void assertStackCount(ItemStack newEntry) {
+        if (newEntry.getCount() != 1) {
+            throw new IllegalArgumentException("The stack count must be 1 for " + newEntry);
+        }
     }
 }
