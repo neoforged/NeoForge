@@ -83,17 +83,19 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
     /**
      * Inserts the new stack at the end of the given tab at this point in time.
      * 
-     * @exception IllegalArgumentException if the new itemstack's count is not 1.
+     * @exception IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
      */
     @Override
     public void accept(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
+            assertNewEntryDoesNotAlreadyExists(parentEntries, newEntry);
             parentEntries.add(newEntry);
         }
 
         if (isSearchTab(visibility)) {
+            assertNewEntryDoesNotAlreadyExists(searchEntries, newEntry);
             searchEntries.add(newEntry);
         }
     }
@@ -141,16 +143,18 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
     /**
      * Inserts the new entry in the front of the tab's content.
      * 
-     * @exception IllegalArgumentException if the new itemstack's count is not 1.
+     * @exception IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
      */
     public void putFirst(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
+            assertNewEntryDoesNotAlreadyExists(parentEntries, newEntry);
             parentEntries.addFirst(newEntry);
         }
 
         if (isSearchTab(visibility)) {
+            assertNewEntryDoesNotAlreadyExists(searchEntries, newEntry);
             searchEntries.addFirst(newEntry);
         }
     }
@@ -178,7 +182,13 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
 
     private void assertTargetExists(InsertableLinkedOpenCustomHashSet<ItemStack> setToCheck, ItemStack existingEntry) {
         if (!setToCheck.contains(existingEntry)) {
-            throw new IllegalArgumentException("Itemstack " + existingEntry + " does not exist in list");
+            throw new IllegalArgumentException("Itemstack " + existingEntry + " does not exist in tab's list");
+        }
+    }
+
+    private void assertNewEntryDoesNotAlreadyExists(InsertableLinkedOpenCustomHashSet<ItemStack> setToCheck, ItemStack newEntry) {
+        if (setToCheck.contains(newEntry)) {
+            throw new IllegalArgumentException("Itemstack " + newEntry + " already exists in the tab's list");
         }
     }
 
