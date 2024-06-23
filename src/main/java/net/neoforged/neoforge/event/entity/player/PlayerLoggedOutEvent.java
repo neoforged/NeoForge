@@ -7,12 +7,8 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.server.level.ServerPlayer;
 
-public abstract class ServerPlayerEvent extends PlayerEvent {
-    protected ServerPlayerEvent(ServerPlayer entity) {
+public class PlayerLoggedOutEvent extends ServerPlayerEvent {
+    public PlayerLoggedOutEvent(ServerPlayer entity) {
         super(entity);
-    }
-
-    public ServerPlayer getEntity() {
-        return ((ServerPlayer) super.getEntity());
     }
 }

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
@@ -13,7 +14,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <p>
  * This event is cancelable which will stop the op or deop from happening.
  */
-public class PermissionsChangedEvent extends PlayerEvent implements ICancellableEvent {
+public class PermissionsChangedEvent extends ServerPlayerEvent implements ICancellableEvent {
     private final int newLevel;
     private final int oldLevel;
 

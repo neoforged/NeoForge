@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * 
  * @see {@link CanContinueSleepingEvent} for per-tick sleeping checks.
  */
-public class CanPlayerSleepEvent extends PlayerEvent {
+public class CanPlayerSleepEvent extends ServerPlayerEvent {
     private final BlockPos pos;
     private final BlockState state;
 
@@ -36,11 +36,6 @@ public class CanPlayerSleepEvent extends PlayerEvent {
         this.pos = pos;
         this.state = player.level().getBlockState(pos);
         this.vanillaProblem = this.problem = problem;
-    }
-
-    @Override
-    public ServerPlayer getEntity() {
-        return (ServerPlayer) super.getEntity();
     }
 
     public Level getLevel() {

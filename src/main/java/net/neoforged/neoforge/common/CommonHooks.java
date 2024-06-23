@@ -184,11 +184,7 @@ import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
-import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.ServerPlayerEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
@@ -719,7 +715,7 @@ public class CommonHooks {
     @Nullable
     public static GameType onChangeGameType(ServerPlayer player, GameType currentGameType, GameType newGameType) {
         if (currentGameType != newGameType) {
-            ServerPlayerEvent.PlayerChangeGameModeEvent evt = new ServerPlayerEvent.PlayerChangeGameModeEvent(player, currentGameType, newGameType);
+            PlayerChangeGameModeEvent evt = new PlayerChangeGameModeEvent(player, currentGameType, newGameType);
             NeoForge.EVENT_BUS.post(evt);
             return evt.isCanceled() ? null : evt.getNewGameMode();
         }

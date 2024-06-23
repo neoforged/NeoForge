@@ -137,26 +137,10 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType;
-import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
-import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
-import net.neoforged.neoforge.event.entity.player.BonemealEvent;
-import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
-import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
-import net.neoforged.neoforge.event.entity.player.ServerPlayerEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider;
@@ -869,15 +853,15 @@ public class EventHooks {
     }
 
     public static void firePlayerChangedDimensionEvent(ServerPlayer player, ResourceKey<Level> originalDimension, ResourceKey<Level> newDimension) {
-        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerChangedDimensionEvent(player, originalDimension, newDimension));
+        NeoForge.EVENT_BUS.post(new PlayerChangedDimensionEvent(player, originalDimension, newDimension));
     }
 
     public static void firePlayerLoggedIn(ServerPlayer player) {
-        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerLoggedInEvent(player));
+        NeoForge.EVENT_BUS.post(new PlayerLoggedInEvent(player));
     }
 
     public static void firePlayerLoggedOut(ServerPlayer player) {
-        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerLoggedOutEvent(player));
+        NeoForge.EVENT_BUS.post(new PlayerLoggedOutEvent(player));
     }
 
     /**
@@ -900,7 +884,7 @@ public class EventHooks {
      * @param fromEndFight Whether the player is respawning because they jumped through the End return portal
      */
     public static void firePlayerRespawnEvent(ServerPlayer player, boolean fromEndFight) {
-        NeoForge.EVENT_BUS.post(new ServerPlayerEvent.PlayerRespawnEvent(player, fromEndFight));
+        NeoForge.EVENT_BUS.post(new PlayerRespawnEvent(player, fromEndFight));
     }
 
     public static void firePlayerCraftingEvent(Player player, ItemStack crafted, Container craftMatrix) {

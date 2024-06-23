@@ -43,6 +43,8 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerLoggedInEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerLoggedOutEvent;
 import net.neoforged.neoforge.event.entity.player.ServerPlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
@@ -139,8 +141,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
         });
 
         if (configuration().isEnabled(Feature.TEST_STORE)) {
-            NeoForge.EVENT_BUS.addListener((final ServerPlayerEvent.PlayerLoggedOutEvent event) -> playerTestStore().put(event.getEntity().getUUID(), tests.tests.keySet()));
-            NeoForge.EVENT_BUS.addListener((final ServerPlayerEvent.PlayerLoggedInEvent event) -> {
+            NeoForge.EVENT_BUS.addListener((final PlayerLoggedOutEvent event) -> playerTestStore().put(event.getEntity().getUUID(), tests.tests.keySet()));
+            NeoForge.EVENT_BUS.addListener((final PlayerLoggedInEvent event) -> {
                 final Set<String> lastTests = playerTestStore().getLast(event.getEntity().getUUID());
                 if (lastTests == null) return;
 

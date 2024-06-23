@@ -31,6 +31,7 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerLoggedInEvent;
 import net.neoforged.neoforge.event.entity.player.ServerPlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -95,7 +96,7 @@ public class NeoForgeEventHandler {
     */
 
     @SubscribeEvent
-    public void playerLogin(ServerPlayerEvent.PlayerLoggedInEvent event) {
+    public void playerLogin(PlayerLoggedInEvent event) {
         UsernameCache.setUsername(event.getEntity().getUUID(), event.getEntity().getGameProfile().getName());
     }
 
