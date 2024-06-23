@@ -114,15 +114,14 @@ public abstract class EntityEvent extends Event {
     }
 
     /**
-     * This event is fired whenever the {@link Pose} changes, and in a few other hardcoded scenarios.<br>
-     * CAREFUL: This is also fired in the Entity constructor. Therefore the entity(subclass) might not be fully initialized. Check Entity#isAddedToWorld() or !Entity#firstUpdate.<br>
-     * If you change the player's size, you probably want to set the eye height accordingly as well<br>
-     * <br>
-     * This event is not {@link ICancellableEvent}.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
+     * Fired whenever the entity's {@link Pose} changes for manipulating the resulting {@link EntityDimensions}.
+     *
+     * <p><strong>Note:</strong> This event is fired from the {@code Entity} constructor, and therefore the entity instance 
+     * might not be fully initialized. Be cautious in using methods and fields from the instance, and check 
+     * {@link Entity#isAddedToWorld()} or {@link Entity#firstTick}.
+     *
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
+     * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
     public static class Size extends EntityEvent {
         private final Pose pose;
