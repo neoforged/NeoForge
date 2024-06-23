@@ -9,7 +9,7 @@
      protected BushBlock(BlockBehaviour.Properties p_51021_) {
          super(p_51021_);
      }
-@@ -33,6 +_,8 @@
+@@ -33,7 +_,10 @@
      @Override
      protected boolean canSurvive(BlockState p_51028_, LevelReader p_51029_, BlockPos p_51030_) {
          BlockPos blockpos = p_51030_.below();
