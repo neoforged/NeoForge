@@ -81,6 +81,8 @@ public class CreativeTabOrderTest {
     public static boolean targetDoesNotExistExceptionForPutBefore = false;
     public static boolean newEntryExistAlreadyExceptionForAccept = false;
     public static boolean newEntryExistAlreadyExceptionForPutFirst = false;
+    public static boolean newEntryExistAlreadyExceptionForPutAfter = false;
+    public static boolean newEntryExistAlreadyExceptionForPutBefore = false;
 
     @BeforeAll
     static void testSetupTabs(MinecraftServer server) {
@@ -182,6 +184,8 @@ public class CreativeTabOrderTest {
         Assertions.assertTrue(targetDoesNotExistExceptionForPutBefore, "Put Before method is missing target itemstack validation where target should exist.");
         Assertions.assertTrue(newEntryExistAlreadyExceptionForAccept, "Accept method is missing duplicate itemstack validation where entry should not be added twice.");
         Assertions.assertTrue(newEntryExistAlreadyExceptionForPutFirst, "Put First method is missing duplicate itemstack validation where entry should not be added twice.");
+        Assertions.assertTrue(newEntryExistAlreadyExceptionForPutAfter, "Put After method is missing duplicate itemstack validation where entry should not be added twice.");
+        Assertions.assertTrue(newEntryExistAlreadyExceptionForPutBefore, "Put Before method is missing duplicate itemstack validation where entry should not be added twice.");
     }
 
     private static List<Item> setupDesiredStoneOrder() {
@@ -244,17 +248,25 @@ public class CreativeTabOrderTest {
                         "does not exist in tab's list",
                         () -> targetDoesNotExistExceptionForPutBefore = true);
 
-
                 catchSpecificExceptionForAction(
                         () -> event.accept(i(Blocks.STONE), vis),
                         "already exists in the tab's list",
                         () -> newEntryExistAlreadyExceptionForAccept = true);
 
-
                 catchSpecificExceptionForAction(
                         () -> event.putFirst(i(Blocks.STONE), vis),
                         "already exists in the tab's list",
                         () -> newEntryExistAlreadyExceptionForPutFirst = true);
+
+                catchSpecificExceptionForAction(
+                        () -> event.putAfter(i(Blocks.DIORITE), i(Blocks.STONE), vis),
+                        "already exists in the tab's list",
+                        () -> newEntryExistAlreadyExceptionForPutAfter = true);
+
+                catchSpecificExceptionForAction(
+                        () -> event.putBefore(i(Blocks.DIORITE), i(Blocks.STONE), vis),
+                        "already exists in the tab's list",
+                        () -> newEntryExistAlreadyExceptionForPutBefore = true);
 
                 stoneParentTab = event.getParentEntries();
                 stoneSearchTab = event.getSearchEntries();
