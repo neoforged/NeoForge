@@ -40,19 +40,23 @@ jobs:
           arguments: setup
           cache-read-only: false
 
-      - name: Run datagen with Gradle
+      - name: Run game tests with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :runData :tests:runData
+          arguments: :tests:runGameTestServer
           cache-read-only: false
 
-      - name: Check local changes
-        id: check
-        run: ./.github/workflows/check-local-changes.sh
+      - name: Run JUnit tests with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :tests:runUnitTests
+          cache-read-only: false
 
-      - name: Output changed files
-        run: git status --porcelain ./*/src/generated/resources/*
-
-      - name: Fail if local changes are detected
-        if: ${{ steps.check.outputs.changed == "1" }}
-        run: exit 1
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
