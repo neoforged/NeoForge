@@ -39,7 +39,8 @@ jobs:
       - name: Run datagen with Gradle
         run: ./gradlew :neoforge:runData :tests:runData
 
-      - name: Check local changes
+      - name: Check no local changes are present
         run: |
-          chmod +x ./.github/workflows/check-local-changes.sh
-          ./.github/workflows/check-local-changes.sh
+          # Print status for easier debugging
+          git status
+          if [ -n "$(git status --porcelain)" ]; then exit 1; fi
