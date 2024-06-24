@@ -1,0 +1,54 @@
+name: Check PR local changes
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - ready_for_review
+      - reopened
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1000
+          fetch-tags: true
+
+      # GradleUtils will append the branch name to the version,
+      # but for that we need a properly checked out branch
+      - name: Create branch for commit
+        run:
+          git switch -C pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.ref }}
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: setup
+          cache-read-only: false
+
+      - name: Run datagen with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :runData :tests:runData
+          cache-read-only: false
+
+      - name: Check local changes
+        id: check
+        run: ./.github/workflows/check-local-changes.sh
+
+      - name: Output changed files
+        run: git status --porcelain ./*/src/generated/resources/*
+
+      - name: Fail if local changes are detected
+        if: ${{ steps.check.outputs.changed == "1" }}
+        run: exit 1
