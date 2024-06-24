@@ -39,7 +39,7 @@ jobs:
       - name: Run datagen with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :runData :tests:runData
+          arguments: :neoforge:runData :tests:runData
           cache-read-only: false
 
       - name: Check local changes
