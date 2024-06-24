@@ -35,7 +35,6 @@ import org.jetbrains.annotations.ApiStatus;
  * <li>if the damage is not zero, entity health is modified and recorded and {@link LivingDamageEvent.Post} is fired.</li>
  * </ol>
  */
-@ApiStatus.Internal
 public class DamageContainer {
     public enum Reduction {
         /** Damage reduced from the effects of armor. */
@@ -154,8 +153,9 @@ public class DamageContainer {
 
     @ApiStatus.Internal
     public void setReduction(Reduction reduction, float amount) {
-        this.reductions.put(reduction, modifyReduction(Reduction.ABSORPTION, amount));
-        this.newDamage -= Math.max(0, amount);
+        float modifiedReduction = modifyReduction(reduction, amount);
+        this.reductions.put(reduction, modifiedReduction);
+        this.newDamage -= Math.max(0, modifiedReduction);
     }
 
     private float modifyReduction(Reduction type, float reduction) {
