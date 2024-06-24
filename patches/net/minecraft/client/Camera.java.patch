@@ -1,6 +1,31 @@
 --- a/net/minecraft/client/Camera.java
 +++ b/net/minecraft/client/Camera.java
-@@ -61,7 +_,7 @@
+@@ -42,6 +_,7 @@
+     private float eyeHeightOld;
+     private float partialTickTime;
+     public static final float FOG_DISTANCE_SCALE = 0.083333336F;
++    private float roll;
+ 
+     public void setup(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_) {
+         this.initialized = true;
+@@ -49,7 +_,10 @@
+         this.entity = p_90577_;
+         this.detached = p_90578_;
+         this.partialTickTime = p_90580_;
+-        this.setRotation(p_90577_.getViewYRot(p_90580_), p_90577_.getViewXRot(p_90580_));
++        var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
++                this, p_90580_, p_90577_.getViewYRot(p_90580_), p_90577_.getViewXRot(p_90580_), 0)
++        );
++        this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
+         this.setPosition(
+             Mth.lerp((double)p_90580_, p_90577_.xo, p_90577_.getX()),
+             Mth.lerp((double)p_90580_, p_90577_.yo, p_90577_.getY()) + (double)Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight),
+@@ -57,11 +_,11 @@
+         );
+         if (p_90578_) {
+             if (p_90579_) {
+-                this.setRotation(this.yRot + 180.0F, -this.xRot);
++                this.setRotation(this.yRot + 180.0F, -this.xRot, -this.roll);
              }
  
              float f = p_90577_ instanceof LivingEntity livingentity ? livingentity.getScale() : 1.0F;
@@ -9,15 +34,33 @@
          } else if (p_90577_ instanceof LivingEntity && ((LivingEntity)p_90577_).isSleeping()) {
              Direction direction = ((LivingEntity)p_90577_).getBedOrientation();
              this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
-@@ -221,6 +_,18 @@
+@@ -102,10 +_,17 @@
+         this.setPosition(new Vec3(this.position.x + (double)vector3f.x, this.position.y + (double)vector3f.y, this.position.z + (double)vector3f.z));
+     }
+ 
++    /** @deprecated Neo: call {@link #setRotation(float, float, float)} instead */
++    @Deprecated
+     protected void setRotation(float p_90573_, float p_90574_) {
++        setRotation(p_90573_, p_90574_, 0F);
++    }
++
++    protected void setRotation(float p_90573_, float p_90574_, float roll) {
+         this.xRot = p_90574_;
+         this.yRot = p_90573_;
+-        this.rotation.rotationYXZ((float) Math.PI - p_90573_ * (float) (Math.PI / 180.0), -p_90574_ * (float) (Math.PI / 180.0), 0.0F);
++        this.roll = roll;
++        this.rotation.rotationYXZ((float) Math.PI - p_90573_ * (float) (Math.PI / 180.0), -p_90574_ * (float) (Math.PI / 180.0), -roll * (float) (Math.PI / 180.0));
+         FORWARDS.rotate(this.rotation, this.forwards);
+         UP.rotate(this.rotation, this.up);
+         LEFT.rotate(this.rotation, this.left);
+@@ -221,6 +_,17 @@
  
      public float getPartialTickTime() {
          return this.partialTickTime;
 +    }
 +
-+    public void setAnglesInternal(float yaw, float pitch) {
-+        this.yRot = yaw;
-+        this.xRot = pitch;
++    public float getRoll() {
++        return this.roll;
 +    }
 +
 +    public net.minecraft.world.level.block.state.BlockState getBlockAtCamera() {
