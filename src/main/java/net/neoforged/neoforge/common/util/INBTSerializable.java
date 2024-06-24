@@ -5,8 +5,14 @@
 
 package net.neoforged.neoforge.common.util;
 
+import com.mojang.serialization.Codec;
+import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.codec.NBTSerializableCodec;
 import org.jetbrains.annotations.UnknownNullability;
 
 /**
@@ -14,6 +20,36 @@ import org.jetbrains.annotations.UnknownNullability;
  * code base that can be serialized to and from a NBT tag.
  */
 public interface INBTSerializable<T extends Tag> {
+    /**
+     * Creates a codec for an implementation of {@link INBTSerializable}.
+     *
+     * @param serializableClass The class implementing INBTSerializable.
+     * @param defaultSupplier   A default supplier for the class; typically a method reference.
+     * @param <S>               Type of class implementing INBTSerializable.
+     * @param <NBT>             Type of NBT tag the class serializes to.
+     * @return A codec for the serializable class.
+     */
+    static <S extends INBTSerializable<NBT>, NBT extends Tag> Codec<S> codec(Class<S> serializableClass, Supplier<S> defaultSupplier) {
+        return NBTSerializableCodec.forSerializable(serializableClass, defaultSupplier);
+    }
+
+    static <T extends Tag, S extends INBTSerializable<T>> StreamCodec<RegistryFriendlyByteBuf, S> streamCodec(Supplier<S> defaultSupplier) {
+        return StreamCodec.of(
+                (RegistryFriendlyByteBuf buffer, S serializable) -> {
+                    var serialized = serializable.serializeNBT(buffer.registryAccess());
+                    buffer.writeNbt(serialized);
+                },
+
+                (RegistryFriendlyByteBuf buffer) -> {
+                    S instance = defaultSupplier.get();
+                    //noinspection unchecked
+                    final var nbt = (T) buffer.readNbt(NbtAccounter.unlimitedHeap());
+                    assert nbt != null;
+                    instance.deserializeNBT(buffer.registryAccess(), nbt);
+                    return instance;
+                });
+    }
+
     @UnknownNullability
     T serializeNBT(HolderLookup.Provider provider);
 
