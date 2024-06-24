@@ -237,10 +237,8 @@ public class CustomItemDisplayContextTest {
         @Override
         protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             super.saveAdditional(tag, holderLookup);
-            var c = new CompoundTag();
             if (heldItem != null) {
-                heldItem.save(holderLookup, c);
-                tag.put("item", c);
+                tag.put("item", heldItem.save(holderLookup, new CompoundTag()));
             }
         }
 
