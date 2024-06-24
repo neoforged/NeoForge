@@ -50,5 +50,5 @@ jobs:
         run: git status --porcelain ./*/src/generated/resources/*
 
       - name: Fail if local changes are detected
-        if: ${{ steps.check.outputs.changed == "1" }}
+        if: steps.check.outputs.changed == '1'
         run: exit 1
