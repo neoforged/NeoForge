@@ -20,13 +20,6 @@ import net.minecraft.world.level.block.Block;
  */
 public class DeferredBlock<T extends Block> extends DeferredHolder<Block, T> implements ItemLike {
     /**
-     * Creates a new {@link ItemStack} with a default size of 1 from this {@link Block}
-     */
-    public ItemStack toStack() {
-        return toStack(1);
-    }
-
-    /**
      * Creates a new {@link ItemStack} with the given size from this {@link Block}
      *
      * @param count The size of the stack to create
