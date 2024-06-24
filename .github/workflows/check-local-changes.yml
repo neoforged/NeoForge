@@ -44,7 +44,9 @@ jobs:
 
       - name: Check local changes
         id: check
-        run: ./.github/workflows/check-local-changes.sh
+        run: |
+          chmod +x ./.github/workflows/check-local-changes.sh
+          ./.github/workflows/check-local-changes.sh
 
       - name: Output changed files
         run: git status --porcelain ./*/src/generated/resources/*
