@@ -30,17 +30,17 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Setup with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: setup
-          cache-read-only: false
+        run: ./gradlew setup
 
       - name: Run datagen with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: :neoforge:runData :tests:runData
-          cache-read-only: false
+        run: ./gradlew :neoforge:runData :tests:runData
 
       - name: Check local changes
         id: check
