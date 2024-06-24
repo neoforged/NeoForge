@@ -34,23 +34,20 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Setup with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: setup
-          cache-read-only: false
+        run: ./gradlew setup
 
       - name: Run game tests with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: :tests:runGameTestServer
-          cache-read-only: false
+        run: ./gradlew :tests:runGameTestServer
 
       - name: Run JUnit tests with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: :tests:runUnitTests
-          cache-read-only: false
+        run: ./gradlew :tests:runUnitTests
 
       - name: Store reports
         if: failure()
