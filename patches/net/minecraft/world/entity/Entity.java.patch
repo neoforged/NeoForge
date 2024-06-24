@@ -292,6 +292,19 @@
      }
  
      public boolean is(Entity p_20356_) {
+@@ -2516,10 +_,11 @@
+     }
+ 
+     public boolean isInvulnerableTo(DamageSource p_20122_) {
+-        return this.isRemoved()
++        boolean isVanillaInvulnerable = this.isRemoved()
+             || this.invulnerable && !p_20122_.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !p_20122_.isCreativePlayer()
+             || p_20122_.is(DamageTypeTags.IS_FIRE) && this.fireImmune()
+             || p_20122_.is(DamageTypeTags.IS_FALL) && this.getType().is(EntityTypeTags.FALL_DAMAGE_IMMUNE);
++        return net.neoforged.neoforge.common.CommonHooks.isEntityInvulnerableTo(this, p_20122_, isVanillaInvulnerable);
+     }
+ 
+     public boolean isInvulnerable() {
 @@ -2544,6 +_,7 @@
  
      @Nullable
