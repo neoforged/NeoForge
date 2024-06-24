@@ -1,13 +1,10 @@
 #!/bin/bash
-set -e
 
-function check() {
-  if [[ -z "$(git status --porcelain ./*/src/generated/resources/*)" ]];
-  then
-    echo "0"
-  else
-    echo "1"
-  fi
-}
-
-echo ::set-output name=changed::$(check)
+GIT_OUT=$(git status --porcelain ./*/src/generated/resources/*)
+echo "$GIT_OUT"
+if [[ -z "$GIT_OUT" ]];
+then
+  exit 1
+else
+  exit 0
+fi
