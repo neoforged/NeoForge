@@ -1,4 +1,4 @@
-name: Run PR gametests
+name: Check PR local changes
 
 on:
   pull_request:
@@ -7,13 +7,9 @@ on:
       - opened
       - ready_for_review
       - reopened
-  push:
-    branches:
-      - 'feature/**'
-  workflow_dispatch:
 
 jobs:
-  build:
+  check-local-changes:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -42,17 +38,11 @@ jobs:
       - name: Setup with Gradle
         run: ./gradlew setup
 
-      - name: Run game tests with Gradle
-        run: ./gradlew :tests:runGameTestServer
+      - name: Run datagen with Gradle
+        run: ./gradlew :neoforge:runData :tests:runData
 
-      - name: Run JUnit tests with Gradle
-        run: ./gradlew :tests:runUnitTests
-
-      - name: Store reports
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: reports
-          path: |
-            **/build/reports/
-            **/build/test-results/
+      - name: Check no local changes are present
+        run: |
+          # Print status for easier debugging
+          git status
+          if [ -n "$(git status --porcelain)" ]; then exit 1; fi
