@@ -536,8 +536,8 @@
 +        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
 +    }
 +
-+    net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder();
-+    public final net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments() { return dataAttachments; }
++    final net.neoforged.neoforge.attachment.AttachmentHolder<Entity> dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder<Entity>(this);
++    public final net.neoforged.neoforge.attachment.AttachmentHolder<Entity> dataAttachments() { return dataAttachments; }
 +
 +    @Nullable
 +    public final <T, C> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, C> capability, @org.jetbrains.annotations.UnknownNullability C context) {

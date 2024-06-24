@@ -23,7 +23,7 @@ public final class AttachmentInternals {
     /**
      * Copy some attachments to another holder.
      */
-    private static <H extends AttachmentHolder> void copyAttachments(HolderLookup.Provider provider, IAttachmentHolder from, H to, Predicate<AttachmentType<?>> filter) {
+    private static <H extends AttachmentHolder<?>> void copyAttachments(HolderLookup.Provider provider, IAttachmentHolder from, H to, Predicate<AttachmentType<?>> filter) {
         if (!from.hasAttachments()) {
             return;
         }
@@ -45,7 +45,7 @@ public final class AttachmentInternals {
         }
     }
 
-    public static void copyChunkAttachmentsOnPromotion(HolderLookup.Provider provider, IAttachmentHolder from, AttachmentHolder to) {
+    public static void copyChunkAttachmentsOnPromotion(HolderLookup.Provider provider, IAttachmentHolder from, AttachmentHolder<?> to) {
         copyAttachments(provider, from, to, type -> true);
     }
 
@@ -53,7 +53,7 @@ public final class AttachmentInternals {
      * Do not call directly, use {@link IEntityExtension#copyAttachmentsFrom(Entity, boolean)}.
      */
     public static void copyEntityAttachments(Entity from, Entity to, boolean isDeath) {
-        copyAttachments(from.registryAccess(), from, to.dataAttachments(), isDeath ? type -> type.copyOnDeath : type -> true);
+        copyAttachments(from.registryAccess(), from, (AttachmentHolder<Entity>) to.dataAttachments(), isDeath ? type -> type.copyOnDeath : type -> true);
     }
 
     @SubscribeEvent

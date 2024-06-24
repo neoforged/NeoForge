@@ -236,8 +236,8 @@
 +        return maxEntityRadius;
 +    }
 +
-+    net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder();
-+    public net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments() { return dataAttachments; }
++    final net.neoforged.neoforge.attachment.AttachmentHolder<Level> dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder<>(this);
++    public final net.neoforged.neoforge.attachment.AttachmentHolder<Level> dataAttachments() { return dataAttachments; }
  
      public final boolean isDebug() {
          return this.isDebug;

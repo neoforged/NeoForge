@@ -11,7 +11,7 @@ import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.JavaOps;
 import java.util.Objects;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -52,7 +52,7 @@ public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final Codec<T> codec;
-    final BiFunction<IAttachmentHolder, T, T> postDeserialize;
+    final BiConsumer<IAttachmentHolder, T> postDeserialize;
     final Predicate<? super T> shouldSerialize;
     final boolean copyOnDeath;
     @Nullable
@@ -69,16 +69,16 @@ public final class AttachmentType<T> {
             this.codec = Codec.of(builder.serializer, deserializer);
             this.postDeserialize = builder.postDeserialize;
             this.copyHandler = builder.copyHandler != null ? builder.copyHandler : (attachment, holder, provider) -> {
-                var serialized = builder.serializer.encodeStart(provider.createSerializationContext(JavaOps.INSTANCE), attachment);
-                if (serialized != null) {
-                    var parsed = deserializer.parse(provider.createSerializationContext(JavaOps.INSTANCE), serialized).getOrThrow();
-                    return postDeserialize.apply(holder, parsed);
-                }
-                return null;
+                return builder.serializer.encodeStart(provider.createSerializationContext(JavaOps.INSTANCE), attachment).result()
+                        .map(serialized -> {
+                            var parsed = deserializer.parse(provider.createSerializationContext(JavaOps.INSTANCE), serialized).getOrThrow();
+                            postDeserialize.accept(holder, parsed);
+                            return parsed;
+                        }).orElse(null);
             };
         } else {
             this.codec = null;
-            this.postDeserialize = (holder, inst) -> inst;
+            this.postDeserialize = (holder, inst) -> {};
             this.copyHandler = null;
         }
     }
@@ -114,7 +114,7 @@ public final class AttachmentType<T> {
         private Encoder<T> serializer;
         @Nullable
         private Decoder<T> deserializer;
-        BiFunction<IAttachmentHolder, T, T> postDeserialize;
+        BiConsumer<IAttachmentHolder, T> postDeserialize;
         private boolean copyOnDeath;
         private Predicate<? super T> shouldSerialize;
         @Nullable
@@ -123,7 +123,7 @@ public final class AttachmentType<T> {
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
             this.shouldSerialize = Predicates.alwaysTrue();
-            this.postDeserialize = (holder, inst) -> inst;
+            this.postDeserialize = (holder, inst) -> {};
         }
 
         /**
@@ -149,7 +149,8 @@ public final class AttachmentType<T> {
             if (this.serializer == null)
                 throw new IllegalStateException("Must set a serializer!");
 
-            return deserialize(deserializeCodec, postDeserialize);
+            this.deserializer = deserializeCodec;
+            return this;
         }
 
         /**
@@ -162,25 +163,10 @@ public final class AttachmentType<T> {
          * @param postDeserialize A function taking the attachment holder and deserialized data.
          * @return The fully constructed attachment data.
          */
-        public Builder<T> deserialize(BiFunction<IAttachmentHolder, T, T> postDeserialize) {
-            if (this.serializer == null || !(this.serializer instanceof Codec<T> decoder))
+        public Builder<T> postDeserialize(BiConsumer<IAttachmentHolder, T> postDeserialize) {
+            if (this.serializer == null)
                 throw new IllegalStateException("Must set a serializer to use shortcut deserialize");
 
-            return deserialize(decoder, postDeserialize);
-        }
-
-        /**
-         * For attachments that are serialized to disk, specifies a post-codec deserialization function.
-         * This function will be called after the codec finishes deserialization but before the attachment is
-         * considered finalized/constructed.
-         * <p>
-         * Modify and return the data object passed in as needed.
-         *
-         * @param postDeserialize A function taking the attachment holder and deserialized data.
-         * @return The fully constructed attachment data.
-         */
-        public Builder<T> deserialize(Decoder<T> deserializeCodec, BiFunction<IAttachmentHolder, T, T> postDeserialize) {
-            this.deserializer = deserializeCodec;
             this.postDeserialize = postDeserialize;
             return this;
         }
@@ -224,8 +210,13 @@ public final class AttachmentType<T> {
         }
 
         public AttachmentType<T> build() {
-            if (this.serializer != null && this.deserializer == null)
-                throw new IllegalStateException("A serializer was specified but no deserializer was found.");
+            if (this.serializer != null && this.deserializer == null) {
+                if (this.serializer instanceof Codec<T> codec) {
+                    this.deserializer = codec;
+                } else {
+                    throw new IllegalStateException("A serializer was specified but no deserializer was found for attachment: %s".formatted(this));
+                }
+            }
 
             return new AttachmentType<>(this);
         }

@@ -25,21 +25,36 @@ import org.slf4j.Logger;
  * Implementation class for objects that can hold data attachments.
  * For the user-facing methods, see {@link IAttachmentHolder}.
  */
-public final class AttachmentHolder implements IAttachmentHolder {
+public final class AttachmentHolder<T extends IAttachmentHolder> implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final Logger LOGGER = LogUtils.getLogger();
+
+    public final Codec<AttachmentHolder<T>> CODEC = new AttachmentHolderCodec<T>(this);
+
+    @Nullable
+    T parent;
+
+    @Nullable
+    Map<AttachmentType<?>, Object> attachments = null;
+
+    AttachmentHolder() {}
+
+    public AttachmentHolder(T parent) {
+        this.parent = parent;
+    }
+
+    public void setParent(T parent) {
+        this.parent = parent;
+    }
 
     private void validateAttachmentType(AttachmentType<?> type) {
         Objects.requireNonNull(type);
         if (FMLLoader.isProduction()) return;
 
         if (!NeoForgeRegistries.ATTACHMENT_TYPES.containsValue(type)) {
-            throw new IllegalArgumentException("Data attachment type with default value " + type.defaultValueSupplier.apply(this) + " must be registered!");
+            throw new IllegalArgumentException("Data attachment type with default value " + type.defaultValueSupplier.apply(parent) + " must be registered!");
         }
     }
-
-    @Nullable
-    Map<AttachmentType<?>, Object> attachments = null;
 
     /**
      * Create the attachment map if it does not yet exist, or return the current map.
@@ -67,7 +82,7 @@ public final class AttachmentHolder implements IAttachmentHolder {
         validateAttachmentType(type);
         T ret = (T) getAttachmentMap().get(type);
         if (ret == null) {
-            ret = type.defaultValueSupplier.apply(this);
+            ret = type.defaultValueSupplier.apply(parent);
             attachments.put(type, ret);
         }
         return ret;
@@ -107,7 +122,7 @@ public final class AttachmentHolder implements IAttachmentHolder {
 
     public final CompoundTag serializeAttachments(HolderLookup.Provider lookup) {
         return (CompoundTag) Objects.requireNonNullElseGet(
-                AttachmentHolder.CODEC.encodeStart(lookup.createSerializationContext(NbtOps.INSTANCE), this)
+                CODEC.encodeStart(lookup.createSerializationContext(NbtOps.INSTANCE), this)
                         .resultOrPartial() // TODO Log errors
                         .orElseGet(CompoundTag::new),
                 CompoundTag::new);
@@ -123,6 +138,4 @@ public final class AttachmentHolder implements IAttachmentHolder {
                     this.attachments.putAll(parsedData.attachments);
                 });
     }
-
-    public static final Codec<AttachmentHolder> CODEC = new AttachmentHolderCodec();
 }

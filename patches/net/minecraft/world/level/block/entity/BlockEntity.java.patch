@@ -63,8 +63,8 @@
 +        return this.customPersistentData;
 +    }
 +
-+    final net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder();
-+    public final net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments() { return dataAttachments; }
++    final net.neoforged.neoforge.attachment.AttachmentHolder<BlockEntity> dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder<>(this);
++    public final net.neoforged.neoforge.attachment.AttachmentHolder<BlockEntity> dataAttachments() { return dataAttachments; }
 +
 +    @Override
 +    @Nullable

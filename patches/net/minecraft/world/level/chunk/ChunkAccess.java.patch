@@ -48,10 +48,10 @@
      }
 +
 +    // FORGE START
-+    final net.neoforged.neoforge.attachment.AttachmentHolder attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder();
++    private final net.neoforged.neoforge.attachment.AttachmentHolder<ChunkAccess> attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder<>(this);
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments() { return attachmentHolder; }
++    public final net.neoforged.neoforge.attachment.AttachmentHolder<ChunkAccess> dataAttachments() { return attachmentHolder; }
 +
 +    @Override
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {

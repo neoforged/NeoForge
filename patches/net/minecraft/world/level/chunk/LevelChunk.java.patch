@@ -115,7 +115,7 @@
      }
  
 +    // FORGE START
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder();
++    private final net.neoforged.neoforge.attachment.AttachmentHolder<LevelChunk> dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder<>(this);
 +    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
 +
 +    @Override

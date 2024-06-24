@@ -21,15 +21,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.slf4j.Logger;
 
-public class AttachmentHolderCodec implements Codec<AttachmentHolder> {
+public class AttachmentHolderCodec<P extends IAttachmentHolder> implements Codec<AttachmentHolder<P>> {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private final AttachmentHolder<P> holder;
+
+    public AttachmentHolderCodec(AttachmentHolder<P> holder) {
+        this.holder = holder;
+    }
 
     @Override
-    public <T> DataResult<Pair<AttachmentHolder, T>> decode(DynamicOps<T> ops, T input) {
+    public <T> DataResult<Pair<AttachmentHolder<P>, T>> decode(DynamicOps<T> ops, T input) {
         return ops.getMap(input).flatMap(map -> parseMap(ops, input, map));
     }
 
-    private <T> DataResult<Pair<AttachmentHolder, T>> parseMap(DynamicOps<T> ops, T input, MapLike<T> map) {
+    private <T> DataResult<Pair<AttachmentHolder<P>, T>> parseMap(DynamicOps<T> ops, T input, MapLike<T> map) {
         final var entries = new IdentityHashMap<AttachmentType<?>, Object>(4);
         final Stream.Builder<Pair<T, T>> failed = Stream.builder();
 
@@ -38,8 +43,8 @@ public class AttachmentHolderCodec implements Codec<AttachmentHolder> {
                 (result, entry) -> parseEntry(result, ops, entry, entries, failed),
                 (r1, r2) -> r1.apply2stable((u1, u2) -> u1, r2));
 
-        final var holder = new AttachmentHolder();
-        holder.attachments.putAll(entries);
+        final var holder = new AttachmentHolder<>(this.holder.parent);
+        holder.getAttachmentMap().putAll(entries);
         final var pair = Pair.of(holder, input);
         final T errors = ops.createMap(failed.build());
 
@@ -50,10 +55,9 @@ public class AttachmentHolderCodec implements Codec<AttachmentHolder> {
             IdentityHashMap<AttachmentType<?>, Object> entries, Stream.Builder<Pair<T, T>> failed) {
         final var keyResult = ResourceLocation.CODEC.parse(ops, input.getFirst());
         final var attrType = keyResult.map(NeoForgeRegistries.ATTACHMENT_TYPES::get).getOrThrow();
-        final var valueResult = keyResult.map(attKey -> {
-            var val = input.getSecond();
-            return attrType.codec.parse(ops, val);
-        }).map(Function.identity());
+        final var valueResult = keyResult
+                .map(attKey -> parseSingleEntry(ops, input, attrType))
+                .map(Function.identity());
 
         final var entryResult = keyResult.apply2stable(Pair::of, valueResult);
 
@@ -74,6 +78,13 @@ public class AttachmentHolderCodec implements Codec<AttachmentHolder> {
         return result.apply2stable((u, p) -> u, entryResult);
     }
 
+    private <T, Att> Att parseSingleEntry(DynamicOps<T> ops, Pair<T, T> input, AttachmentType<Att> attrType) {
+        var val = input.getSecond();
+        var data = attrType.codec.parse(ops, val).getOrThrow();
+        attrType.postDeserialize.accept(holder.parent, data);
+        return data;
+    }
+
     private <T, AT> void encodeAttachment(DynamicOps<T> ops, RecordBuilder<T> mapBuilder,
             AttachmentType<AT> attachment, Object attachmentValue) {
         try {
@@ -91,7 +102,7 @@ public class AttachmentHolderCodec implements Codec<AttachmentHolder> {
     }
 
     @Override
-    public <T> DataResult<T> encode(AttachmentHolder input, DynamicOps<T> ops, T prefix) {
+    public <T> DataResult<T> encode(AttachmentHolder<P> input, DynamicOps<T> ops, T prefix) {
         final RecordBuilder<T> mapBuilder = ops.mapBuilder();
         if (input.hasAttachments() && input.attachments != null) {
             input.attachments.forEach((attType, att) -> encodeAttachment(ops, mapBuilder, attType, att));
