@@ -9,13 +9,13 @@
  
 +    @Deprecated
      private ClientLanguage(Map<String, String> p_118914_, boolean p_118915_) {
-+        this(p_118914_, Map.of(), p_118915_);
++        this(p_118914_, p_118915_, Map.of());
 +    }
 +
-+    private ClientLanguage(Map<String, String> p_118914_, Map<String, net.minecraft.network.chat.Component> componentStorage, boolean p_118915_) {
++    private ClientLanguage(Map<String, String> p_118914_, boolean p_118915_, Map<String, net.minecraft.network.chat.Component> componentStorage) {
          this.storage = p_118914_;
-+        this.componentStorage = componentStorage;
          this.defaultRightToLeft = p_118915_;
++        this.componentStorage = componentStorage;
      }
  
      public static ClientLanguage loadFrom(ResourceManager p_265765_, List<String> p_265743_, boolean p_265470_) {
@@ -38,7 +38,7 @@
          }
  
 -        return new ClientLanguage(ImmutableMap.copyOf(map), p_265470_);
-+        return new ClientLanguage(ImmutableMap.copyOf(map), ImmutableMap.copyOf(componentMap), p_265470_);
++        return new ClientLanguage(ImmutableMap.copyOf(map), p_265470_, ImmutableMap.copyOf(componentMap));
      }
  
 +    @Deprecated

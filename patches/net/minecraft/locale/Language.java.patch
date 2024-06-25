@@ -14,7 +14,7 @@
          return new Language() {
              @Override
              public String getOrDefault(String p_128127_, String p_265421_) {
-@@ -64,21 +_,49 @@
+@@ -64,21 +_,51 @@
                          )
                          .isPresent();
              }
@@ -54,7 +54,9 @@
  
          for (Entry<String, JsonElement> entry : jsonobject.entrySet()) {
 +            if (entry.getValue().isJsonArray()) {
-+                var component = net.minecraft.network.chat.ComponentSerialization.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, entry.getValue()).getOrThrow(com.google.gson.JsonParseException::new);
++                var component = net.minecraft.network.chat.ComponentSerialization.CODEC
++                    .parse(com.mojang.serialization.JsonOps.INSTANCE, entry.getValue())
++                    .getOrThrow(msg -> new com.google.gson.JsonParseException("Error parsing translation for " + entry.getKey() + ": " + msg));
 +
 +                p_128110_.accept(entry.getKey(), component.getString());
 +                componentConsumer.accept(entry.getKey(), component);

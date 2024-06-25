@@ -28,30 +28,23 @@
              String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
  
              try {
-@@ -170,28 +_,46 @@
+@@ -170,6 +_,12 @@
      public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_237521_, Style p_237522_) {
          this.decompose();
  
--        for (FormattedText formattedtext : this.decomposedParts) {
--            Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
--            if (optional.isPresent()) {
--                return optional;
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
 +            // Reference cycle.
 +            return Optional.empty();
 +        }
 +
 +        try {
-+            for (FormattedText formattedtext : this.decomposedParts) {
-+                Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
-+                if (optional.isPresent()) {
-+                    return optional;
-+                }
-             }
--        }
+         for (FormattedText formattedtext : this.decomposedParts) {
+             Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
+             if (optional.isPresent()) {
+@@ -178,12 +_,21 @@
+         }
  
--        return Optional.empty();
-+            return Optional.empty();
+         return Optional.empty();
 +        } finally {
 +            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
 +        }
@@ -61,26 +54,19 @@
      public <T> Optional<T> visit(FormattedText.ContentConsumer<T> p_237519_) {
          this.decompose();
  
--        for (FormattedText formattedtext : this.decomposedParts) {
--            Optional<T> optional = formattedtext.visit(p_237519_);
--            if (optional.isPresent()) {
--                return optional;
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
 +            // Reference cycle.
 +            return Optional.empty();
 +        }
 +
 +        try {
-+            for (FormattedText formattedtext : this.decomposedParts) {
-+                Optional<T> optional = formattedtext.visit(p_237519_);
-+                if (optional.isPresent()) {
-+                    return optional;
-+                }
-             }
--        }
+         for (FormattedText formattedtext : this.decomposedParts) {
+             Optional<T> optional = formattedtext.visit(p_237519_);
+             if (optional.isPresent()) {
+@@ -192,6 +_,9 @@
+         }
  
--        return Optional.empty();
-+            return Optional.empty();
+         return Optional.empty();
 +        } finally {
 +            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
 +        }
