@@ -1,0 +1,11 @@
+{
+  "features": {
+    "enabled": [
+      "neoforge:mod_experimental"
+    ]
+  },
+  "pack": {
+    "description": "Enables experimental features (neotests_experimental_tests_moda)",
+    "pack_format": 48
+  }
+}
