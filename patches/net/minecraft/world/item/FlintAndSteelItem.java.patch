@@ -1,14 +1,12 @@
 --- a/net/minecraft/world/item/FlintAndSteelItem.java
 +++ b/net/minecraft/world/item/FlintAndSteelItem.java
-@@ -10,10 +_,7 @@
- import net.minecraft.world.entity.player.Player;
+@@ -11,9 +_,6 @@
  import net.minecraft.world.item.context.UseOnContext;
  import net.minecraft.world.level.Level;
--import net.minecraft.world.level.block.BaseFireBlock;
+ import net.minecraft.world.level.block.BaseFireBlock;
 -import net.minecraft.world.level.block.CampfireBlock;
 -import net.minecraft.world.level.block.CandleBlock;
 -import net.minecraft.world.level.block.CandleCakeBlock;
-+import net.minecraft.world.level.block.*;
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.gameevent.GameEvent;
