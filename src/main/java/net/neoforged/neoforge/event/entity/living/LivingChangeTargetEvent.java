@@ -20,10 +20,10 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * This event is fired via the {@link CommonHooks#onLivingChangeTarget(LivingEntity, LivingEntity, ILivingTargetType)}<br>
  * <br>
- * {@link #getOriginalTarget()} returns the target that should originally be set.
- * The return value cannot be affected by calling {@link #setNewTarget(LivingEntity)}.<br>
- * {@link #getNewTarget()} returns the new target that this entity will have.
- * The return value can be affected by calling {@link #setNewTarget(LivingEntity)}.<br>
+ * {@link #getOriginalAboutToBeSetTarget()} returns the target that should originally be set.
+ * The return value cannot be affected by calling {@link #setNewAboutToBeSetTarget(LivingEntity)}.<br>
+ * {@link #getNewAboutToBeSetTarget()} returns the new target that this entity will have.
+ * The return value can be affected by calling {@link #setNewAboutToBeSetTarget(LivingEntity)}.<br>
  * {@link #getTargetType()} returns the target type that caused the change of targets.<br>
  * <br>
  * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
@@ -38,32 +38,32 @@ import org.jetbrains.annotations.Nullable;
 public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent {
     private final ILivingTargetType targetType;
     @Nullable
-    private final LivingEntity originalTarget;
+    private final LivingEntity originalAboutToBeSetTarget;
     @Nullable
-    private LivingEntity newTarget;
+    private LivingEntity newAboutToBeSetTarget;
 
-    public LivingChangeTargetEvent(LivingEntity entity, @Nullable LivingEntity originalTarget, ILivingTargetType targetType) {
+    public LivingChangeTargetEvent(LivingEntity entity, @Nullable LivingEntity aboutToBeSetTarget, ILivingTargetType targetType) {
         super(entity);
-        this.originalTarget = originalTarget;
-        this.newTarget = originalTarget;
+        this.originalAboutToBeSetTarget = aboutToBeSetTarget;
+        this.newAboutToBeSetTarget = aboutToBeSetTarget;
         this.targetType = targetType;
     }
 
     /**
-     * {@return the new target of this entity.}
+     * {@return the new target that this entity will begin to track.}
      */
     @Nullable
-    public LivingEntity getNewTarget() {
-        return newTarget;
+    public LivingEntity getNewAboutToBeSetTarget() {
+        return newAboutToBeSetTarget;
     }
 
     /**
      * Sets the new target this entity shall have.
      * 
-     * @param newTarget The new target of this entity.
+     * @param newAboutToBeSetTarget The new target that this entity will begin to track
      */
-    public void setNewTarget(@Nullable LivingEntity newTarget) {
-        this.newTarget = newTarget;
+    public void setNewAboutToBeSetTarget(@Nullable LivingEntity newAboutToBeSetTarget) {
+        this.newAboutToBeSetTarget = newAboutToBeSetTarget;
     }
 
     /**
@@ -77,8 +77,8 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
      * {@return the original entity MC intended to use as a target before firing this event.}
      */
     @Nullable
-    public LivingEntity getOriginalTarget() {
-        return originalTarget;
+    public LivingEntity getOriginalAboutToBeSetTarget() {
+        return originalAboutToBeSetTarget;
     }
 
     /**
@@ -86,14 +86,14 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
      * targets. For a list of default target types, take a look at
      * {@link LivingTargetType}.
      */
-    public static interface ILivingTargetType {
+    public interface ILivingTargetType {
 
     }
 
     /**
      * This enum contains two default living target types.
      */
-    public static enum LivingTargetType implements ILivingTargetType {
+    public enum LivingTargetType implements ILivingTargetType {
         /**
          * This target type indicates that the target has been set by calling {@link Mob#setTarget(LivingEntity)}.
          */
@@ -101,6 +101,6 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
         /**
          * This target type indicates that the target has been set by the {@link StartAttacking} behavior.
          */
-        BEHAVIOR_TARGET;
+        BEHAVIOR_TARGET
     }
 }

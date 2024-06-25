@@ -158,7 +158,7 @@ public class LivingEntityEventTests {
         final var specialAggro = reg.attachments().registerSimpleAttachment("special_aggro", () -> false);
         test.eventListeners().forge().addListener((final LivingChangeTargetEvent event) -> {
             if (event.getTargetType() == LivingChangeTargetEvent.LivingTargetType.MOB_TARGET &&
-                    event.getEntity().getData(specialAggro) && event.getNewTarget() instanceof Player player && player.isHolding(Items.STICK)) {
+                    event.getEntity().getData(specialAggro) && event.getNewAboutToBeSetTarget() instanceof Player player && player.isHolding(Items.STICK)) {
                 event.setCanceled(true);
             }
         });
