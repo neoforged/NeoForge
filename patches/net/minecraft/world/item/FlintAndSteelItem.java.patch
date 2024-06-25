@@ -1,0 +1,42 @@
+--- a/net/minecraft/world/item/FlintAndSteelItem.java
++++ b/net/minecraft/world/item/FlintAndSteelItem.java
+@@ -10,10 +_,7 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.context.UseOnContext;
+ import net.minecraft.world.level.Level;
+-import net.minecraft.world.level.block.BaseFireBlock;
+-import net.minecraft.world.level.block.CampfireBlock;
+-import net.minecraft.world.level.block.CandleBlock;
+-import net.minecraft.world.level.block.CandleCakeBlock;
++import net.minecraft.world.level.block.*;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+ import net.minecraft.world.level.gameevent.GameEvent;
+@@ -29,7 +_,7 @@
+         Level level = p_41297_.getLevel();
+         BlockPos blockpos = p_41297_.getClickedPos();
+         BlockState blockstate = level.getBlockState(blockpos);
+-        if (!CampfireBlock.canLight(blockstate) && !CandleBlock.canLight(blockstate) && !CandleCakeBlock.canLight(blockstate)) {
++        if (!(blockstate.getBlock() instanceof net.neoforged.neoforge.common.SpecialLightableBlock) || !((net.neoforged.neoforge.common.SpecialLightableBlock) blockstate.getBlock()).canLight(blockstate)) {
+             BlockPos blockpos1 = blockpos.relative(p_41297_.getClickedFace());
+             if (BaseFireBlock.canBePlacedAt(level, blockpos1, p_41297_.getHorizontalDirection())) {
+                 level.playSound(player, blockpos1, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+@@ -46,9 +_,9 @@
+             } else {
+                 return InteractionResult.FAIL;
+             }
+-        } else {
++        } else if (blockstate.getBlock() instanceof net.neoforged.neoforge.common.SpecialLightableBlock ilb) {
+             level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+-            level.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)), 11);
++            ilb.setLit(level, blockstate, blockpos, true);
+             level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockpos);
+             if (player != null) {
+                 p_41297_.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41297_.getHand()));
+@@ -56,5 +_,6 @@
+ 
+             return InteractionResult.sidedSuccess(level.isClientSide());
+         }
++        return InteractionResult.PASS;
+     }
+ }
