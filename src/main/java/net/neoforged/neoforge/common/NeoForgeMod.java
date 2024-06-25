@@ -642,7 +642,7 @@ public class NeoForgeMod {
                 Component.translatable("pack.neoforge.experimental.name"),
                 PackSource.FEATURE,
                 false,
-                Pack.Position.BOTTOM));
+                Pack.Position.TOP));
 
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;
