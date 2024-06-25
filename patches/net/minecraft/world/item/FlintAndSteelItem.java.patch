@@ -1,15 +1,5 @@
 --- a/net/minecraft/world/item/FlintAndSteelItem.java
 +++ b/net/minecraft/world/item/FlintAndSteelItem.java
-@@ -11,9 +_,6 @@
- import net.minecraft.world.item.context.UseOnContext;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.BaseFireBlock;
--import net.minecraft.world.level.block.CampfireBlock;
--import net.minecraft.world.level.block.CandleBlock;
--import net.minecraft.world.level.block.CandleCakeBlock;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.properties.BlockStateProperties;
- import net.minecraft.world.level.gameevent.GameEvent;
 @@ -29,7 +_,7 @@
          Level level = p_41297_.getLevel();
          BlockPos blockpos = p_41297_.getClickedPos();
