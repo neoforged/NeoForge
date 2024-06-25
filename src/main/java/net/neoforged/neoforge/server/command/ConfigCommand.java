@@ -64,7 +64,7 @@ public class ConfigCommand {
                 // Click action not allowed on dedicated servers or connected LAN players as neither cannot click a link to a file on the server/LAN owner.
                 // Only provide click action for single player world owners calling this command from in-game.
                 ServerPlayer caller = context.getSource().getPlayer();
-                if (FMLLoader.getDist().isClient() && caller != null && caller.connection.connection.isMemoryConnection()) {
+                if (FMLLoader.getDist().isClient() && caller != null && caller.connection.getConnection().isMemoryConnection()) {
                     fileComponent.withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, f.getAbsolutePath())));
                 }
 
