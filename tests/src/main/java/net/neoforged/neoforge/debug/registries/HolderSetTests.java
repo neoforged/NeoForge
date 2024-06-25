@@ -29,6 +29,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.registries.holdersets.NotHolderSet;
@@ -95,7 +96,7 @@ public class HolderSetTests {
         StreamCodec<RegistryFriendlyByteBuf, HolderSet<Item>> streamCodec = ByteBufCodecs.holderSet(Registries.ITEM);
         RegistryAccess registryAccess = test.getLevel().registryAccess();
         for (HolderSet<Item> holderSet : holderSets) {
-            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess);
+            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE);
             streamCodec.encode(buf, holderSet);
             HolderSet<Item> decoded = streamCodec.decode(buf);
             if (!areHolderSetsEqual(holderSet, decoded)) {
