@@ -1,9 +1,22 @@
 --- a/net/minecraft/world/flag/FeatureFlags.java
 +++ b/net/minecraft/world/flag/FeatureFlags.java
-@@ -13,6 +_,7 @@
+@@ -13,6 +_,20 @@
      public static final Codec<FeatureFlagSet> CODEC;
      public static final FeatureFlagSet VANILLA_SET;
      public static final FeatureFlagSet DEFAULT_FLAGS;
++    /**
++     * A <b>feature flag</b> for use with experimental features that may introduce unexpected or potentially bug-inducing behaviors.<br>
++     * Unlike the standard set of flags, which can change frequently, this flag remains consistent across major version updates.<br>
++     * <br><p>
++     * Modders can reference this flag during built-in feature registration.<br>
++     * However, they must provide their own flagged datapacks to associate datapack features (such as recipes and enchantments) with this flag.<br>
++     * These datapacks can be provided either as optional files or via the {@linkplain net.neoforged.neoforge.event.AddPackFindersEvent} event.
++     * </p>
++     * <br><p>
++     * It is highly recommended that modders document which features are experimental and which ones are not.<br>
++     * Due to the nature of this flag being a <i>‘catch-all’</i>, it enables any and all modded experiments that may exist.
++     * </p>
++     */
 +    public static final FeatureFlag MOD_EXPERIMENTAL;
  
      public static String printMissingFlags(FeatureFlagSet p_250581_, FeatureFlagSet p_250326_) {
