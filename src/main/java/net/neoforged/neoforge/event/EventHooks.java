@@ -811,14 +811,14 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions size, float eyeHeight) {
-        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, size, eyeHeight);
+    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions size) {
+        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, size);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
 
-    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize, float newEyeHeight) {
-        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, oldSize, newSize, entity.getEyeHeight(), newEyeHeight);
+    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize) {
+        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, oldSize, newSize);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
