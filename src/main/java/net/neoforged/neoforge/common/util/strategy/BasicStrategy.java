@@ -8,10 +8,10 @@ package net.neoforged.neoforge.common.util.strategy;
 import it.unimi.dsi.fastutil.Hash;
 import java.util.Objects;
 
+/**
+ * A strategy that uses {@link Objects#hashCode(Object)} and {@link Object#equals(Object)}.
+ */
 public class BasicStrategy implements Hash.Strategy<Object> {
-    /**
-     * A strategy that uses {@link Objects#hashCode(Object)} and {@link Object#equals(Object)}.
-     */
     public static final Hash.Strategy<? super Object> BASIC = new BasicStrategy();
 
     @Override

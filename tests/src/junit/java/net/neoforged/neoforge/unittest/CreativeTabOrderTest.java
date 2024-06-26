@@ -91,7 +91,7 @@ public class CreativeTabOrderTest {
     }
 
     /**
-     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesOnlyMaxLevel(CreativeModeTab.Output, HolderLookup, Set, CreativeModeTab.TabVisibility, FeatureFlagSet)}
+     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesOnlyMaxLevel}
      * 
      * @param server Ephemeral server from extension
      */
@@ -110,7 +110,7 @@ public class CreativeTabOrderTest {
     }
 
     /**
-     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesAllLevels(CreativeModeTab.Output, HolderLookup, Set, CreativeModeTab.TabVisibility, FeatureFlagSet)}
+     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesAllLevels}
      * 
      * @param server Ephemeral server from extension
      */
