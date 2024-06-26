@@ -23,8 +23,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalShape;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import org.jetbrains.annotations.Nullable;
 
@@ -284,8 +284,8 @@ public abstract class BlockEvent extends Event {
 
     /**
      * Fired when a block is right-clicked by a tool to change its state.
-     * For example: Used to determine if {@link ToolActions#AXE_STRIP an axe can strip},
-     * {@link ToolActions#SHOVEL_FLATTEN a shovel can path}, or {@link ToolActions#HOE_TILL a hoe can till}.
+     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
+     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * <p>
      * Care must be taken to ensure level-modifying events are only performed if {@link #isSimulated()} returns {@code false}.
      * <p>
@@ -294,15 +294,15 @@ public abstract class BlockEvent extends Event {
      */
     public static class BlockToolModificationEvent extends BlockEvent implements ICancellableEvent {
         private final UseOnContext context;
-        private final ToolAction toolAction;
+        private final ItemAbility itemAbility;
         private final boolean simulate;
         private BlockState state;
 
-        public BlockToolModificationEvent(BlockState originalState, UseOnContext context, ToolAction toolAction, boolean simulate) {
+        public BlockToolModificationEvent(BlockState originalState, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
             super(context.getLevel(), context.getClickedPos(), originalState);
             this.context = context;
             this.state = originalState;
-            this.toolAction = toolAction;
+            this.itemAbility = itemAbility;
             this.simulate = simulate;
         }
 
@@ -323,10 +323,10 @@ public abstract class BlockEvent extends Event {
         }
 
         /**
-         * @return the action being performed
+         * @return the ability being performed
          */
-        public ToolAction getToolAction() {
-            return this.toolAction;
+        public ItemAbility getItemAbility() {
+            return this.itemAbility;
         }
 
         /**
@@ -360,9 +360,9 @@ public abstract class BlockEvent extends Event {
         }
 
         /**
-         * Returns the state to transform the block into after tool use.
+         * Returns the state to transform the block into after item ability use.
          * If {@link #setFinalState(BlockState)} is not called, this will return the original state.
-         * If {@link #isCanceled()} is {@code true}, this value will be ignored and the tool action will be canceled.
+         * If {@link #isCanceled()} is {@code true}, this value will be ignored and the item ability will be canceled.
          *
          * @return the state to transform the block into after tool use
          */

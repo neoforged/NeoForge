@@ -81,7 +81,6 @@
     "neoforge:attachment_types",
     "neoforge:biome_modifier_serializers",
     "neoforge:condition_codecs",
-    "neoforge:display_contexts",
     "neoforge:entity_data_serializers",
     "neoforge:fluid_ingredient_type",
     "neoforge:fluid_type",

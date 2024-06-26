@@ -114,34 +114,29 @@ public abstract class EntityEvent extends Event {
     }
 
     /**
-     * This event is fired whenever the {@link Pose} changes, and in a few other hardcoded scenarios.<br>
-     * CAREFUL: This is also fired in the Entity constructor. Therefore the entity(subclass) might not be fully initialized. Check Entity#isAddedToWorld() or !Entity#firstUpdate.<br>
-     * If you change the player's size, you probably want to set the eye height accordingly as well<br>
-     * <br>
-     * This event is not {@link ICancellableEvent}.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
+     * Fired whenever the entity's {@link Pose} changes for manipulating the resulting {@link EntityDimensions}.
+     *
+     * <p><strong>Note:</strong> This event is fired from the {@code Entity} constructor, and therefore the entity instance
+     * might not be fully initialized. Be cautious in using methods and fields from the instance, and check
+     * {@link Entity#isAddedToWorld()} or {@link Entity#firstTick}.
+     *
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
+     * {@linkplain NeoForge#EVENT_BUS game event bus}.
      **/
     public static class Size extends EntityEvent {
         private final Pose pose;
         private final EntityDimensions oldSize;
         private EntityDimensions newSize;
-        private final float oldEyeHeight;
-        private float newEyeHeight;
 
-        public Size(Entity entity, Pose pose, EntityDimensions size, float defaultEyeHeight) {
-            this(entity, pose, size, size, defaultEyeHeight, defaultEyeHeight);
+        public Size(Entity entity, Pose pose, EntityDimensions size) {
+            this(entity, pose, size, size);
         }
 
-        public Size(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize, float oldEyeHeight, float newEyeHeight) {
+        public Size(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize) {
             super(entity);
             this.pose = pose;
             this.oldSize = oldSize;
             this.newSize = newSize;
-            this.oldEyeHeight = oldEyeHeight;
-            this.newEyeHeight = newEyeHeight;
         }
 
         public Pose getPose() {
@@ -157,29 +152,7 @@ public abstract class EntityEvent extends Event {
         }
 
         public void setNewSize(EntityDimensions size) {
-            setNewSize(size, false);
-        }
-
-        /**
-         * Set the new size of the entity. Set updateEyeHeight to true to also update the eye height according to the new size.
-         */
-        public void setNewSize(EntityDimensions size, boolean updateEyeHeight) {
             this.newSize = size;
-            if (updateEyeHeight) {
-                this.newEyeHeight = this.getEntity().getEyeHeightAccess(this.getPose());
-            }
-        }
-
-        public float getOldEyeHeight() {
-            return oldEyeHeight;
-        }
-
-        public float getNewEyeHeight() {
-            return newEyeHeight;
-        }
-
-        public void setNewEyeHeight(float newHeight) {
-            this.newEyeHeight = newHeight;
         }
     }
 }
