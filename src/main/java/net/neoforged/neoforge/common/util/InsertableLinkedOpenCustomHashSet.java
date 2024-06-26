@@ -32,6 +32,7 @@ public class InsertableLinkedOpenCustomHashSet<T> extends ObjectLinkedOpenCustom
 
     /**
      * Constructs a new {@link InsertableLinkedOpenCustomHashSet} with the given {@link Hash.Strategy}.
+     * 
      * @param strategy The strategy to use for adding and getting elements from the set.
      */
     public InsertableLinkedOpenCustomHashSet(Hash.Strategy<? super T> strategy) {
@@ -42,8 +43,9 @@ public class InsertableLinkedOpenCustomHashSet<T> extends ObjectLinkedOpenCustom
      * This method will attempt to add {@code element} after the given element {@code insertAfter} in the set. If an
      * element matching {@code insertAfter} cannot be found with this set's {@link Hash.Strategy}, then {@code element}
      * will be added in insertion order. If {#code element} already exists in the set, then the set is not modified.
+     * 
      * @param insertAfter The element to insert {@code element} after.
-     * @param element The element to add into this set.
+     * @param element     The element to add into this set.
      * @return {@code true} if the element was added to the set.
      */
     public boolean addAfter(T insertAfter, T element) {
@@ -83,8 +85,9 @@ public class InsertableLinkedOpenCustomHashSet<T> extends ObjectLinkedOpenCustom
      * This method will attempt to add {@code element} before the given element {@code insertBefore} in the set. If an
      * element matching {@code insertBefore} cannot be found with this set's {@link Hash.Strategy}, then {@code element}
      * will be added in insertion order. If {#code element} already exists in the set, then the set is not modified.
+     * 
      * @param insertBefore The element to insert {@code element} before.
-     * @param element The element to add into this set.
+     * @param element      The element to add into this set.
      * @return {@code true} if the element was added to the set.
      */
     public boolean addBefore(T insertBefore, T element) {
