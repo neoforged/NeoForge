@@ -12,14 +12,7 @@
              turnToDirt(p_153230_, p_153228_, p_153227_, p_153229_);
          }
  
-@@ -117,17 +_,20 @@
-     }
- 
-     private static boolean shouldMaintainFarmland(BlockGetter p_279219_, BlockPos p_279209_) {
--        return p_279219_.getBlockState(p_279209_.above()).is(BlockTags.MAINTAINS_FARMLAND);
-+        BlockState plant = p_279219_.getBlockState(p_279209_.above());
-+        BlockState state = p_279219_.getBlockState(p_279209_);
-+        return plant.getBlock() instanceof net.neoforged.neoforge.common.IPlantable && state.canSustainPlant(p_279219_, p_279209_, Direction.UP, (net.neoforged.neoforge.common.IPlantable)plant.getBlock());
+@@ -121,13 +_,14 @@
      }
  
      private static boolean isNearWater(LevelReader p_53259_, BlockPos p_53260_) {
