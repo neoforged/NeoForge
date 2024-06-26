@@ -108,7 +108,7 @@ public class AttachmentTests {
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void survivesRoundTripThroughCodec(DynamicTest test, RegistrationHelper reg) {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.builder(chunk -> new ChunkMutableInt((ChunkAccess) chunk, 0))
+                .register("chunk_mutable_int", () -> AttachmentType.builder(ChunkAccess.class, chunk -> new ChunkMutableInt(chunk, 0))
                         .serialize(ChunkMutableInt.CODEC)
                         .build());
 

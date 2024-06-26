@@ -65,12 +65,13 @@ public class AttachmentHolderMapCodec extends MapCodec<Map<AttachmentType<?>, Ob
 
             final DataResult<Pair<AttachmentType<?>, Object>> entryResult = attrType.apply2stable(Pair::of, valueResult);
             final Optional<Pair<AttachmentType<?>, Object>> eOpt = entryResult.resultOrPartial();
-            if (eOpt.isPresent()) {
-                final Object existingValue = entries.putIfAbsent(eOpt.get().getFirst(), entry.getSecond());
+            eOpt.ifPresent(pair -> {
+                final Object existingValue = entries.putIfAbsent(pair.getFirst(), pair.getSecond());
                 if (existingValue != null) {
                     failed.add(entry);
                 }
-            }
+            });
+
             if (entryResult.isError()) {
                 failed.add(entry);
             }

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-import net.jodah.typetools.TypeResolver;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -43,7 +42,7 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
     public AttachmentHolder(T parent) {
         this.parent = parent;
 
-        Class<T> parentClass = (Class<T>) TypeResolver.resolveRawClass(AttachmentHolder.class, parent.getClass());
+        Class<T> parentClass = (Class<T>) parent.getClass();
         this.CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 DataAttachmentOps.holder(parentClass),
                 AttachmentHolderMapCodec.INSTANCE.forGetter(x -> x.getAttachmentMap())).apply(inst, AttachmentHolder::new));
@@ -145,7 +144,7 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
     public final void deserializeAttachments(HolderLookup.Provider lookup, CompoundTag tag) {
         CODEC.parse(makeNbtOps(lookup), tag).ifSuccess(parsedData -> {
             assert parsedData.attachments != null;
-            this.attachments.putAll(parsedData.attachments);
+            this.getAttachmentMap().putAll(parsedData.attachments);
         });
     }
 }

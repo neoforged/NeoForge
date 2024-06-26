@@ -14,7 +14,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import net.jodah.typetools.TypeResolver;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -52,7 +51,6 @@ import org.jetbrains.annotations.Nullable;
  * </ul>
  */
 public final class AttachmentType<T> {
-    public final Class<T> dataType;
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final Codec<T> codec;
@@ -62,7 +60,6 @@ public final class AttachmentType<T> {
     final StreamCodec<RegistryFriendlyByteBuf, T> copyHandler;
 
     private <P extends IAttachmentHolder> AttachmentType(Builder<T, P> builder) {
-        this.dataType = builder.dataType;
         this.defaultValueSupplier = (Function<IAttachmentHolder, T>) builder.defaultValueSupplier;
         this.shouldSerialize = builder.shouldSerialize;
         this.copyOnDeath = builder.copyOnDeath;
@@ -86,31 +83,42 @@ public final class AttachmentType<T> {
      * @param defaultValueSupplier A supplier for a new default value of this attachment type.
      */
     public static <T, P extends IAttachmentHolder> Builder<T, P> builder(Supplier<T> defaultValueSupplier) {
-        return Builder.fromReflection(holder -> defaultValueSupplier.get());
+        return new Builder<>(holder -> defaultValueSupplier.get());
     }
 
     /**
      * Creates a builder for an attachment type.
      *
      * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
-     * To obtain a specific subtype, the holder can be cast.
      * If the holder is of the wrong type, the constructor should throw an exception.
      * See {@link #builder(Supplier)} for an overload that does not capture the holder.
      *
      * @param defaultValueConstructor A constructor for a new default value of this attachment type.
+     * @param <P>                     The attachment handler's parent/containing type, i.e. Entity, LevelChunk, BlockEntity
+     * @param <T>                     Data type of the attachment
      */
-    public static <T> Builder<T, IAttachmentHolder> builder(Function<IAttachmentHolder, T> defaultValueConstructor) {
-        return Builder.fromReflection(defaultValueConstructor);
+    public static <T, P extends IAttachmentHolder> Builder<T, P> builder(Function<P, T> defaultValueConstructor) {
+        return new Builder<>(defaultValueConstructor);
     }
 
-    public static <T, P extends IAttachmentHolder> Builder<T, P> builder(Class<P> holderClass, Function<P, T> defaultValueConstructor) {
-        return Builder.fromReflection(holderClass, defaultValueConstructor);
+    /**
+     * Creates a builder for an attachment type.
+     *
+     * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
+     * If the holder is of the wrong type, the constructor should throw an exception.
+     * See {@link #builder(Supplier)} for an overload that does not capture the holder.
+     *
+     * @param parentClass             The attachment handler's parent/containing type class, i.e. Entity, LevelChunk, BlockEntity
+     * @param defaultValueConstructor A constructor for a new default value of this attachment type.
+     * @param <P>                     The attachment handler's parent/containing type, i.e. Entity, LevelChunk, BlockEntity
+     * @param <T>                     Data type of the attachment
+     */
+    public static <T, P extends IAttachmentHolder> Builder<T, P> builder(Class<P> parentClass, Function<P, T> defaultValueConstructor) {
+        return new Builder<>(defaultValueConstructor);
     }
 
     public static class Builder<T, P extends IAttachmentHolder> {
         private final Function<P, T> defaultValueSupplier;
-        private final Class<P> attachmentHolderClass;
-        private final Class<T> dataType;
         @Nullable
         private Encoder<T> serializer;
         @Nullable
@@ -121,25 +129,10 @@ public final class AttachmentType<T> {
         @Nullable
         private StreamCodec<RegistryFriendlyByteBuf, T> copyHandler;
 
-        private Builder(Class<P> parentClass, Class<T> dataType, Function<P, T> defaultValueSupplier) {
-            this.attachmentHolderClass = parentClass;
-            this.dataType = dataType;
+        private Builder(Function<P, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
             this.shouldSerialize = Predicates.alwaysTrue();
             this.postDeserialize = (holder, inst) -> {};
-        }
-
-        private static <T, P extends IAttachmentHolder> Builder<T, P> fromReflection(Function<P, T> defaultValueSupplier) {
-            Class<?>[] typeArgs = TypeResolver.resolveRawArguments(Function.class, defaultValueSupplier.getClass());
-            var attachmentHolderClass = (Class<P>) typeArgs[0];
-            var dataType = (Class<T>) typeArgs[1];
-            return new Builder<>(attachmentHolderClass, dataType, defaultValueSupplier);
-        }
-
-        private static <T, P extends IAttachmentHolder> Builder<T, P> fromReflection(Class<P> parentClass, Function<P, T> defaultValueSupplier) {
-            Class<?>[] typeArgs = TypeResolver.resolveRawArguments(Function.class, defaultValueSupplier.getClass());
-            var dataType = (Class<T>) typeArgs[1];
-            return new Builder<>(parentClass, dataType, defaultValueSupplier);
         }
 
         /**
@@ -207,6 +200,13 @@ public final class AttachmentType<T> {
             return this;
         }
 
+        /**
+         * Overrides the copyHandler for this attachment type.
+         *
+         * <p>The default copyHandler serializes the attachment and deserializes it again.
+         *
+         * <p>A copyHandler can only be provided for serializable attachments.
+         */
         public Builder<T, P> copyHandler(Codec<T> codec) {
             return copyHandler(ByteBufCodecs.fromCodecWithRegistries(codec));
         }
