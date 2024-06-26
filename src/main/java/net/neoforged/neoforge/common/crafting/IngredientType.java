@@ -15,7 +15,7 @@ import net.minecraft.network.codec.StreamCodec;
  *
  * <p>Note that the {@link #streamCodec()} is only used if {@link ICustomIngredient#isSimple()} returns {@code false}.
  */
-public record IngredientType<T extends ICustomIngredient>(MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
+public record IngredientType<T extends ICustomIngredient>(MapCodec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
     /**
      * Constructor for ingredient types that use a regular codec for network syncing.
      */
