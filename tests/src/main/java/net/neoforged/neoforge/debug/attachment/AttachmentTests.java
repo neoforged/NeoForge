@@ -9,12 +9,13 @@ import static net.minecraft.commands.Commands.literal;
 
 import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -22,9 +23,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.attachment.DataAttachmentOps;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -37,17 +39,15 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 @ForEachTest(groups = "attachment")
 public class AttachmentTests {
     private static class ChunkMutableInt {
-        LevelChunk chunk;
+        ChunkAccess chunk;
         private int value;
 
-        public static final Codec<ChunkMutableInt> CODEC = Codec.INT.xmap(ChunkMutableInt::new, ChunkMutableInt::getValue);
+        public static final Codec<ChunkMutableInt> CODEC = RecordCodecBuilder.create(i -> i.group(
+                DataAttachmentOps.holder(ChunkAccess.class),
+                Codec.INT.fieldOf("value").forGetter(c -> c.value)).apply(i, ChunkMutableInt::new));
 
-        public ChunkMutableInt(LevelChunk chunk, int value) {
+        public ChunkMutableInt(ChunkAccess chunk, int value) {
             this.chunk = chunk;
-            this.value = value;
-        }
-
-        public ChunkMutableInt(int value) {
             this.value = value;
         }
 
@@ -66,7 +66,7 @@ public class AttachmentTests {
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void chunkAttachmentReferenceTest(DynamicTest test, RegistrationHelper reg) {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.builder(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0))
+                .register("chunk_mutable_int", () -> AttachmentType.builder(ChunkAccess.class, chunk -> new ChunkMutableInt(chunk, 0))
                         .serialize(ChunkMutableInt.CODEC)
                         .build());
 
@@ -106,37 +106,29 @@ public class AttachmentTests {
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
-    static void postDeserializeFunctionsAreCalled(DynamicTest test, RegistrationHelper reg) {
+    static void survivesRoundTripThroughCodec(DynamicTest test, RegistrationHelper reg) {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.builder(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0))
+                .register("chunk_mutable_int", () -> AttachmentType.builder(chunk -> new ChunkMutableInt((ChunkAccess) chunk, 0))
                         .serialize(ChunkMutableInt.CODEC)
-                        .postDeserialize((IAttachmentHolder holder, ChunkMutableInt chunkMutable) -> {
-                            chunkMutable.chunk = (LevelChunk) holder;
-                            chunkMutable.value += 100;
-                        })
                         .build());
 
         test.onGameTest(helper -> {
             final var chunk = helper.getLevel().getChunk(helper.absolutePos(BlockPos.ZERO));
 
             chunk.removeData(attachmentType); // remove data to ensure that the test can run multiple times
-            chunk.setData(attachmentType, new ChunkMutableInt(5));
+            chunk.setData(attachmentType, new ChunkMutableInt(chunk, 5));
 
             var serialized = chunk.dataAttachments()
                     .serializeAttachments(helper.getLevel().registryAccess());
 
             var chunkData = serialized.get(attachmentType.getId().toString());
-            helper.assertTrue(chunkData instanceof IntTag, "Chunk data not an integer");
-
-            assert chunkData instanceof IntTag;
-            var chunkDataInt = (IntTag) chunkData;
-            helper.assertValueEqual(5, chunkDataInt.getAsInt(), "Chunk data did not serialize correctly.");
+            helper.assertTrue(chunkData instanceof CompoundTag ct && !ct.isEmpty(), "Chunk data not generated");
 
             chunk.dataAttachments()
                     .deserializeAttachments(helper.getLevel().registryAccess(), serialized);
 
             helper.assertValueEqual(chunk, chunk.getData(attachmentType).chunk, "Chunk deserialize did not re-attach chunk reference");
-            helper.assertValueEqual(105, chunk.getData(attachmentType).getValue(), "Chunk deserialize did not adjust number");
+            helper.assertValueEqual(5, chunk.getData(attachmentType).getValue(), "Chunk deserialize did not copy number correctly");
             helper.succeed();
         });
     }

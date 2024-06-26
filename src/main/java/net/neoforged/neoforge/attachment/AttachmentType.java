@@ -9,12 +9,15 @@ import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Encoder;
-import com.mojang.serialization.JavaOps;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import net.jodah.typetools.TypeResolver;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,17 +52,18 @@ import org.jetbrains.annotations.Nullable;
  * </ul>
  */
 public final class AttachmentType<T> {
+    public final Class<T> dataType;
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final Codec<T> codec;
-    final BiConsumer<IAttachmentHolder, T> postDeserialize;
-    final Predicate<? super T> shouldSerialize;
+    final Predicate<T> shouldSerialize;
     final boolean copyOnDeath;
     @Nullable
-    final IAttachmentCopyHandler<T> copyHandler;
+    final StreamCodec<RegistryFriendlyByteBuf, T> copyHandler;
 
-    private AttachmentType(Builder<T> builder) {
-        this.defaultValueSupplier = builder.defaultValueSupplier;
+    private <P extends IAttachmentHolder> AttachmentType(Builder<T, P> builder) {
+        this.dataType = builder.dataType;
+        this.defaultValueSupplier = (Function<IAttachmentHolder, T>) builder.defaultValueSupplier;
         this.shouldSerialize = builder.shouldSerialize;
         this.copyOnDeath = builder.copyOnDeath;
 
@@ -67,18 +71,9 @@ public final class AttachmentType<T> {
             final var deserializer = builder.deserializer != null ? builder.deserializer : Decoder.<T>error("invalid state -- no decoder provided");
 
             this.codec = Codec.of(builder.serializer, deserializer);
-            this.postDeserialize = builder.postDeserialize;
-            this.copyHandler = builder.copyHandler != null ? builder.copyHandler : (attachment, holder, provider) -> {
-                return builder.serializer.encodeStart(provider.createSerializationContext(JavaOps.INSTANCE), attachment).result()
-                        .map(serialized -> {
-                            var parsed = deserializer.parse(provider.createSerializationContext(JavaOps.INSTANCE), serialized).getOrThrow();
-                            postDeserialize.accept(holder, parsed);
-                            return parsed;
-                        }).orElse(null);
-            };
+            this.copyHandler = builder.copyHandler != null ? builder.copyHandler : ByteBufCodecs.fromCodecWithRegistries(this.codec);
         } else {
             this.codec = null;
-            this.postDeserialize = (holder, inst) -> {};
             this.copyHandler = null;
         }
     }
@@ -86,12 +81,12 @@ public final class AttachmentType<T> {
     /**
      * Creates a builder for an attachment type.
      *
-     * <p>See {@link #builder(Function)} for attachments that want to capture a reference to their holder.
+     * <p>See {@link #builder(Class, Function)} for attachments that want to capture a reference to their holder.
      *
      * @param defaultValueSupplier A supplier for a new default value of this attachment type.
      */
-    public static <T> Builder<T> builder(Supplier<T> defaultValueSupplier) {
-        return builder(holder -> defaultValueSupplier.get());
+    public static <T, P extends IAttachmentHolder> Builder<T, P> builder(Supplier<T> defaultValueSupplier) {
+        return Builder.fromReflection(holder -> defaultValueSupplier.get());
     }
 
     /**
@@ -104,26 +99,47 @@ public final class AttachmentType<T> {
      *
      * @param defaultValueConstructor A constructor for a new default value of this attachment type.
      */
-    public static <T> Builder<T> builder(Function<IAttachmentHolder, T> defaultValueConstructor) {
-        return new Builder<>(defaultValueConstructor);
+    public static <T> Builder<T, IAttachmentHolder> builder(Function<IAttachmentHolder, T> defaultValueConstructor) {
+        return Builder.fromReflection(defaultValueConstructor);
     }
 
-    public static class Builder<T> {
-        private final Function<IAttachmentHolder, T> defaultValueSupplier;
+    public static <T, P extends IAttachmentHolder> Builder<T, P> builder(Class<P> holderClass, Function<P, T> defaultValueConstructor) {
+        return Builder.fromReflection(holderClass, defaultValueConstructor);
+    }
+
+    public static class Builder<T, P extends IAttachmentHolder> {
+        private final Function<P, T> defaultValueSupplier;
+        private final Class<P> attachmentHolderClass;
+        private final Class<T> dataType;
         @Nullable
         private Encoder<T> serializer;
         @Nullable
         private Decoder<T> deserializer;
-        BiConsumer<IAttachmentHolder, T> postDeserialize;
+        BiConsumer<P, T> postDeserialize;
         private boolean copyOnDeath;
-        private Predicate<? super T> shouldSerialize;
+        private Predicate<T> shouldSerialize;
         @Nullable
-        private IAttachmentCopyHandler<T> copyHandler;
+        private StreamCodec<RegistryFriendlyByteBuf, T> copyHandler;
 
-        private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
+        private Builder(Class<P> parentClass, Class<T> dataType, Function<P, T> defaultValueSupplier) {
+            this.attachmentHolderClass = parentClass;
+            this.dataType = dataType;
             this.defaultValueSupplier = defaultValueSupplier;
             this.shouldSerialize = Predicates.alwaysTrue();
             this.postDeserialize = (holder, inst) -> {};
+        }
+
+        private static <T, P extends IAttachmentHolder> Builder<T, P> fromReflection(Function<P, T> defaultValueSupplier) {
+            Class<?>[] typeArgs = TypeResolver.resolveRawArguments(Function.class, defaultValueSupplier.getClass());
+            var attachmentHolderClass = (Class<P>) typeArgs[0];
+            var dataType = (Class<T>) typeArgs[1];
+            return new Builder<>(attachmentHolderClass, dataType, defaultValueSupplier);
+        }
+
+        private static <T, P extends IAttachmentHolder> Builder<T, P> fromReflection(Class<P> parentClass, Function<P, T> defaultValueSupplier) {
+            Class<?>[] typeArgs = TypeResolver.resolveRawArguments(Function.class, defaultValueSupplier.getClass());
+            var dataType = (Class<T>) typeArgs[1];
+            return new Builder<>(parentClass, dataType, defaultValueSupplier);
         }
 
         /**
@@ -131,7 +147,7 @@ public final class AttachmentType<T> {
          *
          * @param codec The codec to use.
          */
-        public Builder<T> serialize(Encoder<T> codec) {
+        public Builder<T, P> serialize(Encoder<T> codec) {
             Objects.requireNonNull(codec);
             if (this.serializer != null)
                 throw new IllegalStateException("Serializer already set");
@@ -145,29 +161,11 @@ public final class AttachmentType<T> {
          *
          * @param deserializeCodec A codec to use to deserialize attachment data.
          */
-        public Builder<T> deserialize(Decoder<T> deserializeCodec) {
+        public Builder<T, P> deserialize(Decoder<T> deserializeCodec) {
             if (this.serializer == null)
                 throw new IllegalStateException("Must set a serializer!");
 
             this.deserializer = deserializeCodec;
-            return this;
-        }
-
-        /**
-         * For attachments that are serialized to disk, specifies a post-codec deserialization function.
-         * This function will be called after the codec finishes deserialization but before the attachment is
-         * considered finalized/constructed.
-         * <p>
-         * Modify and return the data object passed in as needed.
-         *
-         * @param postDeserialize A function taking the attachment holder and deserialized data.
-         * @return The fully constructed attachment data.
-         */
-        public Builder<T> postDeserialize(BiConsumer<IAttachmentHolder, T> postDeserialize) {
-            if (this.serializer == null)
-                throw new IllegalStateException("Must set a serializer to use shortcut deserialize");
-
-            this.postDeserialize = postDeserialize;
             return this;
         }
 
@@ -177,7 +175,7 @@ public final class AttachmentType<T> {
          * @param codec           The codec to use.
          * @param shouldSerialize A check that determines whether serialization of the attachment should occur.
          */
-        public Builder<T> serialize(Codec<T> codec, Predicate<? super T> shouldSerialize) {
+        public Builder<T, P> serialize(Codec<T> codec, Predicate<T> shouldSerialize) {
             Objects.requireNonNull(codec);
             this.shouldSerialize = shouldSerialize;
             return serialize(codec);
@@ -186,7 +184,7 @@ public final class AttachmentType<T> {
         /**
          * Requests that this attachment be persisted when a player respawns or when a living entity is converted.
          */
-        public Builder<T> copyOnDeath() {
+        public Builder<T, P> copyOnDeath() {
             if (this.serializer == null)
                 throw new IllegalStateException("copyOnDeath requires a serializer");
             this.copyOnDeath = true;
@@ -200,13 +198,17 @@ public final class AttachmentType<T> {
          *
          * <p>A copyHandler can only be provided for serializable attachments.
          */
-        public Builder<T> copyHandler(IAttachmentCopyHandler<T> cloner) {
+        public Builder<T, P> copyHandler(StreamCodec<RegistryFriendlyByteBuf, T> cloner) {
             Objects.requireNonNull(cloner);
             // Check for serializer because only serializable attachments can be copied.
             if (this.serializer == null || this.deserializer == null)
                 throw new IllegalStateException("copyHandler requires a serializer and deserializer");
             this.copyHandler = cloner;
             return this;
+        }
+
+        public Builder<T, P> copyHandler(Codec<T> codec) {
+            return copyHandler(ByteBufCodecs.fromCodecWithRegistries(codec));
         }
 
         public AttachmentType<T> build() {

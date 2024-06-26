@@ -7,14 +7,17 @@ package net.neoforged.neoforge.attachment;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+import net.jodah.typetools.TypeResolver;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
@@ -29,22 +32,26 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public final Codec<AttachmentHolder<T>> CODEC = new AttachmentHolderCodec<T>(this);
-
     @Nullable
-    T parent;
+    final T parent;
 
     @Nullable
     Map<AttachmentType<?>, Object> attachments = null;
 
-    AttachmentHolder() {}
+    public final Codec<AttachmentHolder<T>> CODEC;
 
     public AttachmentHolder(T parent) {
         this.parent = parent;
+
+        Class<T> parentClass = (Class<T>) TypeResolver.resolveRawClass(AttachmentHolder.class, parent.getClass());
+        this.CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                DataAttachmentOps.holder(parentClass),
+                AttachmentHolderMapCodec.INSTANCE.forGetter(x -> x.getAttachmentMap())).apply(inst, AttachmentHolder::new));
     }
 
-    public void setParent(T parent) {
-        this.parent = parent;
+    private AttachmentHolder(T parent, Map<AttachmentType<?>, Object> attachments) {
+        this(parent);
+        this.getAttachmentMap().putAll(attachments);
     }
 
     private void validateAttachmentType(AttachmentType<?> type) {
@@ -120,9 +127,13 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
         return attachments.keySet().stream();
     }
 
+    private final DataAttachmentOps<Tag, T> makeNbtOps(HolderLookup.Provider lookup) {
+        return DataAttachmentOps.create(lookup, NbtOps.INSTANCE, this.parent);
+    }
+
     public final CompoundTag serializeAttachments(HolderLookup.Provider lookup) {
         return (CompoundTag) Objects.requireNonNullElseGet(
-                CODEC.encodeStart(lookup.createSerializationContext(NbtOps.INSTANCE), this)
+                CODEC.encodeStart(makeNbtOps(lookup), this)
                         .resultOrPartial() // TODO Log errors
                         .orElseGet(CompoundTag::new),
                 CompoundTag::new);
@@ -132,10 +143,9 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
      * Reads serializable attachments from a tag previously created via {@link #CODEC}.
      */
     public final void deserializeAttachments(HolderLookup.Provider lookup, CompoundTag tag) {
-        CODEC.parse(lookup.createSerializationContext(NbtOps.INSTANCE), tag)
-                .ifSuccess(parsedData -> {
-                    assert parsedData.attachments != null;
-                    this.attachments.putAll(parsedData.attachments);
-                });
+        CODEC.parse(makeNbtOps(lookup), tag).ifSuccess(parsedData -> {
+            assert parsedData.attachments != null;
+            this.attachments.putAll(parsedData.attachments);
+        });
     }
 }
