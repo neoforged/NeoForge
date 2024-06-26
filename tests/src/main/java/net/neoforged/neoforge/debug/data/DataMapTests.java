@@ -276,7 +276,7 @@ public class DataMapTests {
             }
         });
 
-        test.eventListeners().forge().addListener((final LivingDamageEvent event) -> {
+        test.eventListeners().forge().addListener((final LivingDamageEvent.Post event) -> {
             final ExperienceGrant grant = event.getSource().typeHolder().getData(xpGrant);
             if (grant != null && event.getEntity() instanceof Player player) {
                 player.giveExperiencePoints(grant.amount());
