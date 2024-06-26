@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -20,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -91,7 +89,7 @@ public class CreativeTabOrderTest {
     }
 
     /**
-     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesOnlyMaxLevel(CreativeModeTab.Output, HolderLookup, Set, CreativeModeTab.TabVisibility, FeatureFlagSet)}
+     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesOnlyMaxLevel}
      * 
      * @param server Ephemeral server from extension
      */
@@ -110,7 +108,7 @@ public class CreativeTabOrderTest {
     }
 
     /**
-     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesAllLevels(CreativeModeTab.Output, HolderLookup, Set, CreativeModeTab.TabVisibility, FeatureFlagSet)}
+     * The local tabEnchantments variable comes from {@link CreativeModeTabs#generateEnchantmentBookTypesAllLevels}
      * 
      * @param server Ephemeral server from extension
      */

@@ -7,10 +7,10 @@ package net.neoforged.neoforge.common.util.strategy;
 
 import it.unimi.dsi.fastutil.Hash;
 
+/**
+ * A strategy that uses {@link System#identityHashCode(Object)} and {@code a == b} comparisons.
+ */
 public class IdentityStrategy implements Hash.Strategy<Object> {
-    /**
-     * A strategy that uses {@link System#identityHashCode(Object)} and {@code a == b} comparisons.
-     */
     public static final Hash.Strategy<? super Object> IDENTITY = new IdentityStrategy();
 
     @Override
