@@ -11,12 +11,9 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.function.Supplier;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -27,37 +24,26 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
  * @param defaultSupplier Used to construct empty instances.
  * @param serializerClass The class implementing {@link INBTSerializable}.
  * @param nbtTypeClass    The type of NBT tag the serializer serializes into.
- * @param serializer      Method reference ({@link INBTSerializable#serializeNBT(HolderLookup.Provider)})
- * @param deserializer    Method reference ({@link INBTSerializable#deserializeNBT(HolderLookup.Provider, Tag)})
  * @param <S>             Serializer type param.
  * @param <NBT>           NBT type param.
  */
 public record NBTSerializableCodec<S extends INBTSerializable<NBT>, NBT extends Tag>(Supplier<S> defaultSupplier,
         Class<S> serializerClass,
-        Class<NBT> nbtTypeClass,
-        Method serializer,
-        Method deserializer) implements Codec<S> {
+        Class<NBT> nbtTypeClass) implements Codec<S> {
     public static <S extends INBTSerializable<NBT>, NBT extends Tag> Codec<S> forSerializable(Class<S> serializerClass, Supplier<S> defaultSupplier) {
-        try {
-            final var nbtTypeClass = Arrays.stream(serializerClass.getGenericInterfaces())
-                    .filter(ParameterizedType.class::isInstance)
-                    .map(ParameterizedType.class::cast)
-                    .filter(pt -> INBTSerializable.class == pt.getRawType())
-                    .map(pt -> pt.getActualTypeArguments()[0])
-                    .findFirst()
-                    .orElseThrow();
+        final var nbtTypeClass = Arrays.stream(serializerClass.getGenericInterfaces())
+                .filter(ParameterizedType.class::isInstance)
+                .map(ParameterizedType.class::cast)
+                .filter(pt -> INBTSerializable.class == pt.getRawType())
+                .map(pt -> pt.getActualTypeArguments()[0])
+                .findFirst()
+                .orElseThrow();
 
-            if (nbtTypeClass instanceof Class<?> nbt2) {
-                final var serializer = serializerClass.getDeclaredMethod("serializeNBT", HolderLookup.Provider.class);
-                final var deserializer = serializerClass.getDeclaredMethod("deserializeNBT", HolderLookup.Provider.class, nbt2);
-
-                return new NBTSerializableCodec<>(defaultSupplier, serializerClass, (Class<NBT>) nbt2, serializer, deserializer);
-            }
-
-            throw new RuntimeException("The type of NBT serializable could not be determined! Do you implement it more than once?");
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+        if (nbtTypeClass instanceof Class<?> nbt2) {
+            return new NBTSerializableCodec<>(defaultSupplier, serializerClass, (Class<NBT>) nbt2);
         }
+
+        throw new RuntimeException("The type of NBT serializable could not be determined! Do you implement it more than once?");
     }
 
     @Override
@@ -76,7 +62,7 @@ public record NBTSerializableCodec<S extends INBTSerializable<NBT>, NBT extends 
         if (nbtTypeClass.isInstance(asNBT)) {
             S instance = defaultSupplier.get();
             try {
-                deserializer.invoke(instance, adapter.lookupProvider, asNBT);
+                instance.deserializeNBT(adapter.lookupProvider, nbtTypeClass.cast(asNBT));
                 return DataResult.success(Pair.of(instance, input));
             } catch (Exception ex) {
                 return DataResult.error(() -> "Error finalizing deserialization. Did not deserialize to the expected class.",
@@ -90,16 +76,8 @@ public record NBTSerializableCodec<S extends INBTSerializable<NBT>, NBT extends 
     @Override
     public <T> DataResult<T> encode(S input, DynamicOps<T> ops, T prefix) {
         if (ops instanceof RegistryOps<T> regOps && regOps.lookupProvider instanceof RegistryOps.HolderLookupAdapter adapter) {
-            try {
-                var serialized = serializer.invoke(input, adapter.lookupProvider);
-                if (nbtTypeClass.isInstance(serialized)) {
-                    return TAG_CODEC.encode(nbtTypeClass.cast(serialized), ops, prefix);
-                } else {
-                    return DataResult.error(() -> "Error serializing the data.");
-                }
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                return DataResult.error(() -> "Failed to call the serialization function.");
-            }
+            var serialized = input.serializeNBT(adapter.lookupProvider);
+            return TAG_CODEC.encode(nbtTypeClass.cast(serialized), ops, prefix);
         }
 
         return DataResult.error(() -> "Was not passed registry ops for serialization; cannot continue.");
