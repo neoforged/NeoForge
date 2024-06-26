@@ -40,7 +40,7 @@
          this.thirdPersonLeftHand = p_111798_;
          this.thirdPersonRightHand = p_111799_;
          this.firstPersonLeftHand = p_111800_;
-@@ -64,6 +_,7 @@
+@@ -64,9 +_,21 @@
          this.gui = p_111803_;
          this.ground = p_111804_;
          this.fixed = p_111805_;
@@ -48,6 +48,20 @@
      }
  
      public ItemTransform getTransform(ItemDisplayContext p_270619_) {
++        if (p_270619_.isModded()) {
++            ItemTransform moddedTransform = moddedTransforms.get(p_270619_);
++            if (moddedTransform != null) {
++                return moddedTransform;
++            }
++            ItemDisplayContext moddedFallback = p_270619_.fallback();
++            if (moddedFallback == null) {
++                return ItemTransform.NO_TRANSFORM;
++            }
++            p_270619_ = moddedFallback;
++        }
+         return switch (p_270619_) {
+             case THIRD_PERSON_LEFT_HAND -> this.thirdPersonLeftHand;
+             case THIRD_PERSON_RIGHT_HAND -> this.thirdPersonRightHand;
 @@ -104,9 +_,23 @@
              ItemTransform itemtransform5 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.GUI);
              ItemTransform itemtransform6 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.GROUND);
