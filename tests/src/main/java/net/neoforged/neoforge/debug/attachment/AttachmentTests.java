@@ -17,6 +17,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,8 +27,11 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.attachment.AttachmentFriendlyByteBuf;
+import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.attachment.DataAttachmentOps;
+import net.neoforged.neoforge.attachment.AttachmentOps;
+import net.neoforged.neoforge.attachment.PendingAttachmentCopy;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -43,8 +48,14 @@ public class AttachmentTests {
         private int value;
 
         public static final Codec<ChunkMutableInt> CODEC = RecordCodecBuilder.create(i -> i.group(
-                DataAttachmentOps.holder(ChunkAccess.class),
+                AttachmentOps.holder(ChunkAccess.class),
                 Codec.INT.fieldOf("value").forGetter(c -> c.value)).apply(i, ChunkMutableInt::new));
+
+        public static final StreamCodec<AttachmentFriendlyByteBuf<ChunkAccess>, ChunkMutableInt> STREAM_CODEC = StreamCodec.composite(
+            AttachmentFriendlyByteBuf.streamHolder(ChunkAccess.class), c -> c.chunk,
+            ByteBufCodecs.INT, ChunkMutableInt::getValue,
+            ChunkMutableInt::new
+        );
 
         public ChunkMutableInt(ChunkAccess chunk, int value) {
             this.chunk = chunk;
@@ -66,7 +77,7 @@ public class AttachmentTests {
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void chunkAttachmentReferenceTest(DynamicTest test, RegistrationHelper reg) {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.builder(ChunkAccess.class, chunk -> new ChunkMutableInt(chunk, 0))
+                .register("chunk_mutable_int", () -> AttachmentType.builder((ChunkAccess chunk) -> new ChunkMutableInt(chunk, 0))
                         .serialize(ChunkMutableInt.CODEC)
                         .build());
 
@@ -108,7 +119,7 @@ public class AttachmentTests {
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void survivesRoundTripThroughCodec(DynamicTest test, RegistrationHelper reg) {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.builder(ChunkAccess.class, chunk -> new ChunkMutableInt(chunk, 0))
+                .register("chunk_mutable_int", () -> AttachmentType.builder((ChunkAccess chunk) -> new ChunkMutableInt(chunk, 0))
                         .serialize(ChunkMutableInt.CODEC)
                         .build());
 
@@ -129,6 +140,44 @@ public class AttachmentTests {
 
             helper.assertValueEqual(chunk, chunk.getData(attachmentType).chunk, "Chunk deserialize did not re-attach chunk reference");
             helper.assertValueEqual(5, chunk.getData(attachmentType).getValue(), "Chunk deserialize did not copy number correctly");
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Data attachments may specify complex copy filters, in order to not copy attachments in specific scenarios.")
+    static void canSpecifyCustomCopyPredicates(DynamicTest test, RegistrationHelper reg) {
+        var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
+                .register("chunk_mutable_int", () -> AttachmentType.builder((ChunkAccess chunk) -> new ChunkMutableInt(chunk, 0))
+                        .serialize(ChunkMutableInt.CODEC)
+                        .copyHandler(ChunkMutableInt.STREAM_CODEC)
+                        .filterCopying((reason, pending) -> {
+                            return pending.data().value > 5;
+                        })
+                        .build());
+
+        test.onGameTest(helper -> {
+            final var chunk = helper.getLevel().getChunk(helper.absolutePos(BlockPos.ZERO));
+            final var chunk2 = helper.getLevel().getChunk(helper.absolutePos(BlockPos.ZERO.north(17)));
+
+            // remove data to ensure that the test can run multiple times
+            chunk.removeData(attachmentType);
+            chunk2.removeData(attachmentType);
+
+            // Initial state - should be denied due to filter
+            chunk.setData(attachmentType, new ChunkMutableInt(chunk, 1));
+
+            final var regAccess = helper.getLevel().registryAccess();
+
+            AttachmentInternals.copyAttachments(regAccess, chunk.dataAttachments(), chunk2.dataAttachments(), PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
+            helper.assertFalse(chunk2.dataAttachments().hasData(attachmentType), "Chunk 2 should not have data! Filter did not apply correctly!");
+
+            // Now change the data so the filter accepts
+            chunk.setData(attachmentType, new ChunkMutableInt(chunk, 10));
+            AttachmentInternals.copyAttachments(regAccess, chunk.dataAttachments(), chunk2.dataAttachments(), PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
+            helper.assertTrue(chunk2.dataAttachments().hasData(attachmentType), "Chunk 2 should have data! Filter did not apply correctly!");
+
             helper.succeed();
         });
     }

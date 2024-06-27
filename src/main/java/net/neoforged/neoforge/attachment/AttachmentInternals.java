@@ -6,10 +6,9 @@
 package net.neoforged.neoforge.attachment;
 
 import io.netty.buffer.Unpooled;
-import java.util.function.Predicate;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,51 +25,55 @@ public final class AttachmentInternals {
     /**
      * Copy some attachments to another holder.
      */
-    private static <H extends AttachmentHolder<?>> void copyAttachments(RegistryAccess registryAccess, IAttachmentHolder from, H to, Predicate<AttachmentType<?>> filter) {
+	@ApiStatus.Internal
+    public static <T extends IAttachmentHolder, H extends AttachmentHolder<T>> void copyAttachments(
+            RegistryAccess registryAccess, IAttachmentHolder from, H to,
+            PendingAttachmentCopy.CopyReason copyReason) {
+
         if (!from.hasAttachments()) {
             return;
         }
 
-        var buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE);
+        var buffer = new AttachmentFriendlyByteBuf<>(Unpooled.buffer(), registryAccess, to);
         from.existingDataTypes()
-                .filter(filter)
-                .filter(type -> type.copyHandler != null)
-                .forEach(type -> {
-                    copySingleAttachment(type, from, to, type.copyHandler, buffer);
+				.filter(type -> type.copyHandler != null)
+                .map(type -> createPendingCopy(type, from, to))
+                .filter(pendingCopy -> pendingCopy.attachmentType().copyCheck.test(copyReason, pendingCopy))
+                .filter(pendingCopy -> pendingCopy.attachmentType().copyHandler != null)
+                .forEach(pendingCopy -> {
+                    pendingCopy.attachmentType().copyHandler.encode(buffer, pendingCopy.data());
+
+                    Object copied = pendingCopy.attachmentType().copyHandler.decode(buffer);
+                    pendingCopy.newHost().getAttachmentMap().put(pendingCopy.attachmentType(), copied);
                 });
 
         buffer.clear();
         buffer.release();
     }
 
-    @SuppressWarnings("unchecked")
-    private static <D, H extends AttachmentHolder<?>> void copySingleAttachment(AttachmentType<?> type, IAttachmentHolder from, H to, StreamCodec<RegistryFriendlyByteBuf, D> copyHandler, RegistryFriendlyByteBuf buffer) {
-        var data = (D) from.getData(type);
-        copyHandler.encode(buffer, data);
-
-        var copied = copyHandler.decode(buffer);
-        to.getAttachmentMap().put(type, copied);
+    private static <D, H extends AttachmentHolder<?>> PendingAttachmentCopy<AttachmentType<D>, D, H> createPendingCopy(AttachmentType<?> type, IAttachmentHolder from, H to) {
+        return new PendingAttachmentCopy<>((AttachmentType<D>) type, from, to, (D) from.getData(type));
     }
 
     public static void copyChunkAttachmentsOnPromotion(RegistryAccess registryAccess, IAttachmentHolder from, AttachmentHolder<?> to) {
-        copyAttachments(registryAccess, from, to, type -> true);
+        copyAttachments(registryAccess, from, to, PendingAttachmentCopy.CopyReason.CHUNK_PROMOTION);
     }
 
     /**
      * Do not call directly, use {@link IEntityExtension#copyAttachmentsFrom(Entity, boolean)}.
      */
-    public static void copyEntityAttachments(Entity from, Entity to, boolean isDeath) {
-        copyAttachments(from.registryAccess(), from, (AttachmentHolder<Entity>) to.dataAttachments(), isDeath ? type -> type.copyOnDeath : type -> true);
+    public static void copyEntityAttachments(Entity from, Entity to, PendingAttachmentCopy.CopyReason reason) {
+        copyAttachments(from.registryAccess(), from, to.dataAttachments(), reason);
     }
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        event.getEntity().copyAttachmentsFrom(event.getOriginal(), event.isWasDeath());
+        event.getEntity().copyAttachmentsFrom(event.getOriginal(), event.isWasDeath() ? PendingAttachmentCopy.CopyReason.DEATH : PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
     }
 
     @SubscribeEvent
     public static void onLivingConvert(LivingConversionEvent.Post event) {
-        event.getOutcome().copyAttachmentsFrom(event.getEntity(), true);
+        event.getOutcome().copyAttachmentsFrom(event.getEntity(), PendingAttachmentCopy.CopyReason.CONVERTED);
     }
 
     private AttachmentInternals() {}

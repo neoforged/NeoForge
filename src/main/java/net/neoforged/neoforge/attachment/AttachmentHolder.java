@@ -44,7 +44,7 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
 
         Class<T> parentClass = (Class<T>) parent.getClass();
         this.CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                DataAttachmentOps.holder(parentClass),
+                AttachmentOps.holder(parentClass),
                 AttachmentHolderMapCodec.INSTANCE.forGetter(x -> x.getAttachmentMap())).apply(inst, AttachmentHolder::new));
     }
 
@@ -126,8 +126,8 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
         return attachments.keySet().stream();
     }
 
-    private final DataAttachmentOps<Tag, T> makeNbtOps(HolderLookup.Provider lookup) {
-        return DataAttachmentOps.create(lookup, NbtOps.INSTANCE, this.parent);
+    private final AttachmentOps<Tag, T> makeNbtOps(HolderLookup.Provider lookup) {
+        return AttachmentOps.create(lookup, NbtOps.INSTANCE, this.parent);
     }
 
     public final CompoundTag serializeAttachments(HolderLookup.Provider lookup) {

@@ -27,6 +27,7 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolderExtension;
+import net.neoforged.neoforge.attachment.PendingAttachmentCopy;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -402,6 +403,16 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag>, IAttach
      *                if {@code false}, all serializable attachments are copied.
      */
     default void copyAttachmentsFrom(Entity other, boolean isDeath) {
-        AttachmentInternals.copyEntityAttachments(other, self(), isDeath);
+        AttachmentInternals.copyEntityAttachments(other, self(), isDeath ? PendingAttachmentCopy.CopyReason.DEATH : PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
+    }
+
+    /**
+     * Copies the serialized attachments from another entity to this entity.
+     *
+     * @param other  the entity that attachments should be copied from
+     * @param reason the reason data is being copied; may be death, conversion, or another reason
+     */
+    default void copyAttachmentsFrom(Entity other, PendingAttachmentCopy.CopyReason reason) {
+        AttachmentInternals.copyEntityAttachments(other, self(), reason);
     }
 }

@@ -11,6 +11,7 @@ import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Encoder;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -55,20 +56,21 @@ public final class AttachmentType<T> {
     @Nullable
     final Codec<T> codec;
     final Predicate<T> shouldSerialize;
-    final boolean copyOnDeath;
+    final BiPredicate<PendingAttachmentCopy.CopyReason, PendingAttachmentCopy<AttachmentType<T>, T, ? extends IAttachmentHolder>> copyCheck;
     @Nullable
-    final StreamCodec<RegistryFriendlyByteBuf, T> copyHandler;
+    final StreamCodec<AttachmentFriendlyByteBuf<? extends IAttachmentHolder>, T> copyHandler;
 
     private <P extends IAttachmentHolder> AttachmentType(Builder<T, P> builder) {
+        // TODO 1.21.1 - actually type attachments more so we can stop all these casts to keep API compat
         this.defaultValueSupplier = (Function<IAttachmentHolder, T>) builder.defaultValueSupplier;
         this.shouldSerialize = builder.shouldSerialize;
-        this.copyOnDeath = builder.copyOnDeath;
+        this.copyCheck = (BiPredicate<PendingAttachmentCopy.CopyReason, PendingAttachmentCopy<AttachmentType<T>, T, ? extends IAttachmentHolder>>) (Object) builder.copyFilter;
 
         if (builder.serializer != null) {
             final var deserializer = builder.deserializer != null ? builder.deserializer : Decoder.<T>error("invalid state -- no decoder provided");
 
             this.codec = Codec.of(builder.serializer, deserializer);
-            this.copyHandler = builder.copyHandler != null ? builder.copyHandler : ByteBufCodecs.fromCodecWithRegistries(this.codec);
+            this.copyHandler = (StreamCodec<AttachmentFriendlyByteBuf<? extends IAttachmentHolder>, T>) (Object) builder.copyHandler;
         } else {
             this.codec = null;
             this.copyHandler = null;
@@ -78,7 +80,7 @@ public final class AttachmentType<T> {
     /**
      * Creates a builder for an attachment type.
      *
-     * <p>See {@link #builder(Class, Function)} for attachments that want to capture a reference to their holder.
+     * <p>See {@link #builder(Function)} for attachments that want to capture a reference to their holder.
      *
      * @param defaultValueSupplier A supplier for a new default value of this attachment type.
      */
@@ -101,22 +103,6 @@ public final class AttachmentType<T> {
         return new Builder<>(defaultValueConstructor);
     }
 
-    /**
-     * Creates a builder for an attachment type.
-     *
-     * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
-     * If the holder is of the wrong type, the constructor should throw an exception.
-     * See {@link #builder(Supplier)} for an overload that does not capture the holder.
-     *
-     * @param parentClass             The attachment handler's parent/containing type class, i.e. Entity, LevelChunk, BlockEntity
-     * @param defaultValueConstructor A constructor for a new default value of this attachment type.
-     * @param <P>                     The attachment handler's parent/containing type, i.e. Entity, LevelChunk, BlockEntity
-     * @param <T>                     Data type of the attachment
-     */
-    public static <T, P extends IAttachmentHolder> Builder<T, P> builder(Class<P> parentClass, Function<P, T> defaultValueConstructor) {
-        return new Builder<>(defaultValueConstructor);
-    }
-
     public static class Builder<T, P extends IAttachmentHolder> {
         private final Function<P, T> defaultValueSupplier;
         @Nullable
@@ -126,13 +112,14 @@ public final class AttachmentType<T> {
         BiConsumer<P, T> postDeserialize;
         private boolean copyOnDeath;
         private Predicate<T> shouldSerialize;
-        @Nullable
-        private StreamCodec<RegistryFriendlyByteBuf, T> copyHandler;
+        private StreamCodec<AttachmentFriendlyByteBuf<P>, T> copyHandler;
+        private BiPredicate<PendingAttachmentCopy.CopyReason, PendingAttachmentCopy<AttachmentType<T>, T, P>> copyFilter;
 
         private Builder(Function<P, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
             this.shouldSerialize = Predicates.alwaysTrue();
             this.postDeserialize = (holder, inst) -> {};
+            this.copyFilter = (reason, pending) -> true;
         }
 
         /**
@@ -143,22 +130,9 @@ public final class AttachmentType<T> {
         public Builder<T, P> serialize(Encoder<T> codec) {
             Objects.requireNonNull(codec);
             if (this.serializer != null)
-                throw new IllegalStateException("Serializer already set");
+                throw new IllegalStateException("Serializer is already set!");
 
             this.serializer = codec;
-            return this;
-        }
-
-        /**
-         * For attachments that are serialized to disk, specifies a different codec to use for deserialization.
-         *
-         * @param deserializeCodec A codec to use to deserialize attachment data.
-         */
-        public Builder<T, P> deserialize(Decoder<T> deserializeCodec) {
-            if (this.serializer == null)
-                throw new IllegalStateException("Must set a serializer!");
-
-            this.deserializer = deserializeCodec;
             return this;
         }
 
@@ -175,28 +149,35 @@ public final class AttachmentType<T> {
         }
 
         /**
-         * Requests that this attachment be persisted when a player respawns or when a living entity is converted.
+         * For attachments that are serialized to disk, specifies a different codec to use for deserialization.
+         *
+         * @param deserializeCodec A codec to use to deserialize attachment data.
          */
-        public Builder<T, P> copyOnDeath() {
-            if (this.serializer == null)
-                throw new IllegalStateException("copyOnDeath requires a serializer");
-            this.copyOnDeath = true;
+        public Builder<T, P> deserialize(Decoder<T> deserializeCodec) {
+            if (this.deserializer != null)
+                throw new IllegalStateException("Deserializer is already set!");
+
+            this.deserializer = deserializeCodec;
             return this;
         }
 
         /**
-         * Overrides the copyHandler for this attachment type.
-         *
-         * <p>The default copyHandler serializes the attachment and deserializes it again.
-         *
-         * <p>A copyHandler can only be provided for serializable attachments.
+         * Requests that this attachment be persisted when a player respawns or when a living entity is converted.
          */
-        public Builder<T, P> copyHandler(StreamCodec<RegistryFriendlyByteBuf, T> cloner) {
-            Objects.requireNonNull(cloner);
-            // Check for serializer because only serializable attachments can be copied.
-            if (this.serializer == null || this.deserializer == null)
-                throw new IllegalStateException("copyHandler requires a serializer and deserializer");
-            this.copyHandler = cloner;
+        public Builder<T, P> copyOnDeath() {
+            return filterCopying((reason, pending) -> reason == PendingAttachmentCopy.CopyReason.DEATH || reason == PendingAttachmentCopy.CopyReason.CONVERTED);
+        }
+
+        /**
+         * Requests that this attachment be persisted when a player respawns or when a living entity is converted.
+         *
+         * @param filter A predicate to determine whether to copy data. Exposes new target and current data.
+         */
+        public Builder<T, P> filterCopying(BiPredicate<PendingAttachmentCopy.CopyReason, PendingAttachmentCopy<AttachmentType<T>, T, P>> filter) {
+            if (this.serializer == null)
+                throw new IllegalStateException("Copy handling requires a serializer");
+
+            this.copyFilter = filter;
             return this;
         }
 
@@ -208,7 +189,18 @@ public final class AttachmentType<T> {
          * <p>A copyHandler can only be provided for serializable attachments.
          */
         public Builder<T, P> copyHandler(Codec<T> codec) {
-            return copyHandler(ByteBufCodecs.fromCodecWithRegistries(codec));
+            return copyHandler(AttachmentFriendlyByteBuf..fromCodecWithRegistries(codec));
+        }
+
+        /**
+         * Overrides the copyHandler for this attachment type.
+         *
+         * <p>The default copyHandler serializes the attachment and deserializes it again.
+         */
+        public Builder<T, P> copyHandler(StreamCodec<AttachmentFriendlyByteBuf<P>, T> cloner) {
+            Objects.requireNonNull(cloner);
+            this.copyHandler = cloner;
+            return this;
         }
 
         public AttachmentType<T> build() {
