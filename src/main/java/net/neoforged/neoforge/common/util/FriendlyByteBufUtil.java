@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 
 /**
  * Utility class for working with {@link FriendlyByteBuf}s.
@@ -27,7 +28,7 @@ public class FriendlyByteBufUtil {
      * @return The written data.
      */
     public static byte[] writeCustomData(Consumer<RegistryFriendlyByteBuf> dataWriter, RegistryAccess registryAccess) {
-        final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess);
+        final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE);
         try {
             dataWriter.accept(buf);
             return buf.array();

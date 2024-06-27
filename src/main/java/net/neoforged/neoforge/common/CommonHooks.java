@@ -113,7 +113,6 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
@@ -125,6 +124,7 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GameMasterBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -188,6 +188,7 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
@@ -440,12 +441,31 @@ public class CommonHooks {
         return ichat;
     }
 
-    public static void dropXpForBlock(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack) {
-        int fortuneLevel = stack.getEnchantmentLevel(Enchantments.FORTUNE);
-        int silkTouchLevel = stack.getEnchantmentLevel(Enchantments.SILK_TOUCH);
-        int exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
-        if (exp > 0)
-            state.getBlock().popExperience(level, pos, exp);
+    /**
+     * Fires the {@link BlockDropsEvent} when block drops (items and experience) are determined.
+     * If the event is not cancelled, all drops will be added to the world, and then {@link BlockBehaviour#spawnAfterBreak} will be called.
+     * 
+     * @param level       The level
+     * @param pos         The broken block's position
+     * @param state       The broken block's state
+     * @param blockEntity The block entity from the given position
+     * @param drops       The list of all items dropped by the block, captured from {@link Block#getDrops}
+     * @param breaker     The entity who broke the block, or null if unknown
+     * @param tool        The tool used when breaking the block; may be empty
+     */
+    public static void handleBlockDrops(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool) {
+        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, blockEntity, drops, breaker, tool);
+        NeoForge.EVENT_BUS.post(event);
+        if (!event.isCanceled()) {
+            for (ItemEntity entity : event.getDrops()) {
+                level.addFreshEntity(entity);
+            }
+            // Always pass false for the dropXP (last) param to spawnAfterBreak since we handle XP.
+            state.spawnAfterBreak((ServerLevel) level, pos, tool, false);
+            if (event.getDroppedExperience() > 0) {
+                state.getBlock().popExperience(level, pos, event.getDroppedExperience());
+            }
+        }
     }
 
     /**
@@ -458,9 +478,9 @@ public class CommonHooks {
      * @param player   The breaking player
      * @param pos      The position of the block being broken
      * @param state    The state of the block being broken
-     * @return The experience dropped by the broken block, or -1 if the break event was canceled.
+     * @return The event
      */
-    public static int fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
+    public static BlockEvent.BreakEvent fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
         boolean preCancelEvent = false;
 
         ItemStack itemstack = player.getMainHandItem();
@@ -486,7 +506,7 @@ public class CommonHooks {
             player.connection.send(new ClientboundBlockUpdatePacket(pos, state));
         }
 
-        return event.isCanceled() ? -1 : event.getExpToDrop();
+        return event;
     }
 
     public static InteractionResult onPlaceItemIntoWorld(UseOnContext context) {

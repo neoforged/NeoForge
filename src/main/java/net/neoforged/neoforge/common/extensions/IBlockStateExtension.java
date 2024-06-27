@@ -120,14 +120,12 @@ public interface IBlockStateExtension {
      *
      * Return true if the block is actually destroyed.
      *
-     * Note: When used in multiplayer, this is called on both client and
-     * server sides!
+     * This function is called on both the logical client and logical server.
      *
      * @param level       The current level
      * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
-     * @param willHarvest True if Block.harvestBlock will be called after this, if the return in true.
-     *                    Can be useful to delay the destruction of tile entities till after harvestBlock
+     * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid and block state for the position in the level.
      * @return True if the block is actually destroyed.
      */
@@ -349,6 +347,7 @@ public interface IBlockStateExtension {
      * @return Amount of XP from breaking this block.
      */
     default int getExpDrop(LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+        // TODO: Change this method to have context of the full tool ItemStack instead of just the enchantment levels.
         return self().getBlock().getExpDrop(self(), level, randomSource, pos, fortuneLevel, silkTouchLevel);
     }
 

@@ -12,12 +12,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalShape;
 import net.neoforged.bus.api.Event;
@@ -25,7 +26,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockEvent extends Event {
@@ -54,48 +54,39 @@ public abstract class BlockEvent extends Event {
     }
 
     /**
-     * Event that is fired when an Block is about to be broken by a player
-     * Canceling this event will prevent the Block from being broken.
+     * This event is fired on the server when a player attempts to break a block, upon receipt of a block break packet.
+     *
+     * The following conditions may cause this event to fire in a cancelled state:
+     * <ul>
+     * <li>If {@link Player#blockActionRestricted} is true.</li>
+     * <li>If the target block is a {@link GameMasterBlock} and {@link Player#canUseGameMasterBlocks()} is false.</li>
+     * <li>If the the player is holding an item, and {@link Item#canAttackBlock} is false.</li>
+     * </ul>
+     *
+     * In the first two cases, un-cancelling the event will not permit the block to be broken.
+     * In the third case, un-cancelling will allow the break, bypassing the behavior of {@link Item#canAttackBlock}.
      */
     public static class BreakEvent extends BlockEvent implements ICancellableEvent {
-        /** Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer */
         private final Player player;
-        private int exp;
 
         public BreakEvent(Level level, BlockPos pos, BlockState state, Player player) {
             super(level, pos, state);
             this.player = player;
-
-            if (state == null || !EventHooks.doPlayerHarvestCheck(player, state, level, pos)) // Handle empty block or player unable to break block scenario
-            {
-                this.exp = 0;
-            } else {
-                int fortuneLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.FORTUNE);
-                int silkTouchLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.SILK_TOUCH);
-                this.exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
-            }
         }
 
+        /**
+         * {@return the player who is attempting to break the block}
+         */
         public Player getPlayer() {
             return player;
         }
 
         /**
-         * Get the experience dropped by the block after the event has processed
-         *
-         * @return The experience to drop or 0 if the event was canceled
+         * Cancelling this event will prevent the block from being broken, and notifies the client of the refusal.
          */
-        public int getExpToDrop() {
-            return this.isCanceled() ? 0 : exp;
-        }
-
-        /**
-         * Set the amount of experience dropped by the block after the event has processed
-         *
-         * @param exp 1 or higher to drop experience, else nothing will drop
-         */
-        public void setExpToDrop(int exp) {
-            this.exp = exp;
+        @Override
+        public void setCanceled(boolean canceled) {
+            ICancellableEvent.super.setCanceled(canceled);
         }
     }
 
