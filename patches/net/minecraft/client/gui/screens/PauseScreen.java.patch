@@ -4,7 +4,7 @@
          } else {
              gridlayout$rowhelper.addChild(this.openScreenButton(PLAYER_REPORTING, () -> new SocialInteractionsScreen(this)));
          }
-+        gridlayout$rowhelper.addChild(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this))).width(BUTTON_WIDTH_FULL).build(), 2);
++        gridlayout$rowhelper.addChild(Button.builder(Component.translatable("fml.menu.mods", net.neoforged.fml.ModList.get().size()), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this))).width(BUTTON_WIDTH_FULL).build(), 2);
  
          Component component = this.minecraft.isLocalServer() ? RETURN_TO_MENU : CommonComponents.GUI_DISCONNECT;
          this.disconnectButton = gridlayout$rowhelper.addChild(Button.builder(component, p_280815_ -> {
