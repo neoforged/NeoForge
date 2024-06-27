@@ -11,7 +11,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-
 import java.util.function.Supplier;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
@@ -25,7 +24,6 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
  * @param <NBT>           NBT type param.
  */
 public record NBTSerializableCodec<S extends INBTSerializable<NBT>, NBT extends Tag>(Supplier<S> defaultSupplier) implements Codec<S> {
-
     @Override
     public <T> DataResult<Pair<S, T>> decode(DynamicOps<T> ops, T input) {
         if (ops instanceof RegistryOps<T> regOps && regOps.lookupProvider instanceof RegistryOps.HolderLookupAdapter adapter) {

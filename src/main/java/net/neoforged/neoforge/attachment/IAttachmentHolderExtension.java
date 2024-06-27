@@ -8,8 +8,12 @@ package net.neoforged.neoforge.attachment;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface IAttachmentHolderExtension extends IAttachmentHolder {
-    IAttachmentHolder dataAttachments();
+public interface IAttachmentHolderExtension<T> extends IAttachmentHolder<T> {
+    IAttachmentHolder<T> dataAttachments();
+
+    default T parent() {
+        return dataAttachments().parent();
+    }
 
     @Override
     default boolean hasAttachments() {

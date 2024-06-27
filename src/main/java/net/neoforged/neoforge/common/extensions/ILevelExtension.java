@@ -19,7 +19,7 @@ import net.neoforged.neoforge.client.model.data.ModelDataManager;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
-public interface ILevelExtension extends IAttachmentHolderExtension {
+public interface ILevelExtension extends IAttachmentHolderExtension<Level> {
     private Level self() {
         return (Level) this;
     }

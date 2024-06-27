@@ -7,8 +7,6 @@ package net.neoforged.neoforge.attachment;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -16,7 +14,6 @@ import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -25,18 +22,17 @@ public final class AttachmentInternals {
     /**
      * Copy some attachments to another holder.
      */
-	@ApiStatus.Internal
-    public static <T extends IAttachmentHolder, H extends AttachmentHolder<T>> void copyAttachments(
-            RegistryAccess registryAccess, IAttachmentHolder from, H to,
+    @ApiStatus.Internal
+    public static <T extends IAttachmentHolder<?>, H extends AttachmentHolder<?>> void copyAttachments(
+            RegistryAccess registryAccess, IAttachmentHolder<?> from, H to,
             PendingAttachmentCopy.CopyReason copyReason) {
-
         if (!from.hasAttachments()) {
             return;
         }
 
         var buffer = new AttachmentFriendlyByteBuf<>(Unpooled.buffer(), registryAccess, to);
         from.existingDataTypes()
-				.filter(type -> type.copyHandler != null)
+                .filter(type -> type.copyHandler != null)
                 .map(type -> createPendingCopy(type, from, to))
                 .filter(pendingCopy -> pendingCopy.attachmentType().copyCheck.test(copyReason, pendingCopy))
                 .filter(pendingCopy -> pendingCopy.attachmentType().copyHandler != null)
@@ -68,7 +64,7 @@ public final class AttachmentInternals {
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        event.getEntity().copyAttachmentsFrom(event.getOriginal(), event.isWasDeath() ? PendingAttachmentCopy.CopyReason.DEATH : PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
+        event.getEntity().copyAttachmentsFrom(event.getOriginal(), event.isWasDeath() ? PendingAttachmentCopy.CopyReason.ENTITY_DEATH : PendingAttachmentCopy.CopyReason.PLAYER_CLONE);
     }
 
     @SubscribeEvent

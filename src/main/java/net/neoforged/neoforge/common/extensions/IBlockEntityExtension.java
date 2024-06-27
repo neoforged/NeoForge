@@ -19,7 +19,7 @@ import net.neoforged.neoforge.attachment.IAttachmentHolderExtension;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.ApiStatus;
 
-public interface IBlockEntityExtension extends IAttachmentHolderExtension {
+public interface IBlockEntityExtension extends IAttachmentHolderExtension<BlockEntity> {
     private BlockEntity self() {
         return (BlockEntity) this;
     }

@@ -13,7 +13,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An object that can hold data attachments.
  */
-public interface IAttachmentHolder {
+public interface IAttachmentHolder<TParent> {
+    TParent parent();
+
     /**
      * Returns {@code true} if there is any data attachments, {@code false} otherwise.
      */

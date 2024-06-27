@@ -27,7 +27,7 @@ import org.slf4j.Logger;
  * Implementation class for objects that can hold data attachments.
  * For the user-facing methods, see {@link IAttachmentHolder}.
  */
-public final class AttachmentHolder<T extends IAttachmentHolder> implements IAttachmentHolder {
+public final class AttachmentHolder<T extends IAttachmentHolder<T>> implements IAttachmentHolder<T> {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -44,7 +44,7 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
 
         Class<T> parentClass = (Class<T>) parent.getClass();
         this.CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                AttachmentOps.holder(parentClass),
+                AttachmentCodecs.holder(parentClass),
                 AttachmentHolderMapCodec.INSTANCE.forGetter(x -> x.getAttachmentMap())).apply(inst, AttachmentHolder::new));
     }
 
@@ -70,6 +70,11 @@ public final class AttachmentHolder<T extends IAttachmentHolder> implements IAtt
             attachments = new IdentityHashMap<>(4);
         }
         return attachments;
+    }
+
+    @Override
+    public T parent() {
+        return parent;
     }
 
     @Override

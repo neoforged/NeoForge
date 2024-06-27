@@ -21,7 +21,7 @@ public class DeferredAttachmentTypes extends DeferredRegister<AttachmentType<?>>
         return register(name, defaultValue, UnaryOperator.identity());
     }
 
-    public <T, P extends IAttachmentHolder> AttachmentType<T> register(String name, Supplier<T> defaultValue, UnaryOperator<AttachmentType.Builder<T, P>> factory) {
+    public <T, P extends IAttachmentHolder<P>> AttachmentType<T> register(String name, Supplier<T> defaultValue, UnaryOperator<AttachmentType.Builder<T, P>> factory) {
         final var attach = factory.apply(AttachmentType.builder(defaultValue)).build();
         register(name, () -> attach);
         return attach;

@@ -32,7 +32,7 @@ public class LevelAttachmentsSavedData extends SavedData {
 
     public LevelAttachmentsSavedData(ServerLevel level, CompoundTag tag) {
         this.level = level;
-        level.dataAttachments().deserializeAttachments(level.registryAccess(), tag);
+        level.dataAttachments().deserializeAttachments(level.registryAccess(), tag.getCompound(AttachmentHolder.ATTACHMENTS_NBT_KEY));
     }
 
     @Override

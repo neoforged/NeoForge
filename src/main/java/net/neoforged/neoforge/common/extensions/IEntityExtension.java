@@ -36,7 +36,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
-public interface IEntityExtension extends INBTSerializable<CompoundTag>, IAttachmentHolderExtension {
+public interface IEntityExtension extends INBTSerializable<CompoundTag>, IAttachmentHolderExtension<Entity> {
     private Entity self() {
         return (Entity) this;
     }
@@ -403,7 +403,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag>, IAttach
      *                if {@code false}, all serializable attachments are copied.
      */
     default void copyAttachmentsFrom(Entity other, boolean isDeath) {
-        AttachmentInternals.copyEntityAttachments(other, self(), isDeath ? PendingAttachmentCopy.CopyReason.DEATH : PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
+        AttachmentInternals.copyEntityAttachments(other, self(), isDeath ? PendingAttachmentCopy.CopyReason.ENTITY_DEATH : PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
     }
 
     /**
