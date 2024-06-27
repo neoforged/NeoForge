@@ -23,14 +23,13 @@ public interface INBTSerializable<T extends Tag> {
     /**
      * Creates a codec for an implementation of {@link INBTSerializable}.
      *
-     * @param serializableClass The class implementing INBTSerializable.
      * @param defaultSupplier   A default supplier for the class; typically a method reference.
      * @param <S>               Type of class implementing INBTSerializable.
      * @param <NBT>             Type of NBT tag the class serializes to.
      * @return A codec for the serializable class.
      */
-    static <S extends INBTSerializable<NBT>, NBT extends Tag> Codec<S> codec(Class<S> serializableClass, Supplier<S> defaultSupplier) {
-        return NBTSerializableCodec.forSerializable(serializableClass, defaultSupplier);
+    static <S extends INBTSerializable<NBT>, NBT extends Tag> Codec<S> codec(Supplier<S> defaultSupplier) {
+        return new NBTSerializableCodec<>(defaultSupplier);
     }
 
     static <T extends Tag, S extends INBTSerializable<T>> StreamCodec<RegistryFriendlyByteBuf, S> streamCodec(Supplier<S> defaultSupplier) {

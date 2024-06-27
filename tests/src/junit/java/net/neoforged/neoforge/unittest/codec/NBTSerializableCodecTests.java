@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(EphemeralTestServerProvider.class)
 public class NBTSerializableCodecTests {
-    private static final Codec<ItemStackHandler> ISH_CODEC = INBTSerializable.codec(ItemStackHandler.class, ItemStackHandler::new);
+    private static final Codec<ItemStackHandler> ISH_CODEC = INBTSerializable.codec(ItemStackHandler::new);
     private static final StreamCodec<RegistryFriendlyByteBuf, ItemStackHandler> ISH_STREAM_CODEC = INBTSerializable.streamCodec(ItemStackHandler::new);
 
     private static ItemStackHandler makeItemHandler() {

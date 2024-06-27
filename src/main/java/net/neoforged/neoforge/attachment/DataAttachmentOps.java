@@ -9,26 +9,19 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.DelegatingOps;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
 
-public class DataAttachmentOps<T, TOwner> extends DelegatingOps<T> {
-    private final HolderLookup.Provider holderLookup;
+public class DataAttachmentOps<T, TOwner> extends RegistryOps<T> {
     private final TOwner parent;
 
-    protected DataAttachmentOps(RegistryOps<T> regOps, HolderLookup.Provider holderLookup, TOwner parent) {
+    protected DataAttachmentOps(RegistryOps<T> regOps, TOwner parent) {
         super(regOps);
-        this.holderLookup = holderLookup;
         this.parent = parent;
     }
 
     public static <T, TOwner extends IAttachmentHolder> DataAttachmentOps<T, TOwner> create(HolderLookup.Provider holderLookup, DynamicOps<T> targetOps, TOwner parent) {
-        return new DataAttachmentOps<>(holderLookup.createSerializationContext(targetOps), holderLookup, parent);
-    }
-
-    public HolderLookup.Provider registryLookup() {
-        return holderLookup;
+        return new DataAttachmentOps<>(holderLookup.createSerializationContext(targetOps), parent);
     }
 
     public static <O, TOwner extends IAttachmentHolder> RecordCodecBuilder<O, TOwner> holder(Class<TOwner> holder) {
