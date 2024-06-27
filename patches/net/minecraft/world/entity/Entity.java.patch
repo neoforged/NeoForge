@@ -452,7 +452,7 @@
      }
  
      public void checkDespawn() {
-@@ -3450,6 +_,109 @@
+@@ -3450,6 +_,105 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }

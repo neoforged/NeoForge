@@ -4,7 +4,7 @@
          this.setAllStarts(p_196851_.getAllStarts());
          this.setAllReferences(p_196851_.getAllReferences());
  
-+        net.neoforged.neoforge.attachment.AttachmentInternals.copyChunkAttachmentsOnPromotion(p_196850_.registryAccess(), p_196851_.dataAttachments(), this.dataAttachments);
++        net.neoforged.neoforge.attachment.AttachmentInternals.copyChunkAttachmentsOnPromotion(p_196850_.registryAccess(), p_196851_.dataAttachments(), this.dataAttachments());
          for (Entry<Heightmap.Types, Heightmap> entry : p_196851_.getHeightmaps()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
@@ -110,12 +110,11 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              if (this.level instanceof ServerLevel serverlevel) {
                  this.addGameEventListener(p_187988_, serverlevel);
-@@ -657,6 +_,16 @@
+@@ -657,6 +_,15 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
 +    // FORGE START
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder<LevelChunk> dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder<>(this);
 +    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
 +
 +    @Override

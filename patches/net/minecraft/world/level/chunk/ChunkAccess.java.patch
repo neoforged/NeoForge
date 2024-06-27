@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess {
-+public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolderExtension {
++public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolderExtension<ChunkAccess> {
      public static final int NO_FILLED_SECTION = -1;
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
@@ -42,16 +42,14 @@
                              }
                          }
                      }
-@@ -476,4 +_,25 @@
+@@ -476,4 +_,23 @@
  
      public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
      }
 +
 +    // FORGE START
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder<ChunkAccess> attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder<>(this);
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final net.neoforged.neoforge.attachment.AttachmentHolder<ChunkAccess> dataAttachments() { return attachmentHolder; }
++    public net.neoforged.neoforge.attachment.AttachmentHolder<ChunkAccess> dataAttachments() { return attachmentHolder; }
 +
 +    @Override
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
