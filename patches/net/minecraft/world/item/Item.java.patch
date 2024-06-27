@@ -8,7 +8,7 @@
 +public class Item implements FeatureElement, ItemLike, net.neoforged.neoforge.common.extensions.IItemExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
 -    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
-+    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
++    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.RegistryManager.getBlockItemMap();
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;

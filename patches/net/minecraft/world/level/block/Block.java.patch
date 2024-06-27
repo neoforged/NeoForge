@@ -11,7 +11,7 @@
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
 -    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
 +    @Deprecated //Forge: Do not use, use GameRegistry
-+    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.GameData.getBlockStateIDMap();
++    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.RegistryManager.getBlockStateIdMap();
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()

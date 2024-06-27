@@ -5,7 +5,7 @@
          .flatMap(p_218093_ -> p_218093_.getStateDefinition().getPossibleStates().stream())
          .collect(ImmutableSet.toImmutableSet());
 -    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = Maps.newHashMap();
-+    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.GameData.getBlockStatePointOfInterestTypeMap();
++    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.RegistryManager.getBlockStatePointOfInterestTypeMap();
  
      private static Set<BlockState> getBlockStates(Block p_218074_) {
          return ImmutableSet.copyOf(p_218074_.getStateDefinition().getPossibleStates());

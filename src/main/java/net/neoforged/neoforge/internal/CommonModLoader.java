@@ -22,7 +22,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
 
 /**
@@ -48,9 +47,9 @@ public abstract class CommonModLoader {
 
         ModLoader.runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
             RegistryManager.postNewRegistryEvent();
-            GameData.unfreezeData();
-            GameData.postRegisterEvents();
-            GameData.freezeData();
+            RegistryManager.unfreezeData();
+            RegistryManager.postRegisterEvents();
+            RegistryManager.freezeData();
             registriesLoaded = true;
         });
     }
