@@ -53,6 +53,17 @@ minecraft {
     }
 }
 
+tasks.configureEach { tsk ->
+    if (tsk.name == 'neoFormApplyUserAccessTransformer' && project.hasProperty('validateAccessTransformers')) {
+        tsk.inputs.property('validation', 'error')
+        tsk.logLevel('ERROR')
+        tsk.doFirst {
+            tsk.getRuntimeProgramArguments().addAll(tsk.getRuntimeProgramArguments().get())
+            tsk.getRuntimeProgramArguments().add('--access-transformer-validation=error')
+        }
+    }
+}
+
 sourceSets {
     main {
         java {
