@@ -26,7 +26,7 @@ public class BrandingControl {
         if (brandings == null) {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
             brd.add("Minecraft " + DetectedVersion.BUILT_IN.getName());
-            brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion());
+            brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion() + " (" + net.neoforged.fml.ModList.get().size() + " mods)");
             brandings = brd.build();
             brandingsNoMC = brandings.subList(1, brandings.size());
         }

@@ -1,26 +1,10 @@
 --- a/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/net/minecraft/client/gui/screens/PauseScreen.java
-@@ -83,12 +_,14 @@
-         );
-         gridlayout$rowhelper.addChild(this.openScreenButton(STATS, () -> new StatsScreen(this, this.minecraft.player.getStats())));
-         ServerLinks serverlinks = this.minecraft.player.connection.serverLinks();
-+        gridlayout$rowhelper.addChild(this.openScreenButton(FEEDBACK_SUBSCREEN, () -> new PauseScreen.FeedbackSubScreen(this))); /*
-         if (serverlinks.isEmpty()) {
-             addFeedbackButtons(this, gridlayout$rowhelper);
+@@ -96,6 +_,7 @@
          } else {
-             gridlayout$rowhelper.addChild(this.openScreenButton(FEEDBACK_SUBSCREEN, () -> new PauseScreen.FeedbackSubScreen(this)));
-             gridlayout$rowhelper.addChild(this.openScreenButton(SERVER_LINKS, () -> new ServerLinksScreen(this, serverlinks)));
+             gridlayout$rowhelper.addChild(this.openScreenButton(PLAYER_REPORTING, () -> new SocialInteractionsScreen(this)));
          }
-+        */ gridlayout$rowhelper.addChild(Button.builder(Component.translatable("fml.menu.mods", net.neoforged.fml.ModList.get().size()), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this))).width(BUTTON_WIDTH_HALF).build());
++        gridlayout$rowhelper.addChild(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this))).width(BUTTON_WIDTH_FULL).build(), 2);
  
-         gridlayout$rowhelper.addChild(this.openScreenButton(OPTIONS, () -> new OptionsScreen(this, this.minecraft.options)));
-         if (this.minecraft.hasSingleplayerServer() && !this.minecraft.getSingleplayerServer().isPublished()) {
-@@ -186,6 +_,8 @@
-             gridlayout.defaultCellSetting().padding(4, 4, 4, 0);
-             GridLayout.RowHelper gridlayout$rowhelper = gridlayout.createRowHelper(2);
-             PauseScreen.addFeedbackButtons(this, gridlayout$rowhelper);
-+            ServerLinks serverlinks = this.minecraft.player.connection.serverLinks();
-+            if (!serverlinks.isEmpty()) gridlayout$rowhelper.addChild(Button.builder(SERVER_LINKS, (button) -> new ServerLinksScreen(this, serverlinks)).width(BUTTON_WIDTH_FULL).build(), 2);
-             this.layout.addToFooter(Button.builder(CommonComponents.GUI_BACK, p_350752_ -> this.onClose()).width(200).build());
-             this.layout.visitWidgets(this::addRenderableWidget);
-             this.repositionElements();
+         Component component = this.minecraft.isLocalServer() ? RETURN_TO_MENU : CommonComponents.GUI_DISCONNECT;
+         this.disconnectButton = gridlayout$rowhelper.addChild(Button.builder(component, p_280815_ -> {
