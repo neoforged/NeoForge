@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.DynamicOps;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.io.File;
 import java.util.EnumSet;
@@ -100,13 +101,14 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
@@ -483,8 +485,8 @@ public class EventHooks {
     }
 
     @Nullable
-    public static BlockState onToolUse(BlockState originalState, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        BlockToolModificationEvent event = new BlockToolModificationEvent(originalState, context, toolAction, simulate);
+    public static BlockState onToolUse(BlockState originalState, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        BlockToolModificationEvent event = new BlockToolModificationEvent(originalState, context, itemAbility, simulate);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getFinalState();
     }
 
@@ -680,12 +682,18 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, ray)).isCanceled();
     }
 
+    /**
+     * Fires the {@link LootTableLoadEvent} for non-empty loot tables and returns the table if the event was not
+     * canceled and the table was not set to {@link LootTable#EMPTY} in the event. Otherwise returns {@code null}
+     * which maps to an empty {@link Optional} in {@link LootDataType#deserialize(ResourceLocation, DynamicOps, Object)}
+     */
+    @Nullable
     public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
-            return table;
+            return null;
         LootTableLoadEvent event = new LootTableLoadEvent(name, table);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled())
-            return LootTable.EMPTY;
+        if (NeoForge.EVENT_BUS.post(event).isCanceled() || event.getTable() == LootTable.EMPTY)
+            return null;
         return event.getTable();
     }
 
@@ -799,14 +807,14 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions size, float eyeHeight) {
-        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, size, eyeHeight);
+    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions size) {
+        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, size);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
 
-    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize, float newEyeHeight) {
-        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, oldSize, newSize, entity.getEyeHeight(), newEyeHeight);
+    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize) {
+        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, oldSize, newSize);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }

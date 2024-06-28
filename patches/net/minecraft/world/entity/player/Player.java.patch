@@ -116,14 +116,6 @@
      @Override
      public void readAdditionalSaveData(CompoundTag p_36215_) {
          super.readAdditionalSaveData(p_36215_);
-@@ -859,6 +_,7 @@
- 
-     @Override
-     public boolean hurt(DamageSource p_36154_, float p_36155_) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onPlayerAttack(this, p_36154_, p_36155_)) return false;
-         if (this.isInvulnerableTo(p_36154_)) {
-             return false;
-         } else if (this.abilities.invulnerable && !p_36154_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 @@ -872,7 +_,9 @@
                      this.removeEntitiesOnShoulder();
                  }
@@ -140,7 +132,7 @@
      @Override
      protected void hurtCurrentlyUsedShield(float p_36383_) {
 -        if (this.useItem.is(Items.SHIELD)) {
-+        if (this.useItem.canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
++        if (this.useItem.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHIELD_BLOCK)) {
              if (!this.level().isClientSide) {
                  this.awardStat(Stats.ITEM_USED.get(this.useItem.getItem()));
              }
@@ -159,20 +151,36 @@
                  if (this.useItem.isEmpty()) {
                      if (interactionhand == InteractionHand.MAIN_HAND) {
                          this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-@@ -952,10 +_,13 @@
+@@ -952,11 +_,14 @@
      @Override
      protected void actuallyHurt(DamageSource p_36312_, float p_36313_) {
          if (!this.isInvulnerableTo(p_36312_)) {
-+            p_36313_ = net.neoforged.neoforge.common.CommonHooks.onLivingHurt(this, p_36312_, p_36313_);
-+            if (p_36313_ <= 0) return;
-             p_36313_ = this.getDamageAfterArmorAbsorb(p_36312_, p_36313_);
-             p_36313_ = this.getDamageAfterMagicAbsorb(p_36312_, p_36313_);
-             float f1 = Math.max(p_36313_ - this.getAbsorptionAmount(), 0.0F);
-             this.setAbsorptionAmount(this.getAbsorptionAmount() - (p_36313_ - f1));
-+            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamage(this, p_36312_, f1);
-             float f = p_36313_ - f1;
+-            p_36313_ = this.getDamageAfterArmorAbsorb(p_36312_, p_36313_);
+-            p_36313_ = this.getDamageAfterMagicAbsorb(p_36312_, p_36313_);
+-            float f1 = Math.max(p_36313_ - this.getAbsorptionAmount(), 0.0F);
+-            this.setAbsorptionAmount(this.getAbsorptionAmount() - (p_36313_ - f1));
+-            float f = p_36313_ - f1;
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(p_36312_, this.damageContainers.peek().getNewDamage()));
++            this.getDamageAfterMagicAbsorb(p_36312_, this.damageContainers.peek().getNewDamage());
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
++            float f1 = Math.max(this.damageContainers.peek().getNewDamage() - this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
++            this.setAbsorptionAmount(this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainers.peek().getNewDamage() - f1));
++            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
++            if (f1 <= 0) return;
++            float f = this.damageContainers.peek().getNewDamage() - f1;
              if (f > 0.0F && f < 3.4028235E37F) {
                  this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(f * 10.0F));
+             }
+@@ -970,7 +_,9 @@
+                 }
+ 
+                 this.gameEvent(GameEvent.ENTITY_DAMAGE);
++                this.onDamageTaken(this.damageContainers.peek());
+             }
++            net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost(this, this.damageContainers.peek());
+         }
+     }
+ 
 @@ -1014,6 +_,8 @@
  
              return InteractionResult.PASS;
@@ -253,7 +261,7 @@
 -                        if (itemstack1.getItem() instanceof SwordItem) {
 -                            flag2 = true;
 -                        }
-+                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_SWEEP);
++                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_SWEEP);
                      }
  
                      float f6 = 0.0F;
@@ -416,7 +424,7 @@
                  }
  
 -                return this.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY;
-+                return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, p_36349_, this.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY);
++                return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, p_36349_, this.abilities.instabuild ? ((ProjectileWeaponItem)p_36349_.getItem()).getDefaultCreativeAmmo(this, p_36349_) : ItemStack.EMPTY);
              }
          }
      }
