@@ -10,10 +10,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.model.CompositeModel;
 import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.ElementsModel;
@@ -24,11 +27,13 @@ import net.neoforged.neoforge.client.model.obj.ObjLoader;
 
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
-    public ClientNeoForgeMod(IEventBus modEventBus) {
+    public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
 
         modEventBus.register(ClientNeoForgeMod.class);
+
+        container.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(container, mc, parent));
     }
 
     @SubscribeEvent

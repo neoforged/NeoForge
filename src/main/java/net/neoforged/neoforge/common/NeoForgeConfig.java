@@ -77,12 +77,12 @@ public class NeoForgeConfig {
 
             logUntranslatedItemTagWarnings = builder
                     .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.")
-                    .translation("forge.configgui.logUntranslatedItemTagWarnings")
+                    .translation("neoforge.configgui.logUntranslatedItemTagWarnings")
                     .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LogWarningMode.SILENCED);
 
             logLegacyTagWarnings = builder
                     .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
-                    .translation("forge.configgui.logLegacyTagWarnings")
+                    .translation("neoforge.configgui.logLegacyTagWarnings")
                     .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LogWarningMode.DEV_SHORT);
 
             builder.pop();
@@ -98,6 +98,8 @@ public class NeoForgeConfig {
         public final BooleanValue showLoadWarnings;
 
         public final BooleanValue useCombinedDepthStencilAttachment;
+
+        public final BooleanValue logUntranslatedConfigurationWarnings;
 
         Client(ModConfigSpec.Builder builder) {
             builder.comment("Client only settings, mostly things related to rendering")
@@ -117,6 +119,11 @@ public class NeoForgeConfig {
                     .comment("Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.")
                     .translation("neoforge.configgui.useCombinedDepthStencilAttachment")
                     .define("useCombinedDepthStencilAttachment", false);
+
+            logUntranslatedConfigurationWarnings = builder
+                .comment("A config option mainly for developers. Logs out confifiguration values that do not have translations when running a client in a development environment.")
+                .translation("neoforge.configgui.logUntranslatedConfigurationWarnings")
+                .define("logUntranslatedConfigurationWarnings", true);
 
             builder.pop();
         }

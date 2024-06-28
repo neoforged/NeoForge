@@ -357,8 +357,12 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         }
 
         public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
+            return defineList(path, defaultSupplier, null, elementValidator);
+        }
+
+        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<?> newElementSupplier, Predicate<Object> elementValidator) {
             context.setClazz(List.class);
-            return define(path, new ValueSpec(defaultSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), context, path) {
+            return define(path, new ListValueSpec(defaultSupplier, newElementSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), elementValidator, context, path, new Range<Integer>(Integer.class, 1, Integer.MAX_VALUE)) {
                 @Override
                 public Object correct(Object value) {
                     if (value == null || !(value instanceof List) || ((List<?>) value).isEmpty()) {
@@ -389,8 +393,12 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         }
 
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(path, defaultSupplier, null, elementValidator);
+        }
+
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<?> newElementSupplier, Predicate<Object> elementValidator) {
             context.setClazz(List.class);
-            return define(path, new ValueSpec(defaultSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), context, path) {
+            return define(path, new ListValueSpec(defaultSupplier, newElementSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), elementValidator, context, path, null) {
                 @Override
                 public Object correct(Object value) {
                     if (value == null || !(value instanceof List)) {
@@ -872,6 +880,54 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
 
         public Object getDefault() {
             return supplier.get();
+        }
+    }
+
+    public static class ListValueSpec extends ValueSpec {
+        private final Supplier<?> newElementSupplier;
+        private final Predicate<Object> elementValidator;
+        private final Range<Integer> sizeRange;
+
+        private ListValueSpec(Supplier<?> supplier, Supplier<?> newElementSupplier, Predicate<Object> listValidator, Predicate<Object> elementValidator, BuilderContext context, List<String> path, Range<Integer> sizeRange) {
+            super(supplier, listValidator, context, path);
+            Objects.requireNonNull(elementValidator, "ElementValidator can not be null");
+
+            this.newElementSupplier = newElementSupplier;
+            this.elementValidator = elementValidator;
+            this.sizeRange = sizeRange;
+        }
+
+        /**
+         * Creates a new empty element that can be added to the end of the list or null if the list doesn't support adding elements.<p>
+         * 
+         * The element does not need to validate with either {@link #test(Object)} or {@link #testElement(Object)}, but it should give the user a good starting point for their edit.<p>
+         * 
+         * Only used by the UI!
+         */
+        public Supplier<?> getNewElementSupplier() {
+            return newElementSupplier;
+        }
+
+        /**
+         * Determines if a given object can be part of the list.<p>
+         * 
+         * Note that the list-level validator overrules this.<p>
+         * 
+         * Only used by the UI!
+         */
+        public boolean testElement(Object value) {
+            return elementValidator.test(value);
+        }
+
+        /**
+         * The allowable range of the size of the list. If null, [0..Integer.MAX_VALUE] is assumed.<p>
+         * 
+         * Note that the validator overrules this.<p>
+         * 
+         * Only used by the UI!
+         */
+        public Range<Integer> getSizeRange() {
+            return sizeRange;
         }
     }
 
