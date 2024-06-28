@@ -224,12 +224,6 @@ public class Tags {
          * Blocks tagged here will be tracked by Farmer Villagers who will attempt to plant crops on top.
          */
         public static final TagKey<Block> VILLAGER_FARMLANDS = neoforgeTag("villager_farmlands");
-        /**
-         * Blocks tagged here will be valid blocks for vanilla crops to survive on.
-         * Modded crops should use this tag as well if applicable.
-         * Rabbits will eat Carrot crops off of these tagged blocks.
-         */
-        public static final TagKey<Block> CROP_FARMLANDS = neoforgeTag("crop_farmlands");
 
         private static TagKey<Block> tag(String name) {
             return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
