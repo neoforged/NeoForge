@@ -1,16 +1,15 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -36,8 +_,11 @@
+@@ -36,8 +_,10 @@
      private static Language loadDefault() {
          Builder<String, String> builder = ImmutableMap.builder();
          BiConsumer<String, String> biconsumer = builder::put;
 -        parseTranslations(biconsumer, "/assets/minecraft/lang/en_us.json");
 -        final Map<String, String> map = builder.build();
-+        Builder<String, net.minecraft.network.chat.Component> componentBuilder = ImmutableMap.builder();
-+        parseTranslations(biconsumer, componentBuilder::put, "/assets/minecraft/lang/en_us.json");
++        Map<String, net.minecraft.network.chat.Component> componentMap = new java.util.HashMap<>();
++        parseTranslations(biconsumer, componentMap::put, "/assets/minecraft/lang/en_us.json");
 +        final Map<String, String> map = new java.util.HashMap<>(builder.build());
-+        Map<String, net.minecraft.network.chat.Component> componentMap = componentBuilder.build();
-+        net.neoforged.neoforge.server.LanguageHook.captureLanguageMap(map);
++        net.neoforged.neoforge.server.LanguageHook.captureLanguageMap(map, componentMap);
          return new Language() {
              @Override
              public String getOrDefault(String p_128127_, String p_265421_) {
