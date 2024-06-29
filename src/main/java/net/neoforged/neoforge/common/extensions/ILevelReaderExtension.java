@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.LevelReader;
 
 public interface ILevelReaderExtension extends RegistryAccess {
-    default LevelReader self() {
+    private LevelReader self() {
         return (LevelReader) this;
     }
 
@@ -25,6 +25,7 @@ public interface ILevelReaderExtension extends RegistryAccess {
     /**
      * Delegates the implementation of RegistryAccess to enable modders to access HolderLookup.Provider methods
      * directly without traversing through level.registryAccess().
+     * For additional utilities, see {@link IHolderLookupProviderExtension}
      */
 
     @Override

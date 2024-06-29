@@ -11,14 +11,24 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
 
 public interface IHolderLookupProviderExtension {
-    default HolderLookup.Provider self() {
+    private HolderLookup.Provider self() {
         return (HolderLookup.Provider) this;
     }
 
+    /**
+     * Shortcut method to get a holder from a ResourceKey.
+     * Can be accessed through LevelReader, see {@link ILevelReaderExtension}
+     * 
+     * @throws IllegalStateException if the registry or key is not found.
+     */
     default <T> Holder<T> holderOrThrow(ResourceKey<T> key) {
         return this.self().lookupOrThrow(key.registryKey()).getOrThrow(key);
     }
 
+    /**
+     * Shortcut method to get an optional holder from a ResourceKey.
+     * Can be accessed through LevelReader, see {@link ILevelReaderExtension}
+     */
     default <T> Optional<Holder.Reference<T>> holder(ResourceKey<T> key) {
         Optional<HolderLookup.RegistryLookup<T>> registry = this.self().lookup(key.registryKey());
         return registry.flatMap(tRegistryLookup -> tRegistryLookup.get(key));
