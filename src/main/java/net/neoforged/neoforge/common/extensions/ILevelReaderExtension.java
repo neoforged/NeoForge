@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -14,6 +15,10 @@ import net.minecraft.world.level.LevelReader;
 public interface ILevelReaderExtension {
     default LevelReader self() {
         return (LevelReader) this;
+    }
+
+    default boolean isAreaLoaded(BlockPos center, int range) {
+        return self().hasChunksAt(center.offset(-range, -range, -range), center.offset(range, range, range));
     }
 
     /**

@@ -9,14 +9,3 @@
      @Nullable
      ChunkAccess getChunk(int p_46823_, int p_46824_, ChunkStatus p_330944_, boolean p_46826_);
  
-@@ -181,6 +_,10 @@
-     @Deprecated
-     default boolean hasChunkAt(BlockPos p_46806_) {
-         return this.hasChunkAt(p_46806_.getX(), p_46806_.getZ());
-+    }
-+
-+    default boolean isAreaLoaded(BlockPos center, int range) {
-+        return this.hasChunksAt(center.offset(-range, -range, -range), center.offset(range, range, range));
-     }
- 
-     @Deprecated
