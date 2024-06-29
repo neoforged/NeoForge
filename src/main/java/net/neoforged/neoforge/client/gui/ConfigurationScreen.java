@@ -96,6 +96,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
     private static final Component MOVE_LIST_ELEMENT_UP = Component.translatable(LANG_PREFIX + "listelementup");
     private static final Component MOVE_LIST_ELEMENT_DOWN = Component.translatable(LANG_PREFIX + "listelementdown");
     private static final Component REMOVE_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "listelementremove");
+    private static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement");
     static final TranslationChecker translationChecker = new TranslationChecker();
 
     private final ModContainer mod;
@@ -332,7 +333,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
          * @return null if no UI element should be added or an {@link Element} to be added to the UI.
          */
         protected Element createOtherValue(final String key, final ConfigValue<?> value) {
-            return null;
+            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.get())), font).alignLeft();
+            label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
+            return new Element(getTranslationComponent(key), getTooltipComponent(key), label);
         }
 
         /**
@@ -572,7 +575,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
          * @return null if this element should be skipped or an {@link Element} to be added to the UI.
          */
         protected Element createOtherValue(final int idx, final T entry) {
-            return null;
+            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(entry)), font).alignLeft();
+            label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
+            return new Element(getTranslationComponent(key), getTooltipComponent(key), label);
         }
 
         @SuppressWarnings("unchecked")

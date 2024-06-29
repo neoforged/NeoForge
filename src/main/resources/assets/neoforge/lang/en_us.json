@@ -126,6 +126,7 @@
 
   "neoforge.configuration.uitext.notonline": "Settings in here are determined by the server and cannot be changed while online.",
   "neoforge.configuration.uitext.notloaded": "Settings in here are are ony available while a world is loaded.",
+  "neoforge.configuration.uitext.unsupportedelement": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.newlistelement": "+",
