@@ -39,13 +39,20 @@ import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ConfigTracker;
+import net.neoforged.fml.config.IConfigEvent;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.loading.FMLLoader;
@@ -86,6 +93,14 @@ public class ConfigurationScreen extends OptionsSubScreen {
         }
     }
 
+    public enum RestartType {
+        NONE, SERVER, GAME;
+
+        RestartType with(RestartType other) {
+            return other == NONE ? this : (other == GAME || this == GAME) ? GAME : SERVER;
+        }
+    }
+
     public static boolean compactList = false;
 
     private static final String LANG_PREFIX = "neoforge.configuration.uitext.";
@@ -98,10 +113,18 @@ public class ConfigurationScreen extends OptionsSubScreen {
     private static final Component MOVE_LIST_ELEMENT_DOWN = Component.translatable(LANG_PREFIX + "listelementdown");
     private static final Component REMOVE_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "listelementremove");
     private static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement");
+    private static final Component GAME_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.game.title");
+    private static final Component GAME_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.game.text");
+    private static final Component GAME_RESTART_YES = Component.translatable("menu.quit");
+    private static final Component SERVER_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.server.title");
+    private static final Component SERVER_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.server.text");
+    private static final Component RETURN_TO_MENU = Component.translatable("menu.returnToMenu");
+    private static final Component SAVING_LEVEL = Component.translatable("menu.savingLevel");
+    private static final Component RESTART_NO = Component.translatable(LANG_PREFIX + "restart.return");
     static final TranslationChecker translationChecker = new TranslationChecker();
 
     private final ModContainer mod;
-    private boolean needsRestart = false;
+    private RestartType needsRestart = RestartType.NONE;
 
     public ConfigurationScreen(final ModContainer mod, final Minecraft mc, final Screen parent) {
         super(parent, mc.options, Component.translatable(translationChecker.check(mod.getModId() + ".configuration.title")));
@@ -131,11 +154,55 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
     @Override
     public void onClose() {
-        if (needsRestart) {
-            System.out.println("TODO"); // TODO
-        }
         translationChecker.finish();
-        super.onClose();
+        switch (needsRestart) {
+            case GAME:
+                minecraft.setScreen(new ConfirmScreen(b -> {
+                    if (b) {
+                        minecraft.stop();
+                    } else {
+                        minecraft.setScreen(this);
+                    }
+                }, GAME_RESTART_TITLE, GAME_RESTART_MESSAGE, GAME_RESTART_YES, RESTART_NO));
+                return;
+            case SERVER:
+                if (minecraft.level != null) {
+                    minecraft.setScreen(new ConfirmScreen(b -> {
+                        if (b) {
+                            // when changing server configs from the client is added, this is where we tell the server to restart and the new config.
+                            // also needs a different text in MP ("server will restart/exit, yada yada") than in SP
+                            onDisconnect();
+                        } else {
+                            minecraft.setScreen(this);
+                        }
+                    }, SERVER_RESTART_TITLE, SERVER_RESTART_MESSAGE, minecraft.isLocalServer() ? RETURN_TO_MENU : CommonComponents.GUI_DISCONNECT, RESTART_NO));
+                    return;
+                }
+                // else fallthrough. If no server is running, we don't need to stop one.
+            case NONE:
+                super.onClose();
+        }
+    }
+
+    // direct copy from PauseScreen (which has the best implementation), sadly it's not really accessible
+    private void onDisconnect() {
+        boolean flag = this.minecraft.isLocalServer();
+        ServerData serverdata = this.minecraft.getCurrentServer();
+        this.minecraft.level.disconnect();
+        if (flag) {
+            this.minecraft.disconnect(new GenericMessageScreen(SAVING_LEVEL));
+        } else {
+            this.minecraft.disconnect();
+        }
+
+        TitleScreen titlescreen = new TitleScreen();
+        if (flag) {
+            this.minecraft.setScreen(titlescreen);
+        } else if (serverdata != null && serverdata.isRealm()) {
+            this.minecraft.setScreen(new RealmsMainScreen(titlescreen));
+        } else {
+            this.minecraft.setScreen(new JoinMultiplayerScreen(titlescreen));
+        }
     }
 
     public static class ConfigurationSectionScreen extends OptionsSubScreen {
@@ -184,12 +251,12 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
         protected final Context context;
         protected boolean changed = false;
-        protected boolean needsRestart = false;
+        protected RestartType needsRestart = RestartType.NONE;
         protected final Map<String, Object> undoMap = new HashMap<>();
 
         public ConfigurationSectionScreen(final ModContainer mod, final Minecraft mc, final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
             this(Context.top(mod, mc, parent, type, modConfig), Component.translatable(translationChecker.check(mod.getModId() + ".configuration." + type.name().toLowerCase() + ".title")));
-            needsRestart = type == Type.STARTUP;
+            needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
         }
 
         public ConfigurationSectionScreen(final Context parentContext, final Screen parent, final Map<String, Object> valueSpecs, final String key,
@@ -240,8 +307,8 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected void onChanged(final String key) {
             changed = true;
             final ValueSpec valueSpec = getValueSpec(key);
-            if (valueSpec != null) {
-                needsRestart |= valueSpec.needsWorldRestart();
+            if (valueSpec != null && valueSpec.needsWorldRestart()) {
+                needsRestart = needsRestart.with(RestartType.SERVER);
             }
         }
 
@@ -480,14 +547,16 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 if (lastScreen instanceof final ConfigurationSectionScreen parent) {
                     parent.changed = true;
                 } else {
+                    // we are a top-level per-type config screen, i.e. one specific config file. Save the config and tell the mod to reload.
+                    // Yes, this means this will fire multiple times if the user changes values in multiple configs, but that doesn't really matter.
                     context.modConfig.save();
+                    IConfigEvent.reloading(context.modConfig).post();
                 }
-            }
-            if (needsRestart) {
+                // restart only matters when there were actual changes
                 if (lastScreen instanceof final ConfigurationSectionScreen parent) {
-                    parent.needsRestart = true;
+                    parent.needsRestart = parent.needsRestart.with(needsRestart);
                 } else if (lastScreen instanceof final ConfigurationScreen parent) {
-                    parent.needsRestart = true;
+                    parent.needsRestart = parent.needsRestart.with(needsRestart);
                 }
             }
             super.onClose();
