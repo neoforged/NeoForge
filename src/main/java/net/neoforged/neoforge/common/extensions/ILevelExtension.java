@@ -7,11 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -109,21 +105,4 @@ public interface ILevelExtension {
      * but it is safe to call on any {@link Level}, without the need for an {@code instanceof} check.
      */
     default void invalidateCapabilities(ChunkPos pos) {}
-
-    /**
-     * Returns a holder for the key using this levels registry access.
-     * 
-     * @throws IllegalStateException if the registry is missing or the key is not present in the registry
-     */
-    default <T> Holder.Reference<T> holderOrThrow(ResourceKey<T> key) {
-        return self().registryAccess().registryOrThrow(key.registryKey()).getHolderOrThrow(key);
-    }
-
-    /**
-     * Returns an optional holder for the key using this levels registry access.
-     */
-    default <T> Optional<Holder.Reference<T>> holder(ResourceKey<T> key) {
-        Optional<Registry<T>> registry = self().registryAccess().registry(key.registryKey());
-        return registry.flatMap(ts -> ts.getHolder(key));
-    }
 }
