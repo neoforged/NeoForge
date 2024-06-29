@@ -5,15 +5,16 @@
 
 package net.neoforged.neoforge.client.gui;
 
+import static net.neoforged.neoforge.common.NeoForgeConfig.CLIENT;
+
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.UnmodifiableConfig.Entry;
 import com.google.common.collect.ImmutableList;
+import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.serialization.Codec;
-
-import static net.neoforged.neoforge.common.NeoForgeConfig.CLIENT;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -184,6 +185,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected final Context context;
         protected boolean changed = false;
         protected boolean needsRestart = false;
+        protected final Map<String, Object> undoMap = new HashMap<>();
 
         public ConfigurationSectionScreen(final ModContainer mod, final Minecraft mc, final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
             this(Context.top(mod, mc, parent, type, modConfig), Component.translatable(translationChecker.check(mod.getModId() + ".configuration." + type.name().toLowerCase() + ".title")));
@@ -302,6 +304,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
             box.setValue(source.get() + "");
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
+                    undoMap.putIfAbsent(key, source.get());
                     target.accept(newValue);
                     onChanged(key);
                     box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
@@ -372,6 +375,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected Element createBooleanValue(final String key, final ValueSpec spec, final Supplier<Boolean> source, final Consumer<Boolean> target) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key), OptionInstance.BOOLEAN_TO_STRING, BOOLEAN_VALUES_NO_PREFIX, source.get(), newVal -> {
+                        undoMap.putIfAbsent(key, source.get());
                         target.accept(newVal);
                         onChanged(key);
                     }));
@@ -385,6 +389,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key), (caption, displayvalue) -> Component.literal(displayvalue.name()),
                             new Custom<>(list), source.get(), newValue -> {
+                                undoMap.putIfAbsent(key, source.get());
                                 target.accept(newValue);
                                 onChanged(key);
                             }));
@@ -400,6 +405,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
                         new OptionInstance<>(getTranslationKey(key), getTooltip(key),
                                 (caption, displayvalue) -> Options.genericValueLabel(caption, Component.literal("" + displayvalue)), new OptionInstance.IntRange(min, max),
                                 null /* codec */, source.get(), newValue -> {
+                                    undoMap.putIfAbsent(key, source.get());
                                     target.accept(newValue);
                                     onChanged(key);
                                 }));
@@ -433,6 +439,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 try {
                     final T val = parser.apply(newValue);
                     if (tester != null ? tester.test(val) : (val != null && (range == null || range.test(val)) && spec.test(val))) {
+                        undoMap.putIfAbsent(key, source.get());
                         target.accept(val);
                         onChanged(key);
                         box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
@@ -499,6 +506,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
             this.key = key;
             this.valueList = valueList;
             this.spec = spec;
+            undoMap.put(key, new ArrayList<T>(valueList.get()));
         }
 
         @Override
