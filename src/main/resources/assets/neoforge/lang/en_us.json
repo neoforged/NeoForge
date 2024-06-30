@@ -129,6 +129,8 @@
   "neoforge.configuration.uitext.unsupportedelement": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.listelement": "%s:",
+  "neoforge.configuration.uitext.undo": "Undo",
+  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
   "neoforge.configuration.uitext.newlistelement": "+",
   "neoforge.configuration.uitext.listelementup": "^",
   "neoforge.configuration.uitext.listelementdown": "v",
@@ -143,8 +145,6 @@
   "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
   "neoforge.configuration.uitext.restart.return": "Not yet...",
 
-
-
   "neoforge.configuration.title": "NeoForge Configuration",
   "neoforge.configuration.common.title": "NeoForge Configuration",
   "neoforge.configuration.general.title": "NeoForge Configuration",
@@ -154,6 +154,8 @@
   "neoforge.configuration.server.title": "NeoForge Configuration",
   "neoforge.configuration.server": "Server configuration settings",
 
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.",
   "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.",
   "neoforge.configgui.removeErroringEntities": "Remove Erroring Entities",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.",

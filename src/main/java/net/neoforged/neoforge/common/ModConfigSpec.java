@@ -384,19 +384,31 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             return defineListAllowEmpty(split(path), defaultValue, elementValidator);
         }
 
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(split(path), defaultValue, newElementSupplier, elementValidator);
+        }
+
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(split(path), defaultSupplier, elementValidator);
+        }
+
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(split(path), defaultSupplier, newElementSupplier, elementValidator);
         }
 
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, List<? extends T> defaultValue, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(path, () -> defaultValue, elementValidator);
         }
 
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(path, () -> defaultValue, newElementSupplier, elementValidator);
+        }
+
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(path, defaultSupplier, null, elementValidator);
         }
 
-        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<?> newElementSupplier, Predicate<Object> elementValidator) {
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
             context.setClazz(List.class);
             return define(path, new ListValueSpec(defaultSupplier, newElementSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), elementValidator, context, path, null) {
                 @Override
