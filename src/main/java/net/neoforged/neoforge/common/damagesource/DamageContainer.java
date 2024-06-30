@@ -91,8 +91,11 @@ public class DamageContainer {
     /**
      * Adds a callback modifier to the vanilla damage reductions. Each function will be performed in sequence
      * on the vanilla value at the time the {@link DamageContainer.Reduction} type is set by vanilla.
-     * <h4>Note: only the {@link LivingIncomingDamageEvent EntityPreDamageEvent}
-     * happens early enough in the sequence for this method to have any effect.</h4>
+     * <ul>
+     * <li>only the {@link LivingIncomingDamageEvent EntityPreDamageEvent}
+     * happens early enough in the sequence for this method to have any effect.</li>
+     * <li>if the vanilla reduction is not triggered, the reduction function will not execute.</li>
+     * </ul>
      *
      * @param type              The reduction type your function will apply to
      * @param reductionFunction takes the current reduction from vanilla and any preceding functions and returns a new
@@ -155,7 +158,7 @@ public class DamageContainer {
     public void setReduction(Reduction reduction, float amount) {
         float modifiedReduction = modifyReduction(reduction, amount);
         this.reductions.put(reduction, modifiedReduction);
-        this.newDamage -= Math.max(0, modifiedReduction);
+        this.newDamage -= modifiedReduction;
     }
 
     private float modifyReduction(Reduction type, float reduction) {
