@@ -125,6 +125,7 @@
   "neoforge.menu.updatescreen.title": "Mod Update",
 
   "neoforge.configuration.uitext.notonline": "Settings in here are determined by the server and cannot be changed while online.",
+  "neoforge.configuration.uitext.notlan": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
   "neoforge.configuration.uitext.notloaded": "Settings in here are are ony available while a world is loaded.",
   "neoforge.configuration.uitext.unsupportedelement": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
   "neoforge.configuration.uitext.section": "%s...",

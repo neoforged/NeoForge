@@ -106,6 +106,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
     private static final String LANG_PREFIX = "neoforge.configuration.uitext.";
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline");
+    public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan");
     public static final Component TOOLTIP_CANNOT_EDIT_NOT_LOADED = Component.translatable(LANG_PREFIX + "notloaded");
     private static final String SECTION = LANG_PREFIX + "section";
     private static final String LIST_ELEMENT = LANG_PREFIX + "listelement";
@@ -141,15 +142,16 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 if (modConfig.getModId().equals(mod.getModId())) {
                     final Button btn = Button.builder(Component.translatable(SECTION, Component.translatable(LANG_PREFIX + type.name().toLowerCase())),
                             button -> minecraft.setScreen(new ConfigurationSectionScreen(mod, minecraft, this, type, modConfig))).build();
-                    if (type == Type.SERVER && minecraft.getCurrentServer() != null && !minecraft.isSingleplayer()) {
-                        btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE));
-                        btn.active = false;
-                    }
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_NOT_LOADED));
                         btn.active = false;
+                    } else if (type == Type.SERVER && minecraft.getCurrentServer() != null && !minecraft.isSingleplayer()) {
+                        btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE));
+                        btn.active = false;
+                    } else if (type == Type.SERVER && minecraft.hasSingleplayerServer() && minecraft.getSingleplayerServer().isPublished()) {
+                        btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN));
+                        btn.active = false;
                     }
-                    // TODO integrated server open to LAN with connected clients
                     list.addSmall(btn, null);
                 }
             }
