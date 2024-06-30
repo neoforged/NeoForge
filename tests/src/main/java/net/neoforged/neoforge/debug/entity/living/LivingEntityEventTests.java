@@ -304,8 +304,6 @@ public class LivingEntityEventTests {
         AttachmentType<Float> VALUE_PRE_POST_DAMAGE = reg.attachments().registerSimpleAttachment("pre_post_damage", () -> 0f);
         AttachmentType<Float> VALUE_NEW_DAMAGE = reg.attachments().registerSimpleAttachment("new_damage", () -> 0f);
 
-
-
         /* This event listener watches for the first event in the damage sequence.  At this stage we expect to  add our
          * reduction functions and replace the incoming damage amount with a new value. */
         test.eventListeners().forge().addListener((final LivingIncomingDamageEvent event) -> {
