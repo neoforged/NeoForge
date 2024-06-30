@@ -151,7 +151,7 @@
                  if (this.useItem.isEmpty()) {
                      if (interactionhand == InteractionHand.MAIN_HAND) {
                          this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-@@ -952,11 +_,14 @@
+@@ -952,11 +_,12 @@
      @Override
      protected void actuallyHurt(DamageSource p_36312_, float p_36313_) {
          if (!this.isInvulnerableTo(p_36312_)) {
@@ -163,11 +163,9 @@
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(p_36312_, this.damageContainers.peek().getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(p_36312_, this.damageContainers.peek().getNewDamage());
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
-+            float f1 = Math.max(this.damageContainers.peek().getNewDamage() - this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
-+            this.setAbsorptionAmount(this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainers.peek().getNewDamage() - f1));
-+            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
-+            if (f1 <= 0) return;
-+            float f = this.damageContainers.peek().getNewDamage() - f1;
++            this.setAbsorptionAmount(this.getAbsorptionAmount() - Math.min(this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), this.getAbsorptionAmount()));
++            float f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
++            float f = java.util.Arrays.stream(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.values()).map(this.damageContainers.peek()::getReduction).reduce(Float::sum).orElse(0f);
              if (f > 0.0F && f < 3.4028235E37F) {
                  this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(f * 10.0F));
              }
