@@ -784,8 +784,16 @@ public class ConfigurationScreen extends OptionsSubScreen {
         public void onClose() {
             if (changed && spec.test(cfgList)) {
                 valueList.set(cfgList);
+                if (context.parent instanceof ConfigurationSectionScreen parent) {
+                    parent.onChanged(key);
+                }
             }
             super.onClose();
+        }
+
+        protected void onChanged(final String key) {
+            changed = true;
+            // parent's onChanged() will be fired when we actually assign the changed list
         }
 
         protected void undo(String key, @SuppressWarnings("rawtypes") ModConfigSpec.ConfigValue configValue) {
