@@ -36,7 +36,10 @@ jobs:
           cache-read-only: false
 
       - name: Setup with Gradle
-        run: ./gradlew setup
+        run: ./gradlew :neoforge:setup
+
+      - name: Gen patches
+        run: ./gradlew :neoforge:unpackSourcePatches
 
       - name: Run datagen with Gradle
         run: ./gradlew :neoforge:runData :tests:runData
