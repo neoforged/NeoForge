@@ -17,7 +17,6 @@ public interface IHolderLookupProviderExtension {
 
     /**
      * Shortcut method to get a holder from a ResourceKey.
-     * Can be accessed through LevelReader, see {@link ILevelReaderExtension}
      * 
      * @throws IllegalStateException if the registry or key is not found.
      */
@@ -27,7 +26,6 @@ public interface IHolderLookupProviderExtension {
 
     /**
      * Shortcut method to get an optional holder from a ResourceKey.
-     * Can be accessed through LevelReader, see {@link ILevelReaderExtension}
      */
     default <T> Optional<Holder.Reference<T>> holder(ResourceKey<T> key) {
         Optional<HolderLookup.RegistryLookup<T>> registry = this.self().lookup(key.registryKey());

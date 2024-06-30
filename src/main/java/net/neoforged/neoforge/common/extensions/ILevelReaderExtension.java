@@ -6,14 +6,12 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.LevelReader;
 
-public interface ILevelReaderExtension extends RegistryAccess {
+public interface ILevelReaderExtension {
     private LevelReader self() {
         return (LevelReader) this;
     }
@@ -23,18 +21,20 @@ public interface ILevelReaderExtension extends RegistryAccess {
     }
 
     /**
-     * Delegates the implementation of RegistryAccess to enable modders to access HolderLookup.Provider methods
-     * directly without traversing through level.registryAccess().
-     * For additional utilities, see {@link IHolderLookupProviderExtension}
+     * Shortcut method to get a holder from a ResourceKey.
+     * see {@link IHolderLookupProviderExtension}
+     *
+     * @throws IllegalStateException if the registry or key is not found.
      */
-
-    @Override
-    default <E> Optional<Registry<E>> registry(ResourceKey<? extends Registry<? extends E>> p_123085_) {
-        return self().registryAccess().registry(p_123085_);
+    default <T> Holder<T> holderOrThrow(ResourceKey<T> key) {
+        return this.self().registryAccess().holderOrThrow(key);
     }
 
-    @Override
-    default Stream<RegistryEntry<?>> registries() {
-        return self().registryAccess().registries();
+    /**
+     * Shortcut method to get an optional holder from a ResourceKey.
+     * see {@link IHolderLookupProviderExtension}
+     */
+    default <T> Optional<Holder.Reference<T>> holder(ResourceKey<T> key) {
+        return this.self().registryAccess().holder(key);
     }
 }
