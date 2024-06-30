@@ -125,6 +125,8 @@ public class ConfigurationScreen extends OptionsSubScreen {
     public static final Component RESTART_NO = Component.translatable(LANG_PREFIX + "restart.return");
     public static final Component UNDO = Component.translatable(LANG_PREFIX + "undo");
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
+    public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
+    public static final Component RESET_TOOLTIP = Component.translatable(LANG_PREFIX + "reset.tooltip");
     static final TranslationChecker translationChecker = new TranslationChecker();
 
     private final ModContainer mod;
@@ -141,7 +143,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
             for (final ModConfig modConfig : ConfigTracker.INSTANCE.configSets().get(type)) {
                 if (modConfig.getModId().equals(mod.getModId())) {
                     final Button btn = Button.builder(Component.translatable(SECTION, Component.translatable(LANG_PREFIX + type.name().toLowerCase())),
-                            button -> minecraft.setScreen(new ConfigurationSectionScreen(mod, minecraft, this, type, modConfig))).build();
+                            button -> minecraft.setScreen(new ConfigurationSectionScreen(mod, minecraft, this, type, modConfig).rebuild())).build();
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_NOT_LOADED));
                         btn.active = false;
@@ -259,7 +261,8 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected boolean changed = false;
         protected RestartType needsRestart = RestartType.NONE;
         protected final Map<String, Object> undoMap = new HashMap<>();
-        protected Button undoButton; // must not be changed after creation unless the reference inside the layout also is replaced
+        protected final Map<String, ConfigurationSectionScreen> sectionCache = new HashMap<>();
+        protected Button undoButton, resetButton; // must not be changed after creation unless the reference inside the layout also is replaced
 
         public ConfigurationSectionScreen(final ModContainer mod, final Minecraft mc, final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
             this(Context.top(mod, mc, parent, type, modConfig), Component.translatable(translationChecker.check(mod.getModId() + ".configuration." + type.name().toLowerCase() + ".title")));
@@ -319,61 +322,77 @@ public class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected void addOptions() {
-            boolean hasUndoableElements = false;
-            final List<Element> elements = new ArrayList<>();
-            for (final Entry entry : context.entries) {
-                final String key = entry.getKey();
-                final Object rawValue = entry.getRawValue();
-                if (rawValue instanceof final ModConfigSpec.ConfigValue cv) {
-                    final ValueSpec valueSpec = getValueSpec(key);
-                    if (valueSpec != null) {
-                        if (cv instanceof final ModConfigSpec.BooleanValue value) {
-                            elements.add(createBooleanValue(key, valueSpec, value, value::set));
-                        } else if (cv instanceof final ModConfigSpec.IntValue value) {
-                            elements.add(createIntegerValue(key, valueSpec, value, value::set));
-                        } else if (cv instanceof final ModConfigSpec.LongValue value) {
-                            elements.add(createLongValue(key, valueSpec, value, value::set));
-                        } else if (cv instanceof final ModConfigSpec.DoubleValue value) {
-                            elements.add(createDoubleValue(key, valueSpec, value, value::set));
-                        } else if (cv instanceof final ModConfigSpec.EnumValue value) {
-                            elements.add(createEnumValue(key, valueSpec, value, value::set));
-                        } else if (String.class.isInstance(valueSpec.getDefault())) {
-                            elements.add(createStringValue(key, valueSpec::test, cv, cv::set));
-                        } else if (valueSpec instanceof ListValueSpec listSpec) {
-                            elements.add(createList(key, listSpec, cv));
-                        } else {
-                            elements.add(createOtherValue(key, cv));
+            rebuild();
+        }
+
+        @SuppressWarnings("unchecked")
+        protected ConfigurationSectionScreen rebuild() {
+            if (list != null) { // this may be called early, skip and wait for init() then
+                list.children().clear();
+                boolean hasUndoableElements = false;
+                boolean hasNonDefaultValues = false;
+                final List<Element> elements = new ArrayList<>();
+                for (final Entry entry : context.entries) {
+                    final String key = entry.getKey();
+                    final Object rawValue = entry.getRawValue();
+                    if (rawValue instanceof final ModConfigSpec.ConfigValue cv) {
+                        final ValueSpec valueSpec = getValueSpec(key);
+                        if (valueSpec != null) {
+                            if (cv instanceof final ModConfigSpec.BooleanValue value) {
+                                elements.add(createBooleanValue(key, valueSpec, value, value::set));
+                            } else if (cv instanceof final ModConfigSpec.IntValue value) {
+                                elements.add(createIntegerValue(key, valueSpec, value, value::set));
+                            } else if (cv instanceof final ModConfigSpec.LongValue value) {
+                                elements.add(createLongValue(key, valueSpec, value, value::set));
+                            } else if (cv instanceof final ModConfigSpec.DoubleValue value) {
+                                elements.add(createDoubleValue(key, valueSpec, value, value::set));
+                            } else if (cv instanceof final ModConfigSpec.EnumValue value) {
+                                elements.add(createEnumValue(key, valueSpec, value, value::set));
+                            } else if (String.class.isInstance(valueSpec.getDefault())) {
+                                elements.add(createStringValue(key, valueSpec::test, cv, cv::set));
+                            } else if (valueSpec instanceof ListValueSpec listSpec) {
+                                elements.add(createList(key, listSpec, cv));
+                            } else {
+                                elements.add(createOtherValue(key, cv));
+                            }
+                            hasUndoableElements |= elements.getLast() != null;
+                            hasNonDefaultValues |= isNonDefault(cv);
                         }
-                        hasUndoableElements |= elements.getLast() != null;
+                    } else if (rawValue instanceof final UnmodifiableConfig subsection) {
+                        final Object object = context.valueSpecs.get(key);
+                        if (object instanceof final UnmodifiableConfig subconfig) {
+                            elements.add(createSection(key, subconfig, subsection));
+                        }
+                    } else {
+                        elements.add(createOtherSection(key, rawValue));
                     }
-                } else if (rawValue instanceof final UnmodifiableConfig subsection) {
-                    final Object object = context.valueSpecs.get(key);
-                    if (object instanceof final UnmodifiableConfig subconfig) {
-                        elements.add(createSection(key, subconfig, subsection));
-                    }
+                }
+
+                if (compactList) {
+                    list.addSmall(elements.stream().filter(Objects::nonNull).map(Element::widget).toList());
                 } else {
-                    elements.add(createOtherSection(key, rawValue));
-                }
-            }
-
-            if (compactList) {
-                list.addSmall(elements.stream().filter(Objects::nonNull).map(Element::widget).toList());
-            } else {
-                for (final Element element : elements) {
-                    if (element != null) {
-                        final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
-                        label.setTooltip(Tooltip.create(element.tooltip));
-                        list.addSmall(label, element.getWidget(options));
+                    for (final Element element : elements) {
+                        if (element != null) {
+                            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
+                            label.setTooltip(Tooltip.create(element.tooltip));
+                            list.addSmall(label, element.getWidget(options));
+                        }
                     }
                 }
-            }
 
-            if (hasUndoableElements && undoButton == null) {
-                createUndoButton();
+                if (hasUndoableElements && undoButton == null) {
+                    createUndoButton();
+                    createResetButton();
+                    setResetButtonstate(hasNonDefaultValues);
+                }
             }
+            return this;
+        }
+
+        protected boolean isNonDefault(ModConfigSpec.ConfigValue<?> cv) {
+            return ((cv.get() == null) != (cv.getDefault() == null)) || (cv.get() != null && !cv.get().equals(cv.getDefault()));
         }
 
         protected Element createStringValue(final String key, final Predicate<String> tester, final Supplier<String> source, final Consumer<String> target) {
@@ -549,7 +568,8 @@ public class ConfigurationScreen extends OptionsSubScreen {
             return new Element(Component.empty(), Component.empty(),
                     Button
                             .builder(Component.translatable(SECTION, getTranslationComponent(key)),
-                                    button -> minecraft.setScreen(new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet())))
+                                    button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
+                                            k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet()).rebuild())))
                             .tooltip(Tooltip.create(getTooltipComponent(key))).build());
         }
 
@@ -557,25 +577,28 @@ public class ConfigurationScreen extends OptionsSubScreen {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
                     Button
                             .builder(Component.translatable(SECTION, getTranslationComponent(key)),
-                                    button -> minecraft
-                                            .setScreen(new ConfigurationListScreen<>(Context.list(context, this), key, getTranslationComponent(key), spec, list)))
+                                    button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
+                                            k -> new ConfigurationListScreen<>(Context.list(context, this), key, getTranslationComponent(key), spec, list)).rebuild()))
                             .tooltip(Tooltip.create(getTooltipComponent(key))).build());
         }
 
         @Override
         public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
             super.render(p_281549_, p_281550_, p_282878_, p_282465_);
-            if (undoButton != null) {
-                // need to check both as a screen may opt to store its initial value in the map on creation. The list screen does this.
-                undoButton.active = changed && !undoMap.isEmpty(); // in render()? Really? --- Yes! This is how vanilla does it.
-            }
+            // need to check both as a screen may opt to store its initial value in the map on creation. The list screen does this.
+            setUndoButtonstate(changed && !undoMap.isEmpty()); // in render()? Really? --- Yes! This is how vanilla does it.
         }
 
         @Override
         protected void addFooter() {
-            if (undoButton != null) {
+            if (undoButton != null || resetButton != null) {
                 LinearLayout linearlayout = layout.addToFooter(LinearLayout.horizontal().spacing(8));
-                linearlayout.addChild(undoButton);
+                if (undoButton != null) {
+                    linearlayout.addChild(undoButton);
+                }
+                if (resetButton != null) {
+                    linearlayout.addChild(resetButton);
+                }
                 linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose()).build());
             } else {
                 super.addFooter();
@@ -589,17 +612,50 @@ public class ConfigurationScreen extends OptionsSubScreen {
                         undo(entry.getKey(), cv);
                     }
                 }
-                list.children().clear();
-                addOptions();
-            }).tooltip(Tooltip.create(UNDO_TOOLTIP))
-                    .build();
+                setResetButtonstate(true);
+                rebuild();
+            }).tooltip(Tooltip.create(UNDO_TOOLTIP)).build();
             undoButton.active = false;
+        }
+
+        protected void setUndoButtonstate(boolean state) {
+            if (undoButton != null) {
+                undoButton.active = state;
+            }
+        }
+
+        protected void createResetButton() {
+            resetButton = Button.builder(RESET, button -> {
+                for (final Entry entry : context.entries) {
+                    if (entry.getRawValue() instanceof final ModConfigSpec.ConfigValue cv) {
+                        reset(entry.getKey(), cv);
+                    }
+                }
+                setResetButtonstate(false);
+                rebuild();
+            }).tooltip(Tooltip.create(RESET_TOOLTIP)).build();
+        }
+
+        protected void setResetButtonstate(boolean state) {
+            if (resetButton != null) {
+                resetButton.active = state;
+            }
         }
 
         @SuppressWarnings("unchecked")
         protected void undo(String key, @SuppressWarnings("rawtypes") ModConfigSpec.ConfigValue configValue) {
             if (undoMap.containsKey(key)) {
                 configValue.set(undoMap.remove(key));
+                onChanged(key);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        protected void reset(String key, @SuppressWarnings("rawtypes") ModConfigSpec.ConfigValue configValue) {
+            if (isNonDefault(configValue)) {
+                undoMap.put(key, configValue.get());
+                configValue.set(getValueSpec(key).correct(null));
+                onChanged(key);
             }
         }
 
@@ -641,42 +697,47 @@ public class ConfigurationScreen extends OptionsSubScreen {
             this.valueList = valueList; // === (ListValueSpec)getValueSpec(key)
             this.cfgList = new ArrayList<>(valueList.get());
             this.spec = spec;
-            undoMap.put(key, List.of() /* just a marker */);
         }
 
         @Override
-        protected void addOptions() {
-            final List<Element> elements = new ArrayList<>();
-            int idx = 0;
-            for (final T entry : cfgList) {
-                if (entry instanceof final Boolean value) {
-                    elements.add(createBooleanListValue(idx, value));
-                } else if (entry instanceof final Integer value) {
-                    elements.add(createIntegerListValue(idx, value));
-                } else if (entry instanceof final Long value) {
-                    elements.add(createLongListValue(idx, value));
-                } else if (entry instanceof final Double value) {
-                    elements.add(createDoubleListValue(idx, value));
-                } else if (entry instanceof final String value) {
-                    elements.add(createStringListValue(idx, value));
-                } else {
-                    elements.add(createOtherValue(idx, entry));
+        protected ConfigurationSectionScreen rebuild() {
+            if (list != null) { // this may be called early, skip and wait for init() then
+                list.children().clear();
+                final List<Element> elements = new ArrayList<>();
+                int idx = 0;
+                for (final T entry : cfgList) {
+                    if (entry instanceof final Boolean value) {
+                        elements.add(createBooleanListValue(idx, value));
+                    } else if (entry instanceof final Integer value) {
+                        elements.add(createIntegerListValue(idx, value));
+                    } else if (entry instanceof final Long value) {
+                        elements.add(createLongListValue(idx, value));
+                    } else if (entry instanceof final Double value) {
+                        elements.add(createDoubleListValue(idx, value));
+                    } else if (entry instanceof final String value) {
+                        elements.add(createStringListValue(idx, value));
+                    } else {
+                        elements.add(createOtherValue(idx, entry));
+                    }
+                    idx++;
                 }
-                idx++;
-            }
 
-            idx = 0;
-            for (final Element element : elements) {
-                if (element != null) {
-                    list.addSmall(createListLabel(idx), element.getWidget(options));
+                idx = 0;
+                for (final Element element : elements) {
+                    if (element != null) {
+                        list.addSmall(createListLabel(idx), element.getWidget(options));
+                    }
+                    idx++;
                 }
-                idx++;
-            }
 
-            createAddElementButton();
-            if (undoButton == null) {
-                createUndoButton();
+                createAddElementButton();
+                if (undoButton == null) {
+                    createUndoButton();
+                    createResetButton();
+                    setResetButtonstate(isNonDefault(valueList));
+                }
             }
+            return this;
         }
 
         /**
@@ -692,9 +753,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
             if (newElement != null && (sizeRange == null || sizeRange.test(cfgList.size() + 1))) {
                 list.addSmall(Button.builder(NEW_LIST_ELEMENT, button -> {
                     cfgList.add((T) newElement.get());
-                    list.children().clear();
-                    addOptions();
+                    rebuild();
                     onChanged(key);
+                    undoMap.putIfAbsent(key, 0);
                 }).build(), null);
             }
         }
@@ -760,9 +821,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
             final boolean valid = spec.test(values);
             if (!simulate && valid) {
                 cfgList = values;
-                ConfigurationListScreen.super.list.children().clear();
-                addOptions();
+                rebuild();
                 onChanged(key);
+                undoMap.putIfAbsent(key, 0);
             }
             return valid;
         }
@@ -773,9 +834,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
             final boolean valid = spec.test(values);
             if (!simulate && valid) {
                 cfgList = values;
-                ConfigurationListScreen.super.list.children().clear();
-                addOptions();
+                rebuild();
                 onChanged(key);
+                undoMap.putIfAbsent(key, 0);
             }
             return valid;
         }
@@ -796,11 +857,32 @@ public class ConfigurationScreen extends OptionsSubScreen {
             // parent's onChanged() will be fired when we actually assign the changed list
         }
 
+        @SuppressWarnings("unchecked")
         protected void undo(String key, @SuppressWarnings("rawtypes") ModConfigSpec.ConfigValue configValue) {
             if (key.equals(this.key)) {
+                // we can't trust this value, it is most likely the undo value for one of the edit fields.
+                // But if we get a List, it must have been set by reset(), as there is no edit field that
+                // can produce Lists. Then we can (and must) use that instead of falling back to the original
+                // value, because in that case we're undoing a reset.
+                final Object undoValue = undoMap.remove(key);
+                cfgList = new ArrayList<>(undoValue instanceof List ? (List<T>) undoValue : valueList.get());
+            }
+            changed = false;
+        }
+
+        @SuppressWarnings("unchecked")
+        protected void reset(String key, @SuppressWarnings("rawtypes") ConfigValue configValue) {
+            if (key.equals(this.key)) {
+                undoMap.put(key, cfgList);
+                configValue.set(getValueSpec(key).correct(null));
+                onChanged(key);
+                // actually changes the value here, so notify the parent
+                if (context.parent instanceof ConfigurationSectionScreen parent) {
+                    parent.onChanged(key);
+                }
                 cfgList = new ArrayList<>(valueList.get());
             }
-        }
+        };
 
         public class ListLabelWidget extends AbstractContainerWidget {
             protected final Button upButton = Button.builder(MOVE_LIST_ELEMENT_UP, this::up).build();
