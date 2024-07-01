@@ -9,16 +9,16 @@
 +
  @OnlyIn(Dist.CLIENT)
  public class Gui {
-     protected static final ResourceLocation CROSSHAIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair");
+     private static final ResourceLocation CROSSHAIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair");
 @@ -158,9 +_,21 @@
-     protected long healthBlinkTime;
-     protected float autosaveIndicatorValue;
-     protected float lastAutosaveIndicatorValue;
+     private long healthBlinkTime;
+     private float autosaveIndicatorValue;
+     private float lastAutosaveIndicatorValue;
 +    /** Neo: This is empty and unused, rendering goes through {@link #layerManager} instead. */
 +    @Deprecated
      private final LayeredDraw layers = new LayeredDraw();
 +    private final net.neoforged.neoforge.client.gui.GuiLayerManager layerManager = new net.neoforged.neoforge.client.gui.GuiLayerManager();
-     protected float scopeScale;
+     private float scopeScale;
  
 +    /**
 +     * Neo: This variable controls the height of overlays on the left of the hotbar (e.g. health, armor).
