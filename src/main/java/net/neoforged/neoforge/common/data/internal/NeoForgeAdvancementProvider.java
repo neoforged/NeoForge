@@ -61,6 +61,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
     private static List<AdvancementGenerator> getVanillaAdvancementProviders(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers = new ArrayList<>();
         criteriaReplacers.add(replaceMatchToolCriteria(ItemAbilities.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
+        criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(ItemAbilities.SHEARS_REMOVE_ARMOR)).build(), Items.SHEARS));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build(), PiglinAi.BARTERING_ITEM));
         criteriaReplacers.add(replaceWearingPredicate(EntityPredicate.Builder.entity().subPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE).build(), predicate -> {
             if (predicate.head().filter(item -> predicateMatches(item, Items.GOLDEN_HELMET)).isPresent()) {
