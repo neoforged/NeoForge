@@ -260,9 +260,10 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected final Context context;
         protected boolean changed = false;
         protected RestartType needsRestart = RestartType.NONE;
-        protected final Map<String, Object> undoMap = new HashMap<>();
         protected final Map<String, ConfigurationSectionScreen> sectionCache = new HashMap<>();
         protected Button undoButton, resetButton; // must not be changed after creation unless the reference inside the layout also is replaced
+        protected final Button doneButton = Button.builder(CommonComponents.GUI_DONE, button -> onClose()).width(Button.SMALL_WIDTH).build();
+        protected final UndoManager undoManager = new UndoManager();
 
         public ConfigurationSectionScreen(final ModContainer mod, final Minecraft mc, final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
             this(Context.top(mod, mc, parent, type, modConfig), Component.translatable(translationChecker.check(mod.getModId() + ".configuration." + type.name().toLowerCase() + ".title")));
@@ -322,6 +323,17 @@ public class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
+        protected boolean isAnyNondefault() {
+            for (final Entry entry : context.entries) {
+                if (entry.getRawValue() instanceof final ModConfigSpec.ConfigValue cv) {
+                    if (!(getValueSpec(entry.getKey()) instanceof ListValueSpec) && isNonDefault(cv)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         @Override
         protected void addOptions() {
             rebuild();
@@ -332,7 +344,6 @@ public class ConfigurationScreen extends OptionsSubScreen {
             if (list != null) { // this may be called early, skip and wait for init() then
                 list.children().clear();
                 boolean hasUndoableElements = false;
-                boolean hasNonDefaultValues = false;
                 final List<Element> elements = new ArrayList<>();
                 for (final Entry entry : context.entries) {
                     final String key = entry.getKey();
@@ -358,7 +369,6 @@ public class ConfigurationScreen extends OptionsSubScreen {
                                 elements.add(createOtherValue(key, cv));
                             }
                             hasUndoableElements |= elements.getLast() != null;
-                            hasNonDefaultValues |= isNonDefault(cv);
                         }
                     } else if (rawValue instanceof final UnmodifiableConfig subsection) {
                         final Object object = context.valueSpecs.get(key);
@@ -385,7 +395,6 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 if (hasUndoableElements && undoButton == null) {
                     createUndoButton();
                     createResetButton();
-                    setResetButtonstate(hasNonDefaultValues);
                 }
             }
             return this;
@@ -404,9 +413,13 @@ public class ConfigurationScreen extends OptionsSubScreen {
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
                     if (!newValue.equals(source.get())) {
-                        undoMap.putIfAbsent(key, source.get());
-                        target.accept(newValue);
-                        onChanged(key);
+                        undoManager.add(v -> {
+                            target.accept(v);
+                            onChanged(key);
+                        }, newValue, v -> {
+                            target.accept(v);
+                            onChanged(key);
+                        }, source.get());
                     }
                     box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
                     return;
@@ -475,11 +488,15 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
         protected Element createBooleanValue(final String key, final ValueSpec spec, final Supplier<Boolean> source, final Consumer<Boolean> target) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
-                    new OptionInstance<>(getTranslationKey(key), getTooltip(key), OptionInstance.BOOLEAN_TO_STRING, BOOLEAN_VALUES_NO_PREFIX, source.get(), newVal -> {
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key), OptionInstance.BOOLEAN_TO_STRING, BOOLEAN_VALUES_NO_PREFIX, source.get(), newValue -> {
                         // regarding change detection: new value always is different (cycle button)
-                        undoMap.putIfAbsent(key, source.get());
-                        target.accept(newVal);
-                        onChanged(key);
+                        undoManager.add(v -> {
+                            target.accept(v);
+                            onChanged(key);
+                        }, newValue, v -> {
+                            target.accept(v);
+                            onChanged(key);
+                        }, source.get());
                     }));
         }
 
@@ -492,9 +509,13 @@ public class ConfigurationScreen extends OptionsSubScreen {
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key), (caption, displayvalue) -> Component.literal(displayvalue.name()),
                             new Custom<>(list), source.get(), newValue -> {
                                 // regarding change detection: new value always is different (cycle button)
-                                undoMap.putIfAbsent(key, source.get());
-                                target.accept(newValue);
-                                onChanged(key);
+                                undoManager.add(v -> {
+                                    target.accept(v);
+                                    onChanged(key);
+                                }, newValue, v -> {
+                                    target.accept(v);
+                                    onChanged(key);
+                                }, source.get());
                             }));
         }
 
@@ -509,9 +530,13 @@ public class ConfigurationScreen extends OptionsSubScreen {
                                 (caption, displayvalue) -> Options.genericValueLabel(caption, Component.literal("" + displayvalue)), new OptionInstance.IntRange(min, max),
                                 null /* codec */, source.get(), newValue -> {
                                     if (!newValue.equals(source.get())) {
-                                        undoMap.putIfAbsent(key, source.get());
-                                        target.accept(newValue);
-                                        onChanged(key);
+                                        undoManager.add(v -> {
+                                            target.accept(v);
+                                            onChanged(key);
+                                        }, newValue, v -> {
+                                            target.accept(v);
+                                            onChanged(key);
+                                        }, source.get());
                                     }
                                 }));
             } else {
@@ -530,24 +555,28 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
-            box.setFilter(newValue -> {
+            box.setFilter(newValueString -> {
                 try {
-                    parser.apply(newValue);
+                    parser.apply(newValueString);
                     return true;
                 } catch (final NumberFormatException e) {
-                    return newValue.isEmpty() || ((range == null || range.getMin().compareTo(zero) < 0) && newValue.equals("-"));
+                    return newValueString.isEmpty() || ((range == null || range.getMin().compareTo(zero) < 0) && newValueString.equals("-"));
                 }
             });
             box.setTooltip(Tooltip.create(getTooltipComponent(key)));
             box.setValue(source.get() + "");
-            box.setResponder(newValue -> {
+            box.setResponder(newValueString -> {
                 try {
-                    final T val = parser.apply(newValue);
-                    if (tester != null ? tester.test(val) : (val != null && (range == null || range.test(val)) && spec.test(val))) {
-                        if (!val.equals(source.get())) {
-                            undoMap.putIfAbsent(key, source.get());
-                            target.accept(val);
-                            onChanged(key);
+                    final T newValue = parser.apply(newValueString);
+                    if (tester != null ? tester.test(newValue) : (newValue != null && (range == null || range.test(newValue)) && spec.test(newValue))) {
+                        if (!newValue.equals(source.get())) {
+                            undoManager.add(v -> {
+                                target.accept(v);
+                                onChanged(key);
+                            }, newValue, v -> {
+                                target.accept(v);
+                                onChanged(key);
+                            }, source.get());
                         }
                         box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
                         return;
@@ -584,9 +613,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
         @Override
         public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
+            setUndoButtonstate(undoManager.canUndo()); // in render()? Really? --- Yes! This is how vanilla does it.
+            setResetButtonstate(isAnyNondefault());
             super.render(p_281549_, p_281550_, p_282878_, p_282465_);
-            // need to check both as a screen may opt to store its initial value in the map on creation. The list screen does this.
-            setUndoButtonstate(changed && !undoMap.isEmpty()); // in render()? Really? --- Yes! This is how vanilla does it.
         }
 
         @Override
@@ -599,7 +628,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 if (resetButton != null) {
                     linearlayout.addChild(resetButton);
                 }
-                linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose()).build());
+                linearlayout.addChild(doneButton);
             } else {
                 super.addFooter();
             }
@@ -607,14 +636,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
         protected void createUndoButton() {
             undoButton = Button.builder(UNDO, button -> {
-                for (final Entry entry : context.entries) {
-                    if (entry.getRawValue() instanceof final ModConfigSpec.ConfigValue cv) {
-                        undo(entry.getKey(), cv);
-                    }
-                }
-                setResetButtonstate(true);
+                undoManager.undo();
                 rebuild();
-            }).tooltip(Tooltip.create(UNDO_TOOLTIP)).build();
+            }).tooltip(Tooltip.create(UNDO_TOOLTIP)).width(Button.SMALL_WIDTH).build();
             undoButton.active = false;
         }
 
@@ -624,38 +648,32 @@ public class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
+        @SuppressWarnings("unchecked")
         protected void createResetButton() {
             resetButton = Button.builder(RESET, button -> {
+                List<UndoManager.Step<?>> list = new ArrayList<>();
                 for (final Entry entry : context.entries) {
                     if (entry.getRawValue() instanceof final ModConfigSpec.ConfigValue cv) {
-                        reset(entry.getKey(), cv);
+                        if (!(getValueSpec(entry.getKey()) instanceof ListValueSpec) && isNonDefault(cv)) {
+                            final String key = entry.getKey();
+                            list.add(undoManager.step(v -> {
+                                cv.set(v);
+                                onChanged(key);
+                            }, getValueSpec(key).correct(null), v -> {
+                                cv.set(v);
+                                onChanged(key);
+                            }, cv.get()));
+                        }
                     }
                 }
-                setResetButtonstate(false);
+                undoManager.add(list);
                 rebuild();
-            }).tooltip(Tooltip.create(RESET_TOOLTIP)).build();
+            }).tooltip(Tooltip.create(RESET_TOOLTIP)).width(Button.SMALL_WIDTH).build();
         }
 
         protected void setResetButtonstate(boolean state) {
             if (resetButton != null) {
                 resetButton.active = state;
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        protected void undo(String key, @SuppressWarnings("rawtypes") ModConfigSpec.ConfigValue configValue) {
-            if (undoMap.containsKey(key)) {
-                configValue.set(undoMap.remove(key));
-                onChanged(key);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        protected void reset(String key, @SuppressWarnings("rawtypes") ModConfigSpec.ConfigValue configValue) {
-            if (isNonDefault(configValue)) {
-                undoMap.put(key, configValue.get());
-                configValue.set(getValueSpec(key).correct(null));
-                onChanged(key);
             }
         }
 
@@ -725,7 +743,15 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 idx = 0;
                 for (final Element element : elements) {
                     if (element != null) {
-                        list.addSmall(createListLabel(idx), element.getWidget(options));
+                        final AbstractWidget widget = element.getWidget(options);
+                        if (widget instanceof EditBox box) {
+                            // Force our responder to check content and set text colour.
+                            // This is only needed on lists, as section cannot have new UI elements added with bad data.
+                            // Here, this can happen when a new element is added to the list.
+                            // As the new value is the old value, no undo record will be created.
+                            box.setValue(box.getValue());
+                        }
+                        list.addSmall(createListLabel(idx), widget);
                     }
                     idx++;
                 }
@@ -734,10 +760,13 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 if (undoButton == null) {
                     createUndoButton();
                     createResetButton();
-                    setResetButtonstate(isNonDefault(valueList));
                 }
             }
             return this;
+        }
+
+        protected boolean isAnyNondefault() {
+            return !cfgList.equals(valueList.getDefault());
         }
 
         /**
@@ -752,10 +781,16 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
             if (newElement != null && (sizeRange == null || sizeRange.test(cfgList.size() + 1))) {
                 list.addSmall(Button.builder(NEW_LIST_ELEMENT, button -> {
-                    cfgList.add((T) newElement.get());
+                    List<T> newValue = new ArrayList<>(cfgList);
+                    newValue.add((T) newElement.get());
+                    undoManager.add(v -> {
+                        cfgList = v;
+                        onChanged(key);
+                    }, newValue, v -> {
+                        cfgList = v;
+                        onChanged(key);
+                    }, cfgList);
                     rebuild();
-                    onChanged(key);
-                    undoMap.putIfAbsent(key, 0);
                 }).build(), null);
             }
         }
@@ -820,10 +855,14 @@ public class ConfigurationScreen extends OptionsSubScreen {
             values.add(idx, values.remove(idx + 1));
             final boolean valid = spec.test(values);
             if (!simulate && valid) {
-                cfgList = values;
+                undoManager.add(v -> {
+                    cfgList = v;
+                    onChanged(key);
+                }, values, v -> {
+                    cfgList = v;
+                    onChanged(key);
+                }, cfgList);
                 rebuild();
-                onChanged(key);
-                undoMap.putIfAbsent(key, 0);
             }
             return valid;
         }
@@ -833,10 +872,14 @@ public class ConfigurationScreen extends OptionsSubScreen {
             values.remove(idx);
             final boolean valid = spec.test(values);
             if (!simulate && valid) {
-                cfgList = values;
+                undoManager.add(v -> {
+                    cfgList = v;
+                    onChanged(key);
+                }, values, v -> {
+                    cfgList = v;
+                    onChanged(key);
+                }, cfgList);
                 rebuild();
-                onChanged(key);
-                undoMap.putIfAbsent(key, 0);
             }
             return valid;
         }
@@ -852,37 +895,38 @@ public class ConfigurationScreen extends OptionsSubScreen {
             super.onClose();
         }
 
+        @Override
+        public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
+            doneButton.active = spec.test(cfgList);
+            super.render(p_281549_, p_281550_, p_282878_, p_282465_);
+        }
+
         protected void onChanged(final String key) {
             changed = true;
             // parent's onChanged() will be fired when we actually assign the changed list
         }
 
         @SuppressWarnings("unchecked")
-        protected void undo(String key, @SuppressWarnings("rawtypes") ModConfigSpec.ConfigValue configValue) {
-            if (key.equals(this.key)) {
-                // we can't trust this value, it is most likely the undo value for one of the edit fields.
-                // But if we get a List, it must have been set by reset(), as there is no edit field that
-                // can produce Lists. Then we can (and must) use that instead of falling back to the original
-                // value, because in that case we're undoing a reset.
-                final Object undoValue = undoMap.remove(key);
-                cfgList = new ArrayList<>(undoValue instanceof List ? (List<T>) undoValue : valueList.get());
-            }
-            changed = false;
+        protected void createResetButton() {
+            resetButton = Button.builder(RESET, button -> {
+                undoManager.add(
+                        v -> {
+                            cfgList = v;
+                            onChanged(key);
+                        }, new ArrayList<>((List<T>) getValueSpec(key).correct(null)),
+                        v -> {
+                            cfgList = v;
+                            onChanged(key);
+                        }, cfgList);
+                rebuild();
+            }).tooltip(Tooltip.create(RESET_TOOLTIP)).width(Button.SMALL_WIDTH).build();
         }
 
-        @SuppressWarnings("unchecked")
-        protected void reset(String key, @SuppressWarnings("rawtypes") ConfigValue configValue) {
-            if (key.equals(this.key)) {
-                undoMap.put(key, cfgList);
-                configValue.set(getValueSpec(key).correct(null));
-                onChanged(key);
-                // actually changes the value here, so notify the parent
-                if (context.parent instanceof ConfigurationSectionScreen parent) {
-                    parent.onChanged(key);
-                }
-                cfgList = new ArrayList<>(valueList.get());
+        protected void setResetButtonstate(boolean state) {
+            if (resetButton != null) {
+                resetButton.active = state;
             }
-        };
+        }
 
         public class ListLabelWidget extends AbstractContainerWidget {
             protected final Button upButton = Button.builder(MOVE_LIST_ELEMENT_UP, this::up).build();
@@ -1004,6 +1048,79 @@ public class ConfigurationScreen extends OptionsSubScreen {
             protected void updateWidgetNarration(final NarrationElementOutput pNarrationElementOutput) {
                 // TODO I have no idea. Help?
             }
+        }
+    }
+
+    /**
+     * A class representing an undo/redo buffer.<p>
+     * 
+     * Every undo step is represented as 2 actions, one to initially execute when the step is added and
+     * to redo after an undo, and one to execute to undo the step.
+     */
+    public static final class UndoManager {
+        public static record Step<T>(Consumer<T> run, T newValue, Consumer<T> undo, T oldValue) {
+            private void runUndo() {
+                undo.accept(oldValue);
+            }
+
+            private void runRedo() {
+                run.accept(newValue);
+            }
+        };
+
+        private final List<Step<?>> undos = new ArrayList<>();
+        private final List<Step<?>> redos = new ArrayList<>();
+
+        public void undo() {
+            if (canUndo()) {
+                Step<?> step = undos.removeLast();
+                step.runUndo();
+                redos.add(step);
+            }
+        }
+
+        public void redo() {
+            if (canRedo()) {
+                Step<?> step = redos.removeLast();
+                step.runRedo();
+                undos.add(step);
+            }
+        }
+
+        private void add(Step<?> step, boolean execute) {
+            undos.add(step);
+            redos.clear();
+            if (execute) {
+                step.runRedo();
+            }
+        }
+
+        public <T> Step<T> step(Consumer<T> run, T newValue, Consumer<T> undo, T oldValue) {
+            return new Step<>(run, newValue, undo, oldValue);
+        }
+
+        public <T> void add(Consumer<T> run, T newValue, Consumer<T> undo, T oldValue) {
+            add(step(run, newValue, undo, oldValue), true);
+        }
+
+        public <T> void addNoExecute(Consumer<T> run, T newValue, Consumer<T> undo, T oldValue) {
+            add(step(run, newValue, undo, oldValue), false);
+        }
+
+        public void add(Step<?>... steps) {
+            add(ImmutableList.copyOf(steps));
+        }
+
+        public void add(final List<Step<?>> steps) {
+            add(new Step<>(n -> steps.forEach(Step::runRedo), null, n -> steps.forEach(Step::runUndo), null), true);
+        }
+
+        public boolean canUndo() {
+            return !undos.isEmpty();
+        }
+
+        public boolean canRedo() {
+            return !redos.isEmpty();
         }
     }
 }
