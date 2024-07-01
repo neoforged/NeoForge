@@ -123,7 +123,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -485,6 +_,104 @@
+@@ -485,6 +_,63 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  
@@ -179,47 +179,6 @@
 +    }
 +
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions> consumer) {
-+    }
-+
-+    @Override
-+    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.neoforged.neoforge.common.IPlantable plantable) {
-+        BlockState plant = plantable.getPlant(world, pos.relative(facing));
-+        net.neoforged.neoforge.common.PlantType type = plantable.getPlantType(world, pos.relative(facing));
-+
-+        if (plant.getBlock() == Blocks.CACTUS)
-+            return state.is(Blocks.CACTUS) || state.is(BlockTags.SAND);
-+
-+        if (plant.getBlock() == Blocks.SUGAR_CANE && this == Blocks.SUGAR_CANE)
-+            return true;
-+
-+        if (plantable instanceof BushBlock && ((BushBlock)plantable).mayPlaceOn(state, world, pos))
-+            return true;
-+
-+        if (net.neoforged.neoforge.common.PlantType.DESERT.equals(type)) {
-+            return state.is(BlockTags.SAND) || state.is(BlockTags.TERRACOTTA);
-+        } else if (net.neoforged.neoforge.common.PlantType.NETHER.equals(type)) {
-+            return this == Blocks.SOUL_SAND;
-+        } else if (net.neoforged.neoforge.common.PlantType.CROP.equals(type)) {
-+            return state.is(Blocks.FARMLAND);
-+        } else if (net.neoforged.neoforge.common.PlantType.CAVE.equals(type)) {
-+            return state.isFaceSturdy(world, pos, Direction.UP);
-+        } else if (net.neoforged.neoforge.common.PlantType.PLAINS.equals(type)) {
-+            return state.is(BlockTags.DIRT) || this == Blocks.FARMLAND;
-+        } else if (net.neoforged.neoforge.common.PlantType.WATER.equals(type)) {
-+            return (state.is(Blocks.WATER) || state.getBlock() instanceof IceBlock) && world.getFluidState(pos.relative(facing)).isEmpty();
-+        } else if (net.neoforged.neoforge.common.PlantType.BEACH.equals(type)) {
-+            boolean isBeach = state.is(BlockTags.DIRT) || state.is(BlockTags.SAND);
-+            boolean hasWater = false;
-+            for (Direction face : Direction.Plane.HORIZONTAL) {
-+                BlockState adjacentBlockState = world.getBlockState(pos.relative(face));
-+                var adjacentFluidState = world.getFluidState(pos.relative(face));
-+                hasWater = hasWater || adjacentBlockState.is(Blocks.FROSTED_ICE) || adjacentFluidState.is(net.minecraft.tags.FluidTags.WATER);
-+                if (hasWater)
-+                    break; //No point continuing.
-+            }
-+            return isBeach && hasWater;
-+        }
-+        return false;
 +    }
 +
 +    /* ========================================= FORGE END ======================================*/
