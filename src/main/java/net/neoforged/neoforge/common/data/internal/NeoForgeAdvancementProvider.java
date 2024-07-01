@@ -138,6 +138,9 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                 if (predicate.isPresent()) {
                     EntityPredicate entityPredicate = predicate.get();
                     if (entityPredicate.equipment().filter(shouldReplace).isPresent()) {
+                        if (entityPredicate.subPredicate().isPresent()) {
+                            throw new IllegalStateException("Attempting to replace an entity predicate that already has a sub predicate");
+                        }
                         EntityPredicate replacement = new EntityPredicate(
                                 entityPredicate.entityType(),
                                 entityPredicate.distanceToPlayer(),
