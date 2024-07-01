@@ -1076,7 +1076,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 downButton.visible = !isLast;
                 downButton.active = !isLast && swap(idx, true);
                 Range<Integer> sizeRange = spec.getSizeRange();
-                delButton.active = cfgList.size() > 1 && (sizeRange == null || sizeRange.test(cfgList.size() - 1)) && del(idx, true);
+                delButton.active = cfgList.size() >= 1 && (sizeRange == null || sizeRange.test(cfgList.size() - 1)) && del(idx, true);
             }
 
             @Override
