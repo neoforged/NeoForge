@@ -121,7 +121,7 @@ public class NeoForgeConfig {
                     .define("useCombinedDepthStencilAttachment", false);
 
             logUntranslatedConfigurationWarnings = builder
-                    .comment("A config option mainly for developers. Logs out confifiguration values that do not have translations when running a client in a development environment.")
+                    .comment("A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.")
                     .translation("neoforge.configgui.logUntranslatedConfigurationWarnings")
                     .define("logUntranslatedConfigurationWarnings", true);
 

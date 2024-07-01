@@ -48,6 +48,7 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -65,7 +66,7 @@ import net.neoforged.neoforge.common.ModConfigSpec.ValueSpec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ConfigurationScreen extends OptionsSubScreen {
+public final class ConfigurationScreen extends OptionsSubScreen {
     public static class TranslationChecker {
         private static final Logger LOGGER = LogManager.getLogger();
         private final Set<String> untranslatables = new HashSet<String>();
@@ -102,14 +103,12 @@ public class ConfigurationScreen extends OptionsSubScreen {
         }
     }
 
-    public static boolean compactList = false;
-
     private static final String LANG_PREFIX = "neoforge.configuration.uitext.";
+    private static final String SECTION = LANG_PREFIX + "section";
+    private static final String LIST_ELEMENT = LANG_PREFIX + "listelement";
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline");
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan");
     public static final Component TOOLTIP_CANNOT_EDIT_NOT_LOADED = Component.translatable(LANG_PREFIX + "notloaded");
-    private static final String SECTION = LANG_PREFIX + "section";
-    private static final String LIST_ELEMENT = LANG_PREFIX + "listelement";
     public static final Component NEW_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "newlistelement");
     public static final Component MOVE_LIST_ELEMENT_UP = Component.translatable(LANG_PREFIX + "listelementup");
     public static final Component MOVE_LIST_ELEMENT_DOWN = Component.translatable(LANG_PREFIX + "listelementdown");
@@ -127,23 +126,35 @@ public class ConfigurationScreen extends OptionsSubScreen {
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
     public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
     public static final Component RESET_TOOLTIP = Component.translatable(LANG_PREFIX + "reset.tooltip");
-    static final TranslationChecker translationChecker = new TranslationChecker();
+    protected static final TranslationChecker translationChecker = new TranslationChecker();
 
-    private final ModContainer mod;
-    private RestartType needsRestart = RestartType.NONE;
+    protected final ModContainer mod;
+    protected RestartType needsRestart = RestartType.NONE;
 
-    public ConfigurationScreen(final ModContainer mod, final Minecraft mc, final Screen parent) {
-        super(parent, mc.options, Component.translatable(translationChecker.check(mod.getModId() + ".configuration.title")));
+    private final TriFunction<ConfigurationScreen, ModConfig.Type, ModConfig, ConfigurationSectionScreen> sectionScreen;
+    // If there is only one config type (and it can be edited, we show that instantly on the way "down" and want to close on the way "up".
+    // But when returning from the restart/reload confirmation screens, we need to stay open.
+    private boolean autoClose = false;
+
+    public ConfigurationScreen(final ModContainer mod, final Screen parent) {
+        this(mod, parent, ConfigurationSectionScreen::new);
+    }
+
+    @SuppressWarnings("resource")
+    public ConfigurationScreen(final ModContainer mod, final Screen parent, TriFunction<ConfigurationScreen, ModConfig.Type, ModConfig, ConfigurationSectionScreen> sectionScreen) {
+        super(parent, Minecraft.getInstance().options, Component.translatable(translationChecker.check(mod.getModId() + ".configuration.title")));
         this.mod = mod;
+        this.sectionScreen = sectionScreen;
     }
 
     @Override
     protected void addOptions() {
+        List<AbstractWidget> buttons = new ArrayList<>();
         for (final Type type : ModConfig.Type.values()) {
             for (final ModConfig modConfig : ConfigTracker.INSTANCE.configSets().get(type)) {
                 if (modConfig.getModId().equals(mod.getModId())) {
                     final Button btn = Button.builder(Component.translatable(SECTION, Component.translatable(LANG_PREFIX + type.name().toLowerCase())),
-                            button -> minecraft.setScreen(new ConfigurationSectionScreen(mod, minecraft, this, type, modConfig).rebuild())).build();
+                            button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig).rebuild())).build();
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_NOT_LOADED));
                         btn.active = false;
@@ -154,9 +165,23 @@ public class ConfigurationScreen extends OptionsSubScreen {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN));
                         btn.active = false;
                     }
-                    list.addSmall(btn, null);
+                    buttons.add(btn);
                 }
             }
+        }
+        list.addSmall(buttons);
+        if (buttons.size() >= 1 && buttons.getFirst().active) {
+            autoClose = true;
+            ((Button) buttons.getFirst()).onPress();
+        }
+    }
+
+    @Override
+    public void added() {
+        super.added();
+        if (autoClose) {
+            autoClose = false;
+            onClose();
         }
     }
 
@@ -177,7 +202,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 if (minecraft.level != null) {
                     minecraft.setScreen(new ConfirmScreen(b -> {
                         if (b) {
-                            // when changing server configs from the client is added, this is where we tell the server to restart and the new config.
+                            // when changing server configs from the client is added, this is where we tell the server to restart and activate the new config.
                             // also needs a different text in MP ("server will restart/exit, yada yada") than in SP
                             onDisconnect();
                         } else {
@@ -187,9 +212,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
                     return;
                 }
                 // else fallthrough. If no server is running, we don't need to stop one.
-            case NONE:
-                super.onClose();
+            default:
         }
+        super.onClose();
     }
 
     // direct copy from PauseScreen (which has the best implementation), sadly it's not really accessible
@@ -214,21 +239,21 @@ public class ConfigurationScreen extends OptionsSubScreen {
     }
 
     public static class ConfigurationSectionScreen extends OptionsSubScreen {
-        public static record Context(ModContainer mod, Minecraft mc, Screen parent, Type type, ModConfig modConfig, ModConfigSpec modSpec,
+        public static record Context(String modId, Screen parent, Type type, ModConfig modConfig, ModConfigSpec modSpec,
                 Set<? extends Entry> entries, Map<String, Object> valueSpecs, List<String> keylist) {
-            public static Context top(final ModContainer mod, final Minecraft mc, final Screen parent, final Type type, final ModConfig modConfig) {
-                return new Context(mod, mc, parent, type, modConfig, (ModConfigSpec) modConfig.getSpec(), ((ModConfigSpec) modConfig.getSpec()).getValues().entrySet(),
+            public static Context top(final String modId, final Screen parent, final Type type, final ModConfig modConfig) {
+                return new Context(modId, parent, type, modConfig, (ModConfigSpec) modConfig.getSpec(), ((ModConfigSpec) modConfig.getSpec()).getValues().entrySet(),
                         modConfig.getSpec().valueMap(), List.of());
             }
 
             public static Context section(final Context parentContext, final Screen parent, final Set<? extends Entry> entries, final Map<String, Object> valueSpecs,
                     final String key) {
-                return new Context(parentContext.mod, parentContext.mc, parent, parentContext.type, parentContext.modConfig, parentContext.modSpec, entries, valueSpecs,
+                return new Context(parentContext.modId, parent, parentContext.type, parentContext.modConfig, parentContext.modSpec, entries, valueSpecs,
                         parentContext.makeKeyList(key));
             }
 
             public static Context list(final Context parentContext, final Screen parent) {
-                return new Context(parentContext.mod, parentContext.mc, parent, parentContext.type, parentContext.modConfig, parentContext.modSpec,
+                return new Context(parentContext.modId, parent, parentContext.type, parentContext.modConfig, parentContext.modSpec,
                         parentContext.entries, parentContext.valueSpecs, parentContext.keylist);
             }
 
@@ -265,19 +290,20 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected final Button doneButton = Button.builder(CommonComponents.GUI_DONE, button -> onClose()).width(Button.SMALL_WIDTH).build();
         protected final UndoManager undoManager = new UndoManager();
 
-        public ConfigurationSectionScreen(final ModContainer mod, final Minecraft mc, final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
-            this(Context.top(mod, mc, parent, type, modConfig), Component.translatable(translationChecker.check(mod.getModId() + ".configuration." + type.name().toLowerCase() + ".title")));
+        public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
+            this(Context.top(modConfig.getModId(), parent, type, modConfig), Component.translatable(translationChecker.check(modConfig.getModId() + ".configuration." + type.name().toLowerCase() + ".title")));
             needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
         }
 
         public ConfigurationSectionScreen(final Context parentContext, final Screen parent, final Map<String, Object> valueSpecs, final String key,
                 final Set<? extends Entry> entrySet) {
             this(Context.section(parentContext, parent, entrySet, valueSpecs, key),
-                    Component.translatable(translationChecker.check(parentContext.mod.getModId() + ".configuration." + key + ".title")));
+                    Component.translatable(translationChecker.check(parentContext.modId + ".configuration." + key + ".title")));
         }
 
+        @SuppressWarnings("resource")
         public ConfigurationSectionScreen(final Context context, final Component title) {
-            super(context.parent, context.mc.options, title);
+            super(context.parent, Minecraft.getInstance().options, title);
             this.context = context;
         }
 
@@ -293,7 +319,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected String getTranslationKey(final String key) {
             final ValueSpec valueSpec = getValueSpec(key);
             final String result = valueSpec != null ? valueSpec.getTranslationKey() : context.modSpec.getLevelTranslationKey(context.makeKeyList(key));
-            return result != null ? result : context.mod.getModId() + ".configuration." + key;
+            return result != null ? result : context.modId + ".configuration." + key;
         }
 
         protected MutableComponent getTranslationComponent(final String key) {
@@ -312,7 +338,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
         protected Component getTooltipComponent(final String key) {
             return Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD))
                     .append(Component.literal("\n\n")).append(
-                            Component.translatableWithFallback(translationChecker.check(context.mod.getModId() + ".configuration." + key + ".tooltip"), getTooltipString(key)));
+                            Component.translatableWithFallback(translationChecker.check(context.modId + ".configuration." + key + ".tooltip"), getTooltipString(key)));
         }
 
         protected void onChanged(final String key) {
@@ -380,15 +406,11 @@ public class ConfigurationScreen extends OptionsSubScreen {
                     }
                 }
 
-                if (compactList) {
-                    list.addSmall(elements.stream().filter(Objects::nonNull).map(Element::widget).toList());
-                } else {
-                    for (final Element element : elements) {
-                        if (element != null) {
-                            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
-                            label.setTooltip(Tooltip.create(element.tooltip));
-                            list.addSmall(label, element.getWidget(options));
-                        }
+                for (final Element element : elements) {
+                    if (element != null) {
+                        final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
+                        label.setTooltip(Tooltip.create(element.tooltip));
+                        list.addSmall(label, element.getWidget(options));
                     }
                 }
 
@@ -484,7 +506,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
-        public static final Custom<Boolean> BOOLEAN_VALUES_NO_PREFIX = new Custom<>(ImmutableList.of(Boolean.TRUE, Boolean.FALSE));
+        protected static final Custom<Boolean> BOOLEAN_VALUES_NO_PREFIX = new Custom<>(ImmutableList.of(Boolean.TRUE, Boolean.FALSE));
 
         protected Element createBooleanValue(final String key, final ValueSpec spec, final Supplier<Boolean> source, final Consumer<Boolean> target) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
@@ -525,23 +547,27 @@ public class ConfigurationScreen extends OptionsSubScreen {
             final Integer max = range != null ? range.getMax() : Integer.MAX_VALUE;
 
             if (max - min < 256) {
-                return new Element(getTranslationComponent(key), getTooltipComponent(key),
-                        new OptionInstance<>(getTranslationKey(key), getTooltip(key),
-                                (caption, displayvalue) -> Options.genericValueLabel(caption, Component.literal("" + displayvalue)), new OptionInstance.IntRange(min, max),
-                                null /* codec */, source.get(), newValue -> {
-                                    if (!newValue.equals(source.get())) {
-                                        undoManager.add(v -> {
-                                            target.accept(v);
-                                            onChanged(key);
-                                        }, newValue, v -> {
-                                            target.accept(v);
-                                            onChanged(key);
-                                        }, source.get());
-                                    }
-                                }));
+                return createSlider(key, source, target, min, max);
             } else {
                 return createNumberBox(key, spec, source, target, null, Integer::decode, 0);
             }
+        }
+
+        protected Element createSlider(final String key, final Supplier<Integer> source, final Consumer<Integer> target, final Integer min, final Integer max) {
+            return new Element(getTranslationComponent(key), getTooltipComponent(key),
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key),
+                            (caption, displayvalue) -> Options.genericValueLabel(caption, Component.literal("" + displayvalue)), new OptionInstance.IntRange(min, max),
+                            null, source.get(), newValue -> {
+                                if (!newValue.equals(source.get())) {
+                                    undoManager.add(v -> {
+                                        target.accept(v);
+                                        onChanged(key);
+                                    }, newValue, v -> {
+                                        target.accept(v);
+                                        onChanged(key);
+                                    }, source.get());
+                                }
+                            }));
         }
 
         protected Element createLongValue(final String key, final ValueSpec spec, final Supplier<Long> source, final Consumer<Long> target) {
@@ -595,19 +621,17 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
         protected Element createSection(final String key, final UnmodifiableConfig subconfig, final UnmodifiableConfig subsection) {
             return new Element(Component.empty(), Component.empty(),
-                    Button
-                            .builder(Component.translatable(SECTION, getTranslationComponent(key)),
-                                    button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
-                                            k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet()).rebuild())))
+                    Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
+                            button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
+                                    k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet()).rebuild())))
                             .tooltip(Tooltip.create(getTooltipComponent(key))).build());
         }
 
         protected <T> Element createList(final String key, final ListValueSpec spec, final ModConfigSpec.ConfigValue<List<T>> list) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
-                    Button
-                            .builder(Component.translatable(SECTION, getTranslationComponent(key)),
-                                    button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
-                                            k -> new ConfigurationListScreen<>(Context.list(context, this), key, getTranslationComponent(key), spec, list)).rebuild()))
+                    Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
+                            button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
+                                    k -> new ConfigurationListScreen<>(Context.list(context, this), key, getTranslationComponent(key), spec, list)).rebuild()))
                             .tooltip(Tooltip.create(getTooltipComponent(key))).build());
         }
 
@@ -653,17 +677,15 @@ public class ConfigurationScreen extends OptionsSubScreen {
             resetButton = Button.builder(RESET, button -> {
                 List<UndoManager.Step<?>> list = new ArrayList<>();
                 for (final Entry entry : context.entries) {
-                    if (entry.getRawValue() instanceof final ModConfigSpec.ConfigValue cv) {
-                        if (!(getValueSpec(entry.getKey()) instanceof ListValueSpec) && isNonDefault(cv)) {
-                            final String key = entry.getKey();
-                            list.add(undoManager.step(v -> {
-                                cv.set(v);
-                                onChanged(key);
-                            }, getValueSpec(key).correct(null), v -> {
-                                cv.set(v);
-                                onChanged(key);
-                            }, cv.get()));
-                        }
+                    if (entry.getRawValue() instanceof final ModConfigSpec.ConfigValue cv && !(getValueSpec(entry.getKey()) instanceof ListValueSpec) && isNonDefault(cv)) {
+                        final String key = entry.getKey();
+                        list.add(undoManager.step(v -> {
+                            cv.set(v);
+                            onChanged(key);
+                        }, getValueSpec(key).correct(null), v -> {
+                            cv.set(v);
+                            onChanged(key);
+                        }, cv.get()));
                     }
                 }
                 undoManager.add(list);
@@ -705,16 +727,16 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
         // the original data
         protected final ModConfigSpec.ConfigValue<List<T>> valueList;
-        // the copy of the real data we are working on
+        // the copy of the data we are working on
         protected List<T> cfgList;
 
         public ConfigurationListScreen(final Context context, final String key, final Component title, final ListValueSpec spec,
                 final ModConfigSpec.ConfigValue<List<T>> valueList) {
             super(context, title);
             this.key = key;
+            this.spec = spec;
             this.valueList = valueList; // === (ListValueSpec)getValueSpec(key)
             this.cfgList = new ArrayList<>(valueList.get());
-            this.spec = spec;
         }
 
         @Override
@@ -808,9 +830,18 @@ public class ConfigurationScreen extends OptionsSubScreen {
         }
 
         /**
-         * Called when a list element is found that has an unknown or unsupported data type. Override this to produce whatever UI elements are appropriate for this object.<p>
+         * Called when a list element is found that has an unknown or unsupported data type. Override this to produce whatever
+         * UI elements are appropriate for this object.<p>
          * 
-         * Note that all types of elements that can be read from the config file as part of a list are already supported. You only need this if you manupulate the contents of the list after it has been loaded.
+         * Note that all types of elements that can be read from the config file as part of a list are already supported. You
+         * only need this if you manipulate the contents of the list after it has been loaded.<p>
+         * 
+         * If this returns null, no row will be shown on the screen, but the up/down buttons will still see your element.
+         * Which means that the user will see no change when moving another element over the hidden line. Consider returning
+         * a {@link StringWidget} as a placeholder instead.<p>
+         * 
+         * Do <em>not</em> capture {@link #cfgList} here or in another create*Value() method. The undo/reset system will
+         * replace the list, so you need to always access the field. You can (and should) capture the index.
          * 
          * @param idx   The index into the list.
          * @param entry The entry itself.
@@ -848,7 +879,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
         }
 
         /**
-         * Swap the given element with the next one.
+         * Swap the given element with the next one. Should be called by the list label widget to manipulate the list.
          */
         protected boolean swap(final int idx, final boolean simulate) {
             final List<T> values = new ArrayList<>(cfgList);
@@ -867,6 +898,9 @@ public class ConfigurationScreen extends OptionsSubScreen {
             return valid;
         }
 
+        /**
+         * Remove the given element. Should be called by the list label widget to manipulate the list.
+         */
         protected boolean del(final int idx, final boolean simulate) {
             final List<T> values = new ArrayList<>(cfgList);
             values.remove(idx);
@@ -903,7 +937,8 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
         protected void onChanged(final String key) {
             changed = true;
-            // parent's onChanged() will be fired when we actually assign the changed list
+            // parent's onChanged() will be fired when we actually assign the changed list. For now,
+            // we've only changed our working copy.
         }
 
         @SuppressWarnings("unchecked")
@@ -928,6 +963,12 @@ public class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
+        /**
+         * A widget to be used as a label in a list of configuration values.<p>
+         * 
+         * It includes buttons for "move element up", "move element down", and "delete element" as well as a label.
+         * 
+         */
         public class ListLabelWidget extends AbstractContainerWidget {
             protected final Button upButton = Button.builder(MOVE_LIST_ELEMENT_UP, this::up).build();
             protected final Button downButton = Button.builder(MOVE_LIST_ELEMENT_DOWN, this::down).build();
@@ -936,14 +977,13 @@ public class ConfigurationScreen extends OptionsSubScreen {
             protected final int idx;
             protected final boolean isFirst;
             protected final boolean isLast;
-            protected int recheck = 20;
 
-            public ListLabelWidget(final int x, final int y, final int width, final int height, final Component message, final int idx) {
-                super(x, y, width, height, message);
+            public ListLabelWidget(final int x, final int y, final int width, final int height, final Component labelText, final int idx) {
+                super(x, y, width, height, labelText);
                 this.idx = idx;
                 this.isFirst = idx == 0;
                 this.isLast = idx + 1 == cfgList.size();
-                label.setMessage(message);
+                label.setMessage(labelText);
                 checkButtons();
                 updateLayout();
             }
@@ -1019,11 +1059,7 @@ public class ConfigurationScreen extends OptionsSubScreen {
 
             @Override
             protected void renderWidget(final GuiGraphics pGuiGraphics, final int pMouseX, final int pMouseY, final float pPartialTick) {
-                if (recheck-- < 0) {
-                    // the check is relatively expensive and it is unlikely that it changes as the list is rebuilt on change. Still, a mod may have a list
-                    // where the deletability of an element depends on the value of another. So periodically re-run the check.
-                    checkButtons();
-                }
+                checkButtons();
                 label.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
                 if (!isFirst) {
                     upButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
@@ -1041,7 +1077,6 @@ public class ConfigurationScreen extends OptionsSubScreen {
                 downButton.active = !isLast && swap(idx, true);
                 Range<Integer> sizeRange = spec.getSizeRange();
                 delButton.active = cfgList.size() > 1 && (sizeRange == null || sizeRange.test(cfgList.size() - 1)) && del(idx, true);
-                recheck = 20;
             }
 
             @Override
