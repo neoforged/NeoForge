@@ -170,7 +170,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
         }
         list.addSmall(buttons);
-        if (buttons.size() >= 1 && buttons.getFirst().active) {
+        if (buttons.size() == 1 && buttons.getFirst().active) {
             autoClose = true;
             ((Button) buttons.getFirst()).onPress();
         }
