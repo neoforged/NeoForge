@@ -24,6 +24,7 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityEquipmentPredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.advancements.critereon.PlayerInteractTrigger;
@@ -49,6 +50,7 @@ import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
+import net.neoforged.neoforge.common.advancements.critereon.SnowBootsEntityPredicate;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +65,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         criteriaReplacers.add(replaceMatchToolCriteria(ItemAbilities.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(ItemAbilities.SHEARS_REMOVE_ARMOR)).build(), Items.SHEARS));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build(), PiglinAi.BARTERING_ITEM));
-        criteriaReplacers.add(replaceWearingPredicate(EntityPredicate.Builder.entity().subPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE).build(), predicate -> {
+        criteriaReplacers.add(replaceWearingPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE, predicate -> {
             if (predicate.head().filter(item -> predicateMatches(item, Items.GOLDEN_HELMET)).isPresent()) {
                 return true;
             } else if (predicate.chest().filter(item -> predicateMatches(item, Items.GOLDEN_CHESTPLATE)).isPresent()) {
@@ -73,6 +75,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
             }
             return predicate.feet().filter(item -> predicateMatches(item, Items.GOLDEN_BOOTS)).isPresent();
         }));
+        //Walk on powdered snow
+        criteriaReplacers.add(replaceWearingPredicate(SnowBootsEntityPredicate.INSTANCE, predicate -> predicate.feet().filter(item -> predicateMatches(item, Items.LEATHER_BOOTS)).isPresent()));
 
         List<AdvancementSubProvider> subProviders = getPrivateValue(net.minecraft.data.advancements.AdvancementProvider.class, VanillaAdvancementProvider.create(output, registries), "subProviders");
         return subProviders.stream()
@@ -123,17 +127,42 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         return true;
     }
 
-    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceWearingPredicate(EntityPredicate replacement, Predicate<EntityEquipmentPredicate> shouldReplace) {
+    private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceWearingPredicate(EntitySubPredicate subPredicate, Predicate<EntityEquipmentPredicate> shouldReplace) {
         return replacePlayerPredicate(condition -> {
+            boolean invert = false;
             if (condition instanceof InvertedLootItemCondition inverted) {
-                if (inverted.term() instanceof LootItemEntityPropertyCondition entityPropertyCondition) {
-                    Optional<EntityPredicate> predicate = entityPropertyCondition.predicate();
-                    if (predicate.isPresent()) {
-                        EntityPredicate entityPredicate = predicate.get();
-                        if (entityPredicate.equipment().filter(shouldReplace).isPresent()) {
-                            //Note: We as currently there are no issues, we just skip any cases where other fields in the entity predicate are present
-                            return LootItemEntityPropertyCondition.hasProperties(entityPropertyCondition.entityTarget(), replacement).invert().build();
+                condition = inverted.term();
+                invert = true;
+            }
+            if (condition instanceof LootItemEntityPropertyCondition entityPropertyCondition) {
+                Optional<EntityPredicate> predicate = entityPropertyCondition.predicate();
+                if (predicate.isPresent()) {
+                    EntityPredicate entityPredicate = predicate.get();
+                    if (entityPredicate.equipment().filter(shouldReplace).isPresent()) {
+                        if (entityPredicate.subPredicate().isPresent()) {
+                            throw new IllegalStateException("Attempting to replace an entity predicate that already has a sub predicate");
                         }
+                        EntityPredicate replacement = new EntityPredicate(
+                                entityPredicate.entityType(),
+                                entityPredicate.distanceToPlayer(),
+                                entityPredicate.movement(),
+                                entityPredicate.location(),
+                                entityPredicate.effects(),
+                                entityPredicate.nbt(),
+                                entityPredicate.flags(),
+                                Optional.empty(),
+                                Optional.of(subPredicate),
+                                entityPredicate.periodicTick(),
+                                entityPredicate.vehicle(),
+                                entityPredicate.passenger(),
+                                entityPredicate.targetedEntity(),
+                                entityPredicate.team(),
+                                entityPredicate.slots());
+                        LootItemCondition.Builder conditionBuilder = LootItemEntityPropertyCondition.hasProperties(entityPropertyCondition.entityTarget(), replacement);
+                        if (invert) {
+                            return conditionBuilder.invert().build();
+                        }
+                        return conditionBuilder.build();
                     }
                 }
             }
