@@ -118,6 +118,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         tagWithOptionalLegacy(Tags.DamageTypes.NO_FLINCH);
     }
 
+    /** {@return an appender for vanilla tags that contain the given entry directly} */
     private TagAppender<DamageType> addAsVanilla(ResourceKey<DamageType> entry) {
         final List<TagBuilder> builders = new ArrayList<>();
         vanillaBuilders.forEach((location, tagBuilder) -> {
