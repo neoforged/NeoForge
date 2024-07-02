@@ -30,7 +30,7 @@ public class BlockEntityTypeValidBlocksEventTests {
     private static boolean wasArgumentExceptionThrownForInvalidBlockClass = false;
 
     @Test
-    void testStartupConfigs() {
+    void testAddingNewSignToBlockEntityValueBlocksField() {
         Assertions.assertTrue(BlockEntityType.SIGN.isValid(BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(MOD_ID, "test_sign_block")).defaultBlockState()),
                 "Adding modded Sign to Signs Block Entity Type's valid blocks should had succeeded.");
 

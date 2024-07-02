@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.event;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -13,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
@@ -25,6 +25,11 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Allows injecting new blocks into a block entity's {@link BlockEntityType#validBlocks} field in a safe manner.
+ * The class of the newly injected block should share the highest common class that all existing blocks in the targeted validBlocks has.
+ * Please use this event instead of manipulating {@link BlockEntityType} directly.
+ */
 public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent {
     private static final MethodHandle VALID_BLOCKS_SETTER_METHOD_HANDLE;
     static {
@@ -111,10 +116,11 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
             BlockEntityTypeAddBlocksEvent event = new BlockEntityTypeAddBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
             ModLoader.postEvent(event); // Allow modders to add to the list in the events.
             try {
-                VALID_BLOCKS_SETTER_METHOD_HANDLE.invoke(blockEntityTypeEntry.getValue(), event.getCurrentValidBlocks()); // Set the validBlocks field without exposing a setter publicly.
+                // Set the validBlocks field without exposing a setter publicly.
+                VALID_BLOCKS_SETTER_METHOD_HANDLE.invokeExact(blockEntityTypeEntry.getValue(), event.getCurrentValidBlocks());
             } catch (Throwable e) {
                 // Required catch so our unhandled exception does not need to be marked on many methods.
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getCause());
             }
         }
     }
