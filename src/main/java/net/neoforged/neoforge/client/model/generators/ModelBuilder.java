@@ -491,6 +491,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @throws NullPointerException if {@code action} is {@code null}
          */
         public ElementBuilder allFacesExcept(BiConsumer<Direction, FaceBuilder> action, Direction... exceptions) {
+            List<Direction> exc = Arrays.asList(exceptions);
             Arrays.stream(Direction.values()).
                 filter(dir -> !exc.contains(dir)).
                 forEach(d -> action.accept(d, face(d)));
