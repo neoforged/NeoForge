@@ -5,12 +5,18 @@
 
 package net.neoforged.neoforge.common.data;
 
+import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.DamageTypeTagsProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagBuilder;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -22,9 +28,25 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
+    private final Map<ResourceLocation, TagBuilder> vanillaBuilders = Maps.newLinkedHashMap();
+    private boolean inVanilla;
+
+    @Override
+    protected TagAppender<DamageType> tag(TagKey<DamageType> tag) {
+        if (inVanilla) {
+            return new TagAppender<>(this.vanillaBuilders.computeIfAbsent(tag.location(), location -> TagBuilder.create()), "minecraft") {};
+        }
+        return super.tag(tag);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     protected void addTags(HolderLookup.Provider lookupProvider) {
+        // Collect vanilla tags
+        inVanilla = true;
+        super.addTags(lookupProvider);
+        inVanilla = false;
+
         tag(NeoForgeMod.POISON_DAMAGE, Tags.DamageTypes.IS_POISON);
 
         tag(DamageTypes.WITHER, Tags.DamageTypes.IS_WITHER);
@@ -35,6 +57,9 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         tag(DamageTypes.THORNS, Tags.DamageTypes.IS_MAGIC);
         tag(DamageTypes.DRAGON_BREATH, Tags.DamageTypes.IS_MAGIC);
         tag(Tags.DamageTypes.IS_MAGIC).addTags(Tags.DamageTypes.IS_POISON, Tags.DamageTypes.IS_WITHER);
+
+        // Poisons should have the same behaviour as in vanilla
+        addAsVanilla(DamageTypes.MAGIC).addTags(Tags.DamageTypes.IS_POISON);
 
         tag(DamageTypes.IN_FIRE, Tags.DamageTypes.IS_ENVIRONMENT);
         tag(DamageTypes.ON_FIRE, Tags.DamageTypes.IS_ENVIRONMENT);
@@ -90,6 +115,22 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         tagWithOptionalLegacy(Tags.DamageTypes.IS_PHYSICAL);
         tagWithOptionalLegacy(Tags.DamageTypes.IS_TECHNICAL);
         tagWithOptionalLegacy(Tags.DamageTypes.NO_FLINCH);
+    }
+
+    private TagAppender<DamageType> addAsVanilla(ResourceKey<DamageType> entry) {
+        final List<TagBuilder> builders = new ArrayList<>();
+        vanillaBuilders.forEach((location, tagBuilder) -> {
+            if (tagBuilder.build().stream().anyMatch(tagEntry -> tagEntry.verifyIfPresent(element -> element.equals(entry.location()), tag -> false))) {
+                builders.add(getOrCreateRawBuilder(TagKey.create(registryKey, location)));
+            }
+        });
+        return new TagAppender<>(new TagBuilder() {
+            @Override
+            public TagBuilder add(TagEntry entry) {
+                builders.forEach(builder -> builder.add(entry));
+                return super.add(entry);
+            }
+        }, modId) {};
     }
 
     @SafeVarargs
