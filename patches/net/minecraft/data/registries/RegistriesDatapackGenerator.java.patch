@@ -53,7 +53,7 @@
                                          p_256000_,
 -                                        p_256449_.elementCodec(),
 -                                        p_256105_.value()
-+                                        p_256449_.conditionalCodec(),
++                                        net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec()),
 +                                        Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions, p_256105_.value()))
                                      )
                              )
