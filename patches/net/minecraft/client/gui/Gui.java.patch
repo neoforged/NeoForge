@@ -127,7 +127,7 @@
 +            
 +            // The event is given the absolute Y position; account for chat component's own offsetting here
 +            p_316307_.pose().pushPose();
-+            p_316307_.pose().translate(event.getPosX(), event.getPosY() - (p_316307_.guiHeight() + chatBottomMargin) / this.chat.getScale(), 0.0F);
++            p_316307_.pose().translate(event.getPosX(), (event.getPosY() - p_316307_.guiHeight() + chatBottomMargin) / this.chat.getScale(), 0.0F);
              int i = Mth.floor(this.minecraft.mouseHandler.xpos() * (double)window.getGuiScaledWidth() / (double)window.getScreenWidth());
              int j = Mth.floor(this.minecraft.mouseHandler.ypos() * (double)window.getGuiScaledHeight() / (double)window.getScreenHeight());
              this.chat.render(p_316307_, this.tickCount, i, j, false);
