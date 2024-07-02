@@ -162,7 +162,7 @@ public class DamageContainer {
     }
 
     private float modifyReduction(Reduction type, float reduction) {
-        for (var func : reductionFunctions.getOrDefault(type, new ArrayList<>())) {
+        for (var func : reductionFunctions.getOrDefault(type, List.of())) {
             reduction = func.modify(this, reduction);
         }
         return reduction;
