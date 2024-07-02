@@ -12,18 +12,18 @@
      private final PackOutput output;
      private final CompletableFuture<HolderLookup.Provider> registries;
 +    private final java.util.function.Predicate<String> namespacePredicate;
-+    private final java.util.List<net.neoforged.neoforge.common.conditions.ICondition> conditions;
++    private final java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions;
  
 +    @Deprecated
      public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_) {
-+        this(p_256643_, p_255780_, null, java.util.List.of());
++        this(p_256643_, p_255780_, null, java.util.Map.of());
 +    }
 +
 +    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds) {
-+        this(p_256643_, p_255780_, modIds, java.util.List.of());
++        this(p_256643_, p_255780_, modIds, java.util.Map.of());
 +    }
 +
-+    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds, java.util.List<net.neoforged.neoforge.common.conditions.ICondition> conditions) {
++    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions) {
 +        this.namespacePredicate = modIds == null ? namespace -> true : modIds::contains;
          this.registries = p_255780_;
          this.output = p_256643_;
@@ -54,7 +54,7 @@
 -                                        p_256449_.elementCodec(),
 -                                        p_256105_.value()
 +                                        net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec()),
-+                                        Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions, p_256105_.value()))
++                                        Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(p_256105_.key(), java.util.List.of()), p_256105_.value()))
                                      )
                              )
                              .toArray(CompletableFuture[]::new)
