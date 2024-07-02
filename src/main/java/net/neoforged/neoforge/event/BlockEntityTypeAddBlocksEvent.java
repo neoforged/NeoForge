@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.event;
 
 import com.google.common.base.Suppliers;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.mixins.BlockEntityTypeAccessor;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -31,15 +30,6 @@ import org.jetbrains.annotations.Nullable;
  * Please use this event instead of manipulating {@link BlockEntityType} directly.
  */
 public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent {
-    private static final MethodHandle VALID_BLOCKS_SETTER_METHOD_HANDLE;
-    static {
-        try {
-            VALID_BLOCKS_SETTER_METHOD_HANDLE = MethodHandles.privateLookupIn(BlockEntityType.class, MethodHandles.lookup()).findSetter(BlockEntityType.class, "validBlocks", Set.class);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private final ResourceKey<BlockEntityType<?>> blockEntityTypeResourceKey;
     private final BlockEntityType<?> blockEntityType;
     private final Set<Block> currentValidBlocks;
@@ -115,13 +105,9 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
         for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
             BlockEntityTypeAddBlocksEvent event = new BlockEntityTypeAddBlocksEvent(blockEntityTypeEntry.getKey(), blockEntityTypeEntry.getValue());
             ModLoader.postEvent(event); // Allow modders to add to the list in the events.
-            try {
-                // Set the validBlocks field without exposing a setter publicly.
-                VALID_BLOCKS_SETTER_METHOD_HANDLE.invokeExact(blockEntityTypeEntry.getValue(), event.getCurrentValidBlocks());
-            } catch (Throwable e) {
-                // Required catch so our unhandled exception does not need to be marked on many methods.
-                throw new RuntimeException(e.getCause());
-            }
+
+            // Set the validBlocks field without exposing a setter publicly.
+            ((BlockEntityTypeAccessor) blockEntityTypeEntry.getValue()).setValidBlocks(event.getCurrentValidBlocks());
         }
     }
 }
