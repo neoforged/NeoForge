@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess, CommandSource, ScoreHolder {
-+public abstract class Entity extends net.neoforged.neoforge.attachment.AttachmentHolder implements SyncedDataHolder, Nameable, EntityAccess, CommandSource, ScoreHolder, net.neoforged.neoforge.common.extensions.IEntityExtension {
++public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess, CommandSource, ScoreHolder, net.neoforged.neoforge.common.extensions.IEntityExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final String ID_TAG = "id";
      public static final String PASSENGERS_TAG = "Passengers";
@@ -201,8 +201,8 @@
                  p_20241_.put("Tags", listtag);
              }
  
-+            CompoundTag attachments = serializeAttachments(registryAccess());
-+            if (attachments != null) p_20241_.put(ATTACHMENTS_NBT_KEY, attachments);
++            var attachments = dataAttachments.serializeAttachments(level.registryAccess());
++            if (attachments != null && !attachments.isEmpty()) p_20241_.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, attachments);
 +            if (persistentData != null) p_20241_.put("NeoForgeData", persistentData.copy());
 +
              this.addAdditionalSaveData(p_20241_);
@@ -213,7 +213,7 @@
                  this.setTicksFrozen(p_20259_.getInt("TicksFrozen"));
                  this.hasVisualFire = p_20259_.getBoolean("HasVisualFire");
 +                if (p_20259_.contains("NeoForgeData", 10)) persistentData = p_20259_.getCompound("NeoForgeData");
-+                if (p_20259_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(registryAccess(), p_20259_.getCompound(ATTACHMENTS_NBT_KEY));
++                if (p_20259_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) dataAttachments.deserializeAttachments(registryAccess(), p_20259_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
                  if (p_20259_.contains("Tags", 9)) {
                      this.tags.clear();
                      ListTag listtag3 = p_20259_.getList("Tags", 8);
@@ -452,7 +452,7 @@
      }
  
      public void checkDespawn() {
-@@ -3450,6 +_,109 @@
+@@ -3450,6 +_,105 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }
@@ -540,12 +540,8 @@
 +        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
 +    }
 +
-+    @Override
-+    @Nullable
-+    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        // Entities are always saved, no setChanged() call is necessary.
-+        return super.setData(type, data);
-+    }
++    final net.neoforged.neoforge.attachment.AttachmentHolder<Entity> dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder<Entity>(this);
++    public final net.neoforged.neoforge.attachment.AttachmentHolder<Entity> dataAttachments() { return dataAttachments; }
 +
 +    @Nullable
 +    public final <T, C> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, C> capability, @org.jetbrains.annotations.UnknownNullability C context) {

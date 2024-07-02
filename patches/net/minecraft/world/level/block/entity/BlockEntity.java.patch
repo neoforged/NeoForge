@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
-+public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
++public abstract class BlockEntity implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
      private final BlockEntityType<?> type;
      @Nullable
@@ -23,7 +23,7 @@
  
      protected void loadAdditional(CompoundTag p_338466_, HolderLookup.Provider p_338445_) {
 +        if (p_338466_.contains("NeoForgeData", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.customPersistentData = p_338466_.getCompound("NeoForgeData");
-+        if (p_338466_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(p_338445_, p_338466_.getCompound(ATTACHMENTS_NBT_KEY));
++        if (p_338466_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) dataAttachments.deserializeAttachments(p_338445_, p_338466_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
      }
  
      public final void loadWithComponents(CompoundTag p_338356_, HolderLookup.Provider p_338558_) {
@@ -32,8 +32,8 @@
  
      protected void saveAdditional(CompoundTag p_187471_, HolderLookup.Provider p_323635_) {
 +        if (this.customPersistentData != null) p_187471_.put("NeoForgeData", this.customPersistentData.copy());
-+        var attachmentsTag = serializeAttachments(p_323635_);
-+        if (attachmentsTag != null) p_187471_.put(ATTACHMENTS_NBT_KEY, attachmentsTag);
++        var attachmentsTag = dataAttachments.serializeAttachments(p_323635_);
++        if (!attachmentsTag.isEmpty()) p_187471_.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, attachmentsTag);
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
@@ -52,7 +52,7 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -231,6 +_,27 @@
+@@ -231,6 +_,30 @@
          return this.type;
      }
  
@@ -63,18 +63,21 @@
 +        return this.customPersistentData;
 +    }
 +
++    final net.neoforged.neoforge.attachment.AttachmentHolder<BlockEntity> dataAttachments = new net.neoforged.neoforge.attachment.AttachmentHolder<>(this);
++    public final net.neoforged.neoforge.attachment.AttachmentHolder<BlockEntity> dataAttachments() { return dataAttachments; }
++
 +    @Override
 +    @Nullable
 +    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        setChanged();
-+        return super.setData(type, data);
++        return dataAttachments.setData(type, data);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
 +        setChanged();
-+        return super.removeData(type);
++        return dataAttachments.removeData(type);
 +    }
 +
      @Deprecated

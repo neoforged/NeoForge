@@ -26,6 +26,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolderExtension;
+import net.neoforged.neoforge.attachment.PendingAttachmentCopy;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -34,7 +36,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
-public interface IEntityExtension extends INBTSerializable<CompoundTag> {
+public interface IEntityExtension extends INBTSerializable<CompoundTag>, IAttachmentHolderExtension<Entity> {
     private Entity self() {
         return (Entity) this;
     }
@@ -401,6 +403,16 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      *                if {@code false}, all serializable attachments are copied.
      */
     default void copyAttachmentsFrom(Entity other, boolean isDeath) {
-        AttachmentInternals.copyEntityAttachments(other, self(), isDeath);
+        AttachmentInternals.copyEntityAttachments(other, self(), isDeath ? PendingAttachmentCopy.CopyReason.ENTITY_DEATH : PendingAttachmentCopy.CopyReason.NOT_SPECIFIED);
+    }
+
+    /**
+     * Copies the serialized attachments from another entity to this entity.
+     *
+     * @param other  the entity that attachments should be copied from
+     * @param reason the reason data is being copied; may be death, conversion, or another reason
+     */
+    default void copyAttachmentsFrom(Entity other, PendingAttachmentCopy.CopyReason reason) {
+        AttachmentInternals.copyEntityAttachments(other, self(), reason);
     }
 }

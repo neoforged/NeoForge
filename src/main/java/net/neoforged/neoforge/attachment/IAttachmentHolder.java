@@ -7,12 +7,15 @@ package net.neoforged.neoforge.attachment;
 
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * An object that can hold data attachments.
  */
-public interface IAttachmentHolder {
+public interface IAttachmentHolder<TParent> {
+    TParent parent();
+
     /**
      * Returns {@code true} if there is any data attachments, {@code false} otherwise.
      */
@@ -94,4 +97,6 @@ public interface IAttachmentHolder {
     default <T> @Nullable T removeData(Supplier<AttachmentType<T>> type) {
         return removeData(type.get());
     }
+
+    Stream<AttachmentType<?>> existingDataTypes();
 }
