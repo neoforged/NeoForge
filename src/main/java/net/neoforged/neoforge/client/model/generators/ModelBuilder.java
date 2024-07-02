@@ -486,15 +486,14 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * faces as necessary.
          *
          * @param action the function to apply to each direction
-         * @param exceptions directions which will be excluded from adding to model file
+         * @param exc directions which will be excluded from adding to model file
          * @return this builder
          * @throws NullPointerException if {@code action} is {@code null}
          */
-        public ElementBuilder allFacesExcept(BiConsumer<Direction, FaceBuilder> action, Direction... exceptions) {
-            List<Direction> exc = Arrays.asList(exceptions);
-            Arrays.stream(Direction.values()).
-                filter(dir -> !exc.contains(dir)).
-                forEach(d -> action.accept(d, face(d)));
+        public ElementBuilder allFacesExcept(BiConsumer<Direction, FaceBuilder> action, Set<Direction> exc) {
+            Arrays.stream(Direction.values())
+                .filter(d -> !exc.contains(d))
+                .forEach(d -> action.accept(d, face(d)));
             return this;
         }
 
