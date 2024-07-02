@@ -480,6 +480,23 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
             return this;
         }
 
+
+         /**
+         * Modify all <em>possible</em> faces except provided in second argument dynamically using a function, creating new
+         * faces as necessary.
+         *
+         * @param action the function to apply to each direction
+         * @param exceptions directions which will be excluded from adding to model file
+         * @return this builder
+         * @throws NullPointerException if {@code action} is {@code null}
+         */
+        public ElementBuilder allFacesExcept(BiConsumer<Direction, FaceBuilder> action, Direction... exceptions) {
+            Arrays.stream(Direction.values()).
+                filter(dir -> !exc.contains(dir)).
+                forEach(d -> action.accept(d, face(d)));
+            return this;
+        }
+
         /**
          * Modify all <em>existing</em> faces dynamically using a function.
          *
