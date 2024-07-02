@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -17,13 +_,26 @@
+@@ -17,13 +_,30 @@
  import net.minecraft.resources.RegistryDataLoader;
  import net.minecraft.resources.ResourceKey;
  
@@ -17,6 +17,10 @@
 +    @Deprecated
      public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_) {
 +        this(p_256643_, p_255780_, null, java.util.List.of());
++    }
++
++    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds) {
++        this(p_256643_, p_255780_, modIds, java.util.List.of());
 +    }
 +
 +    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds, java.util.List<net.neoforged.neoforge.common.conditions.ICondition> conditions) {
