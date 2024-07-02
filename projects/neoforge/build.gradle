@@ -429,6 +429,17 @@ dependencies {
     }
 }
 
+processResources {
+    inputs.property("version", project.version)
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand([
+                "global": [
+                        "neoForgeVersion": project.version
+                ]
+        ])
+    }
+}
+
 afterEvaluate {
     artifacts {
         modDevBundle(userdevJar) {
