@@ -50,14 +50,11 @@ public class BlockEntityTypeValidBlocksEventTests {
         }
 
         public static void onBlockEntityValidBlocks(BlockEntityTypeAddBlocksEvent event) {
-            if (event.getBlockEntityType().equals(BlockEntityType.SIGN)) {
-                event.addValidBlock(TEST_SIGN_BLOCK.get());
-
-                try {
-                    event.addValidBlock(TEST_BED_BLOCK.get());
-                } catch (IllegalArgumentException illegalArgumentException) {
-                    wasArgumentExceptionThrownForInvalidBlockClass = true;
-                }
+            event.modify(BlockEntityType.SIGN, TEST_SIGN_BLOCK.get());
+            try {
+                event.modify(BlockEntityType.SIGN, TEST_BED_BLOCK.get());
+            } catch (IllegalArgumentException illegalArgumentException) {
+                wasArgumentExceptionThrownForInvalidBlockClass = true;
             }
         }
     }

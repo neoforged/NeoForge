@@ -100,7 +100,7 @@ public class GameData {
         } else {
             CommonHooks.modifyAttributes();
             SpawnPlacements.fireSpawnPlacementEvent();
-            BlockEntityTypeAddBlocksEvent.fireBlockEntityTypeValidAdditions();
+            net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent());
             CreativeModeTabRegistry.sortTabs();
         }
     }
