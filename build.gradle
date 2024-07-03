@@ -67,6 +67,11 @@ license {
 
 // Put spotless here because it wants the files to live inside the project root
 immaculate {
+    workflows.named("java") {
+        files.from rootProject.fileTree("src", {
+            include "**/*.java"
+        })
+    }
     workflows.register("patches") {
         files.from(rootProject.fileTree("patches"))
 
