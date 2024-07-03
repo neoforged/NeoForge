@@ -16,10 +16,15 @@
                  stopwatch1.start();
                  hashcache.applyUpdate(hashcache.generateUpdate(p_254418_, p_253750_::run).join());
                  stopwatch1.stop();
-@@ -56,6 +_,34 @@
+@@ -56,6 +_,51 @@
      public DataGenerator.PackGenerator getBuiltinDatapack(boolean p_253826_, String p_254134_) {
          Path path = this.vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("minecraft").resolve("datapacks").resolve(p_254134_);
          return new DataGenerator.PackGenerator(p_253826_, p_254134_, new PackOutput(path));
++    }
++
++    public PackGenerator getBuiltinDatapack(boolean run, String namespace, String path) {
++        var packPath = vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(namespace).resolve("datapacks").resolve(path);
++        return new PackGenerator(run, namespace + '_' + path, new PackOutput(packPath));
 +    }
 +
 +    public Map<String, DataProvider> getProvidersView() {
@@ -48,6 +53,18 @@
 +            DataGenerator.this.providersToRun.put(id, provider);
 +
 +        return provider;
++    }
++
++    public void merge(DataGenerator other) {
++        other.providersToRun.forEach((id, provider) -> {
++            if(!allProviderIds.add(id))
++                throw new IllegalStateException("Duplicate provider: " + id);
++
++            providersToRun.put(id, provider);
++        });
++
++        other.providersToRun.clear();
++        other.allProviderIds.clear();
      }
  
      static {
