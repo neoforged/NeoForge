@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -28,13 +_,15 @@
+@@ -28,13 +_,14 @@
              ItemStack itemstack = player.getProjectile(p_40667_);
              if (!itemstack.isEmpty()) {
                  int i = this.getUseDuration(p_40667_, p_40669_) - p_40670_;
@@ -9,11 +9,8 @@
                  float f = getPowerForTime(i);
                  if (!((double)f < 0.1)) {
                      List<ItemStack> list = draw(p_40667_, itemstack, player);
--                    if (p_40668_ instanceof ServerLevel serverlevel && !list.isEmpty()) {
--                        this.shoot(serverlevel, player, player.getUsedItemHand(), p_40667_, list, f * 3.0F, 1.0F, f == 1.0F, null);
-+                    if (p_40668_ instanceof ServerLevel serverLevel && !list.isEmpty()) {
-+                        this.shoot(serverLevel, player, player.getUsedItemHand(), p_40667_, list, f * 3.0F, 1.0F, f == 1.0F, null);
-+
+                     if (p_40668_ instanceof ServerLevel serverlevel && !list.isEmpty()) {
+                         this.shoot(serverlevel, player, player.getUsedItemHand(), p_40667_, list, f * 3.0F, 1.0F, f == 1.0F, null);
                      }
 -
                      p_40668_.playSound(
