@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "Перелік модів сервера не сумісний",
   "fml.menu.multiplayer.networkincompatible": "Перелік мережевих повідомлень сервера не сумісний",
   "fml.menu.multiplayer.missingdatapackregistries": "Відсутні необхідні реєстри наборів даних: %1$s",
-  "fml.menu.branding": "%s (%s mods)",
+  "fml.menu.branding": "%s (%s модів)",
   "fml.menu.notification.title": "Сповіщення запуску",
   "fml.menu.accessdenied.title": "Відмовлено в доступі до сервера",
   "fml.menu.accessdenied.message": "Fancy Mod Loader не зміг приєднатися до цього сервера\nСервер %1$s заборонив доступ для гравців з модами",
