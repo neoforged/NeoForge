@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "Server-Mod-Liste ist nicht kompatibel",
   "fml.menu.multiplayer.networkincompatible": "Server-Netzwerknachrichtenliste ist nicht kompatibel",
   "fml.menu.multiplayer.missingdatapackregistries": "Erforderliche Datapack-Registries fehlen: %1$s",
-  "fml.menu.loadingmods": "{0,choice,0#Keine Mods|1#1 Mod|1<%s Mods} geladen",
+  "fml.menu.branding": "%s (%s mods)",
   "fml.menu.notification.title": "Start-Benachrichtigung",
   "fml.menu.accessdenied.title": "Serverzugriff verweigert",
   "fml.menu.accessdenied.message": "Fancy Mod Loader konnte sich nicht mit diesem Server verbinden\nDer Server %1$s erlaubt modifizierten Spielern den Beitritt nicht",
