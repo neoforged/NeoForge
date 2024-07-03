@@ -1,14 +1,27 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -31,7 +_,7 @@
+@@ -28,15 +_,17 @@
+             ItemStack itemstack = player.getProjectile(p_40667_);
+             if (!itemstack.isEmpty()) {
+                 int i = this.getUseDuration(p_40667_, p_40669_) - p_40670_;
++                i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(itemstack, p_40668_, player, i, !itemstack.isEmpty());
++                if (i < 0) return;
                  float f = getPowerForTime(i);
                  if (!((double)f < 0.1)) {
                      List<ItemStack> list = draw(p_40667_, itemstack, player);
 -                    if (p_40668_ instanceof ServerLevel serverlevel && !list.isEmpty()) {
-+                    if (p_40668_ instanceof ServerLevel serverlevel && !list.isEmpty() && net.neoforged.neoforge.event.EventHooks.onArrowLoose(itemstack, serverlevel, player, i, true) > 0) {
-                         this.shoot(serverlevel, player, player.getUsedItemHand(), p_40667_, list, f * 3.0F, 1.0F, f == 1.0F, null);
+-                        this.shoot(serverlevel, player, player.getUsedItemHand(), p_40667_, list, f * 3.0F, 1.0F, f == 1.0F, null);
++                    if (p_40668_ instanceof ServerLevel serverLevel && !list.isEmpty()) {
++                        this.shoot(serverLevel, player, player.getUsedItemHand(), p_40667_, list, f * 3.0F, 1.0F, f == 1.0F, null);
++
                      }
- 
+-
+                     p_40668_.playSound(
+-                        null,
++                        player,
+                         player.getX(),
+                         player.getY(),
+                         player.getZ(),
 @@ -82,6 +_,10 @@
      public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
          ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
