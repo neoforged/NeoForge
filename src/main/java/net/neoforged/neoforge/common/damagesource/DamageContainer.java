@@ -8,8 +8,6 @@ package net.neoforged.neoforge.common.damagesource;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -158,14 +156,14 @@ public class DamageContainer {
 
     @ApiStatus.Internal
     public void setReduction(Reduction reduction, float amount) {
-        float modifiedReduction = Mth.clamp(modifyReduction(reduction, amount), 0f, this.getNewDamage());
+        float modifiedReduction = modifyReduction(reduction, amount);
         this.reductions.put(reduction, modifiedReduction);
         this.newDamage -= modifiedReduction;
     }
 
     private float modifyReduction(Reduction type, float reduction) {
         for (var func : reductionFunctions.getOrDefault(type, List.of())) {
-            reduction = Mth.clamp(func.modify(this, reduction), 0f, this.getNewDamage());
+            reduction = func.modify(this, reduction);
         }
         return reduction;
     }
