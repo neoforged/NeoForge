@@ -10,12 +10,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import net.minecraft.core.Holder;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
@@ -143,8 +148,15 @@ public class ServerLifecycleHooks {
                 .toList();
 
         // Apply sorted biome modifiers to each biome.
-        registries.registryOrThrow(Registries.BIOME).holders().forEach(biomeHolder -> {
-            biomeHolder.value().modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers);
+        final var biomeRegistry = registries.registryOrThrow(Registries.BIOME);
+        biomeRegistry.holders().forEach(biomeHolder -> {
+            if (biomeHolder.value().modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers)) {
+                Optional<RegistrationInfo> originalInfo = biomeRegistry.registrationInfo(biomeHolder.key());
+                originalInfo.ifPresent(info -> {
+                    RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());
+                    ((MappedRegistry<Biome>) biomeRegistry).registrationInfos.put(biomeHolder.key(), newInfo);
+                });
+            }
         });
         // Rebuild the indexed feature list
         registries.registryOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
@@ -152,8 +164,15 @@ public class ServerLifecycleHooks {
         });
 
         // Apply sorted structure modifiers to each structure.
-        registries.registryOrThrow(Registries.STRUCTURE).holders().forEach(structureHolder -> {
-            structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers);
+        final var structureRegistry = registries.registryOrThrow(Registries.STRUCTURE);
+        structureRegistry.holders().forEach(structureHolder -> {
+            if(structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers)) {
+                Optional<RegistrationInfo> originalInfo = structureRegistry.registrationInfo(structureHolder.key());
+                originalInfo.ifPresent(info -> {
+                    RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());
+                    ((MappedRegistry<Structure>) structureRegistry).registrationInfos.put(structureHolder.key(), newInfo);
+                });
+            }
         });
     }
 }

@@ -7,6 +7,10 @@ package net.neoforged.neoforge.common.world;
 
 import java.util.List;
 import java.util.Locale;
+
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.ClimateSettings;
@@ -63,11 +67,13 @@ public class ModifiableBiomeInfo {
      * 
      * @param biome          named biome with original data.
      * @param biomeModifiers biome modifiers to apply.
+     *
+     * @return whether the biome was modified
      * 
      * @throws IllegalStateException if invoked more than once.
      */
     @ApiStatus.Internal
-    public void applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers) {
+    public boolean applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers) {
         if (this.modifiedBiomeInfo != null)
             throw new IllegalStateException(String.format(Locale.ENGLISH, "Biome %s already modified", biome));
 
@@ -79,6 +85,20 @@ public class ModifiableBiomeInfo {
             }
         }
         this.modifiedBiomeInfo = builder.build();
+        return !equivalent(originalBiomeInfo, modifiedBiomeInfo);
+    }
+
+    private boolean equivalent(BiomeInfo original, BiomeInfo modified) {
+        return equivalent(original.climateSettings(), modified.climateSettings(), ClimateSettings.CODEC.codec())
+                && equivalent(original.effects(), modified.effects(), BiomeSpecialEffects.CODEC)
+                && equivalent(original.generationSettings(), modified.generationSettings(), BiomeGenerationSettings.CODEC.codec())
+                && equivalent(original.mobSpawnSettings(), modified.mobSpawnSettings(), MobSpawnSettings.CODEC.codec());
+    }
+
+    private <T> boolean equivalent(T original, T modifier, Codec<T> codec) {
+        JsonElement originalJson = codec.encodeStart(JsonOps.INSTANCE, original).result().orElse(null);
+        JsonElement modifiedJson = codec.encodeStart(JsonOps.INSTANCE, modifier).result().orElse(null);
+        return originalJson != null && originalJson.equals(modifiedJson);
     }
 
     /**
