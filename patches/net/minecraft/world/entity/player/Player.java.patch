@@ -163,7 +163,7 @@
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(p_36312_, this.damageContainers.peek().getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(p_36312_, this.damageContainers.peek().getNewDamage());
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
-+            this.setAbsorptionAmount(this.getAbsorptionAmount() - Math.min(this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), this.getAbsorptionAmount()));
++            this.setAbsorptionAmount(this.getAbsorptionAmount() - this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION));
 +            float f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
 +            float f = java.util.Arrays.stream(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.values()).map(this.damageContainers.peek()::getReduction).reduce(Float::sum).orElse(0f);
              if (f > 0.0F && f < 3.4028235E37F) {
