@@ -66,7 +66,7 @@ public class ModifiableBiomeInfo {
      * @param biome          named biome with original data.
      * @param biomeModifiers biome modifiers to apply.
      *
-     * @return whether the biome was modified
+     * @return whether the biome's network-synced data was modified
      * 
      * @throws IllegalStateException if invoked more than once.
      */

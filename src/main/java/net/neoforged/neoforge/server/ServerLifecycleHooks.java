@@ -133,8 +133,9 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
-    private static <T> void stripKnownPack(boolean ran, Holder.Reference<T> holder, Registry<T> registry) {
-        if (ran) {
+    private static <T> void stripKnownPack(boolean modified, Holder.Reference<T> holder, Registry<T> registry) {
+        if (modified) {
+            // If the object's networked data has been modified, we force it to sync by removing its original KnownPack info.
             Optional<RegistrationInfo> originalInfo = registry.registrationInfo(holder.key());
             originalInfo.ifPresent(info -> {
                 RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());

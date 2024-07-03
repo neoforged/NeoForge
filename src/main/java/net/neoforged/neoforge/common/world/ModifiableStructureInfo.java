@@ -61,7 +61,7 @@ public class ModifiableStructureInfo {
      * @param structure          named structure with original data.
      * @param structureModifiers structure modifiers to apply.
      *
-     * @return whether the structure was modified
+     * @return whether the structure's network-synced data was modified
      * 
      * @throws IllegalStateException if invoked more than once.
      */
