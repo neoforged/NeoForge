@@ -414,10 +414,10 @@
 -            float f = p_21241_ - f1;
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainers.peek().getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(p_21240_, this.damageContainers.peek().getNewDamage());
-+            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, Math.min(this.getAbsorptionAmount(), this.damageContainers.peek().getNewDamage()));
 +            this.setAbsorptionAmount(this.getAbsorptionAmount() - this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION));
 +            float f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
-+            float f = java.util.Arrays.stream(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.values()).map(this.damageContainers.peek()::getReduction).reduce(Float::sum).orElse(0f);
++            float f = this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION);
              if (f > 0.0F && f < 3.4028235E37F && p_21240_.getEntity() instanceof ServerPlayer serverplayer) {
                  serverplayer.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(f * 10.0F));
              }
