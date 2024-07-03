@@ -26,7 +26,7 @@
             "condition": "minecraft:match_tool",
             "predicate": {
               "predicates": {
-                "neoforge:tool_action": "axe_wax_off"
+                "neoforge:item_ability": "axe_wax_off"
               }
             }
           }

@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
+@@ -54,7 +_,7 @@
+ 
+     @Override
+     protected boolean mayPlaceOn(BlockState p_52302_, BlockGetter p_52303_, BlockPos p_52304_) {
+-        return p_52302_.is(Blocks.FARMLAND);
++        return p_52302_.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+     }
+ 
+     protected IntegerProperty getAgeProperty() {
 @@ -84,12 +_,14 @@
  
      @Override
@@ -8,26 +17,47 @@
          if (p_221051_.getRawBrightness(p_221052_, 0) >= 9) {
              int i = this.getAge(p_221050_);
              if (i < this.getMaxAge()) {
-                 float f = getGrowthSpeed(this, p_221051_, p_221052_);
+-                float f = getGrowthSpeed(this, p_221051_, p_221052_);
 -                if (p_221053_.nextInt((int)(25.0F / f) + 1) == 0) {
++                float f = getGrowthSpeed(p_221050_, p_221051_, p_221052_);
 +                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_221051_, p_221052_, p_221050_, p_221053_.nextInt((int)(25.0F / f) + 1) == 0)) {
                      p_221051_.setBlock(p_221052_, this.getStateForAge(i + 1), 2);
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_221051_, p_221052_, p_221050_);
                  }
              }
          }
-@@ -117,9 +_,9 @@
+@@ -109,7 +_,8 @@
+         return Mth.nextInt(p_52262_.random, 2, 5);
+     }
+ 
+-    protected static float getGrowthSpeed(Block p_52273_, BlockGetter p_52274_, BlockPos p_52275_) {
++    protected static float getGrowthSpeed(BlockState blockState, BlockGetter p_52274_, BlockPos p_52275_) {
++        Block p_52273_ = blockState.getBlock();
+         float f = 1.0F;
+         BlockPos blockpos = p_52275_.below();
+ 
+@@ -117,9 +_,10 @@
              for (int j = -1; j <= 1; j++) {
                  float f1 = 0.0F;
                  BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
 -                if (blockstate.is(Blocks.FARMLAND)) {
-+                if (blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, (net.neoforged.neoforge.common.IPlantable) p_52273_)) {
++                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, blockState);
++                if (soilDecision.isDefault() ? blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock : soilDecision.isTrue()) {
                      f1 = 1.0F;
 -                    if (blockstate.getValue(FarmBlock.MOISTURE) > 0) {
 +                    if (blockstate.isFertile(p_52274_, p_52275_.offset(i, 0, j))) {
                          f1 = 3.0F;
                      }
                  }
+@@ -155,6 +_,8 @@
+ 
+     @Override
+     protected boolean canSurvive(BlockState p_52282_, LevelReader p_52283_, BlockPos p_52284_) {
++        net.neoforged.neoforge.common.util.TriState soilDecision = p_52283_.getBlockState(p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
+         return hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_);
+     }
+ 
 @@ -164,7 +_,7 @@
  
      @Override
