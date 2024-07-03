@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -28,15 +_,17 @@
+@@ -28,13 +_,15 @@
              ItemStack itemstack = player.getProjectile(p_40667_);
              if (!itemstack.isEmpty()) {
                  int i = this.getUseDuration(p_40667_, p_40669_) - p_40670_;
@@ -17,11 +17,8 @@
                      }
 -
                      p_40668_.playSound(
--                        null,
-+                        player,
+                         null,
                          player.getX(),
-                         player.getY(),
-                         player.getZ(),
 @@ -82,6 +_,10 @@
      public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
          ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
