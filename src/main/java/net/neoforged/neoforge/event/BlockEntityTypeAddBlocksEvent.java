@@ -107,7 +107,7 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
             ModLoader.postEvent(event); // Allow modders to add to the list in the events.
 
             // Set the validBlocks field without exposing a setter publicly.
-            ((BlockEntityTypeAccessor) blockEntityTypeEntry.getValue()).setValidBlocks(event.getCurrentValidBlocks());
+            ((BlockEntityTypeAccessor) blockEntityTypeEntry.getValue()).neoforge$setValidBlocks(event.getCurrentValidBlocks());
         }
     }
 }
