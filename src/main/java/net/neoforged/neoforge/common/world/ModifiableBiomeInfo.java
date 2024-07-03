@@ -5,12 +5,10 @@
 
 package net.neoforged.neoforge.common.world;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import java.util.List;
 import java.util.Locale;
-
-import com.google.gson.JsonElement;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.ClimateSettings;
@@ -89,16 +87,14 @@ public class ModifiableBiomeInfo {
     }
 
     private boolean equivalent(BiomeInfo original, BiomeInfo modified) {
-        return equivalent(original.climateSettings(), modified.climateSettings(), ClimateSettings.CODEC.codec())
-                && equivalent(original.effects(), modified.effects(), BiomeSpecialEffects.CODEC)
-                && equivalent(original.generationSettings(), modified.generationSettings(), BiomeGenerationSettings.CODEC.codec())
-                && equivalent(original.mobSpawnSettings(), modified.mobSpawnSettings(), MobSpawnSettings.CODEC.codec());
-    }
-
-    private <T> boolean equivalent(T original, T modifier, Codec<T> codec) {
-        JsonElement originalJson = codec.encodeStart(JsonOps.INSTANCE, original).result().orElse(null);
-        JsonElement modifiedJson = codec.encodeStart(JsonOps.INSTANCE, modifier).result().orElse(null);
-        return originalJson != null && originalJson.equals(modifiedJson);
+        if (!original.climateSettings().equals(modified.climateSettings())) {
+            return false;
+        }
+        var oEffects = original.effects();
+        var mEffects = modified.effects();
+        JsonElement oEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(JsonOps.INSTANCE, oEffects).result().orElse(null);
+        JsonElement mEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(JsonOps.INSTANCE, mEffects).result().orElse(null);
+        return oEffectsJson != null && oEffectsJson.equals(mEffectsJson);
     }
 
     /**

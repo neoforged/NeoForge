@@ -13,14 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import net.minecraft.core.Holder;
-import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
@@ -36,6 +34,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
+import net.neoforged.neoforge.mixins.MappedRegistryAccessor;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -134,6 +133,17 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
+    private static <T> void stripKnownPack(boolean ran, Holder.Reference<T> holder, Registry<T> registry) {
+        if (ran) {
+            Optional<RegistrationInfo> originalInfo = registry.registrationInfo(holder.key());
+            originalInfo.ifPresent(info -> {
+                RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());
+                //noinspection unchecked
+                ((MappedRegistryAccessor<T>) registry).neoforge$getRegistrationInfos().put(holder.key(), newInfo);
+            });
+        }
+    }
+
     private static void runModifiers(final MinecraftServer server) {
         final RegistryAccess registries = server.registryAccess();
 
@@ -150,13 +160,7 @@ public class ServerLifecycleHooks {
         // Apply sorted biome modifiers to each biome.
         final var biomeRegistry = registries.registryOrThrow(Registries.BIOME);
         biomeRegistry.holders().forEach(biomeHolder -> {
-            if (biomeHolder.value().modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers)) {
-                Optional<RegistrationInfo> originalInfo = biomeRegistry.registrationInfo(biomeHolder.key());
-                originalInfo.ifPresent(info -> {
-                    RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());
-                    ((MappedRegistry<Biome>) biomeRegistry).registrationInfos.put(biomeHolder.key(), newInfo);
-                });
-            }
+            stripKnownPack(biomeHolder.value().modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers), biomeHolder, biomeRegistry);
         });
         // Rebuild the indexed feature list
         registries.registryOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
@@ -166,13 +170,7 @@ public class ServerLifecycleHooks {
         // Apply sorted structure modifiers to each structure.
         final var structureRegistry = registries.registryOrThrow(Registries.STRUCTURE);
         structureRegistry.holders().forEach(structureHolder -> {
-            if(structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers)) {
-                Optional<RegistrationInfo> originalInfo = structureRegistry.registrationInfo(structureHolder.key());
-                originalInfo.ifPresent(info -> {
-                    RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());
-                    ((MappedRegistry<Structure>) structureRegistry).registrationInfos.put(structureHolder.key(), newInfo);
-                });
-            }
+            stripKnownPack(structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers), structureHolder, structureRegistry);
         });
     }
 }
