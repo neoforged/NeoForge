@@ -1,7 +1,6 @@
 {
   "required": true,
   "package": "net.neoforged.neoforge.mixins",
-  "refmap": "neoforge.refmap.json",
   "mixins": [
     "BlockEntityTypeAccessor"
   ],
