@@ -6,14 +6,11 @@
 package net.neoforged.neoforge.event;
 
 import com.google.common.base.Suppliers;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
@@ -22,10 +19,8 @@ import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.mixins.BlockEntityTypeAccessor;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -34,8 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * Please use this event instead of manipulating {@link BlockEntityType} directly.
  */
 public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent {
-    public BlockEntityTypeAddBlocksEvent() {
-    }
+    public BlockEntityTypeAddBlocksEvent() {}
 
     /**
      * Will add the given blocks to the provided {@link BlockEntityType}'s set of valid blocks.
