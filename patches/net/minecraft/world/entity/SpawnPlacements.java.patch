@@ -5,7 +5,7 @@
      private static final Map<EntityType<?>, SpawnPlacements.Data> DATA_BY_TYPE = Maps.newHashMap();
  
 +    /**
-+     * @deprecated modders should use {@link net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent} instead.
++     * @deprecated Neo: Modders should use {@link net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent} instead.
 +     */
 +    @Deprecated
      private static <T extends Mob> void register(
