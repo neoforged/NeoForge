@@ -27,6 +27,14 @@ import org.jetbrains.annotations.Nullable;
  * Allows injecting new blocks into a block entity's {@link BlockEntityType#validBlocks} field in a safe manner.
  * The class of the newly injected block should share the highest common class that all existing blocks in the targeted validBlocks has.
  * Please use this event instead of manipulating {@link BlockEntityType} directly.
+ * <p>
+ * Example: If the valid blocks list has {@linkplain StandingSignBlock} entry and {@linkplain WallSignBlock} entry, the common class is {@linkplain SignBlock},
+ * the given block must be a {@linkplain SignBlock} or have {@link SignBlock} as a parent class in its hierarchy. Example:
+ * {@snippet :
+ * public static void onBlockEntityValidBlocks(BlockEntityTypeAddBlocksEvent event) {
+ *     event.modify(BlockEntityType.SIGN, MODDED_SIGN_BLOCK.get());
+ * }
+ * }
  */
 public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent {
     private final Function<BlockEntityType<?>, ? extends Class<?>> memoizedCommonSuperClass = Util.memoize((BlockEntityType<?> blockEntityType) -> getCommonSuperClassForExistingValidBlocks(blockEntityType.getValidBlocks()));
@@ -35,12 +43,12 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
 
     /**
      * Will add the given blocks to the provided {@link BlockEntityType}'s set of valid blocks.
-     * Make sure the given block is the same or derived from the highest common class of all the entries in valid blocks.
-     * <p>
-     * Example: If the valid blocks list has {@linkplain StandingSignBlock} entry and {@linkplain WallSignBlock} entry, the common class is {@linkplain SignBlock},
-     * the given block must be a {@linkplain SignBlock} or have {@link SignBlock} as a parent class in its hierarchy.
      */
     public void modify(BlockEntityType<?> blockEntityType, Block... blocksToAdd) {
+        if (blocksToAdd.length == 0) {
+            return;
+        }
+
         Set<Block> currentValidBlocks = new HashSet<>(blockEntityType.getValidBlocks());
 
         for (Block block : blocksToAdd) {
@@ -53,10 +61,6 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
 
     /**
      * Will add the given blocks to the {@link BlockEntityType}'s set of valid blocks.
-     * Make sure the given block is the same or derived from the highest common class of all the entries in valid blocks.
-     * <p>
-     * Example: If the valid blocks list has {@linkplain StandingSignBlock} entry and {@linkplain WallSignBlock} entry, the common class is {@linkplain SignBlock},
-     * the given block must be a {@linkplain SignBlock} or have {@link SignBlock} as a parent class in its hierarchy.
      */
     public void modify(ResourceKey<BlockEntityType<?>> blockEntityTypeKey, Block... blocksToAdd) {
         BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(blockEntityTypeKey)
@@ -65,10 +69,6 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
 
     /**
      * Will add the given blocks to the matching {@link BlockEntityType}'s set of valid blocks.
-     * Make sure the given block is the same or derived from the highest common class of all the entries in valid blocks.
-     * <p>
-     * Example: If the valid blocks list has {@linkplain StandingSignBlock} entry and {@linkplain WallSignBlock} entry, the common class is {@linkplain SignBlock},
-     * the given block must be a {@linkplain SignBlock} or have {@link SignBlock} as a parent class in its hierarchy.
      */
     public void modify(BiPredicate<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeToMatch, Block... blocksToAdd) {
         for (Map.Entry<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>> blockEntityTypeEntry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
