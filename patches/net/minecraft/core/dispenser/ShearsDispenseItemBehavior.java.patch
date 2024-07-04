@@ -1,0 +1,26 @@
+--- a/net/minecraft/core/dispenser/ShearsDispenseItemBehavior.java
++++ b/net/minecraft/core/dispenser/ShearsDispenseItemBehavior.java
+@@ -24,7 +_,7 @@
+         ServerLevel serverlevel = p_302443_.level();
+         if (!serverlevel.isClientSide()) {
+             BlockPos blockpos = p_302443_.pos().relative(p_302443_.state().getValue(DispenserBlock.FACING));
+-            this.setSuccess(tryShearBeehive(serverlevel, blockpos) || tryShearLivingEntity(serverlevel, blockpos));
++            this.setSuccess(net.neoforged.neoforge.common.CommonHooks.tryDispenseShearsHarvestBlock(p_302443_, p_123581_, serverlevel, blockpos) || tryShearBeehive(serverlevel, blockpos) || tryShearLivingEntity(serverlevel, blockpos, p_123581_));
+             if (this.isSuccess()) {
+                 p_123581_.hurtAndBreak(1, serverlevel, null, p_348118_ -> {
+                 });
+@@ -51,10 +_,11 @@
+         return false;
+     }
+ 
+-    private static boolean tryShearLivingEntity(ServerLevel p_123583_, BlockPos p_123584_) {
++    private static boolean tryShearLivingEntity(ServerLevel p_123583_, BlockPos p_123584_, ItemStack stack) {
+         for (LivingEntity livingentity : p_123583_.getEntitiesOfClass(LivingEntity.class, new AABB(p_123584_), EntitySelector.NO_SPECTATORS)) {
+-            if (livingentity instanceof Shearable shearable && shearable.readyForShearing()) {
+-                shearable.shear(SoundSource.BLOCKS);
++            if (livingentity instanceof net.neoforged.neoforge.common.IShearable shearable && shearable.isShearable(null, stack, p_123583_, p_123584_)) {
++                shearable.onSheared(null, stack, p_123583_, p_123584_)
++                        .forEach(drop -> shearable.spawnShearedDrop(p_123583_, p_123584_, drop));
+                 p_123583_.gameEvent(null, GameEvent.SHEAR, p_123584_);
+                 return true;
+             }
