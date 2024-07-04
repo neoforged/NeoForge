@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.world;
 
 import com.google.gson.JsonElement;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
@@ -18,10 +19,9 @@ import net.minecraft.world.level.biome.Biome.ClimateSettings;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Holds lazy-evaluable modified biome info.
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * without evaluating the biome info if it's accessed outside of a server context.
  */
 public class ModifiableBiomeInfo {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final BiomeInfo originalBiomeInfo;
     @Nullable
