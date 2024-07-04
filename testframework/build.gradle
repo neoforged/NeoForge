@@ -39,8 +39,14 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-jar.manifest {
-    attributes(['Implementation-Version': version])
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties version: version
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand file: [
+                jarVersion: version
+        ]
+    }
 }
 
 publishing {
