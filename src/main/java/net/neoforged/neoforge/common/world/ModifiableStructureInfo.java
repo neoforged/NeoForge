@@ -60,13 +60,11 @@ public class ModifiableStructureInfo {
      * 
      * @param structure          named structure with original data.
      * @param structureModifiers structure modifiers to apply.
-     *
-     * @return whether the structure's network-synced data was modified
      * 
      * @throws IllegalStateException if invoked more than once.
      */
     @ApiStatus.Internal
-    public boolean applyStructureModifiers(final Holder<Structure> structure, final List<StructureModifier> structureModifiers) {
+    public void applyStructureModifiers(final Holder<Structure> structure, final List<StructureModifier> structureModifiers) {
         if (this.modifiedStructureInfo != null)
             throw new IllegalStateException(String.format(Locale.ENGLISH, "Structure %s already modified", structure));
 
@@ -78,8 +76,6 @@ public class ModifiableStructureInfo {
             }
         }
         this.modifiedStructureInfo = builder.build();
-
-        return !originalStructureInfo.equals(modifiedStructureInfo);
     }
 
     /**

@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.common.world;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
@@ -18,6 +20,8 @@ import net.minecraft.world.level.biome.Biome.ClimateSettings;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
  * without evaluating the biome info if it's accessed outside of a server context.
  */
 public class ModifiableBiomeInfo {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private final BiomeInfo originalBiomeInfo;
     @Nullable
     private BiomeInfo modifiedBiomeInfo = null;
@@ -85,20 +91,15 @@ public class ModifiableBiomeInfo {
                 modifier.modify(biome, phase, builder);
             }
         }
-        this.modifiedBiomeInfo = builder.build();
-        return !equivalent(originalBiomeInfo, modifiedBiomeInfo, registryAccess);
-    }
-
-    private boolean equivalent(BiomeInfo original, BiomeInfo modified, RegistryAccess registryAccess) {
-        if (!original.climateSettings().equals(modified.climateSettings())) {
-            return false;
-        }
-        var oEffects = original.effects();
-        var mEffects = modified.effects();
         DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registryAccess);
-        JsonElement oEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(ops, oEffects).result().orElse(null);
-        JsonElement mEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(ops, mEffects).result().orElse(null);
-        return oEffectsJson != null && oEffectsJson.equals(mEffectsJson);
+        JsonElement originalJson = Biome.NETWORK_CODEC.encodeStart(ops, biome.value()).result().orElse(null);
+        this.modifiedBiomeInfo = builder.build();
+        JsonElement modifiedJson = Biome.NETWORK_CODEC.encodeStart(ops, biome.value()).result().orElse(null);
+        if (originalJson == null || modifiedJson == null) {
+            LOGGER.warn("Failed to determine whether biome {} was modified", biome);
+            return true;
+        }
+        return !originalJson.equals(modifiedJson);
     }
 
     /**

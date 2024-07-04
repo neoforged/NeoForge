@@ -169,9 +169,8 @@ public class ServerLifecycleHooks {
         });
 
         // Apply sorted structure modifiers to each structure.
-        final var structureRegistry = registries.registryOrThrow(Registries.STRUCTURE);
-        structureRegistry.holders().forEach(structureHolder -> {
-            stripKnownPack(structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers), structureHolder, structureRegistry);
+        registries.registryOrThrow(Registries.STRUCTURE).holders().forEach(structureHolder -> {
+            structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers);
         });
     }
 }
