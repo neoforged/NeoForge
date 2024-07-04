@@ -6,10 +6,13 @@
 package net.neoforged.neoforge.common.world;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.ClimateSettings;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
@@ -71,7 +74,7 @@ public class ModifiableBiomeInfo {
      * @throws IllegalStateException if invoked more than once.
      */
     @ApiStatus.Internal
-    public boolean applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers) {
+    public boolean applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers, RegistryAccess registryAccess) {
         if (this.modifiedBiomeInfo != null)
             throw new IllegalStateException(String.format(Locale.ENGLISH, "Biome %s already modified", biome));
 
@@ -83,17 +86,18 @@ public class ModifiableBiomeInfo {
             }
         }
         this.modifiedBiomeInfo = builder.build();
-        return !equivalent(originalBiomeInfo, modifiedBiomeInfo);
+        return !equivalent(originalBiomeInfo, modifiedBiomeInfo, registryAccess);
     }
 
-    private boolean equivalent(BiomeInfo original, BiomeInfo modified) {
+    private boolean equivalent(BiomeInfo original, BiomeInfo modified, RegistryAccess registryAccess) {
         if (!original.climateSettings().equals(modified.climateSettings())) {
             return false;
         }
         var oEffects = original.effects();
         var mEffects = modified.effects();
-        JsonElement oEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(JsonOps.INSTANCE, oEffects).result().orElse(null);
-        JsonElement mEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(JsonOps.INSTANCE, mEffects).result().orElse(null);
+        DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registryAccess);
+        JsonElement oEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(ops, oEffects).result().orElse(null);
+        JsonElement mEffectsJson = BiomeSpecialEffects.CODEC.encodeStart(ops, mEffects).result().orElse(null);
         return oEffectsJson != null && oEffectsJson.equals(mEffectsJson);
     }
 

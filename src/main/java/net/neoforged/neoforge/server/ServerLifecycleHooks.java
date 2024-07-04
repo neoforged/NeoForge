@@ -161,7 +161,7 @@ public class ServerLifecycleHooks {
         // Apply sorted biome modifiers to each biome.
         final var biomeRegistry = registries.registryOrThrow(Registries.BIOME);
         biomeRegistry.holders().forEach(biomeHolder -> {
-            stripKnownPack(biomeHolder.value().modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers), biomeHolder, biomeRegistry);
+            stripKnownPack(biomeHolder.value().modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers, registries), biomeHolder, biomeRegistry);
         });
         // Rebuild the indexed feature list
         registries.registryOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
