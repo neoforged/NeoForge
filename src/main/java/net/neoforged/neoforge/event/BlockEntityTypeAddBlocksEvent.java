@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.event;
 
-import com.google.common.base.Suppliers;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
-import java.util.function.Supplier;
+import java.util.function.Function;
+import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
  * Please use this event instead of manipulating {@link BlockEntityType} directly.
  */
 public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent {
+    private final Function<BlockEntityType<?>, ? extends Class<?>> memoizedCommonSuperClass = Util.memoize((BlockEntityType<?> blockEntityType) -> getCommonSuperClassForExistingValidBlocks(blockEntityType.getValidBlocks()));
+
     public BlockEntityTypeAddBlocksEvent() {}
 
     /**
@@ -39,11 +41,10 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
      * the given block must be a {@linkplain SignBlock} or have {@link SignBlock} as a parent class in its hierarchy.
      */
     public void modify(BlockEntityType<?> blockEntityType, Block... blocksToAdd) {
-        Supplier<? extends @Nullable Class<?>> baseClass = Suppliers.memoize(() -> getCommonSuperClassForExistingValidBlocks(blockEntityType.getValidBlocks()));
         Set<Block> currentValidBlocks = new HashSet<>(blockEntityType.getValidBlocks());
 
         for (Block block : blocksToAdd) {
-            addValidBlock(block, baseClass, currentValidBlocks);
+            addValidBlock(block, memoizedCommonSuperClass.apply(blockEntityType), currentValidBlocks);
         }
 
         // Set the validBlocks field without exposing a setter publicly.
@@ -77,8 +78,8 @@ public class BlockEntityTypeAddBlocksEvent extends Event implements IModBusEvent
         }
     }
 
-    private void addValidBlock(Block block, Supplier<? extends @Nullable Class<?>> baseClass, Set<Block> currentValidBlocks) {
-        if (baseClass.get() == null || baseClass.get().isAssignableFrom(block.getClass())) {
+    private void addValidBlock(Block block, @Nullable Class<?> baseClass, Set<Block> currentValidBlocks) {
+        if (baseClass == null || baseClass.isAssignableFrom(block.getClass())) {
             currentValidBlocks.add(block);
         } else {
             throw new IllegalArgumentException("Given block " + block + " does not derive from existing valid block's common superclass of " + baseClass);
