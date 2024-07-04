@@ -791,7 +791,7 @@ public interface IBlockExtension {
                 }
                 return state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
             }
-        } else if (ItemAbilities.FLINT_LIGHT == itemAbility) {
+        } else if (ItemAbilities.FIRESTARTER_LIGHT == itemAbility) {
             if (CampfireBlock.canLight(state) || CandleBlock.canLight(state) || CandleCakeBlock.canLight(state)) {
                 return state.setValue(BlockStateProperties.LIT, Boolean.valueOf(true));
             }

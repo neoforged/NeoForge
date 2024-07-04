@@ -126,9 +126,10 @@ public class ItemAbilities {
     public static final ItemAbility BRUSH_BRUSH = ItemAbility.get("brush_brush");
 
     /**
-     * Passed onto {@link IBlockExtension#getToolModifiedState} when a Flint and Steel wants to light a campfire/candle/cake
+     * Passed onto {@link IBlockExtension#getToolModifiedState} when flint and steel or fire charge want to light a campfire/candle/cake.
+     * Note that dispensers with flint and steel will also use this but will have no player.
      */
-    public static final ItemAbility FLINT_LIGHT = ItemAbility.get("flint_light");
+    public static final ItemAbility FIRESTARTER_LIGHT = ItemAbility.get("firestarter_light");
 
     // Default actions supported by each tool type
     public static final Set<ItemAbility> DEFAULT_AXE_ACTIONS = of(AXE_DIG, AXE_STRIP, AXE_SCRAPE, AXE_WAX_OFF);
@@ -141,7 +142,8 @@ public class ItemAbilities {
     public static final Set<ItemAbility> DEFAULT_FISHING_ROD_ACTIONS = of(FISHING_ROD_CAST);
     public static final Set<ItemAbility> DEFAULT_TRIDENT_ACTIONS = of(TRIDENT_THROW);
     public static final Set<ItemAbility> DEFAULT_BRUSH_ACTIONS = of(BRUSH_BRUSH);
-    public static final Set<ItemAbility> DEFAULT_FLINT_ACTIONS = of(FLINT_LIGHT);
+    public static final Set<ItemAbility> DEFAULT_FLINT_ACTIONS = of(FIRESTARTER_LIGHT);
+    public static final Set<ItemAbility> DEFAULT_FIRECHARGE_ACTIONS = of(FIRESTARTER_LIGHT);
 
     private static Set<ItemAbility> of(ItemAbility... actions) {
         return Stream.of(actions).collect(Collectors.toCollection(Sets::newIdentityHashSet));

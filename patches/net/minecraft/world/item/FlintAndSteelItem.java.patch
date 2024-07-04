@@ -5,7 +5,7 @@
          BlockPos blockpos = p_41297_.getClickedPos();
          BlockState blockstate = level.getBlockState(blockpos);
 -        if (!CampfireBlock.canLight(blockstate) && !CandleBlock.canLight(blockstate) && !CandleCakeBlock.canLight(blockstate)) {
-+        BlockState blockstate2 = blockstate.getToolModifiedState(p_41297_, net.neoforged.neoforge.common.ItemAbilities.FLINT_LIGHT, false);
++        BlockState blockstate2 = blockstate.getToolModifiedState(p_41297_, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
 +        if (blockstate2 == null) {
              BlockPos blockpos1 = blockpos.relative(p_41297_.getClickedFace());
              if (BaseFireBlock.canBePlacedAt(level, blockpos1, p_41297_.getHorizontalDirection())) {
