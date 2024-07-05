@@ -128,7 +128,7 @@
      }
  
 +    /**
-+     * Neo: Short-lived holder of dropped item entities.
++     * Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
 +     * <p>
 +     * When not null, records all item entities from {@link #popResource(Level, Supplier, ItemStack)} instead of adding them to the world.
 +     */
@@ -136,7 +136,7 @@
 +    private static List<ItemEntity> capturedDrops = null;
 +
 +    /**
-+     * Neo: Initializes {@link #capturedDrops}, starting the drop capture process.
++     * Initializes {@link #capturedDrops}, starting the drop capture process.
 +     * <p>
 +     * Must only be called on the server thread.
 +     */
@@ -145,7 +145,7 @@
 +    }
 +
 +    /**
-+     * Neo: Ends the drop capture process by setting {@link #capturedDrops} to null and returning the old list.
++     * Ends the drop capture process by setting {@link #capturedDrops} to null and returning the old list.
 +     * <p>
 +     * Must only be called on the server thread.
 +     */

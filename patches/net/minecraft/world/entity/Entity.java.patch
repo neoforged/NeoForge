@@ -452,13 +452,17 @@
      }
  
      public void checkDespawn() {
-@@ -3449,6 +_,122 @@
+@@ -3449,6 +_,126 @@
  
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
 +    }
 +
-+    // Neo: Injected ability to track ItemEntities being spawned by dropping, shearing, and other actions
++    /**
++     * Neo: Short-lived holder of dropped item entities being spawned by dropping, shearing, and other actions. Used mainly for Neo hooks and event logic.
++     * <p>
++     * When not null, records all item entities from {@link #spawnAtLocation(ItemStack, float)} and {@link net.minecraft.server.level.ServerPlayer#drop(ItemStack, boolean, boolean)} instead of adding them to the world.
++     */
 +    @Nullable
 +    private java.util.Collection<ItemEntity> captureDrops = null;
 +
