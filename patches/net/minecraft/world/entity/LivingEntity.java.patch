@@ -383,7 +383,7 @@
              int i = (int)Math.max(1.0F, p_330394_ / 4.0F);
  
 +            net.neoforged.neoforge.common.CommonHooks.onArmorHurt(p_330843_, p_331314_, i, this);
-+            if (true) return; //Neo: invalidates the loop.  armor damage happens in common hook
++            if (true) return; //Neo: Invalidates the loop. Armor damage happens in common hook.
              for (EquipmentSlot equipmentslot : p_331314_) {
                  ItemStack itemstack = this.getItemBySlot(equipmentslot);
                  if (itemstack.getItem() instanceof ArmorItem && itemstack.canBeHurtBy(p_330843_)) {
