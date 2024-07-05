@@ -67,6 +67,11 @@ public class BiomeModifierSyncTest {
     @OnInit
     static void init(final TestFramework framework) {
         HELPER.register(framework.modEventBus(), framework.container());
+    }
+
+    @TestHolder(description = "Tests if biome modifications are properly synced", side = Dist.CLIENT)
+    @WithListener(Listener.class)
+    static void biomeModifierSync(final DynamicTest test) {
         ResourceKey<BiomeModifier> modifyTaigaModifier = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(HELPER.modId(), "modify_taiga"));
         HELPER.addProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
@@ -78,12 +83,6 @@ public class BiomeModifierSyncTest {
                             MODIFIED_WATER_COLOR));
                 }),
                 Set.of(HELPER.modId())));
-    }
-
-    @TestHolder(description = "Tests if biome modifications are properly synced", side = Dist.CLIENT)
-    @WithListener(Listener.class)
-    static void biomeModifierSync(final DynamicTest test) {
-        // Test is handled by listener
     }
 
     public static class Listener implements TestListener {
