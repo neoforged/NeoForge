@@ -13,7 +13,8 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -104,7 +105,8 @@ public interface IClientBlockExtensions {
 
             if (entity instanceof LivingEntity) {
                 LivingEntity ent = (LivingEntity) entity;
-                f12 = (float) EnchantmentHelper.getRespiration(ent) * 0.2F;
+                AttributeInstance attributeinstance = ent.getAttribute(Attributes.OXYGEN_BONUS);
+                f12 = (float) (attributeinstance != null ? attributeinstance.getValue() : 0) * 0.2F;
 
                 if (ent.hasEffect(MobEffects.WATER_BREATHING)) {
                     f12 = f12 * 0.3F + 0.6F;

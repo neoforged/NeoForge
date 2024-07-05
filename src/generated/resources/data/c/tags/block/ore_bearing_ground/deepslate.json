@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:deepslate",
+    {
+      "id": "#forge:ore_bearing_ground/deepslate",
+      "required": false
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FenceGateBlock.java
 +++ b/net/minecraft/world/level/block/FenceGateBlock.java
-@@ -32,7 +_,9 @@
+@@ -31,7 +_,9 @@
  
  public class FenceGateBlock extends HorizontalDirectionalBlock {
      public static final MapCodec<FenceGateBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -11,7 +11,7 @@
                  .apply(p_308823_, FenceGateBlock::new)
      );
      public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
-@@ -50,6 +_,8 @@
+@@ -49,6 +_,8 @@
      protected static final VoxelShape X_OCCLUSION_SHAPE = Shapes.or(Block.box(7.0, 5.0, 0.0, 9.0, 16.0, 2.0), Block.box(7.0, 5.0, 14.0, 9.0, 16.0, 16.0));
      protected static final VoxelShape Z_OCCLUSION_SHAPE_LOW = Shapes.or(Block.box(0.0, 2.0, 7.0, 2.0, 13.0, 9.0), Block.box(14.0, 2.0, 7.0, 16.0, 13.0, 9.0));
      protected static final VoxelShape X_OCCLUSION_SHAPE_LOW = Shapes.or(Block.box(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.box(7.0, 2.0, 14.0, 9.0, 13.0, 16.0));
@@ -20,7 +20,7 @@
      private final WoodType type;
  
      @Override
-@@ -58,8 +_,17 @@
+@@ -57,8 +_,17 @@
      }
  
      public FenceGateBlock(WoodType p_273340_, BlockBehaviour.Properties p_273352_) {
@@ -40,7 +40,7 @@
          this.registerDefaultState(
              this.stateDefinition
                  .any()
-@@ -170,7 +_,7 @@
+@@ -169,7 +_,7 @@
          p_53366_.playSound(
              p_53368_,
              p_53367_,
@@ -49,7 +49,7 @@
              SoundSource.BLOCKS,
              1.0F,
              p_53366_.getRandom().nextFloat() * 0.1F + 0.9F
-@@ -187,7 +_,7 @@
+@@ -186,7 +_,7 @@
              p_311813_.playSound(
                  null,
                  p_312680_,
@@ -58,7 +58,7 @@
                  SoundSource.BLOCKS,
                  1.0F,
                  p_311813_.getRandom().nextFloat() * 0.1F + 0.9F
-@@ -208,7 +_,7 @@
+@@ -207,7 +_,7 @@
                      p_53373_.playSound(
                          null,
                          p_53374_,

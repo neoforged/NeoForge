@@ -18,11 +18,13 @@ import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -31,7 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -53,6 +55,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -107,10 +110,8 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        @SuppressWarnings("deprecation")
-        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             if (level.getBlockEntity(pos) instanceof DioriteFlowerPotBlockEntity be) {
-                ItemStack stack = player.getItemInHand(hand);
                 boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().containsKey(BuiltInRegistries.ITEM.getKey(item));
                 boolean hasFlower = be.plant != Blocks.AIR;
 
@@ -136,12 +137,12 @@ public class FullPotsAccessorDemo {
                     }
 
                     level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                    return InteractionResult.sidedSuccess(level.isClientSide());
+                    return ItemInteractionResult.sidedSuccess(level.isClientSide());
                 } else {
-                    return InteractionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
-            return super.use(state, level, pos, player, hand, hit);
+            return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }
 
         @Override
@@ -184,13 +185,13 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public CompoundTag getUpdateTag() {
-            return saveWithFullMetadata();
+        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
+            return saveWithFullMetadata(holderLookup);
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag) {
-            super.handleUpdateTag(tag);
+        public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.handleUpdateTag(tag, holderLookup);
             modelData = modelData.derive().with(PLANT_PROPERTY, plant).build();
             requestModelDataUpdate();
         }
@@ -201,31 +202,31 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-            handleUpdateTag(pkt.getTag());
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holderLookup) {
+            handleUpdateTag(pkt.getTag(), holderLookup);
             //noinspection ConstantConditions
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
-            plant = BuiltInRegistries.BLOCK.get(new ResourceLocation(tag.getString("plant")));
+        public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.loadAdditional(tag, holderLookup);
+            plant = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(tag.getString("plant")));
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag) {
+        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             //noinspection ConstantConditions
             tag.putString("plant", BuiltInRegistries.BLOCK.getKey(plant).toString());
-            super.saveAdditional(tag);
+            super.saveAdditional(tag, holderLookup);
         }
     }
 
-    @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerLoader(final ModelEvent.RegisterGeometryLoaders event) {
-            event.register("diorite_pot", new DioritePotGeometryLoader());
+            event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "diorite_pot"), new DioritePotGeometryLoader());
         }
 
         private static class DioritePotGeometryLoader implements IGeometryLoader<DioritePotModelGeometry> {
@@ -238,8 +239,8 @@ public class FullPotsAccessorDemo {
 
         private record DioritePotModelGeometry(UnbakedModel wrappedModel) implements IUnbakedGeometry<DioritePotModelGeometry> {
             @Override
-            public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-                return new DioritePotModel(wrappedModel.bake(baker, spriteGetter, modelState, modelLocation));
+            public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+                return new DioritePotModel(wrappedModel.bake(baker, spriteGetter, modelState));
             }
 
             @Override
@@ -250,8 +251,8 @@ public class FullPotsAccessorDemo {
 
         private static class DioritePotModel extends BakedModelWrapper<BakedModel> {
             private static final ChunkRenderTypeSet CUTOUT = ChunkRenderTypeSet.of(RenderType.cutout());
-            private static final ResourceLocation POT_TEXTURE = new ResourceLocation("minecraft:block/flower_pot");
-            private static final ResourceLocation DIRT_TEXTURE = new ResourceLocation("minecraft:block/dirt");
+            private static final ResourceLocation POT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/flower_pot");
+            private static final ResourceLocation DIRT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/dirt");
 
             public DioritePotModel(BakedModel wrappedModel) {
                 super(wrappedModel);

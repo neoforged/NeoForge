@@ -6,11 +6,12 @@
 package net.neoforged.neoforge.common.conditions;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.neoforged.fml.ModList;
 
 public record ModLoadedCondition(String modid) implements ICondition {
-    public static Codec<ModLoadedCondition> CODEC = RecordCodecBuilder.create(
+    public static MapCodec<ModLoadedCondition> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             Codec.STRING.fieldOf("modid").forGetter(ModLoadedCondition::modid))
@@ -22,7 +23,7 @@ public record ModLoadedCondition(String modid) implements ICondition {
     }
 
     @Override
-    public Codec<? extends ICondition> codec() {
+    public MapCodec<? extends ICondition> codec() {
         return CODEC;
     }
 

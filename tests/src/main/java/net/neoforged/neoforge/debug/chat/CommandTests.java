@@ -13,6 +13,7 @@ import java.util.List;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.Holder;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -69,18 +70,18 @@ public class CommandTests {
         enum TestArgument {
             BLD {
                 @Override
-                public MobEffect getEffect() {
+                public Holder<MobEffect> getEffect() {
                     return MobEffects.BLINDNESS;
                 }
             },
             NV {
                 @Override
-                public MobEffect getEffect() {
+                public Holder<MobEffect> getEffect() {
                     return MobEffects.NIGHT_VISION;
                 }
             };
 
-            public abstract MobEffect getEffect();
+            public abstract Holder<MobEffect> getEffect();
         }
 
         NeoForge.EVENT_BUS.addListener((final RegisterCommandsEvent event) -> {

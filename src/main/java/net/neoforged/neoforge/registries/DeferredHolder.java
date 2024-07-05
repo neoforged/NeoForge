@@ -19,6 +19,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -172,7 +173,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof DeferredHolder<?, ?> dh && dh.key == this.key;
+        return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key;
     }
 
     @Override
@@ -233,6 +234,25 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
+     * {@return {@code true} if the {@code holder} is the same as this holder}
+     */
+    @Override
+    @Deprecated
+    public boolean is(Holder<R> holder) {
+        bind(false);
+        return this.holder != null && this.holder.is(holder);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <Z> @Nullable Z getData(DataMapType<R, Z> type) {
+        bind(false);
+        return holder == null ? null : holder.getData(type);
+    }
+
+    /**
      * {@return all tags present on the underlying object}
      *
      * <p>If the underlying object is not {@linkplain #isBound() bound} yet, and empty stream is returned.
@@ -274,5 +294,11 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public boolean canSerializeIn(HolderOwner<R> owner) {
         bind(false);
         return this.holder != null && this.holder.canSerializeIn(owner);
+    }
+
+    @Override
+    public Holder<R> getDelegate() {
+        bind(false);
+        return this.holder != null ? this.holder.getDelegate() : this;
     }
 }

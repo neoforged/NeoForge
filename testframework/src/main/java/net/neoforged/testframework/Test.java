@@ -12,11 +12,12 @@ import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.group.Groupable;
 import org.jetbrains.annotations.Nullable;
@@ -103,7 +104,7 @@ public interface Test extends Groupable {
     }
 
     /**
-     * A group of collectors by {@link Mod.EventBusSubscriber.Bus bus}.
+     * A group of collectors by {@link EventBusSubscriber.Bus bus}.
      */
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
@@ -114,14 +115,14 @@ public interface Test extends Groupable {
          * @param bus the bus to get the collector for
          * @return the collector associated with the bus
          */
-        EventListenerCollector getFor(Mod.EventBusSubscriber.Bus bus);
+        EventListenerCollector getFor(EventBusSubscriber.Bus bus);
 
         default EventListenerCollector mod() {
-            return getFor(Mod.EventBusSubscriber.Bus.MOD);
+            return getFor(EventBusSubscriber.Bus.MOD);
         }
 
         default EventListenerCollector forge() {
-            return getFor(Mod.EventBusSubscriber.Bus.FORGE);
+            return getFor(EventBusSubscriber.Bus.GAME);
         }
 
         /**
@@ -206,6 +207,28 @@ public interface Test extends Groupable {
      */
     record Status(Result result, String message) {
         public static final Status DEFAULT = new Status(Result.NOT_PROCESSED, "");
+        public static final Status PASSED = new Status(Result.PASSED, "");
+
+        public static Status passed(String message) {
+            return new Status(Result.PASSED, message);
+        }
+
+        public static Status passed() {
+            return PASSED;
+        }
+
+        public static Status failed(String message) {
+            return new Status(Result.FAILED, message);
+        }
+
+        public MutableComponent asComponent() {
+            MutableComponent component = result().asComponent();
+            String message = message();
+            if (message.isEmpty()) {
+                return component;
+            }
+            return Component.empty().append(component).append(" - " + message);
+        }
 
         @Override
         public String toString() {
@@ -222,16 +245,16 @@ public interface Test extends Groupable {
         FAILED(0xFfcccb, "Failed"),
         NOT_PROCESSED(0xA6A39E, "Not Processed");
 
-        private final int colour;
+        private final int color;
         private final String humanReadable;
 
-        Result(int colour, String humanReadable) {
-            this.colour = colour;
+        Result(int color, String humanReadable) {
+            this.color = color;
             this.humanReadable = humanReadable;
         }
 
-        public int getColour() {
-            return this.colour;
+        public int getColor() {
+            return this.color;
         }
 
         public boolean passed() {
@@ -244,6 +267,10 @@ public interface Test extends Groupable {
 
         public String asHumanReadable() {
             return humanReadable;
+        }
+
+        public MutableComponent asComponent() {
+            return Component.literal(asHumanReadable()).withColor(color);
         }
     }
 

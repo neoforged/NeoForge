@@ -40,7 +40,7 @@ public class CombinedInvWrapper implements IItemHandlerModifiable {
 
     protected IItemHandlerModifiable getHandlerFromIndex(int index) {
         if (index < 0 || index >= itemHandler.length) {
-            return (IItemHandlerModifiable) EmptyHandler.INSTANCE;
+            return (IItemHandlerModifiable) EmptyItemHandler.INSTANCE;
         }
         return itemHandler[index];
     }

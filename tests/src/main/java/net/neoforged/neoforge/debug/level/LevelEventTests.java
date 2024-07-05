@@ -26,7 +26,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
-import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
+import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -39,7 +39,7 @@ public class LevelEventTests {
     @EmptyTemplate(value = "9x9x9", floor = true)
     @TestHolder(description = "Tests if the sapling grow tree event is fired, replacing spruce with birch")
     static void saplingGrowTreeEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final SaplingGrowTreeEvent event) -> {
+        test.eventListeners().forge().addListener((final BlockGrowFeatureEvent event) -> {
             if (event.getFeature() != null && event.getFeature().is(TreeFeatures.SPRUCE)) {
                 event.setFeature(TreeFeatures.BIRCH_BEES_005);
             }
@@ -55,7 +55,7 @@ public class LevelEventTests {
     }
 
     @GameTest
-    @TestHolder
+    @TestHolder(description = "Tests if the alter ground event is fired, replacing podzol with redstone blocks")
     static void alterGroundEvent(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(16, 32, 16)
                 .fill(0, 0, 0, 15, 0, 15, Blocks.DIRT.defaultBlockState())
@@ -92,7 +92,7 @@ public class LevelEventTests {
     @TestHolder(description = "Tests the vanilla game event by hurting entities that are sheared in the overworld")
     static void vanillaGameEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final VanillaGameEvent event) -> {
-            if (event.getVanillaEvent() == GameEvent.SHEAR && event.getLevel().dimension() == Level.OVERWORLD) {
+            if (event.getVanillaEvent().is(GameEvent.SHEAR) && event.getLevel().dimension() == Level.OVERWORLD) {
                 final var entities = event.getLevel().getEntitiesOfClass(Entity.class, new AABB(BlockPos.containing(event.getEventPosition())), e -> e instanceof Shearable);
                 entities.get(0).hurt(event.getLevel().damageSources().generic(), event.getCause() == null ? 1 : 3);
                 test.pass();

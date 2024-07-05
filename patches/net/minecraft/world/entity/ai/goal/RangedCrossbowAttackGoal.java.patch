@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
-@@ -12,7 +_,7 @@
- import net.minecraft.world.item.ItemStack;
+@@ -14,7 +_,7 @@
  import net.minecraft.world.item.Items;
+ import net.minecraft.world.item.component.ChargedProjectiles;
  
 -public class RangedCrossbowAttackGoal<T extends Monster & RangedAttackMob & CrossbowAttackMob> extends Goal {
 +public class RangedCrossbowAttackGoal<T extends net.minecraft.world.entity.Mob & CrossbowAttackMob> extends Goal {
      public static final UniformInt PATHFINDING_DELAY_RANGE = TimeUtil.rangeOfSeconds(1, 2);
      private final T mob;
      private RangedCrossbowAttackGoal.CrossbowState crossbowState = RangedCrossbowAttackGoal.CrossbowState.UNCHARGED;
-@@ -22,6 +_,10 @@
+@@ -24,6 +_,10 @@
      private int attackDelay;
      private int updatePathDelay;
  
@@ -20,7 +20,7 @@
      public RangedCrossbowAttackGoal(T p_25814_, double p_25815_, float p_25816_) {
          this.mob = p_25814_;
          this.speedModifier = p_25815_;
-@@ -35,7 +_,7 @@
+@@ -37,7 +_,7 @@
      }
  
      private boolean isHoldingCrossbow() {
@@ -29,7 +29,7 @@
      }
  
      @Override
-@@ -97,7 +_,7 @@
+@@ -99,7 +_,7 @@
              this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
              if (this.crossbowState == RangedCrossbowAttackGoal.CrossbowState.UNCHARGED) {
                  if (!flag2) {
@@ -38,12 +38,3 @@
                      this.crossbowState = RangedCrossbowAttackGoal.CrossbowState.CHARGING;
                      this.mob.setChargingCrossbow(true);
                  }
-@@ -121,7 +_,7 @@
-                 }
-             } else if (this.crossbowState == RangedCrossbowAttackGoal.CrossbowState.READY_TO_ATTACK && flag) {
-                 this.mob.performRangedAttack(livingentity, 1.0F);
--                ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, Items.CROSSBOW));
-+                ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
-                 CrossbowItem.setCharged(itemstack1, false);
-                 this.crossbowState = RangedCrossbowAttackGoal.CrossbowState.UNCHARGED;
-             }

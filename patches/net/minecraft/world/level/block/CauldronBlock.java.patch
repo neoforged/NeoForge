@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CauldronBlock.java
 +++ b/net/minecraft/world/level/block/CauldronBlock.java
-@@ -60,6 +_,7 @@
+@@ -58,6 +_,7 @@
  
      @Override
      protected void receiveStalactiteDrip(BlockState p_152940_, Level p_152941_, BlockPos p_152942_, Fluid p_152943_) {

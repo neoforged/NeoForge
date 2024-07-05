@@ -85,7 +85,7 @@ public class CustomElytraTest {
                 int nextFlightTick = flightTicks + 1;
                 if (nextFlightTick % 10 == 0) {
                     if (nextFlightTick % 20 == 0) {
-                        stack.hurtAndBreak(1, entity, e -> e.broadcastBreakEvent(EquipmentSlot.CHEST));
+                        stack.hurtAndBreak(1, entity, EquipmentSlot.CHEST);
                     }
                     entity.gameEvent(GameEvent.ELYTRA_GLIDE);
                 }
@@ -96,7 +96,7 @@ public class CustomElytraTest {
 
     @OnlyIn(Dist.CLIENT)
     public static class CustomElytraLayer extends ElytraLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-        private static final ResourceLocation TEXTURE_ELYTRA = new ResourceLocation(MOD_ID, "textures/entity/custom_elytra.png");
+        private static final ResourceLocation TEXTURE_ELYTRA = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/custom_elytra.png");
 
         public CustomElytraLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer, EntityModelSet modelSet) {
             super(renderer, modelSet);

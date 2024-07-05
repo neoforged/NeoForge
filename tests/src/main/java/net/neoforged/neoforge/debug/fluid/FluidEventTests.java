@@ -11,8 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -23,15 +22,15 @@ public class FluidEventTests {
     @GameTest
     @TestHolder(description = "Tests if the CreateFluidSourceEvent is fired and allows modifying the result")
     static void createFluidSourceEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final BlockEvent.CreateFluidSourceEvent event) -> {
+        test.eventListeners().forge().addListener((final CreateFluidSourceEvent event) -> {
             final BlockState state = event.getState();
             final FluidState fluidState = state.getFluidState();
             if (fluidState.getType().isSame(Fluids.WATER)) {
-                event.setResult(Event.Result.DENY);
+                event.setCanConvert(false);
                 // Place andesite on top of the sources
                 event.getLevel().setBlock(event.getPos().above(), Blocks.ANDESITE.defaultBlockState(), 3);
             } else if (fluidState.getType().isSame(Fluids.LAVA)) {
-                event.setResult(Event.Result.ALLOW);
+                event.setCanConvert(true);
             }
         });
 

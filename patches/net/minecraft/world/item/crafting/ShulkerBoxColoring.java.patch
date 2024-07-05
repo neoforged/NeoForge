@@ -1,24 +1,24 @@
 --- a/net/minecraft/world/item/crafting/ShulkerBoxColoring.java
 +++ b/net/minecraft/world/item/crafting/ShulkerBoxColoring.java
-@@ -25,7 +_,7 @@
+@@ -24,7 +_,7 @@
                  if (Block.byItem(itemstack.getItem()) instanceof ShulkerBoxBlock) {
-                     ++i;
+                     i++;
                  } else {
 -                    if (!(itemstack.getItem() instanceof DyeItem)) {
 +                    if (!itemstack.is(net.neoforged.neoforge.common.Tags.Items.DYES)) {
                          return false;
                      }
  
-@@ -43,7 +_,7 @@
+@@ -42,7 +_,7 @@
  
-     public ItemStack assemble(CraftingContainer p_44322_, RegistryAccess p_266985_) {
+     public ItemStack assemble(CraftingInput p_346433_, HolderLookup.Provider p_335717_) {
          ItemStack itemstack = ItemStack.EMPTY;
 -        DyeItem dyeitem = (DyeItem)Items.WHITE_DYE;
 +        net.minecraft.world.item.DyeColor dyecolor = net.minecraft.world.item.DyeColor.WHITE;
  
-         for(int i = 0; i < p_44322_.getContainerSize(); ++i) {
-             ItemStack itemstack1 = p_44322_.getItem(i);
-@@ -51,13 +_,15 @@
+         for (int i = 0; i < p_346433_.size(); i++) {
+             ItemStack itemstack1 = p_346433_.getItem(i);
+@@ -50,13 +_,14 @@
                  Item item = itemstack1.getItem();
                  if (Block.byItem(item) instanceof ShulkerBoxBlock) {
                      itemstack = itemstack1;
@@ -31,9 +31,8 @@
              }
          }
  
--        ItemStack itemstack2 = ShulkerBoxBlock.getColoredItemStack(dyeitem.getDyeColor());
-+        ItemStack itemstack2 = ShulkerBoxBlock.getColoredItemStack(dyecolor);
-+        net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack2);
-         if (itemstack.hasTag()) {
-             itemstack2.setTag(itemstack.getTag().copy());
-         }
+-        Block block = ShulkerBoxBlock.getBlockByColor(dyeitem.getDyeColor());
++        Block block = ShulkerBoxBlock.getBlockByColor(dyecolor);
+         return itemstack.transmuteCopy(block, 1);
+     }
+ 

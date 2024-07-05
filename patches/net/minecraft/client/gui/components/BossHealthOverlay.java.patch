@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/gui/components/BossHealthOverlay.java
 +++ b/net/minecraft/client/gui/components/BossHealthOverlay.java
-@@ -62,13 +_,16 @@
+@@ -63,13 +_,16 @@
  
-             for(LerpingBossEvent lerpingbossevent : this.events.values()) {
+             for (LerpingBossEvent lerpingbossevent : this.events.values()) {
                  int k = i / 2 - 91;
 +                var event = net.neoforged.neoforge.client.ClientHooks.onCustomizeBossEventProgress(p_283175_, this.minecraft.getWindow(), lerpingbossevent, k, j, 10 + this.minecraft.font.lineHeight);
 +                if (!event.isCanceled()) {

@@ -16,8 +16,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 @Mod(CustomParticleTypeTest.MOD_ID)
 public class CustomParticleTypeTest {
@@ -26,30 +27,30 @@ public class CustomParticleTypeTest {
 
     public CustomParticleTypeTest() {}
 
-    @Mod.EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
     public static class ClientEvents {
         private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType() {
             @Override
-            public void begin(BufferBuilder buffer, TextureManager texMgr) {
+            public BufferBuilder begin(Tesselator tesselator, TextureManager texMgr) {
                 Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-                ParticleRenderType.TERRAIN_SHEET.begin(buffer, texMgr);
+                return ParticleRenderType.TERRAIN_SHEET.begin(tesselator, texMgr);
             }
 
             @Override
-            public void end(Tesselator tess) {
-                ParticleRenderType.TERRAIN_SHEET.end(tess);
+            public String toString() {
+                return "CUSTOM_TYPE";
             }
         };
         private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType() {
             @Override
-            public void begin(BufferBuilder buffer, TextureManager texMgr) {
+            public BufferBuilder begin(Tesselator tesselator, TextureManager texMgr) {
                 Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-                ParticleRenderType.TERRAIN_SHEET.begin(buffer, texMgr);
+                return ParticleRenderType.TERRAIN_SHEET.begin(tesselator, texMgr);
             }
 
             @Override
-            public void end(Tesselator tess) {
-                ParticleRenderType.TERRAIN_SHEET.end(tess);
+            public String toString() {
+                return "CUSTOM_TYPE_TWO";
             }
         };
 
@@ -76,8 +77,8 @@ public class CustomParticleTypeTest {
         }
 
         @SubscribeEvent
-        public static void onClientTick(final TickEvent.ClientTickEvent event) {
-            if (!ENABLED || event.phase != TickEvent.Phase.START) {
+        public static void onClientTick(ClientTickEvent.Pre event) {
+            if (!ENABLED) {
                 return;
             }
 

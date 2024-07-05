@@ -5,12 +5,16 @@
 
 package net.neoforged.neoforge.common;
 
+import java.util.Optional;
+import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A default, exposed implementation of ITrade. All of the other implementations of ITrade (in VillagerTrades) are not public.
@@ -45,9 +49,11 @@ public class BasicItemListing implements ItemListing {
         this(new ItemStack(Items.EMERALD, emeralds), forSale, maxTrades, xp, 1);
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     @Override
     public MerchantOffer getOffer(Entity p_219693_, RandomSource p_219694_) {
-        return new MerchantOffer(price, price2, forSale, maxTrades, xp, priceMult);
+        ItemCost cost = new ItemCost(price.getItemHolder(), price.getCount(), DataComponentPredicate.EMPTY, price); // Porting 1.20.5 do something proper for the components here
+        ItemCost cost2 = new ItemCost(price2.getItemHolder(), price2.getCount(), DataComponentPredicate.EMPTY, price2);
+        return new MerchantOffer(cost, Optional.of(cost2), forSale, maxTrades, xp, priceMult);
     }
 }

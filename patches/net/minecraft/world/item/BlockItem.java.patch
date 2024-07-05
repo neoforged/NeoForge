@@ -14,7 +14,7 @@
                          SoundSource.BLOCKS,
                          (soundtype.getVolume() + 1.0F) / 2.0F,
                          soundtype.getPitch() * 0.8F
-@@ -102,10 +_,16 @@
+@@ -99,10 +_,16 @@
          }
      }
  
@@ -31,7 +31,7 @@
      @Nullable
      public BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
          return p_40609_;
-@@ -208,6 +_,10 @@
+@@ -193,6 +_,10 @@
  
      public void registerBlocks(Map<Block, Item> p_40607_, Item p_40608_) {
          p_40607_.put(this.getBlock(), p_40608_);

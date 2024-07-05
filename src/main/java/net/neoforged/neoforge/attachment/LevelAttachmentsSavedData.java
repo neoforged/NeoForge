@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.attachment;
 
 import java.util.Objects;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -18,7 +19,7 @@ public class LevelAttachmentsSavedData extends SavedData {
     public static void init(ServerLevel level) {
         var factory = new SavedData.Factory<>(
                 () -> new LevelAttachmentsSavedData(level),
-                tag -> new LevelAttachmentsSavedData(level, tag));
+                (tag, prov) -> new LevelAttachmentsSavedData(level, tag));
         // Querying the attachment a single time is enough to initialize it,
         // and make sure it gets saved when the level is saved.
         level.getDataStorage().computeIfAbsent(factory, NAME);
@@ -32,13 +33,13 @@ public class LevelAttachmentsSavedData extends SavedData {
 
     public LevelAttachmentsSavedData(ServerLevel level, CompoundTag tag) {
         this.level = level;
-        level.deserializeAttachments(tag);
+        level.deserializeAttachments(level.registryAccess(), tag);
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         // Make sure we don't return null
-        return Objects.requireNonNullElseGet(level.serializeAttachments(), CompoundTag::new);
+        return Objects.requireNonNullElseGet(level.serializeAttachments(provider), CompoundTag::new);
     }
 
     @Override

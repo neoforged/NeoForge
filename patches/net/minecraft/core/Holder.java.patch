@@ -5,22 +5,51 @@
  import net.minecraft.tags.TagKey;
  
 -public interface Holder<T> {
-+public interface Holder<T> extends net.neoforged.neoforge.registries.datamaps.IWithData<T> {
++public interface Holder<T> extends net.neoforged.neoforge.common.extensions.IHolderExtension<T> {
      T value();
  
      boolean isBound();
-@@ -201,6 +_,14 @@
-             } else {
-                 this.value = p_249418_;
+@@ -220,6 +_,14 @@
              }
-+        }
-+
+         }
+ 
 +        @org.jetbrains.annotations.Nullable
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
 +            if (owner instanceof HolderLookup.RegistryLookup<T> lookup) {
 +                return lookup.getData(type, key());
 +            }
 +            return null;
++        }
++
+         void bindTags(Collection<TagKey<T>> p_205770_) {
+             this.tags = Set.copyOf(p_205770_);
          }
+@@ -233,6 +_,28 @@
+         public String toString() {
+             return "Reference{" + this.key + "=" + this.value + "}";
+         }
++
++        // Neo Start
++
++        // Neo: Add DeferredHolder-compatible hashCode() and equals() overrides
++        @Override
++        public int hashCode() {
++            return key().hashCode();
++        }
++
++        @Override
++        public boolean equals(Object obj) {
++            if (this == obj) return true;
++            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key();
++        }
++
++        @Override
++        @org.jetbrains.annotations.Nullable
++        public HolderLookup.RegistryLookup<T> unwrapLookup() {
++            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
++        }
++
++        // Neo End
  
-         public void bindTags(Collection<TagKey<T>> p_205770_) {
+         protected static enum Type {
+             STAND_ALONE,

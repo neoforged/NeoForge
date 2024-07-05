@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.FileUtil;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -45,7 +46,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -85,19 +85,20 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.ChatTypeDecoration;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
-import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Mth;
@@ -108,9 +109,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -129,14 +130,16 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
+import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
-import net.neoforged.neoforge.client.event.ClientPauseUpdatedEvent;
+import net.neoforged.neoforge.client.event.ClientPauseChangeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -152,6 +155,7 @@ import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -166,7 +170,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
-import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -189,7 +192,7 @@ public class ClientHooks {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker CLIENTHOOKS = MarkerManager.getMarker("CLIENTHOOKS");
 
-    //private static final ResourceLocation ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+    //private static final ResourceLocation ITEM_GLINT = ResourceLocation.withDefaultNamespace("textures/misc/enchanted_item_glint.png");
 
     /**
      * Contains the *extra* GUI layers.
@@ -238,41 +241,46 @@ public class ClientHooks {
         return 11000.0F + 10000.0F * (1 + guiLayers.size());
     }
 
-    public static String getArmorTexture(Entity entity, ItemStack armor, String _default, EquipmentSlot slot, String type) {
-        String result = armor.getItem().getArmorTexture(armor, entity, slot, type);
-        return result != null ? result : _default;
+    public static ResourceLocation getArmorTexture(Entity entity, ItemStack armor, ArmorMaterial.Layer layer, boolean innerModel, EquipmentSlot slot) {
+        ResourceLocation result = armor.getItem().getArmorTexture(armor, entity, slot, layer, innerModel);
+        return result != null ? result : layer.texture(innerModel);
     }
 
-    public static void onClientPauseUpdate(boolean paused) {
-        NeoForge.EVENT_BUS.post(new ClientPauseUpdatedEvent(paused));
+    public static boolean onClientPauseChangePre(boolean pause) {
+        var event = NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Pre(pause));
+        return event.isCanceled();
     }
 
-    public static boolean onDrawHighlight(LevelRenderer context, Camera camera, HitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
+    public static void onClientPauseChangePost(boolean pause) {
+        NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Post(pause));
+    }
+
+    public static boolean onDrawHighlight(LevelRenderer context, Camera camera, HitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource) {
         switch (target.getType()) {
             case BLOCK:
                 if (!(target instanceof BlockHitResult blockTarget)) return false;
-                return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, partialTick, poseStack, bufferSource)).isCanceled();
+                return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, deltaTracker, poseStack, bufferSource)).isCanceled();
             case ENTITY:
                 if (!(target instanceof EntityHitResult entityTarget)) return false;
-                NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, partialTick, poseStack, bufferSource));
+                NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, deltaTracker, poseStack, bufferSource));
                 return false;
             default:
                 return false; // NO-OP - This doesn't even get called for anything other than blocks and entities
         }
     }
 
-    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, PoseStack poseStack, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
+    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         var mc = Minecraft.getInstance();
         var profiler = mc.getProfiler();
         profiler.push(stage.toString());
-        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, projectionMatrix, renderTick, mc.getPartialTick(), camera, frustum));
+        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getTimer(), camera, frustum));
         profiler.pop();
     }
 
-    public static void dispatchRenderStage(RenderType renderType, LevelRenderer levelRenderer, PoseStack poseStack, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
+    public static void dispatchRenderStage(RenderType renderType, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         RenderLevelStageEvent.Stage stage = RenderLevelStageEvent.Stage.fromRenderType(renderType);
         if (stage != null)
-            dispatchRenderStage(stage, levelRenderer, poseStack, projectionMatrix, renderTick, camera, frustum);
+            dispatchRenderStage(stage, levelRenderer, null, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
     }
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
@@ -284,15 +292,15 @@ public class ClientHooks {
     }
 
     public static void onTextureAtlasStitched(TextureAtlas atlas) {
-        ModLoader.get().postEvent(new TextureAtlasStitchedEvent(atlas));
+        ModLoader.postEvent(new TextureAtlasStitchedEvent(atlas));
     }
 
     public static void onBlockColorsInit(BlockColors blockColors) {
-        ModLoader.get().postEvent(new RegisterColorHandlersEvent.Block(blockColors));
+        ModLoader.postEvent(new RegisterColorHandlersEvent.Block(blockColors));
     }
 
     public static void onItemColorsInit(ItemColors itemColors, BlockColors blockColors) {
-        ModLoader.get().postEvent(new RegisterColorHandlersEvent.Item(itemColors, blockColors));
+        ModLoader.postEvent(new RegisterColorHandlersEvent.Item(itemColors, blockColors));
     }
 
     public static Model getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot slot, HumanoidModel<?> _default) {
@@ -345,6 +353,12 @@ public class ClientHooks {
         var event = new CalculatePlayerTurnEvent(mouseSensitivity, cinematicCameraEnabled);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    public static float getDetachedCameraDistance(Camera camera, boolean flipped, float entityScale, float distance) {
+        var event = new CalculateDetachedCameraDistanceEvent(camera, flipped, entityScale, distance);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getDistance();
     }
 
     /**
@@ -421,13 +435,7 @@ public class ClientHooks {
         }
     }
 
-    public static ViewportEvent.ComputeCameraAngles onCameraSetup(GameRenderer renderer, Camera camera, float partial) {
-        ViewportEvent.ComputeCameraAngles event = new ViewportEvent.ComputeCameraAngles(renderer, camera, partial, camera.getYRot(), camera.getXRot(), 0);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
-    }
-
-    public static void onModifyBakingResult(Map<ResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
+    public static void onModifyBakingResult(Map<ModelResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
         Function<Material, TextureAtlasSprite> textureGetter = material -> {
             AtlasSet.StitchResult stitchResult = stitchResults.get(material.atlasLocation());
             TextureAtlasSprite sprite = stitchResult.getSprite(material.texture());
@@ -437,11 +445,11 @@ public class ClientHooks {
             LOGGER.warn("Failed to retrieve texture '{}' from atlas '{}'", material.texture(), material.atlasLocation(), new Throwable());
             return stitchResult.missing();
         };
-        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, textureGetter, modelBakery));
+        ModLoader.postEvent(new ModelEvent.ModifyBakingResult(models, textureGetter, modelBakery));
     }
 
-    public static void onModelBake(ModelManager modelManager, Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
-        ModLoader.get().postEvent(new ModelEvent.BakingCompleted(modelManager, Collections.unmodifiableMap(models), modelBakery));
+    public static void onModelBake(ModelManager modelManager, Map<ModelResourceLocation, BakedModel> models, ModelBakery modelBakery) {
+        ModLoader.postEvent(new ModelEvent.BakingCompleted(modelManager, Collections.unmodifiableMap(models), modelBakery));
     }
 
     public static BakedModel handleCameraTransforms(PoseStack poseStack, BakedModel model, ItemDisplayContext cameraTransformType, boolean applyLeftHandTransform) {
@@ -528,7 +536,7 @@ public class ClientHooks {
 
     public static CustomizeGuiOverlayEvent.BossEventProgress onCustomizeBossEventProgress(GuiGraphics guiGraphics, Window window, LerpingBossEvent bossInfo, int x, int y, int increment) {
         CustomizeGuiOverlayEvent.BossEventProgress evt = new CustomizeGuiOverlayEvent.BossEventProgress(window, guiGraphics,
-                Minecraft.getInstance().getPartialTick(), bossInfo, x, y, increment);
+                Minecraft.getInstance().getTimer(), bossInfo, x, y, increment);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
@@ -556,9 +564,9 @@ public class ClientHooks {
     }
 
     public static boolean onScreenMouseClickedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled) {
-        Event event = new ScreenEvent.MouseButtonPressed.Post(guiScreen, mouseX, mouseY, button, handled);
+        var event = new ScreenEvent.MouseButtonPressed.Post(guiScreen, mouseX, mouseY, button, handled);
         NeoForge.EVENT_BUS.post(event);
-        return event.getResult() == Event.Result.DEFAULT ? handled : event.getResult() == Event.Result.ALLOW;
+        return event.getClickResult();
     }
 
     public static boolean onScreenMouseReleasedPre(Screen guiScreen, double mouseX, double mouseY, int button) {
@@ -567,9 +575,9 @@ public class ClientHooks {
     }
 
     public static boolean onScreenMouseReleasedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled) {
-        Event event = new ScreenEvent.MouseButtonReleased.Post(guiScreen, mouseX, mouseY, button, handled);
+        var event = new ScreenEvent.MouseButtonReleased.Post(guiScreen, mouseX, mouseY, button, handled);
         NeoForge.EVENT_BUS.post(event);
-        return event.getResult() == Event.Result.DEFAULT ? handled : event.getResult() == Event.Result.ALLOW;
+        return event.getReleaseResult();
     }
 
     public static boolean onScreenMouseDragPre(Screen guiScreen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
@@ -658,10 +666,8 @@ public class ClientHooks {
 
     public static boolean isNameplateInRenderDistance(Entity entity, double squareDistance) {
         if (entity instanceof LivingEntity) {
-            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE.value());
-            if (attribute != null) {
-                return !(squareDistance > (attribute.getValue() * attribute.getValue()));
-            }
+            double value = ((LivingEntity) entity).getAttributeValue(NeoForgeMod.NAMETAG_DISTANCE);
+            return !(squareDistance > value * value);
         }
         return !(squareDistance > 4096.0f);
     }
@@ -688,7 +694,7 @@ public class ClientHooks {
         layerDefinitions.forEach((k, v) -> builder.put(k, v.get()));
     }
 
-    private static final ResourceLocation ICON_SHEET = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation ICON_SHEET = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
 
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));
@@ -703,15 +709,15 @@ public class ClientHooks {
     }
 
     public static void onRegisterParticleProviders(ParticleEngine particleEngine) {
-        ModLoader.get().postEvent(new RegisterParticleProvidersEvent(particleEngine));
+        ModLoader.postEvent(new RegisterParticleProvidersEvent(particleEngine));
     }
 
     public static void onRegisterKeyMappings(Options options) {
-        ModLoader.get().postEvent(new RegisterKeyMappingsEvent(options));
+        ModLoader.postEvent(new RegisterKeyMappingsEvent(options));
     }
 
-    public static void onRegisterAdditionalModels(Set<ResourceLocation> additionalModels) {
-        ModLoader.get().postEvent(new ModelEvent.RegisterAdditional(additionalModels));
+    public static void onRegisterAdditionalModels(Set<ModelResourceLocation> additionalModels) {
+        ModLoader.postEvent(new ModelEvent.RegisterAdditional(additionalModels));
     }
 
     @Nullable
@@ -726,13 +732,9 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
-    private static final ChatTypeDecoration SYSTEM_CHAT_TYPE_DECORATION = new ChatTypeDecoration("neoforge.chatType.system", List.of(ChatTypeDecoration.Parameter.CONTENT), Style.EMPTY);
-    private static final ChatType SYSTEM_CHAT_TYPE = new ChatType(SYSTEM_CHAT_TYPE_DECORATION, SYSTEM_CHAT_TYPE_DECORATION);
-    private static final ChatType.Bound SYSTEM_CHAT_TYPE_BOUND = SYSTEM_CHAT_TYPE.bind(Component.literal("System"));
-
     @Nullable
     public static Component onClientSystemChat(Component message, boolean overlay) {
-        ClientChatReceivedEvent.System event = new ClientChatReceivedEvent.System(SYSTEM_CHAT_TYPE_BOUND, message, overlay);
+        ClientChatReceivedEvent.System event = new ClientChatReceivedEvent.System(message, overlay);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
@@ -749,7 +751,7 @@ public class ClientHooks {
         return RenderTypeHelper.getEntityRenderType(chunkRenderType, cull);
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
     public static class ClientEvents {
         @Nullable
         private static ShaderInstance rendertypeEntityTranslucentUnlitShader;
@@ -760,7 +762,7 @@ public class ClientHooks {
 
         @SubscribeEvent
         public static void registerShaders(RegisterShadersEvent event) throws IOException {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("neoforge", "rendertype_entity_unlit_translucent"), DefaultVertexFormat.NEW_ENTITY), (p_172645_) -> {
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("neoforge", "rendertype_entity_unlit_translucent"), DefaultVertexFormat.NEW_ENTITY), (p_172645_) -> {
                 rendertypeEntityTranslucentUnlitShader = p_172645_;
             });
         }
@@ -877,23 +879,6 @@ public class ClientHooks {
         return model.getRenderTypes(state, RandomSource.create(), ModelData.EMPTY).contains(RenderType.solid());
     }
 
-    public static void createWorldConfirmationScreen(Runnable doConfirmedWorldLoad) {
-        Component title = Component.translatable("selectWorld.backupQuestion.experimental");
-        Component msg = Component.translatable("selectWorld.backupWarning.experimental")
-                .append("\n\n")
-                .append(Component.translatable("neoforge.selectWorld.backupWarning.experimental.additional"));
-
-        Screen screen = new ConfirmScreen(confirmed -> {
-            if (confirmed) {
-                doConfirmedWorldLoad.run();
-            } else {
-                Minecraft.getInstance().setScreen(null);
-            }
-        }, title, msg, CommonComponents.GUI_PROCEED, CommonComponents.GUI_CANCEL);
-
-        Minecraft.getInstance().setScreen(screen);
-    }
-
     public static boolean renderFireOverlay(Player player, PoseStack mat) {
         return renderBlockOverlay(player, mat, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition());
     }
@@ -913,10 +898,10 @@ public class ClientHooks {
     }
 
     public static ResourceLocation getShaderImportLocation(String basePath, boolean isRelative, String importPath) {
-        final var loc = new ResourceLocation(importPath);
+        final var loc = ResourceLocation.parse(importPath);
         final var normalised = FileUtil.normalizeResourcePath(
                 (isRelative ? basePath : "shaders/include/") + loc.getPath());
-        return new ResourceLocation(loc.getNamespace(), normalised);
+        return ResourceLocation.fromNamespaceAndPath(loc.getNamespace(), normalised);
     }
 
     private static final BiMap<ResourceLocation, SpriteSourceType> SPRITE_SOURCE_TYPES_MAP = HashBiMap.create();
@@ -927,7 +912,7 @@ public class ClientHooks {
 
     @ApiStatus.Internal
     public static void registerSpriteSourceTypes() {
-        ModLoader.get().postEvent(new RegisterSpriteSourceTypesEvent(SPRITE_SOURCE_TYPES_MAP));
+        ModLoader.postEvent(new RegisterSpriteSourceTypesEvent(SPRITE_SOURCE_TYPES_MAP));
     }
 
     @ApiStatus.Internal
@@ -960,7 +945,7 @@ public class ClientHooks {
             element.to.x = Mth.clamp(Mth.lerp(expand, element.to.x, 8F), 0F, 16F);
             element.to.y = Mth.clamp(Mth.lerp(expand, element.to.y, 8F), 0F, 16F);
 
-            float[] uv = faceEntry.getValue().uv.uvs;
+            float[] uv = faceEntry.getValue().uv().uvs;
             // Counteract sprite expansion on edge quads to ensure alignment with pixels on the front and back quads
             if (faceEntry.getKey().getAxis() == Direction.Axis.Y) {
                 float centerU = (uv[0] + uv[0] + uv[2] + uv[2]) / 4.0F;
@@ -1010,18 +995,64 @@ public class ClientHooks {
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
-        ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
-        ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
-        ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());
+        ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
+        ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
+        ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         ClientHooks.onRegisterKeyMappings(mc.options);
         RecipeBookManager.init();
-        GuiOverlayManager.init();
+        mc.gui.initModdedOverlays();
         DimensionSpecialEffectsManager.init();
         NamedRenderTypeManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
+    }
+
+    /**
+     * Fires {@link RenderFrameEvent.Pre}. Called just before {@link GameRenderer#render(float, long, boolean)} in {@link Minecraft#runTick(boolean)}.
+     * <p>
+     * Fired before the profiler section for "gameRenderer" is started.
+     * 
+     * @param partialTick The current partial tick
+     */
+    public static void fireRenderFramePre(DeltaTracker partialTick) {
+        NeoForge.EVENT_BUS.post(new RenderFrameEvent.Pre(partialTick));
+    }
+
+    /**
+     * Fires {@link RenderFrameEvent.Post}. Called just after {@link GameRenderer#render(float, long, boolean)} in {@link Minecraft#runTick(boolean)}.
+     * <p>
+     * Fired after the profiler section for "gameRenderer" is ended.
+     * 
+     * @param partialTick The current partial tick
+     */
+    public static void fireRenderFramePost(DeltaTracker partialRick) {
+        NeoForge.EVENT_BUS.post(new RenderFrameEvent.Post(partialRick));
+    }
+
+    /**
+     * Fires {@link ClientTickEvent.Pre}. Called from the head of {@link Minecraft#tick()}.
+     */
+    public static void fireClientTickPre() {
+        NeoForge.EVENT_BUS.post(new ClientTickEvent.Pre());
+    }
+
+    /**
+     * Fires {@link ClientTickEvent.Post}. Called from the tail of {@link Minecraft#tick()}.
+     */
+    public static void fireClientTickPost() {
+        NeoForge.EVENT_BUS.post(new ClientTickEvent.Post());
+    }
+
+    @Nullable
+    @SuppressWarnings("resource")
+    public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level != null) {
+            return level.registryAccess().lookup(key).orElse(null);
+        }
+        return null;
     }
 }

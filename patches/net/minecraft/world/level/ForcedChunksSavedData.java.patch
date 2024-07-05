@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/level/ForcedChunksSavedData.java
 +++ b/net/minecraft/world/level/ForcedChunksSavedData.java
-@@ -24,16 +_,31 @@
+@@ -25,16 +_,31 @@
      }
  
-     public static ForcedChunksSavedData load(CompoundTag p_151484_) {
+     public static ForcedChunksSavedData load(CompoundTag p_151484_, HolderLookup.Provider p_323940_) {
 -        return new ForcedChunksSavedData(new LongOpenHashSet(p_151484_.getLongArray("Forced")));
 +        ForcedChunksSavedData savedData = new ForcedChunksSavedData(new LongOpenHashSet(p_151484_.getLongArray("Forced")));
 +        net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readModForcedChunks(p_151484_, savedData.blockForcedChunks, savedData.entityForcedChunks);
@@ -11,7 +11,7 @@
      }
  
      @Override
-     public CompoundTag save(CompoundTag p_46120_) {
+     public CompoundTag save(CompoundTag p_46120_, HolderLookup.Provider p_324573_) {
          p_46120_.putLongArray("Forced", this.chunks.toLongArray());
 +        net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.writeModForcedChunks(p_46120_, this.blockForcedChunks, this.entityForcedChunks);
          return p_46120_;

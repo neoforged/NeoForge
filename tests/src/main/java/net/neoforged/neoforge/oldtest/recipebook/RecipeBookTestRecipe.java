@@ -8,6 +8,7 @@ package net.neoforged.neoforge.oldtest.recipebook;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,19 +18,19 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.CommonHooks;
 
-public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.RecipeBookTestContainer> {
+public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     public final Ingredients ingredients;
     private final int width;
     private final int height;
@@ -53,30 +54,24 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
      * Taken from {@link ShapedRecipe}
      */
     @Override
-    public boolean matches(RecipeBookExtensionTest.RecipeBookTestContainer container, Level level) {
-        for (int i = 0; i <= 2 - this.width; ++i) {
-            for (int j = 0; j <= 4 - this.height; ++j) {
-                if (this.matches(container, i, j, true) || this.matches(container, i, j, false))
-                    return true;
-            }
+    public boolean matches(CraftingInput input, Level level) {
+        if (input.width() == this.width && input.height() == this.height) {
+            if (this.matches(input, true) || this.matches(input, false))
+                return true;
         }
 
         return false;
     }
 
-    private boolean matches(RecipeBookExtensionTest.RecipeBookTestContainer container, int x, int y, boolean mirror) //unsure about the last boolean
+    private boolean matches(CraftingInput input, boolean mirror) //unsure about the last boolean
     {
-        for (int i = 0; i < 2; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                int curX = i - x;
-                int curY = j - y;
+        for (int x = 0; x < 2; ++x) {
+            for (int y = 0; y < 4; ++y) {
                 Ingredient ingredient = Ingredient.EMPTY;
-                if (curX >= 0 && curY >= 0 && curX < this.width && curY < this.height) {
-                    int idx = mirror ? this.width - curX - 1 + curY * this.width : curX + curY * this.width;
-                    ingredient = this.items.get(idx);
-                }
+                int idx = mirror ? this.width - x - 1 + y * this.width : x + y * this.width;
+                ingredient = this.items.get(idx);
 
-                if (!ingredient.test(container.getItem(i + j * 2)))
+                if (!ingredient.test(input.getItem(x + y * 2)))
                     return false;
             }
         }
@@ -85,7 +80,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
     }
 
     @Override
-    public ItemStack assemble(RecipeBookExtensionTest.RecipeBookTestContainer p_44001_, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingInput p_44001_, HolderLookup.Provider registryAccess) {
         return this.getResultItem(registryAccess).copy();
     }
 
@@ -95,7 +90,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
         return this.ingredients.result();
     }
 
@@ -124,7 +119,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
         return this.getIngredients().isEmpty() ||
                 this.getIngredients().stream()
                         .filter((ingredient) -> !ingredient.isEmpty())
-                        .anyMatch(CommonHooks::hasNoElements);
+                        .anyMatch(Ingredient::hasNoItems);
     }
 
     @Override
@@ -144,7 +139,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
         };
         private static final Function<String, DataResult<String>> VERIFY_LENGTH_1 = s -> s.length() == 1 ? DataResult.success(s) : DataResult.error(() -> "Key must be a single character!");
 
-        public static final Codec<Ingredients> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+        public static final MapCodec<Ingredients> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Codec.STRING.fieldOf("group").forGetter(Ingredients::group),
                 Codec.STRING.flatXmap(VERIFY_LENGTH_2, VERIFY_LENGTH_2).listOf().flatXmap(VERIFY_SIZE, VERIFY_SIZE).fieldOf("pattern").forGetter(Ingredients::pattern),
                 Codec.unboundedMap(Codec.STRING.flatXmap(VERIFY_LENGTH_1, VERIFY_LENGTH_1), Ingredient.CODEC).fieldOf("key").forGetter(Ingredients::recipe),

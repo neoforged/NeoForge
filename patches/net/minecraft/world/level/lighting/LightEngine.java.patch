@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/lighting/LightEngine.java
 +++ b/net/minecraft/world/level/lighting/LightEngine.java
-@@ -45,7 +_,7 @@
-             return false;
-         } else {
-             return p_285372_.getLightBlock(p_285159_, p_284985_) != p_285110_.getLightBlock(p_285159_, p_284985_)
+@@ -44,7 +_,7 @@
+         return p_285372_ == p_285110_
+             ? false
+             : p_285372_.getLightBlock(p_285159_, p_284985_) != p_285110_.getLightBlock(p_285159_, p_284985_)
 -                || p_285372_.getLightEmission() != p_285110_.getLightEmission()
 +                || p_285372_.getLightEmission(p_285159_, p_284985_) != p_285110_.getLightEmission(p_285159_, p_284985_)
                  || p_285372_.useShapeForLightOcclusion()
                  || p_285110_.useShapeForLightOcclusion();
-         }
+     }

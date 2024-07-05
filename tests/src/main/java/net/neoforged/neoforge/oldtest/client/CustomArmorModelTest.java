@@ -14,7 +14,9 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,7 +60,7 @@ public class CustomArmorModelTest {
     }
 
     private static class TintedArmorItem extends ArmorItem {
-        public TintedArmorItem(ArmorMaterial material, ArmorItem.Type slot, Properties props) {
+        public TintedArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type slot, Properties props) {
             super(material, slot, props);
         }
 
@@ -75,14 +77,16 @@ public class CustomArmorModelTest {
     }
 
     private static class EndermanArmorItem extends ArmorItem {
-        public EndermanArmorItem(ArmorMaterial material, ArmorItem.Type slot, Properties props) {
+        private static final ResourceLocation ARMOR_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/enderman/enderman.png");
+
+        public EndermanArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type slot, Properties props) {
             super(material, slot, props);
         }
 
         @Nullable
         @Override
-        public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-            return "textures/entity/enderman/enderman.png";
+        public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
+            return ARMOR_TEXTURE;
         }
 
         @Override
@@ -107,9 +111,10 @@ public class CustomArmorModelTest {
         }
 
         @Override
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer consumer, int light, int overlay, int color) {
             if (base != null) {
-                base.renderToBuffer(poseStack, consumer, light, overlay, red, 0, 0, alpha);
+                color = FastColor.ARGB32.color(FastColor.ARGB32.alpha(color), FastColor.ARGB32.red(color), 0, 0);
+                base.renderToBuffer(poseStack, consumer, light, overlay, color);
             }
         }
     }

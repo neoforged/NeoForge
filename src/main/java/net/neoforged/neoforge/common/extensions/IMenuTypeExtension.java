@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -17,5 +17,5 @@ public interface IMenuTypeExtension<T> {
         return new MenuType<>(factory, FeatureFlags.DEFAULT_FLAGS);
     }
 
-    T create(int windowId, Inventory playerInv, FriendlyByteBuf extraData);
+    T create(int windowId, Inventory playerInv, RegistryFriendlyByteBuf extraData);
 }

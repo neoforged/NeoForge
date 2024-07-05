@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -23,7 +24,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -45,6 +45,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
@@ -56,8 +57,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -73,18 +72,13 @@ import org.jetbrains.annotations.Nullable;
 public class CustomItemDisplayContextTest {
     public static final String MODID = "custom_transformtype_test";
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     private static class RendererEvents {
-        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", new ResourceLocation("custom_transformtype_test", "hanging"), null);
+        public static final ItemDisplayContext HANGING = ItemDisplayContext.valueOf("NEOTESTS_HANGING");
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ITEM_HANGER_BE.get(), ItemHangerBlockEntityRenderer::new);
-        }
-
-        @SubscribeEvent
-        public static void registerContext(final RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register("hanging", HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer
@@ -225,8 +219,8 @@ public class CustomItemDisplayContextTest {
         }
 
         @Override
-        public CompoundTag getUpdateTag() {
-            return saveWithoutMetadata();
+        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
+            return saveWithoutMetadata(holderLookup);
         }
 
         @Nullable
@@ -236,29 +230,24 @@ public class CustomItemDisplayContextTest {
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag) {
-            load(tag);
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+            handleUpdateTag(pkt.getTag(), lookupProvider);
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-            handleUpdateTag(pkt.getTag());
-        }
-
-        @Override
-        protected void saveAdditional(CompoundTag tag) {
-            var c = new CompoundTag();
+        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.saveAdditional(tag, holderLookup);
             if (heldItem != null) {
-                heldItem.save(c);
-                tag.put("item", c);
+                tag.put("item", heldItem.save(holderLookup, new CompoundTag()));
             }
         }
 
         @Override
-        public void load(CompoundTag tag) {
+        public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.loadAdditional(tag, holderLookup);
             if (tag.contains("item")) {
                 var c = tag.getCompound("item");
-                heldItem = ItemStack.of(c);
+                heldItem = ItemStack.parse(holderLookup, c).orElseThrow();
             }
         }
     }

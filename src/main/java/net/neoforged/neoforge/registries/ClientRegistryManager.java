@@ -22,11 +22,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -34,21 +35,24 @@ import org.slf4j.Logger;
 public class ClientRegistryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) Minecraft.getInstance().level.registryAccess()
-                    .registryOrThrow(payload.registryKey());
-            registry.dataMaps.clear();
-            payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
-        }).exceptionally(ex -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location(), ex.getMessage()));
-            LOGGER.error("Failed to handle registry data map sync: ", ex);
-            return null;
+    public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            try {
+                var regAccess = Minecraft.getInstance().level.registryAccess();
+                final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) regAccess
+                        .registryOrThrow(payload.registryKey());
+                registry.dataMaps.clear();
+                payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
+                NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(regAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));
+            } catch (Throwable t) {
+                LOGGER.error("Failed to handle registry data map sync: ", t);
+                context.disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location().toString(), t.toString()));
+            }
         });
     }
 
-    public static void handleKnownDataMaps(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
-        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {}
+    public static void handleKnownDataMaps(final KnownRegistryDataMapsPayload payload, final IPayloadContext context) {
+        record MandatoryEntry(ResourceKey<? extends Registry<?>> registry, ResourceLocation id) {}
         final Set<MandatoryEntry> ourMandatory = new HashSet<>();
         RegistryManager.getDataMaps().forEach((reg, values) -> values.values().forEach(attach -> {
             if (attach.mandatorySync()) {
@@ -88,12 +92,12 @@ public class ClientRegistryManager {
                 }
             }
 
-            context.packetHandler().disconnect(message);
+            context.disconnect(message);
             return;
         }
 
-        final var known = new HashMap<ResourceKey<Registry<?>>, Collection<ResourceLocation>>();
+        final var known = new HashMap<ResourceKey<? extends Registry<?>>, Collection<ResourceLocation>>();
         RegistryManager.getDataMaps().forEach((key, vals) -> known.put(key, vals.keySet()));
-        context.replyHandler().send(new KnownRegistryDataMapsReplyPayload(known));
+        context.reply(new KnownRegistryDataMapsReplyPayload(known));
     }
 }

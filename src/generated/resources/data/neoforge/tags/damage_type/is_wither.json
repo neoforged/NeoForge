@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:wither",
+    "minecraft:wither_skull",
+    {
+      "id": "#forge:is_wither",
+      "required": false
+    }
+  ]
+}

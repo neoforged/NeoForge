@@ -51,7 +51,7 @@ public final class Capabilities {
     }
 
     private static ResourceLocation create(String path) {
-        return new ResourceLocation("neoforge", path);
+        return ResourceLocation.fromNamespaceAndPath("neoforge", path);
     }
 
     private Capabilities() {}

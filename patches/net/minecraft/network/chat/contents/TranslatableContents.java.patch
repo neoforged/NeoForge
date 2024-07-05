@@ -1,14 +1,75 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
-@@ -139,6 +_,11 @@
-                 }
-             }
+@@ -81,6 +_,13 @@
+         this.key = p_265775_;
+         this.fallback = p_265204_;
+         this.args = p_265752_;
++        if (!net.neoforged.fml.loading.FMLEnvironment.production) {
++            for (Object arg : this.args) {
++                if (!(arg instanceof Component) && !isAllowedPrimitiveArgument(arg)) {
++                    throw new IllegalArgumentException("TranslatableContents' arguments must be either a Component, Number, Boolean, or a String. Was given " + arg + " for " + this.key);
++                }
++            }
++        }
+     }
  
-+            if (j == 0) {
-+                // Forge has some special formatting handlers defined in ForgeI18n, use those if no %s replacements present.
-+                j = net.neoforged.neoforge.internal.TextComponentMessageFormatHandler.handle(this, p_237517_, this.args, p_237516_);
+     @Override
+@@ -92,6 +_,13 @@
+         Language language = Language.getInstance();
+         if (language != this.decomposedWith) {
+             this.decomposedWith = language;
++
++            Component langComponent = language.getComponent(this.key);
++            if (langComponent != null) {
++                this.decomposedParts = ImmutableList.of(langComponent);
++                return;
 +            }
 +
-             if (j < p_237516_.length()) {
-                 String s3 = p_237516_.substring(j);
-                 if (s3.indexOf(37) != -1) {
+             String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
+ 
+             try {
+@@ -170,6 +_,12 @@
+     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_237521_, Style p_237522_) {
+         this.decompose();
+ 
++        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
++            // Reference cycle.
++            return Optional.empty();
++        }
++
++        try {
+         for (FormattedText formattedtext : this.decomposedParts) {
+             Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
+             if (optional.isPresent()) {
+@@ -178,12 +_,21 @@
+         }
+ 
+         return Optional.empty();
++        } finally {
++            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
++        }
+     }
+ 
+     @Override
+     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> p_237519_) {
+         this.decompose();
+ 
++        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
++            // Reference cycle.
++            return Optional.empty();
++        }
++
++        try {
+         for (FormattedText formattedtext : this.decomposedParts) {
+             Optional<T> optional = formattedtext.visit(p_237519_);
+             if (optional.isPresent()) {
+@@ -192,6 +_,9 @@
+         }
+ 
+         return Optional.empty();
++        } finally {
++            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
++        }
+     }
+ 
+     @Override

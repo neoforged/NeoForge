@@ -7,6 +7,7 @@ package net.neoforged.neoforge.registries.holdersets;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,10 +35,9 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * </pre>
  */
 public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) implements ICustomHolderSet<T> {
-    public static <T> Codec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+    public static <T> MapCodec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
         return RegistryOps.retrieveRegistryLookup(registryKey)
-                .xmap(AnyHolderSet::new, AnyHolderSet::registryLookup)
-                .codec();
+                .xmap(AnyHolderSet::new, AnyHolderSet::registryLookup);
     }
 
     @Override

@@ -12,19 +12,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.jetbrains.annotations.Nullable;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class PlayerTestStore extends SavedData {
-    public static final Factory<PlayerTestStore> FACTORY = new Factory<>(PlayerTestStore::new, compoundTag -> new PlayerTestStore().decode(compoundTag));
+    public static final Factory<PlayerTestStore> FACTORY = new Factory<>(PlayerTestStore::new, (compoundTag, provider) -> new PlayerTestStore().decode(compoundTag));
 
     private final Map<UUID, Set<String>> playerToTests = new HashMap<>();
 
@@ -47,7 +44,7 @@ public class PlayerTestStore extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         final CompoundTag testsTag = new CompoundTag();
         playerToTests.forEach((uuid, tests) -> {
             final ListTag testsNbt = new ListTag();
@@ -59,8 +56,10 @@ public class PlayerTestStore extends SavedData {
     }
 
     @Override
-    public void save(File pFile) {
-        pFile.getParentFile().mkdirs();
-        super.save(pFile);
+    public void save(File file, HolderLookup.Provider prov) {
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+        }
+        super.save(file, prov);
     }
 }

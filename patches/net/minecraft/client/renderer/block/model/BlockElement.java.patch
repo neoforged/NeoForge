@@ -20,7 +20,7 @@
          this.shade = p_253661_;
          this.fillUvs();
 +        this.setFaceData(faceData);
-+        this.faces.values().forEach(face -> face.parent = this);
++        this.faces.values().forEach(face -> face.parent().setValue(this));
      }
  
      private void fillUvs() {

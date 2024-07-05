@@ -37,7 +37,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ScaffoldingTest {
     static final String MODID = "scaffolding_test";
     static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    static final TagKey<Block> SCAFFOLDING = BlockTags.create(new ResourceLocation("neoforge", "scaffolding"));
+    static final TagKey<Block> SCAFFOLDING = BlockTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", "scaffolding"));
 
     static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
 
@@ -58,7 +58,7 @@ public class ScaffoldingTest {
 
         @Override
         protected void registerStatesAndModels() {
-            this.getVariantBuilder(SCAFFOLDING_METHOD_TEST.get()).forAllStatesExcept((state) -> ConfiguredModel.builder().modelFile(state.getValue(ScaffoldingBlock.BOTTOM) ? new ModelFile.ExistingModelFile(new ResourceLocation("block/scaffolding_unstable"), this.models().existingFileHelper) : new ModelFile.ExistingModelFile(new ResourceLocation("block/scaffolding_stable"), this.models().existingFileHelper)).build(), ScaffoldingBlock.DISTANCE, ScaffoldingBlock.WATERLOGGED);
+            this.getVariantBuilder(SCAFFOLDING_METHOD_TEST.get()).forAllStatesExcept((state) -> ConfiguredModel.builder().modelFile(state.getValue(ScaffoldingBlock.BOTTOM) ? new ModelFile.ExistingModelFile(ResourceLocation.withDefaultNamespace("block/scaffolding_unstable"), this.models().existingFileHelper) : new ModelFile.ExistingModelFile(ResourceLocation.withDefaultNamespace("block/scaffolding_stable"), this.models().existingFileHelper)).build(), ScaffoldingBlock.DISTANCE, ScaffoldingBlock.WATERLOGGED);
         }
     }
 

@@ -1,20 +1,11 @@
 --- a/net/minecraft/world/entity/animal/SnowGolem.java
 +++ b/net/minecraft/world/entity/animal/SnowGolem.java
-@@ -95,7 +_,7 @@
+@@ -92,7 +_,7 @@
                  this.hurt(this.damageSources().onFire(), 1.0F);
              }
  
 -            if (!this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
++            if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), this)) {
                  return;
              }
  
-@@ -135,7 +_,7 @@
-     @Override
-     protected InteractionResult mobInteract(Player p_29920_, InteractionHand p_29921_) {
-         ItemStack itemstack = p_29920_.getItemInHand(p_29921_);
--        if (itemstack.is(Items.SHEARS) && this.readyForShearing()) {
-+        if (false && itemstack.getItem() == Items.SHEARS && this.readyForShearing()) { //Forge: Moved to onSheared
-             this.shear(SoundSource.PLAYERS);
-             this.gameEvent(GameEvent.SHEAR, p_29920_);
-             if (!this.level().isClientSide) {

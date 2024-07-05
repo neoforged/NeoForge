@@ -1,19 +1,21 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
-@@ -244,4 +_,16 @@
-     public Optional<ParticleGroup> getParticleGroup() {
+@@ -245,6 +_,18 @@
          return Optional.empty();
      }
+ 
++    /**
++     * Returns the bounding box that should be used for particle culling. {@link AABB#INFINITE} can be
++     * returned for particles that should not be culled.
++     */
++    public AABB getRenderBoundingBox(float partialTicks) {
++        return getBoundingBox().inflate(1.0);
++    }
 +
-+     /**
-+      * Forge added method that controls if a particle should be culled to it's bounding box.
-+      * Default behaviour is culling enabled
-+      */
-+     public boolean shouldCull() {
-+         return true;
-+     }
++    public Vec3 getPos() {
++        return new Vec3(this.x, this.y, this.z);
++    }
 +
-+     public net.minecraft.world.phys.Vec3 getPos() {
-+         return new net.minecraft.world.phys.Vec3(this.x, this.y, this.z);
-+     }
- }
+     @OnlyIn(Dist.CLIENT)
+     public static record LifetimeAlpha(float startAlpha, float endAlpha, float startAtNormalizedAge, float endAtNormalizedAge) {
+         public static final Particle.LifetimeAlpha ALWAYS_OPAQUE = new Particle.LifetimeAlpha(1.0F, 1.0F, 0.0F, 1.0F);

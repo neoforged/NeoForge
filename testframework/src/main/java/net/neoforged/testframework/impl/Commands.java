@@ -117,7 +117,7 @@ public record Commands(MutableTestFramework framework) {
     }
 
     private Component formatStatus(Test.Status status) {
-        final MutableComponent resultComponent = Component.literal(status.result().toString()).withStyle(style -> style.withColor(status.result().getColour()));
+        final MutableComponent resultComponent = Component.literal(status.result().toString()).withStyle(style -> style.withColor(status.result().getColor()));
         if (status.message().isBlank()) {
             return resultComponent;
         } else {

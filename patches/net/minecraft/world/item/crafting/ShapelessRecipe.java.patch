@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -19,12 +_,14 @@
+@@ -18,12 +_,14 @@
      final CraftingBookCategory category;
      final ItemStack result;
      final NonNullList<Ingredient> ingredients;
@@ -15,45 +15,25 @@
      }
  
      @Override
-@@ -54,17 +_,20 @@
- 
-     public boolean matches(CraftingContainer p_44262_, Level p_44263_) {
-         StackedContents stackedcontents = new StackedContents();
-+        java.util.List<ItemStack> inputs = new java.util.ArrayList<>();
-         int i = 0;
- 
-         for(int j = 0; j < p_44262_.getContainerSize(); ++j) {
-             ItemStack itemstack = p_44262_.getItem(j);
-             if (!itemstack.isEmpty()) {
-                 ++i;
-+                if (isSimple)
-                 stackedcontents.accountStack(itemstack, 1);
-+                else inputs.add(itemstack);
-             }
-         }
- 
--        return i == this.ingredients.size() && stackedcontents.canCraft(this, null);
-+        return i == this.ingredients.size() && (isSimple ? stackedcontents.canCraft(this, null) : net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs,  this.ingredients) != null);
-     }
- 
-     public ItemStack assemble(CraftingContainer p_44260_, RegistryAccess p_266797_) {
-@@ -77,6 +_,7 @@
-     }
- 
-     public static class Serializer implements RecipeSerializer<ShapelessRecipe> {
-+        private static final net.minecraft.resources.ResourceLocation NAME = new net.minecraft.resources.ResourceLocation("minecraft", "crafting_shapeless");
-         private static final Codec<ShapelessRecipe> CODEC = RecordCodecBuilder.create(
-             p_311734_ -> p_311734_.group(
-                         ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(p_301127_ -> p_301127_.group),
-@@ -87,14 +_,13 @@
+@@ -54,6 +_,12 @@
+     public boolean matches(CraftingInput p_346123_, Level p_44263_) {
+         if (p_346123_.ingredientCount() != this.ingredients.size()) {
+             return false;
++        } else if (!isSimple) {
++            var nonEmptyItems = new java.util.ArrayList<ItemStack>(p_346123_.ingredientCount());
++            for (var item : p_346123_.items())
++                if (!item.isEmpty())
++                    nonEmptyItems.add(item);
++            return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(nonEmptyItems, this.ingredients) != null;
+         } else {
+             return p_346123_.size() == 1 && this.ingredients.size() == 1
+                 ? this.ingredients.getFirst().test(p_346123_.getItem(0))
+@@ -81,12 +_,12 @@
                              .fieldOf("ingredients")
                              .flatXmap(
                                  p_301021_ -> {
--                                    Ingredient[] aingredient = p_301021_.stream()
--                                        .filter(p_300883_ -> !p_300883_.isEmpty())
--                                        .toArray(p_300865_ -> new Ingredient[p_300865_]);
-+                                    Ingredient[] aingredient = p_301021_
-+                                              .toArray(Ingredient[]::new); //Forge skip the empty check and immediatly create the array.
+-                                    Ingredient[] aingredient = p_301021_.stream().filter(p_300883_ -> !p_300883_.isEmpty()).toArray(Ingredient[]::new);
++                                    Ingredient[] aingredient = p_301021_.toArray(Ingredient[]::new); // Neo skip the empty check and immediately create the array.
                                      if (aingredient.length == 0) {
                                          return DataResult.error(() -> "No ingredients for shapeless recipe");
                                      } else {

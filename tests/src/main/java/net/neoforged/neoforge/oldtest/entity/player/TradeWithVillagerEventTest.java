@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.entity.player;
 
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.TradeWithVillagerEvent;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import org.slf4j.Logger;
  * This test shows the player name involved along with the villager name and what the result of the trade is(Count and Item).
  */
 @Mod("trade_with_villager_event_test")
-@Mod.EventBusSubscriber()
+@EventBusSubscriber
 public class TradeWithVillagerEventTest {
     private static final boolean ENABLE = true;
     private static final Logger LOGGER = LogUtils.getLogger();

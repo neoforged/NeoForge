@@ -1,0 +1,24 @@
+--- a/net/minecraft/world/level/chunk/status/ChunkStatusTasks.java
++++ b/net/minecraft/world/level/chunk/status/ChunkStatusTasks.java
+@@ -201,10 +_,21 @@
+                 }
+ 
+                 levelchunk.setFullStatus(generationchunkholder::getFullStatus);
++                try {
++                generationchunkholder.currentlyLoading = levelchunk; // Neo: bypass the future chain when getChunk is called, this prevents deadlocks.
+                 levelchunk.runPostLoad();
++                } finally {
++                    generationchunkholder.currentlyLoading = null; // Neo: Stop bypassing the future chain.
++                }
+                 levelchunk.setLoaded(true);
++                try {
++                generationchunkholder.currentlyLoading = levelchunk; // Neo: bypass the future chain when getChunk is called, this prevents deadlocks.
+                 levelchunk.registerAllBlockEntitiesAfterLevelLoad();
+                 levelchunk.registerTickContainerInLevel(serverlevel);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Load(levelchunk, !(protochunk instanceof ImposterProtoChunk)));
++                } finally {
++                    generationchunkholder.currentlyLoading = null; // Neo: Stop bypassing the future chain.
++                }
+                 return levelchunk;
+             },
+             p_347404_ -> p_347565_.mainThreadMailBox()

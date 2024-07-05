@@ -8,10 +8,10 @@
                  if (optional.isPresent()) {
                      optional.get().createPortalBlocks();
                      return;
-@@ -189,7 +_,7 @@
+@@ -185,7 +_,7 @@
              boolean flag = false;
  
-             for(Direction direction : Direction.values()) {
+             for (Direction direction : Direction.values()) {
 -                if (p_49270_.getBlockState(blockpos$mutableblockpos.set(p_49271_).move(direction)).is(Blocks.OBSIDIAN)) {
 +                if (p_49270_.getBlockState(blockpos$mutableblockpos.set(p_49271_).move(direction)).isPortalFrame(p_49270_, blockpos$mutableblockpos)) {
                      flag = true;

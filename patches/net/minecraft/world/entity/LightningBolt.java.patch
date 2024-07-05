@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/LightningBolt.java
 +++ b/net/minecraft/world/entity/LightningBolt.java
-@@ -37,6 +_,7 @@
+@@ -38,6 +_,7 @@
      private ServerPlayer cause;
      private final Set<Entity> hitEntities = Sets.newHashSet();
      private int blocksSetOnFire;
@@ -8,7 +8,7 @@
  
      public LightningBolt(EntityType<? extends LightningBolt> p_20865_, Level p_20866_) {
          super(p_20865_, p_20866_);
-@@ -72,6 +_,14 @@
+@@ -73,6 +_,14 @@
          }
      }
  
@@ -23,10 +23,10 @@
      @Override
      public void tick() {
          super.tick();
-@@ -150,6 +_,7 @@
+@@ -151,6 +_,7 @@
                      );
  
-                 for(Entity entity : list1) {
+                 for (Entity entity : list1) {
 +                    if (!net.neoforged.neoforge.event.EventHooks.onEntityStruckByLightning(entity, this))
                      entity.thunderHit((ServerLevel)this.level(), this);
                  }

@@ -1,0 +1,8 @@
+{
+   "pack": {
+      "pack_format": 12,
+      "description": "Disabled-By-Default ResourcePack",
+      "forge:resource_pack_format": 12,
+      "forge:data_pack_format": 10
+   }
+}

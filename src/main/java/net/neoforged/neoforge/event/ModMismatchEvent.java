@@ -83,18 +83,16 @@ public class ModMismatchEvent extends Event implements IModBusEvent {
      */
     @Nullable
     public ArtifactVersion getPreviousVersion(String modId) {
-        if (this.versionDifferences.containsKey(modId))
-            return this.versionDifferences.get(modId).oldVersion();
+        var versionDifference = this.versionDifferences.get(modId);
 
-        return null;
+        return versionDifference != null ? versionDifference.oldVersion() : null;
     }
 
     @Nullable
-    public ArtifactVersion getCurrentVersion(String modid) {
-        if (this.versionDifferences.containsKey(modid))
-            return this.versionDifferences.get(modid).newVersion();
+    public ArtifactVersion getCurrentVersion(String modId) {
+        var versionDifference = this.versionDifferences.get(modId);
 
-        return null;
+        return versionDifference != null ? versionDifference.newVersion() : null;
     }
 
     /**
@@ -137,6 +135,7 @@ public class ModMismatchEvent extends Event implements IModBusEvent {
 
     public Stream<MismatchResolutionResult> getResolved() {
         return resolved.keySet().stream()
+                .filter(versionDifferences::containsKey)
                 .map(modid -> new MismatchResolutionResult(modid, versionDifferences.get(modid), resolved.get(modid)))
                 .sorted(Comparator.comparing(MismatchResolutionResult::modid));
     }

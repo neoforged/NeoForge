@@ -25,11 +25,11 @@ public class AnvilUpdateEvent extends Event implements ICancellableEvent {
     private final ItemStack right;
     private final String name;
     private ItemStack output;
-    private int cost;
+    private long cost;
     private int materialCost;
     private final Player player;
 
-    public AnvilUpdateEvent(ItemStack left, ItemStack right, String name, int cost, Player player) {
+    public AnvilUpdateEvent(ItemStack left, ItemStack right, String name, long cost, Player player) {
         this.left = left;
         this.right = right;
         this.output = ItemStack.EMPTY;
@@ -91,7 +91,7 @@ public class AnvilUpdateEvent extends Event implements ICancellableEvent {
      * 
      * @return The level cost of this anvil operation.
      */
-    public int getCost() {
+    public long getCost() {
         return cost;
     }
 
@@ -99,10 +99,12 @@ public class AnvilUpdateEvent extends Event implements ICancellableEvent {
      * Changes the level cost of this operation. <br>
      * The level cost does prevent the output from being available. <br>
      * That is, a player without enough experience may not take the output.
+     *
+     * <p>Values will be clamped to the range 0 - MAX_INT.
      * 
      * @param cost The new level cost.
      */
-    public void setCost(int cost) {
+    public void setCost(long cost) {
         this.cost = cost;
     }
 

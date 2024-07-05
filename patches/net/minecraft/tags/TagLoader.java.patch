@@ -16,7 +16,7 @@
 +        var builder = new java.util.LinkedHashSet<T>(); // Set must retain insertion order, some tag consumers rely on this being the case (see NeoForge#256)
          List<TagLoader.EntryWithSource> list = new ArrayList<>();
  
-         for(TagLoader.EntryWithSource tagloader$entrywithsource : p_215980_) {
+         for (TagLoader.EntryWithSource tagloader$entrywithsource : p_215980_) {
 -            if (!tagloader$entrywithsource.entry().build(p_215979_, builder::add)) {
 +            if (!tagloader$entrywithsource.entry().build(p_215979_, tagloader$entrywithsource.remove() ? builder::remove : builder::add)) {
 +                if (!tagloader$entrywithsource.remove()) // Treat all removals as optional at runtime. If it was missing, then it could of never been added.
@@ -29,7 +29,7 @@
      }
  
      public Map<ResourceLocation, Collection<T>> build(Map<ResourceLocation, List<TagLoader.EntryWithSource>> p_203899_) {
-@@ -102,7 +_,7 @@
+@@ -104,7 +_,7 @@
                          p_215977_ -> LOGGER.error(
                                  "Couldn't load tag {} as it is missing following references: {}",
                                  p_284682_,
@@ -37,8 +37,8 @@
 +                                p_215977_.stream().map(Objects::toString).collect(Collectors.joining("\n\t", "\n\t", ""))
                              )
                      )
-                     .ifRight(p_216001_ -> map.put(p_284682_, p_216001_))
-@@ -114,7 +_,8 @@
+                     .ifRight(p_216001_ -> map.put(p_284682_, (Collection<T>)p_216001_))
+@@ -116,7 +_,8 @@
          return this.build(this.load(p_203901_));
      }
  

@@ -5,26 +5,24 @@
 
 package net.neoforged.neoforge.network.connection;
 
+import net.neoforged.neoforge.network.payload.MinecraftRegisterPayload;
+import net.neoforged.neoforge.network.payload.ModdedNetworkPayload;
+
+/**
+ * Declares categories of connections based on the other side.
+ */
 public enum ConnectionType {
-    VANILLA,
-    OTHER,
-    NEOFORGE;
+    /**
+     * Indicates that the other end is Neo.
+     * Modded channels will be negotiated via {@link ModdedNetworkPayload}.
+     */
+    NEOFORGE,
 
-    public ConnectionType withMinecraftRegisterPayload() {
-        return this == VANILLA ? OTHER : this;
-    }
-
-    public ConnectionType withNeoForgeQueryPayload() {
-        return NEOFORGE;
-    }
-
-    public boolean isVanilla() {
-        return this == VANILLA;
-    }
-
-    public boolean isNotVanilla() {
-        return !isVanilla();
-    }
+    /**
+     * Indicates that the other end of the connection is not Neo. This may be a Vanilla connection, or another modded platform (such as Fabric or Bukkit).
+     * Modded channels will be negotiated via {@link MinecraftRegisterPayload}.
+     */
+    OTHER;
 
     public boolean isOther() {
         return this == OTHER;

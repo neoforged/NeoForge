@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.util;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.UnknownNullability;
  */
 public interface INBTSerializable<T extends Tag> {
     @UnknownNullability
-    T serializeNBT();
+    T serializeNBT(HolderLookup.Provider provider);
 
-    void deserializeNBT(T nbt);
+    void deserializeNBT(HolderLookup.Provider provider, T nbt);
 }

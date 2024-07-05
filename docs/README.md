@@ -32,6 +32,8 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 If you wish to actually inspect NeoForge, submit PRs or otherwise work
 with NeoForge itself, you're in the right place!
 
+Check the [contribution workflow][Contributing] for details.
+
 ### Translations
 
 Translations are done on [Crowdin][Crowdin].

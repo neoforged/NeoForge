@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.entity.player;
 
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerNegotiationEvent;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  * details regarding the work execution is printed out and exceptions are thrown to ensure proper handling.
  */
 @Mod("player_negotiation_event_test")
-@Mod.EventBusSubscriber()
+@EventBusSubscriber
 public class PlayerNegotiationEventTest {
     private static final boolean ENABLE = false;
     private static final Logger LOGGER = LogManager.getLogger(PlayerNegotiationEventTest.class);

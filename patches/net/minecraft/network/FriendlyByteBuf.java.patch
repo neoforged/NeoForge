@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/FriendlyByteBuf.java
 +++ b/net/minecraft/network/FriendlyByteBuf.java
-@@ -80,7 +_,7 @@
+@@ -67,7 +_,7 @@
  import org.joml.Quaternionf;
  import org.joml.Vector3f;
  
@@ -9,26 +9,14 @@
      public static final int DEFAULT_NBT_QUOTA = 2097152;
      private final ByteBuf source;
      public static final short MAX_STRING_LENGTH = 32767;
-@@ -572,9 +_,10 @@
-             this.writeId(BuiltInRegistries.ITEM, item);
-             this.writeByte(p_130056_.getCount());
-             CompoundTag compoundtag = null;
--            if (item.canBeDepleted() || item.shouldOverrideMultiplayerNbt()) {
-+            if (item.isDamageable(p_130056_) || item.shouldOverrideMultiplayerNbt()) {
-                 compoundtag = p_130056_.getTag();
-             }
-+            compoundtag = net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag(compoundtag, p_130056_, false);
- 
-             this.writeNbt(compoundtag);
-         }
-@@ -588,9 +_,7 @@
-         } else {
-             Item item = this.readById(BuiltInRegistries.ITEM);
-             int i = this.readByte();
--            ItemStack itemstack = new ItemStack(item, i);
--            itemstack.setTag(this.readNbt());
--            return itemstack;
-+            return net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack(item, i, this.readNbt());
-         }
+@@ -1588,5 +_,10 @@
+     @Override
+     public boolean release(int p_130347_) {
+         return this.source.release(p_130347_);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public ByteBuf getSource() {
++        return this.source;
      }
- 
+ }

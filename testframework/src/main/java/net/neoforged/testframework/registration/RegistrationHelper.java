@@ -12,8 +12,10 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 
 /**
@@ -46,6 +48,11 @@ public interface RegistrationHelper {
     DeferredAttachmentTypes attachments();
 
     /**
+     * Registers a data map.
+     */
+    <M extends DataMapType<?, ?>> M registerDataMap(M map);
+
+    /**
      * {@return the mod id of this helper}
      */
     String modId();
@@ -58,7 +65,7 @@ public interface RegistrationHelper {
 
     Consumer<Consumer<? extends Event>> eventListeners();
 
-    void register(IEventBus bus);
+    void register(IEventBus bus, ModContainer container);
 
     static RegistrationHelper create(String modId) {
         return new RegistrationHelperImpl(modId);

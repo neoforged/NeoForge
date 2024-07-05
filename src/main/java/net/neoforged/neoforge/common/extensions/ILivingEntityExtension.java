@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.fluids.FluidType;
 
 public interface ILivingEntityExtension extends IEntityExtension {
@@ -28,7 +30,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      */
     default void jumpInFluid(FluidType type) {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.value()), 0.0D));
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED), 0.0D));
     }
 
     /**
@@ -37,7 +39,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      */
     default void sinkInFluid(FluidType type) {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.value()), 0.0D));
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED), 0.0D));
     }
 
     /**
@@ -64,4 +66,15 @@ public interface ILivingEntityExtension extends IEntityExtension {
     default boolean moveInFluid(FluidState state, Vec3 movementVector, double gravity) {
         return state.move(self(), movementVector, gravity);
     }
+
+    /**
+     * Executes in {@link LivingEntity#hurt(DamageSource, float)} after all damage and
+     * effects have applied. Overriding this method is preferred over overriding the
+     * hurt method in custom entities where special behavior is desired after vanilla
+     * logic.
+     *
+     * @param damageContainer The aggregated damage details preceding this hook, which
+     *                        includes changes made to the damage sequence by events.
+     */
+    default void onDamageTaken(DamageContainer damageContainer) {}
 }

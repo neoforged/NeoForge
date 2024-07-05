@@ -45,9 +45,9 @@ public record DataMapFile<T, R>(
         }
 
         return RecordCodecBuilder.create(in -> in.group(
-                ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(DataMapFile::replace),
+                Codec.BOOL.optionalFieldOf("replace", false).forGetter(DataMapFile::replace),
                 ExtraCodecs.strictUnboundedMap(tagOrValue, ConditionalOps.createConditionalCodecWithConditions(DataMapEntry.codec(dataMap))).fieldOf("values").forGetter(DataMapFile::values),
-                ExtraCodecs.strictOptionalField(removalsCodec, "remove", List.of()).forGetter(DataMapFile::removals))
+                removalsCodec.optionalFieldOf("remove", List.of()).forGetter(DataMapFile::removals))
                 .apply(in, DataMapFile::new));
     }
 }

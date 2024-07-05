@@ -5,38 +5,16 @@
  import net.minecraft.world.level.Level;
  
 -public class ShapedRecipe implements CraftingRecipe {
-+public class ShapedRecipe implements CraftingRecipe, net.neoforged.neoforge.common.crafting.IShapedRecipe<net.minecraft.world.inventory.CraftingContainer> {
++public class ShapedRecipe implements CraftingRecipe, net.neoforged.neoforge.common.crafting.IShapedRecipe<net.minecraft.world.item.crafting.CraftingInput> {
      final ShapedRecipePattern pattern;
      final ItemStack result;
      final String group;
-@@ -41,11 +_,21 @@
-     }
- 
-     @Override
-+    public int getRecipeWidth() {
-+        return getWidth();
-+    }
-+
-+    @Override
-     public CraftingBookCategory category() {
-         return this.category;
-     }
- 
-     @Override
-+    public int getRecipeHeight() {
-+        return getHeight();
-+    }
-+
-+    @Override
-     public ItemStack getResultItem(RegistryAccess p_266881_) {
-         return this.result;
-     }
 @@ -84,7 +_,7 @@
      @Override
      public boolean isIncomplete() {
          NonNullList<Ingredient> nonnulllist = this.getIngredients();
 -        return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(p_151273_ -> p_151273_.getItems().length == 0);
-+        return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(net.neoforged.neoforge.common.CommonHooks::hasNoElements);
++        return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(Ingredient::hasNoItems);
      }
  
      public static class Serializer implements RecipeSerializer<ShapedRecipe> {

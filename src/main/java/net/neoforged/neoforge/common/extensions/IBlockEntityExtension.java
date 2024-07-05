@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -15,22 +16,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.ApiStatus;
 
-public interface IBlockEntityExtension extends INBTSerializable<CompoundTag> {
+public interface IBlockEntityExtension {
     private BlockEntity self() {
         return (BlockEntity) this;
-    }
-
-    @Override
-    default void deserializeNBT(CompoundTag nbt) {
-        self().load(nbt);
-    }
-
-    @Override
-    default CompoundTag serializeNBT() {
-        return self().saveWithFullMetadata();
     }
 
     /**
@@ -42,22 +32,22 @@ public interface IBlockEntityExtension extends INBTSerializable<CompoundTag> {
      * @param net The NetworkManager the packet originated from
      * @param pkt The data packet
      */
-    default void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    default void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         CompoundTag compoundtag = pkt.getTag();
-        if (compoundtag != null) {
-            self().load(compoundtag);
+        if (!compoundtag.isEmpty()) {
+            self().loadWithComponents(compoundtag, lookupProvider);
         }
     }
 
     /**
-     * Called when the chunk's TE update tag, gotten from {@link BlockEntity#getUpdateTag()}, is received on the client.
+     * Called when the chunk's TE update tag, gotten from {@link BlockEntity#getUpdateTag(HolderLookup.Provider)}, is received on the client.
      * <p>
-     * Used to handle this tag in a special way. By default this simply calls {@link BlockEntity#load(CompoundTag)}.
+     * Used to handle this tag in a special way. By default this simply calls {@link BlockEntity#loadWithComponents(CompoundTag, HolderLookup.Provider)}.
      *
-     * @param tag The {@link CompoundTag} sent from {@link BlockEntity#getUpdateTag()}
+     * @param tag The {@link CompoundTag} sent from {@link BlockEntity#getUpdateTag(HolderLookup.Provider)}
      */
-    default void handleUpdateTag(CompoundTag tag) {
-        self().load(tag);
+    default void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        self().loadWithComponents(tag, lookupProvider);
     }
 
     /**

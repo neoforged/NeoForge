@@ -1,19 +1,32 @@
 --- a/net/minecraft/client/multiplayer/CommonListenerCookie.java
 +++ b/net/minecraft/client/multiplayer/CommonListenerCookie.java
-@@ -17,6 +_,15 @@
-     FeatureFlagSet enabledFeatures,
-     @Nullable String serverBrand,
-     @Nullable ServerData serverData,
--    @Nullable Screen postDisconnectScreen
-+    @Nullable Screen postDisconnectScreen,
+@@ -26,6 +_,28 @@
+     @Nullable ChatComponent.State chatState,
+     @Deprecated(forRemoval = true) boolean strictErrorHandling,
+     Map<String, String> customReportDetails,
+-    ServerLinks serverLinks
++    ServerLinks serverLinks,
 +    net.neoforged.neoforge.network.connection.ConnectionType connectionType
  ) {
-+
 +    /**
-+     * @deprecated Use {@link #CommonListenerCookie(GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, net.neoforged.neoforge.network.connection.ConnectionType)} instead, to indicate whether the connection is modded.
++     * @deprecated Use {@link #CommonListenerCookie(GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, boolean, Map, ServerLinks, net.neoforged.neoforge.network.connection.ConnectionType)}
++     * instead,to indicate whether the connection is modded.
 +     */
 +    @Deprecated
-+    public CommonListenerCookie(GameProfile localGameProfile, WorldSessionTelemetryManager telemetryManager, RegistryAccess.Frozen receivedRegistries, FeatureFlagSet enabledFeatures, @Nullable String serverBrand, @Nullable ServerData serverData, @Nullable Screen postDisconnectScreen) {
-+        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, net.neoforged.neoforge.network.connection.ConnectionType.VANILLA);
++    public CommonListenerCookie(
++            GameProfile localGameProfile,
++            WorldSessionTelemetryManager telemetryManager,
++            RegistryAccess.Frozen receivedRegistries,
++            FeatureFlagSet enabledFeatures,
++            @Nullable String serverBrand,
++            @Nullable ServerData serverData,
++            @Nullable Screen postDisconnectScreen,
++            Map<ResourceLocation, byte[]> serverCookies,
++            @Nullable ChatComponent.State chatState,
++            @Deprecated(forRemoval = true) boolean strictErrorHandling,
++            Map<String, String> customReportDetails,
++            ServerLinks serverLinks
++    ) {
++        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, strictErrorHandling, customReportDetails, serverLinks, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
 +    }
  }

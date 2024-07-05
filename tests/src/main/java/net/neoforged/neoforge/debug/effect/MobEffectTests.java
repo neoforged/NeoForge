@@ -66,23 +66,23 @@ public class MobEffectTests {
             pig.removeEffectsCuredBy(testCure);
             helper.assertMobEffectAbsent(pig, MobEffects.NIGHT_VISION, "'nightvision removed by test cure'");
 
-            pig.addEffect(new MobEffectInstance(testEffect.get()));
-            helper.assertMobEffectPresent(pig, testEffect.get(), "'test effect was applied'");
+            pig.addEffect(new MobEffectInstance(testEffect));
+            helper.assertMobEffectPresent(pig, testEffect, "'test effect was applied'");
             pig.removeEffectsCuredBy(EffectCures.MILK);
-            helper.assertMobEffectPresent(pig, testEffect.get(), "'test effect not removed by milk'");
+            helper.assertMobEffectPresent(pig, testEffect, "'test effect not removed by milk'");
             pig.removeEffectsCuredBy(testCureTwo);
-            helper.assertMobEffectAbsent(pig, testEffect.get(), "'test effect removed by test cure'");
+            helper.assertMobEffectAbsent(pig, testEffect, "'test effect removed by test cure'");
 
             MobEffectInstance srcInst = new MobEffectInstance(MobEffects.CONFUSION);
-            MobEffectInstance destInst = MobEffectInstance.load(srcInst.save(new CompoundTag()));
+            MobEffectInstance destInst = MobEffectInstance.load((CompoundTag) srcInst.save());
             helper.assertTrue(srcInst.getCures().equals(destInst.getCures()), "'MobEffectInstance serialization roundtrip (standard cures)'");
 
             srcInst.getCures().add(testCure);
-            destInst = MobEffectInstance.load(srcInst.save(new CompoundTag()));
+            destInst = MobEffectInstance.load((CompoundTag) srcInst.save());
             helper.assertTrue(srcInst.getCures().equals(destInst.getCures()), "'MobEffectInstance serialization roundtrip (custom additional cure)'");
 
             srcInst.getCures().clear();
-            destInst = MobEffectInstance.load(srcInst.save(new CompoundTag()));
+            destInst = MobEffectInstance.load((CompoundTag) srcInst.save());
             helper.assertTrue(srcInst.getCures().equals(destInst.getCures()), "'MobEffectInstance serialization roundtrip (no cures)'");
 
             helper.succeed();

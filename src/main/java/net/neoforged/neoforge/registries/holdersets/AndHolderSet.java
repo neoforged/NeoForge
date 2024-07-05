@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.registries.holdersets;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,12 +31,11 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * </pre>
  */
 public class AndHolderSet<T> extends CompositeHolderSet<T> {
-    public static <T> Codec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+    public static <T> MapCodec<? extends ICustomHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
         return HolderSetCodec.create(registryKey, holderCodec, forceList)
                 .listOf()
                 .xmap(AndHolderSet::new, CompositeHolderSet::homogenize)
-                .fieldOf("values")
-                .codec();
+                .fieldOf("values");
     }
 
     public AndHolderSet(List<HolderSet<T>> values) {

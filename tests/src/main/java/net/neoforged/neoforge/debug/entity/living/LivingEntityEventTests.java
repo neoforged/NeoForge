@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
@@ -42,9 +43,9 @@ import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
-import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -130,13 +131,14 @@ public class LivingEntityEventTests {
         test.eventListeners().forge().addListener((final LivingGetProjectileEvent event) -> {
             if (event.getEntity().getData(shootsFireRes)) {
                 event.setProjectileItemStack(new ItemStack(Items.TIPPED_ARROW));
-                PotionUtils.setPotion(event.getProjectileItemStack(), Potions.FIRE_RESISTANCE);
+                event.getProjectileItemStack().set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.FIRE_RESISTANCE));
             }
         });
 
         test.onGameTest(helper -> {
             final var skelly = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0);
             final var pig = helper.spawnWithNoFreeWill(EntityType.PIG, 1, 2, 2);
+            skelly.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOW));
             skelly.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 10));
             skelly.setData(shootsFireRes, true);
 
@@ -186,8 +188,8 @@ public class LivingEntityEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ShieldBlockEvent is fired")
     static void shieldBlockEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ShieldBlockEvent event) -> {
-            if (event.getDamageSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity() instanceof Zombie zombie && Objects.equals(zombie.getName(), Component.literal("shieldblock"))) {
+        test.eventListeners().forge().addListener((final LivingShieldBlockEvent event) -> {
+            if (event.getBlocked() && event.getDamageSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity() instanceof Zombie zombie && Objects.equals(zombie.getName(), Component.literal("shieldblock"))) {
                 zombie.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.STONE));
                 event.setBlockedDamage(event.getOriginalBlockedDamage() / 2);
                 arrow.discard();
@@ -207,8 +209,11 @@ public class LivingEntityEventTests {
 
                 .thenExecute(zombie -> zombie.setItemInHand(InteractionHand.MAIN_HAND, Items.SHIELD.getDefaultInstance()))
                 .thenExecute(zombie -> zombie.startUsingItem(InteractionHand.MAIN_HAND))
-                .thenExecuteAfter(10, zombie -> helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0)
-                        .performRangedAttack(zombie, 1f))
+                .thenExecuteAfter(10, zombie -> {
+                    var skelly = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 2, 0);
+                    skelly.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOW));
+                    skelly.performRangedAttack(zombie, 1f);
+                })
                 .thenWaitUntil(() -> helper.assertEntityIsHolding(new BlockPos(1, 2, 2), EntityType.ZOMBIE, Items.STONE))
                 .thenSucceed());
     }

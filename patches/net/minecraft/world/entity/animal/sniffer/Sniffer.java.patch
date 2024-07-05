@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-@@ -295,7 +_,7 @@
+@@ -299,7 +_,7 @@
                  if (this.tickCount % 10 == 0) {
                      this.level()
                          .playLocalSound(

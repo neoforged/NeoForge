@@ -5,8 +5,16 @@
 
 package net.neoforged.neoforge.common.brewing;
 
-import net.minecraft.world.item.ItemStack;
+import static net.minecraft.world.item.alchemy.PotionBrewing.Builder;
 
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+
+/**
+ * Interface for more flexible brewing recipes.
+ *
+ * <p>Register using {@link RegisterBrewingRecipesEvent} and {@link Builder#addRecipe(IBrewingRecipe)}.
+ */
 public interface IBrewingRecipe {
     /**
      * Returns true is the passed ItemStack is an input for this recipe. "Input"

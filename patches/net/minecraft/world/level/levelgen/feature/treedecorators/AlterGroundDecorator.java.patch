@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
 +++ b/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
-@@ -38,19 +_,20 @@
+@@ -37,19 +_,20 @@
          }
  
          if (!list.isEmpty()) {
@@ -16,7 +16,7 @@
 +                this.placeCircle(p_225969_, p_225978_.west().south(2), eventProvider);
 +                this.placeCircle(p_225969_, p_225978_.east(2).south(2), eventProvider);
  
-                 for(int j = 0; j < 5; ++j) {
+                 for (int j = 0; j < 5; j++) {
                      int k = p_225969_.random().nextInt(64);
                      int l = k % 8;
                      int i1 = k / 8;
@@ -26,7 +26,7 @@
                      }
                  }
              });
-@@ -58,20 +_,28 @@
+@@ -57,20 +_,28 @@
      }
  
      private void placeCircle(TreeDecorator.Context p_225971_, BlockPos p_225972_) {
@@ -34,8 +34,8 @@
 +    }
 +
 +    private void placeCircle(TreeDecorator.Context p_225971_, BlockPos p_225972_, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
-         for(int i = -2; i <= 2; ++i) {
-             for(int j = -2; j <= 2; ++j) {
+         for (int i = -2; i <= 2; i++) {
+             for (int j = -2; j <= 2; j++) {
                  if (Math.abs(i) != 2 || Math.abs(j) != 2) {
 -                    this.placeBlockAt(p_225971_, p_225972_.offset(i, 0, j));
 +                    this.placeBlockAt(p_225971_, p_225972_.offset(i, 0, j), eventProvider);
@@ -49,7 +49,7 @@
 +    }
 +
 +    private void placeBlockAt(TreeDecorator.Context p_225974_, BlockPos p_225975_, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
-         for(int i = 2; i >= -3; --i) {
+         for (int i = 2; i >= -3; i--) {
              BlockPos blockpos = p_225975_.above(i);
              if (Feature.isGrassOrDirt(p_225974_.level(), blockpos)) {
 -                p_225974_.setBlock(blockpos, this.provider.getState(p_225974_.random(), p_225975_));

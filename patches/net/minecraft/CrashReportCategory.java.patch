@@ -18,7 +18,7 @@
          if (this.stackTrace != null && this.stackTrace.length > 0) {
              p_128169_.append("\nStacktrace:");
 -
--            for(StackTraceElement stacktraceelement : this.stackTrace) {
+-            for (StackTraceElement stacktraceelement : this.stackTrace) {
 -                p_128169_.append("\n\tat ");
 -                p_128169_.append(stacktraceelement);
 -            }

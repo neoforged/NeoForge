@@ -1,6 +1,6 @@
 --- a/com/mojang/realmsclient/gui/screens/RealmsGenericErrorScreen.java
 +++ b/com/mojang/realmsclient/gui/screens/RealmsGenericErrorScreen.java
-@@ -66,6 +_,15 @@
+@@ -69,6 +_,15 @@
      }
  
      @Override

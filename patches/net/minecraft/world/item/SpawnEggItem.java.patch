@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -39,11 +_,14 @@
+@@ -42,11 +_,14 @@
      private final int highlightColor;
      private final EntityType<?> defaultType;
  
@@ -15,7 +15,7 @@
          BY_ID.put(p_43207_, this);
      }
  
-@@ -135,6 +_,8 @@
+@@ -134,6 +_,8 @@
  
      @Nullable
      public static SpawnEggItem byId(@Nullable EntityType<?> p_43214_) {
@@ -24,17 +24,12 @@
          return BY_ID.get(p_43214_);
      }
  
-@@ -146,16 +_,16 @@
-         if (p_43229_ != null && p_43229_.contains("EntityTag", 10)) {
-             CompoundTag compoundtag = p_43229_.getCompound("EntityTag");
-             if (compoundtag.contains("id", 8)) {
--                return EntityType.byString(compoundtag.getString("id")).orElse(this.defaultType);
-+                return EntityType.byString(compoundtag.getString("id")).orElse(this.getDefaultType());
-             }
-         }
+@@ -143,12 +_,12 @@
  
--        return this.defaultType;
-+        return this.getDefaultType();
+     public EntityType<?> getType(ItemStack p_330335_) {
+         CustomData customdata = p_330335_.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
+-        return !customdata.isEmpty() ? customdata.read(ENTITY_TYPE_FIELD_CODEC).result().orElse(this.defaultType) : this.defaultType;
++        return !customdata.isEmpty() ? customdata.read(ENTITY_TYPE_FIELD_CODEC).result().orElse(getDefaultType()) : getDefaultType();
      }
  
      @Override
@@ -44,7 +39,7 @@
      }
  
      public Optional<Mob> spawnOffspringFromSpawnEgg(
-@@ -192,5 +_,9 @@
+@@ -179,5 +_,9 @@
                  }
              }
          }

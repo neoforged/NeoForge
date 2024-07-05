@@ -3,6 +3,9 @@
     "minecraft:blaze": {
       "sound": "minecraft:entity.parrot.imitate.blaze"
     },
+    "minecraft:bogged": {
+      "sound": "minecraft:entity.parrot.imitate.bogged"
+    },
     "minecraft:breeze": {
       "sound": "minecraft:entity.parrot.imitate.breeze"
     },

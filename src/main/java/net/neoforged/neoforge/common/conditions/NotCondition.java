@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.common.conditions;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record NotCondition(ICondition value) implements ICondition {
-    public static final Codec<NotCondition> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<NotCondition> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             ICondition.CODEC.fieldOf("value").forGetter(NotCondition::value))
@@ -21,7 +21,7 @@ public record NotCondition(ICondition value) implements ICondition {
     }
 
     @Override
-    public Codec<? extends ICondition> codec() {
+    public MapCodec<? extends ICondition> codec() {
         return CODEC;
     }
 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/DimensionDataStorage.java
 +++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
-@@ -49,16 +_,20 @@
+@@ -54,16 +_,20 @@
      @Nullable
      public <T extends SavedData> T get(SavedData.Factory<T> p_295091_, String p_164860_) {
          SavedData saveddata = this.cache.get(p_164860_);
@@ -17,12 +17,12 @@
      }
  
      @Nullable
--    private <T extends SavedData> T readSavedData(Function<CompoundTag, T> p_164869_, DataFixTypes p_295832_, String p_164870_) {
-+    private <T extends SavedData> T readSavedData(Function<CompoundTag, T> p_164869_, @Nullable DataFixTypes p_295832_, String p_164870_) {
+-    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, DataFixTypes p_295832_, String p_164870_) {
++    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, @Nullable DataFixTypes p_295832_, String p_164870_) {
          try {
              File file1 = this.getDataFile(p_164870_);
              if (file1.exists()) {
-@@ -76,7 +_,7 @@
+@@ -81,7 +_,7 @@
          this.cache.put(p_164856_, p_164857_);
      }
  
@@ -31,7 +31,7 @@
          File file1 = this.getDataFile(p_78159_);
  
          CompoundTag compoundtag1;
-@@ -93,8 +_,12 @@
+@@ -98,8 +_,12 @@
                  }
              }
  

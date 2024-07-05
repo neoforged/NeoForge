@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "type": "testframework:test_enabled",
+      "base": {
+        "type": "neoforge:block_tag",
+        "tag": "minecraft:convertable_to_mud"
+      },
+      "framework": "neotests:tests",
+      "testId": "blockTagIngredient"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:mud"
+  }
+}

@@ -5,12 +5,12 @@
  @OnlyIn(Dist.CLIENT)
  public class ItemBlockRenderTypes {
 +    @Deprecated
-     private static final Map<Block, RenderType> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_311463_ -> {
+     private static final Map<Block, RenderType> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_353020_ -> {
          RenderType rendertype = RenderType.tripwire();
-         p_311463_.put(Blocks.TRIPWIRE, rendertype);
+         p_353020_.put(Blocks.TRIPWIRE, rendertype);
 @@ -335,6 +_,7 @@
-         p_311463_.put(Blocks.BUBBLE_COLUMN, rendertype3);
-         p_311463_.put(Blocks.TINTED_GLASS, rendertype3);
+         p_353020_.put(Blocks.BUBBLE_COLUMN, rendertype3);
+         p_353020_.put(Blocks.TINTED_GLASS, rendertype3);
      });
 +    @Deprecated
      private static final Map<Fluid, RenderType> TYPE_BY_FLUID = Util.make(Maps.newHashMap(), p_109290_ -> {

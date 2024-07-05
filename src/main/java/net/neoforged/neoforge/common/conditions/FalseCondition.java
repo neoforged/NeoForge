@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.common.conditions;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 public final class FalseCondition implements ICondition {
     public static final FalseCondition INSTANCE = new FalseCondition();
 
-    public static final Codec<FalseCondition> CODEC = MapCodec.unit(INSTANCE).stable().codec();
+    public static final MapCodec<FalseCondition> CODEC = MapCodec.unit(INSTANCE).stable();
 
     private FalseCondition() {}
 
@@ -21,7 +20,7 @@ public final class FalseCondition implements ICondition {
     }
 
     @Override
-    public Codec<? extends ICondition> codec() {
+    public MapCodec<? extends ICondition> codec() {
         return CODEC;
     }
 

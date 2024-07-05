@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.entity;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 /**
  * An interface for Entities that need extra information to be communicated
@@ -18,7 +18,7 @@ public interface IEntityWithComplexSpawn {
      *
      * @param buffer The packet data stream
      */
-    void writeSpawnData(FriendlyByteBuf buffer);
+    void writeSpawnData(RegistryFriendlyByteBuf buffer);
 
     /**
      * Called by the client when it receives a Entity spawn packet.
@@ -26,5 +26,5 @@ public interface IEntityWithComplexSpawn {
      *
      * @param additionalData The packet data stream
      */
-    void readSpawnData(FriendlyByteBuf additionalData);
+    void readSpawnData(RegistryFriendlyByteBuf additionalData);
 }

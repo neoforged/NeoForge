@@ -37,7 +37,7 @@
 +    private static org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> getOverlayBlock(Player p_110717_) {
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-         for(int i = 0; i < 8; ++i) {
+         for (int i = 0; i < 8; i++) {
 @@ -58,7 +_,7 @@
              blockpos$mutableblockpos.set(d0, d1, d2);
              BlockState blockstate = p_110717_.level().getBlockState(blockpos$mutableblockpos);
@@ -47,7 +47,7 @@
              }
          }
  
-@@ -89,8 +_,12 @@
+@@ -88,8 +_,12 @@
      }
  
      private static void renderWater(Minecraft p_110726_, PoseStack p_110727_) {
@@ -58,6 +58,6 @@
          RenderSystem.setShader(GameRenderer::getPositionTexShader);
 -        RenderSystem.setShaderTexture(0, UNDERWATER_LOCATION);
 +        RenderSystem.setShaderTexture(0, texture);
-         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
          BlockPos blockpos = BlockPos.containing(p_110726_.player.getX(), p_110726_.player.getEyeY(), p_110726_.player.getZ());
          float f = LightTexture.getBrightness(p_110726_.player.level().dimensionType(), p_110726_.player.level().getMaxLocalRawBrightness(blockpos));
+         RenderSystem.enableBlend();

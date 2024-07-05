@@ -17,6 +17,6 @@
 +            this.send(p_11595_, 0, new String(java.util.Arrays.copyOfRange(whole, start, j+start), StandardCharsets.UTF_8));
 +            i -= j;
 +            start += j;
-         } while(0 != i);
+         } while (0 != i);
      }
  

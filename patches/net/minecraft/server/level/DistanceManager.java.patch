@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/DistanceManager.java
 +++ b/net/minecraft/server/level/DistanceManager.java
-@@ -55,6 +_,8 @@
+@@ -54,6 +_,8 @@
      private long ticketTickCounter;
      private int simulationDistance = 10;
  

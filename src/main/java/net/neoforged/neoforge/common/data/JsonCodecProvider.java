@@ -84,14 +84,14 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
         gather();
 
         return lookupProvider.thenCompose(provider -> {
-            final DynamicOps<JsonElement> dynamicOps = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, provider), ICondition.IContext.EMPTY);
+            final DynamicOps<JsonElement> dynamicOps = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, provider), ICondition.IContext.EMPTY);
 
             this.conditions.forEach((id, withConditions) -> {
                 final Path path = this.pathProvider.json(id);
 
                 futuresBuilder.add(CompletableFuture.supplyAsync(() -> {
                     final Codec<Optional<WithConditions<T>>> withConditionsCodec = ConditionalOps.createConditionalCodecWithConditions(this.codec);
-                    return withConditionsCodec.encodeStart(dynamicOps, Optional.of(withConditions)).getOrThrow(false, msg -> LOGGER.error("Failed to encode {}: {}", path, msg));
+                    return withConditionsCodec.encodeStart(dynamicOps, Optional.of(withConditions)).getOrThrow(msg -> new RuntimeException("Failed to encode %s: %s".formatted(path, msg)));
                 }).thenComposeAsync(encoded -> DataProvider.saveStable(cache, encoded, path)));
             });
 

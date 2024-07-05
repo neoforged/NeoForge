@@ -1,0 +1,15 @@
+--- a/net/minecraft/client/particle/SingleQuadParticle.java
++++ b/net/minecraft/client/particle/SingleQuadParticle.java
+@@ -80,6 +_,12 @@
+             .setLight(p_345037_);
+     }
+ 
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(float partialTicks) {
++        float size = getQuadSize(partialTicks);
++        return new net.minecraft.world.phys.AABB(this.x - size, this.y - size, this.z - size, this.x + size, this.y + size, this.z + size);
++    }
++
+     public float getQuadSize(float p_107681_) {
+         return this.quadSize;
+     }

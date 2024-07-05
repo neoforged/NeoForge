@@ -79,7 +79,7 @@ class EntityCommand {
                 if (info == null)
                     throw NO_ENTITIES.create();
 
-                sender.sendSuccess(() -> Component.translatable("commands.neoforge.entity.list.single.header", name, info.getLeft()), false);
+                sender.sendSuccess(() -> Component.translatable("commands.neoforge.entity.list.single.header", name.toString(), info.getLeft()), false);
                 List<Map.Entry<ChunkPos, Integer>> toSort = new ArrayList<>();
                 toSort.addAll(info.getRight().entrySet());
                 toSort.sort((a, b) -> {

@@ -26,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +40,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
     private final BlockPos pos;
     @Nullable
     private final Direction face;
-    private InteractionResult cancellationResult = InteractionResult.PASS;
 
     protected PlayerInteractEvent(Player player, InteractionHand hand, BlockPos pos, @Nullable Direction face) {
         super(Preconditions.checkNotNull(player, "Null player in PlayerInteractEvent!"));
@@ -58,6 +58,8 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link EntityInteract}.
      */
     public static class EntityInteractSpecific extends PlayerInteractEvent implements ICancellableEvent {
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
         private final Vec3 localPos;
         private final Entity target;
 
@@ -81,6 +83,23 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         public Entity getTarget() {
             return target;
         }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
+        }
     }
 
     /**
@@ -97,6 +116,8 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link RightClickItem}.
      */
     public static class EntityInteract extends PlayerInteractEvent implements ICancellableEvent {
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
         private final Entity target;
 
         public EntityInteract(Player player, InteractionHand hand, Entity target) {
@@ -106,6 +127,23 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
 
         public Entity getTarget() {
             return target;
+        }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
         }
     }
 
@@ -123,8 +161,10 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * Note that handling things differently on the client vs server may cause desynchronizations!
      */
     public static class RightClickBlock extends PlayerInteractEvent implements ICancellableEvent {
-        private Result useBlock = Result.DEFAULT;
-        private Result useItem = Result.DEFAULT;
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
+        private TriState useBlock = TriState.DEFAULT;
+        private TriState useItem = TriState.DEFAULT;
         private BlockHitResult hitVec;
 
         public RightClickBlock(Player player, InteractionHand hand, BlockPos pos, BlockHitResult hitVec) {
@@ -135,14 +175,14 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         /**
          * @return If {@link Block#use(BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)} should be called
          */
-        public Result getUseBlock() {
+        public TriState getUseBlock() {
             return useBlock;
         }
 
         /**
          * @return If {@link Item#onItemUseFirst} and {@link Item#useOn(UseOnContext)} should be called
          */
-        public Result getUseItem() {
+        public TriState getUseItem() {
             return useItem;
         }
 
@@ -154,21 +194,21 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         }
 
         /**
-         * DENY: {@link Block#use(BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)} will never be called. <br>
+         * FALSE: {@link Block#use(BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)} will never be called. <br>
          * DEFAULT: {@link Block#use(BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)} will be called if {@link Item#onItemUseFirst} passes. <br>
          * Note that default activation can be blocked if the user is sneaking and holding an item that does not return true to {@link Item#doesSneakBypassUse}. <br>
-         * ALLOW: {@link Block#updateOrDestroy(BlockState, BlockState, LevelAccessor, BlockPos, int, int)} will always be called, unless {@link Item#onItemUseFirst} does not pass. <br>
+         * TRUE: {@link Block#updateOrDestroy(BlockState, BlockState, LevelAccessor, BlockPos, int, int)} will always be called, unless {@link Item#onItemUseFirst} does not pass. <br>
          */
-        public void setUseBlock(Result triggerBlock) {
+        public void setUseBlock(TriState triggerBlock) {
             this.useBlock = triggerBlock;
         }
 
         /**
-         * DENY: Neither {@link Item#useOn(UseOnContext)} or {@link Item#onItemUseFirst} will be called. <br>
+         * FALSE: Neither {@link Item#useOn(UseOnContext)} or {@link Item#onItemUseFirst} will be called. <br>
          * DEFAULT: {@link Item#onItemUseFirst} will always be called, and {@link Item#useOn(UseOnContext)} will be called if the block passes. <br>
-         * ALLOW: {@link Item#onItemUseFirst} will always be called, and {@link Item#useOn(UseOnContext)} will be called if the block passes, regardless of cooldowns or emptiness. <br>
+         * TRUE: {@link Item#onItemUseFirst} will always be called, and {@link Item#useOn(UseOnContext)} will be called if the block passes, regardless of cooldowns or emptiness. <br>
          */
-        public void setUseItem(Result triggerItem) {
+        public void setUseItem(TriState triggerItem) {
             this.useItem = triggerItem;
         }
 
@@ -176,9 +216,26 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         public void setCanceled(boolean canceled) {
             ICancellableEvent.super.setCanceled(canceled);
             if (canceled) {
-                useBlock = Result.DENY;
-                useItem = Result.DENY;
+                useBlock = TriState.FALSE;
+                useItem = TriState.FALSE;
             }
+        }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
         }
     }
 
@@ -190,8 +247,27 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then continue to other hands.
      */
     public static class RightClickItem extends PlayerInteractEvent implements ICancellableEvent {
+        private InteractionResult cancellationResult = InteractionResult.PASS;
+
         public RightClickItem(Player player, InteractionHand hand) {
             super(player, hand, player.blockPosition(), null);
+        }
+
+        /**
+         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
+         *         the client to keep trying more interactions until something works.
+         */
+        public InteractionResult getCancellationResult() {
+            return cancellationResult;
+        }
+
+        /**
+         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+         * method of the event.
+         */
+        public void setCancellationResult(InteractionResult result) {
+            this.cancellationResult = result;
         }
     }
 
@@ -222,14 +298,9 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * Therefore, in creative mode, {@link #setUseBlock} and {@link #setUseItem} have no effect.
      */
     public static class LeftClickBlock extends PlayerInteractEvent implements ICancellableEvent {
-        private Result useBlock = Result.DEFAULT;
-        private Result useItem = Result.DEFAULT;
+        private TriState useBlock = TriState.DEFAULT;
+        private TriState useItem = TriState.DEFAULT;
         private final Action action;
-
-        @Deprecated(since = "1.20.1", forRemoval = true)
-        public LeftClickBlock(Player player, BlockPos pos, Direction face) {
-            this(player, pos, face, Action.START);
-        }
 
         @ApiStatus.Internal
         public LeftClickBlock(Player player, BlockPos pos, Direction face, Action action) {
@@ -240,14 +311,14 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         /**
          * @return If {@link Block#attack(BlockState, Level, BlockPos, Player)} should be called. Changing this has no effect in creative mode
          */
-        public Result getUseBlock() {
+        public TriState getUseBlock() {
             return useBlock;
         }
 
         /**
          * @return If the block should be attempted to be mined with the current item. Changing this has no effect in creative mode
          */
-        public Result getUseItem() {
+        public TriState getUseItem() {
             return useItem;
         }
 
@@ -258,11 +329,11 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
             return this.action;
         }
 
-        public void setUseBlock(Result triggerBlock) {
+        public void setUseBlock(TriState triggerBlock) {
             this.useBlock = triggerBlock;
         }
 
-        public void setUseItem(Result triggerItem) {
+        public void setUseItem(TriState triggerItem) {
             this.useItem = triggerItem;
         }
 
@@ -270,8 +341,8 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         public void setCanceled(boolean canceled) {
             ICancellableEvent.super.setCanceled(canceled);
             if (canceled) {
-                useBlock = Result.DENY;
-                useItem = Result.DENY;
+                useBlock = TriState.FALSE;
+                useItem = TriState.FALSE;
             }
         }
 
@@ -362,23 +433,5 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      */
     public LogicalSide getSide() {
         return getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;
-    }
-
-    /**
-     * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
-     *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
-     *         the client to keep trying more interactions until something works.
-     */
-    public InteractionResult getCancellationResult() {
-        return cancellationResult;
-    }
-
-    /**
-     * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
-     * method of the event.
-     * Note that this only has an effect on {@link RightClickBlock}, {@link RightClickItem}, {@link EntityInteract}, and {@link EntityInteractSpecific}.
-     */
-    public void setCancellationResult(InteractionResult result) {
-        this.cancellationResult = result;
     }
 }

@@ -1,0 +1,73 @@
+--- a/net/minecraft/client/multiplayer/SessionSearchTrees.java
++++ b/net/minecraft/client/multiplayer/SessionSearchTrees.java
+@@ -86,44 +_,60 @@
+     }
+ 
+     public void updateCreativeTags(List<ItemStack> p_346121_) {
++        this.updateCreativeTags(p_346121_, CREATIVE_TAGS);
++    }
++
++    public void updateCreativeTags(List<ItemStack> p_346121_, SessionSearchTrees.Key key) {
+         this.register(
+-            CREATIVE_TAGS,
++            key,
+             () -> {
+-                CompletableFuture<?> completablefuture = this.creativeByTagSearch;
+-                this.creativeByTagSearch = CompletableFuture.supplyAsync(
++                CompletableFuture<?> completablefuture = net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchTree(key);
++                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putTagSearchTree(key, CompletableFuture.supplyAsync(
+                     () -> new IdSearchTree<>(p_344728_ -> p_344728_.getTags().map(TagKey::location), p_346121_), Util.backgroundExecutor()
+-                );
++                ));
+                 completablefuture.cancel(true);
+             }
+         );
+     }
+ 
+     public SearchTree<ItemStack> creativeTagSearch() {
+-        return this.creativeByTagSearch.join();
++        return this.creativeTagSearch(CREATIVE_TAGS);
++    }
++
++    public SearchTree<ItemStack> creativeTagSearch(SessionSearchTrees.Key key) {
++        return net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchTree(key).join();
+     }
+ 
+     public void updateCreativeTooltips(HolderLookup.Provider p_345391_, List<ItemStack> p_346357_) {
++        this.updateCreativeTooltips(p_345391_, p_346357_, CREATIVE_NAMES);
++    }
++
++    public void updateCreativeTooltips(HolderLookup.Provider p_345391_, List<ItemStack> p_346357_, SessionSearchTrees.Key key) {
+         this.register(
+-            CREATIVE_NAMES,
++            key,
+             () -> {
+                 Item.TooltipContext item$tooltipcontext = Item.TooltipContext.of(p_345391_);
+                 TooltipFlag tooltipflag = TooltipFlag.Default.NORMAL.asCreative();
+-                CompletableFuture<?> completablefuture = this.creativeByNameSearch;
+-                this.creativeByNameSearch = CompletableFuture.supplyAsync(
++                CompletableFuture<?> completablefuture = net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getNameSearchTree(key);
++                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putNameSearchTree(key, CompletableFuture.supplyAsync(
+                     () -> new FullTextSearchTree<>(
+                             p_345006_ -> getTooltipLines(Stream.of(p_345006_), item$tooltipcontext, tooltipflag),
+                             p_345861_ -> p_345861_.getItemHolder().unwrapKey().map(ResourceKey::location).stream(),
+                             p_346357_
+                         ),
+                     Util.backgroundExecutor()
+-                );
++                ));
+                 completablefuture.cancel(true);
+             }
+         );
+     }
+ 
+     public SearchTree<ItemStack> creativeNameSearch() {
+-        return this.creativeByNameSearch.join();
++        return this.creativeNameSearch(CREATIVE_NAMES);
++    }
++
++    public SearchTree<ItemStack> creativeNameSearch(SessionSearchTrees.Key key) {
++        return net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getNameSearchTree(key).join();
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

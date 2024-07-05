@@ -35,7 +35,7 @@ public final class EntitySpectatorShaderManager {
     public static void init() {
         var shaders = new HashMap<EntityType<?>, ResourceLocation>();
         var event = new RegisterEntitySpectatorShadersEvent(shaders);
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(event);
         SHADERS = ImmutableMap.copyOf(shaders);
     }
 

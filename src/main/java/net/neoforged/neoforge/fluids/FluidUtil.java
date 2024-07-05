@@ -33,7 +33,6 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.wrappers.BlockWrapper;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
-import net.neoforged.neoforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
@@ -111,7 +110,7 @@ public class FluidUtil {
      * @return a {@link FluidActionResult} holding the filled container if successful.
      */
     public static FluidActionResult tryFillContainer(ItemStack container, IFluidHandler fluidSource, int maxAmount, @Nullable Player player, boolean doFill) {
-        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
                 .map(containerFluidHandler -> {
                     FluidStack simulatedTransfer = tryFluidTransfer(containerFluidHandler, fluidSource, maxAmount, false);
@@ -153,7 +152,7 @@ public class FluidUtil {
      *         NOTE If the container is consumable, the empty container will be null on success.
      */
     public static FluidActionResult tryEmptyContainer(ItemStack container, IFluidHandler fluidDestination, int maxAmount, @Nullable Player player, boolean doDrain) {
-        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
                 .map(containerFluidHandler -> {
                     FluidStack transfer = tryFluidTransfer(fluidDestination, containerFluidHandler, maxAmount, doDrain);
@@ -324,7 +323,7 @@ public class FluidUtil {
      */
     public static FluidStack tryFluidTransfer(IFluidHandler fluidDestination, IFluidHandler fluidSource, FluidStack resource, boolean doTransfer) {
         FluidStack drainable = fluidSource.drain(resource, IFluidHandler.FluidAction.SIMULATE);
-        if (!drainable.isEmpty() && resource.isFluidEqual(drainable)) {
+        if (!drainable.isEmpty() && FluidStack.isSameFluidSameComponents(resource, drainable)) {
             return tryFluidTransfer_Internal(fluidDestination, fluidSource, drainable, doTransfer);
         }
         return FluidStack.EMPTY;
@@ -375,7 +374,7 @@ public class FluidUtil {
      */
     public static Optional<FluidStack> getFluidContained(ItemStack container) {
         if (!container.isEmpty()) {
-            container = ItemHandlerHelper.copyStackWithSize(container, 1);
+            container = container.copyWithCount(1);
             Optional<FluidStack> fluidContained = getFluidHandler(container)
                     .map(handler -> handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
             if (fluidContained.isPresent() && !fluidContained.get().isEmpty()) {
@@ -411,9 +410,7 @@ public class FluidUtil {
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
         IFluidHandler targetFluidHandler;
-        if (block instanceof IFluidBlock) {
-            targetFluidHandler = new FluidBlockWrapper((IFluidBlock) block, level, pos);
-        } else if (block instanceof BucketPickup) {
+        if (block instanceof BucketPickup) {
             targetFluidHandler = new BucketPickupHandlerWrapper(playerIn, (BucketPickup) block, level, pos);
         } else {
             Optional<IFluidHandler> fluidHandler = getFluidHandler(level, pos, side);
@@ -438,7 +435,7 @@ public class FluidUtil {
      * @return the container's ItemStack with the remaining amount of fluid if the placement was successful, null otherwise
      */
     public static FluidActionResult tryPlaceFluid(@Nullable Player player, Level level, InteractionHand hand, BlockPos pos, ItemStack container, FluidStack resource) {
-        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return getFluidHandler(containerCopy)
                 .filter(handler -> tryPlaceFluid(player, level, hand, pos, handler, resource))
                 .map(IFluidHandlerItem::getContainer)
@@ -530,8 +527,6 @@ public class FluidUtil {
      * Destroys a block when a fluid is placed in the same position.
      * Modeled after {@link BucketItem#emptyContents(Player, Level, BlockPos, BlockHitResult)}
      *
-     * This is a helper method for implementing {@link IFluidBlock#place(Level, BlockPos, FluidStack, IFluidHandler.FluidAction)}.
-     *
      * @param level the level that the fluid will be placed in
      * @param pos   the location that the fluid will be placed
      */
@@ -553,7 +548,7 @@ public class FluidUtil {
      *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
      */
     public static ItemStack getFilledBucket(FluidStack fluidStack) {
-        if (!fluidStack.hasTag() || fluidStack.getTag().isEmpty()) {
+        if (fluidStack.getComponents().isEmpty()) {
             if (fluidStack.is(Fluids.WATER)) {
                 return new ItemStack(Items.WATER_BUCKET);
             } else if (fluidStack.is(Fluids.LAVA)) {

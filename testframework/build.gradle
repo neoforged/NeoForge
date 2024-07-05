@@ -1,9 +1,13 @@
 plugins {
     id 'java'
+    id 'maven-publish'
     id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
     id 'net.neoforged.gradle.platform'
+    id 'neoforge.formatting-conventions'
 }
+
+java.withSourcesJar()
 
 repositories {
     maven {
@@ -17,7 +21,10 @@ repositories {
 }
 
 dependencies {
-    implementation project(':neoforge')
+    implementation project(path: ':neoforge', configuration: 'runtimeElements')
+
+    compileOnly(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
+    compileOnly "org.junit.jupiter:junit-jupiter-params"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
@@ -28,6 +35,27 @@ license {
     include '**/*.java'
 }
 
-apply from: rootProject.file('buildscript/spotless-rules.gradle')
-apply from: rootProject.file('buildscript/generate-package-infos.gradle')
-apply from: rootProject.file('buildscript/apply-all-formatting.gradle')
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties version: version
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand version: version
+    }
+}
+
+publishing {
+    publications.create('TestFramework', MavenPublication) {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+
+        from components.java
+    }
+    repositories {
+        maven rootProject.gradleutils.getPublishingMaven()
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "neotests_player_destroy:block/destroy_on_piston_move"
+    }
+  }
+}

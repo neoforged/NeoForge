@@ -1,0 +1,15 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:orange_concrete"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "neoforge:test_loot_table_3"
+}

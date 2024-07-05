@@ -26,7 +26,7 @@
                          BlockPos blockpos = findTip(p_221860_, p_221861_, p_221862_, 11, false);
                          if (blockpos != null) {
                              if (optional.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-@@ -409,7 +_,8 @@
+@@ -411,7 +_,8 @@
          double d2 = (double)((float)(p_154073_.getY() + 1) - 0.6875F) - 0.0625;
          double d3 = (double)p_154073_.getZ() + 0.5 + vec3.z;
          Fluid fluid = getDripFluid(p_154072_, p_154075_);
@@ -36,7 +36,7 @@
          p_154072_.addParticle(particleoptions, d1, d2, d3, 0.0, 0.0, 0.0);
      }
  
-@@ -561,7 +_,7 @@
+@@ -563,7 +_,7 @@
      }
  
      private static boolean canFillCauldron(Fluid p_154159_) {

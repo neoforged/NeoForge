@@ -22,7 +22,7 @@ public class TestFrameworkMod {
     public static final DeferredHolder<LootItemConditionType, LootItemConditionType> TEST_ENABLED = LOOT_CONDITIONS.register("test_enabled", () -> new LootItemConditionType(TestEnabledLootCondition.CODEC));
 
     public static final DeferredRegister<IngredientType<?>> INGREDIENTS = DeferredRegister.create(NeoForgeRegistries.INGREDIENT_TYPES, "testframework");
-    public static final DeferredHolder<IngredientType<?>, IngredientType<TestEnabledIngredient>> TEST_ENABLED_INGREDIENT = INGREDIENTS.register("test_enabled", () -> new IngredientType<>(TestEnabledIngredient.CODEC, TestEnabledIngredient.CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<TestEnabledIngredient>> TEST_ENABLED_INGREDIENT = INGREDIENTS.register("test_enabled", () -> new IngredientType<>(TestEnabledIngredient.CODEC));
 
     public TestFrameworkMod(IEventBus bus) {
         LOOT_CONDITIONS.register(bus);

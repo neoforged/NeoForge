@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
@@ -21,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 public class EmptyPackResources extends AbstractPackResources {
     private final PackMetadataSection packMeta;
 
-    public EmptyPackResources(String packId, boolean isBuiltin, PackMetadataSection packMeta) {
-        super(packId, isBuiltin);
+    public EmptyPackResources(PackLocationInfo packId, PackMetadataSection packMeta) {
+        super(packId);
         this.packMeta = packMeta;
     }
 
@@ -59,20 +60,18 @@ public class EmptyPackResources extends AbstractPackResources {
 
     public static class EmptyResourcesSupplier implements Pack.ResourcesSupplier {
         private final PackMetadataSection packMeta;
-        private final boolean isBuiltin;
 
-        public EmptyResourcesSupplier(PackMetadataSection packMeta, boolean isBuiltin) {
+        public EmptyResourcesSupplier(PackMetadataSection packMeta) {
             this.packMeta = packMeta;
-            this.isBuiltin = isBuiltin;
         }
 
         @Override
-        public PackResources openPrimary(String id) {
-            return new EmptyPackResources(id, isBuiltin, packMeta);
+        public PackResources openPrimary(PackLocationInfo id) {
+            return new EmptyPackResources(id, packMeta);
         }
 
         @Override
-        public PackResources openFull(String id, Pack.Info info) {
+        public PackResources openFull(PackLocationInfo id, Pack.Metadata info) {
             return openPrimary(id);
         }
     }

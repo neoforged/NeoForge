@@ -36,7 +36,7 @@ public class ConfigSync {
         }));
 
         return configData.entrySet().stream()
-                .map(e -> new ConfigFilePayload(e.getValue(), e.getKey()))
+                .map(e -> new ConfigFilePayload(e.getKey(), e.getValue()))
                 .toList();
     }
 

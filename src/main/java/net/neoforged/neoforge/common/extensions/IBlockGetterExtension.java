@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
 import net.minecraft.world.level.chunk.LightChunk;
-import net.neoforged.neoforge.client.model.data.ModelDataManager;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -59,11 +59,12 @@ public interface IBlockGetterExtension {
     }
 
     /**
-     * Retrieves the model data manager for this level.
-     * This will be {@code null} on a server level.
+     * Retrieves model data for a block at the given position.
+     *
+     * @param pos the position to query
+     * @return the model data at this position, or {@link ModelData#EMPTY} if none exists
      */
-    @Nullable
-    default ModelDataManager getModelDataManager() {
-        return null;
+    default ModelData getModelData(BlockPos pos) {
+        return ModelData.EMPTY;
     }
 }

@@ -32,12 +32,14 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
+import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import org.slf4j.Logger;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -71,6 +73,7 @@ public class DataMapLoader implements PreparableReloadListener {
         registry.dataMaps.clear();
         result.results().forEach((key, entries) -> registry.dataMaps.put(
                 key, this.buildDataMap(registry, key, (List) entries)));
+        NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(registryAccess, registry, DataMapsUpdatedEvent.UpdateCause.SERVER_RELOAD));
     }
 
     private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<R, T> attachment, List<DataMapFile<T, R>> entries) {
@@ -126,7 +129,7 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     private static Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, ProfilerFiller profiler, RegistryAccess access, ICondition.IContext context) {
-        final RegistryOps<JsonElement> ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, access), context);
+        final RegistryOps<JsonElement> ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, access), context);
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
         access.registries().forEach(registryEntry -> {
@@ -161,8 +164,7 @@ public class DataMapLoader implements PreparableReloadListener {
         for (final Resource resource : resources) {
             try (Reader reader = resource.openAsReader()) {
                 JsonElement jsonelement = JsonParser.parseReader(reader);
-                entries.add(codec.decode(ops, jsonelement)
-                        .getOrThrow(false, LOGGER::error).getFirst());
+                entries.add(codec.decode(ops, jsonelement).getOrThrow().getFirst());
             } catch (Exception exception) {
                 LOGGER.error("Could not read data map of type {} for registry {}", attachmentType.id(), registryKey, exception);
             }

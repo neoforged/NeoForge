@@ -1,7 +1,29 @@
 --- a/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
-@@ -45,7 +_,7 @@
-         float p_116960_
+@@ -33,19 +_,19 @@
+     }
+ 
+     public void render(
+-        PoseStack p_116951_,
+-        MultiBufferSource p_116952_,
+-        int p_116953_,
+-        T p_116954_,
+-        float p_116955_,
+-        float p_116956_,
+-        float p_116957_,
+-        float p_116958_,
+-        float p_116959_,
+-        float p_116960_
++            PoseStack p_116951_,
++            MultiBufferSource p_116952_,
++            int p_116953_,
++            T p_116954_,
++            float p_116955_,
++            float p_116956_,
++            float p_116957_,
++            float p_116958_,
++            float p_116959_,
++            float p_116960_
      ) {
          ItemStack itemstack = p_116954_.getItemBySlot(EquipmentSlot.CHEST);
 -        if (itemstack.is(Items.ELYTRA)) {
@@ -22,8 +44,8 @@
              }
  
              p_116951_.pushPose();
-@@ -70,5 +_,30 @@
-             this.elytraModel.renderToBuffer(p_116951_, vertexconsumer, p_116953_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+@@ -68,5 +_,30 @@
+             this.elytraModel.renderToBuffer(p_116951_, vertexconsumer, p_116953_, OverlayTexture.NO_OVERLAY);
              p_116951_.popPose();
          }
 +    }

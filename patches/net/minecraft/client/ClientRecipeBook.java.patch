@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/ClientRecipeBook.java
 +++ b/net/minecraft/client/ClientRecipeBook.java
-@@ -62,7 +_,7 @@
+@@ -65,7 +_,7 @@
              Recipe<?> recipe = recipeholder.value();
              if (!recipe.isSpecial() && !recipe.isIncomplete()) {
                  RecipeBookCategories recipebookcategories = getCategory(recipeholder);
@@ -9,7 +9,7 @@
                  if (s.isEmpty()) {
                      map.computeIfAbsent(recipebookcategories, p_90645_ -> Lists.newArrayList()).add(ImmutableList.of(recipeholder));
                  } else {
-@@ -122,6 +_,8 @@
+@@ -125,6 +_,8 @@
              } else if (recipetype == RecipeType.SMITHING) {
                  return RecipeBookCategories.SMITHING;
              } else {

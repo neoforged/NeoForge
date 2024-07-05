@@ -19,7 +19,7 @@
 -        KeyMapping keymapping = MAP.get(p_90836_);
 +        for (KeyMapping keymapping : MAP.getAll(p_90836_))
          if (keymapping != null) {
-             ++keymapping.clickCount;
+             keymapping.clickCount++;
          }
      }
  
@@ -82,7 +82,7 @@
          return this.key.equals(p_90851_.key);
      }
  
-@@ -165,11 +_,13 @@
+@@ -163,11 +_,13 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -97,7 +97,7 @@
      }
  
      public String saveString() {
-@@ -179,4 +_,84 @@
+@@ -177,4 +_,84 @@
      public void setDown(boolean p_90846_) {
          this.isDown = p_90846_;
      }

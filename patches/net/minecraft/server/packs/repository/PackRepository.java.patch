@@ -8,23 +8,48 @@
 +        this.sources = new java.util.LinkedHashSet<>(List.of(p_251886_)); //Neo: This needs to be a mutable set, so that we can add to it later on.
      }
  
-     public void reload() {
-@@ -71,11 +_,12 @@
+     public static String displayPackList(Collection<Pack> p_341622_) {
+@@ -39,10 +_,13 @@
      }
  
-     private List<Pack> rebuildSelected(Collection<String> p_10518_) {
--        List<Pack> list = this.getAvailablePacks(p_10518_).collect(Collectors.toList());
-+        List<Pack> list = this.getAvailablePacks(p_10518_).flatMap(p -> Stream.concat(Stream.of(p), p.getChildren().stream())).collect(Collectors.toList());
+     private Map<String, Pack> discoverAvailable() {
+-        Map<String, Pack> map = Maps.newTreeMap();
++        // Neo: sort packs within a source by name, between sources according to source order
++        Map<String, Pack> map = Maps.newLinkedHashMap();
  
-         for(Pack pack : this.available.values()) {
+         for (RepositorySource repositorysource : this.sources) {
+-            repositorysource.loadPacks(p_143903_ -> map.put(p_143903_.getId(), p_143903_));
++            Map<String, Pack> sourceMap = Maps.newTreeMap();
++            repositorysource.loadPacks(p_143903_ -> p_143903_.streamSelfAndChildren().forEach(p -> sourceMap.put(p.getId(), p)));
++            map.putAll(sourceMap);
+         }
+ 
+         return ImmutableMap.copyOf(map);
+@@ -77,11 +_,12 @@
+     }
+ 
+     public List<Pack> rebuildSelected(Collection<String> p_10518_) {
+-        List<Pack> list = this.getAvailablePacks(p_10518_).collect(Util.toMutableList());
++        List<Pack> list = net.neoforged.neoforge.resource.ResourcePackLoader.expandAndRemoveRootChildren(this.getAvailablePacks(p_10518_), this.available.values());
+ 
+         for (Pack pack : this.available.values()) {
              if (pack.isRequired() && !list.contains(pack)) {
--                pack.getDefaultPosition().insert(list, pack, Functions.identity(), false);
-+                int i = pack.getDefaultPosition().insert(list, pack, Functions.identity(), false);
+-                pack.getDefaultPosition().insert(list, pack, Pack::selectionConfig, false);
++                int i = pack.getDefaultPosition().insert(list, pack, Pack::selectionConfig, false);
 +                list.addAll(i + 1, pack.getChildren());
              }
          }
  
-@@ -95,7 +_,7 @@
+@@ -93,7 +_,7 @@
+     }
+ 
+     public Collection<String> getAvailableIds() {
+-        return this.available.keySet();
++        return this.available.values().stream().filter(p -> !p.isHidden()).map(Pack::getId).collect(ImmutableSet.toImmutableSet());
+     }
+ 
+     public Collection<Pack> getAvailablePacks() {
+@@ -101,7 +_,7 @@
      }
  
      public Collection<String> getSelectedIds() {
@@ -33,7 +58,7 @@
      }
  
      public FeatureFlagSet getRequestedFeatureFlags() {
-@@ -109,6 +_,10 @@
+@@ -115,6 +_,10 @@
      @Nullable
      public Pack getPack(String p_10508_) {
          return this.available.get(p_10508_);

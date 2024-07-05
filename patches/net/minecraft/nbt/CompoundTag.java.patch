@@ -14,7 +14,7 @@
              Map<String, Tag> map = Maps.newHashMap();
  
              byte b0;
--            while((b0 = p_302338_.readByte()) != 0) {
+-            while ((b0 = p_302338_.readByte()) != 0) {
 -                String s = readString(p_302338_, p_302362_);
 +            while((b0 = readNamedTagType(p_302338_, p_302362_)) != 0) {
 +                String s = p_302362_.readUTF(p_302338_.readUTF());

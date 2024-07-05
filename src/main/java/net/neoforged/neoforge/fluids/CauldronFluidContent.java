@@ -112,7 +112,7 @@ public final class CauldronFluidContent {
         registerEvent.register(Blocks.WATER_CAULDRON, Fluids.WATER, FluidType.BUCKET_VOLUME, LayeredCauldronBlock.LEVEL);
         registerEvent.register(Blocks.LAVA_CAULDRON, Fluids.LAVA, FluidType.BUCKET_VOLUME, null);
         // Modded registrations
-        ModLoader.get().postEvent(registerEvent);
+        ModLoader.postEvent(registerEvent);
     }
 
     /**

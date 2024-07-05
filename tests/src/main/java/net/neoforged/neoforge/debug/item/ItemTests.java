@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.debug.item;
 
-import java.util.Map;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
@@ -14,7 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -24,9 +24,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
@@ -46,17 +43,14 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = ItemTests.GROUP)
 public class ItemTests {
@@ -68,9 +62,9 @@ public class ItemTests {
     })
     static void customMobBucket(final DynamicTest test, final RegistrationHelper reg) {
         final var cowBucket = reg.items().register("cow_bucket", () -> new MobBucketItem(
-                () -> EntityType.COW,
-                () -> Fluids.WATER,
-                () -> SoundEvents.BUCKET_EMPTY_FISH,
+                EntityType.COW,
+                Fluids.WATER,
+                SoundEvents.BUCKET_EMPTY_FISH,
                 (new Item.Properties()).stacksTo(1)))
                 .withLang("Cow bucket");
         test.framework().modEventBus().addListener((final FMLCommonSetupEvent event) -> {
@@ -114,15 +108,10 @@ public class ItemTests {
     })
     static void forgeSpawnEggTest(final DynamicTest test, final RegistrationHelper reg) {
         final var testEntity = reg.entityTypes().registerType("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE)
-                .sized(1, 1)).withAttributes(() -> {
-                    AttributeSupplier.Builder attributes = Pig.createAttributes();
-                    //Remove step height attribute to validate that things are handled properly when an entity doesn't have it
-                    Map<Attribute, AttributeInstance> builder = ObfuscationReflectionHelper.getPrivateValue(AttributeSupplier.Builder.class, attributes, "builder");
-                    if (builder != null) {
-                        builder.remove(NeoForgeMod.STEP_HEIGHT.value());
-                    }
-                    return attributes;
-                }).withRenderer(() -> PigRenderer::new).withLang("Test Pig spawn egg");
+                .sized(1, 1))
+                .withAttributes(Pig::createAttributes)
+                .withRenderer(() -> PigRenderer::new)
+                .withLang("Test Pig spawn egg");
 
         final var egg = reg.items().register("test_spawn_egg", () -> new DeferredSpawnEggItem(testEntity, 0x0000FF, 0xFF0000, new Item.Properties()) {
             @Override
@@ -142,13 +131,8 @@ public class ItemTests {
                 }
                 return sup;
             }
-
-            @Override
-            public boolean spawnsEntity(@Nullable CompoundTag p_43231_, EntityType<?> p_43232_) {
-                return super.spawnsEntity(p_43231_, p_43232_);
-            }
         })
-                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft:item/template_spawn_egg"))));
+                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath("minecraft", "item/template_spawn_egg"))));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.IRON_BLOCK))
@@ -158,11 +142,21 @@ public class ItemTests {
                 .thenSucceed());
     }
 
+    @SuppressWarnings("unused") // Referenced by enumextender.json
+    public static Object getRarityEnumParameter(int idx, Class<?> type) {
+        return type.cast(switch (idx) {
+            case 0 -> -1;
+            case 1 -> "neotests:custom";
+            case 2 -> (UnaryOperator<Style>) style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA);
+            default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
+        });
+    }
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if custom rarities (with custom styles) work on items")
     static void itemCustomRarity(final DynamicTest test, final RegistrationHelper reg) {
-        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
+        final Rarity rarity = Rarity.valueOf("NEOTESTS_CUSTOM");
         final Supplier<Item> item = reg.items().registerSimpleItem("test", new Item.Properties().rarity(rarity))
                 .withLang("Custom rarity test");
 

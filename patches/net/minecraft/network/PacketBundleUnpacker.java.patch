@@ -1,11 +1,11 @@
 --- a/net/minecraft/network/PacketBundleUnpacker.java
 +++ b/net/minecraft/network/PacketBundleUnpacker.java
-@@ -20,7 +_,7 @@
-         if (bundlerinfo$provider == null) {
-             throw new EncoderException("Bundler not configured: " + p_265038_);
-         } else {
--            bundlerinfo$provider.bundlerInfo().unbundlePacket(p_265038_, p_265735_::add);
-+            bundlerinfo$provider.bundlerInfo().unbundlePacket(p_265038_, p_265735_::add, p_265691_);
-         }
+@@ -14,7 +_,7 @@
      }
- }
+ 
+     protected void encode(ChannelHandlerContext p_265691_, Packet<?> p_265038_, List<Object> p_265735_) throws Exception {
+-        this.bundlerInfo.unbundlePacket(p_265038_, p_265735_::add);
++        this.bundlerInfo.unbundlePacket(p_265038_, p_265735_::add, p_265691_);
+         if (p_265038_.isTerminal()) {
+             p_265691_.pipeline().remove(p_265691_.name());
+         }

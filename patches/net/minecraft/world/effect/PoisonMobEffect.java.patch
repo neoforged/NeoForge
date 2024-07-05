@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/effect/PoisonMobEffect.java
 +++ b/net/minecraft/world/effect/PoisonMobEffect.java
-@@ -11,7 +_,12 @@
-     public void applyEffectTick(LivingEntity p_296276_, int p_296233_) {
-         super.applyEffectTick(p_296276_, p_296233_);
+@@ -10,7 +_,12 @@
+     @Override
+     public boolean applyEffectTick(LivingEntity p_296276_, int p_296233_) {
          if (p_296276_.getHealth() > 1.0F) {
 -            p_296276_.hurt(p_296276_.damageSources().magic(), 1.0F);
 +            // Neo: Replace DamageSources#magic() with neoforge:poison to allow differentiating poison damage.
@@ -12,5 +12,5 @@
 +            var dType = dTypeReg.getHolder(net.neoforged.neoforge.common.NeoForgeMod.POISON_DAMAGE).orElse(dTypeReg.getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC));
 +            p_296276_.hurt(new net.minecraft.world.damagesource.DamageSource(dType), 1.0F);
          }
-     }
  
+         return true;

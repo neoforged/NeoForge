@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event;
 
+import java.util.stream.Stream;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.neoforged.bus.api.Event;
@@ -26,15 +27,27 @@ public class OnDatapackSyncEvent extends Event {
     }
 
     /**
-     * @return The server's player list to get a view of all players.
+     * Gets the server's player list, containing all players, when the event fires.
+     *
+     * @return The server's player list.
      */
     public PlayerList getPlayerList() {
         return this.playerList;
     }
 
     /**
-     * @return The player to sync datapacks to. Null when syncing for all players,
-     *         such as when the reload command runs.
+     * Creates a stream of players that need to receive data during this event, which is the specified player (if present) or all players.
+     *
+     * @return A stream of players to sync data to.
+     */
+    public Stream<ServerPlayer> getRelevantPlayers() {
+        return this.player == null ? this.playerList.getPlayers().stream() : Stream.of(this.player);
+    }
+
+    /**
+     * Gets the player that is joining the server, or null when syncing for all players, such as when the reload command runs.
+     *
+     * @return The player to sync datapacks to. Null when syncing for all players.
      */
     @Nullable
     public ServerPlayer getPlayer() {

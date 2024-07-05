@@ -26,36 +26,6 @@ function initializeCoreMod() {
                 return classNode;
             }
         },
-        'flowing_fluid_block': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'net.minecraft.world.level.block.LiquidBlock'
-            },
-            'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, 'fluid', 'getFluid')
-                return classNode;
-            }
-        },
-        'bucketitem': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'net.minecraft.world.item.BucketItem'
-            },
-            'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, 'content', 'getFluid')
-                return classNode;
-            }
-        },
-        'stairsblock': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'net.minecraft.world.level.block.StairBlock'
-            },
-            'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, 'base', 'getModelBlock')
-                return classNode;
-            }
-        },
         'flowerpotblock': {
             'target': {
                 'type': 'CLASS',

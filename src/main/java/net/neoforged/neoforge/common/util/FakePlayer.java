@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Set;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.Connection;
+import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.ChatType;
@@ -21,7 +22,7 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
 import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
 import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
-import net.minecraft.network.protocol.game.ServerboundBlockEntityTagQuery;
+import net.minecraft.network.protocol.game.ServerboundBlockEntityTagQueryPacket;
 import net.minecraft.network.protocol.game.ServerboundChangeDifficultyPacket;
 import net.minecraft.network.protocol.game.ServerboundChatAckPacket;
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
@@ -33,7 +34,7 @@ import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
-import net.minecraft.network.protocol.game.ServerboundEntityTagQuery;
+import net.minecraft.network.protocol.game.ServerboundEntityTagQueryPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundJigsawGeneratePacket;
 import net.minecraft.network.protocol.game.ServerboundLockDifficultyPacket;
@@ -121,7 +122,7 @@ public class FakePlayer extends ServerPlayer {
         private static final Connection DUMMY_CONNECTION = new FakeConnection();
 
         public FakePlayerNetHandler(MinecraftServer server, ServerPlayer player) {
-            super(server, DUMMY_CONNECTION, player, CommonListenerCookie.createInitial(player.getGameProfile()));
+            super(server, DUMMY_CONNECTION, player, CommonListenerCookie.createInitial(player.getGameProfile(), false));
         }
 
         @Override
@@ -185,10 +186,10 @@ public class FakePlayer extends ServerPlayer {
         public void handleEditBook(ServerboundEditBookPacket packet) {}
 
         @Override
-        public void handleEntityTagQuery(ServerboundEntityTagQuery packet) {}
+        public void handleEntityTagQuery(ServerboundEntityTagQueryPacket packet) {}
 
         @Override
-        public void handleBlockEntityTagQuery(ServerboundBlockEntityTagQuery packet) {}
+        public void handleBlockEntityTagQuery(ServerboundBlockEntityTagQueryPacket packet) {}
 
         @Override
         public void handleMovePlayer(ServerboundMovePlayerPacket packet) {}
@@ -215,7 +216,7 @@ public class FakePlayer extends ServerPlayer {
         public void handlePaddleBoat(ServerboundPaddleBoatPacket packet) {}
 
         @Override
-        public void onDisconnect(Component message) {}
+        public void onDisconnect(DisconnectionDetails details) {}
 
         @Override
         public void send(Packet<?> packet) {}
@@ -308,6 +309,6 @@ public class FakePlayer extends ServerPlayer {
         }
 
         @Override
-        public void setListener(PacketListener listener) {}
+        public void setListenerForServerboundHandshake(PacketListener listener) {}
     }
 }

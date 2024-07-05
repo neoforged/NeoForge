@@ -7,6 +7,8 @@ package net.neoforged.neoforge.network.payload;
 
 import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -19,12 +21,10 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkComponent(ResourceLocation id, Optional<String> version) {
-    public ModdedNetworkComponent(FriendlyByteBuf buf) {
-        this(buf.readResourceLocation(), buf.readOptional(FriendlyByteBuf::readUtf));
-    }
-
-    public void write(FriendlyByteBuf buf) {
-        buf.writeResourceLocation(id);
-        buf.writeOptional(version, FriendlyByteBuf::writeUtf);
-    }
+    public static final StreamCodec<FriendlyByteBuf, ModdedNetworkComponent> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC,
+            ModdedNetworkComponent::id,
+            ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8),
+            ModdedNetworkComponent::version,
+            ModdedNetworkComponent::new);
 }

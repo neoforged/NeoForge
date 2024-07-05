@@ -23,6 +23,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -41,6 +42,7 @@ import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.EventListenerGroupImpl;
+import net.neoforged.testframework.impl.GameTestHelperFactory;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.ReflectionUtils;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
@@ -95,14 +97,14 @@ public abstract class AbstractTest implements Test {
         if (template != null) {
             var size = EmptyTemplate.Size.parse(template.value());
             if (template.floor()) {
-                templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size + "_floor");
+                templateFromPattern = ResourceLocation.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size + "_floor");
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.withSize(size.length(), size.height() + 1, size.width())
                             .fill(0, 0, 0, size.length() - 1, 0, size.width() - 1, Blocks.IRON_BLOCK.defaultBlockState())
                             .build());
                 }
             } else {
-                templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size);
+                templateFromPattern = ResourceLocation.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size);
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.empty(size.length(), size.height(), size.width()));
                 }
@@ -111,10 +113,11 @@ public abstract class AbstractTest implements Test {
 
         this.gameTestData = new GameTestData(
                 gameTest.batch().equals("defaultBatch") ? null : gameTest.batch(),
-                gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
+                gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : ResourceLocation.fromNamespaceAndPath(gameTest.templateNamespace(), gameTest.template()).toString(),
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
-                StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()));
+                StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()),
+                gameTest.skyAccess());
     }
 
     protected String gameTestTemplate(GameTest gameTest) {
@@ -190,11 +193,11 @@ public abstract class AbstractTest implements Test {
     }
 
     protected void fail(String message) {
-        updateStatus(new Status(Result.FAILED, message), null);
+        updateStatus(Status.failed(message), null);
     }
 
     protected void pass() {
-        updateStatus(new Status(Result.PASSED, ""), null);
+        updateStatus(Status.passed(), null);
     }
 
     public final void requestConfirmation(Player player, Component message) {
@@ -254,17 +257,26 @@ public abstract class AbstractTest implements Test {
             disabledListeners.forEach(Runnable::run);
         }
 
-        private final List<Consumer<ExtendedGameTestHelper>> onGameTest = new ArrayList<>();
+        private final List<Consumer<GameTestHelper>> onGameTest = new ArrayList<>();
 
         @Override
         public void onGameTest(Consumer<ExtendedGameTestHelper> consumer) {
-            this.onGameTest.add(consumer);
+            onGameTest(ExtendedGameTestHelper::new, consumer);
+        }
+
+        @Override
+        public <T extends GameTestHelper> void onGameTest(Class<T> helperType, final Consumer<T> consumer) {
+            onGameTest(GameTestHelperFactory.forType(helperType), consumer);
+        }
+
+        private <T extends GameTestHelper> void onGameTest(GameTestHelperFactory<T> factory, final Consumer<T> consumer) {
+            this.onGameTest.add(helper -> consumer.accept(factory.apply(helper.testInfo)));
         }
 
         @Override
         public RegistrationHelper registrationHelper(String modId) {
-            final var helper = new RegistrationHelperImpl(modId, framework.container());
-            helper.register(framework.modEventBus());
+            final var helper = new RegistrationHelperImpl(modId);
+            helper.register(framework.modEventBus(), framework.container());
             return helper;
         }
 
@@ -309,17 +321,19 @@ public abstract class AbstractTest implements Test {
                 public void testStructureLoaded(GameTestInfo pTestInfo) {}
 
                 @Override
-                public void testPassed(GameTestInfo pTestInfo) {
+                public void testPassed(GameTestInfo pTestInfo, GameTestRunner runner) {
                     isDuringGameTest = false;
                 }
 
                 @Override
-                public void testFailed(GameTestInfo pTestInfo) {
+                public void testFailed(GameTestInfo pTestInfo, GameTestRunner runner) {
                     isDuringGameTest = false;
                 }
+
+                @Override
+                public void testAddedForRerun(GameTestInfo p_320937_, GameTestInfo p_320294_, GameTestRunner p_320147_) {}
             });
-            final var actualHelper = new ExtendedGameTestHelper(helper.testInfo);
-            this.onGameTest.forEach(test -> test.accept(actualHelper));
+            this.onGameTest.forEach(test -> test.accept(helper));
         }
 
         @Override

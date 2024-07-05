@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.util;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -16,7 +17,7 @@ public class DummySavedData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(final CompoundTag compound) {
+    public CompoundTag save(final CompoundTag compound, HolderLookup.Provider provider) {
         // NOOP
         return null;
     }

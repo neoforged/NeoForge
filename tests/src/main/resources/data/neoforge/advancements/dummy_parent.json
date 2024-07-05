@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:dirt"
+      "id": "minecraft:dirt"
     },
     "title": {
       "translate": "block.minecraft.dirt"

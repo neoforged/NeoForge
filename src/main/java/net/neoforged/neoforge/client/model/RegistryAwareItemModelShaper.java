@@ -51,6 +51,6 @@ public class RegistryAwareItemModelShaper extends ItemModelShaper {
 
     public ModelResourceLocation getLocation(ItemStack stack) {
         ModelResourceLocation location = locations.get(stack.getItem());
-        return location == null ? ModelBakery.MISSING_MODEL_LOCATION : location;
+        return location == null ? ModelBakery.MISSING_MODEL_VARIANT : location;
     }
 }

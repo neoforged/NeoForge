@@ -14,14 +14,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(FlowerPotTest.MODID)
-@Mod.EventBusSubscriber(modid = FlowerPotTest.MODID, bus = Bus.MOD)
+@EventBusSubscriber(modid = FlowerPotTest.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class FlowerPotTest {
     static final String MODID = "flower_pot_test";
     static final String BLOCK_ID = "test_flower_pot";

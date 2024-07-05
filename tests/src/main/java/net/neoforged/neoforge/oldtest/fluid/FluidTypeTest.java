@@ -91,10 +91,10 @@ public class FluidTypeTest {
         @Override
         public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
             consumer.accept(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation STILL = new ResourceLocation("block/water_still"),
-                        FLOW = new ResourceLocation("block/water_flow"),
-                        OVERLAY = new ResourceLocation("block/obsidian"),
-                        VIEW_OVERLAY = new ResourceLocation("textures/block/obsidian.png");
+                private static final ResourceLocation STILL = ResourceLocation.withDefaultNamespace("block/water_still"),
+                        FLOW = ResourceLocation.withDefaultNamespace("block/water_flow"),
+                        OVERLAY = ResourceLocation.withDefaultNamespace("block/obsidian"),
+                        VIEW_OVERLAY = ResourceLocation.withDefaultNamespace("textures/block/obsidian.png");
 
                 @Override
                 public ResourceLocation getStillTexture() {
@@ -148,8 +148,8 @@ public class FluidTypeTest {
                     if (pos.getY() == 100) {
                         vertexConsumer = new VertexConsumerWrapper(vertexConsumer) {
                             @Override
-                            public VertexConsumer color(int r, int g, int b, int a) {
-                                return super.color(b, g, r, a);
+                            public VertexConsumer setColor(int r, int g, int b, int a) {
+                                return super.setColor(b, g, r, a);
                             }
                         };
                     }
@@ -162,8 +162,8 @@ public class FluidTypeTest {
     });
     private static final DeferredHolder<Fluid, FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
     private static final DeferredHolder<Fluid, Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
-    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID, BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
-    private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID.get(), BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
+    private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
 
     public FluidTypeTest(IEventBus modEventBus) {
         if (ENABLE) {

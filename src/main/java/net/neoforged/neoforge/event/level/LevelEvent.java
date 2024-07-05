@@ -24,6 +24,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is fired whenever an event involving a {@link LevelAccessor} occurs.
@@ -133,19 +134,16 @@ public abstract class LevelEvent extends Event {
     public static class PotentialSpawns extends LevelEvent implements ICancellableEvent {
         private final MobCategory mobcategory;
         private final BlockPos pos;
-        private final List<MobSpawnSettings.SpawnerData> list;
-        private final List<MobSpawnSettings.SpawnerData> view;
+        @Nullable
+        private List<MobSpawnSettings.SpawnerData> list;
+        private List<MobSpawnSettings.SpawnerData> view;
 
         public PotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedRandomList<MobSpawnSettings.SpawnerData> oldList) {
             super(level);
             this.pos = pos;
             this.mobcategory = category;
-            if (!oldList.isEmpty())
-                this.list = new ArrayList<>(oldList.unwrap());
-            else
-                this.list = new ArrayList<>();
-
-            this.view = Collections.unmodifiableList(list);
+            this.list = null;
+            this.view = oldList.unwrap();
         }
 
         /**
@@ -169,12 +167,20 @@ public abstract class LevelEvent extends Event {
             return view;
         }
 
+        private void makeList() {
+            if (list == null) {
+                list = new ArrayList<>(view);
+                view = Collections.unmodifiableList(list);
+            }
+        }
+
         /**
          * Appends a SpawnerData entry to the spawn list.
          *
          * @param data SpawnerData entry to be appended to the spawn list.
          */
         public void addSpawnerData(MobSpawnSettings.SpawnerData data) {
+            makeList();
             list.add(data);
         }
 
@@ -186,6 +192,7 @@ public abstract class LevelEvent extends Event {
          *             {@return {@code true} if the spawn list contained the specified element.}
          */
         public boolean removeSpawnerData(MobSpawnSettings.SpawnerData data) {
+            makeList();
             return list.remove(data);
         }
     }

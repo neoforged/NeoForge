@@ -5,22 +5,27 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import com.mojang.datafixers.util.Either;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.data.loot.packs.VanillaLootTableProvider;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -34,7 +39,7 @@ import net.minecraft.world.level.storage.loot.entries.EntryGroup;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.entries.SequentialEntry;
 import net.minecraft.world.level.storage.loot.entries.TagEntry;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
@@ -45,22 +50,22 @@ import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemConditi
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.common.loot.CanToolPerformAction;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Currently used only for replacing shears item to shears_dig tool action
+ * Currently used only for replacing shears item to shears_dig item ability
  */
 public final class NeoForgeLootTableProvider extends LootTableProvider {
     private final List<Function<LootItemCondition, LootItemCondition.Builder>> conditionReplacers = new ArrayList<>();
 
-    public NeoForgeLootTableProvider(PackOutput packOutput) {
-        super(packOutput, Set.of(), VanillaLootTableProvider.create(packOutput).getTables());
+    public NeoForgeLootTableProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> provider) {
+        super(packOutput, Set.of(), VanillaLootTableProvider.create(packOutput, provider).getTables(), provider);
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationcontext) {
+    protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
         // Do not validate against all registered loot tables
     }
 
@@ -68,18 +73,18 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
     public List<LootTableProvider.SubProviderEntry> getTables() {
         replaceLootItemCondition(condition -> {
             if (condition instanceof MatchTool matchTool && checkMatchTool(matchTool, Items.SHEARS)) {
-                return CanToolPerformAction.canToolPerformAction(ToolActions.SHEARS_DIG);
+                return CanItemPerformAbility.canItemPerformAbility(ItemAbilities.SHEARS_DIG);
             }
             return null;
         });
         return super.getTables().stream().map(entry -> {
             // Provides new sub provider with filtering only changed loot tables and replacing condition item to condition tag
-            return new LootTableProvider.SubProviderEntry(() -> replaceAndFilterChangesOnly(entry.provider().get()), entry.paramSet());
+            return new LootTableProvider.SubProviderEntry((provider) -> replaceAndFilterChangesOnly(entry.provider().apply(provider)), entry.paramSet());
         }).collect(Collectors.toList());
     }
 
     private LootTableSubProvider replaceAndFilterChangesOnly(LootTableSubProvider subProvider) {
-        return newConsumer -> subProvider.generate((resourceLocation, builder) -> {
+        return (newConsumer) -> subProvider.generate((resourceLocation, builder) -> {
             LootTable.Builder newBuilder = findAndReplaceInLootTableBuilder(builder);
             if (newBuilder != null) {
                 newConsumer.accept(resourceLocation, newBuilder);
@@ -198,9 +203,9 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
                 TagKey<Item> tag = getPrivateValue(TagEntry.class, tagEntry, "tag");
                 boolean expand = getPrivateValue(TagEntry.class, tagEntry, "expand");
                 builder = expand ? TagEntry.expandTag(tag) : TagEntry.tagContents(tag);
-            } else if (singleton instanceof LootTableReference reference) {
-                ResourceLocation name = getPrivateValue(LootTableReference.class, reference, "name");
-                builder = LootTableReference.lootTableReference(name);
+            } else if (singleton instanceof NestedLootTable reference) {
+                Either<ResourceKey<LootTable>, LootTable> contents = getPrivateValue(NestedLootTable.class, reference, "contents");
+                builder = contents.map(NestedLootTable::lootTableReference, NestedLootTable::inlineLootTable);
             } else {
                 throw new IllegalStateException("Unknown LootPoolSingletonContainer type: " + singleton.getClass().getName());
             }

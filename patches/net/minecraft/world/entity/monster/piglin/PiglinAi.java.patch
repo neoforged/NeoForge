@@ -9,7 +9,7 @@
              if (p_34869_ && flag) {
                  throwItems(p_34868_, getBarterResponseItems(p_34868_));
              } else if (!flag) {
-@@ -465,7 +_,7 @@
+@@ -461,7 +_,7 @@
              return false;
          } else if (isAdmiringDisabled(p_34858_) && p_34858_.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
              return false;
@@ -18,7 +18,7 @@
              return isNotHoldingLovedItemInOffHand(p_34858_);
          } else {
              boolean flag = p_34858_.canAddToInventory(p_34859_);
-@@ -560,7 +_,7 @@
+@@ -551,7 +_,7 @@
      }
  
      protected static boolean canAdmire(Piglin p_34910_, ItemStack p_34911_) {
@@ -27,16 +27,16 @@
      }
  
      protected static void wasHurtBy(Piglin p_34838_, LivingEntity p_34839_) {
-@@ -650,7 +_,7 @@
+@@ -641,7 +_,7 @@
      public static boolean isWearingGold(LivingEntity p_34809_) {
-         for(ItemStack itemstack : p_34809_.getArmorSlots()) {
+         for (ItemStack itemstack : p_34809_.getArmorAndBodyArmorSlots()) {
              Item item = itemstack.getItem();
--            if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial() == ArmorMaterials.GOLD) {
+-            if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial().is(ArmorMaterials.GOLD)) {
 +            if (itemstack.makesPiglinsNeutral(p_34809_)) {
                  return true;
              }
          }
-@@ -803,7 +_,7 @@
+@@ -792,7 +_,7 @@
      }
  
      private static boolean hasCrossbow(LivingEntity p_34919_) {

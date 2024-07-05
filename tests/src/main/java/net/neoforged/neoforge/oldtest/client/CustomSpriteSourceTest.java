@@ -7,7 +7,7 @@ package net.neoforged.neoforge.oldtest.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -50,12 +50,12 @@ public class CustomSpriteSourceTest {
     private static SpriteSourceType tasLoader;
 
     private void registerTextureAtlasSpriteLoaders(RegisterSpriteSourceTypesEvent event) {
-        tasLoader = event.register(new ResourceLocation(MOD_ID, "custom_sprite_source"), CustomSpriteSource.CODEC);
+        tasLoader = event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_sprite_source"), CustomSpriteSource.CODEC);
     }
 
     private record CustomSpriteSource(ResourceLocation id) implements SpriteSource {
         private static final Logger LOGGER = LogUtils.getLogger();
-        private static final Codec<CustomSpriteSource> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+        private static final MapCodec<CustomSpriteSource> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 ResourceLocation.CODEC.fieldOf("id").forGetter(CustomSpriteSource::id)).apply(inst, CustomSpriteSource::new));
 
         @Override

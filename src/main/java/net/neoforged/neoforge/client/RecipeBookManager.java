@@ -65,7 +65,7 @@ public final class RecipeBookManager {
         var typeCategories = new HashMap<RecipeBookType, ImmutableList<RecipeBookCategories>>();
         var recipeCategoryLookups = new HashMap<RecipeType<?>, Function<RecipeHolder<?>, RecipeBookCategories>>();
         var event = new RegisterRecipeBookCategoriesEvent(aggregateCategories, typeCategories, recipeCategoryLookups);
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(event);
         AGGREGATE_CATEGORIES.putAll(aggregateCategories);
         TYPE_CATEGORIES.putAll(typeCategories);
         RECIPE_CATEGORY_LOOKUPS.putAll(recipeCategoryLookups);

@@ -123,7 +123,7 @@ public class FarmlandWaterManager {
     }
 
     static void removeTickets(ChunkAccess chunk) {
-        ChunkTicketManager<Vec3> ticketManager = getTicketManager(chunk.getPos(), chunk.getWorldForge());
+        ChunkTicketManager<Vec3> ticketManager = getTicketManager(chunk.getPos(), chunk.getLevel());
         if (ticketManager != null) {
             if (DEBUG)
                 LOGGER.info("FarmlandWaterManager: got tickets {} at {} before", ticketManager.getTickets().size(), ticketManager.pos);

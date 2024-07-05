@@ -16,8 +16,8 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -27,11 +27,11 @@ public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
     static final String BLOCK_ID = "test_block";
 
-    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(new ResourceLocation(MOD_ID, BLOCK_ID));
+    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(ResourceLocation.fromNamespaceAndPath(MOD_ID, BLOCK_ID));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {
-        e.register(Registries.BLOCK, helper -> helper.register(BLOCK_ID, new Block(Block.Properties.of()) {
+        e.register(Registries.BLOCK, helper -> helper.register(BB_BLOCK.getId(), new Block(Block.Properties.of()) {
             @Override
             public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
                 return entity instanceof Boat ? 2 : super.getFriction(state, level, pos, entity);
@@ -41,7 +41,7 @@ public class SlipperinessTest {
 
     @SubscribeEvent
     public static void registerItems(RegisterEvent e) {
-        e.register(Registries.ITEM, helper -> helper.register(BLOCK_ID, new BlockItem(BB_BLOCK.get(), new Item.Properties())));
+        e.register(Registries.ITEM, helper -> helper.register(BB_BLOCK.getId(), new BlockItem(BB_BLOCK.get(), new Item.Properties())));
     }
 
     /*

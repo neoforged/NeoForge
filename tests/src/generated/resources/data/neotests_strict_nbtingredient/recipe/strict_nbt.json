@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "type": "testframework:test_enabled",
+      "base": {
+        "type": "neoforge:components",
+        "components": {
+          "minecraft:damage": 4
+        },
+        "items": "minecraft:diamond_pickaxe",
+        "strict": true
+      },
+      "framework": "neotests:tests",
+      "testId": "strictNBTIngredient"
+    },
+    {
+      "item": "minecraft:acacia_planks"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:acacia_boat"
+  }
+}

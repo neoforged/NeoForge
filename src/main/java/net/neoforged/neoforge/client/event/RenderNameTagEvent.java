@@ -10,36 +10,28 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.bus.api.Event;
-import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Fired before an entity renderer renders the nameplate of an entity.
- *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and {@linkplain Event.HasResult has a result}.</p>
- * <ul>
- * <li>{@link Event.Result#ALLOW} - the nameplate will be forcibly rendered.</li>
- * <li>{@link Event.Result#DEFAULT} - the vanilla logic will be used.</li>
- * <li>{@link Event.Result#DENY} - the nameplate will not be rendered.</li>
- * </ul>
- *
- * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+ * This event is fired before an entity renderer renders the nameplate of an entity.
+ * It allows reacting to the render and controlling if the name plate will be rendered, as well as changing the rendered name.
+ * <p>
+ * This event is only fired on the logical client.
  *
  * @see EntityRenderer
  */
-@Event.HasResult
 public class RenderNameTagEvent extends EntityEvent {
-    private Component nameplateContent;
     private final Component originalContent;
     private final EntityRenderer<?> entityRenderer;
     private final PoseStack poseStack;
     private final MultiBufferSource multiBufferSource;
     private final int packedLight;
     private final float partialTick;
+
+    private Component content;
+    private TriState canRender = TriState.DEFAULT;
 
     @ApiStatus.Internal
     public RenderNameTagEvent(Entity entity, Component content, EntityRenderer<?> entityRenderer, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, float partialTick) {
@@ -54,19 +46,36 @@ public class RenderNameTagEvent extends EntityEvent {
     }
 
     /**
+     * Changes if the {@link #getContent() content} of the nameplate will be rendered.
+     * {@link TriState#TRUE} and {@link TriState#FALSE} will allow/deny the render respectively.
+     * <p>
+     * Using {@link TriState#DEFAULT} will cause the name to render if {@link EntityRenderer#shouldShowName} returns true.
+     */
+    public void setCanRender(TriState canRender) {
+        this.canRender = canRender;
+    }
+
+    /**
+     * {@return if the nameplate will render or not}
+     */
+    public TriState canRender() {
+        return canRender;
+    }
+
+    /**
      * Sets the new text on the nameplate.
      *
      * @param contents the new text
      */
     public void setContent(Component contents) {
-        this.nameplateContent = contents;
+        this.content = contents;
     }
 
     /**
-     * {@return the text on the nameplate that will be rendered, if the event is not {@link Result#DENY DENIED}}
+     * {@return the text on the nameplate that will be rendered}
      */
     public Component getContent() {
-        return this.nameplateContent;
+        return this.content;
     }
 
     /**

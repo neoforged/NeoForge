@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.world;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -42,16 +43,16 @@ public class StructureModifierTest {
     public static final String MODID = "structure_modifiers_test";
     public static final boolean ENABLED = true;
     public static final String TEST = "test";
-    public static final ResourceLocation ADD_SPAWNS_TO_STRUCTURE_RL = new ResourceLocation(MODID, TEST);
+    public static final ResourceLocation ADD_SPAWNS_TO_STRUCTURE_RL = ResourceLocation.fromNamespaceAndPath(MODID, TEST);
     public static final String MODIFY_STRONGHOLD = "modify_stronghold";
-    public static final ResourceLocation MODIFY_STRONGHOLD_RL = new ResourceLocation(MODID, MODIFY_STRONGHOLD);
+    public static final ResourceLocation MODIFY_STRONGHOLD_RL = ResourceLocation.fromNamespaceAndPath(MODID, MODIFY_STRONGHOLD);
 
     public StructureModifierTest(IEventBus modBus) {
         if (!ENABLED)
             return;
 
         // Serializer types can be registered via deferred register.
-        final DeferredRegister<Codec<? extends StructureModifier>> serializers = DeferredRegister.create(Keys.STRUCTURE_MODIFIER_SERIALIZERS, MODID);
+        final DeferredRegister<MapCodec<? extends StructureModifier>> serializers = DeferredRegister.create(Keys.STRUCTURE_MODIFIER_SERIALIZERS, MODID);
         serializers.register(modBus);
         serializers.register(TEST, TestModifier::makeCodec);
 
@@ -83,7 +84,7 @@ generator.addProvider(event.includeServer(), structureModifierProvider);*/
     public record TestModifier(HolderSet<Structure> structures, MobCategory category, MobSpawnSettings.SpawnerData spawn)
             implements StructureModifier {
 
-        private static final DeferredHolder<Codec<? extends StructureModifier>, Codec<? extends StructureModifier>> SERIALIZER = DeferredHolder.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, ADD_SPAWNS_TO_STRUCTURE_RL);
+        private static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<? extends StructureModifier>> SERIALIZER = DeferredHolder.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, ADD_SPAWNS_TO_STRUCTURE_RL);
         @Override
         public void modify(Holder<Structure> structure, Phase phase, Builder builder) {
             if (phase == Phase.ADD && this.structures.contains(structure)) {
@@ -94,12 +95,12 @@ generator.addProvider(event.includeServer(), structureModifierProvider);*/
         }
 
         @Override
-        public Codec<? extends StructureModifier> codec() {
+        public MapCodec<? extends StructureModifier> codec() {
             return SERIALIZER.get();
         }
 
-        private static Codec<TestModifier> makeCodec() {
-            return RecordCodecBuilder.create(builder -> builder.group(
+        private static MapCodec<TestModifier> makeCodec() {
+            return RecordCodecBuilder.mapCodec(builder -> builder.group(
                     STRUCTURE_LIST_CODEC.fieldOf("structures").forGetter(TestModifier::structures),
                     MobCategory.CODEC.fieldOf("category").forGetter(TestModifier::category),
                     MobSpawnSettings.SpawnerData.CODEC.fieldOf("spawn").forGetter(TestModifier::spawn)).apply(builder, TestModifier::new));

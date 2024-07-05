@@ -27,7 +27,7 @@
          boolean flag = false;
          BlockPos.MutableBlockPos blockpos$mutableblockpos = p_52066_.mutable();
  
-         for(Direction direction : Direction.values()) {
+         for (Direction direction : Direction.values()) {
              BlockState blockstate = p_52065_.getBlockState(blockpos$mutableblockpos);
 -            if (direction != Direction.DOWN || canSolidify(blockstate)) {
 +            if (direction != Direction.DOWN || state.canBeHydrated(p_52065_, p_52066_, blockstate.getFluidState(), blockpos$mutableblockpos)) {
@@ -41,7 +41,7 @@
 @@ -76,7 +_,7 @@
  
      @Override
-     public BlockState updateShape(BlockState p_52074_, Direction p_52075_, BlockState p_52076_, LevelAccessor p_52077_, BlockPos p_52078_, BlockPos p_52079_) {
+     protected BlockState updateShape(BlockState p_52074_, Direction p_52075_, BlockState p_52076_, LevelAccessor p_52077_, BlockPos p_52078_, BlockPos p_52079_) {
 -        return touchesLiquid(p_52077_, p_52078_)
 +        return touchesLiquid(p_52077_, p_52078_, p_52074_)
              ? this.concrete.defaultBlockState()

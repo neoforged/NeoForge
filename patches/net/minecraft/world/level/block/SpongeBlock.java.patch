@@ -16,4 +16,4 @@
 +                        if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_294069_)) {
                              return false;
                          } else {
-                             Block block = blockstate.getBlock();
+                             if (blockstate.getBlock() instanceof BucketPickup bucketpickup

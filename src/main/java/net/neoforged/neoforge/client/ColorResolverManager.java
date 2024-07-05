@@ -23,7 +23,7 @@ public final class ColorResolverManager {
     @ApiStatus.Internal
     public static void init() {
         ImmutableList.Builder<ColorResolver> builder = ImmutableList.builder();
-        ModLoader.get().postEvent(new RegisterColorHandlersEvent.ColorResolvers(builder));
+        ModLoader.postEvent(new RegisterColorHandlersEvent.ColorResolvers(builder));
         colorResolvers = builder.build();
     }
 

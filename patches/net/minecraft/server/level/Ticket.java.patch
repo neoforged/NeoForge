@@ -15,29 +15,29 @@
      }
  
      public int compareTo(Ticket<?> p_9432_) {
-@@ -32,18 +_,18 @@
-             return false;
+@@ -31,18 +_,18 @@
          } else {
-             Ticket<?> ticket = (Ticket)p_9439_;
--            return this.ticketLevel == ticket.ticketLevel && Objects.equals(this.type, ticket.type) && Objects.equals(this.key, ticket.key);
-+            return this.ticketLevel == ticket.ticketLevel && Objects.equals(this.type, ticket.type) && Objects.equals(this.key, ticket.key) && this.forceTicks == ticket.forceTicks;
+             return !(p_9439_ instanceof Ticket<?> ticket)
+                 ? false
+-                : this.ticketLevel == ticket.ticketLevel && Objects.equals(this.type, ticket.type) && Objects.equals(this.key, ticket.key);
++                : this.ticketLevel == ticket.ticketLevel && Objects.equals(this.type, ticket.type) && Objects.equals(this.key, ticket.key) && this.forceTicks == ticket.forceTicks;
          }
      }
  
      @Override
      public int hashCode() {
 -        return Objects.hash(this.type, this.ticketLevel, this.key);
-+        return Objects.hash(this.type, this.ticketLevel, this.key, forceTicks);
++        return Objects.hash(this.type, this.ticketLevel, this.key, this.forceTicks);
      }
  
      @Override
      public String toString() {
 -        return "Ticket[" + this.type + " " + this.ticketLevel + " (" + this.key + ")] at " + this.createdTick;
-+        return "Ticket[" + this.type + " " + this.ticketLevel + " (" + this.key + ")] at " + this.createdTick + " force ticks " + forceTicks;
++        return "Ticket[" + this.type + " " + this.ticketLevel + " (" + this.key + ")] at " + this.createdTick + " force ticks " + this.forceTicks;
      }
  
      public TicketType<T> getType() {
-@@ -61,5 +_,12 @@
+@@ -60,5 +_,12 @@
      protected boolean timedOut(long p_9435_) {
          long i = this.type.timeout();
          return i != 0L && p_9435_ - this.createdTick > i;

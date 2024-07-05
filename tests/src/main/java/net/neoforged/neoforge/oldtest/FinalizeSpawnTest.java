@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 
 @Mod(FinalizeSpawnTest.ID)
 public class FinalizeSpawnTest {
@@ -17,7 +17,7 @@ public class FinalizeSpawnTest {
     public static final boolean ENABLED = false;
 
     public FinalizeSpawnTest() {
-        NeoForge.EVENT_BUS.addListener(MobSpawnEvent.FinalizeSpawn.class, event -> {
+        NeoForge.EVENT_BUS.addListener(FinalizeSpawnEvent.class, event -> {
             var entityType = EntityType.WANDERING_TRADER;
             var entity = event.getEntity();
 

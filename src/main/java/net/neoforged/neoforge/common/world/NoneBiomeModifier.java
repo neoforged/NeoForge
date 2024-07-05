@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.world;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -19,7 +19,7 @@ public class NoneBiomeModifier implements BiomeModifier {
     }
 
     @Override
-    public Codec<? extends BiomeModifier> codec() {
+    public MapCodec<? extends BiomeModifier> codec() {
         return NeoForgeMod.NONE_BIOME_MODIFIER_TYPE.get();
     }
 }

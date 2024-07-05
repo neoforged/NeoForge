@@ -20,7 +20,7 @@
      private final Map<RecipeBookType, RecipeBookSettings.TypeSettings> states;
  
      private RecipeBookSettings(Map<RecipeBookType, RecipeBookSettings.TypeSettings> p_12730_) {
-@@ -159,5 +_,9 @@
+@@ -158,5 +_,9 @@
          public String toString() {
              return "[open=" + this.open + ", filtering=" + this.filtering + "]";
          }

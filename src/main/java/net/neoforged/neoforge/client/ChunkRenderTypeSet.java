@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -51,7 +50,9 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
         var bits = new BitSet();
         for (RenderType renderType : renderTypes) {
             int index = renderType.getChunkLayerId();
-            Preconditions.checkArgument(index >= 0, "Attempted to create chunk render type set with a non-chunk render type: " + renderType);
+            if (index < 0) {
+                throw new IllegalArgumentException("Attempted to create chunk render type set with a non-chunk render type: " + renderType);
+            }
             bits.set(index);
         }
         return new ChunkRenderTypeSet(bits);

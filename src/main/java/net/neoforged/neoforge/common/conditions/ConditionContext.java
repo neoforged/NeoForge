@@ -14,9 +14,11 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagManager;
+import org.jetbrains.annotations.Nullable;
 
 public class ConditionContext implements ICondition.IContext {
     private final TagManager tagManager;
+    @Nullable
     // TODO 1.20.5: Clear loaded tags after reloads complete. The context object may leak, but we still want to invalidate it.
     private Map<ResourceKey<?>, Map<ResourceLocation, Collection<Holder<?>>>> loadedTags = null;
 

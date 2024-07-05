@@ -65,7 +65,7 @@ public class ExtendedBlockModelDeserializer extends BlockModel.Deserializer {
 
         if (jsonobject.has("render_type")) {
             var renderTypeHintName = GsonHelper.getAsString(jsonobject, "render_type");
-            model.customData.setRenderTypeHint(new ResourceLocation(renderTypeHintName));
+            model.customData.setRenderTypeHint(ResourceLocation.parse(renderTypeHintName));
         }
 
         if (jsonobject.has("visibility")) {
@@ -87,10 +87,10 @@ public class ExtendedBlockModelDeserializer extends BlockModel.Deserializer {
         boolean optional;
         if (object.get("loader").isJsonObject()) {
             JsonObject loaderObj = object.getAsJsonObject("loader");
-            name = new ResourceLocation(GsonHelper.getAsString(loaderObj, "id"));
+            name = ResourceLocation.parse(GsonHelper.getAsString(loaderObj, "id"));
             optional = GsonHelper.getAsBoolean(loaderObj, "optional", false);
         } else {
-            name = new ResourceLocation(GsonHelper.getAsString(object, "loader"));
+            name = ResourceLocation.parse(GsonHelper.getAsString(object, "loader"));
             optional = false;
         }
 

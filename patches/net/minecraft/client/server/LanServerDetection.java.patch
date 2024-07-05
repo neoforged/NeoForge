@@ -21,4 +21,4 @@
 +                }
                  boolean flag = false;
  
-                 for(LanServer lanserver : this.servers) {
+                 for (LanServer lanserver : this.servers) {

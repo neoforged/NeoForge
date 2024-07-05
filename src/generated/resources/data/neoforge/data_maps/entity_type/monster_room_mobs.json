@@ -1,0 +1,13 @@
+{
+  "values": {
+    "minecraft:skeleton": {
+      "weight": 100
+    },
+    "minecraft:spider": {
+      "weight": 100
+    },
+    "minecraft:zombie": {
+      "weight": 200
+    }
+  }
+}

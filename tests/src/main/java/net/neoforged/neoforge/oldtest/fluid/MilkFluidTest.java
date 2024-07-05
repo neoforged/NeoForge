@@ -29,7 +29,7 @@ public class MilkFluidTest {
     private static void useMilk(PlayerInteractEvent event) {
         ItemStack stack = event.getItemStack();
         if (stack.getItem() == Items.MILK_BUCKET) {
-            FluidUtil.getFluidContained(stack).ifPresent((fluid) -> event.getEntity().displayClientMessage(Component.literal("Contains ").append(fluid.getDisplayName()), true));
+            FluidUtil.getFluidContained(stack).ifPresent((fluid) -> event.getEntity().displayClientMessage(Component.literal("Contains ").append(fluid.getHoverName()), true));
         }
     }
 }

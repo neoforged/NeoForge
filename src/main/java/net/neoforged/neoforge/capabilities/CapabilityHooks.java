@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.capabilities;
 
 import java.util.List;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -20,9 +21,10 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.items.VanillaHopperItemHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.items.wrapper.EntityArmorInvWrapper;
@@ -30,7 +32,6 @@ import net.neoforged.neoforge.items.wrapper.EntityHandsInvWrapper;
 import net.neoforged.neoforge.items.wrapper.ForwardingItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
-import net.neoforged.neoforge.items.wrapper.ShulkerItemStackInvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -45,7 +46,7 @@ public class CapabilityHooks {
         initialized = true;
 
         var event = new RegisterCapabilitiesEvent();
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.postEventWrapContainerInModOrder(event);
 
         initFinished = true;
     }
@@ -95,7 +96,8 @@ public class CapabilityHooks {
                 BlockEntityType.CHISELED_BOOKSHELF,
                 BlockEntityType.DISPENSER,
                 BlockEntityType.DROPPER,
-                BlockEntityType.JUKEBOX);
+                BlockEntityType.JUKEBOX,
+                BlockEntityType.CRAFTER);
         for (var type : nonSidedVanillaContainers) {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new InvWrapper(container));
         }
@@ -130,7 +132,7 @@ public class CapabilityHooks {
         if (NeoForgeMod.MILK.isBound()) {
             event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
         }
-        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ShulkerItemStackInvWrapper(stack),
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ComponentItemHandler(stack, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
                 Items.BLUE_SHULKER_BOX,
@@ -151,20 +153,20 @@ public class CapabilityHooks {
     }
 
     public static void invalidateCapsOnChunkLoad(ChunkEvent.Load event) {
-        if (!event.getLevel().isClientSide()) {
-            ((ServerLevel) event.getLevel()).invalidateCapabilities(event.getChunk().getPos());
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.invalidateCapabilities(event.getChunk().getPos());
         }
     }
 
     public static void invalidateCapsOnChunkUnload(ChunkEvent.Unload event) {
-        if (!event.getLevel().isClientSide()) {
-            ((ServerLevel) event.getLevel()).invalidateCapabilities(event.getChunk().getPos());
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.invalidateCapabilities(event.getChunk().getPos());
         }
     }
 
-    public static void cleanCapabilityListenerReferencesOnTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && event.side.isServer()) {
-            ((ServerLevel) event.level).cleanCapabilityListenerReferences();
+    public static void cleanCapabilityListenerReferencesOnTick(LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.cleanCapabilityListenerReferences();
         }
     }
 }

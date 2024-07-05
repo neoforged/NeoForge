@@ -22,6 +22,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -47,13 +48,8 @@ public abstract class BakedModelWrapper<T extends BakedModel> implements BakedMo
     }
 
     @Override
-    public boolean useAmbientOcclusion(BlockState state) {
-        return originalModel.useAmbientOcclusion(state);
-    }
-
-    @Override
-    public boolean useAmbientOcclusion(BlockState state, RenderType renderType) {
-        return originalModel.useAmbientOcclusion(state, renderType);
+    public TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
+        return originalModel.useAmbientOcclusion(state, data, renderType);
     }
 
     @Override

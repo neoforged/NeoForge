@@ -1,19 +1,19 @@
 --- a/net/minecraft/server/packs/repository/BuiltInPackSource.java
 +++ b/net/minecraft/server/packs/repository/BuiltInPackSource.java
-@@ -105,4 +_,18 @@
+@@ -106,4 +_,18 @@
              }
          };
      }
 +
-+    public static Pack.ResourcesSupplier fromName(final Function<String, PackResources> onName) {
++    public static Pack.ResourcesSupplier fromName(final Function<PackLocationInfo, PackResources> onName) {
 +        return new Pack.ResourcesSupplier() {
 +            @Override
-+            public PackResources openPrimary(String p_294636_) {
++            public PackResources openPrimary(PackLocationInfo p_294636_) {
 +                return onName.apply(p_294636_);
 +            }
 +
 +            @Override
-+            public PackResources openFull(String p_251717_, Pack.Info p_294956_) {
++            public PackResources openFull(PackLocationInfo p_251717_, Pack.Metadata p_294956_) {
 +                return onName.apply(p_251717_);
 +            }
 +        };

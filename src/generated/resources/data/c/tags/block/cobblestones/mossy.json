@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:mossy_cobblestone",
+    {
+      "id": "#forge:cobblestone/mossy",
+      "required": false
+    }
+  ]
+}

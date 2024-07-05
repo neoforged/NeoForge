@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -65,7 +66,7 @@ public interface BiomeModifier {
     /**
      * @return the codec which serializes and deserializes this biome modifier
      */
-    Codec<? extends BiomeModifier> codec();
+    MapCodec<? extends BiomeModifier> codec();
 
     enum Phase {
         /**

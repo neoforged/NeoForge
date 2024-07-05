@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -39,8 +40,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
 
     private final int barWidth;
     private final int barLeft;
-    private final int bgColorFrom;
-    private final int bgColorTo;
     private final int barBgColor;
     private final int barColor;
     private final int barBorderColor;
@@ -69,33 +68,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     }
 
     /**
-     * @param client   the minecraft instance this ScrollPanel should use
-     * @param width    the width
-     * @param height   the height
-     * @param top      the offset from the top (y coord)
-     * @param left     the offset from the left (x coord)
-     * @param border   the size of the border
-     * @param barWidth the width of the scroll bar
-     */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth) {
-        this(client, width, height, top, left, border, barWidth, 0xC0101010, 0xD0101010);
-    }
-
-    /**
-     * @param client   the minecraft instance this ScrollPanel should use
-     * @param width    the width
-     * @param height   the height
-     * @param top      the offset from the top (y coord)
-     * @param left     the offset from the left (x coord)
-     * @param border   the size of the border
-     * @param barWidth the width of the scroll bar
-     * @param bgColor  the color for the background
-     */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int bgColor) {
-        this(client, width, height, top, left, border, barWidth, bgColor, bgColor);
-    }
-
-    /**
      * @param client      the minecraft instance this ScrollPanel should use
      * @param width       the width
      * @param height      the height
@@ -106,8 +78,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param bgColorFrom the start color for the background gradient
      * @param bgColorTo   the end color for the background gradient
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int bgColorFrom, int bgColorTo) {
-        this(client, width, height, top, left, border, barWidth, bgColorFrom, bgColorTo, 0xFF000000, 0xFF808080, 0xFFC0C0C0);
+    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth) {
+        this(client, width, height, top, left, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0);
     }
 
     /**
@@ -126,7 +98,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param barColor       the color for the scroll bar handle
      * @param barBorderColor the border color for the scroll bar handle
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int bgColorFrom, int bgColorTo, int barBgColor, int barColor, int barBorderColor) {
+    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int barBgColor, int barColor, int barBorderColor) {
         this.client = client;
         this.width = width;
         this.height = height;
@@ -137,8 +109,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         this.barLeft = this.left + this.width - barWidth;
         this.border = border;
         this.barWidth = barWidth;
-        this.bgColorFrom = bgColorFrom;
-        this.bgColorTo = bgColorTo;
         this.barBgColor = barBgColor;
         this.barColor = barColor;
         this.barBorderColor = barBorderColor;
@@ -150,22 +120,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
     protected void drawBackground(GuiGraphics guiGraphics, Tesselator tess, float partialTick) {
-        BufferBuilder worldr = tess.getBuilder();
-
-        if (this.client.level != null) {
-            this.drawGradientRect(guiGraphics, this.left, this.top, this.right, this.bottom, bgColorFrom, bgColorTo);
-        } else // Draw dark dirt background
-        {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
-            final float texScale = 32.0F;
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            worldr.vertex(this.left, this.bottom, 0.0D).uv(this.left / texScale, (this.bottom + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.right, this.bottom, 0.0D).uv(this.right / texScale, (this.bottom + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.right, this.top, 0.0D).uv(this.right / texScale, (this.top + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.left, this.top, 0.0D).uv(this.left / texScale, (this.top + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            tess.end();
-        }
+        Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.left, this.top, 0f, 0f, this.width, this.height);
     }
 
     /**
@@ -269,7 +224,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Tesselator tess = Tesselator.getInstance();
-        BufferBuilder worldr = tess.getBuilder();
 
         double scale = client.getWindow().getGuiScale();
         RenderSystem.enableScissor((int) (left * scale), (int) (client.getWindow().getHeight() - (bottom * scale)),
@@ -297,36 +251,36 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
             int barBgBlue = this.barBgColor & 0xff;
 
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, this.bottom, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, this.bottom, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, this.top, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft, this.top, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            tess.end();
+            BufferBuilder worldr = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            worldr.addVertex(barLeft, this.bottom, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            worldr.addVertex(barLeft + barWidth, this.bottom, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            worldr.addVertex(barLeft + barWidth, this.top, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            worldr.addVertex(barLeft, this.top, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            BufferUploader.drawWithShader(worldr.buildOrThrow());
 
             int barAlpha = this.barColor >> 24 & 0xff;
             int barRed = this.barColor >> 16 & 0xff;
             int barGreen = this.barColor >> 8 & 0xff;
             int barBlue = this.barColor & 0xff;
 
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, barTop + barHeight, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, barTop + barHeight, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, barTop, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft, barTop, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            tess.end();
+            worldr = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            worldr.addVertex(barLeft, barTop + barHeight, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            worldr.addVertex(barLeft + barWidth, barTop + barHeight, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            worldr.addVertex(barLeft + barWidth, barTop, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            worldr.addVertex(barLeft, barTop, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            BufferUploader.drawWithShader(worldr.buildOrThrow());
 
             int barBorderAlpha = this.barBorderColor >> 24 & 0xff;
             int barBorderRed = this.barBorderColor >> 16 & 0xff;
             int barBorderGreen = this.barBorderColor >> 8 & 0xff;
             int barBorderBlue = this.barBorderColor & 0xff;
 
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, barTop + barHeight - 1, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth - 1, barTop + barHeight - 1, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth - 1, barTop, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft, barTop, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            tess.end();
+            worldr = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            worldr.addVertex(barLeft, barTop + barHeight - 1, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            worldr.addVertex(barLeft + barWidth - 1, barTop + barHeight - 1, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            worldr.addVertex(barLeft + barWidth - 1, barTop, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            worldr.addVertex(barLeft, barTop, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            BufferUploader.drawWithShader(worldr.buildOrThrow());
         }
 
         RenderSystem.disableBlend();

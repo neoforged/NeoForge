@@ -27,7 +27,7 @@
 @@ -146,8 +_,8 @@
              return null;
          } else {
-             for(AdvancementTabType advancementtabtype : AdvancementTabType.values()) {
+             for (AdvancementTabType advancementtabtype : AdvancementTabType.values()) {
 -                if (p_97173_ < advancementtabtype.getMax()) {
 -                    return new AdvancementTab(p_97171_, p_97172_, advancementtabtype, p_97173_, p_301072_, optional.get());
 +                if ((p_97173_ % AdvancementTabType.MAX_TABS) < advancementtabtype.getMax()) {

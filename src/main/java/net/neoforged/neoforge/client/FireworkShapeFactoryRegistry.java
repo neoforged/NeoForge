@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.particle.FireworkParticles;
-import net.minecraft.world.item.FireworkRocketItem;
+import net.minecraft.world.item.component.FireworkExplosion;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,18 +16,18 @@ import org.jetbrains.annotations.Nullable;
  * So sometime during your client initalization call register.
  */
 public class FireworkShapeFactoryRegistry {
-    private static final Map<FireworkRocketItem.Shape, Factory> factories = new HashMap<>();
+    private static final Map<FireworkExplosion.Shape, Factory> factories = new HashMap<>();
 
     public interface Factory {
         void build(FireworkParticles.Starter starter, boolean trail, boolean flicker, int[] colors, int[] fadeColors);
     }
 
-    public static void register(FireworkRocketItem.Shape shape, Factory factory) {
+    public static void register(FireworkExplosion.Shape shape, Factory factory) {
         factories.put(shape, factory);
     }
 
     @Nullable
-    public static Factory get(FireworkRocketItem.Shape shape) {
+    public static Factory get(FireworkExplosion.Shape shape) {
         return factories.get(shape);
     }
 }

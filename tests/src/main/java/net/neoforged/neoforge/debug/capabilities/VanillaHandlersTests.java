@@ -115,25 +115,25 @@ public class VanillaHandlersTests {
         helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
         helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, () -> "Expected level 3 cauldron");
 
-        helper.assertTrue(wrapper.getFluidInTank(0).equals(new FluidStack(Fluids.WATER, 1000)), "Expected 1000 water");
+        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.WATER, 1000)), "Expected 1000 water");
 
         // Try to empty as well
         helper.assertTrue(wrapper.drain(new FluidStack(Fluids.LAVA, 1000), EXECUTE).isEmpty(), "Cannot drain lava");
         helper.assertTrue(wrapper.drain(new FluidStack(Fluids.WATER, 999), EXECUTE).isEmpty(), "Cannot drain less than 1000 water");
-        helper.assertTrue(wrapper.drain(new FluidStack(Fluids.WATER, 1000), EXECUTE).equals(new FluidStack(Fluids.WATER, 1000)), "Expected drain of 1000 water");
+        helper.assertTrue(FluidStack.matches(wrapper.drain(new FluidStack(Fluids.WATER, 1000), EXECUTE), new FluidStack(Fluids.WATER, 1000)), "Expected drain of 1000 water");
 
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
         helper.assertTrue(wrapper.getFluidInTank(0).isEmpty(), "Expected empty handler");
 
         // Try lava cauldron
         helper.setBlock(cauldronPos, Blocks.LAVA_CAULDRON);
-        helper.assertTrue(wrapper.getFluidInTank(0).equals(new FluidStack(Fluids.LAVA, 1000)), "Expected 1000 lava");
-        helper.assertTrue(wrapper.drain(1000, EXECUTE).equals(new FluidStack(Fluids.LAVA, 1000)), "Expected drain of 1000 lava");
+        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.LAVA, 1000)), "Expected 1000 lava");
+        helper.assertTrue(FluidStack.matches(wrapper.drain(1000, EXECUTE), new FluidStack(Fluids.LAVA, 1000)), "Expected drain of 1000 lava");
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
 
         // Try partial water filling
         helper.setBlock(cauldronPos, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
-        helper.assertTrue(wrapper.getFluidInTank(0).equals(new FluidStack(Fluids.WATER, 666)), "Expected 666 water");
+        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.WATER, 666)), "Expected 666 water");
         helper.assertTrue(wrapper.drain(1000, EXECUTE).isEmpty(), "Expected no water drain from partial cauldron");
         helper.assertTrue(wrapper.fill(new FluidStack(Fluids.WATER, 1000), EXECUTE) == 0, "Expected no water fill to partial cauldron");
 

@@ -23,7 +23,7 @@ jobs:
     if: true
     uses: neoforged/actions/.github/workflows/publish-prs.yml@main
     with:
-      artifact_base_path: net/neoforged/neoforge/
+      artifact_base_path: net/neoforged/neoforge/|net/neoforged/testframework/
       uploader_workflow_name: Build PRs
     secrets:
       PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}

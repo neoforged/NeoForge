@@ -39,14 +39,14 @@ public class GameTestHooks {
 
     @SuppressWarnings("deprecation")
     public static void registerGametests() {
-        if (!registeredGametests && isGametestEnabled() && ModLoader.isLoadingStateValid()) {
+        if (!registeredGametests && isGametestEnabled() && !ModLoader.hasErrors()) {
             Set<String> enabledNamespaces = getEnabledNamespaces();
             LOGGER.info("Enabled Gametest Namespaces: {}", enabledNamespaces);
 
             Set<Method> gameTestMethods = new HashSet<>();
             RegisterGameTestsEvent event = new RegisterGameTestsEvent(gameTestMethods);
 
-            ModLoader.get().postEvent(event);
+            ModLoader.postEvent(event);
 
             ModList.get().getAllScanData().stream()
                     .map(ModFileScanData::getAnnotations)

@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/particle/ItemPickupParticle.java
++++ b/net/minecraft/client/particle/ItemPickupParticle.java
+@@ -103,4 +_,11 @@
+         this.targetYOld = this.targetY;
+         this.targetZOld = this.targetZ;
+     }
++
++    // Neo: Computing a bounding box for the pickup animation is annoying to patch in, and probably slower than
++    // always rendering it
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(float partialTicks) {
++        return net.minecraft.world.phys.AABB.INFINITE;
++    }
+ }

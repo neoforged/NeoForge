@@ -1,19 +1,43 @@
 --- a/net/minecraft/world/level/block/ChorusFlowerBlock.java
 +++ b/net/minecraft/world/level/block/ChorusFlowerBlock.java
-@@ -65,7 +_,7 @@
+@@ -65,10 +_,13 @@
          BlockPos blockpos = p_220982_.above();
          if (p_220981_.isEmptyBlock(blockpos) && blockpos.getY() < p_220981_.getMaxBuildHeight()) {
              int i = p_220980_.getValue(AGE);
 -            if (i < 5) {
-+            if (i < 5 && net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_220981_, blockpos, p_220980_, true)) {
++            if (i < 5 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_220981_, blockpos, p_220980_, true)) {
                  boolean flag = false;
                  boolean flag1 = false;
                  BlockState blockstate = p_220981_.getBlockState(p_220982_.below());
++                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_220981_, p_220982_.below(), Direction.UP, p_220980_);
++                if (!soilDecision.isDefault()) flag = soilDecision.isTrue();
++                else
+                 if (blockstate.is(Blocks.END_STONE)) {
+                     flag = true;
+                 } else if (blockstate.is(this.plant)) {
+@@ -77,6 +_,8 @@
+                     for (int k = 0; k < 4; k++) {
+                         BlockState blockstate1 = p_220981_.getBlockState(p_220982_.below(j + 1));
+                         if (!blockstate1.is(this.plant)) {
++                            net.neoforged.neoforge.common.util.TriState soilDecision2 = blockstate1.canSustainPlant(p_220981_, p_220982_.below(j + 1), Direction.UP, p_220980_);
++                            if (!soilDecision2.isDefault()) flag1 = soilDecision2.isTrue();
+                             if (blockstate1.is(Blocks.END_STONE)) {
+                                 flag1 = true;
+                             }
 @@ -123,6 +_,7 @@
                  } else {
                      this.placeDeadFlower(p_220981_, p_220982_);
                  }
-+                net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_220981_, p_220982_, p_220980_);
++                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_220981_, p_220982_, p_220980_);
              }
          }
      }
+@@ -159,6 +_,8 @@
+     @Override
+     protected boolean canSurvive(BlockState p_51683_, LevelReader p_51684_, BlockPos p_51685_) {
+         BlockState blockstate = p_51684_.getBlockState(p_51685_.below());
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51684_, p_51685_.below(), Direction.UP, p_51683_);
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
+         if (!blockstate.is(this.plant) && !blockstate.is(Blocks.END_STONE)) {
+             if (!blockstate.isAir()) {
+                 return false;

@@ -27,8 +27,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -113,7 +114,7 @@ public class CustomHeadTest {
         }
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Bus.MOD, modid = MODID)
+    @EventBusSubscriber(value = Dist.CLIENT, bus = Bus.MOD, modid = MODID)
     private static class ClientEvents {
         static final ModelLayerLocation BLAZE_HEAD_LAYER = new ModelLayerLocation(BLAZE_HEAD.getId(), "main");
 
@@ -129,7 +130,7 @@ public class CustomHeadTest {
 
         @SubscribeEvent
         static void clientSetupEvent(FMLClientSetupEvent event) {
-            event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, new ResourceLocation("textures/entity/blaze.png")));
+            event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png")));
         }
 
         @SubscribeEvent

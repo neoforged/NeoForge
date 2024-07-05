@@ -11,8 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -37,7 +37,7 @@ public class BakedModelRenderable implements IRenderable<BakedModelRenderable.Co
      *
      * @see ModelEvent.RegisterAdditional
      */
-    public static BakedModelRenderable of(ResourceLocation model) {
+    public static BakedModelRenderable of(ModelResourceLocation model) {
         return of(Minecraft.getInstance().getModelManager().getModel(model));
     }
 

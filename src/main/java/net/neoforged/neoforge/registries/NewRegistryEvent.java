@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.mojang.serialization.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -71,6 +71,6 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
         if (BuiltInRegistries.REGISTRY.containsKey(registryName))
             throw new IllegalStateException("Attempted duplicate registration of registry " + registryName);
 
-        ((WritableRegistry) BuiltInRegistries.REGISTRY).register(registry.key(), registry, Lifecycle.stable());
+        ((WritableRegistry) BuiltInRegistries.REGISTRY).register(registry.key(), registry, RegistrationInfo.BUILT_IN);
     }
 }

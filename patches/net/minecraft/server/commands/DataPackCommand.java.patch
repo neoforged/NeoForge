@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/DataPackCommand.java
 +++ b/net/minecraft/server/commands/DataPackCommand.java
-@@ -183,7 +_,7 @@
+@@ -186,7 +_,7 @@
      private static int listEnabledPacks(CommandSourceStack p_136866_) {
          PackRepository packrepository = p_136866_.getServer().getPackRepository();
          packrepository.reload();

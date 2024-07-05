@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.model.pipeline;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
@@ -14,22 +13,21 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 /**
  * Vertex pipeline element that remaps incoming data to another format.
  */
 public class RemappingVertexPipeline implements VertexConsumer {
-    private static final Set<VertexFormatElement> KNOWN_ELEMENTS = Set.of(DefaultVertexFormat.ELEMENT_POSITION,
-            DefaultVertexFormat.ELEMENT_COLOR, DefaultVertexFormat.ELEMENT_UV, DefaultVertexFormat.ELEMENT_UV1,
-            DefaultVertexFormat.ELEMENT_UV2, DefaultVertexFormat.ELEMENT_NORMAL, DefaultVertexFormat.ELEMENT_PADDING);
+    private static final Set<VertexFormatElement> KNOWN_ELEMENTS = Set.of(VertexFormatElement.POSITION,
+            VertexFormatElement.COLOR, VertexFormatElement.UV, VertexFormatElement.UV1,
+            VertexFormatElement.UV2, VertexFormatElement.NORMAL);
     private static final int[] EMPTY_INT_ARRAY = new int[0];
 
     private final VertexConsumer parent;
     private final VertexFormat targetFormat;
 
-    private final Vector3d position = new Vector3d();
+    private final Vector3f position = new Vector3f();
     private final Vector3f normal = new Vector3f();
     private final int[] color = new int[] { 255, 255, 255, 255 };
     private final float[] uv0 = new float[] { 0, 0 };
@@ -46,26 +44,26 @@ public class RemappingVertexPipeline implements VertexConsumer {
         this.miscElementIds = new IdentityHashMap<>();
         int i = 0;
         for (var element : targetFormat.getElements())
-            if (element.getUsage() != VertexFormatElement.Usage.PADDING && !KNOWN_ELEMENTS.contains(element))
+            if (!KNOWN_ELEMENTS.contains(element))
                 this.miscElementIds.put(element, i++);
         this.misc = new int[i][];
         Arrays.fill(this.misc, EMPTY_INT_ARRAY);
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
+    public VertexConsumer addVertex(float x, float y, float z) {
         position.set(x, y, z);
         return this;
     }
 
     @Override
-    public VertexConsumer normal(float x, float y, float z) {
+    public VertexConsumer setNormal(float x, float y, float z) {
         normal.set(x, y, z);
         return this;
     }
 
     @Override
-    public VertexConsumer color(int r, int g, int b, int a) {
+    public VertexConsumer setColor(int r, int g, int b, int a) {
         color[0] = r;
         color[1] = g;
         color[2] = b;
@@ -74,21 +72,21 @@ public class RemappingVertexPipeline implements VertexConsumer {
     }
 
     @Override
-    public VertexConsumer uv(float u, float v) {
+    public VertexConsumer setUv(float u, float v) {
         uv0[0] = u;
         uv0[1] = v;
         return this;
     }
 
     @Override
-    public VertexConsumer overlayCoords(int u, int v) {
+    public VertexConsumer setUv1(int u, int v) {
         uv1[0] = u;
         uv1[1] = v;
         return this;
     }
 
     @Override
-    public VertexConsumer uv2(int u, int v) {
+    public VertexConsumer setUv2(int u, int v) {
         uv2[0] = u;
         uv2[1] = v;
         return this;
@@ -102,39 +100,27 @@ public class RemappingVertexPipeline implements VertexConsumer {
         return this;
     }
 
-    @Override
     public void endVertex() {
+        // TODO 1.21: The interface no longer includes an endVertex method because
+        // vanilla now automatically ends the vertex either when a new vertex is started
+        // or a finishing method like build is called
         for (var element : targetFormat.getElements()) {
-            // Ignore padding
-            if (element.getUsage() == VertexFormatElement.Usage.PADDING)
-                continue;
 
             // Try to match and output any of the supported elements, and if that fails, treat as misc
-            if (element.equals(DefaultVertexFormat.ELEMENT_POSITION))
-                parent.vertex(position.x, position.y, position.z);
-            else if (element.equals(DefaultVertexFormat.ELEMENT_NORMAL))
-                parent.normal(normal.x(), normal.y(), normal.z());
-            else if (element.equals(DefaultVertexFormat.ELEMENT_COLOR))
-                parent.color(color[0], color[1], color[2], color[3]);
-            else if (element.equals(DefaultVertexFormat.ELEMENT_UV0))
-                parent.uv(uv0[0], uv0[1]);
-            else if (element.equals(DefaultVertexFormat.ELEMENT_UV1))
-                parent.overlayCoords(uv1[0], uv1[1]);
-            else if (element.equals(DefaultVertexFormat.ELEMENT_UV2))
-                parent.uv2(uv2[0], uv2[1]);
+            if (element.equals(VertexFormatElement.POSITION))
+                parent.addVertex(position.x, position.y, position.z);
+            else if (element.equals(VertexFormatElement.NORMAL))
+                parent.setNormal(normal.x(), normal.y(), normal.z());
+            else if (element.equals(VertexFormatElement.COLOR))
+                parent.setColor(color[0], color[1], color[2], color[3]);
+            else if (element.equals(VertexFormatElement.UV0))
+                parent.setUv(uv0[0], uv0[1]);
+            else if (element.equals(VertexFormatElement.UV1))
+                parent.setUv1(uv1[0], uv1[1]);
+            else if (element.equals(VertexFormatElement.UV2))
+                parent.setUv2(uv2[0], uv2[1]);
             else
                 parent.misc(element, misc[miscElementIds.get(element)]);
         }
-        parent.endVertex();
-    }
-
-    @Override
-    public void defaultColor(int r, int g, int b, int a) {
-        parent.defaultColor(r, g, b, a);
-    }
-
-    @Override
-    public void unsetDefaultColor() {
-        parent.unsetDefaultColor();
     }
 }

@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.ExtraCodecs;
 
 public record DataMapEntry<T>(T value, boolean replace) {
     private DataMapEntry(T value) {
@@ -20,10 +19,10 @@ public record DataMapEntry<T>(T value, boolean replace) {
     }
 
     public static <T> Codec<DataMapEntry<T>> codec(DataMapType<?, T> type) {
-        return ExtraCodecs.either(
+        return Codec.either(
                 RecordCodecBuilder.<DataMapEntry<T>>create(i -> i.group(
                         type.codec().fieldOf("value").forGetter(DataMapEntry::value),
-                        ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(DataMapEntry::replace)).apply(i, DataMapEntry::new)),
+                        Codec.BOOL.optionalFieldOf("replace", false).forGetter(DataMapEntry::replace)).apply(i, DataMapEntry::new)),
                 type.codec()).xmap(e -> e.map(Function.identity(), DataMapEntry::new), entry -> entry.replace() ? Either.left(entry) : Either.right(entry.value()));
     }
 
@@ -38,7 +37,7 @@ public record DataMapEntry<T>(T value, boolean replace) {
             if (attachment instanceof AdvancedDataMapType<R, T, ?> advanced) {
                 return RecordCodecBuilder.create(in -> in.group(
                         tagOrValue.fieldOf("key").forGetter(Removal::key),
-                        ExtraCodecs.strictOptionalField((Codec<DataMapValueRemover<R, T>>) advanced.remover(), "remover").forGetter(Removal::remover)).apply(in, Removal::new));
+                        ((Codec<DataMapValueRemover<R, T>>) advanced.remover()).optionalFieldOf("remover").forGetter(Removal::remover)).apply(in, Removal::new));
             }
             return RecordCodecBuilder.create(inst -> inst
                     .group(tagOrValue.fieldOf("key").forGetter(Removal::key))

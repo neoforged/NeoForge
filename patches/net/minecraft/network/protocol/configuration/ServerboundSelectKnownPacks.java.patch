@@ -1,0 +1,12 @@
+--- a/net/minecraft/network/protocol/configuration/ServerboundSelectKnownPacks.java
++++ b/net/minecraft/network/protocol/configuration/ServerboundSelectKnownPacks.java
+@@ -10,7 +_,8 @@
+ 
+ public record ServerboundSelectKnownPacks(List<KnownPack> knownPacks) implements Packet<ServerConfigurationPacketListener> {
+     public static final StreamCodec<ByteBuf, ServerboundSelectKnownPacks> STREAM_CODEC = StreamCodec.composite(
+-        KnownPack.STREAM_CODEC.apply(ByteBufCodecs.list(64)), ServerboundSelectKnownPacks::knownPacks, ServerboundSelectKnownPacks::new
++        // Neo: increase cap on number of KnownPacks to sync back to the server. This is safe even on vanilla connections, as no more packs will be synced here than were received in the S2C packet
++        KnownPack.STREAM_CODEC.apply(ByteBufCodecs.list(1024)), ServerboundSelectKnownPacks::knownPacks, ServerboundSelectKnownPacks::new
+     );
+ 
+     @Override

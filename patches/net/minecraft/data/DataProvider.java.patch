@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/DataProvider.java
 +++ b/net/minecraft/data/DataProvider.java
-@@ -22,6 +_,8 @@
+@@ -24,6 +_,8 @@
  
  public interface DataProvider {
      ToIntFunction<String> FIXED_ORDER_FIELDS = Util.make(new Object2IntOpenHashMap<>(), p_236070_ -> {

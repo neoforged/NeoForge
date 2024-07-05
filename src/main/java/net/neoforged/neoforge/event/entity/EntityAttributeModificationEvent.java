@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,17 +40,17 @@ public class EntityAttributeModificationEvent extends Event implements IModBusEv
                         .collect(Collectors.toList()));
     }
 
-    public void add(EntityType<? extends LivingEntity> entityType, Attribute attribute, double value) {
+    public void add(EntityType<? extends LivingEntity> entityType, Holder<Attribute> attribute, double value) {
         AttributeSupplier.Builder attributes = entityAttributes.computeIfAbsent(entityType,
                 (type) -> new AttributeSupplier.Builder());
         attributes.add(attribute, value);
     }
 
-    public void add(EntityType<? extends LivingEntity> entityType, Attribute attribute) {
-        add(entityType, attribute, attribute.getDefaultValue());
+    public void add(EntityType<? extends LivingEntity> entityType, Holder<Attribute> attribute) {
+        add(entityType, attribute, attribute.value().getDefaultValue());
     }
 
-    public boolean has(EntityType<? extends LivingEntity> entityType, Attribute attribute) {
+    public boolean has(EntityType<? extends LivingEntity> entityType, Holder<Attribute> attribute) {
         AttributeSupplier globalMap = DefaultAttributes.getSupplier(entityType);
         return globalMap.hasAttribute(attribute) || (entityAttributes.get(entityType) != null && entityAttributes.get(entityType).hasAttribute(attribute));
     }

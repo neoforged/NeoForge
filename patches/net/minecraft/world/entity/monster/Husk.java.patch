@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Husk.java
 +++ b/net/minecraft/world/entity/monster/Husk.java
-@@ -72,6 +_,7 @@
+@@ -70,6 +_,7 @@
  
      @Override
      protected void doUnderWaterConversion() {

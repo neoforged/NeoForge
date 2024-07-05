@@ -13,9 +13,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -51,7 +51,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * This event is fired whenever a player attempts to harvest a block in
      * {@link Player#hasCorrectToolForDrops(BlockState)}.<br>
      * <br>
-     * This event is fired via the {@link EventHooks#doPlayerHarvestCheck(Player, BlockState, boolean)}.<br>
+     * This event is fired via the {@link EventHooks#doPlayerHarvestCheck(Player, BlockState, BlockGetter, BlockPos)}.<br>
      * <br>
      * {@link #state} contains the {@link BlockState} that is being checked for harvesting. <br>
      * {@link #success} contains the boolean value for whether the Block will be successfully harvested. <br>
@@ -64,16 +64,28 @@ public abstract class PlayerEvent extends LivingEvent {
      **/
     public static class HarvestCheck extends PlayerEvent {
         private final BlockState state;
+        private final BlockGetter level;
+        private final BlockPos pos;
         private boolean success;
 
-        public HarvestCheck(Player player, BlockState state, boolean success) {
+        public HarvestCheck(Player player, BlockState state, BlockGetter level, BlockPos pos, boolean success) {
             super(player);
             this.state = state;
+            this.level = level;
+            this.pos = pos;
             this.success = success;
         }
 
         public BlockState getTargetBlock() {
             return this.state;
+        }
+
+        public BlockGetter getLevel() {
+            return level;
+        }
+
+        public BlockPos getPos() {
+            return pos;
         }
 
         public boolean canHarvest() {
@@ -375,31 +387,6 @@ public abstract class PlayerEvent extends LivingEvent {
         }
     }
 
-    public static class ItemPickupEvent extends PlayerEvent {
-        /**
-         * Original EntityItem with current remaining stack size
-         */
-        private final ItemEntity originalEntity;
-        /**
-         * Clone item stack, containing the item and amount picked up
-         */
-        private final ItemStack stack;
-
-        public ItemPickupEvent(Player player, ItemEntity entPickedUp, ItemStack stack) {
-            super(player);
-            this.originalEntity = entPickedUp;
-            this.stack = stack;
-        }
-
-        public ItemStack getStack() {
-            return stack;
-        }
-
-        public ItemEntity getOriginalEntity() {
-            return originalEntity;
-        }
-    }
-
     public static class ItemCraftedEvent extends PlayerEvent {
         private final ItemStack crafting;
         private final Container craftMatrix;
@@ -454,7 +441,7 @@ public abstract class PlayerEvent extends LivingEvent {
 
         /**
          * Did this respawn event come from the player conquering the end?
-         * 
+         *
          * @return if this respawn was because the player conquered the end
          */
         public boolean isEndConquered() {

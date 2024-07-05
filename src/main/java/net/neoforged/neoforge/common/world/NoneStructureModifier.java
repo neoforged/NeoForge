@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.world;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -19,7 +19,7 @@ public class NoneStructureModifier implements StructureModifier {
     }
 
     @Override
-    public Codec<? extends StructureModifier> codec() {
+    public MapCodec<? extends StructureModifier> codec() {
         return NeoForgeMod.NONE_STRUCTURE_MODIFIER_TYPE.get();
     }
 }

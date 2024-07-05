@@ -5,26 +5,23 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
-import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * This event is fired from {@link PhantomSpawner#tick}, once per player, when phantoms would attempt to be spawned.<br>
- * This event is not fired for spectating players.
+ * This event is fired from {@link PhantomSpawner#tick} when phantoms would attempt to be spawned, with one event fired per player.
+ * It allows controlling if a spawn attempt will be made for the particular player, but cannot guarantee that a Phantom will be spawned.
  * <p>
- * This event is fired before any per-player checks (but <i>after<i/> {@link Player#isSpectator()}), but after all global checks.<br>
- * The behavior of {@link PhantomSpawner} is determined by the result of this event.<br>
- * See {@link #setResult} for documentation.<br>
- * <p>
- * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
- * 
- * @see PlayerSpawnPhantomsEvent#setResult for the effects of each result.
+ * This event is only fired on the logical server.
  */
-@Event.HasResult
 public class PlayerSpawnPhantomsEvent extends PlayerEvent {
     private int phantomsToSpawn;
+    private Result result = Result.DEFAULT;
 
     public PlayerSpawnPhantomsEvent(Player player, int phantomsToSpawn) {
         super(player);
@@ -48,15 +45,63 @@ public class PlayerSpawnPhantomsEvent extends PlayerEvent {
     }
 
     /**
-     * The result of this event controls if phantoms will be spawned.<br>
-     * <ul>
-     * <li>If the result is {@link Event.Result#ALLOW}, phantoms will always be spawned;</li>
-     * <li>If the result is {@link Event.Result#DENY}, phantoms will never be spawned;</li>
-     * <li>If the result is {@link Event.Result#DEFAULT}, vanilla checks will be run to determine if the spawn may occur.</li>
-     * </ul>
+     * Changes the result of this event, which controls if a spawn attempt will be made.
+     * 
+     * @see PlayerSpawnPhantomsEvent.Result
      */
-    @Override
-    public void setResult(Event.Result result) {
-        super.setResult(result);
+    public void setResult(Result result) {
+        this.result = result;
+    }
+
+    /**
+     * Returns the result of this event, which controls if a spawn attempt will be made.
+     * 
+     * @see PlayerSpawnPhantomsEvent.Result
+     */
+    public Result getResult() {
+        return result;
+    }
+
+    /**
+     * Checks if a spawn attempt should be made by checking the current result and evaluating the vanilla conditions if necessary.
+     * <p>
+     * Does not check {@link DifficultyInstance#isHarderThan(float)} or the player's {@link Stats#TIME_SINCE_REST}, as these are checked later.
+     * 
+     * @param level The level that phantoms are being spawned in (the same level as the player)
+     * @param pos   The block position of the player
+     * @return true if a spawn attempt should be made
+     */
+    public boolean shouldSpawnPhantoms(ServerLevel level, BlockPos pos) {
+        if (this.getResult() == Result.ALLOW) {
+            return true;
+        }
+        return this.getResult() == Result.DEFAULT && (!level.dimensionType().hasSkyLight() || pos.getY() >= level.getSeaLevel() && level.canSeeSky(pos));
+    }
+
+    /**
+     * Controls if the spawn attempt for the group of phantoms will occur.
+     * <p>
+     * This does not guarantee the spawn attempt will be successful, since this only controls pre-checks
+     * before the spawn position is selected and {@link NaturalSpawner#isValidEmptySpawnBlock} is checked.
+     */
+    public static enum Result {
+        /**
+         * A spawn attempt will always be made, bypassing all rules described in {@link #DEFAULT}.
+         */
+        ALLOW,
+
+        /**
+         * A spawn attempt will only be made if the dimension does not have skylight
+         * <b>or</b> the player's Y-level is above sea level and they can see the sky.
+         * <p>
+         * Additionally, the local difficulty must be higher than a random threshold in [0, 3)
+         * and a random number check based on the player's {@link Stats#TIME_SINCE_REST} must succeed.
+         */
+        DEFAULT,
+
+        /**
+         * A spawn attempt will never be made.
+         */
+        DENY;
     }
 }

@@ -1,9 +1,0 @@
-tasks.named('licenseFormat').get().mustRunAfter generatePackageInfos
-tasks.named('spotlessApply').get().mustRunAfter generatePackageInfos
-tasks.named('spotlessApply').get().mustRunAfter tasks.named('licenseFormat').get()
-
-tasks.register('applyAllFormatting', Task) {
-    dependsOn generatePackageInfos
-    dependsOn tasks.named('licenseFormat').get()
-    dependsOn tasks.named('spotlessApply').get()
-}

@@ -6,12 +6,12 @@
 package net.neoforged.neoforge.common.conditions;
 
 import com.google.common.base.Joiner;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 
 public record OrCondition(List<ICondition> values) implements ICondition {
-    public static final Codec<OrCondition> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<OrCondition> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
                             LIST_CODEC.fieldOf("values").forGetter(OrCondition::values))
@@ -28,7 +28,7 @@ public record OrCondition(List<ICondition> values) implements ICondition {
     }
 
     @Override
-    public Codec<? extends ICondition> codec() {
+    public MapCodec<? extends ICondition> codec() {
         return CODEC;
     }
 

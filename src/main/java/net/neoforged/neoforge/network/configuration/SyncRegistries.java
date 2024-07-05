@@ -19,14 +19,14 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record SyncRegistries() implements ICustomConfigurationTask {
-    private static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "sync_registries");
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "sync_registries");
     public static final Type TYPE = new Type(ID);
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
         sender.accept(new FrozenRegistrySyncStartPayload(RegistryManager.getRegistryNamesForSyncToClient()));
         RegistryManager.generateRegistryPackets(false).forEach(sender);
-        sender.accept(new FrozenRegistrySyncCompletedPayload());
+        sender.accept(FrozenRegistrySyncCompletedPayload.INSTANCE);
     }
 
     @Override

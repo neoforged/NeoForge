@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
 +++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
-@@ -116,7 +_,7 @@
+@@ -115,7 +_,7 @@
          this.initFilterButtonTextures();
          this.tabButtons.clear();
  
--        for(RecipeBookCategories recipebookcategories : RecipeBookCategories.getCategories(this.menu.getRecipeBookType())) {
+-        for (RecipeBookCategories recipebookcategories : RecipeBookCategories.getCategories(this.menu.getRecipeBookType())) {
 +        for(RecipeBookCategories recipebookcategories : this.menu.getRecipeBookCategories()) {
              this.tabButtons.add(new RecipeBookTabButton(recipebookcategories));
          }
  
-@@ -295,7 +_,7 @@
+@@ -297,7 +_,7 @@
          }
  
          if (itemstack != null && this.minecraft.screen != null) {

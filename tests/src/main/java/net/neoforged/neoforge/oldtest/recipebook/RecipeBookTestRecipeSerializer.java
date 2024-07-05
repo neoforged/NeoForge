@@ -5,29 +5,24 @@
 
 package net.neoforged.neoforge.oldtest.recipebook;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.oldtest.recipebook.RecipeBookTestRecipe.Ingredients;
-import org.jetbrains.annotations.Nullable;
 
 public class RecipeBookTestRecipeSerializer implements RecipeSerializer<RecipeBookTestRecipe> {
-    private static final Codec<RecipeBookTestRecipe> CODEC = Ingredients.CODEC.xmap(RecipeBookTestRecipe::new, recipeBookTestRecipe -> recipeBookTestRecipe.ingredients);
+    private static final MapCodec<RecipeBookTestRecipe> CODEC = Ingredients.CODEC.xmap(RecipeBookTestRecipe::new, recipeBookTestRecipe -> recipeBookTestRecipe.ingredients);
+    private static final StreamCodec<RegistryFriendlyByteBuf, RecipeBookTestRecipe> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
 
     @Override
-    public Codec<RecipeBookTestRecipe> codec() {
+    public MapCodec<RecipeBookTestRecipe> codec() {
         return CODEC;
     }
 
     @Override
-    public @Nullable RecipeBookTestRecipe fromNetwork(FriendlyByteBuf buf) {
-        Ingredients ingredients = buf.readWithCodecTrusted(NbtOps.INSTANCE, Ingredients.CODEC);
-        return new RecipeBookTestRecipe(ingredients);
-    }
-
-    @Override
-    public void toNetwork(FriendlyByteBuf buffer, RecipeBookTestRecipe recipe) {
-        buffer.writeWithCodec(NbtOps.INSTANCE, Ingredients.CODEC, recipe.ingredients);
+    public StreamCodec<RegistryFriendlyByteBuf, RecipeBookTestRecipe> streamCodec() {
+        return STREAM_CODEC;
     }
 }

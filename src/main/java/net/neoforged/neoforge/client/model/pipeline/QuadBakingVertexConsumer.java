@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.client.model.pipeline;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -24,19 +23,19 @@ import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
  * <p>
  * This consumer accepts data in {@link com.mojang.blaze3d.vertex.DefaultVertexFormat#BLOCK} and is not picky about
  * ordering or missing elements, but will not automatically populate missing data (color will be black, for example).
+ * <p>
+ * Built quads must be retrieved after building four vertices
  */
 public class QuadBakingVertexConsumer implements VertexConsumer {
     private final Map<VertexFormatElement, Integer> ELEMENT_OFFSETS = Util.make(new IdentityHashMap<>(), map -> {
-        int i = 0;
         for (var element : DefaultVertexFormat.BLOCK.getElements())
-            map.put(element, DefaultVertexFormat.BLOCK.getOffset(i++) / 4); // Int offset
+            map.put(element, DefaultVertexFormat.BLOCK.getOffset(element) / 4); // Int offset
     });
     private static final int QUAD_DATA_SIZE = IQuadTransformer.STRIDE * 4;
 
-    private final Consumer<BakedQuad> quadConsumer;
-
-    int vertexIndex = 0;
-    private int[] quadData = new int[QUAD_DATA_SIZE];
+    private final int[] quadData = new int[QUAD_DATA_SIZE];
+    private int vertexIndex = 0;
+    private boolean building = false;
 
     private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
@@ -44,21 +43,24 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     private boolean shade;
     private boolean hasAmbientOcclusion;
 
-    public QuadBakingVertexConsumer(Consumer<BakedQuad> quadConsumer) {
-        this.quadConsumer = quadConsumer;
-    }
-
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
+    public VertexConsumer addVertex(float x, float y, float z) {
+        if (building) {
+            if (++vertexIndex > 4) {
+                throw new IllegalStateException("Expected quad export after fourth vertex");
+            }
+        }
+        building = true;
+
         int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.POSITION;
-        quadData[offset] = Float.floatToRawIntBits((float) x);
-        quadData[offset + 1] = Float.floatToRawIntBits((float) y);
-        quadData[offset + 2] = Float.floatToRawIntBits((float) z);
+        quadData[offset] = Float.floatToRawIntBits(x);
+        quadData[offset + 1] = Float.floatToRawIntBits(y);
+        quadData[offset + 2] = Float.floatToRawIntBits(z);
         return this;
     }
 
     @Override
-    public VertexConsumer normal(float x, float y, float z) {
+    public VertexConsumer setNormal(float x, float y, float z) {
         int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.NORMAL;
         quadData[offset] = ((int) (x * 127.0f) & 0xFF) |
                 (((int) (y * 127.0f) & 0xFF) << 8) |
@@ -67,7 +69,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     }
 
     @Override
-    public VertexConsumer color(int r, int g, int b, int a) {
+    public VertexConsumer setColor(int r, int g, int b, int a) {
         int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.COLOR;
         quadData[offset] = ((a & 0xFF) << 24) |
                 ((b & 0xFF) << 16) |
@@ -77,7 +79,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     }
 
     @Override
-    public VertexConsumer uv(float u, float v) {
+    public VertexConsumer setUv(float u, float v) {
         int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.UV0;
         quadData[offset] = Float.floatToRawIntBits(u);
         quadData[offset + 1] = Float.floatToRawIntBits(v);
@@ -85,9 +87,8 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     }
 
     @Override
-    public VertexConsumer overlayCoords(int u, int v) {
-        if (IQuadTransformer.UV1 >= 0) // Vanilla doesn't support this, but it may be added by a 3rd party
-        {
+    public VertexConsumer setUv1(int u, int v) {
+        if (IQuadTransformer.UV1 >= 0) { // Vanilla doesn't support this, but it may be added by a 3rd party
             int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.UV1;
             quadData[offset] = (u & 0xFFFF) | ((v & 0xFFFF) << 16);
         }
@@ -95,7 +96,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     }
 
     @Override
-    public VertexConsumer uv2(int u, int v) {
+    public VertexConsumer setUv2(int u, int v) {
         int offset = vertexIndex * IQuadTransformer.STRIDE + IQuadTransformer.UV2;
         quadData[offset] = (u & 0xFFFF) | ((v & 0xFFFF) << 16);
         return this;
@@ -110,22 +111,6 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         }
         return this;
     }
-
-    @Override
-    public void endVertex() {
-        if (++vertexIndex != 4)
-            return;
-        // We have a full quad, pass it to the consumer and reset
-        quadConsumer.accept(new BakedQuad(quadData, tintIndex, direction, sprite, shade, hasAmbientOcclusion));
-        vertexIndex = 0;
-        quadData = new int[QUAD_DATA_SIZE];
-    }
-
-    @Override
-    public void defaultColor(int r, int g, int b, int a) {}
-
-    @Override
-    public void unsetDefaultColor() {}
 
     public void setTintIndex(int tintIndex) {
         this.tintIndex = tintIndex;
@@ -147,22 +132,15 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.hasAmbientOcclusion = hasAmbientOcclusion;
     }
 
-    public static class Buffered extends QuadBakingVertexConsumer {
-        private final BakedQuad[] output;
-
-        public Buffered() {
-            this(new BakedQuad[1]);
+    public BakedQuad bakeQuad() {
+        if (!building || ++vertexIndex != 4) {
+            throw new IllegalStateException("Not enough vertices available. Vertices in buffer: " + vertexIndex);
         }
 
-        private Buffered(BakedQuad[] output) {
-            super(q -> output[0] = q);
-            this.output = output;
-        }
-
-        public BakedQuad getQuad() {
-            var quad = Preconditions.checkNotNull(output[0], "No quad has been emitted. Vertices in buffer: " + vertexIndex);
-            output[0] = null;
-            return quad;
-        }
+        BakedQuad quad = new BakedQuad(quadData.clone(), tintIndex, direction, sprite, shade, hasAmbientOcclusion);
+        vertexIndex = 0;
+        building = false;
+        Arrays.fill(quadData, 0);
+        return quad;
     }
 }

@@ -1,0 +1,33 @@
+{
+  "parent": "data_gen_test:obtain_dirt",
+  "criteria": {
+    "obtained_diamond_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:diamond_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "description": "You obtained a DiamondBlock",
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:diamond_block"
+    },
+    "title": {
+      "translate": "block.minecraft.diamond_block"
+    }
+  },
+  "requirements": [
+    [
+      "obtained_diamond_block"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

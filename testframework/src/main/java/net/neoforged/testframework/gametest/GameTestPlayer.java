@@ -14,9 +14,11 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
@@ -29,7 +31,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     private final GameTestHelper helper;
@@ -53,13 +56,14 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     public GameTestPlayer moveToCentre() {
-        moveTo(helper.absoluteVec(new BlockPos(helper.testInfo.getStructureSize().getX() / 2, helper.testInfo.getStructureName().endsWith("_floor") ? 2 : 1, helper.testInfo.getStructureSize().getX() / 2).getCenter()).subtract(0, 0.5, 0));
+        Vec3i size = helper.testInfo.getStructureBlockEntity().getStructureSize();
+        moveTo(helper.absoluteVec(new BlockPos(size.getX() / 2, helper.testInfo.getStructureName().endsWith("_floor") ? 2 : 1, size.getX() / 2).getCenter()).subtract(0, 0.5, 0));
         return this;
     }
 
     public GameTestPlayer preventItemPickup() {
-        subscribe((final EntityItemPickupEvent event) -> {
-            if (event.getEntity() == this) event.setCanceled(true);
+        subscribe((ItemEntityPickupEvent.Pre event) -> {
+            if (event.getPlayer() == this) event.setCanPickup(TriState.FALSE);
         });
         return this;
     }
@@ -68,14 +72,17 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     public void testStructureLoaded(GameTestInfo i) {}
 
     @Override
-    public void testPassed(GameTestInfo i) {
+    public void testPassed(GameTestInfo i, GameTestRunner runner) {
         disconnectGameTest();
     }
 
     @Override
-    public void testFailed(GameTestInfo i) {
+    public void testFailed(GameTestInfo i, GameTestRunner runner) {
         disconnectGameTest();
     }
+
+    @Override
+    public void testAddedForRerun(GameTestInfo i, GameTestInfo i2, GameTestRunner runner) {}
 
     private final List<Consumer<? extends Event>> listeners = new ArrayList<>();
 
@@ -92,7 +99,7 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
 
     @SuppressWarnings("unchecked")
     private Stream<Packet<? extends ClientCommonPacketListener>> outboundPackets() {
-        return ((EmbeddedChannel) connection.connection.channel()).outboundMessages().stream()
+        return ((EmbeddedChannel) connection.getConnection().channel()).outboundMessages().stream()
                 .filter(Packet.class::isInstance).map(obj -> (Packet<? extends ClientCommonPacketListener>) obj)
                 .flatMap((Function<Packet<? extends ClientCommonPacketListener>, Stream<? extends Packet<? extends ClientCommonPacketListener>>>) packet -> {
                     if (!(packet instanceof ClientboundBundlePacket clientboundBundlePacket)) return Stream.of(packet);

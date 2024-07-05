@@ -16,25 +16,10 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public class MultipartModelData {
-    // Next BC window: don't remove but make private and change the type to ModelProperty<Map<BakedModel, ModelData>>.
-    @Deprecated(forRemoval = true)
-    public static final ModelProperty<MultipartModelData> PROPERTY = new ModelProperty<>();
-
-    private final Map<BakedModel, ModelData> partData;
-
-    private MultipartModelData(Map<BakedModel, ModelData> partData) {
-        this.partData = partData;
-    }
-
-    @Deprecated(forRemoval = true)
-    @Nullable
-    public ModelData get(BakedModel model) {
-        return partData.get(model);
-    }
+    private static final ModelProperty<Map<BakedModel, ModelData>> PROPERTY = new ModelProperty<>();
 
     /**
      * Helper to get the data from a {@link ModelData} instance.
@@ -69,25 +54,6 @@ public class MultipartModelData {
             }
         }
 
-        return dataMap == null ? tileModelData : tileModelData.derive().with(PROPERTY, new MultipartModelData(dataMap)).build();
-    }
-
-    @Deprecated(forRemoval = true)
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @Deprecated(forRemoval = true)
-    public static final class Builder {
-        private final Map<BakedModel, ModelData> partData = new IdentityHashMap<>();
-
-        public Builder with(BakedModel model, ModelData data) {
-            partData.put(model, data);
-            return this;
-        }
-
-        public MultipartModelData build() {
-            return new MultipartModelData(partData);
-        }
+        return dataMap == null ? tileModelData : tileModelData.derive().with(PROPERTY, dataMap).build();
     }
 }
