@@ -459,7 +459,7 @@
 +    }
 +
 +    /**
-+     * Neo: Short-lived holder of dropped item entities being spawned by dropping, shearing, and other actions. Used mainly for Neo hooks and event logic.
++     * Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
 +     * <p>
 +     * When not null, records all item entities from {@link #spawnAtLocation(ItemStack, float)} and {@link net.minecraft.server.level.ServerPlayer#drop(ItemStack, boolean, boolean)} instead of adding them to the world.
 +     */
