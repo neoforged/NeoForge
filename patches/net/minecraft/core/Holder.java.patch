@@ -29,7 +29,7 @@
              return "Reference{" + this.key + "=" + this.value + "}";
          }
 +
-+        // Neo Start
++        // Neo: Start
 +
 +        // Neo: Add DeferredHolder-compatible hashCode() and equals() overrides
 +        @Override
@@ -49,7 +49,7 @@
 +            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
 +        }
 +
-+        // Neo End
++        // Neo: End
  
          protected static enum Type {
              STAND_ALONE,

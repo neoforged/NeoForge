@@ -148,7 +148,7 @@
      }
  
 -    public static class Properties {
-+    // NEO START
++    // Neo: Start
 +    private Object renderProperties;
 +
 +    /*
@@ -172,7 +172,7 @@
 +
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientItemExtensions> consumer) {
 +    }
-+    // END NEO
++    // Neo: End
 +
 +    public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
          private static final Interner<DataComponentMap> COMPONENT_INTERNER = Interners.newStrongInterner();

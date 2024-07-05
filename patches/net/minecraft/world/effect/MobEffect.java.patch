@@ -22,7 +22,7 @@
          return this.requiredFeatures;
      }
 +
-+    // NEO START
++    // Neo: Start
 +    private Object effectRenderer;
 +
 +    /*
@@ -42,7 +42,7 @@
 +
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
 +    }
-+    // END NEO
++    // Neo: End
  
      static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
          public AttributeModifier create(int p_316614_) {
