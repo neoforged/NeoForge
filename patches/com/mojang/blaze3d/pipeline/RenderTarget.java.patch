@@ -36,7 +36,7 @@
 +    private boolean stencilEnabled = false;
 +
 +    /**
-+     * Neo: Attempts to enable 8 bits of stencil buffer on this FrameBuffer.
++     * Attempts to enable 8 bits of stencil buffer on this FrameBuffer.
 +     * Modders must call this directly to set things up.
 +     * This is to prevent the default cause where graphics cards do not support stencil bits.
 +     * <b>Make sure to call this on the main render thread!</b>
@@ -48,7 +48,7 @@
 +    }
 +
 +    /**
-+     * Neo: Returns wither or not this FBO has been successfully initialized with stencil bits.
++     * Returns whether this FBO has been successfully initialized with stencil bits.
 +     * If not, and a modder wishes it to be, they must call enableStencil.
 +     */
 +    public boolean isStencilEnabled() {

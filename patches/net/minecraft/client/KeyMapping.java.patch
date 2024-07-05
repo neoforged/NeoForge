@@ -97,7 +97,7 @@
      }
  
      public String saveString() {
-@@ -176,5 +_,85 @@
+@@ -176,5 +_,86 @@
  
      public void setDown(boolean p_90846_) {
          this.isDown = p_90846_;
@@ -108,29 +108,30 @@
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +    private net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext = net.neoforged.neoforge.client.settings.KeyConflictContext.UNIVERSAL;
 +
++    // Neo: Injected Key Mapping constructors to assist modders
 +    /**
-+     * Neo: Convenience constructor for creating KeyBindings with keyConflictContext set.
++     * Convenience constructor for creating KeyBindings with keyConflictContext set.
 +     */
 +    public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, final InputConstants.Type inputType, final int keyCode, String category) {
 +         this(description, keyConflictContext, inputType.getOrCreate(keyCode), category);
 +    }
 +
 +    /**
-+     * Neo: Convenience constructor for creating KeyBindings with keyConflictContext set.
++     * Convenience constructor for creating KeyBindings with keyConflictContext set.
 +     */
 +    public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Key keyCode, String category) {
 +         this(description, keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier.NONE, keyCode, category);
 +    }
 +
 +    /**
-+     * Neo: Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier set.
++     * Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier set.
 +     */
 +    public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, final InputConstants.Type inputType, final int keyCode, String category) {
 +         this(description, keyConflictContext, keyModifier, inputType.getOrCreate(keyCode), category);
 +    }
 +
 +    /**
-+     * Neo: Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier set.
++     * Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier set.
 +     */
 +    public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode, String category) {
 +        this.name = description;
