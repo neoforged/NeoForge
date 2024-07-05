@@ -198,6 +198,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_EDIBLE_WHEN_PLACED, "Edible When Placed");
         add(Tags.Items.FOODS_FOOD_POISONING, "Food Poisoning Foods");
         add(Tags.Items.FOODS_FRUIT, "Fruits");
+        add(Tags.Items.FOODS_GOLDEN, "Golden Foods");
         add(Tags.Items.FOODS_RAW_FISH, "Raw Fishes");
         add(Tags.Items.FOODS_RAW_MEAT, "Raw Meats");
         add(Tags.Items.FOODS_SOUP, "Soups");

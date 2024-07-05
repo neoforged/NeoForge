@@ -410,6 +410,10 @@ public class Tags {
          */
         public static final TagKey<Item> FOODS_CANDY = tag("foods/candy");
         /**
+         * Any gold-based foods would go in this tag. Such as Golden Apples or Glistering Melon Slice.
+         */
+        public static final TagKey<Item> FOODS_GOLDEN = tag("foods/golden");
+        /**
          * Foods like cake that can be eaten when placed in the world belong in this tag.
          */
         public static final TagKey<Item> FOODS_EDIBLE_WHEN_PLACED = tag("foods/edible_when_placed");
