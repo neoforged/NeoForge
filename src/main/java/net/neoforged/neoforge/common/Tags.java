@@ -385,30 +385,30 @@ public class Tags {
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
          * Cherries would go here as they are considered a "stone fruit" within culinary fields.
          */
-        public static final TagKey<Item> FOODS_FRUITS = tag("foods/fruits");
+        public static final TagKey<Item> FOODS_FRUIT = tag("foods/fruit");
         /**
          * Tomatoes and other foods that are considered vegetables in the culinary field belong in this tag.
          */
-        public static final TagKey<Item> FOODS_VEGETABLES = tag("foods/vegetables");
+        public static final TagKey<Item> FOODS_VEGETABLE = tag("foods/vegetable");
         /**
          * Strawberries, raspberries, and other berry foods belong in this tag.
          * Cherries would NOT go here as they are considered a "stone fruit" within culinary fields.
          */
-        public static final TagKey<Item> FOODS_BERRIES = tag("foods/berries");
-        public static final TagKey<Item> FOODS_BREADS = tag("foods/breads");
-        public static final TagKey<Item> FOODS_COOKIES = tag("foods/cookies");
-        public static final TagKey<Item> FOODS_RAW_MEATS = tag("foods/raw_meats");
-        public static final TagKey<Item> FOODS_COOKED_MEATS = tag("foods/cooked_meats");
-        public static final TagKey<Item> FOODS_RAW_FISHES = tag("foods/raw_fishes");
-        public static final TagKey<Item> FOODS_COOKED_FISHES = tag("foods/cooked_fishes");
+        public static final TagKey<Item> FOODS_BERRY = tag("foods/berry");
+        public static final TagKey<Item> FOODS_BREAD = tag("foods/bread");
+        public static final TagKey<Item> FOODS_COOKIE = tag("foods/cookie");
+        public static final TagKey<Item> FOODS_RAW_MEAT = tag("foods/raw_meat");
+        public static final TagKey<Item> FOODS_COOKED_MEAT = tag("foods/cooked_meat");
+        public static final TagKey<Item> FOODS_RAW_FISH = tag("foods/raw_fish");
+        public static final TagKey<Item> FOODS_COOKED_FISH = tag("foods/cooked_fish");
         /**
          * Soups, stews, and other liquid food in bowls belongs in this tag.
          */
-        public static final TagKey<Item> FOODS_SOUPS = tag("foods/soups");
+        public static final TagKey<Item> FOODS_SOUP = tag("foods/soup");
         /**
          * Sweets and candies like lollipops or chocolate belong in this tag.
          */
-        public static final TagKey<Item> FOODS_CANDIES = tag("foods/candies");
+        public static final TagKey<Item> FOODS_CANDY = tag("foods/candy");
         /**
          * Foods like cake that can be eaten when placed in the world belong in this tag.
          */
@@ -650,6 +650,16 @@ public class Tags {
          * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_BRUSH = tag("tools/brush");
+        /**
+         * A tag containing all existing fire starting tools such as Flint and Steel.
+         * Fire Charge is not a tool (no durability) and thus, does not go in this tag.
+         * Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_IGNITER = tag("tools/igniter");
         /**
          * Collects the 4 vanilla armor tags into one parent collection for ease.
          */

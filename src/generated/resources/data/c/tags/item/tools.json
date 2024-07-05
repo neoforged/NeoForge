@@ -12,6 +12,7 @@
     "#c:tools/shear",
     "#c:tools/shield",
     "#c:tools/spear",
+    "#c:tools/igniter",
     {
       "id": "#forge:tools",
       "required": false
