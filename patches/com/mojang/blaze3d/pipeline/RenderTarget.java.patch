@@ -26,15 +26,17 @@
              }
  
              this.checkStatus();
-@@ -258,4 +_,27 @@
+@@ -257,5 +_,28 @@
+ 
      public int getDepthTextureId() {
          return this.depthBufferId;
-     }
++    }
 +
-+    /*================================ FORGE START ================================================*/
++    // Neo: Injected stencil control
 +    private boolean stencilEnabled = false;
++
 +    /**
-+     * Attempts to enable 8 bits of stencil buffer on this FrameBuffer.
++     * Neo: Attempts to enable 8 bits of stencil buffer on this FrameBuffer.
 +     * Modders must call this directly to set things up.
 +     * This is to prevent the default cause where graphics cards do not support stencil bits.
 +     * <b>Make sure to call this on the main render thread!</b>
@@ -46,11 +48,10 @@
 +    }
 +
 +    /**
-+     * Returns wither or not this FBO has been successfully initialized with stencil bits.
++     * Neo: Returns wither or not this FBO has been successfully initialized with stencil bits.
 +     * If not, and a modder wishes it to be, they must call enableStencil.
 +     */
 +    public boolean isStencilEnabled() {
 +        return this.stencilEnabled;
-+    }
-+    /*================================ FORGE END    ================================================*/
+     }
  }

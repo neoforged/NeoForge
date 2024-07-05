@@ -706,13 +706,12 @@
          return foodproperties != null ? this.eat(p_21067_, p_21068_, foodproperties) : p_21068_;
      }
  
-@@ -3411,6 +_,39 @@
+@@ -3411,6 +_,38 @@
          return p_320526_ == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
      }
  
-+    /* ==== FORGE START ==== */
-+    /***
-+     * Removes all potion effects that have the given {@link net.neoforged.neoforge.common.EffectCure} in their set of cures
++    /**
++     * Neo: Removes all potion effects that have the given {@link net.neoforged.neoforge.common.EffectCure} in their set of cures
 +     * @param cure the EffectCure being used
 +     */
 +    public boolean removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCure cure) {
@@ -733,7 +732,7 @@
 +    }
 +
 +    /**
-+     * Returns true if the entity's rider (EntityPlayer) should face forward when mounted.
++     * Neo: Returns true if the entity's rider (EntityPlayer) should face forward when mounted.
 +     * currently only used in vanilla code by pigs.
 +     *
 +     * @param player The player who is riding the entity.
@@ -760,7 +759,7 @@
  
      public boolean canDisableShield() {
 -        return this.getWeaponItem().getItem() instanceof AxeItem;
-+        return this.getMainHandItem().canDisableShield(this.useItem, this, this);
++        return this.getMainHandItem().canDisableShield(this.useItem, this, this); // Neo: Switch to using the item to determine if disables shield instead of hardcoded Axe check
      }
  
      @Override

@@ -851,9 +851,9 @@ public class FluidType {
 
     private Object renderProperties;
 
-    /*
-       DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
-       Call RenderProperties.get instead
+    /**
+     * DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
+     * Call {@link IClientFluidTypeExtensions#of(FluidType)} instead
      */
     public Object getRenderPropertiesInternal() {
         return renderProperties;
