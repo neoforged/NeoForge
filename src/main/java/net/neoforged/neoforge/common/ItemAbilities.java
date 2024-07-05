@@ -77,6 +77,11 @@ public class ItemAbilities {
     public static final ItemAbility SHEARS_HARVEST = ItemAbility.get("shears_harvest");
 
     /**
+     * This action is exposed by shears and corresponds to a harvest action that is triggered with a right click on armored wolves.
+     */
+    public static final ItemAbility SHEARS_REMOVE_ARMOR = ItemAbility.get("shears_remove_armor");
+
+    /**
      * This action is exposed by shears and corresponds to a carve action that is triggered with a right click on a block that supports such behaviour.
      * Example: Right click with shears o a pumpkin to carve it
      */
@@ -121,7 +126,7 @@ public class ItemAbilities {
     public static final Set<ItemAbility> DEFAULT_SHOVEL_ACTIONS = of(SHOVEL_DIG, SHOVEL_FLATTEN);
     public static final Set<ItemAbility> DEFAULT_PICKAXE_ACTIONS = of(PICKAXE_DIG);
     public static final Set<ItemAbility> DEFAULT_SWORD_ACTIONS = of(SWORD_DIG, SWORD_SWEEP);
-    public static final Set<ItemAbility> DEFAULT_SHEARS_ACTIONS = of(SHEARS_DIG, SHEARS_HARVEST, SHEARS_CARVE, SHEARS_DISARM);
+    public static final Set<ItemAbility> DEFAULT_SHEARS_ACTIONS = of(SHEARS_DIG, SHEARS_HARVEST, SHEARS_REMOVE_ARMOR, SHEARS_CARVE, SHEARS_DISARM);
     public static final Set<ItemAbility> DEFAULT_SHIELD_ACTIONS = of(SHIELD_BLOCK);
     public static final Set<ItemAbility> DEFAULT_FISHING_ROD_ACTIONS = of(FISHING_ROD_CAST);
     public static final Set<ItemAbility> DEFAULT_TRIDENT_ACTIONS = of(TRIDENT_THROW);
