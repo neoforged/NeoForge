@@ -14,7 +14,6 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
@@ -36,7 +35,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.annotation.WithListener;
-import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,8 +80,6 @@ public class BiomeModifierSyncTest {
                 Set.of(HELPER.modId())));
     }
 
-    @GameTest
-    @EmptyTemplate
     @TestHolder(description = "Tests if biome modifications are properly synced", side = Dist.CLIENT)
     @WithListener(Listener.class)
     static void biomeModifierSync(final DynamicTest test) {
