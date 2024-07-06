@@ -17,4 +17,4 @@ license="LGPL v2.1"
     '''
 
 [[mixins]]
-config = "neoforge.mixins.json"
+    config = "neoforge.mixins.json"

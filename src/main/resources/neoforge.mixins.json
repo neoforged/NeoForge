@@ -2,6 +2,7 @@
   "required": true,
   "package": "net.neoforged.neoforge.mixins",
   "mixins": [
+    "BlockEntityTypeAccessor",
     "MappedRegistryAccessor"
   ],
   "client": [],
