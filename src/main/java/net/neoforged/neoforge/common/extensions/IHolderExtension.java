@@ -41,6 +41,6 @@ public interface IHolderExtension<T> extends IWithData<T> {
      */
     @Nullable
     default ResourceKey<T> getKey() {
-        return ((Holder<T>)this).unwrapKey().orElse(null);
+        return ((Holder<T>) this).unwrapKey().orElse(null);
     }
 }
