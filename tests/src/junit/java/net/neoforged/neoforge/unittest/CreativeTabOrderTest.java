@@ -73,15 +73,15 @@ public class CreativeTabOrderTest {
     public static ObjectSortedSet<ItemStack> stoneParentTab;
     public static ObjectSortedSet<ItemStack> stoneSearchTab;
     public static boolean stackCountExceptionForAccept = false;
-    public static boolean stackCountExceptionForPutAfter = false;
-    public static boolean stackCountExceptionForPutBefore = false;
-    public static boolean stackCountExceptionForPutFirst = false;
-    public static boolean targetDoesNotExistExceptionForPutAfter = false;
-    public static boolean targetDoesNotExistExceptionForPutBefore = false;
+    public static boolean stackCountExceptionForInsertAfter = false;
+    public static boolean stackCountExceptionForInsertBefore = false;
+    public static boolean stackCountExceptionForInsertFirst = false;
+    public static boolean targetDoesNotExistExceptionForInsertAfter = false;
+    public static boolean targetDoesNotExistExceptionForInsertBefore = false;
     public static boolean newEntryExistAlreadyExceptionForAccept = false;
-    public static boolean newEntryExistAlreadyExceptionForPutFirst = false;
-    public static boolean newEntryExistAlreadyExceptionForPutAfter = false;
-    public static boolean newEntryExistAlreadyExceptionForPutBefore = false;
+    public static boolean newEntryExistAlreadyExceptionForInsertFirst = false;
+    public static boolean newEntryExistAlreadyExceptionForInsertAfter = false;
+    public static boolean newEntryExistAlreadyExceptionForInsertBefore = false;
 
     @BeforeAll
     static void testSetupTabs(MinecraftServer server) {
@@ -176,15 +176,15 @@ public class CreativeTabOrderTest {
     @Test
     void testBuildCreativeModeTabContentsEventValidations(MinecraftServer server) {
         Assertions.assertTrue(stackCountExceptionForAccept, "Accept method is missing itemstack validation where stack should be 1.");
-        Assertions.assertTrue(stackCountExceptionForPutAfter, "Put After method is missing itemstack validation where stack should be 1.");
-        Assertions.assertTrue(stackCountExceptionForPutBefore, "Put Before method is missing itemstack validation where stack should be 1.");
-        Assertions.assertTrue(stackCountExceptionForPutFirst, "Put First method is missing itemstack validation where stack should be 1.");
-        Assertions.assertTrue(targetDoesNotExistExceptionForPutAfter, "Put After method is missing target itemstack validation where target should exist.");
-        Assertions.assertTrue(targetDoesNotExistExceptionForPutBefore, "Put Before method is missing target itemstack validation where target should exist.");
+        Assertions.assertTrue(stackCountExceptionForInsertAfter, "Insert After method is missing itemstack validation where stack should be 1.");
+        Assertions.assertTrue(stackCountExceptionForInsertBefore, "Insert Before method is missing itemstack validation where stack should be 1.");
+        Assertions.assertTrue(stackCountExceptionForInsertFirst, "Insert First method is missing itemstack validation where stack should be 1.");
+        Assertions.assertTrue(targetDoesNotExistExceptionForInsertAfter, "Insert After method is missing target itemstack validation where target should exist.");
+        Assertions.assertTrue(targetDoesNotExistExceptionForInsertBefore, "Insert Before method is missing target itemstack validation where target should exist.");
         Assertions.assertTrue(newEntryExistAlreadyExceptionForAccept, "Accept method is missing duplicate itemstack validation where entry should not be added twice.");
-        Assertions.assertTrue(newEntryExistAlreadyExceptionForPutFirst, "Put First method is missing duplicate itemstack validation where entry should not be added twice.");
-        Assertions.assertTrue(newEntryExistAlreadyExceptionForPutAfter, "Put After method is missing duplicate itemstack validation where entry should not be added twice.");
-        Assertions.assertTrue(newEntryExistAlreadyExceptionForPutBefore, "Put Before method is missing duplicate itemstack validation where entry should not be added twice.");
+        Assertions.assertTrue(newEntryExistAlreadyExceptionForInsertFirst, "Insert First method is missing duplicate itemstack validation where entry should not be added twice.");
+        Assertions.assertTrue(newEntryExistAlreadyExceptionForInsertAfter, "Insert After method is missing duplicate itemstack validation where entry should not be added twice.");
+        Assertions.assertTrue(newEntryExistAlreadyExceptionForInsertBefore, "Insert Before method is missing duplicate itemstack validation where entry should not be added twice.");
     }
 
     private static List<Item> setupDesiredStoneOrder() {
@@ -210,12 +210,12 @@ public class CreativeTabOrderTest {
         private void buildCreativeTab(final BuildCreativeModeTabContentsEvent event) {
             if (event.getTabKey() == STONE_ORDERING) {
                 var vis = CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-                event.putAfter(i(Blocks.STONE), i(Blocks.TUFF), vis);
-                event.putAfter(i(Blocks.DIORITE), i(Blocks.CALCITE), vis);
-                event.putBefore(i(Blocks.CALCITE), i(Blocks.BLACKSTONE), vis);
+                event.insertAfter(i(Blocks.STONE), i(Blocks.TUFF), vis);
+                event.insertAfter(i(Blocks.DIORITE), i(Blocks.CALCITE), vis);
+                event.insertBefore(i(Blocks.CALCITE), i(Blocks.BLACKSTONE), vis);
                 event.accept(i(Blocks.CYAN_CONCRETE), vis);
                 event.remove(i(Blocks.CYAN_CONCRETE), vis);
-                event.putFirst(i(Blocks.BASALT), vis);
+                event.insertFirst(i(Blocks.BASALT), vis);
 
                 catchSpecificExceptionForAction(
                         () -> event.accept(new ItemStack(Items.DIRT, 4), vis),
@@ -223,29 +223,29 @@ public class CreativeTabOrderTest {
                         () -> stackCountExceptionForAccept = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putAfter(i(Blocks.STONE), new ItemStack(Items.DIRT, 4), vis),
+                        () -> event.insertAfter(i(Blocks.STONE), new ItemStack(Items.DIRT, 4), vis),
                         "The stack count must be 1 for",
-                        () -> stackCountExceptionForPutAfter = true);
+                        () -> stackCountExceptionForInsertAfter = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putBefore(i(Blocks.STONE), new ItemStack(Items.DIRT, 4), vis),
+                        () -> event.insertBefore(i(Blocks.STONE), new ItemStack(Items.DIRT, 4), vis),
                         "The stack count must be 1 for",
-                        () -> stackCountExceptionForPutBefore = true);
+                        () -> stackCountExceptionForInsertBefore = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putFirst(new ItemStack(Items.DIRT, 4), vis),
+                        () -> event.insertFirst(new ItemStack(Items.DIRT, 4), vis),
                         "The stack count must be 1 for",
-                        () -> stackCountExceptionForPutFirst = true);
+                        () -> stackCountExceptionForInsertFirst = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putAfter(i(Blocks.LECTERN), i(Blocks.DIRT), vis),
+                        () -> event.insertAfter(i(Blocks.LECTERN), i(Blocks.DIRT), vis),
                         "does not exist in tab's list",
-                        () -> targetDoesNotExistExceptionForPutAfter = true);
+                        () -> targetDoesNotExistExceptionForInsertAfter = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putBefore(i(Blocks.LECTERN), i(Blocks.DIRT), vis),
+                        () -> event.insertBefore(i(Blocks.LECTERN), i(Blocks.DIRT), vis),
                         "does not exist in tab's list",
-                        () -> targetDoesNotExistExceptionForPutBefore = true);
+                        () -> targetDoesNotExistExceptionForInsertBefore = true);
 
                 catchSpecificExceptionForAction(
                         () -> event.accept(i(Blocks.STONE), vis),
@@ -253,19 +253,19 @@ public class CreativeTabOrderTest {
                         () -> newEntryExistAlreadyExceptionForAccept = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putFirst(i(Blocks.STONE), vis),
+                        () -> event.insertFirst(i(Blocks.STONE), vis),
                         "already exists in the tab's list",
-                        () -> newEntryExistAlreadyExceptionForPutFirst = true);
+                        () -> newEntryExistAlreadyExceptionForInsertFirst = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putAfter(i(Blocks.DIORITE), i(Blocks.STONE), vis),
+                        () -> event.insertAfter(i(Blocks.DIORITE), i(Blocks.STONE), vis),
                         "already exists in the tab's list",
-                        () -> newEntryExistAlreadyExceptionForPutAfter = true);
+                        () -> newEntryExistAlreadyExceptionForInsertAfter = true);
 
                 catchSpecificExceptionForAction(
-                        () -> event.putBefore(i(Blocks.DIORITE), i(Blocks.STONE), vis),
+                        () -> event.insertBefore(i(Blocks.DIORITE), i(Blocks.STONE), vis),
                         "already exists in the tab's list",
-                        () -> newEntryExistAlreadyExceptionForPutBefore = true);
+                        () -> newEntryExistAlreadyExceptionForInsertBefore = true);
 
                 stoneParentTab = event.getParentEntries();
                 stoneSearchTab = event.getSearchEntries();

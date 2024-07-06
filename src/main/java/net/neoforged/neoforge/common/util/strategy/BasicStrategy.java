@@ -14,6 +14,8 @@ import java.util.Objects;
 public class BasicStrategy implements Hash.Strategy<Object> {
     public static final Hash.Strategy<? super Object> BASIC = new BasicStrategy();
 
+    private BasicStrategy() {}
+
     @Override
     public int hashCode(Object o) {
         return Objects.hashCode(o);

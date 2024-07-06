@@ -13,6 +13,8 @@ import it.unimi.dsi.fastutil.Hash;
 public class IdentityStrategy implements Hash.Strategy<Object> {
     public static final Hash.Strategy<? super Object> IDENTITY = new IdentityStrategy();
 
+    private IdentityStrategy() {}
+
     @Override
     public int hashCode(Object o) {
         return System.identityHashCode(o);

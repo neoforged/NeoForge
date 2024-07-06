@@ -119,25 +119,25 @@ public class CreativeModeTabTest {
     private static void onCreativeModeTabBuildContents(BuildCreativeModeTabContentsEvent event) {
         var vis = TabVisibility.PARENT_AND_SEARCH_TABS;
         if (event.getTabKey() == LOGS) {
-            event.putAfter(i(Blocks.ACACIA_LOG), i(Blocks.STRIPPED_ACACIA_LOG), vis);
-            event.putAfter(i(Blocks.BIRCH_LOG), i(Blocks.STRIPPED_BIRCH_LOG), vis);
-            event.putAfter(i(Blocks.DARK_OAK_LOG), i(Blocks.STRIPPED_DARK_OAK_LOG), vis);
-            event.putAfter(i(Blocks.JUNGLE_LOG), i(Blocks.STRIPPED_JUNGLE_LOG), vis);
-            event.putAfter(i(Blocks.OAK_LOG), i(Blocks.STRIPPED_OAK_LOG), vis);
-            event.putAfter(i(Blocks.SPRUCE_LOG), i(Blocks.STRIPPED_SPRUCE_LOG), vis);
+            event.insertAfter(i(Blocks.ACACIA_LOG), i(Blocks.STRIPPED_ACACIA_LOG), vis);
+            event.insertAfter(i(Blocks.BIRCH_LOG), i(Blocks.STRIPPED_BIRCH_LOG), vis);
+            event.insertAfter(i(Blocks.DARK_OAK_LOG), i(Blocks.STRIPPED_DARK_OAK_LOG), vis);
+            event.insertAfter(i(Blocks.JUNGLE_LOG), i(Blocks.STRIPPED_JUNGLE_LOG), vis);
+            event.insertAfter(i(Blocks.OAK_LOG), i(Blocks.STRIPPED_OAK_LOG), vis);
+            event.insertAfter(i(Blocks.SPRUCE_LOG), i(Blocks.STRIPPED_SPRUCE_LOG), vis);
         }
 
         if (event.getTabKey() == STONE) {
-            event.putBefore(i(Blocks.STONE), i(Blocks.SMOOTH_STONE), vis);
-            event.putBefore(i(Blocks.GRANITE), i(Blocks.POLISHED_GRANITE), vis);
-            event.putBefore(i(Blocks.DIORITE), i(Blocks.POLISHED_DIORITE), vis);
-            event.putBefore(i(Blocks.ANDESITE), i(Blocks.POLISHED_ANDESITE), vis);
+            event.insertBefore(i(Blocks.STONE), i(Blocks.SMOOTH_STONE), vis);
+            event.insertBefore(i(Blocks.GRANITE), i(Blocks.POLISHED_GRANITE), vis);
+            event.insertBefore(i(Blocks.DIORITE), i(Blocks.POLISHED_DIORITE), vis);
+            event.insertBefore(i(Blocks.ANDESITE), i(Blocks.POLISHED_ANDESITE), vis);
         }
 
         // Adding this causes a crash (as it should) when opening the creative inventory
         if (false) {
             if (event.getTabKey() == DAMAGED_SWORDS) {
-                event.putBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
+                event.insertBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
             }
         }
     }

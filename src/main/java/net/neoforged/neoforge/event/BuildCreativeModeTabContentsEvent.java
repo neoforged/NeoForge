@@ -84,7 +84,7 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
     /**
      * Inserts the new stack at the end of the given tab at this point in time.
      * 
-     * @exception IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
+     * @throws IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
      */
     @Override
     public void accept(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
@@ -103,11 +103,11 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
 
     /**
      * Inserts the new entry after the specified existing entry.
-     * 
-     * @exception UnsupportedOperationException if the existing entry is not found in the tab's lists.
-     * @exception IllegalArgumentException      if the new itemstack's count is not 1 or target does not exist in set.
+     *
+     * @throws IllegalArgumentException if the new itemstack's count is not 1 or target does not exist in set
+     *                                  OR if the existing entry is not found in the tab's lists.
      */
-    public void putAfter(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
+    public void insertAfter(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
@@ -125,11 +125,11 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
 
     /**
      * Inserts the new entry before the specified existing entry.
-     * 
-     * @exception UnsupportedOperationException if the existing entry is not found in the tab's lists.
-     * @exception IllegalArgumentException      if the new itemstack's count is not 1 or target does not exist in set.
+     *
+     * @throws IllegalArgumentException if the new itemstack's count is not 1 or target does not exist in set
+     *                                  OR if the existing entry is not found in the tab's lists.
      */
-    public void putBefore(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
+    public void insertBefore(ItemStack existingEntry, ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
@@ -148,9 +148,9 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
     /**
      * Inserts the new entry in the front of the tab's content.
      * 
-     * @exception IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
+     * @throws IllegalArgumentException if the new itemstack's count is not 1 or entry already was added to the tab previously.
      */
-    public void putFirst(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
+    public void insertFirst(ItemStack newEntry, CreativeModeTab.TabVisibility visibility) {
         assertStackCount(newEntry);
 
         if (isParentTab(visibility)) {
