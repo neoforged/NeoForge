@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "호환되지 않는 서버 모드 목록",
   "fml.menu.multiplayer.networkincompatible": "서버의 네트워크 메시지들이 호환되지 않음",
   "fml.menu.multiplayer.missingdatapackregistries": "필요한 데이터팩 레지스트리가 누락됨: %1$s",
-  "fml.menu.loadingmods": "모드 {0,choice,0#No mods|1#1|1<%s}개 불러옴",
+  "fml.menu.branding": "%s (%s mods)",
   "fml.menu.notification.title": "시작 알림",
   "fml.menu.accessdenied.title": "서버 접속이 거부되었습니다",
   "fml.menu.accessdenied.message": "Fancy Mod Loader가 서버에 접속할 수 없습니다.\n이 서버(%1$s)는 모드가 설치된 클라이언트의 접속을 거부합니다.",
