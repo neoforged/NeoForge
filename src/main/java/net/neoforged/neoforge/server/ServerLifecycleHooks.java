@@ -133,7 +133,7 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
-    private static <T> void stripKnownPack(boolean modified, Holder.Reference<T> holder, Registry<T> registry) {
+    private static <T> void ensureSyncing(boolean modified, Holder.Reference<T> holder, Registry<T> registry) {
         if (modified) {
             // If the object's networked data has been modified, we force it to sync by removing its original KnownPack info.
             Optional<RegistrationInfo> originalInfo = registry.registrationInfo(holder.key());
@@ -161,7 +161,7 @@ public class ServerLifecycleHooks {
         // Apply sorted biome modifiers to each biome.
         final var biomeRegistry = registries.registryOrThrow(Registries.BIOME);
         biomeRegistry.holders().forEach(biomeHolder -> {
-            stripKnownPack(
+            ensureSyncing(
                     biomeHolder.value().modifiableBiomeInfo()
                             .applyBiomeModifiers(biomeHolder, biomeModifiers, registries),
                     biomeHolder,
