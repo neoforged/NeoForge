@@ -49,8 +49,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.ApiStatus;
@@ -63,10 +63,12 @@ public interface IItemExtension {
     }
 
     /**
-     * ItemStack sensitive version of getItemAttributeModifiers
+     * ItemStack sensitive version of getDefaultAttributeModifiers. Used when a stack has no {@link DataComponents#ATTRIBUTE_MODIFIERS} component.
+     * 
+     * @see {@link IItemStackExtension#getAttributeModifiers()} for querying effective attribute modifiers.
      */
     @SuppressWarnings("deprecation")
-    default ItemAttributeModifiers getAttributeModifiers(ItemStack stack) {
+    default ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         return self().getDefaultAttributeModifiers();
     }
 
@@ -381,13 +383,13 @@ public interface IItemExtension {
 
     /**
      * Queries if an item can perform the given action.
-     * See {@link ToolActions} for a description of each stock action
+     * See {@link ItemAbilities} for a description of each stock action
      * 
-     * @param stack      The stack being used
-     * @param toolAction The action being queried
+     * @param stack       The stack being used
+     * @param itemAbility The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+    default boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
         return false;
     }
 

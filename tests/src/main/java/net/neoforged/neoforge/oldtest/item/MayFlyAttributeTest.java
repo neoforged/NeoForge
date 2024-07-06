@@ -58,7 +58,7 @@ public class MayFlyAttributeTest {
         }
 
         @Override
-        public ItemAttributeModifiers getAttributeModifiers(ItemStack stack) {
+        public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
             return ItemAttributeModifiers.builder()
                     .add(NeoForgeMod.CREATIVE_FLIGHT, MODIFIER, EquipmentSlotGroup.ANY)
                     .build();

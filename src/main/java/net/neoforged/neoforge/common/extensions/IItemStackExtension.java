@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
@@ -20,8 +18,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -44,8 +40,8 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,13 +113,13 @@ public interface IItemStackExtension {
 
     /**
      * Queries if an item can perform the given action.
-     * See {@link ToolActions} for a description of each stock action
+     * See {@link ItemAbilities} for a description of each stock action
      * 
-     * @param toolAction The action being queried
+     * @param itemAbility The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ToolAction toolAction) {
-        return self().getItem().canPerformAction(self(), toolAction);
+    default boolean canPerformAction(ItemAbility itemAbility) {
+        return self().getItem().canPerformAction(self(), itemAbility);
     }
 
     /**
@@ -477,20 +473,21 @@ public interface IItemStackExtension {
     }
 
     /**
-     * {@return the attribute modifiers for the given equipment slot}
+     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents.ATTRIBUTE_MODIFIERS}
+     * or {@link Item#getDefaultAttributeModifiers(ItemStack)} when querying attributes for gameplay purposes.
      * <p>
-     * Fires ItemAttributeModifierEvent to compute the final attribute modifiers.
-     * 
-     * @param equipmentSlot the equipment slot to get the attribute modifiers for
+     * This method first computes the default modifiers, using {@link DataComponents.ATTRIBUTE_MODIFIERS} if present, otherwise
+     * falling back to {@link Item#getDefaultAttributeModifiers(ItemStack)}.
+     * <p>
+     * The {@link ItemAttributeModifiersEvent} is then fired to allow external adjustments.
      */
-    default Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
-        ItemAttributeModifiers itemattributemodifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        Multimap<Holder<Attribute>, AttributeModifier> multimap = LinkedHashMultimap.create();
-        if (!itemattributemodifiers.modifiers().isEmpty()) {
-            itemattributemodifiers.forEach(equipmentSlot, multimap::put);
-        } else {
-            self().getItem().getAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
+    default ItemAttributeModifiers getAttributeModifiers() {
+        ItemAttributeModifiers defaultModifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+
+        if (defaultModifiers.modifiers().isEmpty()) {
+            defaultModifiers = self().getItem().getDefaultAttributeModifiers(self());
         }
-        return CommonHooks.getAttributeModifiers(self(), equipmentSlot, multimap);
+
+        return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
 }

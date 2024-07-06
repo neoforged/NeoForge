@@ -28,6 +28,7 @@
       "chance": 0.65
     },
     "minecraft:beetroot_seeds": {
+      "can_villager_compost": true,
       "chance": 0.3
     },
     "minecraft:big_dripleaf": {
@@ -295,6 +296,7 @@
       "chance": 0.65
     },
     "minecraft:wheat_seeds": {
+      "can_villager_compost": true,
       "chance": 0.3
     },
     "minecraft:white_tulip": {

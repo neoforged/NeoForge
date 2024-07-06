@@ -166,6 +166,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     /**
      * @return The ResourceKey of the object pointed to by this DeferredHolder.
      */
+    @Override
     public ResourceKey<R> getKey() {
         return this.key;
     }
@@ -173,7 +174,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key;
+        return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.getKey() == this.key;
     }
 
     @Override

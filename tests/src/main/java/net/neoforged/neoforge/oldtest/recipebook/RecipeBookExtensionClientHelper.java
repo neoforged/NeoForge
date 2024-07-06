@@ -7,17 +7,32 @@ package net.neoforged.neoforge.oldtest.recipebook;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RecipeBookCategories;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.fml.common.asm.enumextension.EnumProxy;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
 
 public class RecipeBookExtensionClientHelper {
-    public static final Supplier<RecipeBookCategories> TESTING_SEARCH = Suppliers.memoize(() -> RecipeBookCategories.create("TESTING_SEARCH", new ItemStack(Items.COMPASS)));
-    public static final Supplier<RecipeBookCategories> TESTING_CAT_1 = Suppliers.memoize(() -> RecipeBookCategories.create("TESTING_CAT_1", new ItemStack(Items.DIAMOND)));
-    public static final Supplier<RecipeBookCategories> TESTING_CAT_2 = Suppliers.memoize(() -> RecipeBookCategories.create("TESTING_CAT_2", new ItemStack(Items.NETHERITE_INGOT)));
+    @SuppressWarnings("unused") // referenced by enumextender.json
+    public static final EnumProxy<RecipeBookCategories> CAT_SEARCH_ENUM_PARAMS = new EnumProxy<>(
+            RecipeBookCategories.class,
+            (Supplier<List<ItemStack>>) () -> List.of(new ItemStack(Items.COMPASS)));
+    @SuppressWarnings("unused") // referenced by enumextender.json
+    public static final EnumProxy<RecipeBookCategories> CAT_1_ENUM_PARAMS = new EnumProxy<>(
+            RecipeBookCategories.class,
+            (Supplier<List<ItemStack>>) () -> List.of(new ItemStack(Items.DIAMOND)));
+    @SuppressWarnings("unused") // referenced by enumextender.json
+    public static final EnumProxy<RecipeBookCategories> CAT_2_ENUM_PARAMS = new EnumProxy<>(
+            RecipeBookCategories.class,
+            (Supplier<List<ItemStack>>) () -> List.of(new ItemStack(Items.NETHERITE_INGOT)));
+
+    public static final Supplier<RecipeBookCategories> TESTING_SEARCH = Suppliers.memoize(CAT_SEARCH_ENUM_PARAMS::getValue);
+    public static final Supplier<RecipeBookCategories> TESTING_CAT_1 = Suppliers.memoize(CAT_1_ENUM_PARAMS::getValue);
+    public static final Supplier<RecipeBookCategories> TESTING_CAT_2 = Suppliers.memoize(CAT_2_ENUM_PARAMS::getValue);
 
     public static void init(RegisterRecipeBookCategoriesEvent event) {
         event.registerBookCategories(RecipeBookExtensionTest.TEST_TYPE, ImmutableList.of(TESTING_SEARCH.get(), TESTING_CAT_1.get(), TESTING_CAT_2.get()));

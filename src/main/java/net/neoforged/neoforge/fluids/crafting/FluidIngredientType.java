@@ -22,7 +22,7 @@ import net.neoforged.neoforge.common.crafting.IngredientType;
  * @param <T> The type of fluid ingredient
  * @see IngredientType IngredientType, a similar class for custom item ingredients
  */
-public record FluidIngredientType<T extends FluidIngredient>(MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
+public record FluidIngredientType<T extends FluidIngredient>(MapCodec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
     public FluidIngredientType(MapCodec<T> mapCodec) {
         this(mapCodec, ByteBufCodecs.fromCodecWithRegistries(mapCodec.codec()));
     }

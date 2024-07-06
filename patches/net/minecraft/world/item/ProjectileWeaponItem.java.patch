@@ -5,7 +5,7 @@
          }
  
 -        return abstractarrow;
-+        return customArrow(abstractarrow, p_330846_);
++        return customArrow(abstractarrow, p_331497_, p_330846_);
      }
  
      protected static List<ItemStack> draw(ItemStack p_331565_, ItemStack p_330406_, LivingEntity p_330823_) {
@@ -19,13 +19,24 @@
              ? EnchantmentHelper.processAmmoUse(serverlevel, p_331207_, p_331434_, 1)
              : 0;
          if (i > p_331434_.getCount()) {
-@@ -132,5 +_,9 @@
+@@ -132,5 +_,20 @@
  
              return itemstack;
          }
 +    }
 +
-+    public AbstractArrow customArrow(AbstractArrow arrow, net.minecraft.world.item.ItemStack stack) {
++    public AbstractArrow customArrow(AbstractArrow arrow, ItemStack projectileStack, ItemStack weaponStack) {
 +        return arrow;
++    }
++
++    /**
++     * Neo: Controls what ammo ItemStack that Creative Mode should return if the player has no valid ammo in inventory.
++     * Modded weapons should override this to return their own ammo if they do not use vanilla arrows.
++     * @param player The player (if in context) firing the weapon
++     * @param projectileWeaponItem The weapon ItemStack the ammo is for
++     * @return The default ammo ItemStack for this weapon
++     */
++    public ItemStack getDefaultCreativeAmmo(@Nullable Player player, ItemStack projectileWeaponItem) {
++        return Items.ARROW.getDefaultInstance();
      }
  }

@@ -13,10 +13,16 @@
          this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
          p_252014_.pop();
      }
-@@ -246,14 +_,24 @@
+@@ -246,14 +_,30 @@
          }
  
          @Override
++        @Nullable
++        public UnbakedModel getTopLevelModel(ModelResourceLocation location) {
++            return topLevelModels.get(location);
++        }
++
++        @Override
 +        public Function<Material, TextureAtlasSprite> getModelTextureGetter() {
 +            return this.modelTextureGetter;
 +        }
@@ -39,15 +45,16 @@
                  ModelBakery.this.bakedCache.put(modelbakery$bakedcachekey, bakedmodel1);
                  return bakedmodel1;
              }
-@@ -261,13 +_,18 @@
+@@ -261,13 +_,19 @@
  
          @Nullable
          BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_) {
 +            return bakeUncached(p_352386_, p_352194_, this.modelTextureGetter);
 +        }
 +
++        @Override
 +        @Nullable
-+        BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_, Function<Material, TextureAtlasSprite> sprites) {
++        public BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_, Function<Material, TextureAtlasSprite> sprites) {
              if (p_352386_ instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {
                  return ModelBakery.ITEM_MODEL_GENERATOR
 -                    .generateBlockModel(this.modelTextureGetter, blockmodel)

@@ -6,8 +6,8 @@
          ItemStack itemstack1 = p_37137_.getOffhandItem();
 -        boolean flag = itemstack.is(Items.FISHING_ROD);
 -        boolean flag1 = itemstack1.is(Items.FISHING_ROD);
-+        boolean flag = itemstack.canPerformAction(net.neoforged.neoforge.common.ToolActions.FISHING_ROD_CAST);
-+        boolean flag1 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ToolActions.FISHING_ROD_CAST);
++        boolean flag = itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST);
++        boolean flag1 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST);
          if (!p_37137_.isRemoved() && p_37137_.isAlive() && (flag || flag1) && !(this.distanceToSqr(p_37137_) > 1024.0)) {
              return false;
          } else {
