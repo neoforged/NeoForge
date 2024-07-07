@@ -238,6 +238,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.TOOLS_SHIELD).add(Items.SHIELD);
         tag(Tags.Items.TOOLS_BOW).add(Items.BOW);
         tag(Tags.Items.TOOLS_BRUSH).add(Items.BRUSH);
+        tag(Tags.Items.TOOLS_MACE).add(Items.MACE);
         tag(Tags.Items.TOOLS_CROSSBOW).add(Items.CROSSBOW);
         tag(Tags.Items.TOOLS_FISHING_ROD).add(Items.FISHING_ROD);
         tag(Tags.Items.TOOLS_SHEAR).add(Items.SHEARS);
