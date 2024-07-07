@@ -27,8 +27,8 @@
 +    }
 +
 +    /**
-+     * Creates a new DamageEffects with the specified ID and sound. Store the created enum in a static final field.<br>
-+     * Use an enumextender.json to link to your {@link net.neoforged.fml.common.asm.enumextension.EnumProxy} in order to create new entries for this enum.<br>
++     * Creates a new DamageEffects with the specified ID and sound. Store the created enum in a static final field.<p>
++     * Use an enumextender.json to link to your {@link net.neoforged.fml.common.asm.enumextension.EnumProxy} in order to create new entries for this enum.<p>
 +     * Example usage:
 +     * {@snippet :
 +     * public static final EnumProxy<DamageEffects> ELECTRIFYING = new EnumProxy<>(
