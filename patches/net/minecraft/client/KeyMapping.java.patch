@@ -97,16 +97,18 @@
      }
  
      public String saveString() {
-@@ -177,4 +_,84 @@
+@@ -176,5 +_,86 @@
+ 
      public void setDown(boolean p_90846_) {
          this.isDown = p_90846_;
-     }
++    }
 +
-+    /****************** Forge Start *****************************/
++    // Neo: Injected Key Mapping controls
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifierDefault = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +    private net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext = net.neoforged.neoforge.client.settings.KeyConflictContext.UNIVERSAL;
 +
++    // Neo: Injected Key Mapping constructors to assist modders
 +    /**
 +     * Convenience constructor for creating KeyBindings with keyConflictContext set.
 +     */
@@ -146,6 +148,7 @@
 +        CATEGORIES.add(category);
 +    }
 +
++    // Neo: Implemented IKeyMappingExtension methods into vanilla
 +    @Override
 +    public InputConstants.Key getKey() {
 +         return this.key;
@@ -179,6 +182,5 @@
 +         MAP.remove(this);
 +         this.keyModifier = keyModifier;
 +         MAP.put(keyCode, this);
-+    }
-+    /****************** Forge End *****************************/
+     }
  }

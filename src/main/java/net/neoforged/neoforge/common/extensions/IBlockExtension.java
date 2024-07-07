@@ -407,7 +407,7 @@ public interface IBlockExtension {
      * @return True if the soil should be considered fertile.
      */
     default boolean isFertile(BlockState state, BlockGetter level, BlockPos pos) {
-        if (state.is(Blocks.FARMLAND))
+        if (state.getBlock() instanceof FarmBlock)
             return state.getValue(FarmBlock.MOISTURE) > 0;
 
         return false;
@@ -978,7 +978,7 @@ public interface IBlockExtension {
 
     /**
      * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
-     * <p></p>
+     * <p>
      * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
      * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
      *

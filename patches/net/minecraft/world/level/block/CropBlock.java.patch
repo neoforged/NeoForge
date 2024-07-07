@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
+@@ -54,7 +_,7 @@
+ 
+     @Override
+     protected boolean mayPlaceOn(BlockState p_52302_, BlockGetter p_52303_, BlockPos p_52304_) {
+-        return p_52302_.is(Blocks.FARMLAND);
++        return p_52302_.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+     }
+ 
+     protected IntegerProperty getAgeProperty() {
 @@ -84,12 +_,14 @@
  
      @Override
@@ -33,7 +42,7 @@
                  BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
 -                if (blockstate.is(Blocks.FARMLAND)) {
 +                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, blockState);
-+                if (soilDecision.isDefault() ? blockstate.is(Blocks.FARMLAND) : soilDecision.isTrue()) {
++                if (soilDecision.isDefault() ? blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock : soilDecision.isTrue()) {
                      f1 = 1.0F;
 -                    if (blockstate.getValue(FarmBlock.MOISTURE) > 0) {
 +                    if (blockstate.isFertile(p_52274_, p_52275_.offset(i, 0, j))) {

@@ -5,7 +5,7 @@
          void close();
      }
 +
-+    // Forge Start
++    // Neo: Exposed a pixel RGBA getter
 +    public int getPixelRGBA(int frameIndex, int x, int y) {
 +         if (this.contents.animatedTexture != null) {
 +              x += this.contents.animatedTexture.getFrameX(frameIndex) * this.contents.width;
