@@ -18,13 +18,14 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
  * If this event is canceled, the entity does not mount/dismount the other entity.<br>
  * <br>
- * This event does not have a result.<br>
+ * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  *
  */
 
 public class EntityMountEvent extends EntityEvent implements ICancellableEvent {
+    private final Entity entityMounting;
     private final Entity entityBeingMounted;
     private final Level level;
 
@@ -32,6 +33,7 @@ public class EntityMountEvent extends EntityEvent implements ICancellableEvent {
 
     public EntityMountEvent(Entity entityMounting, Entity entityBeingMounted, Level level, boolean isMounting) {
         super(entityMounting);
+        this.entityMounting = entityMounting;
         this.entityBeingMounted = entityBeingMounted;
         this.level = level;
         this.isMounting = isMounting;
@@ -46,7 +48,7 @@ public class EntityMountEvent extends EntityEvent implements ICancellableEvent {
     }
 
     public Entity getEntityMounting() {
-        return super.getEntity();
+        return entityMounting;
     }
 
     public Entity getEntityBeingMounted() {

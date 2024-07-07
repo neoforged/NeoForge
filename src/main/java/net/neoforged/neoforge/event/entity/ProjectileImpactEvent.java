@@ -22,10 +22,12 @@ import net.neoforged.neoforge.event.EventHooks;
  */
 public class ProjectileImpactEvent extends EntityEvent implements ICancellableEvent {
     private final HitResult ray;
+    private final Projectile projectile;
 
     public ProjectileImpactEvent(Projectile projectile, HitResult ray) {
         super(projectile);
         this.ray = ray;
+        this.projectile = projectile;
     }
 
     public HitResult getRayTraceResult() {
@@ -33,6 +35,6 @@ public class ProjectileImpactEvent extends EntityEvent implements ICancellableEv
     }
 
     public Projectile getProjectile() {
-        return ((Projectile) super.getEntity());
+        return projectile;
     }
 }

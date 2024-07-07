@@ -19,15 +19,17 @@ import net.neoforged.neoforge.event.EventHooks;
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class AnimalTameEvent extends LivingEvent implements ICancellableEvent {
+    private final Animal animal;
     private final Player tamer;
 
     public AnimalTameEvent(Animal animal, Player tamer) {
         super(animal);
+        this.animal = animal;
         this.tamer = tamer;
     }
 
     public Animal getAnimal() {
-        return ((Animal) super.getEntity());
+        return animal;
     }
 
     public Player getTamer() {

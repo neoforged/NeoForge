@@ -31,13 +31,16 @@ import org.jetbrains.annotations.Nullable;
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public abstract class PlayerEvent extends LivingEvent {
+    private final Player player;
+
     public PlayerEvent(Player player) {
         super(player);
+        this.player = player;
     }
 
     @Override
     public Player getEntity() {
-        return ((Player) super.getEntity());
+        return player;
     }
 
     /**
