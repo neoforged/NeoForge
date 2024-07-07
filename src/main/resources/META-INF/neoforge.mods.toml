@@ -15,3 +15,6 @@ license="LGPL v2.1"
     description='''
     NeoForge, a NEW broad compatibility API.
     '''
+
+[[mixins]]
+    config = "neoforge.mixins.json"
