@@ -15,8 +15,6 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
  * within the ItemEntity instance.
  */
 public abstract class ItemEvent extends EntityEvent {
-    private final ItemEntity itemEntity;
-
     /**
      * Creates a new event for an {@link ItemEntity}.
      *
@@ -24,7 +22,6 @@ public abstract class ItemEvent extends EntityEvent {
      */
     public ItemEvent(ItemEntity itemEntity) {
         super(itemEntity);
-        this.itemEntity = itemEntity;
     }
 
     /**
@@ -32,6 +29,6 @@ public abstract class ItemEvent extends EntityEvent {
      */
     @Override
     public ItemEntity getEntity() {
-        return itemEntity;
+        return ((ItemEntity) super.getEntity());
     }
 }

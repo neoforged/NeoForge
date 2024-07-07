@@ -22,16 +22,13 @@ import org.jetbrains.annotations.Nullable;
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public abstract class LivingEvent extends EntityEvent {
-    private final LivingEntity livingEntity;
-
     public LivingEvent(LivingEntity entity) {
         super(entity);
-        livingEntity = entity;
     }
 
     @Override
     public LivingEntity getEntity() {
-        return livingEntity;
+        return ((LivingEntity) super.getEntity());
     }
 
     /**
