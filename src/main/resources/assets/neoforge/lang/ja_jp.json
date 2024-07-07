@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "互換性のないサーバーのModリスト",
   "fml.menu.multiplayer.networkincompatible": "互換性のないサーバーのネットワークメッセージリスト",
   "fml.menu.multiplayer.missingdatapackregistries": "必要なデータパックの登録がありません：%1$s",
-  "fml.menu.loadingmods": "{0,choice,0#読み込まれたModはありません|1#1個のModが読み込まれています|1<%s個のModが読み込まれています}",
+  "fml.menu.branding": "%s (%s mods)",
   "fml.menu.notification.title": "起動時の通知",
   "fml.menu.accessdenied.title": "サーバーアクセスが拒否されました",
   "fml.menu.accessdenied.message": "Fancy Mod Loaderはこのサーバーに接続できませんでした\nサーバー %1$sはMod導入下でのアクセスを禁止しています",

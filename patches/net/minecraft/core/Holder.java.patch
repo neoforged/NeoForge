@@ -24,12 +24,19 @@
          void bindTags(Collection<TagKey<T>> p_205770_) {
              this.tags = Set.copyOf(p_205770_);
          }
-@@ -233,6 +_,28 @@
+@@ -233,6 +_,35 @@
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";
          }
 +
 +        // Neo Start
++
++        // Neo: Add key getter that doesn't allocate
++        @Override
++        @org.jetbrains.annotations.Nullable
++        public ResourceKey<T> getKey() {
++            return this.key;
++        }
 +
 +        // Neo: Add DeferredHolder-compatible hashCode() and equals() overrides
 +        @Override
@@ -40,7 +47,7 @@
 +        @Override
 +        public boolean equals(Object obj) {
 +            if (this == obj) return true;
-+            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key();
++            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.getKey() == this.key();
 +        }
 +
 +        @Override
