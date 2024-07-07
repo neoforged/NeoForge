@@ -174,7 +174,7 @@ public class ServerLifecycleHooks {
         biomeRegistry.holders().forEach(biomeHolder -> {
             final Biome biome = biomeHolder.value();
             ensureProperSync(
-            biome.modifiableBiomeInfo()
+                    biome.modifiableBiomeInfo()
                             .applyBiomeModifiers(biomeHolder, biomeModifiers, registries),
                     biomeHolder,
                     biomeRegistry);
