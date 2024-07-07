@@ -200,23 +200,15 @@ public class NeoForgeMod {
     public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
 
     /**
-     * Grants the player the ability to use creative flight when not in creative mode.
-     * Anything above zero allows flight.
+     * This attribute controls if the player may use creative flight when not in creative mode.
      * <p>
-     * For this attribute, you should only use the following modifier values:
-     * <ul>
-     * <li>A value of 1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#ADDITION} to enable the effect.</li>
-     * <li>A value of -1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#MULTIPLY_TOTAL} to forcibly disable the effect.</li>
-     * </ul>
-     * This behavior allows for multiple enables to coexist, not removing the effect unless all enabling modifiers are removed.
+     * This is a {@link BooleanAttribute}, and should only be modified using the standards established by that class.
      * <p>
-     * Additionally, it permits forcibly disabling the attribute through multiply total.
-     * <p>
-     * To determine if a player has flight access via game mode or attribute, use {@link net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly}
+     * To determine if a player may fly (either via game mode or attribute), use {@link IPlayerExtension#mayFly}
      * <p>
      * Game mode flight cannot be disabled via this attribute.
      */
-    public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new RangedAttribute("neoforge.creative_flight", 0D, 0D, Double.MAX_VALUE).setSyncable(true));
+    public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new BooleanAttribute("neoforge.creative_flight", false).setSyncable(true));
 
     /**
      * Stock loot modifier type that adds loot from a subtable to the final loot.
