@@ -26,7 +26,7 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * <p></p>Fires on both the client and server thread when a player interacts with a block.
+ * Fires on both the client and server thread when a player interacts with a block.
  *
  * <p>The event fires in three phases, corresponding with the three interaction behaviors:
  * {@link IItemExtension#onItemUseFirst},

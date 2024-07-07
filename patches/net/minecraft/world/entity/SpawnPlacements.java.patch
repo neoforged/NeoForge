@@ -21,12 +21,15 @@
      }
  
      static {
-@@ -168,5 +_,13 @@
+@@ -168,5 +_,16 @@
      @FunctionalInterface
      public interface SpawnPredicate<T extends Entity> {
          boolean test(EntityType<T> p_217081_, ServerLevelAccessor p_217082_, MobSpawnType p_217083_, BlockPos p_217084_, RandomSource p_217085_);
 +    }
 +
++    /**
++     * Neo: Purely for Neo usage to fire off the spawn registering events.
++     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void fireSpawnPlacementEvent() {
 +         Map<EntityType<?>, net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.MergedSpawnPredicate<?>> map = Maps.newHashMap();

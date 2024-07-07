@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/damagesource/DamageScaling.java
 +++ b/net/minecraft/world/damagesource/DamageScaling.java
-@@ -3,20 +_,41 @@
+@@ -3,20 +_,55 @@
  import com.mojang.serialization.Codec;
  import net.minecraft.util.StringRepresentable;
  
@@ -22,6 +22,20 @@
 +        this(p_270266_, net.neoforged.neoforge.common.damagesource.IScalingFunction.DEFAULT);
 +    }
 +
++    /**
++     * Creates a new DamageScaling with the specified ID and scaling function. Store the created enum in a static final field.<p>
++     * Use an enumextender.json to link to your {@link net.neoforged.fml.common.asm.enumextension.EnumProxy} in order to create new entries for this enum.<p>
++     * Example usage:
++     * {@snippet :
++     * public static final EnumProxy<DamageScaling> CUSTOM_FUNCTION = new EnumProxy<>(
++     *             DamageScaling.class,
++     *             "mymod:custom",
++     *             MyDamageScalings.CUSTOM_MESSAGE_PROVIDER::value);
++     * }
++     * @param id The {@linkplain StringRepresentable#getSerializedName() serialized name}. Prefix this with your modid and `:`
++     * @param scaling The scaling function that will be used when a player is hurt by a damage type with this type of scaling.
++     * @apiNote This method must be called as early as possible, as if {@link #CODEC} is resolved before this is called, it will be unusable.
++     */
 +    private DamageScaling(String id, net.neoforged.neoforge.common.damagesource.IScalingFunction scaling) {
 +        this.id = id;
 +        this.scaling = scaling;

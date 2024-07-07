@@ -428,13 +428,13 @@
              }
          }
      }
-@@ -2201,5 +_,39 @@
+@@ -2201,5 +_,41 @@
          public Component getMessage() {
              return this.message;
          }
 +    }
 +
-+    // =========== FORGE START ==============//
++    // Neo: Getters for the Player's name prefixes and suffixes
 +    public Collection<MutableComponent> getPrefixes() {
 +         return this.prefixes;
 +    }
@@ -444,15 +444,16 @@
 +    }
 +
 +    private Component displayname = null;
++
 +    /**
-+     * Force the displayed name to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
++     * Neo: Force the displayed name to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
 +     */
 +    public void refreshDisplayName() {
 +        this.displayname = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
 +    }
 +
 +    /**
-+     * Force a pose for the player. If set, the vanilla pose determination and clearance check is skipped. Make sure the pose is clear yourself (e.g. in PlayerTick).
++     * Neo: Force a pose for the player. If set, the vanilla pose determination and clearance check is skipped. Make sure the pose is clear yourself (e.g. in PlayerTick).
 +     * This has to be set just once, do not set it every tick.
 +     * Make sure to clear (null) the pose if not required anymore and only use if necessary.
 +     */
@@ -461,6 +462,7 @@
 +    }
 +
 +    /**
++     * Neo:
 +     * @return The forced pose if set, null otherwise
 +     */
 +    @Nullable

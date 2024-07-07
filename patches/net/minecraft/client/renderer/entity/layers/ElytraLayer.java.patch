@@ -1,29 +1,7 @@
 --- a/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
-@@ -33,19 +_,19 @@
-     }
- 
-     public void render(
--        PoseStack p_116951_,
--        MultiBufferSource p_116952_,
--        int p_116953_,
--        T p_116954_,
--        float p_116955_,
--        float p_116956_,
--        float p_116957_,
--        float p_116958_,
--        float p_116959_,
--        float p_116960_
-+            PoseStack p_116951_,
-+            MultiBufferSource p_116952_,
-+            int p_116953_,
-+            T p_116954_,
-+            float p_116955_,
-+            float p_116956_,
-+            float p_116957_,
-+            float p_116958_,
-+            float p_116959_,
-+            float p_116960_
+@@ -45,7 +_,7 @@
+         float p_116960_
      ) {
          ItemStack itemstack = p_116954_.getItemBySlot(EquipmentSlot.CHEST);
 -        if (itemstack.is(Items.ELYTRA)) {
