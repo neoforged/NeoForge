@@ -310,6 +310,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_CROSSBOW, "Crossbows");
         add(Tags.Items.TOOLS_FISHING_ROD, "Fishing Rods");
         add(Tags.Items.TOOLS_BRUSH, "Brushes");
+        add(Tags.Items.TOOLS_MACE, "Maces");
         add(Tags.Items.TOOLS_SPEAR, "Spears");
         add(Tags.Items.TOOLS, "Tools");
         add(Tags.Items.ARMORS, "Armors");

@@ -665,6 +665,14 @@ public class Tags {
          */
         public static final TagKey<Item> TOOLS_IGNITER = tag("tools/igniter");
         /**
+         * A tag containing all existing maces. Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
+        /**
          * Collects the 4 vanilla armor tags into one parent collection for ease.
          */
         public static final TagKey<Item> ARMORS = tag("armors");
