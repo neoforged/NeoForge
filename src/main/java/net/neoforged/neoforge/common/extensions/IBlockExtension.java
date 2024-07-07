@@ -784,7 +784,7 @@ public interface IBlockExtension {
                     context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
                         return block == Blocks.COARSE_DIRT ? Blocks.DIRT.defaultBlockState() : Blocks.FARMLAND.defaultBlockState();
                     }
-        } else if (ItemAbilities.SHOVEL_DOWSE == itemAbility) {
+        } else if (ItemAbilities.SHOVEL_DOUSE == itemAbility) {
             if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {
                 if (!simulate) {
                     CampfireBlock.dowse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);

@@ -64,9 +64,9 @@ public class ItemAbilities {
     public static final ItemAbility SHOVEL_FLATTEN = ItemAbility.get("shovel_flatten");
 
     /**
-     * Passed onto {@link IBlockExtension#getToolModifiedState} when a shovel wants to dowse a campfire
+     * Passed onto {@link IBlockExtension#getToolModifiedState} when a shovel wants to douse a campfire
      */
-    public static final ItemAbility SHOVEL_DOWSE = ItemAbility.get("shovel_dowse");
+    public static final ItemAbility SHOVEL_DOUSE = ItemAbility.get("shovel_douse");
 
     /**
      * Used during player attack to figure out if a sweep attack should be performed
@@ -134,7 +134,7 @@ public class ItemAbilities {
     // Default actions supported by each tool type
     public static final Set<ItemAbility> DEFAULT_AXE_ACTIONS = of(AXE_DIG, AXE_STRIP, AXE_SCRAPE, AXE_WAX_OFF);
     public static final Set<ItemAbility> DEFAULT_HOE_ACTIONS = of(HOE_DIG, HOE_TILL);
-    public static final Set<ItemAbility> DEFAULT_SHOVEL_ACTIONS = of(SHOVEL_DIG, SHOVEL_FLATTEN, SHOVEL_DOWSE);
+    public static final Set<ItemAbility> DEFAULT_SHOVEL_ACTIONS = of(SHOVEL_DIG, SHOVEL_FLATTEN, SHOVEL_DOUSE);
     public static final Set<ItemAbility> DEFAULT_PICKAXE_ACTIONS = of(PICKAXE_DIG);
     public static final Set<ItemAbility> DEFAULT_SWORD_ACTIONS = of(SWORD_DIG, SWORD_SWEEP);
     public static final Set<ItemAbility> DEFAULT_SHEARS_ACTIONS = of(SHEARS_DIG, SHEARS_HARVEST, SHEARS_REMOVE_ARMOR, SHEARS_CARVE, SHEARS_DISARM);
