@@ -853,6 +853,7 @@ public class FluidType {
 
     /**
      * DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
+     * TODO: Replace this with a better solution
      * Call {@link IClientFluidTypeExtensions#of(FluidType)} instead
      */
     public Object getRenderPropertiesInternal() {

@@ -52,10 +52,12 @@
      public static RenderType getRenderType(ItemStack p_109280_, boolean p_109281_) {
          Item item = p_109280_.getItem();
          if (item instanceof BlockItem) {
-@@ -394,6 +_,80 @@
-         return rendertype != null ? rendertype : RenderType.solid();
-     }
+@@ -396,5 +_,78 @@
  
+     public static void setFancy(boolean p_109292_) {
+         renderCutout = p_109292_;
++    }
++
 +    // Neo: Injected new ChunkRenderTypeSets for Blocks to be able to use
 +    private static final net.neoforged.neoforge.client.ChunkRenderTypeSet CUTOUT_MIPPED = net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.cutoutMipped());
 +    private static final net.neoforged.neoforge.client.ChunkRenderTypeSet SOLID = net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.solid());
@@ -127,9 +129,5 @@
 +
 +    private static net.neoforged.neoforge.client.ChunkRenderTypeSet createSetFromPredicate(java.util.function.Predicate<RenderType> predicate) {
 +        return net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.chunkBufferLayers().stream().filter(predicate).toArray(RenderType[]::new));
-+    }
-+
-+    // Neo: Disable cutout mode on FAST rendering
-     public static void setFancy(boolean p_109292_) {
-         renderCutout = p_109292_;
      }
+ }

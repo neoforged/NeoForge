@@ -143,7 +143,7 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -341,13 +_,40 @@
+@@ -341,13 +_,41 @@
          return this.requiredFeatures;
      }
  
@@ -153,6 +153,7 @@
 +
 +    /**
 +     * Neo: DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
++     * TODO: Replace this with a better solution
 +     * Call {@link net.neoforged.neoforge.client.extensions.common.IClientItemExtensions#of(Item)} instead
 +     */
 +    public Object getRenderPropertiesInternal() {

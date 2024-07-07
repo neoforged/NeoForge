@@ -123,7 +123,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -485,6 +_,61 @@
+@@ -485,6 +_,62 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  
@@ -160,6 +160,7 @@
 +
 +    /**
 +     * Neo: DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
++     * TODO: Replace this with a better solution
 +     * Call {@link net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions#of(Block)}  instead
 +     */
 +    public Object getRenderPropertiesInternal() {
