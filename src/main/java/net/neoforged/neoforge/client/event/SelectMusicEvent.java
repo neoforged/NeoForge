@@ -51,7 +51,7 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
     }
 
     /**
-     * {@return the current track that the {@link net.minecraft.client.sounds.MusicManager} is playing, or {@code null} if there is none.}
+     * {@return the current track that the {@link net.minecraft.client.sounds.MusicManager} is playing, or {@code null} if there is none}
      */
     @Nullable
     public SoundInstance getPlayingMusic() {
@@ -68,7 +68,7 @@ public class SelectMusicEvent extends Event implements ICancellableEvent {
 
     /**
      * Changes the situational music. If this is set to {@code null}, any currently playing music will be cancelled.<br>
-     * If this <i>was</i> {@code null} but on the next tick isn't, the muisc given will be immediately played.<br>
+     * If this <i>was</i> {@code null} but on the next tick isn't, the music given will be immediately played.<br>
      * <br>
      */
     public void setMusic(@Nullable Music newMusic) {
