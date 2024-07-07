@@ -24,7 +24,9 @@ import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
