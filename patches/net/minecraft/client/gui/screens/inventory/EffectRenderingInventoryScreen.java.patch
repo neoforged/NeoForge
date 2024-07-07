@@ -19,6 +19,15 @@
              this.renderBackgrounds(p_281945_, i, k, iterable, flag);
              this.renderIcons(p_281945_, i, k, iterable, flag);
              if (flag) {
+@@ -74,6 +_,8 @@
+                         this.getEffectName(mobeffectinstance),
+                         MobEffectUtil.formatDuration(mobeffectinstance, 1.0F, this.minecraft.level.tickRateManager().tickrate())
+                     );
++                    // Neo: Allow mods to adjust the tooltip shown when hovering a mob effect.
++                    list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(this, mobeffectinstance, list);
+                     p_281945_.renderTooltip(this.font, list, Optional.empty(), p_282601_, p_282335_);
+                 }
+             }
 @@ -99,6 +_,11 @@
          int i = this.topPos;
  
