@@ -1,14 +1,24 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -301,6 +_,11 @@
-         return this.validBlocks.contains(p_155263_.getBlock());
-     }
- 
-+    // Neo: Add block getter
-+    public Set<Block> getValidBlocks() {
-+        return java.util.Collections.unmodifiableSet(this.validBlocks);
+@@ -268,6 +_,7 @@
+     );
+     public static final BlockEntityType<VaultBlockEntity> VAULT = register("vault", BlockEntityType.Builder.of(VaultBlockEntity::new, Blocks.VAULT));
+     private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
++    // Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
+     private final Set<Block> validBlocks;
+     private final Type<?> dataType;
+     private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
+@@ -295,6 +_,13 @@
+     @Nullable
+     public T create(BlockPos p_155265_, BlockState p_155266_) {
+         return (T)this.factory.create(p_155265_, p_155266_);
 +    }
 +
-     @Nullable
-     public Holder.Reference<BlockEntityType<?>> builtInRegistryHolder() {
-         return this.builtInRegistryHolder;
++    /**
++     * Neo: Add getter for an immutable view of the set of valid blocks.
++     */
++    public Set<Block> getValidBlocks() {
++        return java.util.Collections.unmodifiableSet(this.validBlocks);
+     }
+ 
+     public boolean isValid(BlockState p_155263_) {

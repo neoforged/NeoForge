@@ -288,7 +288,7 @@ public class CommonHooks {
      *
      */
     public static float onLivingDamagePre(LivingEntity entity, DamageContainer container) {
-        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getContainer().getNewDamage();
+        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getNewDamage();
     }
 
     /**
