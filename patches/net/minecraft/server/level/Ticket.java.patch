@@ -43,7 +43,7 @@
          return i != 0L && p_9435_ - this.createdTick > i;
 +    }
 +
-+    /* ======================================== FORGE START =====================================*/
++    // Neo: Injected ability to force chunks to tick
 +    private final boolean forceTicks;
 +
 +    public boolean isForceTicks() {

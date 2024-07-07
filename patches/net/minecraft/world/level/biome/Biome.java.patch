@@ -49,13 +49,13 @@
      }
  
      public int getFogColor() {
-@@ -415,4 +_,34 @@
+@@ -414,5 +_,32 @@
+         public String getSerializedName() {
              return this.name;
          }
-     }
++    }
 +
-+    // FORGE START
-+
++    // Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
 +    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
 +
 +    /**
@@ -80,7 +80,5 @@
 +     */
 +    public BiomeSpecialEffects getModifiedSpecialEffects() {
 +        return this.modifiableBiomeInfo().get().effects();
-+    }
-+
-+    // FORGE END
+     }
  }
