@@ -75,7 +75,7 @@
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
-@@ -393,6 +_,14 @@
+@@ -393,6 +_,13 @@
          return this.properties.destroyTime;
      }
  
@@ -83,9 +83,8 @@
 +        return ((BlockStateBase)state).isAir;
 +    }
 +
-+    /* ======================================== FORGE START ===================================== */
++    // Neo: Holds the loot table for this block's drops. Used for getLootTable method.
 +    private final java.util.function.Supplier<ResourceKey<LootTable>> lootTableSupplier;
-+    /* ========================================= FORGE END ====================================== */
 +
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
          private final int lightEmission;

@@ -26,7 +26,7 @@
                  HolderGetter<E> holdergetter = optional.get();
 -                return this.registryAwareCodec
 -                    .decode(p_206696_, p_206697_)
-+                // NEO: use the wrapped codec to decode custom/tag/list instead of just tag/list
++                // Neo: use the wrapped codec to decode custom/tag/list instead of just tag/list
 +                return this.combinedCodec.decode(p_206696_, p_206697_)
                      .flatMap(
                          p_337522_ -> {

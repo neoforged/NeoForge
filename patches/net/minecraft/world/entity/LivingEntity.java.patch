@@ -382,8 +382,8 @@
          if (!(p_330394_ <= 0.0F)) {
              int i = (int)Math.max(1.0F, p_330394_ / 4.0F);
  
-+            net.neoforged.neoforge.common.CommonHooks.onArmorHurt(p_330843_, p_331314_, p_330394_, this);
-+            if (true) return; //Neo: invalidates the loop.  armor damage happens in common hook
++            net.neoforged.neoforge.common.CommonHooks.onArmorHurt(p_330843_, p_331314_, i, this);
++            if (true) return; //Neo: Invalidates the loop. Armor damage happens in common hook.
              for (EquipmentSlot equipmentslot : p_331314_) {
                  ItemStack itemstack = this.getItemBySlot(equipmentslot);
                  if (itemstack.getItem() instanceof ArmorItem && itemstack.canBeHurtBy(p_330843_)) {
@@ -414,18 +414,20 @@
 -            float f = p_21241_ - f1;
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(p_21240_, this.damageContainers.peek().getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(p_21240_, this.damageContainers.peek().getNewDamage());
-+            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
-+            float f1 = Math.max(this.damageContainers.peek().getNewDamage() - this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
-+            this.setAbsorptionAmount(this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainers.peek().getNewDamage() - f1));
-+            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
-+            if (f1 <= 0) return;
-+            float f = this.damageContainers.peek().getNewDamage() - f1;
++            float damage = this.damageContainers.peek().getNewDamage();
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, Math.min(this.getAbsorptionAmount(), damage));
++            float absorbed = Math.min(damage, this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION));
++            this.setAbsorptionAmount(Math.max(0, this.getAbsorptionAmount() - absorbed));
++            float f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
++            float f = absorbed;
              if (f > 0.0F && f < 3.4028235E37F && p_21240_.getEntity() instanceof ServerPlayer serverplayer) {
                  serverplayer.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(f * 10.0F));
              }
-@@ -1693,7 +_,9 @@
+@@ -1691,9 +_,10 @@
+             if (f1 != 0.0F) {
+                 this.getCombatTracker().recordDamage(p_21240_, f1);
                  this.setHealth(this.getHealth() - f1);
-                 this.setAbsorptionAmount(this.getAbsorptionAmount() - f1);
+-                this.setAbsorptionAmount(this.getAbsorptionAmount() - f1);
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
 +                this.onDamageTaken(this.damageContainers.peek());
              }
@@ -706,13 +708,12 @@
          return foodproperties != null ? this.eat(p_21067_, p_21068_, foodproperties) : p_21068_;
      }
  
-@@ -3411,6 +_,39 @@
+@@ -3411,6 +_,38 @@
          return p_320526_ == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
      }
  
-+    /* ==== FORGE START ==== */
-+    /***
-+     * Removes all potion effects that have the given {@link net.neoforged.neoforge.common.EffectCure} in their set of cures
++    /**
++     * Neo: Removes all potion effects that have the given {@link net.neoforged.neoforge.common.EffectCure} in their set of cures
 +     * @param cure the EffectCure being used
 +     */
 +    public boolean removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCure cure) {
@@ -733,7 +734,7 @@
 +    }
 +
 +    /**
-+     * Returns true if the entity's rider (EntityPlayer) should face forward when mounted.
++     * Neo: Returns true if the entity's rider (EntityPlayer) should face forward when mounted.
 +     * currently only used in vanilla code by pigs.
 +     *
 +     * @param player The player who is riding the entity.
@@ -760,7 +761,7 @@
  
      public boolean canDisableShield() {
 -        return this.getWeaponItem().getItem() instanceof AxeItem;
-+        return this.getMainHandItem().canDisableShield(this.useItem, this, this);
++        return this.getMainHandItem().canDisableShield(this.useItem, this, this); // Neo: Switch to using the item to determine if disables shield instead of hardcoded Axe check
      }
  
      @Override

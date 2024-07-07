@@ -11,10 +11,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistrationInfo;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
@@ -40,6 +43,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
+import net.neoforged.neoforge.mixins.MappedRegistryAccessor;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -138,6 +142,18 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
+    private static <T> void ensureProperSync(boolean modified, Holder.Reference<T> holder, Registry<T> registry) {
+        if (modified) {
+            // If the object's networked data has been modified, we force it to sync by removing its original KnownPack info.
+            Optional<RegistrationInfo> originalInfo = registry.registrationInfo(holder.key());
+            originalInfo.ifPresent(info -> {
+                RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());
+                //noinspection unchecked
+                ((MappedRegistryAccessor<T>) registry).neoforge$getRegistrationInfos().put(holder.key(), newInfo);
+            });
+        }
+    }
+
     private static void runModifiers(final MinecraftServer server) {
         final RegistryAccess registries = server.registryAccess();
 
@@ -154,9 +170,14 @@ public class ServerLifecycleHooks {
         final Set<EntityType<?>> entitiesWithoutPlacements = new HashSet<>();
 
         // Apply sorted biome modifiers to each biome.
-        registries.registryOrThrow(Registries.BIOME).holders().forEach(biomeHolder -> {
+        final var biomeRegistry = registries.registryOrThrow(Registries.BIOME);
+        biomeRegistry.holders().forEach(biomeHolder -> {
             final Biome biome = biomeHolder.value();
-            biome.modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers);
+            ensureProperSync(
+            biome.modifiableBiomeInfo()
+                            .applyBiomeModifiers(biomeHolder, biomeModifiers, registries),
+                    biomeHolder,
+                    biomeRegistry);
 
             final MobSpawnSettings mobSettings = biome.getMobSettings();
             mobSettings.getSpawnerTypes().forEach(category -> {
