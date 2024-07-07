@@ -94,6 +94,7 @@ import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -126,6 +127,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -224,6 +226,20 @@ public class CommonHooks {
         return false;
     }
 
+    /**
+     * Fires the {@link ItemStackedOnOtherEvent}, allowing items to handle custom behavior relating to being stacked together (i.e. how the bundle operates).
+     * <p>
+     * Called from {@link AbstractContainerMenu#doClick} in the utility method {@link AbstractContainerMenu#tryItemClickBehaviourOverride} before either
+     * {@link ItemStack#overrideStackedOnOther} or {@link ItemStack#overrideOtherStackedOnMe} is called.
+     * 
+     * @param carriedItem       The item currently held by the player, being clicked <i>into</i> the slot
+     * @param stackedOnItem     The item currently present in the clicked slot
+     * @param slot              The {@link Slot} being clicked
+     * @param action            The click action being performed
+     * @param player            The player who clicked the slot
+     * @param carriedSlotAccess A slot access permitting changing the carried item.
+     * @return True if the event was cancelled, indicating that a mod has handled the click; false otherwise
+     */
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
         return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
     }
