@@ -76,9 +76,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * It will be written, and read from disc, so it persists over world saves.
      * 
      * @return A NBTTagCompound
-     * @deprecated Use data attachments ({@link Entity#setData(AttachmentType, Object)}) to store additional data on entities.
      */
-    @Deprecated(forRemoval = true, since = "21.0")
     CompoundTag getPersistentData();
 
     /**
