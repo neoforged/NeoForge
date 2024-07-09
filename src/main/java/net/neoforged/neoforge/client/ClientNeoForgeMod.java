@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client;
 
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -24,6 +25,10 @@ import net.neoforged.neoforge.client.model.obj.ObjLoader;
 
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
+    static {
+        TranslatableContents.lang = () -> com.ibm.icu.util.ULocale.forLocale(net.minecraft.client.Minecraft.getInstance().getLocale());
+    }
+
     public ClientNeoForgeMod(IEventBus modEventBus) {
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();

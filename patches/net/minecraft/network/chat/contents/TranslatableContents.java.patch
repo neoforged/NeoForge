@@ -44,14 +44,22 @@
 +                } else if (s4 != null && s4.startsWith("(")) {
 +                  String s2 = matcher.group(1);
 +                  int i1 = s2 != null ? Integer.parseInt(s2) - 1 : i++;
-+                  p_237517_.accept(FormattedText.of(new com.ibm.icu.text.PluralFormat(com.ibm.icu.util.ULocale.forLocale(net.minecraft.client.Minecraft.getInstance().getLocale()), s4.substring(1, s4.length() - 1)).format(getArgumentNumeric(i1))));
++                  p_237517_.accept(FormattedText.of(new com.ibm.icu.text.PluralFormat(lang.get(), s4.substring(1, s4.length() - 1)).format(getArgumentNumeric(i1))));
                  } else {
                      if (!"s".equals(s4)) {
                          throw new TranslatableFormatException(this, "Unsupported format: '" + s1 + "'");
-@@ -153,6 +_,21 @@
+@@ -153,6 +_,29 @@
          }
      }
  
++    /**
++     * Neo: A server-safe way to get the locale from Minecraft#getLocale(). Is set in Neo's client mod.
++     */
++    public static java.util.function.Supplier<com.ibm.icu.util.ULocale> lang = () -> com.ibm.icu.util.ULocale.US;
++
++    /**
++     * Neo: Variant of getArgument that directly converts numeric arguments to double instead of stringifying them first
++     */
 +    private double getArgumentNumeric(int p_237510_) {
 +      if (p_237510_ >= 0 && p_237510_ < this.args.length) {
 +          Object object = this.args[p_237510_];
