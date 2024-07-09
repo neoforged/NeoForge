@@ -211,27 +211,38 @@
                                  p_38165_.setDeltaMovement(vec33.multiply(0.2, 1.0, 0.2));
                                  p_38165_.push(vec32.x + d0, 0.0, vec32.z + d1);
                                  this.setDeltaMovement(vec32.multiply(0.95, 1.0, 0.95));
-@@ -790,6 +_,42 @@
+@@ -789,6 +_,93 @@
+ 
      public void setCustomDisplay(boolean p_38139_) {
          this.getEntityData().set(DATA_ID_CUSTOM_DISPLAY, p_38139_);
-     }
++    }
 +
-+    // Forge Start
++    // Neo: Controls whether a Minecrart is allowed on Rails or not
 +    private boolean canUseRail = true;
-+    @Override public boolean canUseRail() { return canUseRail; }
-+    @Override public void setCanUseRail(boolean value) { this.canUseRail = value; }
++
++    @Override
++    public boolean canUseRail() {
++        return canUseRail;
++    }
++
++    @Override
++    public void setCanUseRail(boolean value) {
++        this.canUseRail = value;
++    }
++
++    // Neo: Controls the rail speed cap
 +    private float currentSpeedCapOnRail = getMaxCartSpeedOnRail();
-+    @Override public float getCurrentCartSpeedCapOnRail() { return currentSpeedCapOnRail; }
-+    @Override public void setCurrentCartSpeedCapOnRail(float value) { currentSpeedCapOnRail = Math.min(value, getMaxCartSpeedOnRail()); }
-+    @org.jetbrains.annotations.Nullable private Float maxSpeedAirLateral = null;
-+    @Override public float getMaxSpeedAirLateral() { return maxSpeedAirLateral == null ? (float) this.getMaxSpeed() : maxSpeedAirLateral; }
-+    @Override public void setMaxSpeedAirLateral(float value) { maxSpeedAirLateral = value; }
-+    private float maxSpeedAirVertical = DEFAULT_MAX_SPEED_AIR_VERTICAL;
-+    @Override public float getMaxSpeedAirVertical() { return maxSpeedAirVertical; }
-+    @Override public void setMaxSpeedAirVertical(float value) { maxSpeedAirVertical = value; }
-+    private double dragAir = DEFAULT_AIR_DRAG;
-+    @Override public double getDragAir() { return dragAir; }
-+    @Override public void setDragAir(double value) { dragAir = value; }
++
++    @Override
++    public float getCurrentCartSpeedCapOnRail() {
++        return currentSpeedCapOnRail;
++    }
++
++    @Override
++    public void setCurrentCartSpeedCapOnRail(float value) {
++        currentSpeedCapOnRail = Math.min(value, getMaxCartSpeedOnRail());
++    }
++
 +    @Override
 +    public double getMaxSpeedWithRail() { //Non-default because getMaximumSpeed is protected
 +        if (!canUseRail()) return getMaxSpeed();
@@ -242,6 +253,48 @@
 +        float railMaxSpeed = ((BaseRailBlock)state.getBlock()).getRailMaxSpeed(state, this.level(), pos, this);
 +        return Math.min(railMaxSpeed, getCurrentCartSpeedCapOnRail());
 +    }
++
++    // Neo: Controls the horizontal air speed cap
++    @org.jetbrains.annotations.Nullable
++    private Float maxSpeedAirLateral = null;
++
++    @Override
++    public float getMaxSpeedAirLateral() {
++        return maxSpeedAirLateral == null ? (float) this.getMaxSpeed() : maxSpeedAirLateral;
++    }
++
++    @Override
++    public void setMaxSpeedAirLateral(float value) {
++        maxSpeedAirLateral = value;
++    }
++
++    // Neo: Controls the vertical air speed cap
++    private float maxSpeedAirVertical = DEFAULT_MAX_SPEED_AIR_VERTICAL;
++
++    @Override
++    public float getMaxSpeedAirVertical() {
++        return maxSpeedAirVertical;
++    }
++
++    @Override
++    public void setMaxSpeedAirVertical(float value) {
++        maxSpeedAirVertical = value;
++    }
++
++    // Neo: Controls the drag effect when Minecart is in air
++    private double dragAir = DEFAULT_AIR_DRAG;
++
++    @Override
++    public double getDragAir() {
++        return dragAir;
++    }
++
++    @Override
++    public void setDragAir(double value) {
++        dragAir = value;
++    }
++
++    // Neo: Applies the movement speed to the Minecart
 +    @Override
 +    public void moveMinecartOnRail(BlockPos pos) { //Non-default because getMaximumSpeed is protected
 +        AbstractMinecart mc = this;
@@ -249,8 +302,6 @@
 +        double d25 = mc.getMaxSpeedWithRail();
 +        Vec3 vec3d1 = mc.getDeltaMovement();
 +        mc.move(MoverType.SELF, new Vec3(Mth.clamp(d24 * vec3d1.x, -d25, d25), 0.0D, Mth.clamp(d24 * vec3d1.z, -d25, d25)));
-+    }
-+    // Forge end
+     }
  
      @Override
-     public ItemStack getPickResult() {

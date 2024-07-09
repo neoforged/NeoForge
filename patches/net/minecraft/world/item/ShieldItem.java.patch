@@ -1,16 +1,12 @@
 --- a/net/minecraft/world/item/ShieldItem.java
 +++ b/net/minecraft/world/item/ShieldItem.java
-@@ -54,6 +_,13 @@
-         return p_43092_.is(ItemTags.PLANKS) || super.isValidRepairItem(p_43091_, p_43092_);
+@@ -58,4 +_,9 @@
+     public EquipmentSlot getEquipmentSlot() {
+         return EquipmentSlot.OFFHAND;
      }
- 
-+    /* ******************** FORGE START ******************** */
 +
 +    @Override
 +    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
 +        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SHIELD_ACTIONS.contains(itemAbility);
 +    }
-+
-     @Override
-     public EquipmentSlot getEquipmentSlot() {
-         return EquipmentSlot.OFFHAND;
+ }
