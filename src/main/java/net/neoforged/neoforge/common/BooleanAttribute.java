@@ -19,6 +19,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
  * This behavior allows for multiple enabling modifiers to coexist, not removing the effect unless all enabling modifiers are removed.
  * <p>
  * Additionally, it permits forcibly disabling the effect through multiply total.
+ * 
+ * @apiNote Use of other operations and/or values will trigger undefined behavior, where no guarantees can be made if the attribute will be enabled or not.
  */
 public class BooleanAttribute extends Attribute {
     protected BooleanAttribute(String descriptionId, boolean defaultValue) {
