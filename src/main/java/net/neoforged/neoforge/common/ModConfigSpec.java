@@ -82,7 +82,7 @@ public class ModConfigSpec implements IConfigSpec {
      * The currently loaded config values.
      */
     @Nullable
-    private Config loadedConfig;
+    private ILoadedConfig loadedConfig;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -106,27 +106,19 @@ public class ModConfigSpec implements IConfigSpec {
         return levelTranslationKeys.get(path);
     }
 
-    public void setConfig(@Nullable CommentedConfig config) {
+    public void acceptConfig(@Nullable ILoadedConfig config) {
         this.loadedConfig = config;
-        if (config != null && !isCorrect(config)) {
+        if (config != null && !isCorrect(config.config())) {
             // Correct in case the config did not get corrected before this function was called.
             // This should not happen under normal circumstances, hence the warning.
-            String configName = config instanceof FileConfig ? ((FileConfig) config).getNioPath().toString() : config.toString();
-            LOGGER.warn(Logging.CORE, "Configuration file {} is not correct. Correcting", configName);
-            correct(config,
+            LOGGER.warn(Logging.CORE, "Configuration {} is not correct. Correcting", config);
+            correct(config.config(),
                     (action, path, incorrectValue, correctedValue) -> LOGGER.warn(Logging.CORE, "Incorrect key {} was corrected from {} to its default, {}. {}", DOT_JOINER.join(path), incorrectValue, correctedValue, incorrectValue == correctedValue ? "This seems to be an error." : ""),
                     (action, path, incorrectValue, correctedValue) -> LOGGER.debug(Logging.CORE, "The comment on key {} does not match the spec. This may create a backup.", DOT_JOINER.join(path)));
 
-            if (config instanceof FileConfig fileConfig) {
-                fileConfig.save();
-            }
+            config.save();
         }
         this.afterReload();
-    }
-
-    @Override
-    public void acceptConfig(@Nullable CommentedConfig data) {
-        setConfig(data);
     }
 
     public boolean isLoaded() {
@@ -156,14 +148,11 @@ public class ModConfigSpec implements IConfigSpec {
     }
 
     /**
-     * @deprecated Use {@link ModConfig#onConfigChanged()} instead, which will also fire a reloading event.
+     * Saves the current config values to the config file, and fires the config reloading event.
      */
-    @Deprecated(forRemoval = true)
     public void save() {
         Preconditions.checkNotNull(loadedConfig, "Cannot save config value without assigned Config object present");
-        if (loadedConfig instanceof FileConfig fileConfig) {
-            fileConfig.save();
-        }
+        loadedConfig.save();
     }
 
     @Override
@@ -941,10 +930,11 @@ public class ModConfigSpec implements IConfigSpec {
         @Override
         public T get() {
             Preconditions.checkNotNull(spec, "Cannot get config value before spec is built");
-            Preconditions.checkState(spec.loadedConfig != null, "Cannot get config value before config is loaded.");
+            var loadedConfig = spec.loadedConfig;
+            Preconditions.checkState(loadedConfig != null, "Cannot get config value before config is loaded.");
 
             if (cachedValue == null) {
-                cachedValue = getRaw(spec.loadedConfig, path, defaultSupplier);
+                cachedValue = getRaw(loadedConfig.config(), path, defaultSupplier);
             }
             return cachedValue;
         }
@@ -964,10 +954,6 @@ public class ModConfigSpec implements IConfigSpec {
             return parent;
         }
 
-        /**
-         * @deprecated Use {@link ModConfig#onConfigChanged()} instead, which will also fire a reloading event.
-         */
-        @Deprecated(forRemoval = true)
         public void save() {
             Preconditions.checkNotNull(spec, "Cannot save config value before spec is built");
             Preconditions.checkNotNull(spec.loadedConfig, "Cannot save config value without assigned Config object present");
@@ -976,12 +962,13 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * Directly sets the value, without firing events or writing the config to disk.
-         * Make sure to call {@link ModConfig#onConfigChanged()} eventually.
+         * Make sure to call {@link ModConfigSpec#save()} eventually.
          */
         public void set(T value) {
             Preconditions.checkNotNull(spec, "Cannot set config value before spec is built");
-            Preconditions.checkNotNull(spec.loadedConfig, "Cannot set config value without assigned Config object present");
-            spec.loadedConfig.set(path, value);
+            var loadedConfig = spec.loadedConfig;
+            Preconditions.checkNotNull(loadedConfig, "Cannot set config value without assigned Config object present");
+            loadedConfig.config().set(path, value);
             this.cachedValue = value;
         }
 
