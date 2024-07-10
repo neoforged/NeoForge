@@ -11,8 +11,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.BiPredicate;
+import net.neoforged.neoforge.common.util.strategy.BasicStrategy;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -22,16 +22,6 @@ import org.jetbrains.annotations.Nullable;
  * @param <V> the type of mapped values
  */
 public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
-    /**
-     * A strategy that uses {@link Objects#hashCode(Object)} and {@link Object#equals(Object)}.
-     */
-    public static final Strategy<? super Object> BASIC = new BasicStrategy();
-
-    /**
-     * A strategy that uses {@link System#identityHashCode(Object)} and {@code a == b} comparisons.
-     */
-    public static final Strategy<? super Object> IDENTITY = new IdentityStrategy();
-
     private final Strategy<? super K> strategy;
     private final Map<K, Entry> entries;
     private final MergeFunction<K, V> merge;
@@ -45,10 +35,10 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
     private transient int changes = 0;
 
     /**
-     * Creates a new instance using the {@link #BASIC} strategy.
+     * Creates a new instance using the {@link BasicStrategy#BASIC} strategy.
      */
     public MutableHashedLinkedMap() {
-        this(BASIC);
+        this(BasicStrategy.BASIC);
     }
 
     /**
@@ -390,30 +380,6 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
         public int hashCode() {
             return (key == null ? 0 : strategy.hashCode(key)) ^
                     (value == null ? 0 : value.hashCode());
-        }
-    }
-
-    private static class BasicStrategy implements Strategy<Object> {
-        @Override
-        public int hashCode(Object o) {
-            return Objects.hashCode(o);
-        }
-
-        @Override
-        public boolean equals(Object a, Object b) {
-            return Objects.equals(a, b);
-        }
-    }
-
-    private static class IdentityStrategy implements Strategy<Object> {
-        @Override
-        public int hashCode(Object o) {
-            return System.identityHashCode(o);
-        }
-
-        @Override
-        public boolean equals(Object a, Object b) {
-            return a == b;
         }
     }
 }

@@ -46,7 +46,7 @@ jobs:
           cache-read-only: false
 
       - name: Setup with Gradle
-        run: ./gradlew setup
+        run: ./gradlew :neoforge:setup -PvalidateAccessTransformers
 
       - name: Build with Gradle
         run: ./gradlew assemble checkFormatting
