@@ -13,7 +13,6 @@ import com.electronwill.nightconfig.core.EnumGetMethod;
 import com.electronwill.nightconfig.core.InMemoryFormat;
 import com.electronwill.nightconfig.core.UnmodifiableCommentedConfig;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
-import com.electronwill.nightconfig.core.file.FileConfig;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -39,7 +38,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.config.IConfigSpec;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -208,7 +206,7 @@ public class ModConfigSpec implements IConfigSpec {
 
                 String newComment = levelComments.get(parentPath);
                 String oldComment = config.getComment(key);
-                if (!stringsMatchIgnoringNewlines(oldComment, newComment)) {
+                if (!stringsMatchNormalizingNewLines(oldComment, newComment)) {
                     if (commentListener != null)
                         commentListener.onCorrect(action, parentPathUnmodifiable, oldComment, newComment);
 
@@ -229,7 +227,7 @@ public class ModConfigSpec implements IConfigSpec {
                     count++;
                 }
                 String oldComment = config.getComment(key);
-                if (!stringsMatchIgnoringNewlines(oldComment, valueSpec.getComment())) {
+                if (!stringsMatchNormalizingNewLines(oldComment, valueSpec.getComment())) {
                     if (commentListener != null)
                         commentListener.onCorrect(action, parentPathUnmodifiable, oldComment, valueSpec.getComment());
 
@@ -260,12 +258,17 @@ public class ModConfigSpec implements IConfigSpec {
         return count;
     }
 
-    private boolean stringsMatchIgnoringNewlines(@Nullable String string1, @Nullable String string2) {
-        if (string1 != null && string2 != null && string1.length() > 0 && string2.length() > 0) {
+    private boolean stringsMatchNormalizingNewLines(@Nullable String string1, @Nullable String string2) {
+        boolean blank1 = string1 == null || string1.isBlank();
+        boolean blank2 = string2 == null || string2.isBlank();
+        if (blank1 != blank2) {
+            return false;
+        } else if (blank1 && blank2) {
+            return true;
+        } else {
             return string1.replaceAll("\r\n", "\n")
                     .equals(string2.replaceAll("\r\n", "\n"));
         }
-        return Objects.equals(string1, string2);
     }
 
     public static class Builder {
