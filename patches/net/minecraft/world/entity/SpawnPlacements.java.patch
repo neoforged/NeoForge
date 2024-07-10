@@ -11,13 +11,18 @@
      private static <T extends Mob> void register(
          EntityType<T> p_21755_, SpawnPlacementType p_321847_, Heightmap.Types p_21757_, SpawnPlacements.SpawnPredicate<T> p_21758_
      ) {
-@@ -73,7 +_,8 @@
+@@ -73,7 +_,13 @@
          EntityType<T> p_217075_, ServerLevelAccessor p_217076_, MobSpawnType p_217077_, BlockPos p_217078_, RandomSource p_217079_
      ) {
          SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.get(p_217075_);
 -        return spawnplacements$data == null || ((SpawnPredicate<T>)spawnplacements$data.predicate).test(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
 +        boolean vanillaResult = spawnplacements$data == null || spawnplacements$data.predicate.test((EntityType)p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
 +        return net.neoforged.neoforge.event.EventHooks.checkSpawnPlacements(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_, vanillaResult);
++    }
++
++    // Neo: Added to allow for checking if an entity has a spawn placement
++    public static boolean hasPlacement(EntityType<?> type) {
++        return DATA_BY_TYPE.containsKey(type);
      }
  
      static {
