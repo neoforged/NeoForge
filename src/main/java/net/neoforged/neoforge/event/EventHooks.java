@@ -275,7 +275,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * zombie.finalizeSpawn(level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
@@ -288,7 +288,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * EventHooks.finalizeMobSpawn(zombie, level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
