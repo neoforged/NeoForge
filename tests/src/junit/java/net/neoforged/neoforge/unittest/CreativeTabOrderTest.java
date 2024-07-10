@@ -152,18 +152,14 @@ public class CreativeTabOrderTest {
         List<Item> desiredOrder = setupDesiredStoneOrder();
         for (ItemStack entry : stoneParentTab) {
             Item currentDesiredItem = desiredOrder.removeFirst();
-            if (!entry.is(currentDesiredItem)) {
-                Assertions.assertFalse(false, entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone parent tab!");
-            }
+            Assertions.assertTrue(entry.is(currentDesiredItem), entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone parent tab!");
         }
         Assertions.assertTrue(desiredOrder.isEmpty(), "Not all sorted stones were found in stone parent tab!");
 
         desiredOrder = setupDesiredStoneOrder();
         for (ItemStack entry : stoneSearchTab) {
             Item currentDesiredItem = desiredOrder.removeFirst();
-            if (!entry.is(currentDesiredItem)) {
-                Assertions.assertFalse(false, entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone search tab!");
-            }
+            Assertions.assertTrue(entry.is(currentDesiredItem), entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone search tab!");
         }
         Assertions.assertTrue(desiredOrder.isEmpty(), "Not all sorted stones were found in stone search tab!");
     }

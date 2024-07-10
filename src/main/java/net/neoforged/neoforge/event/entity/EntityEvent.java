@@ -118,7 +118,7 @@ public abstract class EntityEvent extends Event {
      *
      * <p><strong>Note:</strong> This event is fired from the {@code Entity} constructor, and therefore the entity instance
      * might not be fully initialized. Be cautious in using methods and fields from the instance, and check
-     * {@link Entity#isAddedToWorld()} or {@link Entity#firstTick}.
+     * {@link Entity#isAddedToLevel()} or {@link Entity#firstTick}.
      *
      * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and is fired on the
      * {@linkplain NeoForge#EVENT_BUS game event bus}.
