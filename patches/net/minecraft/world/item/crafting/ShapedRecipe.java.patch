@@ -1,19 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipe.java
-@@ -81,10 +_,20 @@
-         return this.pattern.height();
-     }
- 
-+    // Neo: Expose a getter for pattern field.
-+    public ShapedRecipePattern getPattern() {
-+        return this.pattern;
-+    }
-+
-+    // Neo: Expose a getter for result field without needing a provider param.
-+    public ItemStack getResultItem() {
-+        return this.result;
-+    }
-+
+@@ -84,7 +_,7 @@
      @Override
      public boolean isIncomplete() {
          NonNullList<Ingredient> nonnulllist = this.getIngredients();
