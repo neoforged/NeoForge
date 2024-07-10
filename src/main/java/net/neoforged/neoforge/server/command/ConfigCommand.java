@@ -19,8 +19,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.StringUtils;
 import net.neoforged.neoforge.client.command.ClientConfigCommand;
@@ -56,8 +56,8 @@ public class ConfigCommand {
         private static int showFile(final CommandContext<CommandSourceStack> context) {
             final String modId = context.getArgument("mod", String.class);
             final ModConfig.Type type = ModConfig.Type.valueOf(context.getArgument("type", ServerModConfigType.class).toString()); // Convert it back to ModConfig to grab the configs
-            final String configFileName = ConfigTracker.INSTANCE.getConfigFileName(modId, type);
-            if (configFileName != null) {
+            var configFileNames = ModConfigs.getConfigFileNames(modId, type);
+            for (var configFileName : configFileNames) {
                 File f = new File(configFileName);
                 MutableComponent fileComponent = Component.literal(f.getName()).withStyle(ChatFormatting.UNDERLINE);
 
@@ -70,7 +70,8 @@ public class ConfigCommand {
 
                 context.getSource().sendSuccess(() -> Component.translatable("commands.config.getwithtype",
                         modId, type.toString(), fileComponent), true);
-            } else {
+            }
+            if (configFileNames.isEmpty()) {
                 context.getSource().sendSuccess(() -> Component.translatable("commands.config.noconfig", modId, type.toString()),
                         true);
             }
