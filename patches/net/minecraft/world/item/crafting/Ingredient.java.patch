@@ -59,7 +59,7 @@
  
      private Ingredient(Stream<? extends Ingredient.Value> p_43907_) {
          this.values = p_43907_.toArray(Ingredient.Value[]::new);
-@@ -47,9 +_,20 @@
+@@ -47,9 +_,23 @@
          this.values = p_301044_;
      }
  
@@ -70,13 +70,17 @@
 +
      public ItemStack[] getItems() {
          if (this.itemStacks == null) {
+-            this.itemStacks = Arrays.stream(this.values).flatMap(p_43916_ -> p_43916_.getItems().stream()).distinct().toArray(ItemStack[]::new);
++            // Neo: vanilla used Stream.distinct() here which has basically no effect as ItemStack does not override equals().
++            // Using ItemStackLinkedSet here instead for a REAL distinct result.
++            // ItemStackLinkedSet#TYPE_AND_TAG strategy does not check for count, might worth re-evaluation once we support ingredient with count
++            final java.util.Set<ItemStack> itemStacks = net.minecraft.world.item.ItemStackLinkedSet.createTypeAndComponentsSet();
 +            if (this.customIngredient != null) {
-+                this.itemStacks = this.customIngredient.getItems()
-+                        .distinct()//Mimic vanilla that calls distinct on the stacks
-+                        .toArray(ItemStack[]::new);
++                this.customIngredient.getItems().forEach(itemStacks::add);
 +            } else {
-             this.itemStacks = Arrays.stream(this.values).flatMap(p_43916_ -> p_43916_.getItems().stream()).distinct().toArray(ItemStack[]::new);
++                Arrays.stream(this.values).flatMap(p_43916_ -> p_43916_.getItems().stream()).forEach(itemStacks::add);
 +            }
++            this.itemStacks = itemStacks.toArray(ItemStack[]::new);
          }
  
          return this.itemStacks;
