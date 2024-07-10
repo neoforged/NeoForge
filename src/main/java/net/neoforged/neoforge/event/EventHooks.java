@@ -11,6 +11,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DynamicOps;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -82,6 +83,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -171,6 +173,7 @@ import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
+import net.neoforged.neoforge.event.level.ServerLevelEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -1124,5 +1127,18 @@ public class EventHooks {
         var event = new MobSplitEvent(parent, children);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    /**
+     * Fires the {@link ServerLevelEvent.CustomSpawners}. Returns the custom spawners list.
+     * 
+     * @param serverLevel    The server level.
+     * @param customSpawners The original custom spawners.
+     * @return The new custom spawners list.
+     */
+    public static List<CustomSpawner> getCustomSpawners(ServerLevel serverLevel, List<CustomSpawner> customSpawners) {
+        ServerLevelEvent.CustomSpawners event = new ServerLevelEvent.CustomSpawners(serverLevel, new ArrayList<>(customSpawners));
+        NeoForge.EVENT_BUS.post(event);
+        return event.getCustomSpawners();
     }
 }
