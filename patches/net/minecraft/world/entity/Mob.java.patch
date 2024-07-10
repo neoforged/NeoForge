@@ -164,12 +164,12 @@
 +
 +    /**
 +     * Marks this mob as being disallowed to spawn during {@link Level#addFreshEntity(Entity)}.<p>
-+     * @throws UnsupportedOperationException if this entity has already been {@link Entity#isAddedToWorld() added to the world}.
++     * @throws UnsupportedOperationException if this entity has already been {@link Entity#isAddedToLevel()} added to the level.
 +     * @apiNote Not public-facing API.
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final void setSpawnCancelled(boolean cancel) {
-+        if (this.isAddedToWorld()) {
++        if (this.isAddedToLevel()) {
 +            throw new UnsupportedOperationException("Late invocations of Mob#setSpawnCancelled are not permitted.");
 +        }
 +        this.spawnCancelled = cancel;
