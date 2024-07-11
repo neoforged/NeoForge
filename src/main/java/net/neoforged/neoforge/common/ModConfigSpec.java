@@ -1086,7 +1086,7 @@ public class ModConfigSpec implements IConfigSpec {
         private final Predicate<Object> elementValidator;
         private final Range<Integer> sizeRange;
 
-        private ListValueSpec(Supplier<?> supplier, Supplier<?> newElementSupplier, Predicate<Object> listValidator, Predicate<Object> elementValidator, BuilderContext context, List<String> path, Range<Integer> sizeRange) {
+        private ListValueSpec(Supplier<?> supplier, Supplier<?> newElementSupplier, Predicate<Object> listValidator, Predicate<Object> elementValidator, BuilderContext context, List<String> path, @Nullable Range<Integer> sizeRange) {
             super(supplier, listValidator, context, path);
             Objects.requireNonNull(elementValidator, "ElementValidator can not be null");
 
@@ -1124,6 +1124,7 @@ public class ModConfigSpec implements IConfigSpec {
          * 
          * Only used by the UI!
          */
+        @Nullable
         public Range<Integer> getSizeRange() {
             return sizeRange;
         }
