@@ -129,6 +129,12 @@
   "neoforge.configuration.uitext.type.server": "Server Settings",
   "neoforge.configuration.uitext.type.common": "Common settings",
   "neoforge.configuration.uitext.type.startup": "Startup settings",
+
+  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
+  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
+  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
+  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+
   "neoforge.configuration.uitext.notonline": "Settings in here are determined by the server and cannot be changed while online.",
   "neoforge.configuration.uitext.notlan": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
   "neoforge.configuration.uitext.notloaded": "Settings in here are are ony available while a world is loaded.",
@@ -154,13 +160,10 @@
   "neoforge.configuration.uitext.restart.return": "Not yet...",
 
   "neoforge.configuration.client": "Client Settings",
-  "neoforge.configuration.client.title": "NeoForge Configuration",
   "neoforge.configuration.client.tooltip": "",
   "neoforge.configuration.general": "General Settings",
-  "neoforge.configuration.general.title": "NeoForge Configuration",
   "neoforge.configuration.general.tooltip": "",
   "neoforge.configuration.server": "Server Settings",
-  "neoforge.configuration.server.title": "NeoForge Configuration",
   "neoforge.configuration.server.tooltip": "",
 
   "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",

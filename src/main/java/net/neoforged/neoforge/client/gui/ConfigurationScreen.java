@@ -101,7 +101,7 @@ import org.jetbrains.annotations.Nullable;
 public final class ConfigurationScreen extends OptionsSubScreen {
     public static class TranslationChecker {
         private static final Logger LOGGER = LogManager.getLogger();
-        private final Set<String> untranslatables = new HashSet<String>();
+        private final Set<String> untranslatables = new HashSet<>();
 
         public String check(final String translationKey) {
             if (!I18n.exists(translationKey)) {
@@ -176,7 +176,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     protected final ModContainer mod;
     private final TriFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Screen> sectionScreen;
 
-    protected RestartType needsRestart = RestartType.NONE;
+    public RestartType needsRestart = RestartType.NONE;
     // If there is only one config type (and it can be edited, we show that instantly on the way "down" and want to close on the way "up".
     // But when returning from the restart/reload confirmation screens, we need to stay open.
     private boolean autoClose = false;
@@ -387,7 +387,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param modConfig The actual config to show and edit.
          */
         public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
-            this(Context.top(modConfig.getModId(), parent, modConfig), translatableConfig(modConfig, ".title", LANG_PREFIX + "title"));
+            this(Context.top(modConfig.getModId(), parent, modConfig), translatableConfig(modConfig, ".title", LANG_PREFIX + "title." + type.name().toLowerCase(Locale.ROOT)));
             needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
         }
 
@@ -402,9 +402,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param entrySet      The source for the {@link ConfigValue} objects for this section.
          */
         public ConfigurationSectionScreen(final Context parentContext, final Screen parent, final Map<String, Object> valueSpecs, final String key,
-                final Set<? extends Entry> entrySet) {
-            this(Context.section(parentContext, parent, entrySet, valueSpecs, key),
-                    Component.translatable(translationChecker.check(parentContext.modId + ".configuration." + key + ".title")));
+                final Set<? extends Entry> entrySet, Component title) {
+            this(Context.section(parentContext, parent, entrySet, valueSpecs, key), Component.empty()
+                    .append(parent.getTitle()).append(Component.literal(" > ").withStyle(ChatFormatting.GOLD)
+                            .withStyle(ChatFormatting.BOLD)).append(title));
         }
 
         @SuppressWarnings("resource")
@@ -753,7 +754,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return new Element(null, null,
                     Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
-                                    k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet()).rebuild())))
+                                    k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet(), Component.translatable(getTranslationKey(key))).rebuild())))
                             .tooltip(Tooltip.create(getTooltipComponent(key)))
                             .width(Button.DEFAULT_WIDTH)
                             // .width(BIG_BUTTON_WIDTH) TODO - reconsider this?
