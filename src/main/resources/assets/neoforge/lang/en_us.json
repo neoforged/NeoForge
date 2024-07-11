@@ -140,6 +140,19 @@
   "neoforge.configuration.uitext.notloaded": "Settings in here are are ony available while a world is loaded.",
   "neoforge.configuration.uitext.unsupportedelement": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
   "neoforge.configuration.uitext.section": "%s...",
+  "neoforge.configuration.uitext.breadcrumb": [
+    {
+      "index": 0
+    },
+    {
+      "text": " > ",
+      "color": "gold",
+      "bold": true
+    },
+    {
+      "index": 1
+    }
+  ],
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Undo",
   "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
@@ -158,13 +171,6 @@
   "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
   "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
   "neoforge.configuration.uitext.restart.return": "Not yet...",
-
-  "neoforge.configuration.client": "Client Settings",
-  "neoforge.configuration.client.tooltip": "",
-  "neoforge.configuration.general": "General Settings",
-  "neoforge.configuration.general.tooltip": "",
-  "neoforge.configuration.server": "Server Settings",
-  "neoforge.configuration.server.tooltip": "",
 
   "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
