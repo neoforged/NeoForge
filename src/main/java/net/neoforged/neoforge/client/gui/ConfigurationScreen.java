@@ -926,7 +926,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             final Supplier<?> newElement = spec.getNewElementSupplier();
             final Range<Integer> sizeRange = spec.getSizeRange();
 
-            if (sizeRange == null || sizeRange.test(cfgList.size() + 1)) {
+            if (newElement != null && sizeRange.test(cfgList.size() + 1)) {
                 list.addSmall(Button.builder(NEW_LIST_ELEMENT, button -> {
                     List<T> newValue = new ArrayList<>(cfgList);
                     newValue.add((T) newElement.get());

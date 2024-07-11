@@ -584,7 +584,7 @@ public class ModConfigSpec implements IConfigSpec {
          * @return A {@link ConfigValue} object that can be used to access the config value and that will live-update if the value changed, i.e. because the config file
          *         was updated or the config UI was used.
          */
-        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator, Range<Integer> sizeRange) {
+        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, @Nullable Supplier<T> newElementSupplier, Predicate<Object> elementValidator, Range<Integer> sizeRange) {
             context.setClazz(List.class);
             return define(path, new ListValueSpec(defaultSupplier, newElementSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), elementValidator, context, path, sizeRange) {
                 @Override
@@ -1082,17 +1082,21 @@ public class ModConfigSpec implements IConfigSpec {
     }
 
     public static class ListValueSpec extends ValueSpec {
-        private final Supplier<?> newElementSupplier;
-        private final Predicate<Object> elementValidator;
-        private final Range<Integer> sizeRange;
+        private static final Range<Integer> MAX_ELEMENTS = new Range<>(Integer.class, 0, Integer.MAX_VALUE);
 
-        private ListValueSpec(Supplier<?> supplier, Supplier<?> newElementSupplier, Predicate<Object> listValidator, Predicate<Object> elementValidator, BuilderContext context, List<String> path, @Nullable Range<Integer> sizeRange) {
+        @Nullable
+        private final Supplier<?> newElementSupplier;
+        @Nullable
+        private final Range<Integer> sizeRange;
+        private final Predicate<Object> elementValidator;
+
+        private ListValueSpec(Supplier<?> supplier, @Nullable Supplier<?> newElementSupplier, Predicate<Object> listValidator, Predicate<Object> elementValidator, BuilderContext context, List<String> path, @Nullable Range<Integer> sizeRange) {
             super(supplier, listValidator, context, path);
             Objects.requireNonNull(elementValidator, "ElementValidator can not be null");
 
             this.newElementSupplier = newElementSupplier;
             this.elementValidator = elementValidator;
-            this.sizeRange = sizeRange;
+            this.sizeRange = Objects.requireNonNullElse(sizeRange, MAX_ELEMENTS);
         }
 
         /**
@@ -1102,6 +1106,7 @@ public class ModConfigSpec implements IConfigSpec {
          * 
          * Only used by the UI!
          */
+        @Nullable
         public Supplier<?> getNewElementSupplier() {
             return newElementSupplier;
         }
@@ -1118,13 +1123,12 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         /**
-         * The allowable range of the size of the list. If null, [0..Integer.MAX_VALUE] is assumed.<p>
-         * 
-         * Note that the validator overrules this.<p>
-         * 
+         * The allowable range of the size of the list.
+         * <p>
+         * Note that the validator overrules this.
+         * <p>
          * Only used by the UI!
          */
-        @Nullable
         public Range<Integer> getSizeRange() {
             return sizeRange;
         }
