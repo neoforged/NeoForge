@@ -620,11 +620,18 @@ public class ModConfigSpec implements IConfigSpec {
             return this;
         }
 
+        /**
+         * Config values marked as needing a world restart will not reset their {@linkplain ConfigValue#get() cached value} until they are unloaded
+         * (i.e. when a world is closed).
+         */
         public Builder worldRestart() {
             context.worldRestart();
             return this;
         }
 
+        /**
+         * Config values marked as needing a game restart will never reset their {@linkplain ConfigValue#get() cached value}.
+         */
         public Builder gameRestart() {
             context.gameRestart();
             return this;
