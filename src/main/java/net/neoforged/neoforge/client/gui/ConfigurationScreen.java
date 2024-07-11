@@ -144,6 +144,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      */
     private static final String SECTION = LANG_PREFIX + "section";
     /**
+     * The breadcrumb separator. Default: "%s > %s"
+     */
+    private static final String CRUMB = LANG_PREFIX + "breadcrumb";
+    /**
      * The label of list elements. Will be supplied the index into the list. Default: "%s:"
      */
     private static final String LIST_ELEMENT = LANG_PREFIX + "listelement";
@@ -403,9 +407,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          */
         public ConfigurationSectionScreen(final Context parentContext, final Screen parent, final Map<String, Object> valueSpecs, final String key,
                 final Set<? extends Entry> entrySet, Component title) {
-            this(Context.section(parentContext, parent, entrySet, valueSpecs, key), Component.empty()
-                    .append(parent.getTitle()).append(Component.literal(" > ").withStyle(ChatFormatting.GOLD)
-                            .withStyle(ChatFormatting.BOLD)).append(title));
+            this(Context.section(parentContext, parent, entrySet, valueSpecs, key), Component.translatable(CRUMB, parent.getTitle(), title));
         }
 
         @SuppressWarnings("resource")
