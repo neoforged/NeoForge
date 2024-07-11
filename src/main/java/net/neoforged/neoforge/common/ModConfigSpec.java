@@ -138,7 +138,11 @@ public class ModConfigSpec implements IConfigSpec {
     private void resetCaches(final Iterable<Object> configValues) {
         configValues.forEach(value -> {
             if (value instanceof ConfigValue<?> configValue) {
-                configValue.clearCache();
+                // Only clear the caches of configs that don't need a game restart and of those that don't need a world restart, and if they do
+                // the config is being unloaded
+                if (!configValue.getSpec().needsGameRestart() && (!configValue.getSpec().needsWorldRestart() || this.loadedConfig == null)) {
+                    configValue.clearCache();
+                }
             } else if (value instanceof Config innerConfig) {
                 this.resetCaches(innerConfig.valueMap().values());
             }
@@ -621,6 +625,11 @@ public class ModConfigSpec implements IConfigSpec {
             return this;
         }
 
+        public Builder gameRestart() {
+            context.gameRestart();
+            return this;
+        }
+
         public Builder push(String path) {
             return push(split(path));
         }
@@ -674,6 +683,7 @@ public class ModConfigSpec implements IConfigSpec {
         @Nullable
         private Range<?> range;
         private boolean worldRestart = false;
+        private boolean gameRestart = false;
         @Nullable
         private Class<?> clazz;
 
@@ -734,8 +744,16 @@ public class ModConfigSpec implements IConfigSpec {
             this.worldRestart = true;
         }
 
+        public void gameRestart() {
+            this.gameRestart = true;
+        }
+
         public boolean needsWorldRestart() {
             return this.worldRestart;
+        }
+
+        public boolean needsGameRestart() {
+            return this.gameRestart;
         }
 
         public void setClazz(Class<?> clazz) {
@@ -751,7 +769,8 @@ public class ModConfigSpec implements IConfigSpec {
             validate(hasComment(), "Non-empty comment when empty expected");
             validate(langKey, "Non-null translation key when null expected");
             validate(range, "Non-null range when null expected");
-            validate(worldRestart, "Dangeling world restart value set to true");
+            validate(worldRestart, "Dangling world restart value set to true");
+            validate(worldRestart, "Dangling game restart value set to true");
         }
 
         private void validate(@Nullable Object value, String message) {
@@ -844,6 +863,7 @@ public class ModConfigSpec implements IConfigSpec {
         @Nullable
         private final Range<?> range;
         private final boolean worldRestart;
+        private final boolean gameRestart;
         @Nullable
         private final Class<?> clazz;
         private final Supplier<?> supplier;
@@ -853,10 +873,13 @@ public class ModConfigSpec implements IConfigSpec {
             Objects.requireNonNull(supplier, "Default supplier can not be null");
             Objects.requireNonNull(validator, "Validator can not be null");
 
+            Preconditions.checkArgument(context.needsGameRestart() == context.needsWorldRestart() && context.needsWorldRestart(), "Cannot require both world and game restart");
+
             this.comment = context.hasComment() ? context.buildComment(path) : null;
             this.langKey = context.getTranslationKey();
             this.range = context.getRange();
             this.worldRestart = context.needsWorldRestart();
+            this.gameRestart = context.needsGameRestart();
             this.clazz = context.getClazz();
             this.supplier = supplier;
             this.validator = validator;
@@ -880,6 +903,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         public boolean needsWorldRestart() {
             return this.worldRestart;
+        }
+
+        public boolean needsGameRestart() {
+            return this.gameRestart;
         }
 
         @Nullable
@@ -923,9 +950,12 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         /**
-         * Returns the actual value for the configuration setting, throwing if the config has not yet been loaded.
+         * Returns the configured value for the configuration setting, throwing if the config has not yet been loaded.
+         * <p>
+         * This getter is cached, and will respect the {@link ValueSpec#needsWorldRestart() world restart} and {@link ValueSpec#needsGameRestart() game restart}
+         * options by not clearing its cache if one of those options are set.
          *
-         * @return the actual value for the setting
+         * @return the configured value for the setting
          * @throws NullPointerException  if the {@link ModConfigSpec config spec} object that will contain this has
          *                               not yet been built
          * @throws IllegalStateException if the associated config has not yet been loaded
@@ -942,7 +972,7 @@ public class ModConfigSpec implements IConfigSpec {
             return cachedValue;
         }
 
-        protected T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
+        public T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
             return config.getOrElse(path, defaultSupplier);
         }
 
@@ -972,7 +1002,14 @@ public class ModConfigSpec implements IConfigSpec {
             var loadedConfig = spec.loadedConfig;
             Preconditions.checkNotNull(loadedConfig, "Cannot set config value without assigned Config object present");
             loadedConfig.config().set(path, value);
-            this.cachedValue = value;
+
+            if (!(getSpec().gameRestart || getSpec().worldRestart)) {
+                this.cachedValue = value;
+            }
+        }
+
+        public ValueSpec getSpec() {
+            return parent.spec.get(path);
         }
 
         public void clearCache() {
@@ -1005,7 +1042,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected Integer getRaw(Config config, List<String> path, Supplier<Integer> defaultSupplier) {
+        public Integer getRaw(Config config, List<String> path, Supplier<Integer> defaultSupplier) {
             return config.getIntOrElse(path, () -> defaultSupplier.get());
         }
 
@@ -1021,7 +1058,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected Long getRaw(Config config, List<String> path, Supplier<Long> defaultSupplier) {
+        public Long getRaw(Config config, List<String> path, Supplier<Long> defaultSupplier) {
             return config.getLongOrElse(path, () -> defaultSupplier.get());
         }
 
@@ -1037,7 +1074,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected Double getRaw(Config config, List<String> path, Supplier<Double> defaultSupplier) {
+        public Double getRaw(Config config, List<String> path, Supplier<Double> defaultSupplier) {
             Number n = config.<Number>get(path);
             return n == null ? defaultSupplier.get() : n.doubleValue();
         }
@@ -1059,7 +1096,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
+        public T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
             return config.getEnumOrElse(path, clazz, converter, defaultSupplier);
         }
     }
