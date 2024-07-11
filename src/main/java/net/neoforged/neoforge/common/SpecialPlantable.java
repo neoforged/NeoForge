@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +35,7 @@ public interface SpecialPlantable {
      * Spawns the plant with the given direction attachment point at location.
      * Ideally called after canPlacePlantAtPosition returns true.
      */
-    void spawnPlantAtPosition(ItemStack itemStack, LevelReader level, BlockPos pos, @Nullable Direction direction);
+    void spawnPlantAtPosition(ItemStack itemStack, LevelAccessor level, BlockPos pos, @Nullable Direction direction);
 
     /**
      * Whether Villagers can pick up this item and plant it down on any block that extends FarmBlock.
