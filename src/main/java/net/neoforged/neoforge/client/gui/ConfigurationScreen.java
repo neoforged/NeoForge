@@ -767,7 +767,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
                     Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
-                                    k -> new ConfigurationListScreen<>(Context.list(context, this), key, getTranslationComponent(key), spec, list)).rebuild()))
+                                    k -> new ConfigurationListScreen<>(Context.list(context, this), key, Component.translatable(CRUMB, this.getTitle(), getTranslationComponent(key)), spec, list)).rebuild()))
                             .tooltip(Tooltip.create(getTooltipComponent(key))).build());
         }
 
@@ -943,7 +943,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             final Range<Integer> sizeRange = spec.getSizeRange();
 
             if (newElement != null && sizeRange.test(cfgList.size() + 1)) {
-                list.addSmall(Button.builder(NEW_LIST_ELEMENT, button -> {
+                list.addSmall(new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.empty(), font), Button.builder(NEW_LIST_ELEMENT, button -> {
                     List<T> newValue = new ArrayList<>(cfgList);
                     newValue.add((T) newElement.get());
                     undoManager.add(v -> {
@@ -954,7 +954,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         onChanged(key);
                     }, cfgList);
                     rebuild();
-                }).build(), null);
+                }).build());
             }
         }
 
