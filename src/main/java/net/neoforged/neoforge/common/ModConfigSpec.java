@@ -880,7 +880,7 @@ public class ModConfigSpec implements IConfigSpec {
             Objects.requireNonNull(supplier, "Default supplier can not be null");
             Objects.requireNonNull(validator, "Validator can not be null");
 
-            Preconditions.checkArgument(context.needsGameRestart() == context.needsWorldRestart() && context.needsWorldRestart(), "Cannot require both world and game restart");
+            Preconditions.checkArgument(context.needsGameRestart() == context.needsWorldRestart() && !context.needsWorldRestart(), "Cannot require both world and game restart");
 
             this.comment = context.hasComment() ? context.buildComment(path) : null;
             this.langKey = context.getTranslationKey();
