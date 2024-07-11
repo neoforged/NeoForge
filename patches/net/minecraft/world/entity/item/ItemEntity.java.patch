@@ -55,19 +55,17 @@
                  }
  
                  this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -185,7 +_,16 @@
+@@ -185,7 +_,14 @@
                  }
              }
  
 -            if (!this.level().isClientSide && this.age >= 6000) {
 +            ItemStack item = this.getItem();
 +            if (!this.level().isClientSide && this.age >= lifespan) {
-+                 int hook = net.neoforged.neoforge.event.EventHooks.onItemExpire(this, item);
-+                 if (hook < 0) {
-+                     this.discard();
-+                 } else {
-+                     this.lifespan += hook;
-+                 }
++                this.lifespan += net.neoforged.neoforge.event.EventHooks.onItemExpire(this);
++                if (this.age >= lifespan) {
++                    this.discard();
++                }
 +            }
 +            if (item.isEmpty() && !this.isRemoved()) {
                  this.discard();
