@@ -84,7 +84,7 @@ public final class ClientPayloadHandler {
     }
 
     public static void handle(ConfigFilePayload payload, IPayloadContext context) {
-        ConfigSync.INSTANCE.receiveSyncedConfig(payload.contents(), payload.fileName());
+        ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
     }
 
     public static void handle(AdvancedAddEntityPayload advancedAddEntityPayload, IPayloadContext context) {
