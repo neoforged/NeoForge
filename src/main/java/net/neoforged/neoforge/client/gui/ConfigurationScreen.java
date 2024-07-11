@@ -145,7 +145,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      * The label of list elements. Will be supplied the index into the list. Default: "%s:"
      */
     private static final String LIST_ELEMENT = LANG_PREFIX + "listelement";
-    
+
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline");
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan");
     public static final Component TOOLTIP_CANNOT_EDIT_NOT_LOADED = Component.translatable(LANG_PREFIX + "notloaded");
@@ -166,7 +166,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
     public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
     public static final Component RESET_TOOLTIP = Component.translatable(LANG_PREFIX + "reset.tooltip");
-    
+
     // Ideally this should not be static, but we need it in the construtor's super() call
     protected static final TranslationChecker translationChecker = new TranslationChecker();
 
@@ -201,7 +201,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             buttons.add(null); // start header on a new line
                         }
                         buttons.add(new StringWidget(/* OptionsList.BIG_BUTTON_WIDTH */ 310, Button.DEFAULT_HEIGHT,
-                        		Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font).alignLeft());
+                                Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font).alignLeft());
                         buttons.add(null); // newline after header
                         headerAdded = true;
                     }
@@ -229,9 +229,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     }
 
     public static String asTranslationKey(ModConfig modConfig) {
-    	return modConfig.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH);
+        return modConfig.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH);
     }
-    
+
     @Override
     public void added() {
         super.added();
