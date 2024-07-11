@@ -53,10 +53,6 @@ public abstract class CommonModLoader {
             GameData.freezeData();
             registriesLoaded = true;
         });
-    }
-
-    protected static void load(Executor syncExecutor, Executor parallelExecutor) {
-        Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
 
         ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
             if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -64,6 +60,10 @@ public abstract class CommonModLoader {
             }
             ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
         });
+    }
+
+    protected static void load(Executor syncExecutor, Executor parallelExecutor) {
+        Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
 
         ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
         ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,
