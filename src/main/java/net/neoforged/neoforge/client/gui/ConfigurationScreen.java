@@ -68,6 +68,7 @@ import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ListValueSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.Range;
 import net.neoforged.neoforge.common.ModConfigSpec.ValueSpec;
+import net.neoforged.neoforge.common.TranslatableEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -239,8 +240,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         var displayName = ModList.get().getModContainerById(modConfig.getModId()).orElseThrow().getModInfo().getDisplayName();
         return Component.translatableWithFallback(
                 modConfig.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH) + suffix,
-                I18n.get(fallback, displayName), displayName
-        );
+                I18n.get(fallback, displayName), displayName);
     }
 
     @Override
@@ -659,7 +659,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             final List<T> list = Arrays.stream(clazz.getEnumConstants()).filter(spec::test).toList();
 
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
-                    new OptionInstance<>(getTranslationKey(key), getTooltip(key), (caption, displayvalue) -> Component.literal(displayvalue.name()),
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key), (caption, displayvalue) -> displayvalue instanceof TranslatableEnum tenum ? tenum.getTranslatedName() : Component.literal(displayvalue.name()),
                             new Custom<>(list), source.get(), newValue -> {
                                 // regarding change detection: new value always is different (cycle button)
                                 undoManager.add(v -> {

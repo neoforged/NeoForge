@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.oldtest;
 
+import java.util.List;
+import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -12,12 +14,10 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
-
-import java.util.List;
+import net.neoforged.neoforge.common.TranslatableEnum;
 
 @Mod("configui")
 public class ConfigUITest {
-
     public ConfigUITest(ModContainer container) {
         container.registerConfig(ModConfig.Type.CLIENT, Client.SPEC);
         container.registerConfig(ModConfig.Type.COMMON, Common.SPEC);
@@ -45,14 +45,15 @@ public class ConfigUITest {
                     .push("visuals");
 
             builder.comment("The amount of squirrels to show")
-                            .translation("configuitest.client.squirrels")
-                            .defineInRange("squirrels", 1, 1, Integer.MAX_VALUE);
+                    .translation("configuitest.client.squirrels")
+                    .defineInRange("squirrels", 1, 1, Integer.MAX_VALUE);
 
             builder.pop();
 
             SPEC = builder.build();
         }
     }
+
     public static class Server {
         public static final ModConfigSpec SPEC;
 
@@ -62,6 +63,7 @@ public class ConfigUITest {
             SPEC = builder.build();
         }
     }
+
     public static class Common {
         public static final ModConfigSpec SPEC;
 
@@ -81,13 +83,29 @@ public class ConfigUITest {
             SPEC = builder.build();
         }
     }
+
     public static class Startup {
         public static final ModConfigSpec SPEC;
 
         static {
             var builder = new ModConfigSpec.Builder();
 
+            builder.translation("configuitest.startup.speed")
+                    .comment("Do you want SPEEED????")
+                    .defineEnum("startupspeed", StartupSpeed.SLOW);
+
             SPEC = builder.build();
+        }
+
+        public enum StartupSpeed implements TranslatableEnum {
+            FAST,
+            SLOW {
+                @Override
+                public Component getTranslatedName() {
+                    return Component.literal("Slow that it hurts");
+                }
+            },
+            FASTEST
         }
     }
 }

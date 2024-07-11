@@ -5,5 +5,7 @@
 
   "configuitest.common.section1": "Section 1",
   "configuitest.common.section2": "Section 2",
-  "configuitest.common.numbers": "Magic numbers"
+  "configuitest.common.numbers": "Magic numbers",
+
+  "configuitest.startup.speed": "Startup speed"
 }
