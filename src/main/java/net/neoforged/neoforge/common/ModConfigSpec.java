@@ -140,7 +140,7 @@ public class ModConfigSpec implements IConfigSpec {
             if (value instanceof ConfigValue<?> configValue) {
                 // Only clear the caches of configs that don't need a game restart and of those that don't need a world restart, and if they do
                 // the config is being unloaded
-                if (!configValue.getSpec().needsGameRestart() && (!configValue.getSpec().needsWorldRestart() || this.loadedConfig == null)) {
+                if (configValue.getSpec().restartType.canClearCache(loadedConfig == null)) {
                     configValue.clearCache();
                 }
             } else if (value instanceof Config innerConfig) {
@@ -689,8 +689,7 @@ public class ModConfigSpec implements IConfigSpec {
         private String langKey;
         @Nullable
         private Range<?> range;
-        private boolean worldRestart = false;
-        private boolean gameRestart = false;
+        private RestartType restartType = RestartType.NONE;
         @Nullable
         private Class<?> clazz;
 
@@ -748,19 +747,15 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         public void worldRestart() {
-            this.worldRestart = true;
+            this.restartType = RestartType.WORLD;
         }
 
         public void gameRestart() {
-            this.gameRestart = true;
+            this.restartType = RestartType.GAME;
         }
 
-        public boolean needsWorldRestart() {
-            return this.worldRestart;
-        }
-
-        public boolean needsGameRestart() {
-            return this.gameRestart;
+        public RestartType restartType() {
+            return restartType;
         }
 
         public void setClazz(Class<?> clazz) {
@@ -776,8 +771,7 @@ public class ModConfigSpec implements IConfigSpec {
             validate(hasComment(), "Non-empty comment when empty expected");
             validate(langKey, "Non-null translation key when null expected");
             validate(range, "Non-null range when null expected");
-            validate(worldRestart, "Dangling world restart value set to true");
-            validate(worldRestart, "Dangling game restart value set to true");
+            validate(restartType == RestartType.NONE, "Dangling restart value set to " + restartType);
         }
 
         private void validate(@Nullable Object value, String message) {
@@ -869,24 +863,20 @@ public class ModConfigSpec implements IConfigSpec {
         private final String langKey;
         @Nullable
         private final Range<?> range;
-        private final boolean worldRestart;
-        private final boolean gameRestart;
         @Nullable
         private final Class<?> clazz;
         private final Supplier<?> supplier;
         private final Predicate<Object> validator;
+        private final RestartType restartType;
 
         private ValueSpec(Supplier<?> supplier, Predicate<Object> validator, BuilderContext context, List<String> path) {
             Objects.requireNonNull(supplier, "Default supplier can not be null");
             Objects.requireNonNull(validator, "Validator can not be null");
 
-            Preconditions.checkArgument(context.needsGameRestart() == context.needsWorldRestart() && !context.needsWorldRestart(), "Cannot require both world and game restart");
-
             this.comment = context.hasComment() ? context.buildComment(path) : null;
             this.langKey = context.getTranslationKey();
             this.range = context.getRange();
-            this.worldRestart = context.needsWorldRestart();
-            this.gameRestart = context.needsGameRestart();
+            this.restartType = context.restartType();
             this.clazz = context.getClazz();
             this.supplier = supplier;
             this.validator = validator;
@@ -908,12 +898,8 @@ public class ModConfigSpec implements IConfigSpec {
             return (Range<V>) this.range;
         }
 
-        public boolean needsWorldRestart() {
-            return this.worldRestart;
-        }
-
-        public boolean needsGameRestart() {
-            return this.gameRestart;
+        public RestartType restartType() {
+            return restartType;
         }
 
         @Nullable
@@ -959,7 +945,7 @@ public class ModConfigSpec implements IConfigSpec {
         /**
          * Returns the configured value for the configuration setting, throwing if the config has not yet been loaded.
          * <p>
-         * This getter is cached, and will respect the {@link ValueSpec#needsWorldRestart() world restart} and {@link ValueSpec#needsGameRestart() game restart}
+         * This getter is cached, and will respect the {@link Builder#worldRestart() world restart} and {@link Builder#gameRestart() game restart}
          * options by not clearing its cache if one of those options are set.
          *
          * @return the configured value for the setting
@@ -1010,7 +996,7 @@ public class ModConfigSpec implements IConfigSpec {
             Preconditions.checkNotNull(loadedConfig, "Cannot set config value without assigned Config object present");
             loadedConfig.config().set(path, value);
 
-            if (!(getSpec().gameRestart || getSpec().worldRestart)) {
+            if (getSpec().restartType == RestartType.NONE) {
                 this.cachedValue = value;
             }
         }
@@ -1114,5 +1100,29 @@ public class ModConfigSpec implements IConfigSpec {
 
     private static List<String> split(String path) {
         return Lists.newArrayList(DOT_SPLITTER.split(path));
+    }
+
+    /**
+     * Used to prevent cached config values from being updated unless the game or the world is restarted.
+     */
+    public enum RestartType {
+        /**
+         * Do not require a restart to update the cached config value.
+         */
+        NONE,
+        /**
+         * Require a world restart.
+         */
+        WORLD,
+        /**
+         * Require a game restart.
+         */
+        GAME;
+
+        private boolean canClearCache(boolean configUnloaded) {
+            if (this == GAME) return false;
+            if (this == WORLD) return configUnloaded;
+            return true;
+        }
     }
 }
