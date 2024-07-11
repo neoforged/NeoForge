@@ -57,6 +57,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.config.ModConfigs;
@@ -167,6 +168,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
     public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
     public static final Component RESET_TOOLTIP = Component.translatable(LANG_PREFIX + "reset.tooltip");
+    public static final int BIG_BUTTON_WIDTH = 310;
 
     // Ideally this should not be static, but we need it in the construtor's super() call
     protected static final TranslationChecker translationChecker = new TranslationChecker();
@@ -185,7 +187,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
     @SuppressWarnings("resource")
     public ConfigurationScreen(final ModContainer mod, final Screen parent, TriFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Screen> sectionScreen) {
-        super(parent, Minecraft.getInstance().options, Component.translatable(translationChecker.check(mod.getModId() + ".configuration.title")));
+        super(parent, Minecraft.getInstance().options, Component.translatableWithFallback(mod.getModId() + ".configuration.title", I18n.get(LANG_PREFIX + "title", mod.getModInfo().getDisplayName()), mod.getModInfo().getDisplayName()));
         this.mod = mod;
         this.sectionScreen = sectionScreen;
     }
@@ -201,13 +203,13 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         if (buttons.size() % 2 != 0) {
                             buttons.add(null); // start header on a new line
                         }
-                        buttons.add(new StringWidget(/* OptionsList.BIG_BUTTON_WIDTH */ 310, Button.DEFAULT_HEIGHT,
+                        buttons.add(new StringWidget(BIG_BUTTON_WIDTH, Button.DEFAULT_HEIGHT,
                                 Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font).alignLeft());
                         buttons.add(null); // newline after header
                         headerAdded = true;
                     }
-                    final Button btn = Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(asTranslationKey(modConfig)))),
-                            button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig))).build();
+                    final Button btn = Button.builder(Component.translatable(SECTION, translatableConfig(modConfig, "", LANG_PREFIX + "type." + modConfig.getType().name().toLowerCase(Locale.ROOT))),
+                            button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig))).width(BIG_BUTTON_WIDTH).build();
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_NOT_LOADED));
                         btn.active = false;
@@ -229,8 +231,12 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
     }
 
-    public static String asTranslationKey(ModConfig modConfig) {
-        return modConfig.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH);
+    public static Component translatableConfig(ModConfig modConfig, String suffix, String fallback) {
+        var displayName = ModList.get().getModContainerById(modConfig.getModId()).orElseThrow().getModInfo().getDisplayName();
+        return Component.translatableWithFallback(
+                modConfig.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH) + suffix,
+                I18n.get(fallback, displayName), displayName
+        );
     }
 
     @Override
@@ -344,8 +350,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
-        public record Element(Component name, Component tooltip, @Nullable AbstractWidget widget, @Nullable OptionInstance<?> option) {
-            public Element(final Component name, final Component tooltip, final AbstractWidget widget) {
+        public record Element(@Nullable Component name, @Nullable Component tooltip, @Nullable AbstractWidget widget, @Nullable OptionInstance<?> option) {
+            public Element(@Nullable final Component name, @Nullable final Component tooltip, final AbstractWidget widget) {
                 this(name, tooltip, widget, null);
             }
 
@@ -381,7 +387,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param modConfig The actual config to show and edit.
          */
         public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
-            this(Context.top(modConfig.getModId(), parent, modConfig), Component.translatable(translationChecker.check(asTranslationKey(modConfig) + ".title")));
+            this(Context.top(modConfig.getModId(), parent, modConfig), translatableConfig(modConfig, ".title", LANG_PREFIX + "title"));
             needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
         }
 
@@ -501,9 +507,13 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
                 for (final Element element : elements) {
                     if (element != null) {
-                        final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
-                        label.setTooltip(Tooltip.create(element.tooltip));
-                        list.addSmall(label, element.getWidget(options));
+                        if (element.name() == null) {
+                            list.addSmall(List.of(element.getWidget(options)));
+                        } else {
+                            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
+                            label.setTooltip(Tooltip.create(element.tooltip));
+                            list.addSmall(label, element.getWidget(options));
+                        }
                     }
                 }
 
@@ -740,11 +750,14 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         @Nullable
         protected Element createSection(final String key, final UnmodifiableConfig subconfig, final UnmodifiableConfig subsection) {
             if (subconfig.isEmpty()) return null;
-            return new Element(Component.empty(), Component.empty(),
+            return new Element(null, null,
                     Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
                                     k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet()).rebuild())))
-                            .tooltip(Tooltip.create(getTooltipComponent(key))).build());
+                            .tooltip(Tooltip.create(getTooltipComponent(key)))
+                            .width(Button.DEFAULT_WIDTH)
+                            // .width(BIG_BUTTON_WIDTH) TODO - reconsider this?
+                            .build());
         }
 
         protected <T> Element createList(final String key, final ListValueSpec spec, final ModConfigSpec.ConfigValue<List<T>> list) {
