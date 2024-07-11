@@ -69,7 +69,6 @@ import net.neoforged.neoforge.common.ModConfigSpec.Range;
 import net.neoforged.neoforge.common.ModConfigSpec.ValueSpec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -247,13 +246,16 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public void onClose() {
         translationChecker.finish();
         switch (needsRestart) {
-            case GAME -> minecraft.setScreen(new ConfirmScreen(b -> {
-                if (b) {
-                    minecraft.stop();
-                } else {
-                    minecraft.setScreen(this);
-                }
-            }, GAME_RESTART_TITLE, GAME_RESTART_MESSAGE, GAME_RESTART_YES, RESTART_NO));
+            case GAME -> {
+                minecraft.setScreen(new ConfirmScreen(b -> {
+                    if (b) {
+                        minecraft.stop();
+                    } else {
+                        minecraft.setScreen(this);
+                    }
+                }, GAME_RESTART_TITLE, GAME_RESTART_MESSAGE, GAME_RESTART_YES, RESTART_NO));
+                return;
+            }
             case SERVER -> {
                 if (minecraft.level != null) {
                     minecraft.setScreen(new ConfirmScreen(b -> {
@@ -265,6 +267,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             minecraft.setScreen(this);
                         }
                     }, SERVER_RESTART_TITLE, SERVER_RESTART_MESSAGE, minecraft.isLocalServer() ? RETURN_TO_MENU : CommonComponents.GUI_DISCONNECT, RESTART_NO));
+                    return;
                 }
             }
         }
@@ -457,7 +460,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             rebuild();
         }
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         protected ConfigurationSectionScreen rebuild() {
             if (list != null) { // this may be called early, skip and wait for init() then
                 list.children().clear();
@@ -490,8 +493,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                                 hasUndoableElements = true;
                             }
                         }
-                        case UnmodifiableConfig subsection when context.valueSpecs.get(key) instanceof UnmodifiableConfig subconfig ->
-                                elements.add(createSection(key, subconfig, subsection));
+                        case UnmodifiableConfig subsection when context.valueSpecs.get(key) instanceof UnmodifiableConfig subconfig -> elements.add(createSection(key, subconfig, subsection));
                         default -> elements.add(createOtherSection(key, rawValue));
                     }
                 }
@@ -790,7 +792,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         protected void createResetButton() {
             resetButton = Button.builder(RESET, button -> {
                 List<UndoManager.Step<?>> list = new ArrayList<>();
