@@ -1,0 +1,9 @@
+{
+  "configuitest.client.playsound": "Play jump sound",
+  "configuitest.client.visuals": "Visuals",
+  "configuitest.client.squirrels": "Squirrel count",
+
+  "configuitest.common.section1": "Section 1",
+  "configuitest.common.section2": "Section 2",
+  "configuitest.common.numbers": "Magic numbers"
+}

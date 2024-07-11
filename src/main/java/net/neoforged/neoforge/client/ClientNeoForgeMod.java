@@ -35,7 +35,7 @@ public class ClientNeoForgeMod {
 
         modEventBus.register(ClientNeoForgeMod.class);
 
-        container.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(container, parent));
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     @SubscribeEvent
