@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,10 +57,9 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.config.ConfigTracker;
-import net.neoforged.fml.config.IConfigEvent;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
+import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -133,9 +133,19 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
     }
 
+    /**
+     * Prefix for static keys the configuration screens use internally.
+     */
     private static final String LANG_PREFIX = "neoforge.configuration.uitext.";
+    /**
+     * A wrapper for the labels of buttons that open a new screen. Default: "%s..."
+     */
     private static final String SECTION = LANG_PREFIX + "section";
+    /**
+     * The label of list elements. Will be supplied the index into the list. Default: "%s:"
+     */
     private static final String LIST_ELEMENT = LANG_PREFIX + "listelement";
+    
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline");
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan");
     public static final Component TOOLTIP_CANNOT_EDIT_NOT_LOADED = Component.translatable(LANG_PREFIX + "notloaded");
@@ -146,22 +156,24 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement");
     public static final Component GAME_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.game.title");
     public static final Component GAME_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.game.text");
-    public static final Component GAME_RESTART_YES = Component.translatable("menu.quit");
+    public static final Component GAME_RESTART_YES = Component.translatable("menu.quit"); // TitleScreen.init() et.al.
     public static final Component SERVER_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.server.title");
     public static final Component SERVER_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.server.text");
-    public static final Component RETURN_TO_MENU = Component.translatable("menu.returnToMenu");
-    public static final Component SAVING_LEVEL = Component.translatable("menu.savingLevel");
+    public static final Component RETURN_TO_MENU = Component.translatable("menu.returnToMenu"); // PauseScreen.RETURN_TO_MENU
+    public static final Component SAVING_LEVEL = Component.translatable("menu.savingLevel"); // PauseScreen.SAVING_LEVEL
     public static final Component RESTART_NO = Component.translatable(LANG_PREFIX + "restart.return");
     public static final Component UNDO = Component.translatable(LANG_PREFIX + "undo");
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
     public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
     public static final Component RESET_TOOLTIP = Component.translatable(LANG_PREFIX + "reset.tooltip");
+    
+    // Ideally this should not be static, but we need it in the construtor's super() call
     protected static final TranslationChecker translationChecker = new TranslationChecker();
 
     protected final ModContainer mod;
-    protected RestartType needsRestart = RestartType.NONE;
-
     private final TriFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Screen> sectionScreen;
+
+    protected RestartType needsRestart = RestartType.NONE;
     // If there is only one config type (and it can be edited, we show that instantly on the way "down" and want to close on the way "up".
     // But when returning from the restart/reload confirmation screens, we need to stay open.
     private boolean autoClose = false;
@@ -181,9 +193,19 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     protected void addOptions() {
         List<AbstractWidget> buttons = new ArrayList<>();
         for (final Type type : ModConfig.Type.values()) {
-            for (final ModConfig modConfig : ConfigTracker.INSTANCE.configSets().get(type)) {
+            boolean headerAdded = false;
+            for (final ModConfig modConfig : ModConfigs.getConfigSet(type)) {
                 if (modConfig.getModId().equals(mod.getModId())) {
-                    final Button btn = Button.builder(Component.translatable(SECTION, Component.translatable(LANG_PREFIX + type.name().toLowerCase())),
+                    if (!headerAdded) {
+                        if (buttons.size() % 2 != 0) {
+                            buttons.add(null); // start header on a new line
+                        }
+                        buttons.add(new StringWidget(/* OptionsList.BIG_BUTTON_WIDTH */ 310, Button.DEFAULT_HEIGHT,
+                        		Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font).alignLeft());
+                        buttons.add(null); // newline after header
+                        headerAdded = true;
+                    }
+                    final Button btn = Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(asTranslationKey(modConfig)))),
                             button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig))).build();
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_NOT_LOADED));
@@ -200,12 +222,16 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
         }
         list.addSmall(buttons);
-        if (buttons.size() == 1 && buttons.getFirst().active) {
+        if (buttons.size() == 3 && buttons.getLast().active) {
             autoClose = true;
-            ((Button) buttons.getFirst()).onPress();
+            ((Button) buttons.getLast()).onPress();
         }
     }
 
+    public static String asTranslationKey(ModConfig modConfig) {
+    	return modConfig.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH);
+    }
+    
     @Override
     public void added() {
         super.added();
@@ -296,7 +322,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 Set<? extends Entry> entries, Map<String, Object> valueSpecs, List<String> keylist) {
             public static Context top(final String modId, final Screen parent, final ModConfig modConfig) {
                 return new Context(modId, parent, modConfig, (ModConfigSpec) modConfig.getSpec(), ((ModConfigSpec) modConfig.getSpec()).getValues().entrySet(),
-                        modConfig.getSpec().valueMap(), List.of());
+                        ((ModConfigSpec) modConfig.getSpec()).getSpec().valueMap(), List.of());
             }
 
             public static Context section(final Context parentContext, final Screen parent, final Set<? extends Entry> entries, final Map<String, Object> valueSpecs,
@@ -352,7 +378,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param modConfig The actual config to show and edit.
          */
         public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
-            this(Context.top(modConfig.getModId(), parent, modConfig), Component.translatable(translationChecker.check(modConfig.getModId() + ".configuration." + type.name().toLowerCase() + ".title")));
+            this(Context.top(modConfig.getModId(), parent, modConfig), Component.translatable(translationChecker.check(asTranslationKey(modConfig) + ".title")));
             needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
         }
 
@@ -409,7 +435,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected Component getTooltipComponent(final String key) {
             return Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD))
                     .append(Component.literal("\n\n")).append(
-                            Component.translatableWithFallback(translationChecker.check(context.modId + ".configuration." + key + ".tooltip"), getTooltipString(key)));
+                            Component.translatableWithFallback(translationChecker.check(getTranslationKey(key) + ".tooltip"), getTooltipString(key)));
         }
 
         /**
@@ -795,9 +821,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                     parent.changed = true;
                 } else {
                     // we are a top-level per-type config screen, i.e. one specific config file. Save the config and tell the mod to reload.
-                    // Yes, this means this will fire multiple times if the user changes values in multiple configs, but that doesn't really matter.
-                    context.modConfig.save();
-                    IConfigEvent.reloading(context.modConfig).post();
+                    context.modSpec.save();
                 }
                 // the restart flag only matters when there were actual changes
                 if (lastScreen instanceof final ConfigurationSectionScreen parent) {
