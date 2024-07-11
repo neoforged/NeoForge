@@ -6,7 +6,10 @@
 package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -18,16 +21,17 @@ import net.neoforged.neoforge.common.TranslatableEnum;
 
 @Mod("configui")
 public class ConfigUITest {
-    public ConfigUITest(ModContainer container) {
+    public ConfigUITest(final ModContainer container) {
         container.registerConfig(ModConfig.Type.CLIENT, Client.SPEC);
         container.registerConfig(ModConfig.Type.COMMON, Common.SPEC);
         container.registerConfig(ModConfig.Type.SERVER, Server.SPEC);
         container.registerConfig(ModConfig.Type.STARTUP, Startup.SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, MDKConfig.SPEC, "mdk");
     }
 
     @Mod(value = "configui", dist = Dist.CLIENT)
     public static class ConfigUIClient {
-        public ConfigUIClient(ModContainer container) {
+        public ConfigUIClient(final ModContainer container) {
             container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         }
     }
@@ -36,7 +40,7 @@ public class ConfigUITest {
         public static final ModConfigSpec SPEC;
 
         static {
-            var builder = new ModConfigSpec.Builder();
+            final var builder = new ModConfigSpec.Builder();
 
             builder.comment("Play a sound when you jump").translation("configuitest.client.playsound").define("playsound", true);
 
@@ -58,7 +62,7 @@ public class ConfigUITest {
         public static final ModConfigSpec SPEC;
 
         static {
-            var builder = new ModConfigSpec.Builder();
+            final var builder = new ModConfigSpec.Builder();
 
             SPEC = builder.build();
         }
@@ -68,7 +72,7 @@ public class ConfigUITest {
         public static final ModConfigSpec SPEC;
 
         static {
-            var builder = new ModConfigSpec.Builder();
+            final var builder = new ModConfigSpec.Builder();
 
             builder.translation("configuitest.common.section1")
                     .push("section1");
@@ -88,7 +92,7 @@ public class ConfigUITest {
         public static final ModConfigSpec SPEC;
 
         static {
-            var builder = new ModConfigSpec.Builder();
+            final var builder = new ModConfigSpec.Builder();
 
             builder.translation("configuitest.startup.speed")
                     .comment("Do you want SPEEED????")
@@ -107,5 +111,54 @@ public class ConfigUITest {
             },
             FASTEST
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static class MDKConfig {
+        private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+
+        static {
+            BUILDER.comment("Whether to log the dirt block on common setup").define("logDirtBlock", true);
+
+            BUILDER.comment("Where all the wild booleans live").translation("key.random").push("subsection1");
+            BUILDER.comment("Whether to log the dirt block on common setup").define("val1", true);
+            BUILDER.comment("Whether to log the dirt block on common setup").define("val2", true);
+            BUILDER.comment("Whether to log the dirt block on common setup").define("val3", true);
+
+            BUILDER.comment("Where all the wild ints live").translation("key.randomint").push("subsection2");
+            BUILDER.comment("A weird number").defineInRange("eridNumber", 43, 43, 53);
+            BUILDER.comment("A wild number").defineInRange("num", 99, 55, 555555);
+            BUILDER.comment("A wild number").defineInRange("numD", 99.001, 55.55, 555555.0);
+            BUILDER.comment("A wild number").defineInRange("numL", -99L, -555L, Long.MAX_VALUE);
+            BUILDER.pop();
+
+            BUILDER.defineEnum("dir", Direction.NORTH);
+            BUILDER.defineEnum("dir2", Direction.SOUTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NORTH);
+
+            BUILDER.pop();
+            BUILDER.comment("Whether to log the dirt block on common setup").define("outer2", true);
+
+            BUILDER.comment("A magic number").defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
+
+            BUILDER.comment("A mundane number").defineInRange("mundaneNumber", 42, 1, 50);
+
+            BUILDER.comment("What you want the introduction message to be for the magic number").define("magicNumberIntroduction", "The magic number is... ");
+
+            // a list of strings that are treated as resource locations for items
+            BUILDER.comment("A list of items to log on common setup.").defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "minecraft:",
+                    obj -> obj instanceof final String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.tryParse(itemName)));
+
+            BUILDER.comment("A list of int for no reason.").defineListAllowEmpty("intlist", List.of(1, 2, 3), () -> 0,
+                    v -> v != null && (Integer) v >= -1 && (Integer) v < 100);
+
+            BUILDER.comment("A list of something for no reason.").defineListAllowEmpty("alist", List.of(), v -> v != null);
+
+            BUILDER.comment("A list of something for no reason.").defineListAllowEmpty("blist.c",
+                    List.of("zero", Integer.valueOf(0), Double.valueOf(0), Long.valueOf(0)), v -> v != null);
+
+            BUILDER.comment("intentionally untranslated entry").define("missing", false);
+        }
+
+        static final ModConfigSpec SPEC = BUILDER.build();
     }
 }

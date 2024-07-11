@@ -52,12 +52,12 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.data.models.blockstates.PropertyDispatch.QuadFunction;
 import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.config.ModConfigs;
@@ -103,6 +103,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static class TranslationChecker {
         private static final Logger LOGGER = LogManager.getLogger();
         private final Set<String> untranslatables = new HashSet<>();
+        private final Set<String> untranslatablesWithFallback = new HashSet<>();
 
         public String check(final String translationKey) {
             if (!I18n.exists(translationKey)) {
@@ -111,15 +112,31 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return translationKey;
         }
 
+        public String check(final String translationKey, final String fallback) {
+            if (!I18n.exists(translationKey)) {
+                untranslatablesWithFallback.add(translationKey);
+                return fallback != null ? check(fallback) : translationKey;
+            }
+            return translationKey;
+        }
+
         public void finish() {
-            if (CLIENT.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && !untranslatables.isEmpty()) {
+            if (CLIENT.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("""
                         \n	Dev warning - Untranslated configuration keys detected. Please translate your configuration keys so users can properly configure your mod.
                         """);
-                stringBuilder.append("\nUntranslated keys:");
-                for (String key : untranslatables) {
-                    stringBuilder.append("\n     ").append(key);
+                if (!untranslatables.isEmpty()) {
+                    stringBuilder.append("\nUntranslated keys:");
+                    for (String key : untranslatables) {
+                        stringBuilder.append("\n     ").append(key);
+                    }
+                }
+                if (!untranslatablesWithFallback.isEmpty()) {
+                    stringBuilder.append("\nThe following keys have fallbacks. Please check if those are suitable, and translate them if they're not.");
+                    for (String key : untranslatablesWithFallback) {
+                        stringBuilder.append("\n     ").append(key);
+                    }
                 }
 
                 LOGGER.warn(stringBuilder);
@@ -179,7 +196,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     protected static final TranslationChecker translationChecker = new TranslationChecker();
 
     protected final ModContainer mod;
-    private final TriFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Screen> sectionScreen;
+    private final QuadFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Component, Screen> sectionScreen;
 
     public RestartType needsRestart = RestartType.NONE;
     // If there is only one config type (and it can be edited, we show that instantly on the way "down" and want to close on the way "up".
@@ -191,56 +208,53 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     }
 
     @SuppressWarnings("resource")
-    public ConfigurationScreen(final ModContainer mod, final Screen parent, TriFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Screen> sectionScreen) {
-        super(parent, Minecraft.getInstance().options, Component.translatableWithFallback(mod.getModId() + ".configuration.title", I18n.get(LANG_PREFIX + "title", mod.getModInfo().getDisplayName()), mod.getModInfo().getDisplayName()));
+    public ConfigurationScreen(final ModContainer mod, final Screen parent, QuadFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Component, Screen> sectionScreen) {
+        super(parent, Minecraft.getInstance().options, Component.translatable(translationChecker.check(mod.getModId() + ".configuration.title", LANG_PREFIX + "title"), mod.getModInfo().getDisplayName()));
         this.mod = mod;
         this.sectionScreen = sectionScreen;
     }
 
     @Override
     protected void addOptions() {
-        List<AbstractWidget> buttons = new ArrayList<>();
+        Button btn = null;
+        int count = 0;
         for (final Type type : ModConfig.Type.values()) {
             boolean headerAdded = false;
             for (final ModConfig modConfig : ModConfigs.getConfigSet(type)) {
                 if (modConfig.getModId().equals(mod.getModId())) {
                     if (!headerAdded) {
-                        if (buttons.size() % 2 != 0) {
-                            buttons.add(null); // start header on a new line
-                        }
-                        buttons.add(new StringWidget(BIG_BUTTON_WIDTH, Button.DEFAULT_HEIGHT,
-                                Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font).alignLeft());
-                        buttons.add(null); // newline after header
+                        list.addSmall(new StringWidget(BIG_BUTTON_WIDTH, Button.DEFAULT_HEIGHT,
+                                Component.translatable(LANG_PREFIX + type.name().toLowerCase(Locale.ENGLISH)).withStyle(ChatFormatting.UNDERLINE), font).alignLeft(), null);
                         headerAdded = true;
                     }
-                    final Button btn = Button.builder(Component.translatable(SECTION, translatableConfig(modConfig, "", LANG_PREFIX + "type." + modConfig.getType().name().toLowerCase(Locale.ROOT))),
-                            button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig))).width(BIG_BUTTON_WIDTH).build();
+                    btn = Button.builder(Component.translatable(SECTION, translatableConfig(modConfig, "", LANG_PREFIX + "type." + modConfig.getType().name().toLowerCase(Locale.ROOT))),
+                            button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig, translatableConfig(modConfig, ".title", LANG_PREFIX + "title." + type.name().toLowerCase(Locale.ROOT))))).width(BIG_BUTTON_WIDTH).build();
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_NOT_LOADED));
                         btn.active = false;
+                        count = 99; // prevent autoClose
                     } else if (type == Type.SERVER && minecraft.getCurrentServer() != null && !minecraft.isSingleplayer()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE));
                         btn.active = false;
+                        count = 99; // prevent autoClose
                     } else if (type == Type.SERVER && minecraft.hasSingleplayerServer() && minecraft.getSingleplayerServer().isPublished()) {
                         btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN));
                         btn.active = false;
+                        count = 99; // prevent autoClose
                     }
-                    buttons.add(btn);
+                    list.addSmall(btn, null);
+                    count++;
                 }
             }
         }
-        list.addSmall(buttons);
-        if (buttons.size() == 3 && buttons.getLast().active) {
+        if (count == 1) {
             autoClose = true;
-            ((Button) buttons.getLast()).onPress();
+            btn.onPress();
         }
     }
 
-    public static Component translatableConfig(ModConfig modConfig, String suffix, String fallback) {
-        var displayName = ModList.get().getModContainerById(modConfig.getModId()).orElseThrow().getModInfo().getDisplayName();
-        return Component.translatableWithFallback(
-                modConfig.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH) + suffix,
-                I18n.get(fallback, displayName), displayName);
+    public Component translatableConfig(ModConfig modConfig, String suffix, String fallback) {
+        return Component.translatable(translationChecker.check(mod.getModId() + ".configuration.section." + modConfig.getFileName().replaceAll("[^a-zA-Z0-9]+", ".").replaceFirst("^\\.", "").replaceFirst("\\.$", "").toLowerCase(Locale.ENGLISH) + suffix, fallback), mod.getModInfo().getDisplayName());
     }
 
     @Override
@@ -252,6 +266,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
     }
 
+    @SuppressWarnings("incomplete-switch")
     @Override
     public void onClose() {
         translationChecker.finish();
@@ -390,8 +405,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param type      The {@link Type} this configuration is for. Only used to generate the title of the screen.
          * @param modConfig The actual config to show and edit.
          */
-        public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig) {
-            this(Context.top(modConfig.getModId(), parent, modConfig), translatableConfig(modConfig, ".title", LANG_PREFIX + "title." + type.name().toLowerCase(Locale.ROOT)));
+        public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig, Component title) {
+            this(Context.top(modConfig.getModId(), parent, modConfig), title);
             needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
         }
 
@@ -436,7 +451,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return Component.translatable(translationChecker.check(getTranslationKey(key)));
         }
 
-        protected String getTooltipString(final String key) {
+        protected String getComment(final String key) {
             final ValueSpec valueSpec = getValueSpec(key);
             return valueSpec != null ? getValueSpec(key).getComment() : context.modSpec.getLevelComment(context.makeKeyList(key));
         }
@@ -448,7 +463,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected Component getTooltipComponent(final String key) {
             return Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD))
                     .append(Component.literal("\n\n")).append(
-                            Component.translatableWithFallback(translationChecker.check(getTranslationKey(key) + ".tooltip"), getTooltipString(key)));
+                            Component.translatableWithFallback(translationChecker.check(getTranslationKey(key) + ".tooltip", null), getComment(key)));
         }
 
         /**
