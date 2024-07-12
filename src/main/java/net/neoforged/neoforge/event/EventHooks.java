@@ -12,6 +12,7 @@ import com.mojang.serialization.DynamicOps;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -795,10 +796,10 @@ public class EventHooks {
         return event.getNewTime();
     }
 
-    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
+    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess, List<PreparableReloadListener> base, Map<Class<? extends PreparableReloadListener>, ResourceLocation> vanillaIds) {
         AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess);
         NeoForge.EVENT_BUS.post(event);
-        return event.getListeners();
+        return event.getSortedListeners(base, vanillaIds);
     }
 
     public static void onCommandRegister(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection environment, CommandBuildContext context) {

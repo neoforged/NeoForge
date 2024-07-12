@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DataMapLoader implements PreparableReloadListener {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("neoforge", "data_maps");
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String PATH = "data_maps";
     private Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> results;
