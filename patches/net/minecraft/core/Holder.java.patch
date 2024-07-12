@@ -24,32 +24,37 @@
          void bindTags(Collection<TagKey<T>> p_205770_) {
              this.tags = Set.copyOf(p_205770_);
          }
-@@ -233,6 +_,28 @@
+@@ -232,6 +_,33 @@
+         @Override
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";
-         }
++        }
 +
-+        // Neo Start
++        // Neo: Add key getter that doesn't allocate
++        @Override
++        @org.jetbrains.annotations.Nullable
++        public ResourceKey<T> getKey() {
++            return this.key;
++        }
 +
-+        // Neo: Add DeferredHolder-compatible hashCode() and equals() overrides
++        // Neo: Add DeferredHolder-compatible hashCode() overrides
 +        @Override
 +        public int hashCode() {
 +            return key().hashCode();
 +        }
 +
++        // Neo: Add DeferredHolder-compatible equals() overrides
 +        @Override
 +        public boolean equals(Object obj) {
 +            if (this == obj) return true;
-+            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key();
++            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.getKey() == this.key();
 +        }
 +
++        // Neo: Helper method to get the registry lookup from a holder
 +        @Override
 +        @org.jetbrains.annotations.Nullable
 +        public HolderLookup.RegistryLookup<T> unwrapLookup() {
 +            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
-+        }
-+
-+        // Neo End
+         }
  
          protected static enum Type {
-             STAND_ALONE,

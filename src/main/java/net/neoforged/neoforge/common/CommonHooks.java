@@ -232,7 +232,7 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new DifficultyChangeEvent(difficulty, oldDifficulty));
     }
 
-    public static LivingChangeTargetEvent onLivingChangeTarget(LivingEntity entity, LivingEntity originalTarget, LivingChangeTargetEvent.ILivingTargetType targetType) {
+    public static LivingChangeTargetEvent onLivingChangeTarget(LivingEntity entity, @Nullable LivingEntity originalTarget, LivingChangeTargetEvent.ILivingTargetType targetType) {
         LivingChangeTargetEvent event = new LivingChangeTargetEvent(entity, originalTarget, targetType);
         NeoForge.EVENT_BUS.post(event);
 
@@ -288,7 +288,7 @@ public class CommonHooks {
      *
      */
     public static float onLivingDamagePre(LivingEntity entity, DamageContainer container) {
-        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getContainer().getNewDamage();
+        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getNewDamage();
     }
 
     /**
