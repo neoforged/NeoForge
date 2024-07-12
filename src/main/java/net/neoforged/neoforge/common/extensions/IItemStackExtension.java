@@ -7,9 +7,12 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -489,5 +492,50 @@ public interface IItemStackExtension {
         }
 
         return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
+    }
+
+
+    default Tag encode(HolderLookup.Provider provider, Tag tag) {
+        try{
+            return self().CODEC.encode(self(), provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow();
+        }catch (Exception exception){
+            throw new RuntimeException(formatItemSaveException(exception, tag));
+        }
+    }
+
+    default Tag encode(HolderLookup.Provider p_332160_) {
+        try {
+            return self().CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), self()).getOrThrow();
+        }catch (Exception exception) {
+            throw new RuntimeException(formatItemSaveException(exception, null));
+        }
+    }
+
+    /**
+     * Wraps an exception thrown during itemstack serialization with additional context
+     * on the itemstack, components, and tag.
+     * <pre>
+     * Example:
+     * Caused by: java.lang.Exception: Error saving itemstack 1 minecraft:dirt with components:
+     * Item:1 minecraft:dirt
+     * minecraft:max_stack_size=>64
+     * minecraft:lore=>ItemLore[lines=[], styledLines=[]]
+     * minecraft:enchantments=>ItemEnchantments{enchantments={}, showInTooltip=true}
+     * minecraft:repair_cost=>0
+     * minecraft:attribute_modifiers=>ItemAttributeModifiers[modifiers=[], showInTooltip=true]
+     * minecraft:rarity=>COMMON
+     * With tag: {}
+     * </pre>
+     */
+    private Exception formatItemSaveException(Exception e, @Nullable Tag tag){
+        StringBuilder cause = new StringBuilder("Error saving itemstack (" + self() + ") with components:");
+        cause.append("\nItem:").append(self());
+        self().getComponents().forEach((component) ->{
+            cause.append("\n").append(component);
+        });
+        if(tag != null) {
+            cause.append("\nWith tag: ").append(tag);
+        }
+        return new Exception(cause.toString(), e);
     }
 }
