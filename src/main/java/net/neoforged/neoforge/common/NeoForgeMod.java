@@ -617,7 +617,8 @@ public class NeoForgeMod {
         DualStackUtils.initialise();
         TagConventionLogWarning.init();
 
-        modEventBus.addListener(EventPriority.LOW, CapabilityHooks::registerVanillaProviders);
+        modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
+        modEventBus.addListener(EventPriority.LOW, CapabilityHooks::registerFallbackVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);
         // These 3 listeners use the default priority for now, can be re-evaluated later.
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkLoad);
