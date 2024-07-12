@@ -161,7 +161,7 @@ public class RegistryManager {
         vanillaSnapshot = takeSnapshot(SnapshotType.FULL);
     }
 
-    private static void takeFrozenSnapshot() {
+    static void takeFrozenSnapshot() {
         frozenSnapshot = takeSnapshot(SnapshotType.SYNC_TO_CLIENT);
     }
 
