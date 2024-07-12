@@ -71,6 +71,7 @@ import net.neoforged.neoforge.common.ModConfigSpec.ValueSpec;
 import net.neoforged.neoforge.common.TranslatableEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -115,9 +116,17 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         public String check(final String translationKey, final String fallback) {
             if (!I18n.exists(translationKey)) {
                 untranslatablesWithFallback.add(translationKey);
-                return fallback != null ? check(fallback) : translationKey;
+                return check(fallback);
             }
             return translationKey;
+        }
+
+        public boolean existsWithFallback(final String translationKey) {
+            if (!I18n.exists(translationKey)) {
+                untranslatablesWithFallback.add(translationKey);
+                return false;
+            }
+            return true;
         }
 
         public void finish() {
@@ -461,9 +470,14 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         protected Component getTooltipComponent(final String key) {
-            return Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD))
-                    .append(Component.literal("\n\n")).append(
-                            Component.translatableWithFallback(translationChecker.check(getTranslationKey(key) + ".tooltip", null), getComment(key)));
+            final String tooltipKey = getTranslationKey(key) + ".tooltip";
+            final String comment = getComment(key);
+            final MutableComponent baseComponent = Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD));
+            if (translationChecker.existsWithFallback(tooltipKey) || !Strings.isBlank(comment)) {
+                return baseComponent.append(Component.literal("\n\n")).append(Component.translatableWithFallback(tooltipKey, comment));
+            } else {
+                return baseComponent;
+            }
         }
 
         /**

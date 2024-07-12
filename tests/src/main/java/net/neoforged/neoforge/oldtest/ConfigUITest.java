@@ -157,6 +157,8 @@ public class ConfigUITest {
                     List.of("zero", Integer.valueOf(0), Double.valueOf(0), Long.valueOf(0)), v -> v != null);
 
             BUILDER.comment("intentionally untranslated entry").define("missing", false);
+            BUILDER.define("missing_no_tooltip", false);
+            BUILDER.translation("missing_empty_tooltip").define("missing_empty_tooltip", false);
         }
 
         static final ModConfigSpec SPEC = BUILDER.build();

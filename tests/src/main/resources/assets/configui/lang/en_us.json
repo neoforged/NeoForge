@@ -51,5 +51,6 @@
   "key.random.tooltip": "Random values with a translation key override.",
   "key.randomint": "Counting",
   "key.randomint.tooltip": "Better than accounting.",
-  "configui.configuration.section.mdk": "Test Options"
+  "configui.configuration.section.mdk": "Test Options",
+  "missing_empty_tooltip.tooltip": ""
 }
