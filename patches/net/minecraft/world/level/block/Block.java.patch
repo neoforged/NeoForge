@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -61,11 +_,12 @@
+@@ -61,11 +_,11 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  import org.slf4j.Logger;
  
@@ -10,7 +10,6 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
 -    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
-+    @Deprecated //Forge: Do not use, use GameRegistry
 +    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.RegistryManager.getBlockStateIdMap();
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
