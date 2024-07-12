@@ -494,11 +494,10 @@ public interface IItemStackExtension {
         return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
 
-
     default Tag encode(HolderLookup.Provider provider, Tag tag) {
-        try{
+        try {
             return self().CODEC.encode(self(), provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow();
-        }catch (Exception exception){
+        } catch (Exception exception) {
             throw new RuntimeException(formatItemSaveException(exception, tag));
         }
     }
@@ -506,7 +505,7 @@ public interface IItemStackExtension {
     default Tag encode(HolderLookup.Provider p_332160_) {
         try {
             return self().CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), self()).getOrThrow();
-        }catch (Exception exception) {
+        } catch (Exception exception) {
             throw new RuntimeException(formatItemSaveException(exception, null));
         }
     }
@@ -514,6 +513,7 @@ public interface IItemStackExtension {
     /**
      * Wraps an exception thrown during itemstack serialization with additional context
      * on the itemstack, components, and tag.
+     * 
      * <pre>
      * Example:
      * Caused by: java.lang.Exception: Error saving itemstack 1 minecraft:dirt with components:
@@ -527,13 +527,13 @@ public interface IItemStackExtension {
      * With tag: {}
      * </pre>
      */
-    private Exception formatItemSaveException(Exception e, @Nullable Tag tag){
+    private Exception formatItemSaveException(Exception e, @Nullable Tag tag) {
         StringBuilder cause = new StringBuilder("Error saving itemstack (" + self() + ") with components:");
         cause.append("\nItem:").append(self());
-        self().getComponents().forEach((component) ->{
+        self().getComponents().forEach((component) -> {
             cause.append("\n").append(component);
         });
-        if(tag != null) {
+        if (tag != null) {
             cause.append("\nWith tag: ").append(tag);
         }
         return new Exception(cause.toString(), e);
