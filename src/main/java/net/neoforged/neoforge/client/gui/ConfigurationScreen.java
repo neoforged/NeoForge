@@ -702,7 +702,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected Element createSlider(final String key, final Supplier<Integer> source, final Consumer<Integer> target, final Integer min, final Integer max) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key),
-                            (caption, displayvalue) -> Options.genericValueLabel(caption, Component.literal("" + displayvalue)), new OptionInstance.IntRange(min, max),
+                            (caption, displayvalue) -> Component.literal("" + displayvalue), new OptionInstance.IntRange(min, max),
                             null, source.get(), newValue -> {
                                 if (!newValue.equals(source.get())) {
                                     undoManager.add(v -> {
