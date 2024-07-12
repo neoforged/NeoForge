@@ -116,14 +116,14 @@ public abstract class ReloadListenerEvent extends Event {
         }
 
         // Add edges between vanilla listeners
-//        for (int i = 0; i < baseListeners.size(); i++) {
+        for (int i = 0; i < baseListeners.size(); i++) {
 //            if (i < baseListeners.size() - 1) {
 //                graph.putEdge(baseListeners.get(i), baseListeners.get(i + 1));
 //            }
-//            if (i > 0) {
-//                graph.putEdge(baseListeners.get(i - 1), baseListeners.get(i));
-//            }
-//        }
+            if (i > 0) {
+                graph.putEdge(baseListeners.get(i - 1), baseListeners.get(i));
+            }
+        }
 
         // Add edges requested by modder-added listeners
         for (PreparableReloadListener listener : listeners) {
