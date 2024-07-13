@@ -73,6 +73,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
@@ -617,6 +618,7 @@ public class NeoForgeMod {
         TagConventionLogWarning.init();
 
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
+        modEventBus.addListener(EventPriority.LOW, CapabilityHooks::registerFallbackVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);
         // These 3 listeners use the default priority for now, can be re-evaluated later.
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkLoad);
