@@ -42,10 +42,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.*;
 import net.neoforged.neoforge.event.EventHooks;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -494,48 +493,59 @@ public interface IItemStackExtension {
         return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
 
+    /**
+     * Wraps the original {@link ItemStack#save} encoding behavior and logs additional information if an exception is thrown.
+     */
     default Tag encode(HolderLookup.Provider provider, Tag tag) {
         try {
             return self().CODEC.encode(self(), provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow();
         } catch (Exception exception) {
-            throw new RuntimeException(formatItemSaveException(exception, tag));
-        }
-    }
-
-    default Tag encode(HolderLookup.Provider p_332160_) {
-        try {
-            return self().CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), self()).getOrThrow();
-        } catch (Exception exception) {
-            throw new RuntimeException(formatItemSaveException(exception, null));
+            logItemInfo(exception, tag);
+            throw exception;
         }
     }
 
     /**
-     * Wraps an exception thrown during itemstack serialization with additional context
-     * on the itemstack, components, and tag.
-     * 
+     * Wraps the original {@link ItemStack#save} encoding behavior and logs additional information if an exception is thrown.
+     */
+    default Tag encode(HolderLookup.Provider p_332160_) {
+        try {
+            return self().CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), self()).getOrThrow();
+        } catch (Exception exception) {
+            logItemInfo(exception, null);
+            throw exception;
+        }
+    }
+
+    /**
+     * Logs component information and tag data for an itemstack that failed to save.
      * <pre>
      * Example:
-     * Caused by: java.lang.Exception: Error saving itemstack 1 minecraft:dirt with components:
-     * Item:1 minecraft:dirt
-     * minecraft:max_stack_size=>64
-     * minecraft:lore=>ItemLore[lines=[], styledLines=[]]
-     * minecraft:enchantments=>ItemEnchantments{enchantments={}, showInTooltip=true}
-     * minecraft:repair_cost=>0
-     * minecraft:attribute_modifiers=>ItemAttributeModifiers[modifiers=[], showInTooltip=true]
-     * minecraft:rarity=>COMMON
+     * Error saving itemstack [1 minecraft:dirt]. Original cause: java.lang.NullPointerException
+     * With components:
+     * {
+     *    neoforge:test=>Test[s=null]
+     *    minecraft:max_stack_size=>64
+     *    minecraft:lore=>ItemLore[lines=[], styledLines=[]]
+     *    minecraft:enchantments=>ItemEnchantments{enchantments={}, showInTooltip=true}
+     *    minecraft:repair_cost=>0
+     *    minecraft:attribute_modifiers=>ItemAttributeModifiers[modifiers=[], showInTooltip=true]
+     *    minecraft:rarity=>COMMON
+     * }
      * With tag: {}
      * </pre>
      */
-    private Exception formatItemSaveException(Exception e, @Nullable Tag tag) {
-        StringBuilder cause = new StringBuilder("Error saving itemstack (" + self() + ") with components:");
-        cause.append("\nItem:").append(self());
+    private void logItemInfo(Exception original, @Nullable Tag tag) {
+        StringBuilder cause = new StringBuilder("Error saving itemstack [" + self() + "]. Original cause: " + original);
+
+        cause.append("\nWith components:\n{");
         self().getComponents().forEach((component) -> {
-            cause.append("\n").append(component);
+            cause.append("\n\t").append(component);
         });
+        cause.append("\n}");
         if (tag != null) {
             cause.append("\nWith tag: ").append(tag);
         }
-        return new Exception(cause.toString(), e);
+        LogManager.getLogger().error(cause.toString());
     }
 }

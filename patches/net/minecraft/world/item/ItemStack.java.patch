@@ -57,20 +57,22 @@
              if (player != null && interactionresult.indicateItemUse()) {
                  player.awardStat(Stats.ITEM_USED.get(item));
              }
-@@ -382,7 +_,7 @@
+@@ -382,7 +_,8 @@
          if (this.isEmpty()) {
              throw new IllegalStateException("Cannot encode empty ItemStack");
          } else {
 -            return CODEC.encode(this, p_331900_.createSerializationContext(NbtOps.INSTANCE), p_330830_).getOrThrow();
++            // Neo: Logs extra information about this ItemStack on error
 +            return this.encode(p_331900_, p_330830_);
          }
      }
  
-@@ -390,7 +_,7 @@
+@@ -390,7 +_,8 @@
          if (this.isEmpty()) {
              throw new IllegalStateException("Cannot encode empty ItemStack");
          } else {
 -            return CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), this).getOrThrow();
++            // Neo: Logs extra information about this ItemStack on error
 +            return this.encode(p_332160_);
          }
      }
