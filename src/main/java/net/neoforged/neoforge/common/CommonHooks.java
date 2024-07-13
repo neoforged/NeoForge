@@ -99,12 +99,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ClickAction;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.RecipeBookType;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.AdventureModePredicate;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -239,7 +236,7 @@ public class CommonHooks {
      * <p>
      * Called from {@link AbstractContainerMenu#doClick} in the utility method {@link AbstractContainerMenu#tryItemClickBehaviourOverride} before either
      * {@link ItemStack#overrideStackedOnOther} or {@link ItemStack#overrideOtherStackedOnMe} is called.
-     * 
+     *
      * @param carriedItem       The item currently held by the player, being clicked <i>into</i> the slot
      * @param stackedOnItem     The item currently present in the clicked slot
      * @param slot              The {@link Slot} being clicked
@@ -1508,7 +1505,7 @@ public class CommonHooks {
 
     /**
      * Creates a {@link UseOnContext} for {@link net.minecraft.core.dispenser.DispenseItemBehavior dispense behavior}.
-     * 
+     *
      * @param source the {@link BlockSource block source} context of the dispense behavior
      * @param stack  the dispensed item stack
      * @return a {@link UseOnContext} representing the dispense behavior
@@ -1557,5 +1554,12 @@ public class CommonHooks {
             vanillaMap = Map.copyOf(vanillaMap);
         }
         return vanillaMap;
+    }
+
+    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
+        if (FMLEnvironment.dist.isClient()) {
+            return ClientHooks.getFilteredRecipeBookTypeValues();
+        }
+        return RecipeBookType.values();
     }
 }
