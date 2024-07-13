@@ -100,9 +100,9 @@
 -            boolean flag = !player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty();
 +            UseOnContext useoncontext = new UseOnContext(player, hand, result);
 +            if (event.getUseItem() != net.neoforged.neoforge.common.util.TriState.FALSE) {
-+                InteractionResult result = itemstack.onItemUseFirst(useoncontext);
-+                if (result != InteractionResult.PASS) {
-+                    return result;
++                InteractionResult res = itemstack.onItemUseFirst(useoncontext);
++                if (res != InteractionResult.PASS) {
++                    return res;
 +                }
 +            }
 +            boolean flag = !player.getMainHandItem().doesSneakBypassUse(player.level(), blockpos, player) || !player.getOffhandItem().doesSneakBypassUse(player.level(), blockpos, player);

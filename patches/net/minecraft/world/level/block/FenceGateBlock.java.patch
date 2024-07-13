@@ -35,8 +35,8 @@
 +        super(properties);
 +        com.google.common.base.Preconditions.checkArgument(type.isPresent() || (openSound.isPresent() && closeSound.isPresent()), "Fence gates must have sounds set");
 +        this.type = type.orElse(null);
-+        this.openSound = openSound.orElseGet(() -> type.fenceGateOpen()); // Type may be null, so we cannot do a method ref
-+        this.closeSound = closeSound.orElseGet(() -> type.fenceGateClose());
++        this.openSound = openSound.orElseGet(() -> this.type.fenceGateOpen()); // Type may be null, so we cannot do a method ref
++        this.closeSound = closeSound.orElseGet(() -> this.type.fenceGateClose());
          this.registerDefaultState(
              this.stateDefinition
                  .any()

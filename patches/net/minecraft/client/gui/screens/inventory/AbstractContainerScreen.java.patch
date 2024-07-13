@@ -81,7 +81,7 @@
 +    }
 +
 +    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, @Nullable String countString) {
-+            GuiGraphics guiGraphics = guiGraphics; Slot slot = slot; String s = countString; int i = slot.x; int j = slot.y;
++            String s = countString; int i = slot.x; int j = slot.y;
              int j1 = slot.x + slot.y * this.imageWidth;
              if (slot.isFake()) {
                  guiGraphics.renderFakeItem(itemstack, i, j, j1);

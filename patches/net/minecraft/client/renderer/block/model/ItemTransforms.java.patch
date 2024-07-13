@@ -71,16 +71,16 @@
 -            );
 +
 +            var builder = com.google.common.collect.ImmutableMap.<ItemDisplayContext, ItemTransform>builder();
-+            for (ItemDisplayContext type : ItemDisplayContext.values()) {
-+                if (type.isModded()) {
-+                    var transform = this.getTransform(context, jsonobject, type);
-+                    var fallbackType = type;
++            for (ItemDisplayContext ctxType : ItemDisplayContext.values()) {
++                if (ctxType.isModded()) {
++                    var transform = this.getTransform(context, jsonobject, ctxType);
++                    var fallbackType = ctxType;
 +                    while (transform == ItemTransform.NO_TRANSFORM && fallbackType.fallback() != null) {
 +                        fallbackType = fallbackType.fallback();
 +                        transform = this.getTransform(context, jsonobject, fallbackType);
 +                    }
 +                    if (transform != ItemTransform.NO_TRANSFORM){
-+                        builder.put(type, transform);
++                        builder.put(ctxType, transform);
 +                    }
 +                }
 +            }

@@ -9,7 +9,7 @@
 +    }
 +
      private boolean addEntity(T entity, boolean worldGenSpawned) {
-+        if (entity instanceof Entity entity && net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(entity, entity.level(), worldGenSpawned)).isCanceled()) return false;
++        if (entity instanceof Entity et && net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(et, et.level(), worldGenSpawned)).isCanceled()) return false;
 +        return addEntityWithoutEvent(entity, worldGenSpawned);
 +    }
 +
