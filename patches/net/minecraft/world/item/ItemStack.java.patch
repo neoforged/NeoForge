@@ -63,7 +63,7 @@
          } else {
 -            return CODEC.encode(this, p_331900_.createSerializationContext(NbtOps.INSTANCE), p_330830_).getOrThrow();
 +            // Neo: Logs extra information about this ItemStack on error
-+            return this.encode(p_331900_, p_330830_);
++            return net.neoforged.neoforge.common.util.DataComponentUtil.wrapEncodingExceptions(this, CODEC, p_331900_, p_330830_);
          }
      }
  
@@ -73,7 +73,7 @@
          } else {
 -            return CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), this).getOrThrow();
 +            // Neo: Logs extra information about this ItemStack on error
-+            return this.encode(p_332160_);
++            return net.neoforged.neoforge.common.util.DataComponentUtil.wrapEncodingExceptions(this, CODEC, p_332160_);
          }
      }
  

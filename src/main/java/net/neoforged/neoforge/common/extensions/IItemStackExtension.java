@@ -7,12 +7,9 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -46,7 +43,6 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -493,62 +489,5 @@ public interface IItemStackExtension {
         }
 
         return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
-    }
-
-    /**
-     * Wraps the original {@link ItemStack#save} encoding behavior and logs additional information if an exception is thrown.
-     */
-    default Tag encode(HolderLookup.Provider provider, Tag tag) {
-        try {
-            return ItemStack.CODEC.encode(self(), provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow();
-        } catch (Exception exception) {
-            logItemInfo(exception, tag);
-            throw exception;
-        }
-    }
-
-    /**
-     * Wraps the original {@link ItemStack#save} encoding behavior and logs additional information if an exception is thrown.
-     */
-    default Tag encode(HolderLookup.Provider p_332160_) {
-        try {
-            return ItemStack.CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), self()).getOrThrow();
-        } catch (Exception exception) {
-            logItemInfo(exception, null);
-            throw exception;
-        }
-    }
-
-    /**
-     * Logs component information and tag data for an itemstack that failed to save.
-     * 
-     * <pre>
-     * Example:
-     * Error saving itemstack [1 minecraft:dirt]. Original cause: java.lang.NullPointerException
-     * With components:
-     * {
-     *    neoforge:test=>Test[s=null]
-     *    minecraft:max_stack_size=>64
-     *    minecraft:lore=>ItemLore[lines=[], styledLines=[]]
-     *    minecraft:enchantments=>ItemEnchantments{enchantments={}, showInTooltip=true}
-     *    minecraft:repair_cost=>0
-     *    minecraft:attribute_modifiers=>ItemAttributeModifiers[modifiers=[], showInTooltip=true]
-     *    minecraft:rarity=>COMMON
-     * }
-     * With tag: {}
-     * </pre>
-     */
-    private void logItemInfo(Exception original, @Nullable Tag tag) {
-        StringBuilder cause = new StringBuilder("Error saving itemstack [" + self() + "]. Original cause: " + original);
-
-        cause.append("\nWith components:\n{");
-        self().getComponents().forEach((component) -> {
-            cause.append("\n\t").append(component);
-        });
-        cause.append("\n}");
-        if (tag != null) {
-            cause.append("\nWith tag: ").append(tag);
-        }
-        LogManager.getLogger().error(cause.toString());
     }
 }
