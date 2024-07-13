@@ -673,6 +673,33 @@ public class Tags {
          */
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
         /**
+         * A tag containing melee-based weapons for recipes and loot tables.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> MELEE_WEAPON_TOOLS = tag("tools/melee_weapon");
+        /**
+         * A tag containing ranged-based weapons for recipes and loot tables.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> RANGED_WEAPON_TOOLS = tag("tools/ranged_weapon");
+        /**
+         * A tag containing mining-based tools for recipes and loot tables.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> MINING_TOOL_TOOLS = tag("tools/mining_tool");
+        /**
          * Collects the 4 vanilla armor tags into one parent collection for ease.
          */
         public static final TagKey<Item> ARMORS = tag("armors");
