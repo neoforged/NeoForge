@@ -11,19 +11,19 @@
  
          this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
 @@ -228,6 +_,7 @@
-     public void playerTouch(Player p_20792_) {
-         if (p_20792_ instanceof ServerPlayer serverplayer) {
-             if (p_20792_.takeXpDelay == 0) {
-+                if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.PickupXp(p_20792_, this)).isCanceled()) return;
-                 p_20792_.takeXpDelay = 2;
-                 p_20792_.take(this, 1);
+     public void playerTouch(Player entity) {
+         if (entity instanceof ServerPlayer serverplayer) {
+             if (entity.takeXpDelay == 0) {
++                if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.PickupXp(entity, this)).isCanceled()) return;
+                 entity.takeXpDelay = 2;
+                 entity.take(this, 1);
                  int i = this.repairPlayerItems(serverplayer, this.value);
 @@ -247,7 +_,7 @@
-         Optional<EnchantedItemInUse> optional = EnchantmentHelper.getRandomItemWith(EnchantmentEffectComponents.REPAIR_WITH_XP, p_344821_, ItemStack::isDamaged);
+         Optional<EnchantedItemInUse> optional = EnchantmentHelper.getRandomItemWith(EnchantmentEffectComponents.REPAIR_WITH_XP, player, ItemStack::isDamaged);
          if (optional.isPresent()) {
              ItemStack itemstack = optional.get().itemStack();
--            int i = EnchantmentHelper.modifyDurabilityToRepairFromXp(p_344821_.serverLevel(), itemstack, p_147094_);
-+            int i = EnchantmentHelper.modifyDurabilityToRepairFromXp(p_344821_.serverLevel(), itemstack, (int) (p_147094_ * itemstack.getXpRepairRatio()));
+-            int i = EnchantmentHelper.modifyDurabilityToRepairFromXp(player.serverLevel(), itemstack, value);
++            int i = EnchantmentHelper.modifyDurabilityToRepairFromXp(player.serverLevel(), itemstack, (int) (value * itemstack.getXpRepairRatio()));
              int j = Math.min(i, itemstack.getDamageValue());
              itemstack.setDamageValue(itemstack.getDamageValue() - j);
              if (j > 0) {

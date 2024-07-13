@@ -3,14 +3,14 @@
 @@ -93,7 +_,12 @@
  
      @Override
-     protected boolean canSurvive(BlockState p_221473_, LevelReader p_221474_, BlockPos p_221475_) {
--        return isHanging(p_221473_) ? p_221474_.getBlockState(p_221475_.above()).is(Blocks.MANGROVE_LEAVES) : super.canSurvive(p_221473_, p_221474_, p_221475_);
-+        if (isHanging(p_221473_)) {
-+            net.neoforged.neoforge.common.util.TriState soilDecision = p_221474_.getBlockState(p_221475_.above()).canSustainPlant(p_221474_, p_221475_.above(), Direction.DOWN, p_221473_);
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+-        return isHanging(state) ? level.getBlockState(pos.above()).is(Blocks.MANGROVE_LEAVES) : super.canSurvive(state, level, pos);
++        if (isHanging(state)) {
++            net.neoforged.neoforge.common.util.TriState soilDecision = level.getBlockState(pos.above()).canSustainPlant(level, pos.above(), Direction.DOWN, state);
 +            if (!soilDecision.isDefault()) return soilDecision.isTrue();
-+            return p_221474_.getBlockState(p_221475_.above()).is(Blocks.MANGROVE_LEAVES);
++            return level.getBlockState(pos.above()).is(Blocks.MANGROVE_LEAVES);
 +        }
-+        return super.canSurvive(p_221473_, p_221474_, p_221475_);
++        return super.canSurvive(state, level, pos);
      }
  
      @Override

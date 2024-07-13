@@ -3,39 +3,39 @@
 @@ -118,7 +_,9 @@
          Instant instant = Instant.now();
          this.handleMessage(null, () -> {
-             Component component = p_251256_.decorate(p_250375_);
+             Component component = boundChatType.decorate(message);
 -            this.minecraft.gui.getChat().addMessage(component);
-+            Component forgeComponent = net.neoforged.neoforge.client.ClientHooks.onClientChat(p_251256_, component, Util.NIL_UUID);
++            Component forgeComponent = net.neoforged.neoforge.client.ClientHooks.onClientChat(boundChatType, component, Util.NIL_UUID);
 +            if (forgeComponent == null) return false;
 +            this.minecraft.gui.getChat().addMessage(forgeComponent);
-             this.narrateChatMessage(p_251256_, p_250375_);
+             this.narrateChatMessage(boundChatType, message);
              this.logSystemMessage(component, instant);
              this.previousMessageTime = Util.getMillis();
 @@ -137,12 +_,16 @@
-             MessageSignature messagesignature = p_249430_.signature();
-             FilterMask filtermask = p_249430_.filterMask();
+             MessageSignature messagesignature = chatMessage.signature();
+             FilterMask filtermask = chatMessage.filterMask();
              if (filtermask.isEmpty()) {
--                this.minecraft.gui.getChat().addMessage(p_249231_, messagesignature, guimessagetag);
-+                Component forgeComponent = net.neoforged.neoforge.client.ClientHooks.onClientPlayerChat(p_251766_, p_249231_, p_249430_, p_249430_.sender());
+-                this.minecraft.gui.getChat().addMessage(decoratedServerContent, messagesignature, guimessagetag);
++                Component forgeComponent = net.neoforged.neoforge.client.ClientHooks.onClientPlayerChat(boundChatType, decoratedServerContent, chatMessage, chatMessage.sender());
 +                if (forgeComponent == null) return false;
 +                this.minecraft.gui.getChat().addMessage(forgeComponent, messagesignature, guimessagetag);
-                 this.narrateChatMessage(p_251766_, p_249430_.decoratedContent());
+                 this.narrateChatMessage(boundChatType, chatMessage.decoratedContent());
              } else {
-                 Component component = filtermask.applyWithFormatting(p_249430_.signedContent());
+                 Component component = filtermask.applyWithFormatting(chatMessage.signedContent());
                  if (component != null) {
--                    this.minecraft.gui.getChat().addMessage(p_251766_.decorate(component), messagesignature, guimessagetag);
-+                    Component forgeComponent = net.neoforged.neoforge.client.ClientHooks.onClientPlayerChat(p_251766_, p_251766_.decorate(component), p_249430_, p_249430_.sender());
+-                    this.minecraft.gui.getChat().addMessage(boundChatType.decorate(component), messagesignature, guimessagetag);
++                    Component forgeComponent = net.neoforged.neoforge.client.ClientHooks.onClientPlayerChat(boundChatType, boundChatType.decorate(component), chatMessage, chatMessage.sender());
 +                    if (forgeComponent == null) return false;
 +                    this.minecraft.gui.getChat().addMessage(forgeComponent, messagesignature, guimessagetag);
-                     this.narrateChatMessage(p_251766_, component);
+                     this.narrateChatMessage(boundChatType, component);
                  }
              }
 @@ -175,6 +_,8 @@
  
-     public void handleSystemMessage(Component p_240522_, boolean p_240642_) {
-         if (!this.minecraft.options.hideMatchedNames().get() || !this.minecraft.isBlocked(this.guessChatUUID(p_240522_))) {
-+            p_240522_ = net.neoforged.neoforge.client.ClientHooks.onClientSystemChat(p_240522_, p_240642_);
-+            if (p_240522_ == null) return;
-             if (p_240642_) {
-                 this.minecraft.gui.setOverlayMessage(p_240522_, false);
+     public void handleSystemMessage(Component message, boolean isOverlay) {
+         if (!this.minecraft.options.hideMatchedNames().get() || !this.minecraft.isBlocked(this.guessChatUUID(message))) {
++            message = net.neoforged.neoforge.client.ClientHooks.onClientSystemChat(message, isOverlay);
++            if (message == null) return;
+             if (isOverlay) {
+                 this.minecraft.gui.setOverlayMessage(message, false);
              } else {

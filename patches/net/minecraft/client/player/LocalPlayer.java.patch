@@ -1,26 +1,26 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
 @@ -297,6 +_,7 @@
-         ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
+         ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = fullStack
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
              : ServerboundPlayerActionPacket.Action.DROP_ITEM;
-+        if (isUsingItem() && getUsedItemHand() == InteractionHand.MAIN_HAND && (p_108701_ || getUseItem().getCount() == 1)) stopUsingItem(); // Forge: fix MC-231097 on the clientside
-         ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
++        if (isUsingItem() && getUsedItemHand() == InteractionHand.MAIN_HAND && (fullStack || getUseItem().getCount() == 1)) stopUsingItem(); // Forge: fix MC-231097 on the clientside
+         ItemStack itemstack = this.getInventory().removeFromSelected(fullStack);
          this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
          return !itemstack.isEmpty();
 @@ -489,7 +_,14 @@
  
      @Override
-     public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
--        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), p_108651_, this.getSoundSource(), p_108652_, p_108653_, false);
-+        net.minecraft.core.Holder<SoundEvent> holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(p_108651_);
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(this, holder, this.getSoundSource(), p_108652_, p_108653_);
+     public void playSound(SoundEvent sound, float volume, float pitch) {
+-        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundSource(), volume, pitch, false);
++        net.minecraft.core.Holder<SoundEvent> holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound);
++        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(this, holder, this.getSoundSource(), volume, pitch);
 +        if (event.isCanceled() || event.getSound() == null) return;
-+        p_108651_ = event.getSound().value();
++        sound = event.getSound().value();
 +        SoundSource source = event.getSource();
-+        p_108652_ = event.getNewVolume();
-+        p_108653_ = event.getNewPitch();
-+        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), p_108651_, source, p_108652_, p_108653_, false);
++        volume = event.getNewVolume();
++        pitch = event.getNewPitch();
++        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), sound, source, volume, pitch, false);
      }
  
      @Override

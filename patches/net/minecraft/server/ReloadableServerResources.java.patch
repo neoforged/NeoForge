@@ -1,9 +1,9 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
 @@ -49,6 +_,8 @@
-         this.commands = new Commands(p_206858_, CommandBuildContext.simple(this.registryLookup, p_250695_));
+         this.commands = new Commands(commandSelection, CommandBuildContext.simple(this.registryLookup, enabledFeatures));
          this.advancements = new ServerAdvancementManager(this.registryLookup);
-         this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
+         this.functionLibrary = new ServerFunctionLibrary(functionCompilationLevel, this.commands.getDispatcher());
 +        // Neo: Create context object
 +        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager);
      }
@@ -32,11 +32,11 @@
 +    }
 +
      public static CompletableFuture<ReloadableServerResources> loadResources(
-         ResourceManager p_248588_,
-         LayeredRegistryAccess<RegistryLayer> p_335667_,
+         ResourceManager resourceManager,
+         LayeredRegistryAccess<RegistryLayer> registries,
 @@ -90,14 +_,27 @@
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
-                         p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
+                         p_335211_.compositeAccess(), enabledFeatures, commandSelection, functionCompilationLevel
                      );
 +                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
 +                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
@@ -44,8 +44,8 @@
 +                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryLookup);
 +                    });
                      return SimpleReloadInstance.create(
--                            p_248588_, reloadableserverresources.listeners(), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
-+                            p_248588_, listeners, p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
+-                            resourceManager, reloadableserverresources.listeners(), backgroundExecutor, gameExecutor, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
++                            resourceManager, listeners, backgroundExecutor, gameExecutor, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
                          )
                          .done()
                          .whenComplete(
@@ -70,4 +70,4 @@
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.fullRegistryHolder.get(), false, false));
      }
  
-     private static <T> void updateRegistryTags(RegistryAccess p_206871_, TagManager.LoadResult<T> p_206872_) {
+     private static <T> void updateRegistryTags(RegistryAccess registryAccess, TagManager.LoadResult<T> loadResult) {

@@ -7,14 +7,14 @@
 +    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot;
  
 +    @Deprecated
-     RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[] p_350680_) {
-+        this(p_200456_, p_200457_, p_200458_, p_350680_, net.neoforged.neoforge.client.model.data.ModelDataManager.EMPTY_SNAPSHOT);
+     RenderChunkRegion(Level level, int minChunkX, int minChunkZ, RenderChunk[] chunks) {
++        this(level, minChunkX, minChunkZ, chunks, net.neoforged.neoforge.client.model.data.ModelDataManager.EMPTY_SNAPSHOT);
 +    }
-+    RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[] p_350680_, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot) {
-         this.level = p_200456_;
-         this.minChunkX = p_200457_;
-         this.minChunkZ = p_200458_;
-         this.chunks = p_350680_;
++    RenderChunkRegion(Level level, int minChunkX, int minChunkZ, RenderChunk[] chunks, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot) {
+         this.level = level;
+         this.minChunkX = minChunkX;
+         this.minChunkZ = minChunkZ;
+         this.chunks = chunks;
 +        this.modelDataSnapshot = modelDataSnapshot;
      }
  
@@ -40,4 +40,4 @@
 +        return this.getChunk(pos.x, pos.z).wrapped.getAuxLightManager(pos);
      }
  
-     public static int index(int p_350911_, int p_350842_, int p_350891_, int p_350833_) {
+     public static int index(int minX, int minZ, int x, int z) {

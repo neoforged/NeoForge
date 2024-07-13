@@ -3,37 +3,37 @@
 @@ -47,7 +_,7 @@
      }
  
-     protected boolean checkExtraStartConditions(ServerLevel p_23174_, Villager p_23175_) {
--        if (!p_23174_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+        if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_23174_, p_23175_)) {
+     protected boolean checkExtraStartConditions(ServerLevel level, Villager owner) {
+-        if (!level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++        if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, owner)) {
              return false;
-         } else if (p_23175_.getVillagerData().getProfession() != VillagerProfession.FARMER) {
+         } else if (owner.getVillagerData().getProfession() != VillagerProfession.FARMER) {
              return false;
 @@ -82,7 +_,7 @@
-         BlockState blockstate = p_23182_.getBlockState(p_23181_);
+         BlockState blockstate = serverLevel.getBlockState(pos);
          Block block = blockstate.getBlock();
-         Block block1 = p_23182_.getBlockState(p_23181_.below()).getBlock();
+         Block block1 = serverLevel.getBlockState(pos.below()).getBlock();
 -        return block instanceof CropBlock && ((CropBlock)block).isMaxAge(blockstate) || blockstate.isAir() && block1 instanceof FarmBlock;
 +        return block instanceof CropBlock && ((CropBlock)block).isMaxAge(blockstate) || blockstate.isAir() && (block1 instanceof FarmBlock || block1.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
      }
  
-     protected void start(ServerLevel p_23177_, Villager p_23178_, long p_23179_) {
+     protected void start(ServerLevel level, Villager entity, long gameTime) {
 @@ -109,7 +_,7 @@
-                     p_23196_.destroyBlock(this.aboveFarmlandPos, true, p_23197_);
+                     level.destroyBlock(this.aboveFarmlandPos, true, owner);
                  }
  
--                if (blockstate.isAir() && block1 instanceof FarmBlock && p_23197_.hasFarmSeeds()) {
-+                if (blockstate.isAir() && (block1 instanceof FarmBlock || block1.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS)) && p_23197_.hasFarmSeeds()) {
-                     SimpleContainer simplecontainer = p_23197_.getInventory();
+-                if (blockstate.isAir() && block1 instanceof FarmBlock && owner.hasFarmSeeds()) {
++                if (blockstate.isAir() && (block1 instanceof FarmBlock || block1.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS)) && owner.hasFarmSeeds()) {
+                     SimpleContainer simplecontainer = owner.getInventory();
  
                      for (int i = 0; i < simplecontainer.getContainerSize(); i++) {
 @@ -120,6 +_,11 @@
-                             p_23196_.setBlockAndUpdate(this.aboveFarmlandPos, blockstate1);
-                             p_23196_.gameEvent(GameEvent.BLOCK_PLACE, this.aboveFarmlandPos, GameEvent.Context.of(p_23197_, blockstate1));
+                             level.setBlockAndUpdate(this.aboveFarmlandPos, blockstate1);
+                             level.gameEvent(GameEvent.BLOCK_PLACE, this.aboveFarmlandPos, GameEvent.Context.of(owner, blockstate1));
                              flag = true;
-+                        } else if (itemstack.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(p_23197_)) {
-+                            if (specialPlantable.canPlacePlantAtPosition(itemstack, p_23196_, aboveFarmlandPos, net.minecraft.core.Direction.DOWN)) {
-+                                specialPlantable.spawnPlantAtPosition(itemstack, p_23196_, aboveFarmlandPos, net.minecraft.core.Direction.DOWN);
++                        } else if (itemstack.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(owner)) {
++                            if (specialPlantable.canPlacePlantAtPosition(itemstack, level, aboveFarmlandPos, net.minecraft.core.Direction.DOWN)) {
++                                specialPlantable.spawnPlantAtPosition(itemstack, level, aboveFarmlandPos, net.minecraft.core.Direction.DOWN);
 +                                flag = true;
 +                            }
                          }

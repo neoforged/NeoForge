@@ -3,7 +3,7 @@
 @@ -83,8 +_,8 @@
  
          for (int i = 0; i < nonnulllist.size(); i++) {
-             ItemStack itemstack = p_344763_.getItem(i);
+             ItemStack itemstack = input.getItem(i);
 -            if (itemstack.getItem().hasCraftingRemainingItem()) {
 -                nonnulllist.set(i, new ItemStack(itemstack.getItem().getCraftingRemainingItem()));
 +            if (itemstack.hasCraftingRemainingItem()) {

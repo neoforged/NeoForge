@@ -6,11 +6,11 @@
  public class BiomeTagsProvider extends TagsProvider<Biome> {
 +    /** @deprecated Forge: Use the {@linkplain #BiomeTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
 +    @Deprecated
-     public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_) {
-         super(p_255800_, Registries.BIOME, p_256205_);
+     public BiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+         super(output, Registries.BIOME, provider);
 +    }
-+    public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-+        super(p_255800_, Registries.BIOME, p_256205_, modId, existingFileHelper);
++    public BiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
++        super(output, Registries.BIOME, provider, modId, existingFileHelper);
      }
  
      @Override

@@ -14,30 +14,30 @@
  
 +    /** @deprecated Forge: Use {@link net.neoforged.neoforge.event.RegisterGameTestsEvent RegisterGameTestsEvent} to register game tests */
 +    @Deprecated
-     public static void register(Class<?> p_177502_) {
-         Arrays.stream(p_177502_.getDeclaredMethods()).sorted(Comparator.comparing(Method::getName)).forEach(GameTestRegistry::register);
+     public static void register(Class<?> testClass) {
+         Arrays.stream(testClass.getDeclaredMethods()).sorted(Comparator.comparing(Method::getName)).forEach(GameTestRegistry::register);
      }
  
 +    /** @deprecated Forge: Use {@link net.neoforged.neoforge.event.RegisterGameTestsEvent RegisterGameTestsEvent} to register game tests */
 +    @Deprecated
-     public static void register(Method p_177504_) {
-+         register(p_177504_, java.util.Set.of());
+     public static void register(Method testMethod) {
++         register(testMethod, java.util.Set.of());
 +    }
 +    /** @deprecated Forge: Use {@link net.neoforged.neoforge.event.RegisterGameTestsEvent RegisterGameTestsEvent} to register game tests */
 +    @Deprecated
-+    public static void register(Method p_177504_, java.util.Set<String> allowedNamespaces) {
-         String s = p_177504_.getDeclaringClass().getSimpleName();
-         GameTest gametest = p_177504_.getAnnotation(GameTest.class);
++    public static void register(Method testMethod, java.util.Set<String> allowedNamespaces) {
+         String s = testMethod.getDeclaringClass().getSimpleName();
+         GameTest gametest = testMethod.getAnnotation(GameTest.class);
 -        if (gametest != null) {
-+        if (gametest != null && (allowedNamespaces.isEmpty() || allowedNamespaces.contains(net.neoforged.neoforge.gametest.GameTestHooks.getTemplateNamespace(p_177504_)))) {
-             TEST_FUNCTIONS.add(turnMethodIntoTestFunction(p_177504_));
++        if (gametest != null && (allowedNamespaces.isEmpty() || allowedNamespaces.contains(net.neoforged.neoforge.gametest.GameTestHooks.getTemplateNamespace(testMethod)))) {
+             TEST_FUNCTIONS.add(turnMethodIntoTestFunction(testMethod));
              TEST_CLASS_NAMES.add(s);
          }
  
-         GameTestGenerator gametestgenerator = p_177504_.getAnnotation(GameTestGenerator.class);
+         GameTestGenerator gametestgenerator = testMethod.getAnnotation(GameTestGenerator.class);
          if (gametestgenerator != null) {
--            TEST_FUNCTIONS.addAll(useTestGeneratorMethod(p_177504_));
-+            Collection<TestFunction> testFunctions = new java.util.ArrayList<>(useTestGeneratorMethod(p_177504_));
+-            TEST_FUNCTIONS.addAll(useTestGeneratorMethod(testMethod));
++            Collection<TestFunction> testFunctions = new java.util.ArrayList<>(useTestGeneratorMethod(testMethod));
 +            if (!allowedNamespaces.isEmpty())
 +                 testFunctions.removeIf(t -> !allowedNamespaces.contains(net.minecraft.resources.ResourceLocation.parse(t.structureName()).getNamespace()));
 +            TEST_FUNCTIONS.addAll(testFunctions);
@@ -46,35 +46,35 @@
  
 @@ -101,7 +_,9 @@
  
-     private static Collection<TestFunction> useTestGeneratorMethod(Method p_177514_) {
+     private static Collection<TestFunction> useTestGeneratorMethod(Method testMethod) {
          try {
--            Object object = p_177514_.getDeclaringClass().newInstance();
+-            Object object = testMethod.getDeclaringClass().newInstance();
 +            Object object = null;
-+            if (!java.lang.reflect.Modifier.isStatic(p_177514_.getModifiers()))
-+                 object = p_177514_.getDeclaringClass().newInstance();
-             return (Collection<TestFunction>)p_177514_.invoke(object);
++            if (!java.lang.reflect.Modifier.isStatic(testMethod.getModifiers()))
++                 object = testMethod.getDeclaringClass().newInstance();
+             return (Collection<TestFunction>)testMethod.invoke(object);
          } catch (ReflectiveOperationException reflectiveoperationexception) {
              throw new RuntimeException(reflectiveoperationexception);
 @@ -112,8 +_,9 @@
-         GameTest gametest = p_177516_.getAnnotation(GameTest.class);
-         String s = p_177516_.getDeclaringClass().getSimpleName();
+         GameTest gametest = testMethod.getAnnotation(GameTest.class);
+         String s = testMethod.getDeclaringClass().getSimpleName();
          String s1 = s.toLowerCase();
--        String s2 = s1 + "." + p_177516_.getName().toLowerCase();
+-        String s2 = s1 + "." + testMethod.getName().toLowerCase();
 -        String s3 = gametest.template().isEmpty() ? s2 : s1 + "." + gametest.template();
-+        boolean prefixGameTestTemplate = net.neoforged.neoforge.gametest.GameTestHooks.prefixGameTestTemplate(p_177516_);
-+        String s2 = (prefixGameTestTemplate ? s1 + "." : "") + p_177516_.getName().toLowerCase();
-+        String s3 = net.neoforged.neoforge.gametest.GameTestHooks.getTemplateNamespace(p_177516_) + ":" + (gametest.template().isEmpty() ? s2 : (prefixGameTestTemplate ? s1 + "." : "") + gametest.template());
++        boolean prefixGameTestTemplate = net.neoforged.neoforge.gametest.GameTestHooks.prefixGameTestTemplate(testMethod);
++        String s2 = (prefixGameTestTemplate ? s1 + "." : "") + testMethod.getName().toLowerCase();
++        String s3 = net.neoforged.neoforge.gametest.GameTestHooks.getTemplateNamespace(testMethod) + ":" + (gametest.template().isEmpty() ? s2 : (prefixGameTestTemplate ? s1 + "." : "") + gametest.template());
          String s4 = gametest.batch();
          Rotation rotation = StructureUtils.getRotationForRotationSteps(gametest.rotationSteps());
          return new TestFunction(
 @@ -135,7 +_,9 @@
-     private static Consumer<?> turnMethodIntoConsumer(Method p_177520_) {
+     private static Consumer<?> turnMethodIntoConsumer(Method testMethod) {
          return p_177512_ -> {
              try {
--                Object object = p_177520_.getDeclaringClass().newInstance();
+-                Object object = testMethod.getDeclaringClass().newInstance();
 +                Object object = null;
-+                if (!java.lang.reflect.Modifier.isStatic(p_177520_.getModifiers()))
-+                     object = p_177520_.getDeclaringClass().newInstance();
-                 p_177520_.invoke(object, p_177512_);
++                if (!java.lang.reflect.Modifier.isStatic(testMethod.getModifiers()))
++                     object = testMethod.getDeclaringClass().newInstance();
+                 testMethod.invoke(object, p_177512_);
              } catch (InvocationTargetException invocationtargetexception) {
                  if (invocationtargetexception.getCause() instanceof RuntimeException) {

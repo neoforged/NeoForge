@@ -2,27 +2,27 @@
 +++ b/net/minecraft/CrashReport.java
 @@ -58,14 +_,8 @@
          if (this.uncategorizedStackTrace != null && this.uncategorizedStackTrace.length > 0) {
-             p_127520_.append("-- Head --\n");
-             p_127520_.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
--            p_127520_.append("Stacktrace:\n");
+             builder.append("-- Head --\n");
+             builder.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
+-            builder.append("Stacktrace:\n");
 -
 -            for (StackTraceElement stacktraceelement : this.uncategorizedStackTrace) {
--                p_127520_.append("\t").append("at ").append(stacktraceelement);
--                p_127520_.append("\n");
+-                builder.append("\t").append("at ").append(stacktraceelement);
+-                builder.append("\n");
 -            }
 -
--            p_127520_.append("\n");
-+            p_127520_.append("Stacktrace:");
-+            p_127520_.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.uncategorizedStackTrace));
+-            builder.append("\n");
++            builder.append("Stacktrace:");
++            builder.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.uncategorizedStackTrace));
          }
  
          for (CrashReportCategory crashreportcategory : this.details) {
 @@ -73,6 +_,7 @@
-             p_127520_.append("\n\n");
+             builder.append("\n\n");
          }
  
 +        net.neoforged.neoforge.logging.CrashReportExtender.extendSystemReport(systemReport);
-         this.systemReport.appendToCrashReportString(p_127520_);
+         this.systemReport.appendToCrashReportString(builder);
      }
  
 @@ -92,18 +_,7 @@
@@ -44,4 +44,4 @@
 +        return net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(throwable);
      }
  
-     public String getFriendlyReport(ReportType p_350860_, List<String> p_350563_) {
+     public String getFriendlyReport(ReportType type, List<String> links) {

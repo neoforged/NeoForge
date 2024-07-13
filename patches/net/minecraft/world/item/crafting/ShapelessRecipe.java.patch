@@ -6,28 +6,28 @@
      final NonNullList<Ingredient> ingredients;
 +    private final boolean isSimple;
  
-     public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, ItemStack p_252071_, NonNullList<Ingredient> p_250689_) {
-         this.group = p_249640_;
-         this.category = p_249390_;
-         this.result = p_252071_;
-         this.ingredients = p_250689_;
-+        this.isSimple = p_250689_.stream().allMatch(Ingredient::isSimple);
+     public ShapelessRecipe(String group, CraftingBookCategory category, ItemStack result, NonNullList<Ingredient> ingredients) {
+         this.group = group;
+         this.category = category;
+         this.result = result;
+         this.ingredients = ingredients;
++        this.isSimple = ingredients.stream().allMatch(Ingredient::isSimple);
      }
  
      @Override
 @@ -54,6 +_,12 @@
-     public boolean matches(CraftingInput p_346123_, Level p_44263_) {
-         if (p_346123_.ingredientCount() != this.ingredients.size()) {
+     public boolean matches(CraftingInput input, Level level) {
+         if (input.ingredientCount() != this.ingredients.size()) {
              return false;
 +        } else if (!isSimple) {
-+            var nonEmptyItems = new java.util.ArrayList<ItemStack>(p_346123_.ingredientCount());
-+            for (var item : p_346123_.items())
++            var nonEmptyItems = new java.util.ArrayList<ItemStack>(input.ingredientCount());
++            for (var item : input.items())
 +                if (!item.isEmpty())
 +                    nonEmptyItems.add(item);
 +            return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(nonEmptyItems, this.ingredients) != null;
          } else {
-             return p_346123_.size() == 1 && this.ingredients.size() == 1
-                 ? this.ingredients.getFirst().test(p_346123_.getItem(0))
+             return input.size() == 1 && this.ingredients.size() == 1
+                 ? this.ingredients.getFirst().test(input.getItem(0))
 @@ -81,12 +_,12 @@
                              .fieldOf("ingredients")
                              .flatXmap(

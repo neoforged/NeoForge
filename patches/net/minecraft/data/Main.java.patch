@@ -11,7 +11,7 @@
 +        OptionSpec<Void> flat = optionparser.accepts("flat", "Do not append modid prefix to output directory when generating for multiple mods");
 +        OptionSpec<String> assetIndex = optionparser.accepts("assetIndex").withRequiredArg();
 +        OptionSpec<java.io.File> assetsDir = optionparser.accepts("assetsDir").withRequiredArg().ofType(java.io.File.class);
-         OptionSet optionset = optionparser.parse(p_129669_);
+         OptionSet optionset = optionparser.parse(args);
 -        if (!optionset.has(optionspec) && optionset.hasOptions()) {
 +        if (!optionset.has(optionspec) && optionset.hasOptions() && !(optionset.specs().size() == 1 && optionset.has(gameDir))) {
              Path path = Paths.get(optionspec7.value(optionset));

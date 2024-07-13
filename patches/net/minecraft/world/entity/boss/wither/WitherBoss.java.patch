@@ -26,8 +26,8 @@
 +     * @deprecated Forge: Use {@link BlockState#canEntityDestroy(net.minecraft.world.level.BlockGetter, BlockPos, Entity)} instead.
 +     */
 +    @Deprecated
-     public static boolean canDestroy(BlockState p_31492_) {
-         return !p_31492_.isAir() && !p_31492_.is(BlockTags.WITHER_IMMUNE);
+     public static boolean canDestroy(BlockState state) {
+         return !state.isAir() && !state.is(BlockTags.WITHER_IMMUNE);
      }
 @@ -495,6 +_,7 @@
  

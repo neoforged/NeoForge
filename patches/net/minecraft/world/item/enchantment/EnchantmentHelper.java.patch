@@ -8,81 +8,81 @@
 +     * @deprecated Neo: Use {@link #getTagEnchantmentLevel(Holder, ItemStack)} for NBT enchantments, or {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay.
 +     */
 +    @Deprecated
-     public static int getItemEnchantmentLevel(Holder<Enchantment> p_346179_, ItemStack p_44845_) {
+     public static int getItemEnchantmentLevel(Holder<Enchantment> enchantment, ItemStack stack) {
 +        // Neo: To reduce patch size, update this method to always check gameplay enchantments, and add getTagEnchantmentLevel as a helper for mods.
-+        return p_44845_.getEnchantmentLevel(p_346179_);
++        return stack.getEnchantmentLevel(enchantment);
 +    }
 +
 +    /**
 +     * Gets the level of an enchantment from NBT. Use {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay logic.
 +     */
-+    public static int getTagEnchantmentLevel(Holder<Enchantment> p_346179_, ItemStack p_44845_) {
-         ItemEnchantments itemenchantments = p_44845_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-         return itemenchantments.getLevel(p_346179_);
++    public static int getTagEnchantmentLevel(Holder<Enchantment> enchantment, ItemStack stack) {
+         ItemEnchantments itemenchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+         return itemenchantments.getLevel(enchantment);
      }
 @@ -122,6 +_,12 @@
-     private static void runIterationOnItem(ItemStack p_345425_, EnchantmentHelper.EnchantmentVisitor p_345023_) {
-         ItemEnchantments itemenchantments = p_345425_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+     private static void runIterationOnItem(ItemStack stack, EnchantmentHelper.EnchantmentVisitor visitor) {
+         ItemEnchantments itemenchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
 +        // Neo: Respect gameplay-only enchantments when doing iterations
 +        var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
 +        if (lookup != null) {
-+            itemenchantments = p_345425_.getAllEnchantments(lookup);
++            itemenchantments = stack.getAllEnchantments(lookup);
 +        }
 +
          for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
-             p_345023_.accept(entry.getKey(), entry.getIntValue());
+             visitor.accept(entry.getKey(), entry.getIntValue());
          }
 @@ -132,6 +_,10 @@
      ) {
-         if (!p_44852_.isEmpty()) {
-             ItemEnchantments itemenchantments = p_44852_.get(DataComponents.ENCHANTMENTS);
+         if (!stack.isEmpty()) {
+             ItemEnchantments itemenchantments = stack.get(DataComponents.ENCHANTMENTS);
 +
 +            // Neo: Respect gameplay-only enchantments when doing iterations
-+            itemenchantments = p_44852_.getAllEnchantments(p_345792_.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT));
++            itemenchantments = stack.getAllEnchantments(entity.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT));
 +
              if (itemenchantments != null && !itemenchantments.isEmpty()) {
-                 EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
+                 EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(stack, slot, entity);
  
 @@ -417,6 +_,12 @@
-     public static boolean hasTag(ItemStack p_345665_, TagKey<Enchantment> p_345928_) {
-         ItemEnchantments itemenchantments = p_345665_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+     public static boolean hasTag(ItemStack stack, TagKey<Enchantment> tag) {
+         ItemEnchantments itemenchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
 +        // Neo: Respect gameplay-only enchantments when enchantment effect tag checks
 +        var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
 +        if (lookup != null) {
-+            itemenchantments = p_345665_.getAllEnchantments(lookup);
++            itemenchantments = stack.getAllEnchantments(lookup);
 +        }
 +
          for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
              Holder<Enchantment> holder = entry.getKey();
-             if (holder.is(p_345928_)) {
+             if (holder.is(tag)) {
 @@ -484,7 +_,7 @@
  
-     public static int getEnchantmentCost(RandomSource p_220288_, int p_220289_, int p_220290_, ItemStack p_220291_) {
-         Item item = p_220291_.getItem();
+     public static int getEnchantmentCost(RandomSource random, int enchantNum, int power, ItemStack stack) {
+         Item item = stack.getItem();
 -        int i = item.getEnchantmentValue();
-+        int i = p_220291_.getEnchantmentValue();
++        int i = stack.getEnchantmentValue();
          if (i <= 0) {
              return 0;
          } else {
 @@ -529,7 +_,7 @@
-     public static List<EnchantmentInstance> selectEnchantment(RandomSource p_220298_, ItemStack p_220299_, int p_220300_, Stream<Holder<Enchantment>> p_346061_) {
+     public static List<EnchantmentInstance> selectEnchantment(RandomSource random, ItemStack stack, int level, Stream<Holder<Enchantment>> possibleEnchantments) {
          List<EnchantmentInstance> list = Lists.newArrayList();
-         Item item = p_220299_.getItem();
+         Item item = stack.getItem();
 -        int i = item.getEnchantmentValue();
-+        int i = p_220299_.getEnchantmentValue();
++        int i = stack.getEnchantmentValue();
          if (i <= 0) {
              return list;
          } else {
 @@ -575,7 +_,9 @@
-     public static List<EnchantmentInstance> getAvailableEnchantmentResults(int p_44818_, ItemStack p_44819_, Stream<Holder<Enchantment>> p_345348_) {
+     public static List<EnchantmentInstance> getAvailableEnchantmentResults(int level, ItemStack stack, Stream<Holder<Enchantment>> possibleEnchantments) {
          List<EnchantmentInstance> list = Lists.newArrayList();
-         boolean flag = p_44819_.is(Items.BOOK);
--        p_345348_.filter(p_344529_ -> p_344529_.value().isPrimaryItem(p_44819_) || flag).forEach(p_344478_ -> {
+         boolean flag = stack.is(Items.BOOK);
+-        possibleEnchantments.filter(p_344529_ -> p_344529_.value().isPrimaryItem(stack) || flag).forEach(p_344478_ -> {
 +        // Neo: Rewrite filter logic to call isPrimaryItemFor instead of hardcoded vanilla logic.
 +        // The original logic is recorded in the default implementation of IItemExtension#isPrimaryItemFor.
-+        p_345348_.filter(p_44819_::isPrimaryItemFor).forEach(p_344478_ -> {
++        possibleEnchantments.filter(stack::isPrimaryItemFor).forEach(p_344478_ -> {
              Enchantment enchantment = p_344478_.value();
  
              for (int i = enchantment.getMaxLevel(); i >= enchantment.getMinLevel(); i--) {

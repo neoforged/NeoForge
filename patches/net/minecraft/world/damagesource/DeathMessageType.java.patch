@@ -17,9 +17,8 @@
 +    private final net.neoforged.neoforge.common.damagesource.IDeathMessageProvider msgFunction;
  
 +    @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-     private DeathMessageType(String p_270201_) {
--        this.id = p_270201_;
-+        this(p_270201_, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider.DEFAULT);
+     private DeathMessageType(String id) {
++        this(id, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider.DEFAULT);
 +    }
 +
 +    /**
@@ -37,7 +36,7 @@
 +     * @apiNote This method must be called as early as possible, as if {@link #CODEC} is resolved before this is called, it will be unusable.
 +     */
 +    private DeathMessageType(String id, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider msgFunction) {
-+        this.id = id;
+         this.id = id;
 +        this.msgFunction = msgFunction;
      }
  

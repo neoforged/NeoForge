@@ -24,13 +24,13 @@
 +    public final java.util.List<net.minecraft.resources.ResourceLocation> tabsAfter;
  
      CreativeModeTab(
-         CreativeModeTab.Row p_260217_,
+         CreativeModeTab.Row row,
 @@ -35,7 +_,15 @@
-         CreativeModeTab.Type p_260176_,
-         Component p_260100_,
-         Supplier<ItemStack> p_259543_,
--        CreativeModeTab.DisplayItemsGenerator p_259085_
-+        CreativeModeTab.DisplayItemsGenerator p_259085_,
+         CreativeModeTab.Type type,
+         Component displayName,
+         Supplier<ItemStack> iconGenerator,
+-        CreativeModeTab.DisplayItemsGenerator displayItemGenerator
++        CreativeModeTab.DisplayItemsGenerator displayItemGenerator,
 +        net.minecraft.resources.ResourceLocation scrollerSpriteLocation,
 +        boolean hasSearchBar,
 +        int searchBarWidth,
@@ -40,12 +40,12 @@
 +        java.util.List<net.minecraft.resources.ResourceLocation> tabsBefore,
 +        java.util.List<net.minecraft.resources.ResourceLocation> tabsAfter
      ) {
-         this.row = p_260217_;
-         this.column = p_259557_;
+         this.row = row;
+         this.column = column;
 @@ -43,12 +_,29 @@
-         this.iconGenerator = p_259543_;
-         this.displayItemsGenerator = p_259085_;
-         this.type = p_260176_;
+         this.iconGenerator = iconGenerator;
+         this.displayItemsGenerator = displayItemGenerator;
+         this.type = type;
 +        this.scrollerSpriteLocation = scrollerSpriteLocation;
 +        this.hasSearchBar = hasSearchBar;
 +        this.searchBarWidth = searchBarWidth;
@@ -64,25 +64,25 @@
 +        return new CreativeModeTab.Builder(Row.TOP, 0);
      }
  
-     public static ResourceLocation createTextureLocation(String p_350882_) {
-         return ResourceLocation.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + p_350882_ + ".png");
+     public static ResourceLocation createTextureLocation(String name) {
+         return ResourceLocation.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + name + ".png");
      }
  
 +    /** @deprecated Forge: use {@link #builder()} **/ @Deprecated
-     public static CreativeModeTab.Builder builder(CreativeModeTab.Row p_259342_, int p_260312_) {
-         return new CreativeModeTab.Builder(p_259342_, p_260312_);
+     public static CreativeModeTab.Builder builder(CreativeModeTab.Row row, int column) {
+         return new CreativeModeTab.Builder(row, column);
      }
 @@ -106,7 +_,7 @@
          ResourceKey<CreativeModeTab> resourcekey = BuiltInRegistries.CREATIVE_MODE_TAB
              .getResourceKey(this)
              .orElseThrow(() -> new IllegalStateException("Unregistered creative tab: " + this));
--        this.displayItemsGenerator.accept(p_270156_, creativemodetab$itemdisplaybuilder);
-+        net.neoforged.neoforge.event.EventHooks.onCreativeModeTabBuildContents(this, resourcekey, this.displayItemsGenerator, p_270156_, creativemodetab$itemdisplaybuilder);
+-        this.displayItemsGenerator.accept(parameters, creativemodetab$itemdisplaybuilder);
++        net.neoforged.neoforge.event.EventHooks.onCreativeModeTabBuildContents(this, resourcekey, this.displayItemsGenerator, parameters, creativemodetab$itemdisplaybuilder);
          this.displayItems = creativemodetab$itemdisplaybuilder.tabContents;
          this.displayItemsSearchTab = creativemodetab$itemdisplaybuilder.searchTabContents;
      }
 @@ -123,9 +_,37 @@
-         return this.displayItemsSearchTab.contains(p_259317_);
+         return this.displayItemsSearchTab.contains(stack);
      }
  
 +    public boolean hasSearchBar() {
@@ -134,13 +134,13 @@
 +        private final java.util.List<net.minecraft.resources.ResourceLocation> tabsBefore = new java.util.ArrayList<>();
 +        private final java.util.List<net.minecraft.resources.ResourceLocation> tabsAfter = new java.util.ArrayList<>();
  
-         public Builder(CreativeModeTab.Row p_259171_, int p_259661_) {
-             this.row = p_259171_;
+         public Builder(CreativeModeTab.Row row, int column) {
+             this.row = row;
 @@ -174,6 +_,8 @@
  
-         protected CreativeModeTab.Builder type(CreativeModeTab.Type p_259283_) {
-             this.type = p_259283_;
-+            if (p_259283_ == Type.SEARCH)
+         protected CreativeModeTab.Builder type(CreativeModeTab.Type type) {
+             this.type = type;
++            if (type == Type.SEARCH)
 +                return this.withSearchBar();
              return this;
          }

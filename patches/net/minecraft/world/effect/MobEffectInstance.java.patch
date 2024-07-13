@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
 @@ -80,6 +_,7 @@
-         this.visible = p_19532_;
-         this.showIcon = p_19533_;
-         this.hiddenEffect = p_316863_;
+         this.visible = visible;
+         this.showIcon = showIcon;
+         this.hiddenEffect = hiddenEffect;
 +        this.effect.value().fillEffectCures(this.cures, this);
      }
  
-     public MobEffectInstance(MobEffectInstance p_19543_) {
+     public MobEffectInstance(MobEffectInstance other) {
 @@ -97,6 +_,8 @@
-             p_324529_.showIcon(),
-             p_324529_.hiddenEffect().map(p_323227_ -> new MobEffectInstance(p_324441_, p_323227_)).orElse(null)
+             details.showIcon(),
+             details.hiddenEffect().map(p_323227_ -> new MobEffectInstance(effect, p_323227_)).orElse(null)
          );
 +        this.cures.clear();
-+        p_324529_.cures().ifPresent(this.cures::addAll);
++        details.cures().ifPresent(this.cures::addAll);
      }
  
      private MobEffectInstance.Details asDetails() {
@@ -28,25 +28,25 @@
      }
  
 @@ -124,6 +_,8 @@
-         this.ambient = p_19549_.ambient;
-         this.visible = p_19549_.visible;
-         this.showIcon = p_19549_.showIcon;
+         this.ambient = effectInstance.ambient;
+         this.visible = effectInstance.visible;
+         this.showIcon = effectInstance.showIcon;
 +        this.cures.clear();
-+        this.cures.addAll(p_19549_.cures);
++        this.cures.addAll(effectInstance.cures);
      }
  
-     public boolean update(MobEffectInstance p_19559_) {
+     public boolean update(MobEffectInstance other) {
 @@ -324,11 +_,11 @@
-                 .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
-                 .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
-                 .compare(this.getDuration(), p_19566_.getDuration())
--                .compare(this.getEffect().value().getColor(), p_19566_.getEffect().value().getColor())
-+                .compare(this.getEffect().value().getSortOrder(this), p_19566_.getEffect().value().getSortOrder(p_19566_))
+                 .compareFalseFirst(this.isAmbient(), other.isAmbient())
+                 .compareFalseFirst(this.isInfiniteDuration(), other.isInfiniteDuration())
+                 .compare(this.getDuration(), other.getDuration())
+-                .compare(this.getEffect().value().getColor(), other.getEffect().value().getColor())
++                .compare(this.getEffect().value().getSortOrder(this), other.getEffect().value().getSortOrder(other))
                  .result()
              : ComparisonChain.start()
-                 .compare(this.isAmbient(), p_19566_.isAmbient())
--                .compare(this.getEffect().value().getColor(), p_19566_.getEffect().value().getColor())
-+                .compare(this.getEffect().value().getSortOrder(this), p_19566_.getEffect().value().getSortOrder(p_19566_))
+                 .compare(this.isAmbient(), other.isAmbient())
+-                .compare(this.getEffect().value().getColor(), other.getEffect().value().getColor())
++                .compare(this.getEffect().value().getSortOrder(this), other.getEffect().value().getSortOrder(other))
                  .result();
      }
  
@@ -108,13 +108,13 @@
          );
 @@ -434,5 +_,17 @@
          ) {
-             return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_);
+             return new MobEffectInstance.Details(amplifier, duration, ambient, showParticles, showIcon.orElse(showParticles), hiddenEffect);
          }
 +
 +        private static MobEffectInstance.Details create(
-+            int p_323657_, int p_324205_, boolean p_324263_, boolean p_324000_, Optional<Boolean> p_323607_, Optional<MobEffectInstance.Details> p_324604_, Optional<java.util.Set<net.neoforged.neoforge.common.EffectCure>> cures
++            int amplifier, int duration, boolean ambient, boolean showParticles, Optional<Boolean> showIcon, Optional<MobEffectInstance.Details> hiddenEffect, Optional<java.util.Set<net.neoforged.neoforge.common.EffectCure>> cures
 +        ) {
-+            return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_, cures);
++            return new MobEffectInstance.Details(amplifier, duration, ambient, showParticles, showIcon.orElse(showParticles), hiddenEffect, cures);
 +        }
 +
 +        @Deprecated

@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/block/ComparatorBlock.java
 +++ b/net/minecraft/world/level/block/ComparatorBlock.java
 @@ -199,4 +_,16 @@
-     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_51887_) {
-         p_51887_.add(FACING, MODE, POWERED);
+     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+         builder.add(FACING, MODE, POWERED);
      }
 +
 +    @Override

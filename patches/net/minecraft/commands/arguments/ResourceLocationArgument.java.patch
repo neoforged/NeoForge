@@ -2,19 +2,19 @@
 +++ b/net/minecraft/commands/arguments/ResourceLocationArgument.java
 @@ -29,7 +_,7 @@
  
-     public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> p_106988_, String p_106989_) throws CommandSyntaxException {
-         ResourceLocation resourcelocation = getId(p_106988_, p_106989_);
--        AdvancementHolder advancementholder = p_106988_.getSource().getServer().getAdvancements().get(resourcelocation);
-+        AdvancementHolder advancementholder = p_106988_.getSource().getAdvancement(resourcelocation);
+     public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+         ResourceLocation resourcelocation = getId(context, name);
+-        AdvancementHolder advancementholder = context.getSource().getServer().getAdvancements().get(resourcelocation);
++        AdvancementHolder advancementholder = context.getSource().getAdvancement(resourcelocation);
          if (advancementholder == null) {
              throw ERROR_UNKNOWN_ADVANCEMENT.create(resourcelocation);
          } else {
 @@ -38,7 +_,7 @@
      }
  
-     public static RecipeHolder<?> getRecipe(CommandContext<CommandSourceStack> p_106995_, String p_106996_) throws CommandSyntaxException {
--        RecipeManager recipemanager = p_106995_.getSource().getServer().getRecipeManager();
-+        RecipeManager recipemanager = p_106995_.getSource().getRecipeManager();
-         ResourceLocation resourcelocation = getId(p_106995_, p_106996_);
+     public static RecipeHolder<?> getRecipe(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+-        RecipeManager recipemanager = context.getSource().getServer().getRecipeManager();
++        RecipeManager recipemanager = context.getSource().getRecipeManager();
+         ResourceLocation resourcelocation = getId(context, name);
          return recipemanager.byKey(resourcelocation).orElseThrow(() -> ERROR_UNKNOWN_RECIPE.create(resourcelocation));
      }

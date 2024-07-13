@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
 @@ -79,6 +_,8 @@
-             p_150474_.giveExperienceLevels(-this.cost.get());
+             player.giveExperienceLevels(-this.cost.get());
          }
  
-+        float breakChance = net.neoforged.neoforge.common.CommonHooks.onAnvilRepair(p_150474_, p_150475_, AnvilMenu.this.inputSlots.getItem(0), AnvilMenu.this.inputSlots.getItem(1));
++        float breakChance = net.neoforged.neoforge.common.CommonHooks.onAnvilRepair(player, stack, AnvilMenu.this.inputSlots.getItem(0), AnvilMenu.this.inputSlots.getItem(1));
 +
          this.inputSlots.setItem(0, ItemStack.EMPTY);
          if (this.repairItemCountCost > 0) {
@@ -13,8 +13,8 @@
          this.cost.set(0);
          this.access.execute((p_150479_, p_150480_) -> {
              BlockState blockstate = p_150479_.getBlockState(p_150480_);
--            if (!p_150474_.hasInfiniteMaterials() && blockstate.is(BlockTags.ANVIL) && p_150474_.getRandom().nextFloat() < 0.12F) {
-+            if (!p_150474_.getAbilities().instabuild && blockstate.is(BlockTags.ANVIL) && p_150474_.getRandom().nextFloat() < breakChance) {
+-            if (!player.hasInfiniteMaterials() && blockstate.is(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
++            if (!player.getAbilities().instabuild && blockstate.is(BlockTags.ANVIL) && player.getRandom().nextFloat() < breakChance) {
                  BlockState blockstate1 = AnvilBlock.damage(blockstate);
                  if (blockstate1 == null) {
                      p_150479_.removeBlock(p_150480_, false);

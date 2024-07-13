@@ -3,9 +3,9 @@
 @@ -6,7 +_,7 @@
      private final Iterable<Packet<? super T>> packets;
  
-     protected BundlePacket(Iterable<Packet<? super T>> p_265290_) {
--        this.packets = p_265290_;
-+        this.packets = net.neoforged.neoforge.network.bundle.BundlePacketUtils.flatten(p_265290_);
+     protected BundlePacket(Iterable<Packet<? super T>> packets) {
+-        this.packets = packets;
++        this.packets = net.neoforged.neoforge.network.bundle.BundlePacketUtils.flatten(packets);
      }
  
      public final Iterable<Packet<? super T>> subPackets() {

@@ -3,11 +3,11 @@
 @@ -137,8 +_,8 @@
  
          for (int i1 = 0; i1 < 10 && blockpos.getY() <= l; i1++) {
-             BlockState blockstate = p_155108_.getBlockState(blockpos);
+             BlockState blockstate = level.getBlockState(blockpos);
 -            if (blockstate.getBlock() instanceof BeaconBeamBlock beaconbeamblock) {
 -                int j1 = beaconbeamblock.getColor().getTextureDiffuseColor();
-+            Integer j1 = blockstate.getBeaconColorMultiplier(p_155108_, blockpos, p_155109_);
++            Integer j1 = blockstate.getBeaconColorMultiplier(level, blockpos, pos);
 +            if (j1 != null) {
-                 if (p_155111_.checkingBeamSections.size() <= 1) {
+                 if (blockEntity.checkingBeamSections.size() <= 1) {
                      beaconblockentity$beaconbeamsection = new BeaconBlockEntity.BeaconBeamSection(j1);
-                     p_155111_.checkingBeamSections.add(beaconblockentity$beaconbeamsection);
+                     blockEntity.checkingBeamSections.add(beaconblockentity$beaconbeamsection);

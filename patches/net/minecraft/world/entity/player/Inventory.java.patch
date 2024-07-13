@@ -30,8 +30,8 @@
              } catch (Throwable throwable) {
                  CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");
-+                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(p_36042_.getItem())));
-+                crashreportcategory.setDetail("Item Class", () -> p_36042_.getItem().getClass().getName());
-                 crashreportcategory.setDetail("Item ID", Item.getId(p_36042_.getItem()));
-                 crashreportcategory.setDetail("Item data", p_36042_.getDamageValue());
-                 crashreportcategory.setDetail("Item name", () -> p_36042_.getHoverName().getString());
++                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem())));
++                crashreportcategory.setDetail("Item Class", () -> stack.getItem().getClass().getName());
+                 crashreportcategory.setDetail("Item ID", Item.getId(stack.getItem()));
+                 crashreportcategory.setDetail("Item data", stack.getDamageValue());
+                 crashreportcategory.setDetail("Item name", () -> stack.getHoverName().getString());

@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 @@ -37,7 +_,7 @@
-         this.blockModelShaper = p_173399_;
-         this.blockEntityRenderer = p_173400_;
-         this.blockColors = p_173401_;
+         this.blockModelShaper = blockModelShaper;
+         this.blockEntityRenderer = blockEntityRenderer;
+         this.blockColors = blockColors;
 -        this.modelRenderer = new ModelBlockRenderer(this.blockColors);
 +        this.modelRenderer = new net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer(this.blockColors);
          this.liquidBlockRenderer = new LiquidBlockRenderer();
@@ -14,48 +14,48 @@
      }
  
 +    @Deprecated //Forge: Model data parameter
-     public void renderBreakingTexture(BlockState p_110919_, BlockPos p_110920_, BlockAndTintGetter p_110921_, PoseStack p_110922_, VertexConsumer p_110923_) {
-+         renderBreakingTexture(p_110919_, p_110920_, p_110921_, p_110922_, p_110923_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
+     public void renderBreakingTexture(BlockState state, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, VertexConsumer consumer) {
++         renderBreakingTexture(state, pos, level, poseStack, consumer, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
 +    }
-+    public void renderBreakingTexture(BlockState p_110919_, BlockPos p_110920_, BlockAndTintGetter p_110921_, PoseStack p_110922_, VertexConsumer p_110923_, net.neoforged.neoforge.client.model.data.ModelData modelData) {
-         if (p_110919_.getRenderShape() == RenderShape.MODEL) {
-             BakedModel bakedmodel = this.blockModelShaper.getBlockModel(p_110919_);
-             long i = p_110919_.getSeed(p_110920_);
-+            modelData = bakedmodel.getModelData(p_110921_, p_110920_, p_110919_, modelData);
++    public void renderBreakingTexture(BlockState state, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, VertexConsumer consumer, net.neoforged.neoforge.client.model.data.ModelData modelData) {
+         if (state.getRenderShape() == RenderShape.MODEL) {
+             BakedModel bakedmodel = this.blockModelShaper.getBlockModel(state);
+             long i = state.getSeed(pos);
++            modelData = bakedmodel.getModelData(level, pos, state, modelData);
              this.modelRenderer
--                .tesselateBlock(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.random, i, OverlayTexture.NO_OVERLAY);
-+                .tesselateBlock(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.random, i, OverlayTexture.NO_OVERLAY, modelData, null);
+-                .tesselateBlock(level, bakedmodel, state, pos, poseStack, consumer, true, this.random, i, OverlayTexture.NO_OVERLAY);
++                .tesselateBlock(level, bakedmodel, state, pos, poseStack, consumer, true, this.random, i, OverlayTexture.NO_OVERLAY, modelData, null);
          }
 +    }
 +
 +    public void renderBatched(
-+            BlockState p_234356_,
-+            BlockPos p_234357_,
-+            BlockAndTintGetter p_234358_,
-+            PoseStack p_234359_,
-+            VertexConsumer p_234360_,
-+            boolean p_234361_,
-+            RandomSource p_234362_
++            BlockState state,
++            BlockPos pos,
++            BlockAndTintGetter level,
++            PoseStack poseStack,
++            VertexConsumer consumer,
++            boolean checkSides,
++            RandomSource random
 +    ) {
-+        renderBatched(p_234356_, p_234357_, p_234358_, p_234359_, p_234360_, p_234361_, p_234362_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
++        renderBatched(state, pos, level, poseStack, consumer, checkSides, random, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
      }
  
      public void renderBatched(
 @@ -61,7 +_,9 @@
-         PoseStack p_234359_,
-         VertexConsumer p_234360_,
-         boolean p_234361_,
--        RandomSource p_234362_
-+        RandomSource p_234362_,
+         PoseStack poseStack,
+         VertexConsumer consumer,
+         boolean checkSides,
+-        RandomSource random
++        RandomSource random,
 +        net.neoforged.neoforge.client.model.data.ModelData modelData,
 +        net.minecraft.client.renderer.RenderType renderType
      ) {
          try {
              this.modelRenderer
 @@ -75,7 +_,9 @@
-                     p_234361_,
-                     p_234362_,
-                     p_234356_.getSeed(p_234357_),
+                     checkSides,
+                     random,
+                     state.getSeed(pos),
 -                    OverlayTexture.NO_OVERLAY
 +                    OverlayTexture.NO_OVERLAY,
 +                    modelData,
@@ -65,57 +65,57 @@
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block in world");
 @@ -87,6 +_,7 @@
  
-     public void renderLiquid(BlockPos p_234364_, BlockAndTintGetter p_234365_, VertexConsumer p_234366_, BlockState p_234367_, FluidState p_234368_) {
+     public void renderLiquid(BlockPos pos, BlockAndTintGetter level, VertexConsumer consumer, BlockState blockState, FluidState fluidState) {
          try {
-+            if (net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(p_234368_).renderFluid(p_234368_, p_234365_, p_234364_, p_234366_, p_234367_)) return;
-             this.liquidBlockRenderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
++            if (net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidState).renderFluid(fluidState, level, pos, consumer, blockState)) return;
+             this.liquidBlockRenderer.tesselate(level, pos, consumer, blockState, fluidState);
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating liquid in world");
 @@ -104,7 +_,11 @@
-         return this.blockModelShaper.getBlockModel(p_110911_);
+         return this.blockModelShaper.getBlockModel(state);
      }
  
 +    @Deprecated //Forge: Model data and render type parameter
-     public void renderSingleBlock(BlockState p_110913_, PoseStack p_110914_, MultiBufferSource p_110915_, int p_110916_, int p_110917_) {
-+        renderSingleBlock(p_110913_, p_110914_, p_110915_, p_110916_, p_110917_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
+     public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
++        renderSingleBlock(state, poseStack, bufferSource, packedLight, packedOverlay, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 +    }
-+    public void renderSingleBlock(BlockState p_110913_, PoseStack p_110914_, MultiBufferSource p_110915_, int p_110916_, int p_110917_, net.neoforged.neoforge.client.model.data.ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
-         RenderShape rendershape = p_110913_.getRenderShape();
++    public void renderSingleBlock(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, net.neoforged.neoforge.client.model.data.ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
+         RenderShape rendershape = state.getRenderShape();
          if (rendershape != RenderShape.INVISIBLE) {
              switch (rendershape) {
 @@ -114,22 +_,25 @@
                      float f = (float)(i >> 16 & 0xFF) / 255.0F;
                      float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
                      float f2 = (float)(i & 0xFF) / 255.0F;
-+                    for (net.minecraft.client.renderer.RenderType rt : bakedmodel.getRenderTypes(p_110913_, RandomSource.create(42), modelData))
++                    for (net.minecraft.client.renderer.RenderType rt : bakedmodel.getRenderTypes(state, RandomSource.create(42), modelData))
                      this.modelRenderer
                          .renderModel(
-                             p_110914_.last(),
--                            p_110915_.getBuffer(ItemBlockRenderTypes.getRenderType(p_110913_, false)),
-+                            p_110915_.getBuffer(renderType != null ? renderType : net.neoforged.neoforge.client.RenderTypeHelper.getEntityRenderType(rt, false)),
-                             p_110913_,
+                             poseStack.last(),
+-                            bufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(state, false)),
++                            bufferSource.getBuffer(renderType != null ? renderType : net.neoforged.neoforge.client.RenderTypeHelper.getEntityRenderType(rt, false)),
+                             state,
                              bakedmodel,
                              f,
                              f1,
                              f2,
-                             p_110916_,
--                            p_110917_
-+                            p_110917_,
+                             packedLight,
+-                            packedOverlay
++                            packedOverlay,
 +                            modelData,
 +                            rt
                          );
                      break;
                  case ENTITYBLOCK_ANIMATED:
 -                    this.blockEntityRenderer
--                        .renderByItem(new ItemStack(p_110913_.getBlock()), ItemDisplayContext.NONE, p_110914_, p_110915_, p_110916_, p_110917_);
-+                    ItemStack stack = new ItemStack(p_110913_.getBlock());
-+                    net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(stack).getCustomRenderer().renderByItem(stack, ItemDisplayContext.NONE, p_110914_, p_110915_, p_110916_, p_110917_);
+-                        .renderByItem(new ItemStack(state.getBlock()), ItemDisplayContext.NONE, poseStack, bufferSource, packedLight, packedOverlay);
++                    ItemStack stack = new ItemStack(state.getBlock());
++                    net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(stack).getCustomRenderer().renderByItem(stack, ItemDisplayContext.NONE, poseStack, bufferSource, packedLight, packedOverlay);
              }
          }
      }
 @@ -137,5 +_,9 @@
      @Override
-     public void onResourceManagerReload(ResourceManager p_110909_) {
+     public void onResourceManagerReload(ResourceManager resourceManager) {
          this.liquidBlockRenderer.setupSprites();
 +    }
 +

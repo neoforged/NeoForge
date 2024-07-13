@@ -11,5 +11,5 @@
 +    }
 +
      @Override
-     public NoiseColumn getBaseColumn(int p_223959_, int p_223960_, LevelHeightAccessor p_223961_, RandomState p_223962_) {
+     public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor height, RandomState random) {
          return new NoiseColumn(0, new BlockState[0]);

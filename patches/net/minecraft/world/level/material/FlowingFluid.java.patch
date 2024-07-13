@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
 @@ -164,7 +_,7 @@
-             BlockState blockstate = p_256464_.getBlockState(blockpos);
+             BlockState blockstate = level.getBlockState(blockpos);
              FluidState fluidstate = blockstate.getFluidState();
-             if (fluidstate.getType().isSame(this) && this.canPassThroughWall(direction, p_256464_, p_76037_, p_76038_, blockpos, blockstate)) {
+             if (fluidstate.getType().isSame(this) && this.canPassThroughWall(direction, level, pos, blockState, blockpos, blockstate)) {
 -                if (fluidstate.isSource()) {
-+                if (fluidstate.isSource() && net.neoforged.neoforge.event.EventHooks.canCreateFluidSource(p_256464_, blockpos, blockstate)) {
++                if (fluidstate.isSource() && net.neoforged.neoforge.event.EventHooks.canCreateFluidSource(level, blockpos, blockstate)) {
                      j++;
                  }
  
@@ -13,13 +13,13 @@
              }
          }
  
--        if (this.canConvertToSource(p_256464_) && j >= 2) {
+-        if (this.canConvertToSource(level) && j >= 2) {
 +        if (j >= 2) {
-             BlockState blockstate1 = p_256464_.getBlockState(p_76037_.below());
+             BlockState blockstate1 = level.getBlockState(pos.below());
              FluidState fluidstate1 = blockstate1.getFluidState();
              if (blockstate1.isSolid() || this.isSourceBlockOfThisType(fluidstate1)) {
 @@ -238,6 +_,15 @@
-         return this.getSource().defaultFluidState().setValue(FALLING, Boolean.valueOf(p_76069_));
+         return this.getSource().defaultFluidState().setValue(FALLING, Boolean.valueOf(falling));
      }
  
 +    @Override
@@ -31,6 +31,6 @@
 +     * @deprecated Forge: Use {@link #canConvertToSource(FluidState, Level, BlockPos)} instead.
 +     */
 +    @Deprecated
-     protected abstract boolean canConvertToSource(Level p_256009_);
+     protected abstract boolean canConvertToSource(Level level);
  
-     protected void spreadTo(LevelAccessor p_76005_, BlockPos p_76006_, BlockState p_76007_, Direction p_76008_, FluidState p_76009_) {
+     protected void spreadTo(LevelAccessor level, BlockPos pos, BlockState blockState, Direction direction, FluidState fluidState) {

@@ -10,30 +10,30 @@
      @Nullable
      private String group;
  
-     public ShapelessRecipeBuilder(RecipeCategory p_250837_, ItemLike p_251897_, int p_252227_) {
-+        this(p_250837_, new ItemStack(p_251897_, p_252227_));
+     public ShapelessRecipeBuilder(RecipeCategory category, ItemLike result, int count) {
++        this(category, new ItemStack(result, count));
 +    }
 +
-+    public ShapelessRecipeBuilder(RecipeCategory p_250837_, ItemStack result) {
-         this.category = p_250837_;
--        this.result = p_251897_.asItem();
--        this.count = p_252227_;
++    public ShapelessRecipeBuilder(RecipeCategory category, ItemStack result) {
+         this.category = category;
+-        this.result = result.asItem();
+-        this.count = count;
 +        this.result = result.getItem();
 +        this.count = result.getCount();
 +        this.resultStack = result;
      }
  
-     public static ShapelessRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
+     public static ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemLike result) {
 @@ -41,6 +_,10 @@
-         return new ShapelessRecipeBuilder(p_252339_, p_250836_, p_249928_);
+         return new ShapelessRecipeBuilder(category, result, count);
      }
  
-+    public static ShapelessRecipeBuilder shapeless(RecipeCategory p_252339_, ItemStack result) {
-+        return new ShapelessRecipeBuilder(p_252339_, result);
++    public static ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStack result) {
++        return new ShapelessRecipeBuilder(category, result);
 +    }
 +
-     public ShapelessRecipeBuilder requires(TagKey<Item> p_206420_) {
-         return this.requires(Ingredient.of(p_206420_));
+     public ShapelessRecipeBuilder requires(TagKey<Item> tag) {
+         return this.requires(Ingredient.of(tag));
      }
 @@ -95,7 +_,7 @@
          ShapelessRecipe shapelessrecipe = new ShapelessRecipe(
@@ -43,4 +43,4 @@
 +            this.resultStack,
              this.ingredients
          );
-         p_301215_.accept(p_126206_, shapelessrecipe, advancement$builder.build(p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+         recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")));

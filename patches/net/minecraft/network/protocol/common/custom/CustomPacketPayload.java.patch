@@ -4,16 +4,16 @@
      }
  
      static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
--        final CustomPacketPayload.FallbackProvider<B> p_319839_, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> p_320495_
-+        final CustomPacketPayload.FallbackProvider<B> p_319839_, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> p_320495_, net.minecraft.network.ConnectionProtocol protocol, net.minecraft.network.protocol.PacketFlow packetFlow
+-        final CustomPacketPayload.FallbackProvider<B> fallbackProvider, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> typeAndCodecs
++        final CustomPacketPayload.FallbackProvider<B> fallbackProvider, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> typeAndCodecs, net.minecraft.network.ConnectionProtocol protocol, net.minecraft.network.protocol.PacketFlow packetFlow
      ) {
-         final Map<ResourceLocation, StreamCodec<? super B, ? extends CustomPacketPayload>> map = p_320495_.stream()
+         final Map<ResourceLocation, StreamCodec<? super B, ? extends CustomPacketPayload>> map = typeAndCodecs.stream()
              .collect(Collectors.toUnmodifiableMap(p_320895_ -> p_320895_.type().id(), CustomPacketPayload.TypeAndCodec::codec));
          return new StreamCodec<B, CustomPacketPayload>() {
              private StreamCodec<? super B, ? extends CustomPacketPayload> findCodec(ResourceLocation p_320938_) {
                  StreamCodec<? super B, ? extends CustomPacketPayload> streamcodec = map.get(p_320938_);
 +                if (streamcodec == null) streamcodec = net.neoforged.neoforge.network.registration.NetworkRegistry.getCodec(p_320938_, protocol, packetFlow);
-                 return streamcodec != null ? streamcodec : p_319839_.create(p_320938_);
+                 return streamcodec != null ? streamcodec : fallbackProvider.create(p_320938_);
              }
  
              private <T extends CustomPacketPayload> void writeCap(B p_320565_, CustomPacketPayload.Type<T> p_320917_, CustomPacketPayload p_320112_) {

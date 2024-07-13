@@ -20,26 +20,26 @@
 +                    .append(Component.translatable("neoforge.selectWorld.backupWarning.experimental.additional"));
          }
  
-         this.minecraft.setScreen(new BackupConfirmScreen(p_307323_, (p_307085_, p_307086_) -> {
+         this.minecraft.setScreen(new BackupConfirmScreen(onCancel, (p_307085_, p_307086_) -> {
 @@ -377,10 +_,19 @@
-         WorldData worlddata = p_330774_.worldData();
+         WorldData worlddata = worldStem.worldData();
          boolean flag = worlddata.worldGenOptions().isOldCustomizedWorld();
          boolean flag1 = worlddata.worldGenSettingsLifecycle() != Lifecycle.stable();
 -        if (!flag && !flag1) {
 +        boolean skipConfirmation = worlddata instanceof PrimaryLevelData pld && pld.hasConfirmedExperimentalWarning();
 +        if (skipConfirmation || (!flag && !flag1)) {
-             this.openWorldLoadBundledResourcePack(p_331469_, p_330774_, p_330989_, p_332128_);
+             this.openWorldLoadBundledResourcePack(levelStorage, worldStem, packRepository, onFail);
          } else {
--            this.askForBackup(p_331469_, flag, () -> this.openWorldLoadBundledResourcePack(p_331469_, p_330774_, p_330989_, p_332128_), () -> {
-+            this.askForBackup(p_331469_, flag, () -> {
+-            this.askForBackup(levelStorage, flag, () -> this.openWorldLoadBundledResourcePack(levelStorage, worldStem, packRepository, onFail), () -> {
++            this.askForBackup(levelStorage, flag, () -> {
 +                if (!flag) {
 +                    // Neo: Prevent the message from showing again
-+                    if (p_330774_.worldData() instanceof PrimaryLevelData pld) {
++                    if (worldStem.worldData() instanceof PrimaryLevelData pld) {
 +                        pld.withConfirmedWarning(true);
 +                    }
 +                }
-+                this.openWorldLoadBundledResourcePack(p_331469_, p_330774_, p_330989_, p_332128_);
++                this.openWorldLoadBundledResourcePack(levelStorage, worldStem, packRepository, onFail);
 +            }, () -> {
-                 p_330774_.close();
-                 p_331469_.safeClose();
-                 p_332128_.run();
+                 worldStem.close();
+                 levelStorage.safeClose();
+                 onFail.run();

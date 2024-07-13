@@ -3,12 +3,12 @@
 @@ -116,6 +_,8 @@
  
      @Override
-     public InteractionResult interact(Player p_38562_, InteractionHand p_38563_) {
-+        InteractionResult ret = super.interact(p_38562_, p_38563_);
+     public InteractionResult interact(Player player, InteractionHand hand) {
++        InteractionResult ret = super.interact(player, hand);
 +        if (ret.consumesAction()) return ret;
-         ItemStack itemstack = p_38562_.getItemInHand(p_38563_);
+         ItemStack itemstack = player.getItemInHand(hand);
          if (INGREDIENT.test(itemstack) && this.fuel + 3600 <= 32000) {
-             itemstack.consume(1, p_38562_);
+             itemstack.consume(1, player);
 @@ -128,6 +_,11 @@
          }
  

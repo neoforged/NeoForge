@@ -2,11 +2,11 @@
 +++ b/net/minecraft/world/entity/npc/Villager.java
 @@ -322,7 +_,7 @@
      @Override
-     public InteractionResult mobInteract(Player p_35472_, InteractionHand p_35473_) {
-         ItemStack itemstack = p_35472_.getItemInHand(p_35473_);
+     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+         ItemStack itemstack = player.getItemInHand(hand);
 -        if (itemstack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping()) {
-+        if (itemstack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping() || p_35472_.isSecondaryUseActive()) {
-             return super.mobInteract(p_35472_, p_35473_);
++        if (itemstack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping() || player.isSecondaryUseActive()) {
+             return super.mobInteract(player, hand);
          } else if (this.isBaby()) {
              this.setUnhappy();
 @@ -742,8 +_,9 @@
@@ -23,26 +23,26 @@
 @@ -799,7 +_,7 @@
  
      @Override
-     public void thunderHit(ServerLevel p_35409_, LightningBolt p_35410_) {
--        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL) {
-+        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
-             LOGGER.info("Villager {} was struck by lightning {}.", this, p_35410_);
-             Witch witch = EntityType.WITCH.create(p_35409_);
+     public void thunderHit(ServerLevel level, LightningBolt lightning) {
+-        if (level.getDifficulty() != Difficulty.PEACEFUL) {
++        if (level.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
+             LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
+             Witch witch = EntityType.WITCH.create(level);
              if (witch != null) {
 @@ -812,6 +_,7 @@
                  }
  
                  witch.setPersistenceRequired();
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, witch);
-                 p_35409_.addFreshEntityWithPassengers(witch);
+                 level.addFreshEntityWithPassengers(witch);
                  this.releaseAllPois();
                  this.discard();
 @@ -831,7 +_,7 @@
      @Override
-     public boolean wantsToPickUp(ItemStack p_35543_) {
-         Item item = p_35543_.getItem();
+     public boolean wantsToPickUp(ItemStack stack) {
+         Item item = stack.getItem();
 -        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item))
-+        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item) || (p_35543_.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this)))
-             && this.getInventory().canAddItem(p_35543_);
++        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item) || (stack.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this)))
+             && this.getInventory().canAddItem(stack);
      }
  

@@ -14,9 +14,9 @@
          }, Util.nonCriticalIoPool());
          LOGGER.info("Setting user: {}", this.user.getName());
 -        LOGGER.debug("(Session ID is {})", this.user.getSessionId());
-         this.demo = p_91084_.game.demo;
-         this.allowsMultiplayer = !p_91084_.game.disableMultiplayer;
-         this.allowsChat = !p_91084_.game.disableChat;
+         this.demo = gameConfig.game.demo;
+         this.allowsMultiplayer = !gameConfig.game.disableMultiplayer;
+         this.allowsChat = !gameConfig.game.disableChat;
 @@ -476,15 +_,15 @@
          }
  
@@ -68,7 +68,7 @@
          this.window.setDefaultErrorCallback();
 @@ -614,16 +_,18 @@
          GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
-         Minecraft.GameLoadCookie minecraft$gameloadcookie = new Minecraft.GameLoadCookie(realmsclient, p_91084_.quickPlay);
+         Minecraft.GameLoadCookie minecraft$gameloadcookie = new Minecraft.GameLoadCookie(realmsclient, gameConfig.quickPlay);
          this.setOverlay(
 -            new LoadingOverlay(
 -                this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
@@ -87,7 +87,7 @@
 -            )
 +            ).get()
          );
-         this.quickPlayLog = QuickPlayLog.of(p_91084_.quickPlay.path());
+         this.quickPlayLog = QuickPlayLog.of(gameConfig.quickPlay.path());
      }
 @@ -663,6 +_,11 @@
              runnable = () -> this.setScreen(screen);
@@ -113,19 +113,19 @@
 @@ -743,7 +_,7 @@
      }
  
-     private void rollbackResourcePacks(Throwable p_91240_, @Nullable Minecraft.GameLoadCookie p_299846_) {
+     private void rollbackResourcePacks(Throwable throwable, @Nullable Minecraft.GameLoadCookie gameLoadCookie) {
 -        if (this.resourcePackRepository.getSelectedIds().size() > 1) {
 +        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired())) { //Forge: This caused infinite loop if any resource packs are forced. Such as mod resources. So check if we can disable any.
-             this.clearResourcePacksOnError(p_91240_, null, p_299846_);
+             this.clearResourcePacksOnError(throwable, null, gameLoadCookie);
          } else {
-             Util.throwAsRuntime(p_91240_);
+             Util.throwAsRuntime(throwable);
 @@ -871,13 +_,13 @@
  
-         if (p_91333_.getSaveFile() != null) {
-             Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + p_91333_.getSaveFile().toAbsolutePath());
+         if (crashReport.getSaveFile() != null) {
+             Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getSaveFile().toAbsolutePath());
 -            System.exit(-1);
 +            net.neoforged.neoforge.server.ServerLifecycleHooks.handleExit(-1);
-         } else if (p_91333_.saveToFile(path1, ReportType.CRASH)) {
+         } else if (crashReport.saveToFile(path1, ReportType.CRASH)) {
              Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + path1.toAbsolutePath());
 -            System.exit(-1);
 +            net.neoforged.neoforge.server.ServerLifecycleHooks.handleExit(-1);
@@ -153,18 +153,18 @@
  
 +        net.neoforged.neoforge.client.ClientHooks.clearGuiLayers(this);
 +        Screen old = this.screen;
-+        if (p_91153_ != null) {
-+            var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, p_91153_);
++        if (guiScreen != null) {
++            var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, guiScreen);
 +            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) return;
-+            p_91153_ = event.getNewScreen();
++            guiScreen = event.getNewScreen();
 +        }
 +
-+        if (old != null && p_91153_ != old) {
++        if (old != null && guiScreen != old) {
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Closing(old));
 +            old.removed();
 +        }
 +
-             this.screen = p_91153_;
+             this.screen = guiScreen;
              if (this.screen != null) {
                  this.screen.added();
 @@ -1170,9 +_,11 @@
@@ -173,7 +173,7 @@
          if (!this.noRender) {
 +            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePre(this.timer);
              this.profiler.popPush("gameRenderer");
-             this.gameRenderer.render(this.timer, p_91384_);
+             this.gameRenderer.render(this.timer, renderLevel);
              this.profiler.pop();
 +            net.neoforged.neoforge.client.ClientHooks.fireRenderFramePost(this.timer);
          }
@@ -332,11 +332,11 @@
 @@ -2056,6 +_,7 @@
      }
  
-     public void setLevel(ClientLevel p_91157_, ReceivingLevelScreen.Reason p_341652_) {
+     public void setLevel(ClientLevel level, ReceivingLevelScreen.Reason reason) {
 +        if (this.level != null) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
-         this.updateScreenAndTick(new ReceivingLevelScreen(() -> false, p_341652_));
-         this.level = p_91157_;
-         this.updateLevelInEngines(p_91157_);
+         this.updateScreenAndTick(new ReceivingLevelScreen(() -> false, reason));
+         this.level = level;
+         this.updateLevelInEngines(level);
 @@ -2093,6 +_,7 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
@@ -347,7 +347,7 @@
          this.clientLevelTeardownInProgress = true;
 @@ -2100,6 +_,7 @@
          try {
-             this.updateScreenAndTick(p_320248_);
+             this.updateScreenAndTick(nextScreen);
              if (this.level != null) {
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
                  if (integratedserver != null) {
@@ -381,8 +381,8 @@
                  }
 @@ -2794,6 +_,10 @@
  
-     public void updateMaxMipLevel(int p_91313_) {
-         this.modelManager.updateMaxMipLevel(p_91313_);
+     public void updateMaxMipLevel(int mipMapLevel) {
+         this.modelManager.updateMaxMipLevel(mipMapLevel);
 +    }
 +
 +    public ItemColors getItemColors() {

@@ -2,7 +2,7 @@
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -264,7 +_,7 @@
  
-     public static <S extends MinecraftServer> S spin(Function<Thread, S> p_129873_) {
+     public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {
          AtomicReference<S> atomicreference = new AtomicReference<>();
 -        Thread thread = new Thread(() -> atomicreference.get().runServer(), "Server thread");
 +        Thread thread = new Thread(net.neoforged.fml.util.thread.SidedThreadGroups.SERVER, () -> atomicreference.get().runServer(), "Server thread");
@@ -26,13 +26,13 @@
          }
  
 @@ -432,6 +_,7 @@
-             p_177898_.setSpawn(BlockPos.ZERO.above(80), 0.0F);
+             levelData.setSpawn(BlockPos.ZERO.above(80), 0.0F);
          } else {
-             ServerChunkCache serverchunkcache = p_177897_.getChunkSource();
-+            if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(p_177897_, p_177898_)) return;
+             ServerChunkCache serverchunkcache = level.getChunkSource();
++            if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(level, levelData)) return;
              ChunkPos chunkpos = new ChunkPos(serverchunkcache.randomState().sampler().findSpawnPosition());
-             int i = serverchunkcache.getGenerator().getSpawnHeight(p_177897_);
-             if (i < p_177897_.getMinBuildHeight()) {
+             int i = serverchunkcache.getGenerator().getSpawnHeight(level);
+             if (i < level.getMinBuildHeight()) {
 @@ -513,6 +_,7 @@
                      ChunkPos chunkpos = new ChunkPos(k);
                      serverlevel1.getChunkSource().updateChunkForced(chunkpos, true);
@@ -87,12 +87,12 @@
              }
          }
 @@ -901,11 +_,13 @@
-     public void tickServer(BooleanSupplier p_129871_) {
+     public void tickServer(BooleanSupplier hasTimeLeft) {
          long i = Util.getNanos();
          this.tickCount++;
-+        net.neoforged.neoforge.event.EventHooks.fireServerTickPre(p_129871_, this);
++        net.neoforged.neoforge.event.EventHooks.fireServerTickPre(hasTimeLeft, this);
          this.tickRateManager.tick();
-         this.tickChildren(p_129871_);
+         this.tickChildren(hasTimeLeft);
          if (i - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) {
              this.lastServerStatus = i;
              this.status = this.buildServerStatus();
@@ -104,10 +104,10 @@
          this.smoothedTickTimeMillis = this.smoothedTickTimeMillis * 0.8F + (float)j / (float)TimeUtil.NANOSECONDS_PER_MILLISECOND * 0.19999999F;
          this.logTickMethodTime(i);
          this.profiler.pop();
-+        net.neoforged.neoforge.event.EventHooks.fireServerTickPost(p_129871_, this);
++        net.neoforged.neoforge.event.EventHooks.fireServerTickPost(hasTimeLeft, this);
      }
  
-     private void logTickMethodTime(long p_321837_) {
+     private void logTickMethodTime(long startTime) {
 @@ -935,6 +_,16 @@
          }
      }
@@ -149,15 +149,15 @@
              }
  
              this.profiler.push("tick");
-+            net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(serverlevel, p_129954_);
++            net.neoforged.neoforge.event.EventHooks.fireLevelTickPre(serverlevel, hasTimeLeft);
  
              try {
-                 serverlevel.tick(p_129954_);
+                 serverlevel.tick(hasTimeLeft);
 @@ -1013,16 +_,18 @@
                  serverlevel.fillReportDetails(crashreport);
                  throw new ReportedException(crashreport);
              }
-+            net.neoforged.neoforge.event.EventHooks.fireLevelTickPost(serverlevel, p_129954_);
++            net.neoforged.neoforge.event.EventHooks.fireLevelTickPost(serverlevel, hasTimeLeft);
  
              this.profiler.pop();
              this.profiler.pop();
@@ -181,13 +181,13 @@
 +        return net.neoforged.neoforge.internal.BrandingControl.getServerBranding();
      }
  
-     public SystemReport fillSystemReport(SystemReport p_177936_) {
+     public SystemReport fillSystemReport(SystemReport systemReport) {
 @@ -1441,7 +_,7 @@
  
-     public CompletableFuture<Void> reloadResources(Collection<String> p_129862_) {
+     public CompletableFuture<Void> reloadResources(Collection<String> selectedIds) {
          CompletableFuture<Void> completablefuture = CompletableFuture.<ImmutableList>supplyAsync(
--                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
-+                () -> this.packRepository.rebuildSelected(p_129862_).stream().map(Pack::open).collect(ImmutableList.toImmutableList()),
+-                () -> selectedIds.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
++                () -> this.packRepository.rebuildSelected(selectedIds).stream().map(Pack::open).collect(ImmutableList.toImmutableList()),
                  this
              )
              .thenCompose(
@@ -200,14 +200,14 @@
                  this
              );
 @@ -1495,8 +_,10 @@
-         FeatureFlagSet featureflagset = p_249869_ ? FeatureFlagSet.of() : p_341632_.enabledFeatures();
-         FeatureFlagSet featureflagset1 = p_249869_ ? FeatureFlags.REGISTRY.allFlags() : p_341632_.enabledFeatures();
-         p_248681_.reload();
+         FeatureFlagSet featureflagset = initMode ? FeatureFlagSet.of() : initialDataConfig.enabledFeatures();
+         FeatureFlagSet featureflagset1 = initMode ? FeatureFlags.REGISTRY.allFlags() : initialDataConfig.enabledFeatures();
+         packRepository.reload();
 +        DataPackConfig.DEFAULT.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());
 +        datapackconfig.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());
-         if (p_341620_) {
--            return configureRepositoryWithSelection(p_248681_, List.of("vanilla"), featureflagset, false);
-+            return configureRepositoryWithSelection(p_248681_, net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), featureflagset, false);
+         if (safeMode) {
+-            return configureRepositoryWithSelection(packRepository, List.of("vanilla"), featureflagset, false);
++            return configureRepositoryWithSelection(packRepository, net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), featureflagset, false);
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
@@ -215,14 +215,14 @@
                  set.add("vanilla");
              }
  
-+            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, datapackconfig.getEnabled(), p_248681_);
++            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, datapackconfig.getEnabled(), packRepository);
 +
-             return configureRepositoryWithSelection(p_248681_, set, featureflagset, true);
+             return configureRepositoryWithSelection(packRepository, set, featureflagset, true);
          }
      }
 @@ -1712,6 +_,31 @@
  
-     public abstract boolean isSingleplayerOwner(GameProfile p_129840_);
+     public abstract boolean isSingleplayerOwner(GameProfile profile);
  
 +    private Map<ResourceKey<Level>, long[]> perWorldTickTimes = Maps.newIdentityHashMap();
 +    @Nullable
@@ -249,7 +249,7 @@
 +        return worldArray;
 +    }
 +
-     public void dumpServerProperties(Path p_177911_) throws IOException {
+     public void dumpServerProperties(Path path) throws IOException {
      }
  
 @@ -1873,6 +_,10 @@

@@ -20,50 +20,50 @@
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_107382_, ParticleProvider<T> p_107383_) {
--        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_107382_), p_107383_);
-+        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107382_), p_107383_);
+     public <T extends ParticleOptions> void register(ParticleType<T> particleType, ParticleProvider<T> particleFactory) {
+-        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(particleType), particleFactory);
++        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(particleType), particleFactory);
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
+     public <T extends ParticleOptions> void register(ParticleType<T> particleType, ParticleProvider.Sprite<T> sprite) {
          this.register(
-             p_273423_,
+             particleType,
 @@ -236,10 +_,12 @@
          );
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +    @Deprecated
-     public <T extends ParticleOptions> void register(ParticleType<T> p_107379_, ParticleEngine.SpriteParticleRegistration<T> p_107380_) {
+     public <T extends ParticleOptions> void register(ParticleType<T> particleType, ParticleEngine.SpriteParticleRegistration<T> particleMetaFactory) {
          ParticleEngine.MutableSpriteSet particleengine$mutablespriteset = new ParticleEngine.MutableSpriteSet();
-         this.spriteSets.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107379_), particleengine$mutablespriteset);
--        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_107379_), p_107380_.create(particleengine$mutablespriteset));
-+        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107379_), p_107380_.create(particleengine$mutablespriteset));
+         this.spriteSets.put(BuiltInRegistries.PARTICLE_TYPE.getKey(particleType), particleengine$mutablespriteset);
+-        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(particleType), particleMetaFactory.create(particleengine$mutablespriteset));
++        this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(particleType), particleMetaFactory.create(particleengine$mutablespriteset));
      }
  
      @Override
 @@ -365,7 +_,7 @@
      private <T extends ParticleOptions> Particle makeParticle(
-         T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
+         T particleData, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed
      ) {
--        ParticleProvider<T> particleprovider = (ParticleProvider<T>)this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getId(p_107396_.getType()));
-+        ParticleProvider<T> particleprovider = (ParticleProvider<T>) this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107396_.getType()));
+-        ParticleProvider<T> particleprovider = (ParticleProvider<T>)this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getId(particleData.getType()));
++        ParticleProvider<T> particleprovider = (ParticleProvider<T>) this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getKey(particleData.getType()));
          return particleprovider == null
              ? null
-             : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
+             : particleprovider.createParticle(particleData, this.level, x, y, z, xSpeed, ySpeed, zSpeed);
 @@ -441,11 +_,20 @@
          }
      }
  
 +    @Deprecated
-     public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_) {
-+        render(p_107339_, p_107340_, p_107341_, null, type -> true);
+     public void render(LightTexture lightTexture, Camera camera, float partialTick) {
++        render(lightTexture, camera, partialTick, null, type -> true);
 +    }
 +
-+    public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum, java.util.function.Predicate<ParticleRenderType> renderTypePredicate) {
-         p_107339_.turnOnLightLayer();
++    public void render(LightTexture lightTexture, Camera camera, float partialTick, @Nullable net.minecraft.client.renderer.culling.Frustum frustum, java.util.function.Predicate<ParticleRenderType> renderTypePredicate) {
+         lightTexture.turnOnLightLayer();
          RenderSystem.enableDepthTest();
 +        //TODO porting: is this even needed with the particle render order fix???
 +        RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE2);
@@ -79,25 +79,25 @@
                  BufferBuilder bufferbuilder = particlerendertype.begin(tesselator, this.textureManager);
                  if (bufferbuilder != null) {
                      for (Particle particle : queue) {
-+                        if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_107341_))) continue;
++                        if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(partialTick))) continue;
                          try {
-                             particle.render(bufferbuilder, p_107340_, p_107341_);
+                             particle.render(bufferbuilder, camera, partialTick);
                          } catch (Throwable throwable) {
 @@ -484,7 +_,7 @@
      }
  
-     public void destroy(BlockPos p_107356_, BlockState p_107357_) {
--        if (!p_107357_.isAir() && p_107357_.shouldSpawnTerrainParticles()) {
-+        if (!p_107357_.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(p_107357_).addDestroyEffects(p_107357_, this.level, p_107356_, this)) {
-             VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
+     public void destroy(BlockPos pos, BlockState state) {
+-        if (!state.isAir() && state.shouldSpawnTerrainParticles()) {
++        if (!state.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state).addDestroyEffects(state, this.level, pos, this)) {
+             VoxelShape voxelshape = state.getShape(this.level, pos);
              double d0 = 0.25;
              voxelshape.forAllBoxes(
 @@ -516,7 +_,7 @@
                                          d6 - 0.5,
-                                         p_107357_,
-                                         p_107356_
+                                         state,
+                                         pos
 -                                    )
-+                                    ).updateSprite(p_107357_, p_107356_)
++                                    ).updateSprite(state, pos)
                                  );
                              }
                          }
@@ -105,8 +105,8 @@
                  d0 = (double)i + aabb.maxX + 0.1F;
              }
  
--            this.add(new TerrainParticle(this.level, d0, d1, d2, 0.0, 0.0, 0.0, blockstate, p_107368_).setPower(0.2F).scale(0.6F));
-+            this.add((new TerrainParticle(this.level, d0, d1, d2, 0.0D, 0.0D, 0.0D, blockstate, p_107368_).updateSprite(blockstate, p_107368_)).setPower(0.2F).scale(0.6F));
+-            this.add(new TerrainParticle(this.level, d0, d1, d2, 0.0, 0.0, 0.0, blockstate, pos).setPower(0.2F).scale(0.6F));
++            this.add((new TerrainParticle(this.level, d0, d1, d2, 0.0D, 0.0D, 0.0D, blockstate, pos).updateSprite(blockstate, pos)).setPower(0.2F).scale(0.6F));
          }
      }
  
@@ -130,4 +130,4 @@
 +            crack(pos, target.getDirection());
      }
  
-     private boolean hasSpaceInParticleLimit(ParticleGroup p_172280_) {
+     private boolean hasSpaceInParticleLimit(ParticleGroup group) {

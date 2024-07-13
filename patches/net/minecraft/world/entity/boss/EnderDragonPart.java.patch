@@ -10,9 +10,9 @@
      public final String name;
      private final EntityDimensions size;
  
-     public EnderDragonPart(EnderDragon p_31014_, String p_31015_, float p_31016_, float p_31017_) {
--        super(p_31014_.getType(), p_31014_.level());
-+        super(p_31014_);
-         this.size = EntityDimensions.scalable(p_31016_, p_31017_);
+     public EnderDragonPart(EnderDragon parentMob, String name, float width, float height) {
+-        super(parentMob.getType(), parentMob.level());
++        super(parentMob);
+         this.size = EntityDimensions.scalable(width, height);
          this.refreshDimensions();
-         this.parentMob = p_31014_;
+         this.parentMob = parentMob;

@@ -10,4 +10,4 @@
 +
      @FunctionalInterface
      interface RegistryBootstrap<T> {
-         Object run(Registry<T> p_260128_);
+         Object run(Registry<T> registry);

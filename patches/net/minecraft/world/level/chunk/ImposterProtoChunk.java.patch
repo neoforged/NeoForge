@@ -4,13 +4,13 @@
      }
  
      @Override
-+    public void findBlocks(java.util.function.BiPredicate<BlockState, BlockPos> p_285465_, BiConsumer<BlockPos, BlockState> p_285030_) {
-+        this.wrapped.findBlocks(p_285465_, p_285030_);
++    public void findBlocks(java.util.function.BiPredicate<BlockState, BlockPos> predicate, BiConsumer<BlockPos, BlockState> output) {
++        this.wrapped.findBlocks(predicate, output);
 +    }
 +
 +    @Override
-+    public void findBlocks(Predicate<BlockState> p_285465_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {
-+        this.wrapped.findBlocks(p_285465_, fineFilter, p_285030_);
++    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> output) {
++        this.wrapped.findBlocks(predicate, fineFilter, output);
 +    }
 +
      public TickContainerAccess<Block> getBlockTicks() {

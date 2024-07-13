@@ -10,27 +10,27 @@
      private static final double MIN_SCROLL_PERIOD = 3.0;
      protected int width;
 @@ -123,6 +_,8 @@
-         renderScrollingString(p_281857_, p_282790_, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), p_282944_);
+         renderScrollingString(guiGraphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
      }
  
 +    /** @deprecated Neo: Use {@link #onClick(double, double, int)} instead. */
 +    @Deprecated
-     public void onClick(double p_93634_, double p_93635_) {
+     public void onClick(double mouseX, double mouseY) {
      }
  
 @@ -139,7 +_,7 @@
-                 boolean flag = this.clicked(p_93641_, p_93642_);
+                 boolean flag = this.clicked(mouseX, mouseY);
                  if (flag) {
                      this.playDownSound(Minecraft.getInstance().getSoundManager());
--                    this.onClick(p_93641_, p_93642_);
-+                    this.onClick(p_93641_, p_93642_, p_93643_);
+-                    this.onClick(mouseX, mouseY);
++                    this.onClick(mouseX, mouseY, button);
                      return true;
                  }
              }
 @@ -253,6 +_,19 @@
      @Override
-     public void setFocused(boolean p_93693_) {
-         this.focused = p_93693_;
+     public void setFocused(boolean focused) {
+         this.focused = focused;
 +    }
 +
 +    public static final int UNSET_FG_COLOR = -1;

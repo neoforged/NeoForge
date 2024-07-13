@@ -3,9 +3,9 @@
 @@ -70,9 +_,11 @@
      private static final EntityDataAccessor<Integer> DATA_VARIANT_ID = SynchedEntityData.defineId(Parrot.class, EntityDataSerializers.INT);
      private static final Predicate<Mob> NOT_PARROT_PREDICATE = new Predicate<Mob>() {
-         public boolean test(@Nullable Mob p_29453_) {
--            return p_29453_ != null && Parrot.MOB_SOUND_MAP.containsKey(p_29453_.getType());
-+            return p_29453_ != null && (Parrot.MOB_SOUND_MAP.containsKey(p_29453_.getType()) || p_29453_.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS) != null);
+         public boolean test(@Nullable Mob mob) {
+-            return mob != null && Parrot.MOB_SOUND_MAP.containsKey(mob.getType());
++            return mob != null && (Parrot.MOB_SOUND_MAP.containsKey(mob.getType()) || mob.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS) != null);
          }
      };
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS data map} instead */
@@ -18,28 +18,28 @@
  
              if (!this.level().isClientSide) {
 -                if (this.random.nextInt(10) == 0) {
-+                if (this.random.nextInt(10) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_29414_)) {
-                     this.tame(p_29414_);
++                if (this.random.nextInt(10) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, player)) {
+                     this.tame(player);
                      this.level().broadcastEntityEvent(this, (byte)7);
                  } else {
 @@ -321,7 +_,10 @@
  
-     public static SoundEvent getAmbient(Level p_218239_, RandomSource p_218240_) {
-         if (p_218239_.getDifficulty() != Difficulty.PEACEFUL && p_218240_.nextInt(1000) == 0) {
+     public static SoundEvent getAmbient(Level level, RandomSource random) {
+         if (level.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(1000) == 0) {
 -            List<EntityType<?>> list = Lists.newArrayList(MOB_SOUND_MAP.keySet());
 +            final var entities = new java.util.HashSet<>(MOB_SOUND_MAP.keySet());
-+            final var registry = p_218239_.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENTITY_TYPE);
++            final var registry = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENTITY_TYPE);
 +            registry.getDataMap(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS).keySet().forEach(key -> entities.add(registry.get(key)));
 +            List<EntityType<?>> list = Lists.newArrayList(entities);
-             return getImitatedSound(list.get(p_218240_.nextInt(list.size())));
+             return getImitatedSound(list.get(random.nextInt(list.size())));
          } else {
              return SoundEvents.PARROT_AMBIENT;
 @@ -329,7 +_,9 @@
      }
  
-     private static SoundEvent getImitatedSound(EntityType<?> p_29409_) {
--        return MOB_SOUND_MAP.getOrDefault(p_29409_, SoundEvents.PARROT_AMBIENT);
-+        var imitation = p_29409_.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS);
+     private static SoundEvent getImitatedSound(EntityType<?> type) {
+-        return MOB_SOUND_MAP.getOrDefault(type, SoundEvents.PARROT_AMBIENT);
++        var imitation = type.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS);
 +        if (imitation != null) return imitation.sound();
 +        return SoundEvents.PARROT_AMBIENT;
      }

@@ -18,7 +18,7 @@
 +                return chunkholder.currentlyLoading; // Neo: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
 +
              profilerfiller.incrementCounter("getChunkCacheMiss");
-             CompletableFuture<ChunkResult<ChunkAccess>> completablefuture = this.getChunkFutureMainThread(p_8360_, p_8361_, p_330876_, p_8363_);
+             CompletableFuture<ChunkResult<ChunkAccess>> completablefuture = this.getChunkFutureMainThread(x, z, chunkStatus, requireChunk);
              this.mainThreadProcessor.managedBlock(completablefuture::isDone);
 @@ -184,6 +_,7 @@
              if (chunkholder == null) {
@@ -40,20 +40,20 @@
 @@ -435,11 +_,17 @@
      }
  
-     public <T> void addRegionTicket(TicketType<T> p_8388_, ChunkPos p_8389_, int p_8390_, T p_8391_) {
--        this.distanceManager.addRegionTicket(p_8388_, p_8389_, p_8390_, p_8391_);
-+        addRegionTicket(p_8388_, p_8389_, p_8390_, p_8391_, false);
+     public <T> void addRegionTicket(TicketType<T> type, ChunkPos pos, int distance, T value) {
+-        this.distanceManager.addRegionTicket(type, pos, distance, value);
++        addRegionTicket(type, pos, distance, value, false);
 +    }
-+    public <T> void addRegionTicket(TicketType<T> p_8388_, ChunkPos p_8389_, int p_8390_, T p_8391_, boolean forceTicks) {
-+        this.distanceManager.addRegionTicket(p_8388_, p_8389_, p_8390_, p_8391_, forceTicks);
++    public <T> void addRegionTicket(TicketType<T> type, ChunkPos pos, int distance, T value, boolean forceTicks) {
++        this.distanceManager.addRegionTicket(type, pos, distance, value, forceTicks);
      }
  
-     public <T> void removeRegionTicket(TicketType<T> p_8439_, ChunkPos p_8440_, int p_8441_, T p_8442_) {
--        this.distanceManager.removeRegionTicket(p_8439_, p_8440_, p_8441_, p_8442_);
-+        removeRegionTicket(p_8439_, p_8440_, p_8441_, p_8442_, false);
+     public <T> void removeRegionTicket(TicketType<T> type, ChunkPos pos, int distance, T value) {
+-        this.distanceManager.removeRegionTicket(type, pos, distance, value);
++        removeRegionTicket(type, pos, distance, value, false);
 +    }
-+    public <T> void removeRegionTicket(TicketType<T> p_8439_, ChunkPos p_8440_, int p_8441_, T p_8442_, boolean forceTicks) {
-+        this.distanceManager.removeRegionTicket(p_8439_, p_8440_, p_8441_, p_8442_, forceTicks);
++    public <T> void removeRegionTicket(TicketType<T> type, ChunkPos pos, int distance, T value, boolean forceTicks) {
++        this.distanceManager.removeRegionTicket(type, pos, distance, value, forceTicks);
      }
  
      @Override

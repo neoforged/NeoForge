@@ -49,15 +49,15 @@
                  }
  
                  this.resetFallDistance();
--            } else if (!this.level().getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && p_38307_ < 0.0) {
-+            } else if (!this.canBoatInFluid(this.level().getFluidState(this.blockPosition().below())) && p_38307_ < 0.0D) {
-                 this.fallDistance -= (float)p_38307_;
+-            } else if (!this.level().getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && y < 0.0) {
++            } else if (!this.canBoatInFluid(this.level().getFluidState(this.blockPosition().below())) && y < 0.0D) {
+                 this.fallDistance -= (float)y;
              }
          }
 @@ -871,7 +_,7 @@
  
      @Override
-     protected boolean canAddPassenger(Entity p_38390_) {
+     protected boolean canAddPassenger(Entity passenger) {
 -        return this.getPassengers().size() < this.getMaxPassengers() && !this.isEyeInFluid(FluidTags.WATER);
 +        return this.getPassengers().size() < this.getMaxPassengers() && !this.canBoatInFluid(this.getEyeInFluidType());
      }

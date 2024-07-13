@@ -14,19 +14,19 @@
          ImmutableMap.of(
              Blocks.GRASS_BLOCK,
 @@ -46,7 +_,8 @@
-     public InteractionResult useOn(UseOnContext p_41341_) {
-         Level level = p_41341_.getLevel();
-         BlockPos blockpos = p_41341_.getClickedPos();
+     public InteractionResult useOn(UseOnContext context) {
+         Level level = context.getLevel();
+         BlockPos blockpos = context.getClickedPos();
 -        Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = TILLABLES.get(level.getBlockState(blockpos).getBlock());
-+        BlockState toolModifiedState = level.getBlockState(blockpos).getToolModifiedState(p_41341_, net.neoforged.neoforge.common.ItemAbilities.HOE_TILL, false);
++        BlockState toolModifiedState = level.getBlockState(blockpos).getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.HOE_TILL, false);
 +        Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = toolModifiedState == null ? null : Pair.of(ctx -> true, changeIntoState(toolModifiedState));
          if (pair == null) {
              return InteractionResult.PASS;
          } else {
 @@ -86,5 +_,10 @@
  
-     public static boolean onlyIfAirAbove(UseOnContext p_150857_) {
-         return p_150857_.getClickedFace() != Direction.DOWN && p_150857_.getLevel().getBlockState(p_150857_.getClickedPos().above()).isAir();
+     public static boolean onlyIfAirAbove(UseOnContext context) {
+         return context.getClickedFace() != Direction.DOWN && context.getLevel().getBlockState(context.getClickedPos().above()).isAir();
 +    }
 +
 +    @Override

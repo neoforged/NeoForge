@@ -8,7 +8,7 @@
 +    private net.minecraft.client.server.LanServerPinger dediLanPinger;
  
      public DedicatedServer(
-         Thread p_214789_,
+         Thread serverThread,
 @@ -103,6 +_,7 @@
          Thread thread = new Thread("Server console handler") {
              @Override

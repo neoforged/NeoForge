@@ -1,3 +1,4 @@
 dynamicProject {
+    parchment = "${parchment_version}"
     neoform("${project.minecraft_version}-${project.neoform_version}")
 }

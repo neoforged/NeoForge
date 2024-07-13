@@ -2,10 +2,10 @@
 +++ b/net/minecraft/world/entity/projectile/ProjectileUtil.java
 @@ -81,7 +_,7 @@
                  Vec3 vec31 = optional.get();
-                 double d1 = p_37289_.distanceToSqr(vec31);
+                 double d1 = startVec.distanceToSqr(vec31);
                  if (d1 < d0 || d0 == 0.0) {
--                    if (entity1.getRootVehicle() == p_37288_.getRootVehicle()) {
-+                    if (entity1.getRootVehicle() == p_37288_.getRootVehicle() && !entity1.canRiderInteract()) {
+-                    if (entity1.getRootVehicle() == shooter.getRootVehicle()) {
++                    if (entity1.getRootVehicle() == shooter.getRootVehicle() && !entity1.canRiderInteract()) {
                          if (d0 == 0.0) {
                              entity = entity1;
                              vec3 = vec31;
@@ -14,12 +14,12 @@
      }
  
 +    @Deprecated // Forge: Use the version below that takes in a Predicate<Item> instead of an Item
-     public static InteractionHand getWeaponHoldingHand(LivingEntity p_37298_, Item p_37299_) {
-         return p_37298_.getMainHandItem().is(p_37299_) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+     public static InteractionHand getWeaponHoldingHand(LivingEntity shooter, Item weapon) {
+         return shooter.getMainHandItem().is(weapon) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 +    }
 +
 +    public static InteractionHand getWeaponHoldingHand(LivingEntity livingEntity, Predicate<Item> itemPredicate) {
 +        return itemPredicate.test(livingEntity.getMainHandItem().getItem()) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
      }
  
-     public static AbstractArrow getMobArrow(LivingEntity p_37301_, ItemStack p_37302_, float p_37303_, @Nullable ItemStack p_345078_) {
+     public static AbstractArrow getMobArrow(LivingEntity shooter, ItemStack arrow, float velocity, @Nullable ItemStack weapon) {

@@ -11,13 +11,13 @@
  
 @@ -42,7 +_,7 @@
  
-     public ItemStack assemble(CraftingInput p_346433_, HolderLookup.Provider p_335717_) {
+     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
          ItemStack itemstack = ItemStack.EMPTY;
 -        DyeItem dyeitem = (DyeItem)Items.WHITE_DYE;
 +        net.minecraft.world.item.DyeColor dyecolor = net.minecraft.world.item.DyeColor.WHITE;
  
-         for (int i = 0; i < p_346433_.size(); i++) {
-             ItemStack itemstack1 = p_346433_.getItem(i);
+         for (int i = 0; i < input.size(); i++) {
+             ItemStack itemstack1 = input.getItem(i);
 @@ -50,13 +_,14 @@
                  Item item = itemstack1.getItem();
                  if (Block.byItem(item) instanceof ShulkerBoxBlock) {

@@ -4,23 +4,23 @@
      ) {
          return new StreamCodec<RegistryFriendlyByteBuf, R>() {
              private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf p_330361_) {
--                return p_320353_.apply(p_330361_.registryAccess().registryOrThrow(p_319942_));
-+                var registry = p_330361_.registryAccess().registryOrThrow(p_319942_);
+-                return idGetter.apply(p_330361_.registryAccess().registryOrThrow(registryKey));
++                var registry = p_330361_.registryAccess().registryOrThrow(registryKey);
 +                if (net.neoforged.neoforge.registries.RegistryManager.isNonSyncedBuiltInRegistry(registry)) {
 +                    throw new IllegalStateException("Cannot use ID syncing for non-synced built-in registry: " + registry.key());
 +                }
-+                return p_320353_.apply(registry);
++                return idGetter.apply(registry);
              }
  
              public R decode(RegistryFriendlyByteBuf p_331253_) {
 @@ -520,8 +_,25 @@
              private static final int NAMED_SET = -1;
-             private final StreamCodec<RegistryFriendlyByteBuf, Holder<T>> holderCodec = ByteBufCodecs.holderRegistry(p_332137_);
+             private final StreamCodec<RegistryFriendlyByteBuf, Holder<T>> holderCodec = ByteBufCodecs.holderRegistry(registryKey);
  
 +            private final Map<net.neoforged.neoforge.registries.holdersets.HolderSetType, StreamCodec<RegistryFriendlyByteBuf, ? extends net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>>> holderSetCodecs = new java.util.concurrent.ConcurrentHashMap<>();
 +
 +            private StreamCodec<RegistryFriendlyByteBuf, ? extends net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>> holderSetCodec(net.neoforged.neoforge.registries.holdersets.HolderSetType type) {
-+                return this.holderSetCodecs.computeIfAbsent(type, key -> key.makeStreamCodec(p_332137_));
++                return this.holderSetCodecs.computeIfAbsent(type, key -> key.makeStreamCodec(registryKey));
 +            }
 +
 +            private <H extends net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>> H cast(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> holderSet) {
@@ -37,8 +37,8 @@
 +                    return this.holderSetCodec(net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.byIdOrThrow(-2 - i)).decode(p_340887_);
 +                }
                  if (i == -1) {
-                     Registry<T> registry = p_340887_.registryAccess().registryOrThrow(p_332137_);
-                     return registry.getTag(TagKey.create(p_332137_, ResourceLocation.STREAM_CODEC.decode(p_340887_))).orElseThrow();
+                     Registry<T> registry = p_340887_.registryAccess().registryOrThrow(registryKey);
+                     return registry.getTag(TagKey.create(registryKey, ResourceLocation.STREAM_CODEC.decode(p_340887_))).orElseThrow();
 @@ -537,6 +_,15 @@
              }
  

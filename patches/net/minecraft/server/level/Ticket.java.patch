@@ -3,21 +3,21 @@
 @@ -9,9 +_,14 @@
      private long createdTick;
  
-     protected Ticket(TicketType<T> p_9425_, int p_9426_, T p_9427_) {
-+        this(p_9425_, p_9426_, p_9427_, false);
+     protected Ticket(TicketType<T> type, int ticketLevel, T key) {
++        this(type, ticketLevel, key, false);
 +    }
 +
-+    public Ticket(TicketType<T> p_9425_, int p_9426_, T p_9427_, boolean forceTicks) {
-         this.type = p_9425_;
-         this.ticketLevel = p_9426_;
-         this.key = p_9427_;
++    public Ticket(TicketType<T> type, int ticketLevel, T key, boolean forceTicks) {
+         this.type = type;
+         this.ticketLevel = ticketLevel;
+         this.key = key;
 +        this.forceTicks = forceTicks;
      }
  
-     public int compareTo(Ticket<?> p_9432_) {
+     public int compareTo(Ticket<?> other) {
 @@ -31,18 +_,18 @@
          } else {
-             return !(p_9439_ instanceof Ticket<?> ticket)
+             return !(other instanceof Ticket<?> ticket)
                  ? false
 -                : this.ticketLevel == ticket.ticketLevel && Objects.equals(this.type, ticket.type) && Objects.equals(this.key, ticket.key);
 +                : this.ticketLevel == ticket.ticketLevel && Objects.equals(this.type, ticket.type) && Objects.equals(this.key, ticket.key) && this.forceTicks == ticket.forceTicks;
@@ -38,9 +38,9 @@
  
      public TicketType<T> getType() {
 @@ -60,5 +_,12 @@
-     protected boolean timedOut(long p_9435_) {
+     protected boolean timedOut(long currentTime) {
          long i = this.type.timeout();
-         return i != 0L && p_9435_ - this.createdTick > i;
+         return i != 0L && currentTime - this.createdTick > i;
 +    }
 +
 +    // Neo: Injected ability to force chunks to tick

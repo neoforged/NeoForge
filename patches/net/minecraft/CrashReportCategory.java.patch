@@ -4,9 +4,9 @@
          if (astacktraceelement.length <= 0) {
              return 0;
          } else {
--            this.stackTrace = new StackTraceElement[astacktraceelement.length - 3 - p_128149_];
--            System.arraycopy(astacktraceelement, 3 + p_128149_, this.stackTrace, 0, this.stackTrace.length);
-+            int len = astacktraceelement.length - 3 - p_128149_;
+-            this.stackTrace = new StackTraceElement[astacktraceelement.length - 3 - size];
+-            System.arraycopy(astacktraceelement, 3 + size, this.stackTrace, 0, this.stackTrace.length);
++            int len = astacktraceelement.length - 3 - size;
 +            if (len <= 0) len = astacktraceelement.length;
 +            this.stackTrace = new StackTraceElement[len];
 +            System.arraycopy(astacktraceelement, astacktraceelement.length - len, this.stackTrace, 0, this.stackTrace.length);
@@ -16,13 +16,13 @@
 @@ -165,16 +_,16 @@
  
          if (this.stackTrace != null && this.stackTrace.length > 0) {
-             p_128169_.append("\nStacktrace:");
+             builder.append("\nStacktrace:");
 -
 -            for (StackTraceElement stacktraceelement : this.stackTrace) {
--                p_128169_.append("\n\tat ");
--                p_128169_.append(stacktraceelement);
+-                builder.append("\n\tat ");
+-                builder.append(stacktraceelement);
 -            }
-+            p_128169_.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.stackTrace));
++            builder.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.stackTrace));
          }
      }
  
@@ -34,4 +34,4 @@
 +        this.stackTrace = t.getStackTrace();
      }
  
-     public static void populateBlockDetails(CrashReportCategory p_178951_, LevelHeightAccessor p_178952_, BlockPos p_178953_, @Nullable BlockState p_178954_) {
+     public static void populateBlockDetails(CrashReportCategory category, LevelHeightAccessor levelHeightAccessor, BlockPos pos, @Nullable BlockState state) {

@@ -28,21 +28,21 @@
 +        this(registryKey, codec, validator, defaultValue, net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec), idSetter);
 +    }
  
-     public void runValidation(ValidationContext p_279366_, ResourceKey<T> p_336149_, T p_279124_) {
-         this.validator.run(p_279366_, p_336149_, p_279124_);
+     public void runValidation(ValidationContext context, ResourceKey<T> key, T value) {
+         this.validator.run(context, key, value);
      }
  
-     public <V> Optional<T> deserialize(ResourceLocation p_279253_, DynamicOps<V> p_324006_, V p_324329_) {
--        DataResult<T> dataresult = this.codec.parse(p_324006_, p_324329_);
+     public <V> Optional<T> deserialize(ResourceLocation resourceLocation, DynamicOps<V> ops, V value) {
+-        DataResult<T> dataresult = this.codec.parse(ops, value);
 -        dataresult.error()
--            .ifPresent(p_350259_ -> LOGGER.error("Couldn't parse element {}/{} - {}", this.registryKey.location(), p_279253_, p_350259_.message()));
+-            .ifPresent(p_350259_ -> LOGGER.error("Couldn't parse element {}/{} - {}", this.registryKey.location(), resourceLocation, p_350259_.message()));
 -        return dataresult.result();
-+        var dataresult = this.conditionalCodec.parse(p_324006_, p_324329_);
-+        dataresult.error().ifPresent(p_338121_ -> LOGGER.error("Couldn't parse element {}:{} - {}", this.registryKey, p_279253_, p_338121_.message()));
++        var dataresult = this.conditionalCodec.parse(ops, value);
++        dataresult.error().ifPresent(p_338121_ -> LOGGER.error("Couldn't parse element {}:{} - {}", this.registryKey, resourceLocation, p_338121_.message()));
 +        return dataresult.result().map(it -> {
-+            it.ifPresent(val -> idSetter.accept(val, p_279253_));
++            it.ifPresent(val -> idSetter.accept(val, resourceLocation));
 +            T value = it.orElse(defaultValue);
-+            if (value instanceof LootTable lootTable) value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(p_279253_, lootTable);
++            if (value instanceof LootTable lootTable) value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(resourceLocation, lootTable);
 +            return value;
 +        });
      }

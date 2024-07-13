@@ -33,9 +33,9 @@
 +        this.player.zo = oldPos.z;
 +    }
 +
-     private boolean noBlocksAround(Entity p_9794_) {
-         return p_9794_.level()
-             .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
+     private boolean noBlocksAround(Entity entity) {
+         return entity.level()
+             .getBlockStates(entity.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
 @@ -927,7 +_,7 @@
                                      && !flag1
                                      && this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR
@@ -60,21 +60,21 @@
  
 @@ -1060,7 +_,7 @@
                      .handleBlockBreakAction(
-                         blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
+                         blockpos, serverboundplayeractionpacket$action, packet.getDirection(), this.player.level().getMaxBuildHeight(), packet.getSequence()
                      );
--                this.player.connection.ackBlockChangesUpTo(p_9889_.getSequence());
-+                this.player.connection.ackBlockChangesUpTo =p_9889_.getSequence();
+-                this.player.connection.ackBlockChangesUpTo(packet.getSequence());
++                this.player.connection.ackBlockChangesUpTo =packet.getSequence();
                  return;
              default:
                  throw new IllegalArgumentException("Invalid player action");
 @@ -1079,7 +_,7 @@
      @Override
-     public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
-         PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
--        this.player.connection.ackBlockChangesUpTo(p_9930_.getSequence());
-+        this.player.connection.ackBlockChangesUpTo = p_9930_.getSequence();
+     public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
+-        this.player.connection.ackBlockChangesUpTo(packet.getSequence());
++        this.player.connection.ackBlockChangesUpTo = packet.getSequence();
          ServerLevel serverlevel = this.player.serverLevel();
-         InteractionHand interactionhand = p_9930_.getHand();
+         InteractionHand interactionhand = packet.getHand();
          ItemStack itemstack = this.player.getItemInHand(interactionhand);
 @@ -1231,8 +_,9 @@
                  }
@@ -102,10 +102,10 @@
                          @Override
 @@ -1753,7 +_,7 @@
      @Override
-     public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
-         PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
--        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.getAbilities().mayfly;
-+        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.mayFly();
+     public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
+-        this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().mayfly;
++        this.player.getAbilities().flying = packet.isFlying() && this.player.mayFly();
      }
  
      @Override
@@ -121,8 +121,8 @@
 @@ -1847,6 +_,7 @@
  
      @Override
-     public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {
-+        super.handleCustomPayload(p_333887_); // Neo: Call super to invoke modded payload handling.
+     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
++        super.handleCustomPayload(packet); // Neo: Call super to invoke modded payload handling.
      }
  
      @Override

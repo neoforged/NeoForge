@@ -5,20 +5,20 @@
          }
  
 -        return abstractarrow;
-+        return customArrow(abstractarrow, p_331497_, p_330846_);
++        return customArrow(abstractarrow, ammo, weapon);
      }
  
-     protected static List<ItemStack> draw(ItemStack p_331565_, ItemStack p_330406_, LivingEntity p_330823_) {
+     protected static List<ItemStack> draw(ItemStack weapon, ItemStack ammo, LivingEntity shooter) {
 @@ -115,7 +_,8 @@
      }
  
-     protected static ItemStack useAmmo(ItemStack p_331207_, ItemStack p_331434_, LivingEntity p_330302_, boolean p_330934_) {
--        int i = !p_330934_ && !p_330302_.hasInfiniteMaterials() && p_330302_.level() instanceof ServerLevel serverlevel
+     protected static ItemStack useAmmo(ItemStack weapon, ItemStack ammo, LivingEntity shooter, boolean intangable) {
+-        int i = !intangable && !shooter.hasInfiniteMaterials() && shooter.level() instanceof ServerLevel serverlevel
 +        // Neo: Adjust this check to respect ArrowItem#isInfinite, bypassing processAmmoUse if true.
-+        int i = !p_330934_ && p_330302_.level() instanceof ServerLevel serverlevel && !(p_330302_.hasInfiniteMaterials() || (p_331434_.getItem() instanceof ArrowItem ai && ai.isInfinite(p_331434_, p_331207_, p_330302_)))
-             ? EnchantmentHelper.processAmmoUse(serverlevel, p_331207_, p_331434_, 1)
++        int i = !intangable && shooter.level() instanceof ServerLevel serverlevel && !(shooter.hasInfiniteMaterials() || (ammo.getItem() instanceof ArrowItem ai && ai.isInfinite(ammo, weapon, shooter)))
+             ? EnchantmentHelper.processAmmoUse(serverlevel, weapon, ammo, 1)
              : 0;
-         if (i > p_331434_.getCount()) {
+         if (i > ammo.getCount()) {
 @@ -132,5 +_,20 @@
  
              return itemstack;

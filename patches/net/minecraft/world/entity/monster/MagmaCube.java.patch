@@ -9,9 +9,9 @@
  
      @Override
 +    @Deprecated // FORGE: use jumpInFluid instead
-     protected void jumpInLiquid(TagKey<Fluid> p_204065_) {
--        if (p_204065_ == FluidTags.LAVA) {
-+        this.jumpInLiquidInternal(() -> p_204065_ == FluidTags.LAVA, () -> super.jumpInLiquid(p_204065_));
+     protected void jumpInLiquid(TagKey<Fluid> fluidTag) {
+-        if (fluidTag == FluidTags.LAVA) {
++        this.jumpInLiquidInternal(() -> fluidTag == FluidTags.LAVA, () -> super.jumpInLiquid(fluidTag));
 +    }
 +
 +    private void jumpInLiquidInternal(java.util.function.BooleanSupplier isLava, Runnable onSuper) {
@@ -20,7 +20,7 @@
              this.setDeltaMovement(vec3.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3.z);
              this.hasImpulse = true;
          } else {
--            super.jumpInLiquid(p_204065_);
+-            super.jumpInLiquid(fluidTag);
 +            onSuper.run();
          }
 +    }

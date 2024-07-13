@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/component/FireworkExplosion.java
 +++ b/net/minecraft/world/item/component/FireworkExplosion.java
 @@ -107,7 +_,10 @@
-         return new FireworkExplosion(this.shape, this.colors, new IntArrayList(p_330678_), this.hasTrail, this.hasTwinkle);
+         return new FireworkExplosion(this.shape, this.colors, new IntArrayList(fadeColors), this.hasTrail, this.hasTwinkle);
      }
  
 -    public static enum Shape implements StringRepresentable {

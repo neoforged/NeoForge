@@ -2,36 +2,36 @@
 +++ b/net/minecraft/Util.java
 @@ -267,8 +_,8 @@
                  .getSchema(DataFixUtils.makeKey(SharedConstants.getCurrentVersion().getDataVersion().getVersion()))
-                 .getChoiceType(p_137552_, p_137553_);
+                 .getChoiceType(p_type, choiceName);
          } catch (IllegalArgumentException illegalargumentexception) {
--            LOGGER.error("No data fixer registered for {}", p_137553_);
+-            LOGGER.error("No data fixer registered for {}", choiceName);
 -            if (SharedConstants.IS_RUNNING_IN_IDE) {
-+            LOGGER.debug("No data fixer registered for {}", p_137553_);
++            LOGGER.debug("No data fixer registered for {}", choiceName);
 +            if (SharedConstants.IS_RUNNING_IN_IDE && false) {
                  throw illegalargumentexception;
              }
          }
 @@ -526,20 +_,20 @@
  
-     public static void logAndPauseIfInIde(String p_143786_) {
-         LOGGER.error(p_143786_);
+     public static void logAndPauseIfInIde(String error) {
+         LOGGER.error(error);
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
-             doPause(p_143786_);
+             doPause(error);
          }
      }
  
-     public static void logAndPauseIfInIde(String p_200891_, Throwable p_200892_) {
-         LOGGER.error(p_200891_, p_200892_);
+     public static void logAndPauseIfInIde(String message, Throwable error) {
+         LOGGER.error(message, error);
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
-             doPause(p_200891_);
+             doPause(message);
          }
      }
  
-     public static <T extends Throwable> T pauseInIde(T p_137571_) {
+     public static <T extends Throwable> T pauseInIde(T throwable) {
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
-             LOGGER.error("Trying to throw a fatal exception, pausing in IDE", p_137571_);
-             doPause(p_137571_.getMessage());
+             LOGGER.error("Trying to throw a fatal exception, pausing in IDE", throwable);
+             doPause(throwable.getMessage());
          }

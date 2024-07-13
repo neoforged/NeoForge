@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
 @@ -132,6 +_,10 @@
-         return this.definition.slots().stream().anyMatch(p_345027_ -> p_345027_.test(p_345146_));
+         return this.definition.slots().stream().anyMatch(p_345027_ -> p_345027_.test(slot));
      }
  
 +    /**
 +     * @deprecated Neo: Use {@link ItemStack#isPrimaryItemFor(Holder)}
 +     */
 +    @Deprecated
-     public boolean isPrimaryItem(ItemStack p_336088_) {
-         return this.isSupportedItem(p_336088_) && (this.definition.primaryItems.isEmpty() || p_336088_.is(this.definition.primaryItems.get()));
+     public boolean isPrimaryItem(ItemStack stack) {
+         return this.isSupportedItem(stack) && (this.definition.primaryItems.isEmpty() || stack.is(this.definition.primaryItems.get()));
      }
 @@ -503,6 +_,15 @@
-     public static Enchantment.Builder enchantment(Enchantment.EnchantmentDefinition p_345873_) {
-         return new Enchantment.Builder(p_345873_);
+     public static Enchantment.Builder enchantment(Enchantment.EnchantmentDefinition definition) {
+         return new Enchantment.Builder(definition);
      }
 +
 +//    TODO: Reimplement. Not sure if we want to patch EnchantmentDefinition or hack this in as an EnchantmentEffectComponent.

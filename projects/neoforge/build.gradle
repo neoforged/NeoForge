@@ -17,6 +17,7 @@ changelog {
 }
 
 dynamicProject {
+    parchment = "${parchment_version}"
     runtime("${project.minecraft_version}-${project.neoform_version}",
             rootProject.layout.projectDirectory.dir('patches'),
             rootProject.layout.projectDirectory.dir('rejects'))

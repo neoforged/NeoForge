@@ -4,8 +4,8 @@
                      }
  
                      if (optional.isEmpty()) {
-+                        ConnectScreen.LOGGER.error("Couldn't connect to server: Unknown host \"{}\"", p_249536_.getHost());
++                        ConnectScreen.LOGGER.error("Couldn't connect to server: Unknown host \"{}\"", serverAddress.getHost());
 +                        net.neoforged.neoforge.network.DualStackUtils.logInitialPreferences();
-                         p_251955_.execute(
-                             () -> p_251955_.setScreen(
+                         minecraft.execute(
+                             () -> minecraft.setScreen(
                                      new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.connectFailedTitle, ConnectScreen.UNKNOWN_HOST_MESSAGE)

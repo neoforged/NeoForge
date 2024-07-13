@@ -2,13 +2,13 @@
 +++ b/net/minecraft/world/level/block/NetherWartBlock.java
 @@ -55,9 +_,10 @@
      @Override
-     protected void randomTick(BlockState p_221806_, ServerLevel p_221807_, BlockPos p_221808_, RandomSource p_221809_) {
-         int i = p_221806_.getValue(AGE);
--        if (i < 3 && p_221809_.nextInt(10) == 0) {
-+        if (i < 3 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_221807_, p_221808_, p_221806_, p_221809_.nextInt(10) == 0)) {
-             p_221806_ = p_221806_.setValue(AGE, Integer.valueOf(i + 1));
-             p_221807_.setBlock(p_221808_, p_221806_, 2);
-+            net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_221807_, p_221808_, p_221806_);
+     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+         int i = state.getValue(AGE);
+-        if (i < 3 && random.nextInt(10) == 0) {
++        if (i < 3 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt(10) == 0)) {
+             state = state.setValue(AGE, Integer.valueOf(i + 1));
+             level.setBlock(pos, state, 2);
++            net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
          }
      }
  

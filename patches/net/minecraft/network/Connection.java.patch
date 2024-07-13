@@ -7,42 +7,42 @@
 +    @Nullable
 +    private ProtocolInfo<?> inboundProtocol;
  
-     public Connection(PacketFlow p_129482_) {
-         this.receiving = p_129482_;
+     public Connection(PacketFlow receiving) {
+         this.receiving = receiving;
 @@ -120,11 +_,13 @@
          if (this.delayedDisconnect != null) {
              this.disconnect(this.delayedDisconnect);
          }
-+        net.neoforged.neoforge.network.connection.ConnectionUtils.setConnection(p_129525_, this);
++        net.neoforged.neoforge.network.connection.ConnectionUtils.setConnection(context, this);
      }
  
      @Override
-     public void channelInactive(ChannelHandlerContext p_129527_) {
+     public void channelInactive(ChannelHandlerContext context) {
          this.disconnect(Component.translatable("disconnect.endOfStream"));
-+        net.neoforged.neoforge.network.connection.ConnectionUtils.removeConnection(p_129527_);
++        net.neoforged.neoforge.network.connection.ConnectionUtils.removeConnection(context);
      }
  
      @Override
 @@ -141,6 +_,13 @@
                  } else {
-                     Component component = Component.translatable("disconnect.genericReason", "Internal Exception: " + p_129534_);
+                     Component component = Component.translatable("disconnect.genericReason", "Internal Exception: " + exception);
                      PacketListener packetlistener = this.packetListener;
 +                    if (packetlistener != null) {
 +                        ConnectionProtocol protocol = packetlistener.protocol();
 +                        if (protocol == ConnectionProtocol.CONFIGURATION || protocol == ConnectionProtocol.PLAY) {
 +                            // Neo: Always log critical network exceptions for config and play packets
-+                            LOGGER.error("Exception caught in connection", p_129534_);
++                            LOGGER.error("Exception caught in connection", exception);
 +                        }
 +                    }
                      DisconnectionDetails disconnectiondetails;
                      if (packetlistener != null) {
-                         disconnectiondetails = packetlistener.createDisconnectionInfo(component, p_129534_);
+                         disconnectiondetails = packetlistener.createDisconnectionInfo(component, exception);
 @@ -226,6 +_,7 @@
-         if (p_320903_.flow() != this.getReceiving()) {
-             throw new IllegalStateException("Invalid inbound protocol: " + p_320903_.id());
+         if (protocolInfo.flow() != this.getReceiving()) {
+             throw new IllegalStateException("Invalid inbound protocol: " + protocolInfo.id());
          } else {
-+            this.inboundProtocol = p_320903_;
-             this.packetListener = p_320940_;
++            this.inboundProtocol = protocolInfo;
+             this.packetListener = packetInfo;
              this.disconnectListener = null;
              UnconfiguredPipelineHandler.InboundConfigurationTask unconfiguredpipelinehandler$inboundconfigurationtask = UnconfiguredPipelineHandler.setupInboundProtocol(
 @@ -254,7 +_,12 @@
@@ -63,23 +63,23 @@
          if (this.address == null) {
              return "local";
          } else {
--            return p_295875_ ? this.address.toString() : "IP hidden";
-+            return p_295875_ ? net.neoforged.neoforge.network.DualStackUtils.getAddressString(this.address) : "IP hidden";
+-            return logIps ? this.address.toString() : "IP hidden";
++            return logIps ? net.neoforged.neoforge.network.DualStackUtils.getAddressString(this.address) : "IP hidden";
          }
      }
  
 @@ -470,6 +_,7 @@
      }
  
-     public static ChannelFuture connect(InetSocketAddress p_290034_, boolean p_290035_, final Connection p_290031_) {
-+        net.neoforged.neoforge.network.DualStackUtils.checkIPv6(p_290034_.getAddress());
+     public static ChannelFuture connect(InetSocketAddress address, boolean useEpollIfAvailable, final Connection connection) {
++        net.neoforged.neoforge.network.DualStackUtils.checkIPv6(address.getAddress());
          Class<? extends SocketChannel> oclass;
          EventLoopGroup eventloopgroup;
-         if (Epoll.isAvailable() && p_290035_) {
+         if (Epoll.isAvailable() && useEpollIfAvailable) {
 @@ -638,5 +_,17 @@
  
-     public void setBandwidthLogger(LocalSampleLogger p_323799_) {
-         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(p_323799_);
+     public void setBandwidthLogger(LocalSampleLogger bandwithLogger) {
+         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(bandwithLogger);
 +    }
 +
 +    public Channel channel() {

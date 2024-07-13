@@ -4,8 +4,8 @@
      private static final Logger LOGGER = LogUtils.getLogger();
  
      @DontObfuscate
--    public static void main(String[] p_129699_) {
-+    public static void main(String[] p_129699_) throws Exception {
+-    public static void main(String[] args) {
++    public static void main(String[] args) throws Exception {
          SharedConstants.tryDetectVersion();
          OptionParser optionparser = new OptionParser();
          OptionSpec<Void> optionspec = optionparser.accepts("nogui");
@@ -24,7 +24,7 @@
 +        }
  
          try {
-             OptionSet optionset = optionparser.parse(p_129699_);
+             OptionSet optionset = optionparser.parse(args);
 @@ -90,6 +_,13 @@
                  optionparser.printHelpOn(System.err);
                  return;

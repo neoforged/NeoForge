@@ -2,19 +2,19 @@
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 @@ -222,12 +_,12 @@
      ) {
-         AABB aabb = p_114444_.getBoundingBox().move(-p_114444_.getX(), -p_114444_.getY(), -p_114444_.getZ());
-         LevelRenderer.renderLineBox(p_114442_, p_114443_, aabb, p_353064_, p_353059_, p_353042_, 1.0F);
--        if (p_114444_ instanceof EnderDragon) {
-+        if (p_114444_.isMultipartEntity()) {
-             double d0 = -Mth.lerp((double)p_114445_, p_114444_.xOld, p_114444_.getX());
-             double d1 = -Mth.lerp((double)p_114445_, p_114444_.yOld, p_114444_.getY());
-             double d2 = -Mth.lerp((double)p_114445_, p_114444_.zOld, p_114444_.getZ());
+         AABB aabb = p_entity.getBoundingBox().move(-p_entity.getX(), -p_entity.getY(), -p_entity.getZ());
+         LevelRenderer.renderLineBox(poseStack, buffer, aabb, green, blue, alpha, 1.0F);
+-        if (p_entity instanceof EnderDragon) {
++        if (p_entity.isMultipartEntity()) {
+             double d0 = -Mth.lerp((double)red, p_entity.xOld, p_entity.getX());
+             double d1 = -Mth.lerp((double)red, p_entity.yOld, p_entity.getY());
+             double d2 = -Mth.lerp((double)red, p_entity.zOld, p_entity.getZ());
  
--            for (EnderDragonPart enderdragonpart : ((EnderDragon)p_114444_).getSubEntities()) {
-+            for (net.neoforged.neoforge.entity.PartEntity<?> enderdragonpart : p_114444_.getParts()) {
-                 p_114442_.pushPose();
-                 double d3 = d0 + Mth.lerp((double)p_114445_, enderdragonpart.xOld, enderdragonpart.getX());
-                 double d4 = d1 + Mth.lerp((double)p_114445_, enderdragonpart.yOld, enderdragonpart.getY());
+-            for (EnderDragonPart enderdragonpart : ((EnderDragon)p_entity).getSubEntities()) {
++            for (net.neoforged.neoforge.entity.PartEntity<?> enderdragonpart : p_entity.getParts()) {
+                 poseStack.pushPose();
+                 double d3 = d0 + Mth.lerp((double)red, enderdragonpart.xOld, enderdragonpart.getX());
+                 double d4 = d1 + Mth.lerp((double)red, enderdragonpart.yOld, enderdragonpart.getY());
 @@ -467,6 +_,10 @@
          return this.itemInHandRenderer;
      }
@@ -24,7 +24,7 @@
 +    }
 +
      @Override
-     public void onResourceManagerReload(ResourceManager p_174004_) {
+     public void onResourceManagerReload(ResourceManager resourceManager) {
          EntityRendererProvider.Context entityrendererprovider$context = new EntityRendererProvider.Context(
 @@ -474,5 +_,6 @@
          );

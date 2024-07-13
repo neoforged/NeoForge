@@ -3,10 +3,10 @@
 @@ -64,6 +_,7 @@
  
      @Nullable
-     public <T> T set(DataComponentType<? super T> p_330791_, @Nullable T p_330369_) {
-+        net.neoforged.neoforge.common.CommonHooks.validateComponent(p_330369_);
+     public <T> T set(DataComponentType<? super T> component, @Nullable T value) {
++        net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
          this.ensureMapOwnership();
-         T t = this.prototype.get((DataComponentType<? extends T>)p_330791_);
+         T t = this.prototype.get((DataComponentType<? extends T>)component);
          Optional<T> optional;
 @@ -192,6 +_,10 @@
          }

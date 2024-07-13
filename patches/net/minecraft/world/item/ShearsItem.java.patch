@@ -25,6 +25,6 @@
 +    }
 +
 +    @Override
-     public InteractionResult useOn(UseOnContext p_186371_) {
-         Level level = p_186371_.getLevel();
-         BlockPos blockpos = p_186371_.getClickedPos();
+     public InteractionResult useOn(UseOnContext context) {
+         Level level = context.getLevel();
+         BlockPos blockpos = context.getClickedPos();

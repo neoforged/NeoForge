@@ -2,30 +2,30 @@
 +++ b/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
 @@ -118,9 +_,29 @@
      ) {
-         float f = (float)(p_275688_ + p_275535_) / 2.0F;
-         float f1 = (float)(p_275245_ + p_294406_) / 2.0F;
--        p_282802_.enableScissor(p_275688_, p_275245_, p_275535_, p_294406_);
-         float f2 = (float)Math.atan((double)((f - p_275546_) / 40.0F));
-         float f3 = (float)Math.atan((double)((f1 - p_295352_) / 40.0F));
+         float f = (float)(x1 + x2) / 2.0F;
+         float f1 = (float)(y1 + y2) / 2.0F;
+-        guiGraphics.enableScissor(x1, y1, x2, y2);
+         float f2 = (float)Math.atan((double)((f - mouseX) / 40.0F));
+         float f3 = (float)Math.atan((double)((f1 - mouseY) / 40.0F));
 +        // Forge: Allow passing in direct angle components instead of mouse position
-+        renderEntityInInventoryFollowsAngle(p_282802_, p_275688_, p_275245_, p_275535_, p_294406_, p_294663_, p_275604_, f2, f3, p_275689_);
++        renderEntityInInventoryFollowsAngle(guiGraphics, x1, y1, x2, y2, scale, yOffset, f2, f3, entity);
 +    }
 +
 +    public static void renderEntityInInventoryFollowsAngle(
-+        GuiGraphics p_282802_,
-+        int p_275688_,
-+        int p_275245_,
-+        int p_275535_,
-+        int p_294406_,
-+        int p_294663_,
-+        float p_275604_,
++        GuiGraphics guiGraphics,
++        int x1,
++        int y1,
++        int x2,
++        int y2,
++        int scale,
++        float yOffset,
 +        float angleXComponent,
 +        float angleYComponent,
-+        LivingEntity p_275689_
++        LivingEntity entity
 +    ) {
-+        float f = (float)(p_275688_ + p_275535_) / 2.0F;
-+        float f1 = (float)(p_275245_ + p_294406_) / 2.0F;
-+        p_282802_.enableScissor(p_275688_, p_275245_, p_275535_, p_294406_);
++        float f = (float)(x1 + x2) / 2.0F;
++        float f1 = (float)(y1 + y2) / 2.0F;
++        guiGraphics.enableScissor(x1, y1, x2, y2);
 +        float f2 = angleXComponent;
 +        float f3 = angleYComponent;
          Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);

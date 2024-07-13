@@ -21,8 +21,8 @@
 +            return null;
 +        }
 +
-         void bindTags(Collection<TagKey<T>> p_205770_) {
-             this.tags = Set.copyOf(p_205770_);
+         void bindTags(Collection<TagKey<T>> tags) {
+             this.tags = Set.copyOf(tags);
          }
 @@ -232,6 +_,33 @@
          @Override

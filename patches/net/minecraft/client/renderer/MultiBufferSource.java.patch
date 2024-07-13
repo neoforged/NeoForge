@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/renderer/MultiBufferSource.java
++++ b/net/minecraft/client/renderer/MultiBufferSource.java
+@@ -19,8 +_,8 @@
+         return immediateWithBuffers(Object2ObjectSortedMaps.emptyMap(), sharedBuffer);
+     }
+ 
+-    static MultiBufferSource.BufferSource immediateWithBuffers(SequencedMap<RenderType, ByteBufferBuilder> fixedBuffers, ByteBufferBuilder sharedBuffer) {
+-        return new MultiBufferSource.BufferSource(sharedBuffer, fixedBuffers);
++    static MultiBufferSource.BufferSource immediateWithBuffers(SequencedMap<RenderType, ByteBufferBuilder> p_352388_, ByteBufferBuilder p_350332_) {
++        return new MultiBufferSource.BufferSource(p_350332_, p_352388_);
+     }
+ 
+     VertexConsumer getBuffer(RenderType renderType);
+@@ -33,9 +_,9 @@
+         @Nullable
+         protected RenderType lastSharedType;
+ 
+-        protected BufferSource(ByteBufferBuilder sharedBuffer, SequencedMap<RenderType, ByteBufferBuilder> fixedBuffers) {
+-            this.sharedBuffer = sharedBuffer;
+-            this.fixedBuffers = fixedBuffers;
++        protected BufferSource(ByteBufferBuilder p_350964_, SequencedMap<RenderType, ByteBufferBuilder> p_352181_) {
++            this.sharedBuffer = p_350964_;
++            this.fixedBuffers = p_352181_;
+         }
+ 
+         @Override

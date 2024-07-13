@@ -12,7 +12,7 @@
 @@ -100,6 +_,13 @@
      }
  
-     public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
+     public abstract VoxelShape getShape(FluidState state, BlockGetter level, BlockPos pos);
 +
 +    private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
 +    @Override

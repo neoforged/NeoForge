@@ -6,6 +6,6 @@
                  Cloner.Factory cloner$factory = new Cloner.Factory();
 -                RegistryDataLoader.WORLDGEN_REGISTRIES.forEach(p_311524_ -> p_311524_.runWithArguments(cloner$factory::addCodec));
 +                net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().forEach(p_311524_ -> p_311524_.runWithArguments(cloner$factory::addCodec));
-                 RegistrySetBuilder.PatchedRegistries registrysetbuilder$patchedregistries = p_309174_.buildPatch(
+                 RegistrySetBuilder.PatchedRegistries registrysetbuilder$patchedregistries = registrySetBuilder.buildPatch(
                      registryaccess$frozen, p_311522_, cloner$factory
                  );

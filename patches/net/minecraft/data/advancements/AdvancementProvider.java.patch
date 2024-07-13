@@ -16,8 +16,8 @@
                      throw new IllegalStateException("Duplicate advancement " + p_339356_.id());
                  } else {
                      Path path = this.pathProvider.json(p_339356_.id());
--                    list.add(DataProvider.saveStable(p_254268_, p_323115_, Advancement.CODEC, p_339356_.value(), path));
-+                    list.add(DataProvider.saveStable(p_254268_, p_323115_, Advancement.CODEC, p_339356_.value(), path));// TODO: make conditional
+-                    list.add(DataProvider.saveStable(output, p_323115_, Advancement.CODEC, p_339356_.value(), path));
++                    list.add(DataProvider.saveStable(output, p_323115_, Advancement.CODEC, p_339356_.value(), path));// TODO: make conditional
                  }
              };
  

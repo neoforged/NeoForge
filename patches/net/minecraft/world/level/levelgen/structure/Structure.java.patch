@@ -8,17 +8,17 @@
 +    /** Neo: Field accesses are redirected to {@link #getModifiedStructureSettings()} with a coremod. */
 +    private final Structure.StructureSettings settings;
  
-     public static <S extends Structure> RecordCodecBuilder<S, Structure.StructureSettings> settingsCodec(Instance<S> p_226568_) {
+     public static <S extends Structure> RecordCodecBuilder<S, Structure.StructureSettings> settingsCodec(Instance<S> instance) {
 -        return Structure.StructureSettings.CODEC.forGetter(p_226595_ -> p_226595_.settings);
 +        return Structure.StructureSettings.CODEC.forGetter(p_226595_ -> p_226595_.modifiableStructureInfo().getOriginalStructureInfo().structureSettings()); // FORGE: Patch codec to ignore field redirect coremods.
      }
  
-     public static <S extends Structure> MapCodec<S> simpleCodec(Function<Structure.StructureSettings, S> p_226608_) {
+     public static <S extends Structure> MapCodec<S> simpleCodec(Function<Structure.StructureSettings, S> factory) {
 @@ -54,6 +_,7 @@
  
-     protected Structure(Structure.StructureSettings p_226558_) {
-         this.settings = p_226558_;
-+        this.modifiableStructureInfo = new net.neoforged.neoforge.common.world.ModifiableStructureInfo(new net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo(p_226558_)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
+     protected Structure(Structure.StructureSettings settings) {
+         this.settings = settings;
++        this.modifiableStructureInfo = new net.neoforged.neoforge.common.world.ModifiableStructureInfo(new net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo(settings)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
      }
  
      public HolderSet<Biome> biomes() {

@@ -2,19 +2,19 @@
 +++ b/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
 @@ -32,13 +_,16 @@
  
-             Material material = p_111672_.getMaterial(s);
+             Material material = model.getMaterial(s);
              map.put(s, Either.left(material));
--            SpriteContents spritecontents = p_111671_.apply(material).contents();
+-            SpriteContents spritecontents = spriteGetter.apply(material).contents();
 -            list.addAll(this.processFrames(i, s, spritecontents));
-+            TextureAtlasSprite sprite = p_111671_.apply(material);
++            TextureAtlasSprite sprite = spriteGetter.apply(material);
 +            // Neo: fix MC-73186 on generated item models
 +            list.addAll(net.neoforged.neoforge.client.ClientHooks.fixItemModelSeams(this.processFrames(i, s, sprite.contents()), sprite));
          }
  
-         map.put("particle", p_111672_.hasTexture("particle") ? Either.left(p_111672_.getMaterial("particle")) : map.get("layer0"));
-         BlockModel blockmodel = new BlockModel(null, list, map, false, p_111672_.getGuiLight(), p_111672_.getTransforms(), p_111672_.getOverrides());
-         blockmodel.name = p_111672_.name;
-+        blockmodel.customData.copyFrom(p_111672_.customData);
+         map.put("particle", model.hasTexture("particle") ? Either.left(model.getMaterial("particle")) : map.get("layer0"));
+         BlockModel blockmodel = new BlockModel(null, list, map, false, model.getGuiLight(), model.getTransforms(), model.getOverrides());
+         blockmodel.name = model.name;
++        blockmodel.customData.copyFrom(model.customData);
 +        blockmodel.customData.setGui3d(false);
          return blockmodel;
      }

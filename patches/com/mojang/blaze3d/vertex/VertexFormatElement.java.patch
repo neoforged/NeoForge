@@ -1,7 +1,7 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormatElement.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormatElement.java
 @@ -78,6 +_,15 @@
-         return ELEMENTS.stream().filter(p_350573_ -> p_350573_ != null && (p_350349_ & p_350573_.mask()) != 0);
+         return ELEMENTS.stream().filter(p_350573_ -> p_350573_ != null && (mask & p_350573_.mask()) != 0);
      }
  
 +    public static int findNextId() {
@@ -29,7 +29,7 @@
 @@ -163,6 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          public interface SetupState {
-             void setupBufferState(int p_167053_, int p_167054_, int p_167055_, long p_167056_, int p_167057_);
+             void setupBufferState(int size, int type, int stride, long pointer, int index);
 +        }
 +
 +        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {

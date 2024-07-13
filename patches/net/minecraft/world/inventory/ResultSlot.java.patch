@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/inventory/ResultSlot.java
 +++ b/net/minecraft/world/inventory/ResultSlot.java
 @@ -47,6 +_,7 @@
-     protected void checkTakeAchievements(ItemStack p_40185_) {
+     protected void checkTakeAchievements(ItemStack stack) {
          if (this.removeCount > 0) {
-             p_40185_.onCraftedBy(this.player.level(), this.player, this.removeCount);
-+            net.neoforged.neoforge.event.EventHooks.firePlayerCraftingEvent(this.player, p_40185_, this.craftSlots);
+             stack.onCraftedBy(this.player.level(), this.player, this.removeCount);
++            net.neoforged.neoforge.event.EventHooks.firePlayerCraftingEvent(this.player, stack, this.craftSlots);
          }
  
          if (this.container instanceof RecipeCraftingHolder recipecraftingholder) {
@@ -12,8 +12,8 @@
          CraftingInput craftinginput = craftinginput$positioned.input();
          int i = craftinginput$positioned.left();
          int j = craftinginput$positioned.top();
-+        net.neoforged.neoforge.common.CommonHooks.setCraftingPlayer(p_150638_);
-         NonNullList<ItemStack> nonnulllist = p_150638_.level().getRecipeManager().getRemainingItemsFor(RecipeType.CRAFTING, craftinginput, p_150638_.level());
++        net.neoforged.neoforge.common.CommonHooks.setCraftingPlayer(player);
+         NonNullList<ItemStack> nonnulllist = player.level().getRecipeManager().getRemainingItemsFor(RecipeType.CRAFTING, craftinginput, player.level());
 +        net.neoforged.neoforge.common.CommonHooks.setCraftingPlayer(null);
  
          for (int k = 0; k < craftinginput.height(); k++) {

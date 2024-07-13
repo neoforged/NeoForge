@@ -8,11 +8,11 @@
          private long currentSectionKey;
          private EntitySection<T> currentSection;
  
-         Callback(T p_157673_, long p_157674_, EntitySection<T> p_157675_) {
-             this.entity = p_157673_;
-+            this.realEntity = p_157673_ instanceof Entity ? (Entity) p_157673_ : null;
-             this.currentSectionKey = p_157674_;
-             this.currentSection = p_157675_;
+         Callback(T entity, long section, EntitySection<T> currentSection) {
+             this.entity = entity;
++            this.realEntity = entity instanceof Entity ? (Entity) entity : null;
+             this.currentSectionKey = section;
+             this.currentSection = currentSection;
          }
 @@ -107,6 +_,7 @@
                  TransientEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);

@@ -20,10 +20,8 @@
 +    private final java.util.function.Supplier<SoundEvent> soundSupplier;
  
 +    @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-     private DamageEffects(String p_270875_, SoundEvent p_270383_) {
--        this.id = p_270875_;
--        this.sound = p_270383_;
-+        this(p_270875_, () -> p_270383_);
+     private DamageEffects(String id, SoundEvent sound) {
++        this(id, () -> sound);
 +    }
 +
 +    /**
@@ -41,7 +39,8 @@
 +     * @apiNote This method must be called as early as possible, as if {@link #CODEC} is resolved before this is called, it will be unusable.
 +     */
 +    private DamageEffects(String id, java.util.function.Supplier<SoundEvent> sound) {
-+        this.id = id;
+         this.id = id;
+-        this.sound = sound;
 +        this.soundSupplier = sound;
 +        this.sound = null;
      }

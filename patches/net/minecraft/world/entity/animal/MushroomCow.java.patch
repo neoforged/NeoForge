@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
 @@ -165,8 +_,10 @@
-     public void shear(SoundSource p_28924_) {
-         this.level().playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);
+     public void shear(SoundSource category) {
+         this.level().playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, category, 1.0F, 1.0F);
          if (!this.level().isClientSide()) {
 +            if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.COW, (timer) -> {})) return;
              Cow cow = EntityType.COW.create(this.level());

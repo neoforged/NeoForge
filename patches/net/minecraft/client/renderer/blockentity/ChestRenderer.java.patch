@@ -3,16 +3,16 @@
 @@ -128,7 +_,7 @@
              f1 = 1.0F - f1;
              f1 = 1.0F - f1 * f1 * f1;
-             int i = neighborcombineresult.apply(new BrightnessCombiner<>()).applyAsInt(p_112367_);
--            Material material = Sheets.chooseMaterial(p_112363_, chesttype, this.xmasTextures);
-+            Material material = this.getMaterial(p_112363_, chesttype);
-             VertexConsumer vertexconsumer = material.buffer(p_112366_, RenderType::entityCutout);
+             int i = neighborcombineresult.apply(new BrightnessCombiner<>()).applyAsInt(packedLight);
+-            Material material = Sheets.chooseMaterial(blockEntity, chesttype, this.xmasTextures);
++            Material material = this.getMaterial(blockEntity, chesttype);
+             VertexConsumer vertexconsumer = material.buffer(bufferSource, RenderType::entityCutout);
              if (flag1) {
                  if (chesttype == ChestType.LEFT) {
 @@ -159,5 +_,15 @@
-         p_112372_.render(p_112370_, p_112371_, p_112376_, p_112377_);
-         p_112373_.render(p_112370_, p_112371_, p_112376_, p_112377_);
-         p_112374_.render(p_112370_, p_112371_, p_112376_, p_112377_);
+         lidPart.render(poseStack, consumer, packedLight, packedOverlay);
+         lockPart.render(poseStack, consumer, packedLight, packedOverlay);
+         bottomPart.render(poseStack, consumer, packedLight, packedOverlay);
 +    }
 +
 +    protected Material getMaterial(T blockEntity, ChestType chestType) {

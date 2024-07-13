@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 @@ -56,4 +_,10 @@
-         this.model.renderToBuffer(p_112480_, vertexconsumer, p_112482_, p_112483_);
-         p_112480_.popPose();
+         this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, packedOverlay);
+         poseStack.popPose();
      }
 +
 +    @Override

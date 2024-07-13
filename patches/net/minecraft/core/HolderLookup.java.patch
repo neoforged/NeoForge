@@ -8,7 +8,7 @@
 +    public interface Provider extends net.neoforged.neoforge.common.extensions.IHolderLookupProviderExtension {
          Stream<ResourceKey<? extends Registry<?>>> listRegistries();
  
-         <T> Optional<HolderLookup.RegistryLookup<T>> lookup(ResourceKey<? extends Registry<? extends T>> p_256285_);
+         <T> Optional<HolderLookup.RegistryLookup<T>> lookup(ResourceKey<? extends Registry<? extends T>> registryKey);
 @@ -96,6 +_,11 @@
              };
          }

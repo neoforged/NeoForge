@@ -6,6 +6,6 @@
  
 -public interface ServerCommonPacketListener extends ServerCookiePacketListener, ServerPacketListener {
 +public interface ServerCommonPacketListener extends ServerCookiePacketListener, ServerPacketListener, net.neoforged.neoforge.common.extensions.IServerCommonPacketListenerExtension {
-     void handleKeepAlive(ServerboundKeepAlivePacket p_296457_);
+     void handleKeepAlive(ServerboundKeepAlivePacket packet);
  
-     void handlePong(ServerboundPongPacket p_294309_);
+     void handlePong(ServerboundPongPacket packet);

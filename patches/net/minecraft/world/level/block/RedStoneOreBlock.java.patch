@@ -2,10 +2,10 @@
 +++ b/net/minecraft/world/level/block/RedStoneOreBlock.java
 @@ -87,9 +_,14 @@
      @Override
-     protected void spawnAfterBreak(BlockState p_221907_, ServerLevel p_221908_, BlockPos p_221909_, ItemStack p_221910_, boolean p_221911_) {
-         super.spawnAfterBreak(p_221907_, p_221908_, p_221909_, p_221910_, p_221911_);
--        if (p_221911_) {
--            this.tryDropExperience(p_221908_, p_221909_, p_221910_, UniformInt.of(1, 5));
+     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack, boolean dropExperience) {
+         super.spawnAfterBreak(state, level, pos, stack, dropExperience);
+-        if (dropExperience) {
+-            this.tryDropExperience(level, pos, stack, UniformInt.of(1, 5));
 -        }
 +    }
 +

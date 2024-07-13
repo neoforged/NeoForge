@@ -11,25 +11,25 @@
                  .apply(p_344669_, LootPool::new)
      );
 @@ -50,7 +_,8 @@
-         List<LootItemCondition> p_299316_,
-         List<LootItemFunction> p_298954_,
-         NumberProvider p_165131_,
--        NumberProvider p_165132_
-+        NumberProvider p_165132_,
+         List<LootItemCondition> conditions,
+         List<LootItemFunction> functions,
+         NumberProvider rolls,
+-        NumberProvider bonusRolls
++        NumberProvider bonusRolls,
 +        java.util.Optional<String> name
      ) {
-         this.entries = p_298764_;
-         this.conditions = p_299316_;
+         this.entries = entries;
+         this.conditions = conditions;
 @@ -59,6 +_,7 @@
-         this.compositeFunction = LootItemFunctions.compose(p_298954_);
-         this.rolls = p_165131_;
-         this.bonusRolls = p_165132_;
+         this.compositeFunction = LootItemFunctions.compose(functions);
+         this.rolls = rolls;
+         this.bonusRolls = bonusRolls;
 +        this.name = name.orElse(null);
      }
  
-     private void addRandomItem(Consumer<ItemStack> p_79059_, LootContext p_79060_) {
+     private void addRandomItem(Consumer<ItemStack> stackConsumer, LootContext context) {
 @@ -122,6 +_,57 @@
-         this.bonusRolls.validate(p_79052_.forChild(".bonusRolls"));
+         this.bonusRolls.validate(context.forChild(".bonusRolls"));
      }
  
 +    // Neo: Implement LootPool freezing to prevent manipulation outside of Neo APIs
@@ -93,8 +93,8 @@
 +        @org.jetbrains.annotations.Nullable
 +        private String name;
  
-         public LootPool.Builder setRolls(NumberProvider p_165134_) {
-             this.rolls = p_165134_;
+         public LootPool.Builder setRolls(NumberProvider rolls) {
+             this.rolls = rolls;
 @@ -162,8 +_,13 @@
              return this;
          }

@@ -28,4 +28,4 @@
 +        }
      }
  
-     public Transformation slerp(Transformation p_175938_, float p_175939_) {
+     public Transformation slerp(Transformation transformation, float delta) {

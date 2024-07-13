@@ -13,12 +13,12 @@
 +    /**
 +     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant}
 +     */
-     protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_) {
--        this(p_256596_, p_255886_, p_256513_, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()));
-+        this(p_256596_, p_255886_, p_256513_, "vanilla", null);
+     protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+-        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()));
++        this(output, registryKey, lookupProvider, "vanilla", null);
 +    }
-+    protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-+        this(p_256596_, p_255886_, p_256513_, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()), modId, existingFileHelper);
++    protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
++        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()), modId, existingFileHelper);
      }
  
 +    /**
@@ -26,22 +26,22 @@
 +     */
 +    @Deprecated
      protected TagsProvider(
-         PackOutput p_275432_,
-         ResourceKey<? extends Registry<T>> p_275476_,
-         CompletableFuture<HolderLookup.Provider> p_275222_,
-         CompletableFuture<TagsProvider.TagLookup<T>> p_275565_
+         PackOutput output,
+         ResourceKey<? extends Registry<T>> registryKey,
+         CompletableFuture<HolderLookup.Provider> lookupProvider,
+         CompletableFuture<TagsProvider.TagLookup<T>> parentProvider
      ) {
-+        this(p_275432_, p_275476_, p_275222_, p_275565_, "vanilla", null);
++        this(output, registryKey, lookupProvider, parentProvider, "vanilla", null);
 +    }
-+    protected TagsProvider(PackOutput p_275432_, ResourceKey<? extends Registry<T>> p_275476_, CompletableFuture<HolderLookup.Provider> p_275222_, CompletableFuture<TagsProvider.TagLookup<T>> p_275565_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-         this.pathProvider = p_275432_.createRegistryTagsPathProvider(p_275476_);
-         this.registryKey = p_275476_;
-         this.parentProvider = p_275565_;
-         this.lookupProvider = p_275222_;
++    protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<T>> parentProvider, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
+         this.pathProvider = output.createRegistryTagsPathProvider(registryKey);
+         this.registryKey = registryKey;
+         this.parentProvider = parentProvider;
+         this.lookupProvider = lookupProvider;
 +        this.modId = modId;
 +        this.existingFileHelper = existingFileHelper;
-+        this.resourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.minecraft.core.registries.Registries.tagsDirPath(p_275476_));
-+        this.elementResourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_275476_.location()));
++        this.resourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.minecraft.core.registries.Registries.tagsDirPath(registryKey));
++        this.elementResourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.neoforged.neoforge.common.CommonHooks.prefixNamespace(registryKey.location()));
 +    }
 +
 +    // Forge: Allow customizing the path for a given tag or returning null
@@ -56,7 +56,7 @@
 +        return "Tags for " + this.registryKey.location() + " mod id " + this.modId;
      }
  
-     protected abstract void addTags(HolderLookup.Provider p_256380_);
+     protected abstract void addTags(HolderLookup.Provider provider);
 @@ -84,7 +_,10 @@
                                      ResourceLocation resourcelocation = p_323138_.getKey();
                                      TagBuilder tagbuilder = p_323138_.getValue();
@@ -74,11 +74,11 @@
                                          );
                                      } else {
 -                                        Path path = this.pathProvider.json(resourcelocation);
--                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, false), path);
+-                                        return DataProvider.saveStable(output, p_323140_.contents, TagFile.CODEC, new TagFile(list, false), path);
 +                                        Path path = this.getPath(resourcelocation);
 +                                        if (path == null) return CompletableFuture.completedFuture(null); // Neo: Allow running this data provider without writing it. Recipe provider needs valid tags.
 +                                        var removed = tagbuilder.getRemoveEntries().toList();
-+                                        return DataProvider.saveStable(p_253684_, p_323140_.contents, TagFile.CODEC, new TagFile(list, tagbuilder.isReplace(), removed), path);
++                                        return DataProvider.saveStable(output, p_323140_.contents, TagFile.CODEC, new TagFile(list, tagbuilder.isReplace(), removed), path);
                                      }
                                  }
                              )
@@ -95,17 +95,17 @@
 +        return false;
 +    }
 +
-     protected TagsProvider.TagAppender<T> tag(TagKey<T> p_206425_) {
-         TagBuilder tagbuilder = this.getOrCreateRawBuilder(p_206425_);
+     protected TagsProvider.TagAppender<T> tag(TagKey<T> tag) {
+         TagBuilder tagbuilder = this.getOrCreateRawBuilder(tag);
 -        return new TagsProvider.TagAppender<>(tagbuilder);
 +        return new TagsProvider.TagAppender<>(tagbuilder, modId);
      }
  
-     protected TagBuilder getOrCreateRawBuilder(TagKey<T> p_236452_) {
+     protected TagBuilder getOrCreateRawBuilder(TagKey<T> tag) {
 +        if (existingFileHelper != null) {
-+            existingFileHelper.trackGenerated(p_236452_.location(), resourceType);
++            existingFileHelper.trackGenerated(tag.location(), resourceType);
 +        }
-         return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
+         return this.builders.computeIfAbsent(tag.location(), p_236442_ -> TagBuilder.create());
      }
  
 @@ -127,11 +_,13 @@
@@ -117,17 +117,17 @@
          private final TagBuilder builder;
 +        private final String modId;
  
--        protected TagAppender(TagBuilder p_256426_) {
--            this.builder = p_256426_;
+-        protected TagAppender(TagBuilder builder) {
+-            this.builder = builder;
 +        protected TagAppender(TagBuilder p_236454_, String modId) {
 +            this.builder = p_236454_;
 +            this.modId = modId;
          }
  
-         public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
+         public final TagsProvider.TagAppender<T> add(ResourceKey<T> key) {
 @@ -169,6 +_,19 @@
-         public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation p_176842_) {
-             this.builder.addOptionalTag(p_176842_);
+         public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation location) {
+             this.builder.addOptionalTag(location);
              return this;
 +        }
 +

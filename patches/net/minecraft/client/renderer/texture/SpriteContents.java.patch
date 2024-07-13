@@ -8,19 +8,19 @@
 +        return this.originalImage;
 +    }
 +
-     public void increaseMipLevel(int p_248864_) {
+     public void increaseMipLevel(int mipLevel) {
          try {
-             this.byMipLevel = MipmapGenerator.generateMipLevels(this.byMipLevel, p_248864_);
+             this.byMipLevel = MipmapGenerator.generateMipLevels(this.byMipLevel, mipLevel);
 @@ -120,6 +_,10 @@
  
-     void upload(int p_248895_, int p_250245_, int p_250458_, int p_251337_, NativeImage[] p_248825_) {
+     void upload(int x, int y, int frameX, int frameY, NativeImage[] atlasData) {
          for (int i = 0; i < this.byMipLevel.length; i++) {
 +            // Forge: Skip uploading if the texture would be made invalid by mip level
 +            if ((this.width >> i) <= 0 || (this.height >> i) <= 0)
 +                break;
 +
-             p_248825_[i]
-                 .upload(i, p_248895_ >> i, p_250245_ >> i, p_250458_ >> i, p_251337_ >> i, this.width >> i, this.height >> i, this.byMipLevel.length > 1, false);
+             atlasData[i]
+                 .upload(i, x >> i, y >> i, frameX >> i, frameY >> i, this.width >> i, this.height >> i, this.byMipLevel.length > 1, false);
          }
 @@ -242,7 +_,8 @@
              for (int i = 0; i < this.activeFrame.length; i++) {

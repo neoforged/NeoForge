@@ -7,5 +7,5 @@
 -public interface LevelReader extends BlockAndTintGetter, CollisionGetter, SignalGetter, BiomeManager.NoiseBiomeSource {
 +public interface LevelReader extends BlockAndTintGetter, CollisionGetter, SignalGetter, BiomeManager.NoiseBiomeSource, net.neoforged.neoforge.common.extensions.ILevelReaderExtension {
      @Nullable
-     ChunkAccess getChunk(int p_46823_, int p_46824_, ChunkStatus p_330944_, boolean p_46826_);
+     ChunkAccess getChunk(int x, int z, ChunkStatus chunkStatus, boolean requireChunk);
  

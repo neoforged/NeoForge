@@ -6,8 +6,8 @@
  
 +    /** Neo: mixins targeting this method won't fire for container screens as {@link net.minecraft.client.gui.screens.inventory.AbstractContainerScreen#render} replicates this method in place of a super call to insert an event */
      @Override
-     public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
-         this.renderBackground(p_281549_, p_281550_, p_282878_, p_282465_);
+     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 @@ -201,7 +_,7 @@
      }
  
@@ -16,10 +16,10 @@
 +        this.minecraft.popGuiLayer();
      }
  
-     protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
+     protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
 @@ -312,8 +_,11 @@
-         this.width = p_96608_;
-         this.height = p_96609_;
+         this.width = width;
+         this.height = height;
          if (!this.initialized) {
 +            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Pre(this, this.children, this::addEventWidget, this::removeWidget)).isCanceled()) {
              this.init();
@@ -43,26 +43,26 @@
      @Override
 @@ -354,6 +_,7 @@
  
-         this.renderBlurredBackground(p_294317_);
-         this.renderMenuBackground(p_283688_);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.BackgroundRendered(this, p_283688_));
+         this.renderBlurredBackground(partialTick);
+         this.renderMenuBackground(guiGraphics);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.BackgroundRendered(this, guiGraphics));
      }
  
-     protected void renderBlurredBackground(float p_330683_) {
+     protected void renderBlurredBackground(float partialTick) {
 @@ -467,6 +_,10 @@
-     public void onFilesDrop(List<Path> p_96591_) {
+     public void onFilesDrop(List<Path> packs) {
      }
  
 +    public Minecraft getMinecraft() {
 +        return this.minecraft;
 +    }
 +
-     private void scheduleNarration(long p_169381_, boolean p_169382_) {
-         this.nextNarrationTime = Util.getMillis() + p_169381_;
-         if (p_169382_) {
+     private void scheduleNarration(long delay, boolean stopSuppression) {
+         this.nextNarrationTime = Util.getMillis() + delay;
+         if (stopSuppression) {
 @@ -643,5 +_,13 @@
-             this.index = p_169425_;
-             this.priority = p_169426_;
+             this.index = index;
+             this.priority = priority;
          }
 +    }
 +

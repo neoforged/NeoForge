@@ -28,74 +28,74 @@
 +        initClient();
      }
  
-     public static boolean isExceptionForConnection(BlockState p_152464_) {
+     public static boolean isExceptionForConnection(BlockState state) {
 @@ -208,6 +_,8 @@
-         BlockState blockstate = p_152446_.getBlockState(p_152449_);
-         if (p_152445_.skipRendering(blockstate, p_152448_)) {
+         BlockState blockstate = level.getBlockState(pos);
+         if (state.skipRendering(blockstate, face)) {
              return false;
-+        } else if (blockstate.hidesNeighborFace(p_152446_, p_152449_, p_152445_, p_152448_.getOpposite()) && p_152445_.supportsExternalFaceHiding()) {
++        } else if (blockstate.hidesNeighborFace(level, pos, state, face.getOpposite()) && state.supportsExternalFaceHiding()) {
 +            return false;
          } else if (blockstate.canOcclude()) {
-             Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(p_152445_, blockstate, p_152448_);
+             Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(state, blockstate, face);
              Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> object2bytelinkedopenhashmap = OCCLUSION_CACHE.get();
 @@ -281,24 +_,30 @@
  
-     public static void dropResources(BlockState p_49951_, Level p_49952_, BlockPos p_49953_) {
-         if (p_49952_ instanceof ServerLevel) {
+     public static void dropResources(BlockState state, Level level, BlockPos pos) {
+         if (level instanceof ServerLevel) {
 +            beginCapturingDrops();
-             getDrops(p_49951_, (ServerLevel)p_49952_, p_49953_, null).forEach(p_152406_ -> popResource(p_49952_, p_49953_, p_152406_));
--            p_49951_.spawnAfterBreak((ServerLevel)p_49952_, p_49953_, ItemStack.EMPTY, true);
+             getDrops(state, (ServerLevel)level, pos, null).forEach(p_152406_ -> popResource(level, pos, p_152406_));
+-            state.spawnAfterBreak((ServerLevel)level, pos, ItemStack.EMPTY, true);
 +            List<ItemEntity> captured = stopCapturingDrops();
-+            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) p_49952_, p_49953_, p_49951_, null, captured, null, ItemStack.EMPTY);
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) level, pos, state, null, captured, null, ItemStack.EMPTY);
          }
      }
  
-     public static void dropResources(BlockState p_49893_, LevelAccessor p_49894_, BlockPos p_49895_, @Nullable BlockEntity p_49896_) {
-         if (p_49894_ instanceof ServerLevel) {
+     public static void dropResources(BlockState state, LevelAccessor level, BlockPos pos, @Nullable BlockEntity blockEntity) {
+         if (level instanceof ServerLevel) {
 +            beginCapturingDrops();
-             getDrops(p_49893_, (ServerLevel)p_49894_, p_49895_, p_49896_).forEach(p_49859_ -> popResource((ServerLevel)p_49894_, p_49895_, p_49859_));
--            p_49893_.spawnAfterBreak((ServerLevel)p_49894_, p_49895_, ItemStack.EMPTY, true);
+             getDrops(state, (ServerLevel)level, pos, blockEntity).forEach(p_49859_ -> popResource((ServerLevel)level, pos, p_49859_));
+-            state.spawnAfterBreak((ServerLevel)level, pos, ItemStack.EMPTY, true);
 +            List<ItemEntity> captured = stopCapturingDrops();
-+            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) p_49894_, p_49895_, p_49893_, p_49896_, captured, null, ItemStack.EMPTY);
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) level, pos, state, blockEntity, captured, null, ItemStack.EMPTY);
          }
      }
  
      public static void dropResources(
--        BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
-+            BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
+-        BlockState state, Level level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack tool
++            BlockState state, Level level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack tool
      ) {
-         if (p_49883_ instanceof ServerLevel) {
+         if (level instanceof ServerLevel) {
 +            beginCapturingDrops();
-             getDrops(p_49882_, (ServerLevel)p_49883_, p_49884_, p_49885_, p_49886_, p_49887_).forEach(p_49944_ -> popResource(p_49883_, p_49884_, p_49944_));
--            p_49882_.spawnAfterBreak((ServerLevel)p_49883_, p_49884_, p_49887_, true);
+             getDrops(state, (ServerLevel)level, pos, blockEntity, entity, tool).forEach(p_49944_ -> popResource(level, pos, p_49944_));
+-            state.spawnAfterBreak((ServerLevel)level, pos, tool, true);
 +            List<ItemEntity> captured = stopCapturingDrops();
-+            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) p_49883_, p_49884_, p_49882_, p_49885_, captured, p_49886_, p_49887_);
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops((ServerLevel) level, pos, state, blockEntity, captured, entity, tool);
          }
      }
  
 @@ -326,19 +_,26 @@
      }
  
-     private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
--        if (!p_152441_.isClientSide && !p_152443_.isEmpty() && p_152441_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-+        if (!p_152441_.isClientSide && !p_152443_.isEmpty() && p_152441_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !p_152441_.restoringBlockSnapshots) {
-             ItemEntity itementity = p_152442_.get();
+     private static void popResource(Level level, Supplier<ItemEntity> itemEntitySupplier, ItemStack stack) {
+-        if (!level.isClientSide && !stack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
++        if (!level.isClientSide && !stack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !level.restoringBlockSnapshots) {
+             ItemEntity itementity = itemEntitySupplier.get();
              itementity.setDefaultPickUpDelay();
--            p_152441_.addFreshEntity(itementity);
+-            level.addFreshEntity(itementity);
 +            // Neo: Add drops to the captured list if capturing is enabled.
 +            if (capturedDrops != null) {
 +                capturedDrops.add(itementity);
 +            }
 +            else {
-+                p_152441_.addFreshEntity(itementity);
++                level.addFreshEntity(itementity);
 +            }
          }
      }
  
-     public void popExperience(ServerLevel p_49806_, BlockPos p_49807_, int p_49808_) {
--        if (p_49806_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-+        if (p_49806_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !p_49806_.restoringBlockSnapshots) {
-             ExperienceOrb.award(p_49806_, Vec3.atCenterOf(p_49807_), p_49808_);
+     public void popExperience(ServerLevel level, BlockPos pos, int amount) {
+-        if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
++        if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !level.restoringBlockSnapshots) {
+             ExperienceOrb.award(level, Vec3.atCenterOf(pos), amount);
          }
      }
  
@@ -105,25 +105,25 @@
      }
 @@ -385,8 +_,10 @@
  
-     public void updateEntityAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
-         p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0, 0.0, 1.0));
-+        p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
+     public void updateEntityAfterFallOn(BlockGetter level, Entity entity) {
+         entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0, 0.0, 1.0));
++        entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
      }
  
 +    @Deprecated //Forge: Use more sensitive version
-     public ItemStack getCloneItemStack(LevelReader p_304395_, BlockPos p_49824_, BlockState p_49825_) {
+     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
          return new ItemStack(this);
      }
 @@ -420,6 +_,7 @@
-     public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
+     public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {
      }
  
 +    @Deprecated //Forge: Use more sensitive version
-     public boolean dropFromExplosion(Explosion p_49826_) {
+     public boolean dropFromExplosion(Explosion explosion) {
          return true;
      }
 @@ -485,6 +_,62 @@
-         return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
+         return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), shapeGetter));
      }
  
 +    /**

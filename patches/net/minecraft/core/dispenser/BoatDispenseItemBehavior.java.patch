@@ -3,9 +3,9 @@
 @@ -35,21 +_,22 @@
          double d2 = vec3.y() + (double)((float)direction.getStepY() * 1.125F);
          double d3 = vec3.z() + (double)direction.getStepZ() * d0;
-         BlockPos blockpos = p_302460_.pos().relative(direction);
+         BlockPos blockpos = blockSource.pos().relative(direction);
 +        Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(serverlevel, d1, d2, d3) : new Boat(serverlevel, d1, d2, d3));
-+        EntityType.<Boat>createDefaultStackConfig(serverlevel, p_123376_, null).accept(boat);
++        EntityType.<Boat>createDefaultStackConfig(serverlevel, item, null).accept(boat);
 +        boat.setVariant(this.type);
 +        boat.setYRot(direction.toYRot());
          double d4;
@@ -15,17 +15,17 @@
          } else {
 -            if (!serverlevel.getBlockState(blockpos).isAir() || !serverlevel.getFluidState(blockpos.below()).is(FluidTags.WATER)) {
 +            if (!serverlevel.getBlockState(blockpos).isAir() || !boat.canBoatInFluid(serverlevel.getFluidState(blockpos.below()))) {
-                 return this.defaultDispenseItemBehavior.dispense(p_302460_, p_123376_);
+                 return this.defaultDispenseItemBehavior.dispense(blockSource, item);
              }
  
              d4 = 0.0;
          }
  
 -        Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(serverlevel, d1, d2 + d4, d3) : new Boat(serverlevel, d1, d2 + d4, d3));
--        EntityType.<Boat>createDefaultStackConfig(serverlevel, p_123376_, null).accept(boat);
+-        EntityType.<Boat>createDefaultStackConfig(serverlevel, item, null).accept(boat);
 -        boat.setVariant(this.type);
 -        boat.setYRot(direction.toYRot());
 +        boat.setPos(d1, d2 + d4, d3);
          serverlevel.addFreshEntity(boat);
-         p_123376_.shrink(1);
-         return p_123376_;
+         item.shrink(1);
+         return item;

@@ -7,6 +7,6 @@
 +            // Neo: set the chest to attacking_entity for loot context.
 +            if (this instanceof AbstractMinecartContainer entityContainer)
 +                lootparams$builder.withParameter(LootContextParams.ATTACKING_ENTITY, entityContainer);
-             if (p_219950_ != null) {
-                 lootparams$builder.withLuck(p_219950_.getLuck()).withParameter(LootContextParams.THIS_ENTITY, p_219950_);
+             if (player != null) {
+                 lootparams$builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
              }

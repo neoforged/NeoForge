@@ -3,9 +3,9 @@
 @@ -28,7 +_,7 @@
          }
  
-         if (!p_41349_.isClientSide) {
--            p_41350_.removeEffect(MobEffects.POISON);
-+            p_41350_.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.HONEY);
+         if (!level.isClientSide) {
+-            entityLiving.removeEffect(MobEffects.POISON);
++            entityLiving.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.HONEY);
          }
  
-         if (p_41348_.isEmpty()) {
+         if (stack.isEmpty()) {

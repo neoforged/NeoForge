@@ -14,5 +14,5 @@
  
 -            this.fadeOutStart = Util.getMillis();
              if (this.minecraft.screen != null) {
-                 this.minecraft.screen.init(this.minecraft, p_281839_.guiWidth(), p_281839_.guiHeight());
+                 this.minecraft.screen.init(this.minecraft, guiGraphics.guiWidth(), guiGraphics.guiHeight());
              }

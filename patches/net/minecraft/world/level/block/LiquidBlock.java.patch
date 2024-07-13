@@ -3,23 +3,23 @@
 @@ -134,7 +_,7 @@
  
      @Override
-     protected void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
--        if (this.shouldSpreadLiquid(p_54755_, p_54756_, p_54754_)) {
-+        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54755_, p_54756_)) {
-             p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.fluid.getTickDelay(p_54755_));
+     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+-        if (this.shouldSpreadLiquid(level, pos, state)) {
++        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(level, pos)) {
+             level.scheduleTick(pos, state.getFluidState().getType(), this.fluid.getTickDelay(level));
          }
      }
 @@ -150,11 +_,12 @@
  
      @Override
-     protected void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, BlockPos p_54713_, boolean p_54714_) {
--        if (this.shouldSpreadLiquid(p_54710_, p_54711_, p_54709_)) {
-+        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54710_, p_54711_)) {
-             p_54710_.scheduleTick(p_54711_, p_54709_.getFluidState().getType(), this.fluid.getTickDelay(p_54710_));
+     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+-        if (this.shouldSpreadLiquid(level, pos, state)) {
++        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(level, pos)) {
+             level.scheduleTick(pos, state.getFluidState().getType(), this.fluid.getTickDelay(level));
          }
      }
  
 +    @Deprecated // FORGE: Use FluidInteractionRegistry#canInteract instead
-     private boolean shouldSpreadLiquid(Level p_54697_, BlockPos p_54698_, BlockState p_54699_) {
+     private boolean shouldSpreadLiquid(Level level, BlockPos pos, BlockState state) {
          if (this.fluid.is(FluidTags.LAVA)) {
-             boolean flag = p_54697_.getBlockState(p_54698_.below()).is(Blocks.SOUL_SOIL);
+             boolean flag = level.getBlockState(pos.below()).is(Blocks.SOUL_SOIL);

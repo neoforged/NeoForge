@@ -12,16 +12,16 @@
 @@ -105,11 +_,13 @@
      VibrationSystem.User getVibrationUser();
  
-     static int getGameEventFrequency(Holder<GameEvent> p_316300_) {
--        return p_316300_.unwrapKey().map(VibrationSystem::getGameEventFrequency).orElse(0);
-+        var data = p_316300_.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VIBRATION_FREQUENCIES);
+     static int getGameEventFrequency(Holder<GameEvent> gameEvent) {
+-        return gameEvent.unwrapKey().map(VibrationSystem::getGameEventFrequency).orElse(0);
++        var data = gameEvent.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VIBRATION_FREQUENCIES);
 +        return data != null ? data.frequency() : 0;
      }
  
-     static int getGameEventFrequency(ResourceKey<GameEvent> p_316800_) {
--        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_316800_);
-+        var holder = net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.getHolder(p_316800_);
+     static int getGameEventFrequency(ResourceKey<GameEvent> eventKey) {
+-        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(eventKey);
++        var holder = net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.getHolder(eventKey);
 +        return holder.map(VibrationSystem::getGameEventFrequency).orElse(0);
      }
  
-     static ResourceKey<GameEvent> getResonanceEventByFrequency(int p_282105_) {
+     static ResourceKey<GameEvent> getResonanceEventByFrequency(int frequency) {

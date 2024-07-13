@@ -42,8 +42,8 @@
  
      @Nullable
 @@ -363,6 +_,12 @@
-     public EntityDimensions getDefaultDimensions(Pose p_316359_) {
-         return super.getDefaultDimensions(p_316359_).scale((float)this.getSize());
+     public EntityDimensions getDefaultDimensions(Pose pose) {
+         return super.getDefaultDimensions(pose).scale((float)this.getSize());
      }
 +
 +    /**

@@ -3,9 +3,9 @@
 @@ -35,7 +_,7 @@
  
      @Override
-     public void sendSystemMessage(Component p_215653_) {
--        this.buffer.append(p_215653_.getString());
-+        this.buffer.append(p_215653_.getString()).append("\n"); // FIX MC-7569 - RCON has no newlines in multiline output
+     public void sendSystemMessage(Component component) {
+-        this.buffer.append(component.getString());
++        this.buffer.append(component.getString()).append("\n"); // FIX MC-7569 - RCON has no newlines in multiline output
      }
  
      @Override

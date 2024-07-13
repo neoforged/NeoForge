@@ -4,22 +4,22 @@
              }
          }
  
--        if (this.shouldShowName(p_114485_)) {
--            this.renderNameTag(p_114485_, p_114485_.getDisplayName(), p_114488_, p_114489_, p_114490_, p_114487_);
+-        if (this.shouldShowName(p_entity)) {
+-            this.renderNameTag(p_entity, p_entity.getDisplayName(), poseStack, bufferSource, packedLight, partialTick);
 +        // Neo: Post the RenderNameTagEvent and conditionally wrap #renderNameTag based on the result.
-+        var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent(p_114485_, p_114485_.getDisplayName(), this, p_114488_, p_114489_, p_114490_, p_114487_);
++        var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent(p_entity, p_entity.getDisplayName(), this, poseStack, bufferSource, packedLight, partialTick);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+        if (event.canRender().isTrue() || event.canRender().isDefault() && this.shouldShowName(p_114485_)) {
-+            this.renderNameTag(p_114485_, event.getContent(), p_114488_, p_114489_, p_114490_, p_114487_);
++        if (event.canRender().isTrue() || event.canRender().isDefault() && this.shouldShowName(p_entity)) {
++            this.renderNameTag(p_entity, event.getContent(), poseStack, bufferSource, packedLight, partialTick);
          }
      }
  
 @@ -181,7 +_,7 @@
  
-     protected void renderNameTag(T p_114498_, Component p_114499_, PoseStack p_114500_, MultiBufferSource p_114501_, int p_114502_, float p_316698_) {
-         double d0 = this.entityRenderDispatcher.distanceToSqr(p_114498_);
+     protected void renderNameTag(T entity, Component displayName, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick) {
+         double d0 = this.entityRenderDispatcher.distanceToSqr(entity);
 -        if (!(d0 > 4096.0)) {
-+        if (net.neoforged.neoforge.client.ClientHooks.isNameplateInRenderDistance(p_114498_, d0)) {
-             Vec3 vec3 = p_114498_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_114498_.getViewYRot(p_316698_));
++        if (net.neoforged.neoforge.client.ClientHooks.isNameplateInRenderDistance(entity, d0)) {
+             Vec3 vec3 = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getViewYRot(partialTick));
              if (vec3 != null) {
-                 boolean flag = !p_114498_.isDiscrete();
+                 boolean flag = !entity.isDiscrete();

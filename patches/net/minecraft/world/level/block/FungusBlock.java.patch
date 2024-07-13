@@ -3,11 +3,11 @@
 @@ -73,6 +_,9 @@
  
      @Override
-     public void performBonemeal(ServerLevel p_221243_, RandomSource p_221244_, BlockPos p_221245_, BlockState p_221246_) {
--        this.getFeature(p_221243_).ifPresent(p_256352_ -> p_256352_.value().place(p_221243_, p_221243_.getChunkSource().getGenerator(), p_221244_, p_221245_));
+     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
+-        this.getFeature(level).ifPresent(p_256352_ -> p_256352_.value().place(level, level.getChunkSource().getGenerator(), random, pos));
 +        // Neo: Fire the BlockGrowFeatureEvent and change the ifPresent call to use the event's result.
-+        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(p_221243_, p_221244_, p_221245_, this.getFeature(p_221243_).orElse(null));
++        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, this.getFeature(level).orElse(null));
 +        if (event.isCanceled()) return;
-+        Optional.ofNullable(event.getFeature()).ifPresent(p_256352_ -> p_256352_.value().place(p_221243_, p_221243_.getChunkSource().getGenerator(), p_221244_, p_221245_));
++        Optional.ofNullable(event.getFeature()).ifPresent(p_256352_ -> p_256352_.value().place(level, level.getChunkSource().getGenerator(), random, pos));
      }
  }

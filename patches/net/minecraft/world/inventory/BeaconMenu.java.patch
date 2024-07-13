@@ -10,6 +10,6 @@
 -                }
 +            } else if (this.moveItemStackTo(itemstack1, 0, 1, false)) { //Forge Fix Shift Clicking in beacons with stacks larger then 1.
 +                return ItemStack.EMPTY;
-             } else if (p_39052_ >= 1 && p_39052_ < 28) {
+             } else if (index >= 1 && index < 28) {
                  if (!this.moveItemStackTo(itemstack1, 28, 37, false)) {
                      return ItemStack.EMPTY;

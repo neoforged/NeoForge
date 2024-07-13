@@ -6,20 +6,20 @@
      private final List<PotionBrewing.Mix<Item>> containerMixes;
 +    private final net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry registry;
  
-     PotionBrewing(List<Ingredient> p_340915_, List<PotionBrewing.Mix<Potion>> p_341164_, List<PotionBrewing.Mix<Item>> p_341170_) {
-+        this(p_340915_, p_341164_, p_341170_, List.of());
+     PotionBrewing(List<Ingredient> containers, List<PotionBrewing.Mix<Potion>> potionMixes, List<PotionBrewing.Mix<Item>> containerMixes) {
++        this(containers, potionMixes, containerMixes, List.of());
 +    }
 +
-+    PotionBrewing(List<Ingredient> p_340915_, List<PotionBrewing.Mix<Potion>> p_341164_, List<PotionBrewing.Mix<Item>> p_341170_, List<net.neoforged.neoforge.common.brewing.IBrewingRecipe> recipes) {
-         this.containers = p_340915_;
-         this.potionMixes = p_341164_;
-         this.containerMixes = p_341170_;
++    PotionBrewing(List<Ingredient> containers, List<PotionBrewing.Mix<Potion>> potionMixes, List<PotionBrewing.Mix<Item>> containerMixes, List<net.neoforged.neoforge.common.brewing.IBrewingRecipe> recipes) {
+         this.containers = containers;
+         this.potionMixes = potionMixes;
+         this.containerMixes = containerMixes;
 +        this.registry = new net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry(recipes);
      }
  
-     public boolean isIngredient(ItemStack p_43507_) {
--        return this.isContainerIngredient(p_43507_) || this.isPotionIngredient(p_43507_);
-+        return this.registry.isValidIngredient(p_43507_) || this.isContainerIngredient(p_43507_) || this.isPotionIngredient(p_43507_);
+     public boolean isIngredient(ItemStack stack) {
+-        return this.isContainerIngredient(stack) || this.isPotionIngredient(stack);
++        return this.registry.isValidIngredient(stack) || this.isContainerIngredient(stack) || this.isPotionIngredient(stack);
 +    }
 +
 +    /**
@@ -38,27 +38,27 @@
 +        return registry.recipes();
      }
  
-     private boolean isContainer(ItemStack p_341168_) {
+     private boolean isContainer(ItemStack stack) {
 @@ -71,6 +_,7 @@
      }
  
-     public boolean hasMix(ItemStack p_43509_, ItemStack p_43510_) {
-+        if (registry.hasOutput(p_43509_, p_43510_)) return true;
-         return !this.isContainer(p_43509_) ? false : this.hasContainerMix(p_43509_, p_43510_) || this.hasPotionMix(p_43509_, p_43510_);
+     public boolean hasMix(ItemStack reagent, ItemStack potionItem) {
++        if (registry.hasOutput(reagent, potionItem)) return true;
+         return !this.isContainer(reagent) ? false : this.hasContainerMix(reagent, potionItem) || this.hasPotionMix(reagent, potionItem);
      }
  
 @@ -103,6 +_,8 @@
-         if (p_43531_.isEmpty()) {
-             return p_43531_;
+         if (potionItem.isEmpty()) {
+             return potionItem;
          } else {
-+            var customMix = registry.getOutput(p_43531_, p_43530_); // Parameters are swapped compared to what vanilla passes!
++            var customMix = registry.getOutput(potionItem, potion); // Parameters are swapped compared to what vanilla passes!
 +            if (!customMix.isEmpty()) return customMix;
-             Optional<Holder<Potion>> optional = p_43531_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
+             Optional<Holder<Potion>> optional = potionItem.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
              if (optional.isEmpty()) {
-                 return p_43531_;
+                 return potionItem;
 @@ -127,6 +_,7 @@
-     public static PotionBrewing bootstrap(FeatureFlagSet p_341301_) {
-         PotionBrewing.Builder potionbrewing$builder = new PotionBrewing.Builder(p_341301_);
+     public static PotionBrewing bootstrap(FeatureFlagSet enabledFeatures) {
+         PotionBrewing.Builder potionbrewing$builder = new PotionBrewing.Builder(enabledFeatures);
          addVanillaMixes(potionbrewing$builder);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent(potionbrewing$builder));
          return potionbrewing$builder.build();
@@ -71,7 +71,7 @@
 +        private final List<net.neoforged.neoforge.common.brewing.IBrewingRecipe> recipes = new ArrayList<>();
          private final FeatureFlagSet enabledFeatures;
  
-         public Builder(FeatureFlagSet p_340975_) {
+         public Builder(FeatureFlagSet enabledFeatures) {
 @@ -237,8 +_,26 @@
              }
          }

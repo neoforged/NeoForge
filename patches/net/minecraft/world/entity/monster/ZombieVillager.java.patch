@@ -11,7 +11,7 @@
          }
 @@ -246,6 +_,7 @@
              if (!this.isSilent()) {
-                 p_34399_.levelEvent(null, 1027, this.blockPosition(), 0);
+                 serverLevel.levelEvent(null, 1027, this.blockPosition(), 0);
              }
 +            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
          }

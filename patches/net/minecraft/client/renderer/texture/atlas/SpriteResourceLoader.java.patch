@@ -3,12 +3,12 @@
 @@ -24,7 +_,7 @@
      Logger LOGGER = LogUtils.getLogger();
  
-     static SpriteResourceLoader create(Collection<MetadataSectionSerializer<?>> p_296204_) {
+     static SpriteResourceLoader create(Collection<MetadataSectionSerializer<?>> sectionSerializers) {
 -        return (p_293680_, p_293681_) -> {
 +        return (p_293680_, p_293681_, constructor) -> {
              ResourceMetadata resourcemetadata;
              try {
-                 resourcemetadata = p_293681_.metadata().copySections(p_296204_);
+                 resourcemetadata = p_293681_.metadata().copySections(sectionSerializers);
 @@ -45,7 +_,7 @@
                  .orElse(AnimationMetadataSection.EMPTY);
              FrameSize framesize = animationmetadatasection.calculateFrameSize(nativeimage.getWidth(), nativeimage.getHeight());
@@ -22,9 +22,9 @@
      }
  
      @Nullable
--    SpriteContents loadSprite(ResourceLocation p_295581_, Resource p_294329_);
-+    default SpriteContents loadSprite(ResourceLocation p_295581_, Resource p_294329_) {
-+        return loadSprite(p_295581_, p_294329_, SpriteContents::new);
+-    SpriteContents loadSprite(ResourceLocation location, Resource resource);
++    default SpriteContents loadSprite(ResourceLocation location, Resource resource) {
++        return loadSprite(location, resource, SpriteContents::new);
 +    }
 +
 +    @Nullable

@@ -6,7 +6,7 @@
  
 +            @Override
 +            public void unbundlePacket(Packet<?> bundlePacket, Consumer<Packet<?>> packetSender, io.netty.channel.ChannelHandlerContext context) {
-+                if (bundlePacket.type() == p_320816_) {
++                if (bundlePacket.type() == type) {
 +                    P p = (P)bundlePacket;
 +                    java.util.List<Packet<?>> packets = net.neoforged.neoforge.network.registration.NetworkRegistry.filterGameBundlePackets(context, p.subPackets());
 +                    if (packets.isEmpty()) {
@@ -16,9 +16,9 @@
 +                        packetSender.accept(packets.get(0));
 +                        return;
 +                    }
-+                    packetSender.accept(p_265373_);
++                    packetSender.accept(packet);
 +                    packets.forEach(packetSender);
-+                    packetSender.accept(p_265373_);
++                    packetSender.accept(packet);
 +                } else {
 +                    packetSender.accept(bundlePacket);
 +                }
@@ -35,7 +35,7 @@
 +     * @deprecated Use {@link #unbundlePacket(Packet, Consumer, io.netty.channel.ChannelHandlerContext)} instead, as it supports packet filtering and is more efficient.
 +     */
 +    @Deprecated
-     void unbundlePacket(Packet<?> p_265095_, Consumer<Packet<?>> p_265715_);
+     void unbundlePacket(Packet<?> packet, Consumer<Packet<?>> consumer);
 +
 +    /**
 +     * Unwrap and flattens a bundle packet.
@@ -51,4 +51,4 @@
 +    }
  
      @Nullable
-     BundlerInfo.Bundler startPacketBundling(Packet<?> p_265162_);
+     BundlerInfo.Bundler startPacketBundling(Packet<?> packet);

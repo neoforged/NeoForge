@@ -11,28 +11,28 @@
      public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 @@ -49,6 +_,7 @@
      @Override
-     protected VoxelShape getShape(BlockState p_49403_, BlockGetter p_49404_, BlockPos p_49405_, CollisionContext p_49406_) {
-         RailShape railshape = p_49403_.is(this) ? p_49403_.getValue(this.getShapeProperty()) : null;
-+        RailShape railShape2 = p_49403_.is(this) ? getRailDirection(p_49403_, p_49404_, p_49405_, null) : null;
+     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+         RailShape railshape = state.is(this) ? state.getValue(this.getShapeProperty()) : null;
++        RailShape railShape2 = state.is(this) ? getRailDirection(state, level, pos, null) : null;
          return railshape != null && railshape.isAscending() ? HALF_BLOCK_AABB : FLAT_AABB;
      }
  
 @@ -76,7 +_,7 @@
      @Override
-     protected void neighborChanged(BlockState p_49377_, Level p_49378_, BlockPos p_49379_, Block p_49380_, BlockPos p_49381_, boolean p_49382_) {
-         if (!p_49378_.isClientSide && p_49378_.getBlockState(p_49379_).is(this)) {
--            RailShape railshape = p_49377_.getValue(this.getShapeProperty());
-+            RailShape railshape = getRailDirection(p_49377_, p_49378_, p_49379_, null);
-             if (shouldBeRemoved(p_49379_, p_49378_, railshape)) {
-                 dropResources(p_49377_, p_49378_, p_49379_);
-                 p_49378_.removeBlock(p_49379_, p_49382_);
+     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+         if (!level.isClientSide && level.getBlockState(pos).is(this)) {
+-            RailShape railshape = state.getValue(this.getShapeProperty());
++            RailShape railshape = getRailDirection(state, level, pos, null);
+             if (shouldBeRemoved(pos, level, railshape)) {
+                 dropResources(state, level, pos);
+                 level.removeBlock(pos, isMoving);
 @@ -121,7 +_,7 @@
-     protected void onRemove(BlockState p_49384_, Level p_49385_, BlockPos p_49386_, BlockState p_49387_, boolean p_49388_) {
-         if (!p_49388_) {
-             super.onRemove(p_49384_, p_49385_, p_49386_, p_49387_, p_49388_);
--            if (p_49384_.getValue(this.getShapeProperty()).isAscending()) {
-+            if (getRailDirection(p_49384_, p_49385_, p_49386_, null).isAscending()) {
-                 p_49385_.updateNeighborsAt(p_49386_.above(), this);
+     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+         if (!isMoving) {
+             super.onRemove(state, level, pos, newState, isMoving);
+-            if (state.getValue(this.getShapeProperty()).isAscending()) {
++            if (getRailDirection(state, level, pos, null).isAscending()) {
+                 level.updateNeighborsAt(pos.above(), this);
              }
  
 @@ -142,6 +_,11 @@
@@ -49,8 +49,8 @@
      @Override
 @@ -158,5 +_,15 @@
      @Override
-     protected FluidState getFluidState(BlockState p_152158_) {
-         return p_152158_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152158_);
+     protected FluidState getFluidState(BlockState state) {
+         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 +    }
 +
 +    @Override
