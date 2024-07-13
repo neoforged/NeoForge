@@ -61,7 +61,7 @@ public class DataComponentUtil {
      * </pre>
      */
     public static void logDataComponentSaveError(DataComponentHolder componentHolder, Exception original, @Nullable Tag tag) {
-        StringBuilder cause = new StringBuilder("Error saving itemstack [" + componentHolder + "]. Original cause: " + original);
+        StringBuilder cause = new StringBuilder("Error saving [" + componentHolder + "]. Original cause: " + original);
 
         cause.append("\nWith components:\n{");
         componentHolder.getComponents().forEach((component) -> {
