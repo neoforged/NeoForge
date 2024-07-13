@@ -65,9 +65,6 @@ license="LGPL v2.1"
     type="required"
     ordering="AFTER"
 
-[[mods]]
-    modId="villager_trade_test"
-
 # LEGACY TEST CASES
 ###### The mods below are from the old test framework and need to be yeeted later again.
 
