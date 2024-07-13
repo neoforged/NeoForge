@@ -500,7 +500,7 @@ public interface IItemStackExtension {
      */
     default Tag encode(HolderLookup.Provider provider, Tag tag) {
         try {
-            return self().CODEC.encode(self(), provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow();
+            return ItemStack.CODEC.encode(self(), provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow();
         } catch (Exception exception) {
             logItemInfo(exception, tag);
             throw exception;
@@ -512,7 +512,7 @@ public interface IItemStackExtension {
      */
     default Tag encode(HolderLookup.Provider p_332160_) {
         try {
-            return self().CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), self()).getOrThrow();
+            return ItemStack.CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), self()).getOrThrow();
         } catch (Exception exception) {
             logItemInfo(exception, null);
             throw exception;
