@@ -112,26 +112,8 @@ public class CapabilityHooks {
             event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new InvWrapper(entity));
         }
         event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInvWrapper(player.getInventory()));
-        // Register to all entity types to make sure we support all living entity subclasses.
-        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
-                if (entity instanceof AbstractHorse horse)
-                    return new InvWrapper(horse.getInventory());
-                else if (entity instanceof LivingEntity livingEntity)
-                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
-
-                return null;
-            });
-        }
 
         // Items
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
-        }
-        if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
-        }
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ComponentItemHandler(stack, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
@@ -150,6 +132,32 @@ public class CapabilityHooks {
                 Items.RED_SHULKER_BOX,
                 Items.WHITE_SHULKER_BOX,
                 Items.YELLOW_SHULKER_BOX);
+    }
+
+    public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {
+        // Entities
+        // Register to all entity types to make sure we support all living entity subclasses.
+        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
+            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
+                if (entity instanceof AbstractHorse horse)
+                    return new InvWrapper(horse.getInventory());
+                else if (entity instanceof LivingEntity livingEntity)
+                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
+
+                return null;
+            });
+        }
+
+        // Items
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item.getClass() == BucketItem.class)
+                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
+        }
+
+        // We want mods to be able to override our milk cap by default
+        if (NeoForgeMod.MILK.isBound()) {
+            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
+        }
     }
 
     public static void invalidateCapsOnChunkLoad(ChunkEvent.Load event) {
