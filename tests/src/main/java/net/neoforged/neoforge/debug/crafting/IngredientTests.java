@@ -75,7 +75,7 @@ public class IngredientTests {
     static void blockTagIngredient(final DynamicTest test, final RegistrationHelper reg) {
         reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void buildRecipes(RecipeOutput output, HolderLookup.Provider holderLookup) {
+            protected void buildRecipes(RecipeOutput output) {
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.MUD)
                         .requires(new TestEnabledIngredient(new BlockTagIngredient(BlockTags.CONVERTABLE_TO_MUD).toVanilla(), test.framework(), test.id()).toVanilla())
                         .requires(Items.WATER_BUCKET)
@@ -106,7 +106,7 @@ public class IngredientTests {
     static void partialNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
         reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void buildRecipes(RecipeOutput output, HolderLookup.Provider holderLookup) {
+            protected void buildRecipes(RecipeOutput output) {
                 ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.ALLIUM)
                         .pattern("IDE")
                         .define('I', new TestEnabledIngredient(
@@ -152,7 +152,7 @@ public class IngredientTests {
     static void strictNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
         reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void buildRecipes(RecipeOutput output, HolderLookup.Provider holderLookup) {
+            protected void buildRecipes(RecipeOutput output) {
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.ACACIA_BOAT)
                         .requires(new TestEnabledIngredient(
                                 DataComponentIngredient.of(true, DataComponents.DAMAGE, 4, Items.DIAMOND_PICKAXE),
@@ -343,7 +343,7 @@ public class IngredientTests {
     static void testSizedIngredient(final DynamicTest test, final RegistrationHelper reg) {
         reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void buildRecipes(RecipeOutput output, HolderLookup.Provider holderLookup) {
+            protected void buildRecipes(RecipeOutput output) {
                 CompressedShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.CHERRY_FENCE)
                         .requires(new TestEnabledIngredient(
                                 Ingredient.of(Items.DIAMOND_PICKAXE),

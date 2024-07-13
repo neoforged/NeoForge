@@ -62,7 +62,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(RecipeOutput recipeOutput, HolderLookup.Provider holderLookup) {
+    protected void buildRecipes(RecipeOutput recipeOutput) {
         replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.GOLD_INGOT, Tags.Items.INGOTS_GOLD);
         replace(Items.GOLD_NUGGET, Tags.Items.NUGGETS_GOLD);
@@ -109,7 +109,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
             public Advancement.Builder advancement() {
                 return recipeOutput.advancement();
             }
-        }, holderLookup);
+        });
     }
 
     @Nullable

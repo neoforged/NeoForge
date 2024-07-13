@@ -23,7 +23,7 @@
                                      RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
                                  )
                              );
-@@ -107,18 +_,22 @@
+@@ -107,18 +_,26 @@
                  public Advancement.Builder advancement() {
                      return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
                  }
@@ -47,7 +47,11 @@
 +        return DataProvider.saveStable(p_253674_, p_323646_, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_301116_.value(), conditions)), this.advancementPathProvider.json(p_301116_.id()));
 +    }
 +
-+    protected abstract void buildRecipes(RecipeOutput p_301172_, HolderLookup.Provider holderLookup);
++    protected void buildRecipes(RecipeOutput recipeOutput, HolderLookup.Provider holderLookup) {
++        buildRecipes(recipeOutput);
++    }
++
++    protected void buildRecipes(RecipeOutput p_301172_) {}
 +
 +    protected void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
          BlockFamilies.getAllFamilies().filter(BlockFamily::shouldGenerateRecipe).forEach(p_313461_ -> generateRecipes(p_301146_, p_313461_, p_251836_));
