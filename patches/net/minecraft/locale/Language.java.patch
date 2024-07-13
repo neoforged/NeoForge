@@ -72,7 +72,7 @@
          instance = p_128115_;
 +    }
 +
-+    // FORGE START
++    // Neo: All helpers methods below are injected by Neo to ease modder's usage of Language
 +    public Map<String, String> getLanguageData() { return ImmutableMap.of(); }
 +
 +    public @org.jetbrains.annotations.Nullable net.minecraft.network.chat.Component getComponent(String key) {

@@ -81,15 +81,16 @@
 -                    this.vertex(p_234372_, f51, f37 + f45, f52, f33, f34, f35, f58, f60, j);
 -                    this.vertex(p_234372_, f51, f37 + f16, f52, f33, f34, f35, f58, f31, j);
 -                    this.vertex(p_234372_, f47, f37 + f16, f49, f33, f34, f35, f56, f31, j);
-+                    this.vertex(p_234372_, f47, f37 + f44, f49, f33, f34, f35, alpha, f56, f59, j);
-+                    this.vertex(p_234372_, f51, f37 + f45, f52, f33, f34, f35, alpha, f58, f60, j);
-+                    this.vertex(p_234372_, f51, f37 + f16, f52, f33, f34, f35, alpha, f58, f31, j);
-+                    this.vertex(p_234372_, f47, f37 + f16, f49, f33, f34, f35, alpha, f56, f31, j);
-                     if (textureatlassprite2 != this.waterOverlay) {
+-                    if (textureatlassprite2 != this.waterOverlay) {
 -                        this.vertex(p_234372_, f47, f37 + f16, f49, f33, f34, f35, f56, f31, j);
 -                        this.vertex(p_234372_, f51, f37 + f16, f52, f33, f34, f35, f58, f31, j);
 -                        this.vertex(p_234372_, f51, f37 + f45, f52, f33, f34, f35, f58, f60, j);
 -                        this.vertex(p_234372_, f47, f37 + f44, f49, f33, f34, f35, f56, f59, j);
++                    this.vertex(p_234372_, f47, f37 + f44, f49, f33, f34, f35, alpha, f56, f59, j);
++                    this.vertex(p_234372_, f51, f37 + f45, f52, f33, f34, f35, alpha, f58, f60, j);
++                    this.vertex(p_234372_, f51, f37 + f16, f52, f33, f34, f35, alpha, f58, f31, j);
++                    this.vertex(p_234372_, f47, f37 + f16, f49, f33, f34, f35, alpha, f56, f31, j);
++                    if (textureatlassprite2 != atextureatlassprite[2]) { // Neo: use custom fluid's overlay texture
 +                        this.vertex(p_234372_, f47, f37 + f16, f49, f33, f34, f35, alpha, f56, f31, j);
 +                        this.vertex(p_234372_, f51, f37 + f16, f52, f33, f34, f35, alpha, f58, f31, j);
 +                        this.vertex(p_234372_, f51, f37 + f45, f52, f33, f34, f35, alpha, f58, f60, j);

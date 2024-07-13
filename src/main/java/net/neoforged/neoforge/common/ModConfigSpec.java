@@ -11,9 +11,8 @@ import com.electronwill.nightconfig.core.ConfigSpec.CorrectionAction;
 import com.electronwill.nightconfig.core.ConfigSpec.CorrectionListener;
 import com.electronwill.nightconfig.core.EnumGetMethod;
 import com.electronwill.nightconfig.core.InMemoryFormat;
+import com.electronwill.nightconfig.core.UnmodifiableCommentedConfig;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
-import com.electronwill.nightconfig.core.file.FileConfig;
-import com.electronwill.nightconfig.core.utils.UnmodifiableConfigWrapper;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -49,23 +48,52 @@ import org.jetbrains.annotations.Nullable;
  * Like {@link com.electronwill.nightconfig.core.ConfigSpec} except in builder format, and extended to accept comments, language keys,
  * and other things mod configs would find useful.
  */
-public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig> implements IConfigSpec<ModConfigSpec>//TODO: Remove extends and pipe everything through getSpec/getValues?
-{
-    private Map<List<String>, String> levelComments;
-    private Map<List<String>, String> levelTranslationKeys;
+public class ModConfigSpec implements IConfigSpec {
+    /*
+     * Each config field (for example `category.subcategory.something`) has:
+     * - an associated ValueSpec which contains metadata about the field,
+     * - a ConfigValue which caches the value for the field.
+     * These are stored in `spec` and `values` respectively,
+     * (ab)using the tree structure of a Config.
+     *
+     * Intermediate levels cannot be represented inside a Config like that,
+     * so their metadata is stored in `levelComments` and `levelTranslationKeys`.
+     */
+    /**
+     * Stores the comments for intermediate levels.
+     */
+    private final Map<List<String>, String> levelComments;
+    /**
+     * Stores the translation keys for intermediate levels.
+     */
+    private final Map<List<String>, String> levelTranslationKeys;
 
-    private UnmodifiableConfig values;
-    private Config childConfig;
-
-    private boolean isCorrecting = false;
+    /**
+     * Stores the {@link ValueSpec}s, (ab)using the hierarchical structure of {@link Config}.
+     */
+    private final UnmodifiableConfig spec;
+    /**
+     * Stores the {@link ConfigValue}s, (ab)using the hierarchical structure of {@link Config}.
+     */
+    private final UnmodifiableConfig values;
+    /**
+     * The currently loaded config values.
+     */
+    @Nullable
+    private ILoadedConfig loadedConfig;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ModConfigSpec(UnmodifiableConfig storage, UnmodifiableConfig values, Map<List<String>, String> levelComments, Map<List<String>, String> levelTranslationKeys) {
-        super(storage);
+    private ModConfigSpec(UnmodifiableConfig spec, UnmodifiableConfig values, Map<List<String>, String> levelComments, Map<List<String>, String> levelTranslationKeys) {
+        this.spec = spec;
         this.values = values;
         this.levelComments = levelComments;
         this.levelTranslationKeys = levelTranslationKeys;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.spec.isEmpty();
     }
 
     public String getLevelComment(List<String> path) {
@@ -76,37 +104,27 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         return levelTranslationKeys.get(path);
     }
 
-    public void setConfig(CommentedConfig config) {
-        this.childConfig = config;
-        if (config != null && !isCorrect(config)) {
-            String configName = config instanceof FileConfig ? ((FileConfig) config).getNioPath().toString() : config.toString();
-            LOGGER.warn(Logging.CORE, "Configuration file {} is not correct. Correcting", configName);
-            correct(config,
+    public void acceptConfig(@Nullable ILoadedConfig config) {
+        this.loadedConfig = config;
+        if (config != null && !isCorrect(config.config())) {
+            // Correct in case the config did not get corrected before this function was called.
+            // This should not happen under normal circumstances, hence the warning.
+            LOGGER.warn(Logging.CORE, "Configuration {} is not correct. Correcting", config);
+            correct(config.config(),
                     (action, path, incorrectValue, correctedValue) -> LOGGER.warn(Logging.CORE, "Incorrect key {} was corrected from {} to its default, {}. {}", DOT_JOINER.join(path), incorrectValue, correctedValue, incorrectValue == correctedValue ? "This seems to be an error." : ""),
                     (action, path, incorrectValue, correctedValue) -> LOGGER.debug(Logging.CORE, "The comment on key {} does not match the spec. This may create a backup.", DOT_JOINER.join(path)));
 
-            if (config instanceof FileConfig) {
-                ((FileConfig) config).save();
-            }
+            config.save();
         }
         this.afterReload();
     }
 
-    @Override
-    public void acceptConfig(final CommentedConfig data) {
-        setConfig(data);
-    }
-
-    public boolean isCorrecting() {
-        return isCorrecting;
-    }
-
     public boolean isLoaded() {
-        return childConfig != null;
+        return loadedConfig != null;
     }
 
     public UnmodifiableConfig getSpec() {
-        return this.config;
+        return this.spec;
     }
 
     public UnmodifiableConfig getValues() {
@@ -119,49 +137,45 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
 
     private void resetCaches(final Iterable<Object> configValues) {
         configValues.forEach(value -> {
-            if (value instanceof ConfigValue) {
-                final ConfigValue<?> configValue = (ConfigValue<?>) value;
+            if (value instanceof ConfigValue<?> configValue) {
                 configValue.clearCache();
-            } else if (value instanceof Config) {
-                final Config innerConfig = (Config) value;
+            } else if (value instanceof Config innerConfig) {
                 this.resetCaches(innerConfig.valueMap().values());
             }
         });
     }
 
+    /**
+     * Saves the current config values to the config file, and fires the config reloading event.
+     */
     public void save() {
-        Preconditions.checkNotNull(childConfig, "Cannot save config value without assigned Config object present");
-        if (childConfig instanceof FileConfig) {
-            ((FileConfig) childConfig).save();
-        }
+        Preconditions.checkNotNull(loadedConfig, "Cannot save config value without assigned Config object present");
+        loadedConfig.save();
     }
 
-    public synchronized boolean isCorrect(CommentedConfig config) {
+    @Override
+    public boolean isCorrect(UnmodifiableCommentedConfig config) {
         LinkedList<String> parentPath = new LinkedList<>();
-        return correct(this.config, config, parentPath, Collections.unmodifiableList(parentPath), (a, b, c, d) -> {}, null, true) == 0;
+        return correct(this.spec, config, parentPath, Collections.unmodifiableList(parentPath), (a, b, c, d) -> {}, null, true) == 0;
     }
 
-    public int correct(CommentedConfig config) {
-        return correct(config, (action, path, incorrectValue, correctedValue) -> {}, null);
+    public void correct(CommentedConfig config) {
+        correct(config, (action, path, incorrectValue, correctedValue) -> {}, null);
     }
 
-    public synchronized int correct(CommentedConfig config, CorrectionListener listener) {
+    public int correct(CommentedConfig config, CorrectionListener listener) {
         return correct(config, listener, null);
     }
 
-    public synchronized int correct(CommentedConfig config, CorrectionListener listener, CorrectionListener commentListener) {
+    public int correct(CommentedConfig config, CorrectionListener listener, @Nullable CorrectionListener commentListener) {
         LinkedList<String> parentPath = new LinkedList<>(); //Linked list for fast add/removes
-        int ret = -1;
-        try {
-            isCorrecting = true;
-            ret = correct(this.config, config, parentPath, Collections.unmodifiableList(parentPath), listener, commentListener, false);
-        } finally {
-            isCorrecting = false;
-        }
-        return ret;
+        return correct(this.spec, config, parentPath, Collections.unmodifiableList(parentPath), listener, commentListener, false);
     }
 
-    private int correct(UnmodifiableConfig spec, CommentedConfig config, LinkedList<String> parentPath, List<String> parentPathUnmodifiable, CorrectionListener listener, CorrectionListener commentListener, boolean dryRun) {
+    /**
+     * {@code config} will be downcast to {@link CommentedConfig} if {@code dryRun} is {@code false} and a modification needs to be made.
+     */
+    private int correct(UnmodifiableConfig spec, UnmodifiableCommentedConfig config, LinkedList<String> parentPath, List<String> parentPathUnmodifiable, CorrectionListener listener, @Nullable CorrectionListener commentListener, boolean dryRun) {
         int count = 0;
 
         Map<String, Object> specMap = spec.valueMap();
@@ -183,7 +197,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
                 } else if (dryRun) {
                     return 1;
                 } else {
-                    CommentedConfig newValue = config.createSubConfig();
+                    CommentedConfig newValue = ((CommentedConfig) config).createSubConfig();
                     configMap.put(key, newValue);
                     listener.onCorrect(action, parentPathUnmodifiable, configValue, newValue);
                     count++;
@@ -192,14 +206,14 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
 
                 String newComment = levelComments.get(parentPath);
                 String oldComment = config.getComment(key);
-                if (!stringsMatchIgnoringNewlines(oldComment, newComment)) {
+                if (!stringsMatchNormalizingNewLines(oldComment, newComment)) {
                     if (commentListener != null)
                         commentListener.onCorrect(action, parentPathUnmodifiable, oldComment, newComment);
 
                     if (dryRun)
                         return 1;
 
-                    config.setComment(key, newComment);
+                    ((CommentedConfig) config).setComment(key, newComment);
                 }
             } else {
                 ValueSpec valueSpec = (ValueSpec) specValue;
@@ -213,14 +227,14 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
                     count++;
                 }
                 String oldComment = config.getComment(key);
-                if (!stringsMatchIgnoringNewlines(oldComment, valueSpec.getComment())) {
+                if (!stringsMatchNormalizingNewLines(oldComment, valueSpec.getComment())) {
                     if (commentListener != null)
                         commentListener.onCorrect(action, parentPathUnmodifiable, oldComment, valueSpec.getComment());
 
                     if (dryRun)
                         return 1;
 
-                    config.setComment(key, valueSpec.getComment());
+                    ((CommentedConfig) config).setComment(key, valueSpec.getComment());
                 }
             }
 
@@ -244,25 +258,26 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         return count;
     }
 
-    private boolean stringsMatchIgnoringNewlines(@Nullable Object obj1, @Nullable Object obj2) {
-        if (obj1 instanceof String string1 && obj2 instanceof String string2) {
-            if (string1.length() > 0 && string2.length() > 0) {
-                return string1.replaceAll("\r\n", "\n")
-                        .equals(string2.replaceAll("\r\n", "\n"));
-
-            }
+    private boolean stringsMatchNormalizingNewLines(@Nullable String string1, @Nullable String string2) {
+        boolean blank1 = string1 == null || string1.isBlank();
+        boolean blank2 = string2 == null || string2.isBlank();
+        if (blank1 != blank2) {
+            return false;
+        } else if (blank1 && blank2) {
+            return true;
+        } else {
+            return string1.replaceAll("\r\n", "\n")
+                    .equals(string2.replaceAll("\r\n", "\n"));
         }
-        // Fallback for when we're not given Strings, or one of them is empty
-        return Objects.equals(obj1, obj2);
     }
 
     public static class Builder {
-        private final Config storage = Config.of(LinkedHashMap::new, InMemoryFormat.withUniversalSupport()); // Use LinkedHashMap for consistent ordering
+        private final Config spec = Config.of(LinkedHashMap::new, InMemoryFormat.withUniversalSupport()); // Use LinkedHashMap for consistent ordering
         private BuilderContext context = new BuilderContext();
-        private Map<List<String>, String> levelComments = new HashMap<>();
-        private Map<List<String>, String> levelTranslationKeys = new HashMap<>();
-        private List<String> currentPath = new ArrayList<>();
-        private List<ConfigValue<?>> values = new ArrayList<>();
+        private final Map<List<String>, String> levelComments = new HashMap<>();
+        private final Map<List<String>, String> levelTranslationKeys = new HashMap<>();
+        private final List<String> currentPath = new ArrayList<>();
+        private final List<ConfigValue<?>> values = new ArrayList<>();
 
         //Object
         public <T> ConfigValue<T> define(String path, T defaultValue) {
@@ -302,7 +317,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
                 tmp.addAll(path);
                 path = tmp;
             }
-            storage.set(path, value);
+            spec.set(path, value);
             context = new BuilderContext();
             return new ConfigValue<>(this, path, defaultSupplier);
         }
@@ -361,11 +376,11 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             return define(path, new ValueSpec(defaultSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), context, path) {
                 @Override
                 public Object correct(Object value) {
-                    if (value == null || !(value instanceof List) || ((List<?>) value).isEmpty()) {
+                    if (!(value instanceof List<?> currentList) || currentList.isEmpty()) {
                         LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction. It is null, not a list, or an empty list. Modders, consider defineListAllowEmpty?", path.get(path.size() - 1));
                         return getDefault();
                     }
-                    List<?> list = Lists.newArrayList((List<?>) value);
+                    List<?> list = Lists.newArrayList(currentList);
                     list.removeIf(elementValidator.negate());
                     if (list.isEmpty()) {
                         LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction. It failed validation.", path.get(path.size() - 1));
@@ -392,8 +407,8 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             context.setClazz(List.class);
             return define(path, new ValueSpec(defaultSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), context, path) {
                 @Override
-                public Object correct(Object value) {
-                    if (value == null || !(value instanceof List)) {
+                public Object correct(@Nullable Object value) {
+                    if (!(value instanceof List)) {
                         LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction, as it is null or not a list.", path.get(path.size() - 1));
                         return getDefault();
                     }
@@ -646,21 +661,20 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             Config valueCfg = Config.of(Config.getDefaultMapCreator(true, true), InMemoryFormat.withSupport(ConfigValue.class::isAssignableFrom));
             values.forEach(v -> valueCfg.set(v.getPath(), v));
 
-            ModConfigSpec ret = new ModConfigSpec(storage, valueCfg, levelComments, levelTranslationKeys);
+            ModConfigSpec ret = new ModConfigSpec(spec.unmodifiable(), valueCfg.unmodifiable(), Collections.unmodifiableMap(levelComments), Collections.unmodifiableMap(levelTranslationKeys));
             values.forEach(v -> v.spec = ret);
             return ret;
-        }
-
-        public interface BuilderConsumer {
-            void accept(Builder builder);
         }
     }
 
     private static class BuilderContext {
         private final List<String> comment = new LinkedList<>();
+        @Nullable
         private String langKey;
+        @Nullable
         private Range<?> range;
         private boolean worldRestart = false;
+        @Nullable
         private Class<?> clazz;
 
         public void addComment(String value) {
@@ -696,10 +710,11 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             return LINE_JOINER.join(comment);
         }
 
-        public void setTranslationKey(String value) {
+        public void setTranslationKey(@Nullable String value) {
             this.langKey = value;
         }
 
+        @Nullable
         public String getTranslationKey() {
             return this.langKey;
         }
@@ -709,6 +724,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             this.setClazz(value.getClazz());
         }
 
+        @Nullable
         @SuppressWarnings("unchecked")
         public <V extends Comparable<? super V>> Range<V> getRange() {
             return (Range<V>) this.range;
@@ -726,6 +742,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             this.clazz = clazz;
         }
 
+        @Nullable
         public Class<?> getClazz() {
             return this.clazz;
         }
@@ -737,7 +754,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             validate(worldRestart, "Dangeling world restart value set to true");
         }
 
-        private void validate(Object value, String message) {
+        private void validate(@Nullable Object value, String message) {
             if (value != null)
                 throw new IllegalStateException(message);
         }
@@ -772,7 +789,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             return max;
         }
 
-        private boolean isNumber(Object other) {
+        private boolean isNumber(@Nullable Object other) {
             return Number.class.isAssignableFrom(clazz) && other instanceof Number;
         }
 
@@ -796,7 +813,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             return result;
         }
 
-        public Object correct(Object value, Object def) {
+        public Object correct(@Nullable Object value, Object def) {
             if (isNumber(value)) {
                 Number n = (Number) value;
                 return n.doubleValue() < ((Number) min).doubleValue() ? min : n.doubleValue() > ((Number) max).doubleValue() ? max : value;
@@ -820,10 +837,14 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
     }
 
     public static class ValueSpec {
+        @Nullable
         private final String comment;
+        @Nullable
         private final String langKey;
+        @Nullable
         private final Range<?> range;
         private final boolean worldRestart;
+        @Nullable
         private final Class<?> clazz;
         private final Supplier<?> supplier;
         private final Predicate<Object> validator;
@@ -841,14 +862,17 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             this.validator = validator;
         }
 
+        @Nullable
         public String getComment() {
             return comment;
         }
 
+        @Nullable
         public String getTranslationKey() {
             return langKey;
         }
 
+        @Nullable
         @SuppressWarnings("unchecked")
         public <V extends Comparable<? super V>> Range<V> getRange() {
             return (Range<V>) this.range;
@@ -858,15 +882,16 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
             return this.worldRestart;
         }
 
+        @Nullable
         public Class<?> getClazz() {
             return this.clazz;
         }
 
-        public boolean test(Object value) {
+        public boolean test(@Nullable Object value) {
             return validator.test(value);
         }
 
-        public Object correct(Object value) {
+        public Object correct(@Nullable Object value) {
             return range == null ? getDefault() : range.correct(value, getDefault());
         }
 
@@ -876,14 +901,14 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
     }
 
     public static class ConfigValue<T> implements Supplier<T> {
-        private static boolean USE_CACHES = true;
-
         private final Builder parent;
         private final List<String> path;
         private final Supplier<T> defaultSupplier;
 
+        @Nullable
         private T cachedValue = null;
 
+        @Nullable
         private ModConfigSpec spec;
 
         ConfigValue(Builder parent, List<String> path, Supplier<T> defaultSupplier) {
@@ -908,25 +933,12 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         @Override
         public T get() {
             Preconditions.checkNotNull(spec, "Cannot get config value before spec is built");
-            // TODO: Remove this dev-time check so this errors out on both production and dev
-            // This is dev-time-only in 1.19.x, to avoid breaking already published mods while forcing devs to fix their errors
-            if (!FMLEnvironment.production) {
-                // When the above if-check is removed, change message to "Cannot get config value before config is loaded"
-                Preconditions.checkState(spec.childConfig != null, """
-                        Cannot get config value before config is loaded.
-                        This error is currently only thrown in the development environment, to avoid breaking published mods.
-                        In a future version, this will also throw in the production environment.
-                        """);
+            var loadedConfig = spec.loadedConfig;
+            Preconditions.checkState(loadedConfig != null, "Cannot get config value before config is loaded.");
+
+            if (cachedValue == null) {
+                cachedValue = getRaw(loadedConfig.config(), path, defaultSupplier);
             }
-
-            if (spec.childConfig == null)
-                return defaultSupplier.get();
-
-            if (USE_CACHES && cachedValue == null)
-                cachedValue = getRaw(spec.childConfig, path, defaultSupplier);
-            else if (!USE_CACHES)
-                return getRaw(spec.childConfig, path, defaultSupplier);
-
             return cachedValue;
         }
 
@@ -947,14 +959,19 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
 
         public void save() {
             Preconditions.checkNotNull(spec, "Cannot save config value before spec is built");
-            Preconditions.checkNotNull(spec.childConfig, "Cannot save config value without assigned Config object present");
+            Preconditions.checkNotNull(spec.loadedConfig, "Cannot save config value without assigned Config object present");
             spec.save();
         }
 
+        /**
+         * Directly sets the value, without firing events or writing the config to disk.
+         * Make sure to call {@link ModConfigSpec#save()} eventually.
+         */
         public void set(T value) {
             Preconditions.checkNotNull(spec, "Cannot set config value before spec is built");
-            Preconditions.checkNotNull(spec.childConfig, "Cannot set config value without assigned Config object present");
-            spec.childConfig.set(path, value);
+            var loadedConfig = spec.loadedConfig;
+            Preconditions.checkNotNull(loadedConfig, "Cannot set config value without assigned Config object present");
+            loadedConfig.config().set(path, value);
             this.cachedValue = value;
         }
 
