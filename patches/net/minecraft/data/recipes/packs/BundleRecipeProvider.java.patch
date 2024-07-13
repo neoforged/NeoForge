@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/recipes/packs/BundleRecipeProvider.java
++++ b/net/minecraft/data/recipes/packs/BundleRecipeProvider.java
+@@ -15,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected void buildRecipes(RecipeOutput p_301031_) {
++    protected void buildRecipes(RecipeOutput p_301031_, HolderLookup.Provider holderLookup) {
+         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.BUNDLE)
+             .define('#', Items.RABBIT_HIDE)
+             .define('-', Items.STRING)

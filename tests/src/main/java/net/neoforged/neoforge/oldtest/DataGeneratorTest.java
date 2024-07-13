@@ -200,7 +200,7 @@ public class DataGeneratorTest {
         }
 
         @Override
-        protected void buildRecipes(RecipeOutput consumer) {
+        protected void buildRecipes(RecipeOutput consumer, HolderLookup.Provider holderLookup) {
             // conditional recipe
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
                     .pattern("XXX")
