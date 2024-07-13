@@ -22,13 +22,12 @@ import net.minecraft.nbt.NbtIo;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Declares a class containing helpers for performing file I/O in a resillient
- * manner.
+ * Contains helpers for performing file I/O in a resilient manner.
  */
 public final class IOUtilities {
     private static final String TEMP_FILE_SUFFIX = ".neoforge-tmp";
     private static final OpenOption[] OPEN_OPTIONS = {
-            StandardOpenOption.DSYNC, // TODO: DSYNC or SYNC here?
+            StandardOpenOption.DSYNC,
             StandardOpenOption.WRITE,
             StandardOpenOption.TRUNCATE_EXISTING
     };
@@ -123,7 +122,16 @@ public final class IOUtilities {
                 TEMP_FILE_SUFFIX);
 
         try {
-            writeImpl(tempPath, targetPath, writeCallback);
+            try (OutputStream writeStream = Files.newOutputStream(tempPath, OPEN_OPTIONS)) {
+                writeCallback.write(writeStream);
+            }
+
+            // Now we try and move the file to the correct location, atomically if possible.
+            try {
+                Files.move(tempPath, targetPath, StandardCopyOption.ATOMIC_MOVE);
+            } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+                Files.move(tempPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (Exception first) {
             // If an exception occurs, we want to try and clean up if we can before rethrowing.
             try {
@@ -137,20 +145,7 @@ public final class IOUtilities {
         }
     }
 
-    private static void writeImpl(Path tempFile, Path destination, WriteCallback callback) throws IOException {
-        try (OutputStream writeStream = Files.newOutputStream(tempFile, OPEN_OPTIONS)) {
-            callback.write(writeStream);
-        }
-
-        // Now we try and move the file to the correct location, atomically if possible.
-        try {
-            Files.move(tempFile, destination, StandardCopyOption.ATOMIC_MOVE);
-        } catch (java.nio.file.AtomicMoveNotSupportedException e) {
-            Files.move(tempFile, destination, StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
-
-    /***
+    /**
      * Declares an interface which is functionally equivalent to {@link Consumer},
      * except supports the ability to throw IOExceptions that may occur.
      */
