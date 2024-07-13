@@ -9,8 +9,8 @@
      public final double minY;
      public final double minZ;
 @@ -528,5 +_,13 @@
-             p_165883_.y + p_165885_ / 2.0,
-             p_165883_.z + p_165886_ / 2.0
+             center.y + ySize / 2.0,
+             center.z + zSize / 2.0
          );
 +    }
 +

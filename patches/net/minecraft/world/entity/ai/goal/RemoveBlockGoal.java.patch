@@ -13,9 +13,9 @@
          );
          return chunkaccess == null
              ? false
--            : chunkaccess.getBlockState(p_25851_).is(this.blockToRemove)
-+            : chunkaccess.getBlockState(p_25851_).canEntityDestroy(p_25850_, p_25851_, this.removerMob)
-+                && chunkaccess.getBlockState(p_25851_).is(this.blockToRemove)
-                 && chunkaccess.getBlockState(p_25851_.above()).isAir()
-                 && chunkaccess.getBlockState(p_25851_.above(2)).isAir();
+-            : chunkaccess.getBlockState(pos).is(this.blockToRemove)
++            : chunkaccess.getBlockState(pos).canEntityDestroy(level, pos, this.removerMob)
++                && chunkaccess.getBlockState(pos).is(this.blockToRemove)
+                 && chunkaccess.getBlockState(pos.above()).isAir()
+                 && chunkaccess.getBlockState(pos.above(2)).isAir();
      }

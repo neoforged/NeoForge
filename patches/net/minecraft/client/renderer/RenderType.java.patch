@@ -3,42 +3,42 @@
 @@ -968,7 +_,7 @@
      }
  
-     public static RenderType text(ResourceLocation p_110498_) {
--        return TEXT.apply(p_110498_);
-+        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getText(p_110498_);
+     public static RenderType text(ResourceLocation location) {
+-        return TEXT.apply(location);
++        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getText(location);
      }
  
      public static RenderType textBackground() {
 @@ -976,19 +_,19 @@
      }
  
-     public static RenderType textIntensity(ResourceLocation p_173238_) {
--        return TEXT_INTENSITY.apply(p_173238_);
-+        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensity(p_173238_);
+     public static RenderType textIntensity(ResourceLocation id) {
+-        return TEXT_INTENSITY.apply(id);
++        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensity(id);
      }
  
-     public static RenderType textPolygonOffset(ResourceLocation p_181445_) {
--        return TEXT_POLYGON_OFFSET.apply(p_181445_);
-+        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextPolygonOffset(p_181445_);
+     public static RenderType textPolygonOffset(ResourceLocation id) {
+-        return TEXT_POLYGON_OFFSET.apply(id);
++        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextPolygonOffset(id);
      }
  
-     public static RenderType textIntensityPolygonOffset(ResourceLocation p_181447_) {
--        return TEXT_INTENSITY_POLYGON_OFFSET.apply(p_181447_);
-+        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityPolygonOffset(p_181447_);
+     public static RenderType textIntensityPolygonOffset(ResourceLocation id) {
+-        return TEXT_INTENSITY_POLYGON_OFFSET.apply(id);
++        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensityPolygonOffset(id);
      }
  
-     public static RenderType textSeeThrough(ResourceLocation p_110501_) {
--        return TEXT_SEE_THROUGH.apply(p_110501_);
-+        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextSeeThrough(p_110501_);
+     public static RenderType textSeeThrough(ResourceLocation location) {
+-        return TEXT_SEE_THROUGH.apply(location);
++        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextSeeThrough(location);
      }
  
      public static RenderType textBackgroundSeeThrough() {
 @@ -996,7 +_,7 @@
      }
  
-     public static RenderType textIntensitySeeThrough(ResourceLocation p_173241_) {
--        return TEXT_INTENSITY_SEE_THROUGH.apply(p_173241_);
-+        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensitySeeThrough(p_173241_);
+     public static RenderType textIntensitySeeThrough(ResourceLocation id) {
+-        return TEXT_INTENSITY_SEE_THROUGH.apply(id);
++        return net.neoforged.neoforge.client.NeoForgeRenderTypes.getTextIntensitySeeThrough(id);
      }
  
      public static RenderType lightning() {

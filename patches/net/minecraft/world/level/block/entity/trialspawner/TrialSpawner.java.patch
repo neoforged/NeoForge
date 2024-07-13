@@ -14,11 +14,11 @@
  
                                  boolean flag = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().contains("id", 8);
 -                                if (flag) {
--                                    mob.finalizeSpawn(p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.TRIAL_SPAWNER, null);
+-                                    mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.TRIAL_SPAWNER, null);
 -                                }
 +                                // Neo: Patch in FinalizeSpawn for spawners so it may be fired unconditionally, instead of only when vanilla would normally call it.
 +                                // The local flag is the conditions under which the spawner will normally call Mob#finalizeSpawn.
-+                                net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.TRIAL_SPAWNER, null, this, flag);
++                                net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.TRIAL_SPAWNER, null, this, flag);
  
                                  mob.setPersistenceRequired();
                                  spawndata.getEquipment().ifPresent(mob::equip);

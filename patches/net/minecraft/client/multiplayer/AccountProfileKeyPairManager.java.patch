@@ -8,4 +8,4 @@
 +                    if (net.neoforged.fml.loading.FMLLoader.isProduction() || this.userApiService != UserApiService.OFFLINE)
                      LOGGER.error("Failed to retrieve profile key pair", (Throwable)ioexception);
                      this.writeProfileKeyPair(null);
-                     return p_254074_;
+                     return pair;

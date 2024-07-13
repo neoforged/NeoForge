@@ -3,9 +3,9 @@
 @@ -104,7 +_,7 @@
  
      @Override
-     public BlockState playerWillDestroy(Level p_57615_, BlockPos p_57616_, BlockState p_57617_, Player p_57618_) {
--        if (!p_57615_.isClientSide && !p_57618_.getMainHandItem().isEmpty() && p_57618_.getMainHandItem().is(Items.SHEARS)) {
-+        if (!p_57615_.isClientSide && !p_57618_.getMainHandItem().isEmpty() && p_57618_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_DISARM)) {
-             p_57615_.setBlock(p_57616_, p_57617_.setValue(DISARMED, Boolean.valueOf(true)), 4);
-             p_57615_.gameEvent(p_57618_, GameEvent.SHEAR, p_57616_);
+     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+-        if (!level.isClientSide && !player.getMainHandItem().isEmpty() && player.getMainHandItem().is(Items.SHEARS)) {
++        if (!level.isClientSide && !player.getMainHandItem().isEmpty() && player.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_DISARM)) {
+             level.setBlock(pos, state.setValue(DISARMED, Boolean.valueOf(true)), 4);
+             level.gameEvent(player, GameEvent.SHEAR, pos);
          }

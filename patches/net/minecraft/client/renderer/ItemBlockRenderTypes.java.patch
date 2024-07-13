@@ -22,8 +22,8 @@
  
 +    /** @deprecated Forge: Use {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
 +    @Deprecated // Note: this method does NOT support model-based render types
-     public static RenderType getChunkRenderType(BlockState p_109283_) {
-         Block block = p_109283_.getBlock();
+     public static RenderType getChunkRenderType(BlockState state) {
+         Block block = state.getBlock();
          if (block instanceof LeavesBlock) {
 @@ -352,6 +_,8 @@
          }
@@ -31,8 +31,8 @@
  
 +    /** @deprecated Forge: Use {@link net.neoforged.neoforge.client.RenderTypeHelper#getMovingBlockRenderType(RenderType)} while iterating through {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
 +    @Deprecated // Note: this method does NOT support model-based render types
-     public static RenderType getMovingBlockRenderType(BlockState p_109294_) {
-         Block block = p_109294_.getBlock();
+     public static RenderType getMovingBlockRenderType(BlockState state) {
+         Block block = state.getBlock();
          if (block instanceof LeavesBlock) {
 @@ -366,6 +_,8 @@
          }
@@ -40,8 +40,8 @@
  
 +    /** @deprecated Forge: Use {@link net.neoforged.neoforge.client.RenderTypeHelper#getEntityRenderType(RenderType, boolean)} while iterating through {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
 +    @Deprecated // Note: this method does NOT support model-based render types
-     public static RenderType getRenderType(BlockState p_109285_, boolean p_109286_) {
-         RenderType rendertype = getChunkRenderType(p_109285_);
+     public static RenderType getRenderType(BlockState state, boolean cull) {
+         RenderType rendertype = getChunkRenderType(state);
          if (rendertype == RenderType.translucent()) {
 @@ -379,6 +_,8 @@
          }
@@ -49,13 +49,13 @@
  
 +    /** @deprecated Forge: Use {@link net.minecraft.client.resources.model.BakedModel#getRenderPasses(ItemStack, boolean)} and {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(ItemStack, boolean)}. */
 +    @Deprecated // Note: this method does NOT support model-based render types
-     public static RenderType getRenderType(ItemStack p_109280_, boolean p_109281_) {
-         Item item = p_109280_.getItem();
+     public static RenderType getRenderType(ItemStack stack, boolean cull) {
+         Item item = stack.getItem();
          if (item instanceof BlockItem) {
 @@ -396,5 +_,78 @@
  
-     public static void setFancy(boolean p_109292_) {
-         renderCutout = p_109292_;
+     public static void setFancy(boolean fancy) {
+         renderCutout = fancy;
 +    }
 +
 +    // Neo: Injected new ChunkRenderTypeSets for Blocks to be able to use

@@ -3,24 +3,24 @@
 @@ -137,6 +_,7 @@
      }
  
-     private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, HopperBlockEntity p_326256_) {
-+        if (net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_)) return true;
-         Container container = getAttachedContainer(p_155563_, p_155564_, p_326256_);
+     private static boolean ejectItems(Level level, BlockPos pos, HopperBlockEntity blockEntity) {
++        if (net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(blockEntity)) return true;
+         Container container = getAttachedContainer(level, pos, blockEntity);
          if (container == null) {
              return false;
 @@ -214,6 +_,8 @@
-     public static boolean suckInItems(Level p_155553_, Hopper p_155554_) {
-         BlockPos blockpos = BlockPos.containing(p_155554_.getLevelX(), p_155554_.getLevelY() + 1.0, p_155554_.getLevelZ());
-         BlockState blockstate = p_155553_.getBlockState(blockpos);
-+        Boolean ret = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155553_, p_155554_);
+     public static boolean suckInItems(Level level, Hopper hopper) {
+         BlockPos blockpos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());
+         BlockState blockstate = level.getBlockState(blockpos);
++        Boolean ret = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(level, hopper);
 +        if (ret != null) return ret;
-         Container container = getSourceContainer(p_155553_, p_155554_, blockpos, blockstate);
+         Container container = getSourceContainer(level, hopper, blockpos, blockstate);
          if (container != null) {
              Direction direction = Direction.DOWN;
 @@ -470,5 +_,9 @@
      @Override
-     protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
-         return new HopperMenu(p_59312_, p_59313_, this);
+     protected AbstractContainerMenu createMenu(int id, Inventory player) {
+         return new HopperMenu(id, player, this);
 +    }
 +
 +    public long getLastUpdateTime() {

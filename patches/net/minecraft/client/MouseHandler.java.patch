@@ -4,7 +4,7 @@
                  this.activeButton = -1;
              }
  
-+            if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(p_91532_, p_91533_, p_91534_)) return;
++            if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(button, action, modifiers)) return;
              boolean[] aboolean = new boolean[]{false};
              if (this.minecraft.getOverlay() == null) {
                  if (this.minecraft.screen == null) {
@@ -40,7 +40,7 @@
                      }
                  }
              }
-+            net.neoforged.neoforge.client.ClientHooks.onMouseButtonPost(p_91532_, p_91533_, p_91534_);
++            net.neoforged.neoforge.client.ClientHooks.onMouseButtonPost(button, action, modifiers);
          }
      }
  
@@ -83,7 +83,7 @@
 @@ -262,12 +_,13 @@
      }
  
-     private void turnPlayer(double p_316356_) {
+     private void turnPlayer(double movementTime) {
 -        double d2 = this.minecraft.options.sensitivity().get() * 0.6F + 0.2F;
 +        var event = net.neoforged.neoforge.client.ClientHooks.getTurnPlayerValues(this.minecraft.options.sensitivity().get(), this.minecraft.options.smoothCamera);
 +        double d2 = event.getMouseSensitivity() * 0.6F + 0.2F;
@@ -93,8 +93,8 @@
          double d1;
 -        if (this.minecraft.options.smoothCamera) {
 +        if (event.getCinematicCameraEnabled()) {
-             double d5 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d4, p_316356_ * d4);
-             double d6 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d4, p_316356_ * d4);
+             double d5 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d4, movementTime * d4);
+             double d6 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d4, movementTime * d4);
              d0 = d5;
 @@ -313,6 +_,14 @@
  

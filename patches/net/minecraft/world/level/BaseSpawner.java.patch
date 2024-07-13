@@ -13,19 +13,19 @@
  
                          entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), randomsource.nextFloat() * 360.0F, 0.0F);
                          if (entity instanceof Mob mob) {
--                            if (spawndata.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(p_151312_, MobSpawnType.SPAWNER)
--                                || !mob.checkSpawnObstruction(p_151312_)) {
-+                            if (!net.neoforged.neoforge.event.EventHooks.checkSpawnPositionSpawner(mob, p_151312_, MobSpawnType.SPAWNER, spawndata, this)) {
+-                            if (spawndata.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(serverLevel, MobSpawnType.SPAWNER)
+-                                || !mob.checkSpawnObstruction(serverLevel)) {
++                            if (!net.neoforged.neoforge.event.EventHooks.checkSpawnPositionSpawner(mob, serverLevel, MobSpawnType.SPAWNER, spawndata, this)) {
                                  continue;
                              }
  
                              boolean flag1 = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().contains("id", 8);
 -                            if (flag1) {
--                                ((Mob)entity).finalizeSpawn(p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null);
+-                                ((Mob)entity).finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null);
 -                            }
 +                            // Neo: Patch in FinalizeSpawn for spawners so it may be fired unconditionally, instead of only when vanilla would normally call it.
 +                            // The local flag1 is the conditions under which the spawner will normally call Mob#finalizeSpawn.
-+                            net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, this, flag1);
++                            net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, serverLevel, serverLevel.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, this, flag1);
  
                              spawndata.getEquipment().ifPresent(mob::equip);
                          }

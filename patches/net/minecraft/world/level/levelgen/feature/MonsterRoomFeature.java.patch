@@ -3,8 +3,8 @@
 @@ -131,6 +_,6 @@
      }
  
-     private EntityType<?> randomEntityId(RandomSource p_225154_) {
--        return Util.getRandom(MOBS, p_225154_);
-+        return net.neoforged.neoforge.common.MonsterRoomHooks.getRandomMonsterRoomMob(p_225154_);
+     private EntityType<?> randomEntityId(RandomSource random) {
+-        return Util.getRandom(MOBS, random);
++        return net.neoforged.neoforge.common.MonsterRoomHooks.getRandomMonsterRoomMob(random);
      }
  }

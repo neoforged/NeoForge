@@ -2,30 +2,30 @@
 +++ b/net/minecraft/world/level/block/FarmBlock.java
 @@ -100,10 +_,7 @@
      @Override
-     public void fallOn(Level p_153227_, BlockState p_153228_, BlockPos p_153229_, Entity p_153230_, float p_153231_) {
-         if (!p_153227_.isClientSide
--            && p_153227_.random.nextFloat() < p_153231_ - 0.5F
--            && p_153230_ instanceof LivingEntity
--            && (p_153230_ instanceof Player || p_153227_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING))
--            && p_153230_.getBbWidth() * p_153230_.getBbWidth() * p_153230_.getBbHeight() > 0.512F) {
-+            && net.neoforged.neoforge.common.CommonHooks.onFarmlandTrample(p_153227_, p_153229_, Blocks.DIRT.defaultBlockState(), p_153231_, p_153230_)) { // Forge: Move logic to Entity#canTrample
-             turnToDirt(p_153230_, p_153228_, p_153227_, p_153229_);
+     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+         if (!level.isClientSide
+-            && level.random.nextFloat() < fallDistance - 0.5F
+-            && entity instanceof LivingEntity
+-            && (entity instanceof Player || level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING))
+-            && entity.getBbWidth() * entity.getBbWidth() * entity.getBbHeight() > 0.512F) {
++            && net.neoforged.neoforge.common.CommonHooks.onFarmlandTrample(level, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity)) { // Forge: Move logic to Entity#canTrample
+             turnToDirt(entity, state, level, pos);
          }
  
 @@ -121,13 +_,14 @@
      }
  
-     private static boolean isNearWater(LevelReader p_53259_, BlockPos p_53260_) {
-+        BlockState state = p_53259_.getBlockState(p_53260_);
-         for (BlockPos blockpos : BlockPos.betweenClosed(p_53260_.offset(-4, 0, -4), p_53260_.offset(4, 1, 4))) {
--            if (p_53259_.getFluidState(blockpos).is(FluidTags.WATER)) {
-+            if (state.canBeHydrated(p_53259_, p_53260_, p_53259_.getFluidState(blockpos), blockpos)) {
+     private static boolean isNearWater(LevelReader level, BlockPos pos) {
++        BlockState state = level.getBlockState(pos);
+         for (BlockPos blockpos : BlockPos.betweenClosed(pos.offset(-4, 0, -4), pos.offset(4, 1, 4))) {
+-            if (level.getFluidState(blockpos).is(FluidTags.WATER)) {
++            if (state.canBeHydrated(level, pos, level.getFluidState(blockpos), blockpos)) {
                  return true;
              }
          }
  
 -        return false;
-+        return net.neoforged.neoforge.common.FarmlandWaterManager.hasBlockWaterTicket(p_53259_, p_53260_);
++        return net.neoforged.neoforge.common.FarmlandWaterManager.hasBlockWaterTicket(level, pos);
      }
  
      @Override

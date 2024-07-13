@@ -3,42 +3,42 @@
 @@ -97,7 +_,8 @@
              return null;
          } else {
-             BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below());
+             BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos().below());
 -            if (blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON)) {
-+            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_261764_.getLevel(), p_261764_.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
++            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(context.getLevel(), context.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
 +            if (soilDecision.isDefault() ? blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision.isTrue()) {
                  if (blockstate.is(Blocks.BAMBOO_SAPLING)) {
                      return this.defaultBlockState().setValue(AGE, Integer.valueOf(0));
                  } else if (blockstate.is(Blocks.BAMBOO)) {
 @@ -130,10 +_,11 @@
      @Override
-     protected void randomTick(BlockState p_261931_, ServerLevel p_261751_, BlockPos p_261616_, RandomSource p_261766_) {
-         if (p_261931_.getValue(STAGE) == 0) {
--            if (p_261766_.nextInt(3) == 0 && p_261751_.isEmptyBlock(p_261616_.above()) && p_261751_.getRawBrightness(p_261616_.above(), 0) >= 9) {
-+            if (p_261751_.isEmptyBlock(p_261616_.above()) && p_261751_.getRawBrightness(p_261616_.above(), 0) >= 9) {
-                 int i = this.getHeightBelowUpToMax(p_261751_, p_261616_) + 1;
+     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+         if (state.getValue(STAGE) == 0) {
+-            if (random.nextInt(3) == 0 && level.isEmptyBlock(pos.above()) && level.getRawBrightness(pos.above(), 0) >= 9) {
++            if (level.isEmptyBlock(pos.above()) && level.getRawBrightness(pos.above(), 0) >= 9) {
+                 int i = this.getHeightBelowUpToMax(level, pos) + 1;
 -                if (i < 16) {
-+                if (i < 16 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_261751_, p_261616_, p_261931_, p_261766_.nextInt(3) == 0)) {
-                     this.growBamboo(p_261931_, p_261751_, p_261616_, p_261766_, i);
-+                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_261751_, p_261616_, p_261931_);
++                if (i < 16 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt(3) == 0)) {
+                     this.growBamboo(state, level, pos, random, i);
++                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
                  }
              }
          }
 @@ -141,6 +_,8 @@
  
      @Override
-     protected boolean canSurvive(BlockState p_261860_, LevelReader p_262154_, BlockPos p_261493_) {
-+        net.neoforged.neoforge.common.util.TriState soilDecision = p_262154_.getBlockState(p_261493_.below()).canSustainPlant(p_262154_, p_261493_.below(), Direction.UP, p_261860_);
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
++        net.neoforged.neoforge.common.util.TriState soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
-         return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
+         return level.getBlockState(pos.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
  
 @@ -193,7 +_,7 @@
  
      @Override
-     protected float getDestroyProgress(BlockState p_261691_, Player p_262171_, BlockGetter p_261621_, BlockPos p_261500_) {
--        return p_262171_.getMainHandItem().getItem() instanceof SwordItem ? 1.0F : super.getDestroyProgress(p_261691_, p_262171_, p_261621_, p_261500_);
-+        return p_262171_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG) ? 1.0F : super.getDestroyProgress(p_261691_, p_262171_, p_261621_, p_261500_);
+     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+-        return player.getMainHandItem().getItem() instanceof SwordItem ? 1.0F : super.getDestroyProgress(state, player, level, pos);
++        return player.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG) ? 1.0F : super.getDestroyProgress(state, player, level, pos);
      }
  
-     protected void growBamboo(BlockState p_261855_, Level p_262076_, BlockPos p_262109_, RandomSource p_261633_, int p_261759_) {
+     protected void growBamboo(BlockState state, Level level, BlockPos pos, RandomSource random, int age) {

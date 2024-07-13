@@ -12,15 +12,15 @@
 @@ -182,9 +_,11 @@
  
      @Override
-     public void performRangedAttack(LivingEntity p_32141_, float p_32142_) {
+     public void performRangedAttack(LivingEntity target, float distanceFactor) {
 -        ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
 -        ItemStack itemstack1 = this.getProjectile(itemstack);
--        AbstractArrow abstractarrow = this.getArrow(itemstack1, p_32142_, itemstack);
+-        AbstractArrow abstractarrow = this.getArrow(itemstack1, distanceFactor, itemstack);
 +        ItemStack weapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
 +        ItemStack itemstack1 = this.getProjectile(weapon);
-+        AbstractArrow abstractarrow = this.getArrow(itemstack1, p_32142_, weapon);
++        AbstractArrow abstractarrow = this.getArrow(itemstack1, distanceFactor, weapon);
 +        if (weapon.getItem() instanceof net.minecraft.world.item.ProjectileWeaponItem weaponItem)
 +            abstractarrow = weaponItem.customArrow(abstractarrow, itemstack1, weapon);
-         double d0 = p_32141_.getX() - this.getX();
-         double d1 = p_32141_.getY(0.3333333333333333) - abstractarrow.getY();
-         double d2 = p_32141_.getZ() - this.getZ();
+         double d0 = target.getX() - this.getX();
+         double d1 = target.getY(0.3333333333333333) - abstractarrow.getY();
+         double d2 = target.getZ() - this.getZ();

@@ -3,21 +3,21 @@
 @@ -42,6 +_,9 @@
      private static final Map<Item, Map<ResourceLocation, ItemPropertyFunction>> PROPERTIES = Maps.newHashMap();
  
-     private static ClampedItemPropertyFunction registerGeneric(ResourceLocation p_174582_, ClampedItemPropertyFunction p_174583_) {
-+        return (ClampedItemPropertyFunction) registerGeneric(p_174582_, (ItemPropertyFunction) p_174583_);
+     private static ClampedItemPropertyFunction registerGeneric(ResourceLocation name, ClampedItemPropertyFunction property) {
++        return (ClampedItemPropertyFunction) registerGeneric(name, (ItemPropertyFunction) property);
 +    }
-+    public static ItemPropertyFunction registerGeneric(ResourceLocation p_174582_, ItemPropertyFunction p_174583_) {
-         GENERIC_PROPERTIES.put(p_174582_, p_174583_);
-         return p_174583_;
++    public static ItemPropertyFunction registerGeneric(ResourceLocation name, ItemPropertyFunction property) {
+         GENERIC_PROPERTIES.put(name, property);
+         return property;
      }
 @@ -51,6 +_,10 @@
      }
  
-     private static void register(Item p_174571_, ResourceLocation p_174572_, ClampedItemPropertyFunction p_174573_) {
-+        register(p_174571_, p_174572_, (ItemPropertyFunction) p_174573_);
+     private static void register(Item item, ResourceLocation name, ClampedItemPropertyFunction property) {
++        register(item, name, (ItemPropertyFunction) property);
 +    }
 +
-+    public static void register(Item p_174571_, ResourceLocation p_174572_, ItemPropertyFunction p_174573_) {
-         PROPERTIES.computeIfAbsent(p_174571_, p_117828_ -> Maps.newHashMap()).put(p_174572_, p_174573_);
++    public static void register(Item item, ResourceLocation name, ItemPropertyFunction property) {
+         PROPERTIES.computeIfAbsent(item, p_117828_ -> Maps.newHashMap()).put(name, property);
      }
  

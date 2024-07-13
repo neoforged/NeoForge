@@ -3,12 +3,12 @@
 @@ -51,9 +_,10 @@
      }
  
-     protected boolean scanForWater(BlockGetter p_52135_, BlockPos p_52136_) {
-+        BlockState state = p_52135_.getBlockState(p_52136_);
+     protected boolean scanForWater(BlockGetter level, BlockPos pos) {
++        BlockState state = level.getBlockState(pos);
          for (Direction direction : Direction.values()) {
-             FluidState fluidstate = p_52135_.getFluidState(p_52136_.relative(direction));
+             FluidState fluidstate = level.getFluidState(pos.relative(direction));
 -            if (fluidstate.is(FluidTags.WATER)) {
-+            if (state.canBeHydrated(p_52135_, p_52136_, fluidstate, p_52136_.relative(direction))) {
++            if (state.canBeHydrated(level, pos, fluidstate, pos.relative(direction))) {
                  return true;
              }
          }

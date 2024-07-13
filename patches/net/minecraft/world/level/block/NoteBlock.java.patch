@@ -1,23 +1,23 @@
 --- a/net/minecraft/world/level/block/NoteBlock.java
 +++ b/net/minecraft/world/level/block/NoteBlock.java
 @@ -110,7 +_,9 @@
-         if (p_316774_.isClientSide) {
+         if (level.isClientSide) {
              return InteractionResult.SUCCESS;
          } else {
--            p_316441_ = p_316441_.cycle(NOTE);
-+            int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(p_316774_, p_316344_, p_316441_, p_316441_.getValue(NOTE), p_316441_.cycle(NOTE).getValue(NOTE));
+-            state = state.cycle(NOTE);
++            int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(level, pos, state, state.getValue(NOTE), state.cycle(NOTE).getValue(NOTE));
 +            if (_new == -1) return InteractionResult.FAIL;
-+            p_316441_ = p_316441_.setValue(NOTE, _new);
-             p_316774_.setBlock(p_316344_, p_316441_, 3);
-             this.playNote(p_316884_, p_316441_, p_316774_, p_316344_);
-             p_316884_.awardStat(Stats.TUNE_NOTEBLOCK);
++            state = state.setValue(NOTE, _new);
+             level.setBlock(pos, state, 3);
+             this.playNote(player, state, level, pos);
+             player.awardStat(Stats.TUNE_NOTEBLOCK);
 @@ -132,6 +_,9 @@
  
      @Override
-     protected boolean triggerEvent(BlockState p_55023_, Level p_55024_, BlockPos p_55025_, int p_55026_, int p_55027_) {
-+        net.neoforged.neoforge.event.level.NoteBlockEvent.Play e = new net.neoforged.neoforge.event.level.NoteBlockEvent.Play(p_55024_, p_55025_, p_55023_, p_55023_.getValue(NOTE), p_55023_.getValue(INSTRUMENT));
+     protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
++        net.neoforged.neoforge.event.level.NoteBlockEvent.Play e = new net.neoforged.neoforge.event.level.NoteBlockEvent.Play(level, pos, state, state.getValue(NOTE), state.getValue(INSTRUMENT));
 +        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(e).isCanceled()) return false;
-+        p_55023_ = p_55023_.setValue(NOTE, e.getVanillaNoteId()).setValue(INSTRUMENT, e.getInstrument());
-         NoteBlockInstrument noteblockinstrument = p_55023_.getValue(INSTRUMENT);
++        state = state.setValue(NOTE, e.getVanillaNoteId()).setValue(INSTRUMENT, e.getInstrument());
+         NoteBlockInstrument noteblockinstrument = state.getValue(INSTRUMENT);
          float f;
          if (noteblockinstrument.isTunable()) {

@@ -9,10 +9,10 @@
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
 @@ -366,6 +_,7 @@
-             p_253924_.gui.getChat().restoreState(p_295121_.chatState());
+             minecraft.gui.getChat().restoreState(commonListenerCookie.chatState());
          }
  
-+        this.connectionType = p_295121_.connectionType();
++        this.connectionType = commonListenerCookie.connectionType();
          this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
      }
  
@@ -21,7 +21,7 @@
          this.minecraft.debugRenderer.clear();
          this.minecraft.player.resetPos();
 +        net.neoforged.neoforge.client.ClientHooks.firePlayerLogin(this.minecraft.gameMode, this.minecraft.player, this.minecraft.getConnection().connection);
-         this.minecraft.player.setId(p_105030_.playerId());
+         this.minecraft.player.setId(packet.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
 @@ -828,7 +_,8 @@
@@ -43,24 +43,24 @@
          localplayer1.setYRot(-180.0F);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
 @@ -1306,10 +_,7 @@
-         PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
-         BlockPos blockpos = p_104976_.getPos();
-         this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
--            CompoundTag compoundtag = p_104976_.getTag();
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft);
+         BlockPos blockpos = packet.getPos();
+         this.minecraft.level.getBlockEntity(blockpos, packet.getType()).ifPresent(p_337415_ -> {
+-            CompoundTag compoundtag = packet.getTag();
 -            if (!compoundtag.isEmpty()) {
 -                p_337415_.loadWithComponents(compoundtag, this.registryAccess);
 -            }
-+            p_337415_.onDataPacket(connection, p_104976_, this.registryAccess);
++            p_337415_.onDataPacket(connection, packet, this.registryAccess);
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
 @@ -1471,7 +_,9 @@
      @Override
-     public void handleCommands(ClientboundCommandsPacket p_104990_) {
-         PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
--        this.commands = new CommandDispatcher<>(p_104990_.getRoot(CommandBuildContext.simple(this.registryAccess, this.enabledFeatures)));
+     public void handleCommands(ClientboundCommandsPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft);
+-        this.commands = new CommandDispatcher<>(packet.getRoot(CommandBuildContext.simple(this.registryAccess, this.enabledFeatures)));
 +        var context = CommandBuildContext.simple(this.registryAccess, this.enabledFeatures);
-+        this.commands = new CommandDispatcher<>(p_104990_.getRoot(context));
++        this.commands = new CommandDispatcher<>(packet.getRoot(context));
 +        this.commands = net.neoforged.neoforge.client.ClientCommandHandler.mergeServerCommands(this.commands, context);
      }
  
@@ -75,7 +75,7 @@
      @Override
 @@ -1595,8 +_,10 @@
          TagCollector tagcollector = new TagCollector();
-         p_294888_.getTags().forEach(tagcollector::append);
+         packet.getTags().forEach(tagcollector::append);
          tagcollector.updateTags(this.registryAccess, this.connection.isMemoryConnection());
 -        List<ItemStack> list = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
 -        this.searchTrees.updateCreativeTags(list);
@@ -89,20 +89,20 @@
 @@ -2407,6 +_,8 @@
      }
  
-     public void sendChat(String p_249888_) {
-+        p_249888_ = net.neoforged.neoforge.client.ClientHooks.onClientSendMessage(p_249888_);
-+        if (p_249888_.isEmpty()) return;
+     public void sendChat(String message) {
++        message = net.neoforged.neoforge.client.ClientHooks.onClientSendMessage(message);
++        if (message.isEmpty()) return;
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
 @@ -2416,6 +_,7 @@
      }
  
-     public void sendCommand(String p_250092_) {
-+        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(p_250092_)) return;
-         SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
+     public void sendCommand(String command) {
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) return;
+         SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(command));
          if (signablecommand.arguments().isEmpty()) {
-             this.send(new ServerboundChatCommandPacket(p_250092_));
+             this.send(new ServerboundChatCommandPacket(command));
 @@ -2490,6 +_,10 @@
  
      public Scoreboard scoreboard() {

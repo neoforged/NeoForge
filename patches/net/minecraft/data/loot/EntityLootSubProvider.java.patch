@@ -9,7 +9,7 @@
 +    }
 +
      @Override
-     public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> p_251751_) {
+     public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
          this.generate();
          Set<ResourceKey<LootTable>> set = new HashSet<>();
 -        BuiltInRegistries.ENTITY_TYPE
@@ -23,8 +23,8 @@
          }
      }
  
--    protected static boolean canHaveLootTable(EntityType<?> p_249029_) {
-+    protected boolean canHaveLootTable(EntityType<?> p_249029_) {
-         return SPECIAL_LOOT_TABLE_TYPES.contains(p_249029_) || p_249029_.getCategory() != MobCategory.MISC;
+-    protected static boolean canHaveLootTable(EntityType<?> entityType) {
++    protected boolean canHaveLootTable(EntityType<?> entityType) {
+         return SPECIAL_LOOT_TABLE_TYPES.contains(entityType) || entityType.getCategory() != MobCategory.MISC;
      }
  

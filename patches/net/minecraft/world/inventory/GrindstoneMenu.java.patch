@@ -6,8 +6,8 @@
      private final ContainerLevelAccess access;
 +    private int xp = -1;
  
-     public GrindstoneMenu(int p_39563_, Inventory p_39564_) {
-         this(p_39563_, p_39564_, ContainerLevelAccess.NULL);
+     public GrindstoneMenu(int containerId, Inventory playerInventory) {
+         this(containerId, playerInventory, ContainerLevelAccess.NULL);
 @@ -49,13 +_,13 @@
          this.addSlot(new Slot(this.repairSlots, 0, 49, 19) {
              @Override
@@ -27,42 +27,42 @@
 @@ -66,6 +_,7 @@
  
              @Override
-             public void onTake(Player p_150574_, ItemStack p_150575_) {
-+                if (net.neoforged.neoforge.common.CommonHooks.onGrindstoneTake(GrindstoneMenu.this.repairSlots, p_39568_, this::getExperienceAmount)) return;
-                 p_39568_.execute((p_39634_, p_39635_) -> {
+             public void onTake(Player player, ItemStack stack) {
++                if (net.neoforged.neoforge.common.CommonHooks.onGrindstoneTake(GrindstoneMenu.this.repairSlots, access, this::getExperienceAmount)) return;
+                 access.execute((p_39634_, p_39635_) -> {
                      if (p_39634_ instanceof ServerLevel) {
                          ExperienceOrb.award((ServerLevel)p_39634_, Vec3.atCenterOf(p_39635_), this.getExperienceAmount(p_39634_));
 @@ -78,6 +_,7 @@
              }
  
-             private int getExperienceAmount(Level p_39632_) {
+             private int getExperienceAmount(Level level) {
 +                if (xp > -1) return xp;
                  int l = 0;
                  l += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(0));
                  l += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(1));
 @@ -131,6 +_,8 @@
  
-     private ItemStack computeResult(ItemStack p_332654_, ItemStack p_332736_) {
-         boolean flag = !p_332654_.isEmpty() || !p_332736_.isEmpty();
-+        this.xp = net.neoforged.neoforge.common.CommonHooks.onGrindstoneChange(p_332654_, p_332736_, this.resultSlots, -1);
+     private ItemStack computeResult(ItemStack inputItem, ItemStack additionalItem) {
+         boolean flag = !inputItem.isEmpty() || !additionalItem.isEmpty();
++        this.xp = net.neoforged.neoforge.common.CommonHooks.onGrindstoneChange(inputItem, additionalItem, this.resultSlots, -1);
 +        if (this.xp != Integer.MIN_VALUE) return ItemStack.EMPTY; // Porting 1.20.5 check if this is correct
          if (!flag) {
              return ItemStack.EMPTY;
-         } else if (p_332654_.getCount() <= 1 && p_332736_.getCount() <= 1) {
+         } else if (inputItem.getCount() <= 1 && additionalItem.getCount() <= 1) {
 @@ -155,7 +_,7 @@
-             int k = p_332686_.getMaxDamage() - p_332686_.getDamageValue();
+             int k = additionalItem.getMaxDamage() - additionalItem.getDamageValue();
              int l = j + k + i * 5 / 100;
              int i1 = 1;
--            if (!p_332723_.isDamageableItem()) {
-+            if (!p_332723_.isDamageableItem() || !p_332723_.isRepairable()) {
-                 if (p_332723_.getMaxStackSize() < 2 || !ItemStack.matches(p_332723_, p_332686_)) {
+-            if (!inputItem.isDamageableItem()) {
++            if (!inputItem.isDamageableItem() || !inputItem.isRepairable()) {
+                 if (inputItem.getMaxStackSize() < 2 || !ItemStack.matches(inputItem, additionalItem)) {
                      return ItemStack.EMPTY;
                  }
 @@ -167,6 +_,7 @@
              if (itemstack.isDamageableItem()) {
                  itemstack.set(DataComponents.MAX_DAMAGE, i);
                  itemstack.setDamageValue(Math.max(i - l, 0));
-+                if (!p_332686_.isRepairable()) itemstack.setDamageValue(p_332723_.getDamageValue());
++                if (!additionalItem.isRepairable()) itemstack.setDamageValue(inputItem.getDamageValue());
              }
  
-             this.mergeEnchantsFrom(itemstack, p_332686_);
+             this.mergeEnchantsFrom(itemstack, additionalItem);

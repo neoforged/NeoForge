@@ -13,20 +13,20 @@
          }
      }
  
--    private static boolean isSticky(BlockState p_155938_) {
--        return p_155938_.is(Blocks.SLIME_BLOCK) || p_155938_.is(Blocks.HONEY_BLOCK);
+-    private static boolean isSticky(BlockState state) {
+-        return state.is(Blocks.SLIME_BLOCK) || state.is(Blocks.HONEY_BLOCK);
 -    }
 -
--    private static boolean canStickToEachOther(BlockState p_155940_, BlockState p_155941_) {
--        if (p_155940_.is(Blocks.HONEY_BLOCK) && p_155941_.is(Blocks.SLIME_BLOCK)) {
+-    private static boolean canStickToEachOther(BlockState state1, BlockState state2) {
+-        if (state1.is(Blocks.HONEY_BLOCK) && state2.is(Blocks.SLIME_BLOCK)) {
 -            return false;
 -        } else {
--            return p_155940_.is(Blocks.SLIME_BLOCK) && p_155941_.is(Blocks.HONEY_BLOCK) ? false : isSticky(p_155940_) || isSticky(p_155941_);
+-            return state1.is(Blocks.SLIME_BLOCK) && state2.is(Blocks.HONEY_BLOCK) ? false : isSticky(state1) || isSticky(state2);
 -        }
 -    }
 -
-     private boolean addBlockLine(BlockPos p_60434_, Direction p_60435_) {
-         BlockState blockstate = this.level.getBlockState(p_60434_);
+     private boolean addBlockLine(BlockPos originPos, Direction direction) {
+         BlockState blockstate = this.level.getBlockState(originPos);
          if (blockstate.isAir()) {
 @@ -86,12 +_,13 @@
              if (i + this.toPush.size() > 12) {
@@ -35,7 +35,7 @@
 -                while (isSticky(blockstate)) {
 +                BlockState oldState;
 +                while(blockstate.isStickyBlock()) {
-                     BlockPos blockpos = p_60434_.relative(this.pushDirection.getOpposite(), i);
+                     BlockPos blockpos = originPos.relative(this.pushDirection.getOpposite(), i);
 -                    BlockState blockstate1 = blockstate;
 +                    oldState = blockstate;
                      blockstate = this.level.getBlockState(blockpos);
@@ -56,7 +56,7 @@
                          }
 @@ -174,7 +_,7 @@
              if (direction.getAxis() != this.pushDirection.getAxis()) {
-                 BlockPos blockpos = p_60432_.relative(direction);
+                 BlockPos blockpos = fromPos.relative(direction);
                  BlockState blockstate1 = this.level.getBlockState(blockpos);
 -                if (canStickToEachOther(blockstate1, blockstate) && !this.addBlockLine(blockpos, direction)) {
 +                if (blockstate1.canStickTo(blockstate) && blockstate.canStickTo(blockstate1) && !this.addBlockLine(blockpos, direction)) {

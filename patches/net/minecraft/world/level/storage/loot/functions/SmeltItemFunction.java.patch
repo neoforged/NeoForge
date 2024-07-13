@@ -2,10 +2,10 @@
 +++ b/net/minecraft/world/level/storage/loot/functions/SmeltItemFunction.java
 @@ -41,7 +_,7 @@
              if (optional.isPresent()) {
-                 ItemStack itemstack = optional.get().value().getResultItem(p_81269_.getLevel().registryAccess());
+                 ItemStack itemstack = optional.get().value().getResultItem(context.getLevel().registryAccess());
                  if (!itemstack.isEmpty()) {
--                    return itemstack.copyWithCount(p_81268_.getCount());
-+                    return itemstack.copyWithCount(p_81268_.getCount() * itemstack.getCount()); // Forge: Support smelting returning multiple
+-                    return itemstack.copyWithCount(stack.getCount());
++                    return itemstack.copyWithCount(stack.getCount() * itemstack.getCount()); // Forge: Support smelting returning multiple
                  }
              }
  

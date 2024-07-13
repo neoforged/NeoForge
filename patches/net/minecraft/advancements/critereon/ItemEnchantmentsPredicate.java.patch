@@ -7,12 +7,12 @@
 +
 +        // Neo: use IItemExtension#getAllEnchantments for enchantments when testing this predicate.
 +        @Override
-+        public boolean matches(ItemStack p_333958_) {
++        public boolean matches(ItemStack stack) {
 +            var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
 +            if (lookup != null) {
-+                return matches(p_333958_, p_333958_.getAllEnchantments(lookup));
++                return matches(stack, stack.getAllEnchantments(lookup));
 +            }
-+            return super.matches(p_333958_);
++            return super.matches(stack);
 +        }
      }
  

@@ -21,4 +21,4 @@
 +                }
                  return levelchunk;
              },
-             p_347404_ -> p_347565_.mainThreadMailBox()
+             p_347404_ -> worldGenContext.mainThreadMailBox()

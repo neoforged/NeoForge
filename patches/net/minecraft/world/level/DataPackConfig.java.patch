@@ -3,10 +3,10 @@
 @@ -19,7 +_,7 @@
      private final List<String> disabled;
  
-     public DataPackConfig(List<String> p_45848_, List<String> p_45849_) {
--        this.enabled = ImmutableList.copyOf(p_45848_);
-+        this.enabled = com.google.common.collect.Lists.newArrayList(p_45848_);
-         this.disabled = ImmutableList.copyOf(p_45849_);
+     public DataPackConfig(List<String> enabled, List<String> disabled) {
+-        this.enabled = ImmutableList.copyOf(enabled);
++        this.enabled = com.google.common.collect.Lists.newArrayList(enabled);
+         this.disabled = ImmutableList.copyOf(disabled);
      }
  
 @@ -29,5 +_,9 @@

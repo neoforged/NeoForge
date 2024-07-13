@@ -3,11 +3,11 @@
 @@ -184,7 +_,7 @@
  
      @VisibleForTesting
-     public static void maybeTransferFluid(BlockState p_221860_, ServerLevel p_221861_, BlockPos p_221862_, float p_221863_) {
--        if (!(p_221863_ > 0.17578125F) || !(p_221863_ > 0.05859375F)) {
+     public static void maybeTransferFluid(BlockState state, ServerLevel level, BlockPos pos, float randChance) {
+-        if (!(randChance > 0.17578125F) || !(randChance > 0.05859375F)) {
 +        if (true) { //Neo: remove the water and lava drip chance checks to allow modded fluids to drip into cauldrons
-             if (isStalactiteStartPos(p_221860_, p_221861_, p_221862_)) {
-                 Optional<PointedDripstoneBlock.FluidInfo> optional = getFluidAboveStalactite(p_221861_, p_221862_, p_221860_);
+             if (isStalactiteStartPos(state, level, pos)) {
+                 Optional<PointedDripstoneBlock.FluidInfo> optional = getFluidAboveStalactite(level, pos, state);
                  if (!optional.isEmpty()) {
 @@ -193,14 +_,12 @@
                      if (fluid == Fluids.WATER) {
@@ -20,28 +20,28 @@
                          f = 0.05859375F;
                      }
  
--                    if (!(p_221863_ >= f)) {
+-                    if (!(randChance >= f)) {
 +                    net.neoforged.neoforge.fluids.FluidType.DripstoneDripInfo dripInfo = fluid.getFluidType().getDripInfo();
-+                    if (dripInfo != null && !(p_221863_ >= dripInfo.chance())) {
-                         BlockPos blockpos = findTip(p_221860_, p_221861_, p_221862_, 11, false);
++                    if (dripInfo != null && !(randChance >= dripInfo.chance())) {
+                         BlockPos blockpos = findTip(state, level, pos, 11, false);
                          if (blockpos != null) {
                              if (optional.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
 @@ -411,7 +_,8 @@
-         double d2 = (double)((float)(p_154073_.getY() + 1) - 0.6875F) - 0.0625;
-         double d3 = (double)p_154073_.getZ() + 0.5 + vec3.z;
-         Fluid fluid = getDripFluid(p_154072_, p_154075_);
+         double d2 = (double)((float)(pos.getY() + 1) - 0.6875F) - 0.0625;
+         double d3 = (double)pos.getZ() + 0.5 + vec3.z;
+         Fluid fluid = getDripFluid(level, p_fluid);
 -        ParticleOptions particleoptions = fluid.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
 +        ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
 +        if (particleoptions != null)
-         p_154072_.addParticle(particleoptions, d1, d2, d3, 0.0, 0.0, 0.0);
+         level.addParticle(particleoptions, d1, d2, d3, 0.0, 0.0, 0.0);
      }
  
 @@ -563,7 +_,7 @@
      }
  
-     private static boolean canFillCauldron(Fluid p_154159_) {
--        return p_154159_ == Fluids.LAVA || p_154159_ == Fluids.WATER;
-+        return p_154159_.getFluidType().getDripInfo() != null;
+     private static boolean canFillCauldron(Fluid fluid) {
+-        return fluid == Fluids.LAVA || fluid == Fluids.WATER;
++        return fluid.getFluidType().getDripInfo() != null;
      }
  
-     private static boolean canGrow(BlockState p_154141_, BlockState p_154142_) {
+     private static boolean canGrow(BlockState dripstoneState, BlockState state) {

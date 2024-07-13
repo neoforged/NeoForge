@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/SwordItem.java
 +++ b/net/minecraft/world/item/SwordItem.java
 @@ -21,11 +_,25 @@
-         super(p_43269_, p_43272_.component(DataComponents.TOOL, createToolProperties()));
+         super(tier, properties.component(DataComponents.TOOL, createToolProperties()));
      }
  
 +    /**
@@ -15,21 +15,21 @@
          return new Tool(List.of(Tool.Rule.minesAndDrops(List.of(Blocks.COBWEB), 15.0F), Tool.Rule.overrideSpeed(BlockTags.SWORD_EFFICIENT, 1.5F)), 1.0F, 2);
      }
  
-     public static ItemAttributeModifiers createAttributes(Tier p_330371_, int p_331976_, float p_332104_) {
-+        return createAttributes(p_330371_, (float)p_331976_, p_332104_);
+     public static ItemAttributeModifiers createAttributes(Tier tier, int attackDamage, float attackSpeed) {
++        return createAttributes(tier, (float)attackDamage, attackSpeed);
 +    }
 +
 +    /**
 +     * Neo: Method overload to allow giving a float for damage instead of an int.
 +     */
-+    public static ItemAttributeModifiers createAttributes(Tier p_330371_, float p_331976_, float p_332104_) {
++    public static ItemAttributeModifiers createAttributes(Tier tier, float attackDamage, float attackSpeed) {
          return ItemAttributeModifiers.builder()
              .add(
                  Attributes.ATTACK_DAMAGE,
 @@ -55,5 +_,10 @@
      @Override
-     public void postHurtEnemy(ItemStack p_345553_, LivingEntity p_345771_, LivingEntity p_346282_) {
-         p_345553_.hurtAndBreak(1, p_346282_, EquipmentSlot.MAINHAND);
+     public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+         stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
 +    }
 +
 +    @Override

@@ -5,10 +5,10 @@
  import net.minecraft.world.item.crafting.Recipe;
  
 -public interface RecipeOutput {
--    void accept(ResourceLocation p_312249_, Recipe<?> p_312328_, @Nullable AdvancementHolder p_312176_);
+-    void accept(ResourceLocation location, Recipe<?> recipe, @Nullable AdvancementHolder advancement);
 +public interface RecipeOutput extends net.neoforged.neoforge.common.extensions.IRecipeOutputExtension {
-+    default void accept(ResourceLocation p_312249_, Recipe<?> p_312328_, @Nullable AdvancementHolder p_312176_) {
-+        accept(p_312249_, p_312328_, p_312176_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++    default void accept(ResourceLocation location, Recipe<?> recipe, @Nullable AdvancementHolder advancement) {
++        accept(location, recipe, advancement, new net.neoforged.neoforge.common.conditions.ICondition[0]);
 +    }
  
      Advancement.Builder advancement();

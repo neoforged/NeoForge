@@ -4,35 +4,35 @@
                  }
              }
  
--            if (p_90897_ == 1 && (!(this.minecraft.screen instanceof KeyBindsScreen) || ((KeyBindsScreen)screen).lastKeySelection <= Util.getMillis() - 20L)) {
+-            if (action == 1 && (!(this.minecraft.screen instanceof KeyBindsScreen) || ((KeyBindsScreen)screen).lastKeySelection <= Util.getMillis() - 20L)) {
 +
 +            if ((!(this.minecraft.screen instanceof KeyBindsScreen) || ((KeyBindsScreen)screen).lastKeySelection <= Util.getMillis() - 20L)) {
-+                if (p_90897_ == 1) {
-                 if (this.minecraft.options.keyFullscreen.matches(p_90895_, p_90896_)) {
++                if (action == 1) {
+                 if (this.minecraft.options.keyFullscreen.matches(key, scanCode)) {
                      this.minecraft.getWindow().toggleFullScreen();
                      this.minecraft.options.fullscreen().set(this.minecraft.getWindow().isFullscreen());
 @@ -384,6 +_,8 @@
                      );
                      return;
                  }
-+                } else if (p_90897_ == 0 /*GLFW_RELEASE*/ && this.minecraft.screen instanceof KeyBindsScreen && net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE)
++                } else if (action == 0 /*GLFW_RELEASE*/ && this.minecraft.screen instanceof KeyBindsScreen && net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE)
 +                    ((KeyBindsScreen)this.minecraft.screen).selectedKey = null; //Forge: Unset pure modifiers.
              }
  
-             if (p_90897_ != 0) {
+             if (action != 0) {
 @@ -407,9 +_,13 @@
                  Screen.wrapScreenError(() -> {
-                     if (p_90897_ == 1 || p_90897_ == 2) {
+                     if (action == 1 || action == 2) {
                          screen.afterKeyboardAction();
--                        aboolean[0] = screen.keyPressed(p_90895_, p_90896_, p_90898_);
-+                        aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, p_90895_, p_90896_, p_90898_);
-+                        if (!aboolean[0]) aboolean[0] = screen.keyPressed(p_90895_, p_90896_, p_90898_);
-+                        if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPost(screen, p_90895_, p_90896_, p_90898_);
-                     } else if (p_90897_ == 0) {
--                        aboolean[0] = screen.keyReleased(p_90895_, p_90896_, p_90898_);
-+                        aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, p_90895_, p_90896_, p_90898_);
-+                        if (!aboolean[0]) aboolean[0] = screen.keyReleased(p_90895_, p_90896_, p_90898_);
-+                        if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, p_90895_, p_90896_, p_90898_);
+-                        aboolean[0] = screen.keyPressed(key, scanCode, modifiers);
++                        aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, key, scanCode, modifiers);
++                        if (!aboolean[0]) aboolean[0] = screen.keyPressed(key, scanCode, modifiers);
++                        if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPost(screen, key, scanCode, modifiers);
+                     } else if (action == 0) {
+-                        aboolean[0] = screen.keyReleased(key, scanCode, modifiers);
++                        aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, key, scanCode, modifiers);
++                        if (!aboolean[0]) aboolean[0] = screen.keyReleased(key, scanCode, modifiers);
++                        if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, key, scanCode, modifiers);
                      }
                  }, "keyPressed event handler", screen.getClass().getCanonicalName());
                  if (aboolean[0]) {
@@ -40,33 +40,33 @@
                      }
                  }
              }
-+            net.neoforged.neoforge.client.ClientHooks.onKeyInput(p_90895_, p_90896_, p_90897_, p_90898_);
++            net.neoforged.neoforge.client.ClientHooks.onKeyInput(key, scanCode, action, modifiers);
          }
      }
  
-     private void charTyped(long p_90890_, int p_90891_, int p_90892_) {
-         if (p_90890_ == this.minecraft.getWindow().getWindow()) {
+     private void charTyped(long windowPointer, int codePoint, int modifiers) {
+         if (windowPointer == this.minecraft.getWindow().getWindow()) {
 -            GuiEventListener guieventlistener = this.minecraft.screen;
 +            Screen guieventlistener = this.minecraft.screen;
              if (guieventlistener != null && this.minecraft.getOverlay() == null) {
-                 if (Character.charCount(p_90891_) == 1) {
+                 if (Character.charCount(codePoint) == 1) {
 -                    Screen.wrapScreenError(
--                        () -> guieventlistener.charTyped((char)p_90891_, p_90892_), "charTyped event handler", guieventlistener.getClass().getCanonicalName()
+-                        () -> guieventlistener.charTyped((char)codePoint, modifiers), "charTyped event handler", guieventlistener.getClass().getCanonicalName()
 -                    );
 +                    Screen.wrapScreenError(() -> {
-+                        if (net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPre(guieventlistener, (char)p_90891_, p_90892_)) return;
-+                        if (guieventlistener.charTyped((char)p_90891_, p_90892_)) return;
-+                        net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(guieventlistener, (char)p_90891_, p_90892_);
++                        if (net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPre(guieventlistener, (char)codePoint, modifiers)) return;
++                        if (guieventlistener.charTyped((char)codePoint, modifiers)) return;
++                        net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(guieventlistener, (char)codePoint, modifiers);
 +                    }, "charTyped event handler", guieventlistener.getClass().getCanonicalName());
                  } else {
-                     for (char c0 : Character.toChars(p_90891_)) {
+                     for (char c0 : Character.toChars(codePoint)) {
 -                        Screen.wrapScreenError(
--                            () -> guieventlistener.charTyped(c0, p_90892_), "charTyped event handler", guieventlistener.getClass().getCanonicalName()
+-                            () -> guieventlistener.charTyped(c0, modifiers), "charTyped event handler", guieventlistener.getClass().getCanonicalName()
 -                        );
 +                        Screen.wrapScreenError(() -> {
-+                            if (net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPre(guieventlistener, c0, p_90892_)) return;
-+                            if (guieventlistener.charTyped(c0, p_90892_)) return;
-+                            net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(guieventlistener, c0, p_90892_);
++                            if (net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPre(guieventlistener, c0, modifiers)) return;
++                            if (guieventlistener.charTyped(c0, modifiers)) return;
++                            net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(guieventlistener, c0, modifiers);
 +                        }, "charTyped event handler", guieventlistener.getClass().getCanonicalName());
                      }
                  }

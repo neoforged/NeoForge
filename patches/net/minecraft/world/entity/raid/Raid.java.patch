@@ -12,7 +12,7 @@
 @@ -515,7 +_,7 @@
                  }
  
-                 this.joinRaid(i, raider, p_37756_, false);
+                 this.joinRaid(i, raider, pos, false);
 -                if (raid$raidertype.entityType == EntityType.RAVAGER) {
 +                if (raid$raidertype.entityTypeSupplier.get() == EntityType.RAVAGER) {
                      Raider raider1 = null;
@@ -37,10 +37,10 @@
 +        final java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier;
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-         private RaiderType(EntityType<? extends Raider> p_37821_, int[] p_37822_) {
-             this.entityType = p_37821_;
-             this.spawnsPerWaveBeforeBonus = p_37822_;
-+            this.entityTypeSupplier = () -> p_37821_;
+         private RaiderType(EntityType<? extends Raider> entityType, int[] spawnsPerWaveBeforeBonus) {
+             this.entityType = entityType;
+             this.spawnsPerWaveBeforeBonus = spawnsPerWaveBeforeBonus;
++            this.entityTypeSupplier = () -> entityType;
 +        }
 +
 +        private RaiderType(java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier, int[] spawnsPerWave) {

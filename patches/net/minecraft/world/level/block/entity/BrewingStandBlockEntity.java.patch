@@ -3,45 +3,45 @@
 @@ -164,6 +_,7 @@
      }
  
-     private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(p_155293_)) return;
-         ItemStack itemstack = p_155293_.get(3);
-         PotionBrewing potionbrewing = p_155291_.potionBrewing();
+     private static void doBrew(Level level, BlockPos pos, NonNullList<ItemStack> items) {
++        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(items)) return;
+         ItemStack itemstack = items.get(3);
+         PotionBrewing potionbrewing = level.potionBrewing();
  
 @@ -171,15 +_,17 @@
-             p_155293_.set(i, potionbrewing.mix(itemstack, p_155293_.get(i)));
+             items.set(i, potionbrewing.mix(itemstack, items.get(i)));
          }
  
 -        itemstack.shrink(1);
 -        if (itemstack.getItem().hasCraftingRemainingItem()) {
 -            ItemStack itemstack1 = new ItemStack(itemstack.getItem().getCraftingRemainingItem());
-+        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(p_155293_);
++        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
 +        if (itemstack.hasCraftingRemainingItem()) {
 +            ItemStack itemstack1 = itemstack.getCraftingRemainingItem();
 +            itemstack.shrink(1);
              if (itemstack.isEmpty()) {
                  itemstack = itemstack1;
              } else {
-                 Containers.dropItemStack(p_155291_, (double)p_155292_.getX(), (double)p_155292_.getY(), (double)p_155292_.getZ(), itemstack1);
+                 Containers.dropItemStack(level, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemstack1);
              }
          }
 +        else itemstack.shrink(1);
  
-         p_155293_.set(3, itemstack);
-         p_155291_.levelEvent(1035, p_155292_, 0);
+         items.set(3, itemstack);
+         level.levelEvent(1035, pos, 0);
 @@ -208,13 +_,13 @@
  
      @Override
-     public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {
+     public boolean canPlaceItem(int index, ItemStack stack) {
 +        PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
-         if (p_59017_ == 3) {
+         if (index == 3) {
 -            PotionBrewing potionbrewing = this.level != null ? this.level.potionBrewing() : PotionBrewing.EMPTY;
-             return potionbrewing.isIngredient(p_59018_);
+             return potionbrewing.isIngredient(stack);
          } else {
-             return p_59017_ == 4
-                 ? p_59018_.is(Items.BLAZE_POWDER)
--                : (p_59018_.is(Items.POTION) || p_59018_.is(Items.SPLASH_POTION) || p_59018_.is(Items.LINGERING_POTION) || p_59018_.is(Items.GLASS_BOTTLE))
-+                : (potionbrewing.isInput(p_59018_) || p_59018_.is(Items.GLASS_BOTTLE))
-                     && this.getItem(p_59017_).isEmpty();
+             return index == 4
+                 ? stack.is(Items.BLAZE_POWDER)
+-                : (stack.is(Items.POTION) || stack.is(Items.SPLASH_POTION) || stack.is(Items.LINGERING_POTION) || stack.is(Items.GLASS_BOTTLE))
++                : (potionbrewing.isInput(stack) || stack.is(Items.GLASS_BOTTLE))
+                     && this.getItem(index).isEmpty();
          }
      }

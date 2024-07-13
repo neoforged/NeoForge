@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
 @@ -87,15 +_,40 @@
-         return new LootContext.VisitedEntry<>(LootDataType.MODIFIER, p_279163_);
+         return new LootContext.VisitedEntry<>(LootDataType.MODIFIER, modifier);
      }
  
 +    // Neo: Keep track of the original loot table ID through modifications
 +    @org.jetbrains.annotations.Nullable
 +    private ResourceLocation queriedLootTableId;
 +
-+    private LootContext(LootParams p_287722_, RandomSource p_287702_, HolderGetter.Provider p_287619_, ResourceLocation queriedLootTableId) {
-+        this(p_287722_, p_287702_, p_287619_);
++    private LootContext(LootParams params, RandomSource random, HolderGetter.Provider p_287619_, ResourceLocation queriedLootTableId) {
++        this(params, random, p_287619_);
 +        this.queriedLootTableId = queriedLootTableId;
 +    }
 +
@@ -28,8 +28,8 @@
 +        @Nullable
 +        private ResourceLocation queriedLootTableId; // Forge: correctly pass around loot table ID with copy constructor
  
-         public Builder(LootParams p_287628_) {
-             this.params = p_287628_;
+         public Builder(LootParams params) {
+             this.params = params;
          }
  
 +        public Builder(LootContext context) {
@@ -38,9 +38,9 @@
 +            this.queriedLootTableId = context.queriedLootTableId;
 +        }
 +
-         public LootContext.Builder withOptionalRandomSeed(long p_78966_) {
-             if (p_78966_ != 0L) {
-                 this.random = RandomSource.create(p_78966_);
+         public LootContext.Builder withOptionalRandomSeed(long seed) {
+             if (seed != 0L) {
+                 this.random = RandomSource.create(seed);
 @@ -109,6 +_,11 @@
              return this;
          }
@@ -55,7 +55,7 @@
          }
 @@ -119,7 +_,7 @@
              RandomSource randomsource = Optional.ofNullable(this.random)
-                 .or(() -> p_298622_.map(serverlevel::getRandomSequence))
+                 .or(() -> sequence.map(serverlevel::getRandomSequence))
                  .orElseGet(serverlevel::getRandom);
 -            return new LootContext(this.params, randomsource, minecraftserver.reloadableRegistries().lookup());
 +            return new LootContext(this.params, randomsource, minecraftserver.reloadableRegistries().lookup(), queriedLootTableId);
@@ -73,4 +73,4 @@
 +            return this.name;
          }
  
-         public static LootContext.EntityTarget getByName(String p_79007_) {
+         public static LootContext.EntityTarget getByName(String name) {

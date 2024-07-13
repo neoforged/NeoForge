@@ -23,47 +23,47 @@
 @@ -57,8 +_,17 @@
      }
  
-     public FenceGateBlock(WoodType p_273340_, BlockBehaviour.Properties p_273352_) {
--        super(p_273352_.sound(p_273340_.soundType()));
--        this.type = p_273340_;
-+        this(java.util.Optional.of(p_273340_), p_273352_.sound(p_273340_.soundType()), java.util.Optional.of(p_273340_.fenceGateOpen()), java.util.Optional.of(p_273340_.fenceGateClose()));
+     public FenceGateBlock(WoodType type, BlockBehaviour.Properties properties) {
+-        super(properties.sound(type.soundType()));
+-        this.type = type;
++        this(java.util.Optional.of(type), properties.sound(type.soundType()), java.util.Optional.of(type.fenceGateOpen()), java.util.Optional.of(type.fenceGateClose()));
 +    }
-+    public FenceGateBlock(BlockBehaviour.Properties p_273352_, net.minecraft.sounds.SoundEvent openSound, net.minecraft.sounds.SoundEvent closeSound) {
-+        this(java.util.Optional.empty(), p_273352_, java.util.Optional.of(openSound), java.util.Optional.of(closeSound));
++    public FenceGateBlock(BlockBehaviour.Properties properties, net.minecraft.sounds.SoundEvent openSound, net.minecraft.sounds.SoundEvent closeSound) {
++        this(java.util.Optional.empty(), properties, java.util.Optional.of(openSound), java.util.Optional.of(closeSound));
 +    }
-+    public FenceGateBlock(java.util.Optional<WoodType> p_273340_, BlockBehaviour.Properties p_273352_, java.util.Optional<net.minecraft.sounds.SoundEvent> openSound, java.util.Optional<net.minecraft.sounds.SoundEvent> closeSound) {
-+        super(p_273352_);
-+        com.google.common.base.Preconditions.checkArgument(p_273340_.isPresent() || (openSound.isPresent() && closeSound.isPresent()), "Fence gates must have sounds set");
-+        this.type = p_273340_.orElse(null);
-+        this.openSound = openSound.orElseGet(() -> type.fenceGateOpen()); // Type may be null, so we cannot do a method ref
-+        this.closeSound = closeSound.orElseGet(() -> type.fenceGateClose());
++    public FenceGateBlock(java.util.Optional<WoodType> type, BlockBehaviour.Properties properties, java.util.Optional<net.minecraft.sounds.SoundEvent> openSound, java.util.Optional<net.minecraft.sounds.SoundEvent> closeSound) {
++        super(properties);
++        com.google.common.base.Preconditions.checkArgument(type.isPresent() || (openSound.isPresent() && closeSound.isPresent()), "Fence gates must have sounds set");
++        this.type = type.orElse(null);
++        this.openSound = openSound.orElseGet(() -> this.type.fenceGateOpen()); // Type may be null, so we cannot do a method ref
++        this.closeSound = closeSound.orElseGet(() -> this.type.fenceGateClose());
          this.registerDefaultState(
              this.stateDefinition
                  .any()
 @@ -169,7 +_,7 @@
-         p_53366_.playSound(
-             p_53368_,
-             p_53367_,
+         level.playSound(
+             player,
+             pos,
 -            flag ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
 +            flag ? openSound : closeSound,
              SoundSource.BLOCKS,
              1.0F,
-             p_53366_.getRandom().nextFloat() * 0.1F + 0.9F
+             level.getRandom().nextFloat() * 0.1F + 0.9F
 @@ -186,7 +_,7 @@
-             p_311813_.playSound(
+             level.playSound(
                  null,
-                 p_312680_,
+                 pos,
 -                flag ? this.type.fenceGateClose() : this.type.fenceGateOpen(),
 +                flag ? closeSound : openSound,
                  SoundSource.BLOCKS,
                  1.0F,
-                 p_311813_.getRandom().nextFloat() * 0.1F + 0.9F
+                 level.getRandom().nextFloat() * 0.1F + 0.9F
 @@ -207,7 +_,7 @@
-                     p_53373_.playSound(
+                     level.playSound(
                          null,
-                         p_53374_,
+                         pos,
 -                        flag ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
 +                        flag ? openSound : closeSound,
                          SoundSource.BLOCKS,
                          1.0F,
-                         p_53373_.getRandom().nextFloat() * 0.1F + 0.9F
+                         level.getRandom().nextFloat() * 0.1F + 0.9F

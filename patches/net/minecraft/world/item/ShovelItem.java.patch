@@ -3,9 +3,9 @@
 @@ -44,7 +_,7 @@
              return InteractionResult.PASS;
          } else {
-             Player player = p_43119_.getPlayer();
+             Player player = context.getPlayer();
 -            BlockState blockstate1 = FLATTENABLES.get(blockstate.getBlock());
-+            BlockState blockstate1 = blockstate.getToolModifiedState(p_43119_, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_FLATTEN, false);
++            BlockState blockstate1 = blockstate.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_FLATTEN, false);
              BlockState blockstate2 = null;
              if (blockstate1 != null && level.getBlockState(blockpos.above()).isAir()) {
                  level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);

@@ -11,33 +11,33 @@
 +    /** @deprecated Forge: Use {@linkplain #SimpleBakedModel(List, Map, boolean, boolean, boolean, TextureAtlasSprite, ItemTransforms, ItemOverrides, net.neoforged.neoforge.client.RenderTypeGroup) variant with RenderTypeGroup} **/
 +    @Deprecated
      public SimpleBakedModel(
-         List<BakedQuad> p_119489_,
-         Map<Direction, List<BakedQuad>> p_119490_,
+         List<BakedQuad> unculledFaces,
+         Map<Direction, List<BakedQuad>> culledFaces,
 @@ -37,6 +_,20 @@
-         ItemTransforms p_119495_,
-         ItemOverrides p_119496_
+         ItemTransforms transforms,
+         ItemOverrides overrides
      ) {
-+        this(p_119489_, p_119490_, p_119491_, p_119492_, p_119493_, p_119494_, p_119495_, p_119496_, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
++        this(unculledFaces, culledFaces, hasAmbientOcclusion, usesBlockLight, isGui3d, particleIcon, transforms, overrides, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
 +    }
 +
 +    public SimpleBakedModel(
-+              List<BakedQuad> p_119489_,
-+              Map<Direction, List<BakedQuad>> p_119490_,
-+              boolean p_119491_,
-+              boolean p_119492_,
-+              boolean p_119493_,
-+              TextureAtlasSprite p_119494_,
-+              ItemTransforms p_119495_,
-+              ItemOverrides p_119496_,
++              List<BakedQuad> unculledFaces,
++              Map<Direction, List<BakedQuad>> culledFaces,
++              boolean hasAmbientOcclusion,
++              boolean usesBlockLight,
++              boolean isGui3d,
++              TextureAtlasSprite particleIcon,
++              ItemTransforms transforms,
++              ItemOverrides overrides,
 +              net.neoforged.neoforge.client.RenderTypeGroup renderTypes
 +    ) {
-         this.unculledFaces = p_119489_;
-         this.culledFaces = p_119490_;
-         this.hasAmbientOcclusion = p_119491_;
+         this.unculledFaces = unculledFaces;
+         this.culledFaces = culledFaces;
+         this.hasAmbientOcclusion = hasAmbientOcclusion;
 @@ -45,6 +_,9 @@
-         this.particleIcon = p_119494_;
-         this.transforms = p_119495_;
-         this.overrides = p_119496_;
+         this.particleIcon = particleIcon;
+         this.transforms = transforms;
+         this.overrides = overrides;
 +        this.blockRenderTypes = !renderTypes.isEmpty() ? net.neoforged.neoforge.client.ChunkRenderTypeSet.of(renderTypes.block()) : null;
 +        this.itemRenderTypes = !renderTypes.isEmpty() ? List.of(renderTypes.entity()) : null;
 +        this.fabulousItemRenderTypes = !renderTypes.isEmpty() ? List.of(renderTypes.entityFabulous()) : null;

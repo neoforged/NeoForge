@@ -16,50 +16,50 @@
 +            MobCategory mobcategory = entity.getClassification(true);
              if (mobcategory != MobCategory.MISC) {
                  BlockPos blockpos = entity.blockPosition();
-                 p_186527_.query(
+                 chunkGetter.query(
 @@ -199,7 +_,7 @@
                                      l1++;
-                                     p_47040_.addFreshEntityWithPassengers(mob);
-                                     p_47044_.run(mob, p_47041_);
+                                     level.addFreshEntityWithPassengers(mob);
+                                     callback.run(mob, chunk);
 -                                    if (j >= mob.getMaxSpawnClusterSize()) {
 +                                    if (j >= net.neoforged.neoforge.event.EventHooks.getMaxSpawnClusterSize(mob)) {
                                          return;
                                      }
  
 @@ -272,7 +_,7 @@
-         return p_46994_ > (double)(p_46993_.getType().getCategory().getDespawnDistance() * p_46993_.getType().getCategory().getDespawnDistance())
-                 && p_46993_.removeWhenFarAway(p_46994_)
+         return distance > (double)(mob.getType().getCategory().getDespawnDistance() * mob.getType().getCategory().getDespawnDistance())
+                 && mob.removeWhenFarAway(distance)
              ? false
--            : p_46993_.checkSpawnRules(p_46992_, MobSpawnType.NATURAL) && p_46993_.checkSpawnObstruction(p_46992_);
-+            : net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(p_46993_, p_46992_, MobSpawnType.NATURAL);
+-            : mob.checkSpawnRules(level, MobSpawnType.NATURAL) && mob.checkSpawnObstruction(level);
++            : net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(mob, level, MobSpawnType.NATURAL);
      }
  
      private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAt(
 @@ -303,9 +_,14 @@
-         BlockPos p_220448_,
-         @Nullable Holder<Biome> p_220449_
+         BlockPos pos,
+         @Nullable Holder<Biome> biome
      ) {
--        return isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_)
+-        return isInNetherFortressBounds(pos, level, category, structureManager)
 -            ? NetherFortressStructure.FORTRESS_ENEMIES
--            : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_);
+-            : generator.getMobsAt(biome != null ? biome : level.getBiome(pos), structureManager, category, pos);
 +        // Forge: Add in potential spawns, and replace hardcoded nether fortress mob list
-+        if (isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_)) {
-+            var monsterSpawns = p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER);
++        if (isInNetherFortressBounds(pos, level, category, structureManager)) {
++            var monsterSpawns = structureManager.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER);
 +            if (monsterSpawns != null) { // structure modifiers can clear the spawn overrides
-+                return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(p_220444_, p_220447_, p_220448_, monsterSpawns.spawns());
++                return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(level, category, pos, monsterSpawns.spawns());
 +            }
 +        }
-+        return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(p_220444_, p_220447_, p_220448_, p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_));
++        return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(level, category, pos, generator.getMobsAt(biome != null ? biome : level.getBiome(pos), structureManager, category, pos));
      }
  
-     public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {
+     public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {
 @@ -392,8 +_,7 @@
  
-                                 entity.moveTo(d0, (double)blockpos.getY(), d1, p_220454_.nextFloat() * 360.0F, 0.0F);
+                                 entity.moveTo(d0, (double)blockpos.getY(), d1, random.nextFloat() * 360.0F, 0.0F);
                                  if (entity instanceof Mob mob
--                                    && mob.checkSpawnRules(p_220451_, MobSpawnType.CHUNK_GENERATION)
--                                    && mob.checkSpawnObstruction(p_220451_)) {
-+                                    && net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(mob, p_220451_, MobSpawnType.CHUNK_GENERATION)) {
+-                                    && mob.checkSpawnRules(levelAccessor, MobSpawnType.CHUNK_GENERATION)
+-                                    && mob.checkSpawnObstruction(levelAccessor)) {
++                                    && net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(mob, levelAccessor, MobSpawnType.CHUNK_GENERATION)) {
                                      spawngroupdata = mob.finalizeSpawn(
-                                         p_220451_, p_220451_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata
+                                         levelAccessor, levelAccessor.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata
                                      );

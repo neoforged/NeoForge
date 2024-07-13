@@ -18,13 +18,13 @@
      private final ChatFormatting color;
 +    private final java.util.function.UnaryOperator<net.minecraft.network.chat.Style> styleModifier;
  
-     private Rarity(int p_336096_, String p_335642_, ChatFormatting p_43028_) {
-         this.id = p_336096_;
-         this.name = p_335642_;
-         this.color = p_43028_;
+     private Rarity(int id, String name, ChatFormatting color) {
+         this.id = id;
+         this.name = name;
+         this.color = color;
 -    }
 -
-+        this.styleModifier = style -> style.withColor(p_43028_);
++        this.styleModifier = style -> style.withColor(color);
 +    }
 +
 +    Rarity(int id, String name, java.util.function.UnaryOperator<net.minecraft.network.chat.Style> styleModifier) {

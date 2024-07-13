@@ -3,8 +3,8 @@
 @@ -58,6 +_,7 @@
  
      @Override
-     protected void receiveStalactiteDrip(BlockState p_152940_, Level p_152941_, BlockPos p_152942_, Fluid p_152943_) {
-+        if (p_152943_.getFluidType().handleCauldronDrip(p_152943_, p_152941_, p_152942_)) return;
-         if (p_152943_ == Fluids.WATER) {
+     protected void receiveStalactiteDrip(BlockState state, Level level, BlockPos pos, Fluid fluid) {
++        if (fluid.getFluidType().handleCauldronDrip(fluid, level, pos)) return;
+         if (fluid == Fluids.WATER) {
              BlockState blockstate = Blocks.WATER_CAULDRON.defaultBlockState();
-             p_152941_.setBlockAndUpdate(p_152942_, blockstate);
+             level.setBlockAndUpdate(pos, blockstate);

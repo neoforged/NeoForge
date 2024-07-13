@@ -15,7 +15,7 @@
 @@ -799,7 +_,7 @@
          this.incompatibleResourcePacks.clear();
  
-         for (Pack pack : p_275268_.getSelectedPacks()) {
+         for (Pack pack : packRepository.getSelectedPacks()) {
 -            if (!pack.isFixedPosition()) {
 +            if (!pack.isFixedPosition() && !pack.isHidden()) {
                  this.resourcePacks.add(pack.getId());
@@ -24,25 +24,25 @@
 @@ -1099,6 +_,7 @@
      }
  
-     public Options(Minecraft p_92138_, File p_92139_) {
+     public Options(Minecraft minecraft, File gameDirectory) {
 +        setForgeKeybindProperties();
-         this.minecraft = p_92138_;
-         this.optionsFile = new File(p_92139_, "options.txt");
+         this.minecraft = minecraft;
+         this.optionsFile = new File(gameDirectory, "options.txt");
          boolean flag = Runtime.getRuntime().maxMemory() >= 1000000000L;
 @@ -1236,11 +_,21 @@
-         this.onboardAccessibility = p_168428_.process("onboardAccessibility", this.onboardAccessibility);
-         p_168428_.process("menuBackgroundBlurriness", this.menuBackgroundBlurriness);
+         this.onboardAccessibility = accessor.process("onboardAccessibility", this.onboardAccessibility);
+         accessor.process("menuBackgroundBlurriness", this.menuBackgroundBlurriness);
  
-+        net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod.processOptions(p_168428_);
-+        processOptionsForge(p_168428_);
++        net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod.processOptions(accessor);
++        processOptionsForge(accessor);
 +    }
 +    // FORGE: split off to allow reloading options after mod loading is done
-+    private void processOptionsForge(Options.FieldAccess p_168428_)
++    private void processOptionsForge(Options.FieldAccess accessor)
 +    {
          for (KeyMapping keymapping : this.keyMappings) {
 -            String s = keymapping.saveString();
 +            String s = keymapping.saveString() + (keymapping.getKeyModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE ? ":" + keymapping.getKeyModifier() : "");
-             String s1 = p_168428_.process("key_" + keymapping.getName(), s);
+             String s1 = accessor.process("key_" + keymapping.getName(), s);
              if (!s.equals(s1)) {
 -                keymapping.setKey(InputConstants.getKey(s1));
 +                if (s1.indexOf(':') != -1) {
@@ -84,7 +84,7 @@
 @@ -1535,6 +_,23 @@
          }
  
-         p_92146_.setSelected(set);
+         resourcePackList.setSelected(set);
 +    }
 +
 +    private void setForgeKeybindProperties() {

@@ -1,30 +1,30 @@
 --- a/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
 @@ -45,7 +_,7 @@
-         float p_116960_
+         float headPitch
      ) {
-         ItemStack itemstack = p_116954_.getItemBySlot(EquipmentSlot.CHEST);
+         ItemStack itemstack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
 -        if (itemstack.is(Items.ELYTRA)) {
-+        if (shouldRender(itemstack, p_116954_)) {
++        if (shouldRender(itemstack, livingEntity)) {
              ResourceLocation resourcelocation;
-             if (p_116954_ instanceof AbstractClientPlayer abstractclientplayer) {
+             if (livingEntity instanceof AbstractClientPlayer abstractclientplayer) {
                  PlayerSkin playerskin = abstractclientplayer.getSkin();
 @@ -54,10 +_,10 @@
                  } else if (playerskin.capeTexture() != null && abstractclientplayer.isModelPartShown(PlayerModelPart.CAPE)) {
                      resourcelocation = playerskin.capeTexture();
                  } else {
 -                    resourcelocation = WINGS_LOCATION;
-+                    resourcelocation = getElytraTexture(itemstack, p_116954_);
++                    resourcelocation = getElytraTexture(itemstack, livingEntity);
                  }
              } else {
 -                resourcelocation = WINGS_LOCATION;
-+                resourcelocation = getElytraTexture(itemstack, p_116954_);
++                resourcelocation = getElytraTexture(itemstack, livingEntity);
              }
  
-             p_116951_.pushPose();
+             poseStack.pushPose();
 @@ -68,5 +_,30 @@
-             this.elytraModel.renderToBuffer(p_116951_, vertexconsumer, p_116953_, OverlayTexture.NO_OVERLAY);
-             p_116951_.popPose();
+             this.elytraModel.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
+             poseStack.popPose();
          }
 +    }
 +

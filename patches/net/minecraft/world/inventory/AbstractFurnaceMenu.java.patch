@@ -3,9 +3,9 @@
 @@ -167,7 +_,7 @@
      }
  
-     protected boolean isFuel(ItemStack p_38989_) {
--        return AbstractFurnaceBlockEntity.isFuel(p_38989_);
-+        return p_38989_.getBurnTime(this.recipeType) > 0;
+     protected boolean isFuel(ItemStack stack) {
+-        return AbstractFurnaceBlockEntity.isFuel(stack);
++        return stack.getBurnTime(this.recipeType) > 0;
      }
  
      public float getBurnProgress() {

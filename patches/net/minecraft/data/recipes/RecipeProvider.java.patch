@@ -9,13 +9,13 @@
                      if (!set.add(p_312039_)) {
                          throw new IllegalStateException("Duplicate recipe " + p_312039_);
                      } else {
--                        list.add(DataProvider.saveStable(p_324494_, p_324248_, Recipe.CODEC, p_312254_, RecipeProvider.this.recipePathProvider.json(p_312039_)));
-+                        list.add(DataProvider.saveStable(p_324494_, p_324248_, Recipe.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, conditions)), RecipeProvider.this.recipePathProvider.json(p_312039_)));
+-                        list.add(DataProvider.saveStable(output, registries, Recipe.CODEC, p_312254_, RecipeProvider.this.recipePathProvider.json(p_312039_)));
++                        list.add(DataProvider.saveStable(output, registries, Recipe.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, conditions)), RecipeProvider.this.recipePathProvider.json(p_312039_)));
                          if (p_311794_ != null) {
                              list.add(
                                  DataProvider.saveStable(
-                                     p_324494_,
-                                     p_324248_,
+                                     output,
+                                     registries,
 -                                    Advancement.CODEC,
 -                                    p_311794_.value(),
 +                                    Advancement.CONDITIONAL_CODEC,
@@ -26,19 +26,19 @@
 @@ -113,12 +_,16 @@
      }
  
-     protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_) {
--        return DataProvider.saveStable(p_253674_, p_323646_, Advancement.CODEC, p_301116_.value(), this.advancementPathProvider.json(p_301116_.id()));
-+        return buildAdvancement(p_253674_, p_323646_, p_301116_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
+     protected CompletableFuture<?> buildAdvancement(CachedOutput output, HolderLookup.Provider registries, AdvancementHolder advancement) {
+-        return DataProvider.saveStable(output, registries, Advancement.CODEC, advancement.value(), this.advancementPathProvider.json(advancement.id()));
++        return buildAdvancement(output, registries, advancement, new net.neoforged.neoforge.common.conditions.ICondition[0]);
 +    }
 +
-+    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
-+        return DataProvider.saveStable(p_253674_, p_323646_, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_301116_.value(), conditions)), this.advancementPathProvider.json(p_301116_.id()));
++    protected CompletableFuture<?> buildAdvancement(CachedOutput output, HolderLookup.Provider registries, AdvancementHolder advancement, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
++        return DataProvider.saveStable(output, registries, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(advancement.value(), conditions)), this.advancementPathProvider.json(advancement.id()));
      }
  
-     protected abstract void buildRecipes(RecipeOutput p_301172_);
+     protected abstract void buildRecipes(RecipeOutput recipeOutput);
  
--    protected static void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
-+    protected void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
-         BlockFamilies.getAllFamilies().filter(BlockFamily::shouldGenerateRecipe).forEach(p_313461_ -> generateRecipes(p_301146_, p_313461_, p_251836_));
+-    protected static void generateForEnabledBlockFamilies(RecipeOutput recipeOutput, FeatureFlagSet enabledFeatures) {
++    protected void generateForEnabledBlockFamilies(RecipeOutput recipeOutput, FeatureFlagSet enabledFeatures) {
+         BlockFamilies.getAllFamilies().filter(BlockFamily::shouldGenerateRecipe).forEach(p_313461_ -> generateRecipes(recipeOutput, p_313461_, enabledFeatures));
      }
  

@@ -3,9 +3,9 @@
 @@ -39,7 +_,7 @@
  
      @Override
-     public boolean mayPlace(ItemStack p_345029_) {
--        return this.slot == this.owner.getEquipmentSlotForItem(p_345029_);
-+        return p_345029_.canEquip(slot, owner);
+     public boolean mayPlace(ItemStack stack) {
+-        return this.slot == this.owner.getEquipmentSlotForItem(stack);
++        return stack.canEquip(slot, owner);
      }
  
      @Override

@@ -10,11 +10,11 @@
 +    @Deprecated
      @Nullable
      public StructureTemplate.StructureBlockInfo processBlock(
-         LevelReader p_74416_,
+         LevelReader level,
 @@ -30,5 +_,28 @@
-         StructurePlaceSettings p_277497_
+         StructurePlaceSettings settings
      ) {
-         return p_278053_;
+         return processedBlockInfos;
 +    }
 +
 +    @Nullable

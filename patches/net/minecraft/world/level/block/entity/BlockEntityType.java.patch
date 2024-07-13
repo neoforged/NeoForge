@@ -10,8 +10,8 @@
      private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
 @@ -295,6 +_,13 @@
      @Nullable
-     public T create(BlockPos p_155265_, BlockState p_155266_) {
-         return (T)this.factory.create(p_155265_, p_155266_);
+     public T create(BlockPos pos, BlockState state) {
+         return (T)this.factory.create(pos, state);
 +    }
 +
 +    /**
@@ -21,4 +21,4 @@
 +        return java.util.Collections.unmodifiableSet(this.validBlocks);
      }
  
-     public boolean isValid(BlockState p_155263_) {
+     public boolean isValid(BlockState state) {

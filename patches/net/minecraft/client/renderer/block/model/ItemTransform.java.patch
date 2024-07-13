@@ -6,23 +6,23 @@
      public final Vector3f scale;
 +    public final Vector3f rightRotation;
  
-     public ItemTransform(Vector3f p_254427_, Vector3f p_254496_, Vector3f p_254022_) {
-+        this(p_254427_, p_254496_, p_254022_, new Vector3f());
+     public ItemTransform(Vector3f rotation, Vector3f translation, Vector3f scale) {
++        this(rotation, translation, scale, new Vector3f());
 +    }
 +
-+    public ItemTransform(Vector3f p_254427_, Vector3f p_254496_, Vector3f p_254022_, Vector3f rightRotation) {
-         this.rotation = new Vector3f(p_254427_);
-         this.translation = new Vector3f(p_254496_);
-         this.scale = new Vector3f(p_254022_);
++    public ItemTransform(Vector3f rotation, Vector3f translation, Vector3f scale, Vector3f rightRotation) {
+         this.rotation = new Vector3f(rotation);
+         this.translation = new Vector3f(translation);
+         this.scale = new Vector3f(scale);
 +        this.rightRotation = new Vector3f(rightRotation);
      }
  
-     public void apply(boolean p_111764_, PoseStack p_111765_) {
+     public void apply(boolean leftHand, PoseStack poseStack) {
 @@ -42,6 +_,7 @@
-             p_111765_.translate((float)i * this.translation.x(), this.translation.y(), this.translation.z());
-             p_111765_.mulPose(new Quaternionf().rotationXYZ(f * (float) (Math.PI / 180.0), f1 * (float) (Math.PI / 180.0), f2 * (float) (Math.PI / 180.0)));
-             p_111765_.scale(this.scale.x(), this.scale.y(), this.scale.z());
-+            p_111765_.mulPose(net.neoforged.neoforge.common.util.TransformationHelper.quatFromXYZ(rightRotation.x(), rightRotation.y() * (p_111764_ ? -1 : 1), rightRotation.z() * (p_111764_ ? -1 : 1), true));
+             poseStack.translate((float)i * this.translation.x(), this.translation.y(), this.translation.z());
+             poseStack.mulPose(new Quaternionf().rotationXYZ(f * (float) (Math.PI / 180.0), f1 * (float) (Math.PI / 180.0), f2 * (float) (Math.PI / 180.0)));
+             poseStack.scale(this.scale.x(), this.scale.y(), this.scale.z());
++            poseStack.mulPose(net.neoforged.neoforge.common.util.TransformationHelper.quatFromXYZ(rightRotation.x(), rightRotation.y() * (leftHand ? -1 : 1), rightRotation.z() * (leftHand ? -1 : 1), true));
          }
      }
  
@@ -35,4 +35,4 @@
 +            return new ItemTransform(vector3f, vector3f1, vector3f2, rightRotation);
          }
  
-         private Vector3f getVector3f(JsonObject p_111779_, String p_111780_, Vector3f p_253777_) {
+         private Vector3f getVector3f(JsonObject json, String key, Vector3f fallback) {

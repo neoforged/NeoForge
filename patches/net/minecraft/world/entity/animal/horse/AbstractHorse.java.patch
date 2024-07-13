@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 @@ -396,9 +_,9 @@
-     protected void playStepSound(BlockPos p_30584_, BlockState p_30585_) {
-         if (!p_30585_.liquid()) {
-             BlockState blockstate = this.level().getBlockState(p_30584_.above());
--            SoundType soundtype = p_30585_.getSoundType();
-+            SoundType soundtype = p_30585_.getSoundType(level(), p_30584_, this);
+     protected void playStepSound(BlockPos pos, BlockState block) {
+         if (!block.liquid()) {
+             BlockState blockstate = this.level().getBlockState(pos.above());
+-            SoundType soundtype = block.getSoundType();
++            SoundType soundtype = block.getSoundType(level(), pos, this);
              if (blockstate.is(Blocks.SNOW)) {
 -                soundtype = blockstate.getSoundType();
-+                soundtype = blockstate.getSoundType(level(), p_30584_, this);
++                soundtype = blockstate.getSoundType(level(), pos, this);
              }
  
              if (this.isVehicle() && this.canGallop) {
@@ -17,13 +17,13 @@
          this.setIsJumping(true);
          this.hasImpulse = true;
 +        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
-         if (p_275435_.z > 0.0) {
+         if (travelVector.z > 0.0) {
              float f = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
              float f1 = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
 @@ -1118,6 +_,11 @@
  
-         this.randomizeAttributes(p_30555_.getRandom());
-         return super.finalizeSpawn(p_30555_, p_30556_, p_30557_, p_30558_);
+         this.randomizeAttributes(level.getRandom());
+         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
 +    }
 +
 +    // Neo: Inventory getter
@@ -31,4 +31,4 @@
 +        return this.inventory;
      }
  
-     public boolean hasInventoryChanged(Container p_149512_) {
+     public boolean hasInventoryChanged(Container inventory) {

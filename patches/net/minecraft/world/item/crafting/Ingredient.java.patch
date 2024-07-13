@@ -57,10 +57,10 @@
 +    public static final Codec<List<Ingredient>> LIST_CODEC = MAP_CODEC_NONEMPTY.codec().listOf();
 +    public static final Codec<List<Ingredient>> LIST_CODEC_NONEMPTY = LIST_CODEC.validate(list -> list.isEmpty() ? DataResult.error(() -> "Item array cannot be empty, at least one item must be defined") : DataResult.success(list));
  
-     private Ingredient(Stream<? extends Ingredient.Value> p_43907_) {
-         this.values = p_43907_.toArray(Ingredient.Value[]::new);
+     private Ingredient(Stream<? extends Ingredient.Value> values) {
+         this.values = values.toArray(Ingredient.Value[]::new);
 @@ -47,9 +_,20 @@
-         this.values = p_301044_;
+         this.values = values;
      }
  
 +    public Ingredient(net.neoforged.neoforge.common.crafting.ICustomIngredient customIngredient) {
@@ -81,13 +81,13 @@
  
          return this.itemStacks;
 @@ -58,6 +_,8 @@
-     public boolean test(@Nullable ItemStack p_43914_) {
-         if (p_43914_ == null) {
+     public boolean test(@Nullable ItemStack stack) {
+         if (stack == null) {
              return false;
 +        } else if (this.customIngredient != null) {
-+            return this.customIngredient.test(p_43914_);
++            return this.customIngredient.test(stack);
          } else if (this.isEmpty()) {
-             return p_43914_.isEmpty();
+             return stack.isEmpty();
          } else {
 @@ -86,13 +_,65 @@
          return this.stackingIds;
@@ -119,9 +119,9 @@
      }
  
      @Override
-     public boolean equals(Object p_301003_) {
--        return p_301003_ instanceof Ingredient ingredient ? Arrays.equals((Object[])this.values, (Object[])ingredient.values) : false;
-+        return p_301003_ instanceof Ingredient ingredient ? java.util.Objects.equals(this.customIngredient, ingredient.customIngredient) && Arrays.equals((Object[])this.values, (Object[])ingredient.values) : false;
+     public boolean equals(Object other) {
+-        return other instanceof Ingredient ingredient ? Arrays.equals((Object[])this.values, (Object[])ingredient.values) : false;
++        return other instanceof Ingredient ingredient ? java.util.Objects.equals(this.customIngredient, ingredient.customIngredient) && Arrays.equals((Object[])this.values, (Object[])ingredient.values) : false;
 +    }
 +
 +    @Override
@@ -156,13 +156,13 @@
 +        return this.customIngredient != null;
      }
  
-     public static Ingredient fromValues(Stream<? extends Ingredient.Value> p_43939_) {
+     public static Ingredient fromValues(Stream<? extends Ingredient.Value> stream) {
 @@ -120,6 +_,7 @@
-         return fromValues(Stream.of(new Ingredient.TagValue(p_204133_)));
+         return fromValues(Stream.of(new Ingredient.TagValue(tag)));
      }
  
 +    @Deprecated // Neo: We take over the codec creation entirely to support custom ingredients - see CraftingHelper
-     private static Codec<Ingredient> codec(boolean p_301074_) {
+     private static Codec<Ingredient> codec(boolean allowEmpty) {
          Codec<Ingredient.Value[]> codec = Codec.list(Ingredient.Value.CODEC)
              .comapFlatMap(
 @@ -144,10 +_,11 @@
@@ -177,7 +177,7 @@
 +        static final Codec<Ingredient.ItemValue> CODEC = MAP_CODEC.codec();
  
          @Override
-         public boolean equals(Object p_301316_) {
+         public boolean equals(Object other) {
 @@ -163,10 +_,11 @@
      }
  
@@ -190,7 +190,7 @@
 +        static final Codec<Ingredient.TagValue> CODEC = MAP_CODEC.codec();
  
          @Override
-         public boolean equals(Object p_301162_) {
+         public boolean equals(Object other) {
 @@ -181,12 +_,18 @@
                  list.add(new ItemStack(holder));
              }

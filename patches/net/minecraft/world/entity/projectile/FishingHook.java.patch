@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
 @@ -240,8 +_,8 @@
-     private boolean shouldStopFishing(Player p_37137_) {
-         ItemStack itemstack = p_37137_.getMainHandItem();
-         ItemStack itemstack1 = p_37137_.getOffhandItem();
+     private boolean shouldStopFishing(Player player) {
+         ItemStack itemstack = player.getMainHandItem();
+         ItemStack itemstack1 = player.getOffhandItem();
 -        boolean flag = itemstack.is(Items.FISHING_ROD);
 -        boolean flag1 = itemstack1.is(Items.FISHING_ROD);
 +        boolean flag = itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST);
 +        boolean flag1 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST);
-         if (!p_37137_.isRemoved() && p_37137_.isAlive() && (flag || flag1) && !(this.distanceToSqr(p_37137_) > 1024.0)) {
+         if (!player.isRemoved() && player.isAlive() && (flag || flag1) && !(this.distanceToSqr(player) > 1024.0)) {
              return false;
          } else {
 @@ -252,7 +_,7 @@
@@ -27,10 +27,10 @@
 +            net.neoforged.neoforge.event.entity.player.ItemFishedEvent event = null;
              if (this.hookedIn != null) {
                  this.pullEntity(this.hookedIn);
-                 CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, p_37157_, this, Collections.emptyList());
+                 CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, stack, this, Collections.emptyList());
 @@ -451,10 +_,17 @@
                      .withParameter(LootContextParams.ORIGIN, this.position())
-                     .withParameter(LootContextParams.TOOL, p_37157_)
+                     .withParameter(LootContextParams.TOOL, stack)
                      .withParameter(LootContextParams.THIS_ENTITY, this)
 +                    .withParameter(LootContextParams.ATTACKING_ENTITY, this.getOwner())
                      .withLuck((float)this.luck + player.getLuck())
@@ -43,7 +43,7 @@
 +                    this.discard();
 +                    return event.getRodDamage();
 +                }
-                 CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, p_37157_, this, list);
+                 CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, stack, this, list);
  
                  for (ItemStack itemstack : list) {
 @@ -480,6 +_,7 @@

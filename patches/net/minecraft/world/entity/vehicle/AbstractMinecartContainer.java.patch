@@ -3,9 +3,9 @@
 @@ -95,6 +_,8 @@
  
      @Override
-     public InteractionResult interact(Player p_38232_, InteractionHand p_38233_) {
-+        InteractionResult ret = super.interact(p_38232_, p_38233_);
+     public InteractionResult interact(Player player, InteractionHand hand) {
++        InteractionResult ret = super.interact(player, hand);
 +        if (ret.consumesAction()) return ret;
-         return this.interactWithContainerVehicle(p_38232_);
+         return this.interactWithContainerVehicle(player);
      }
  

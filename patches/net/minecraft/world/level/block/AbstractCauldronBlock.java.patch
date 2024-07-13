@@ -2,24 +2,24 @@
 +++ b/net/minecraft/world/level/block/AbstractCauldronBlock.java
 @@ -101,4 +_,22 @@
  
-     protected void receiveStalactiteDrip(BlockState p_151975_, Level p_151976_, BlockPos p_151977_, Fluid p_151978_) {
+     protected void receiveStalactiteDrip(BlockState state, Level level, BlockPos pos, Fluid fluid) {
      }
 +
 +    @Override
-+    public void onPlace(BlockState p_51978_, Level p_51979_, BlockPos p_51980_, BlockState p_51981_, boolean p_51982_) {
-+        super.onPlace(p_51978_, p_51979_, p_51980_, p_51981_, p_51982_);
++    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
++        super.onPlace(state, level, pos, oldState, isMoving);
 +        // Neo: Invalidate cauldron capabilities when a cauldron is added
-+        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(p_51981_.getBlock()) == null) {
-+            p_51979_.invalidateCapabilities(p_51980_);
++        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(oldState.getBlock()) == null) {
++            level.invalidateCapabilities(pos);
 +        }
 +    }
 +
 +    @Override
-+    public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
-+        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
++    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
++        super.onRemove(state, level, pos, newState, movedByPiston);
 +        // Neo: Invalidate cauldron capabilities when a cauldron is removed
-+        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(p_60518_.getBlock()) == null) {
-+            p_60516_.invalidateCapabilities(p_60517_);
++        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(newState.getBlock()) == null) {
++            level.invalidateCapabilities(pos);
 +        }
 +    }
  }

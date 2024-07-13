@@ -11,12 +11,12 @@
 @@ -66,10 +_,15 @@
                      .collect(ImmutableList.toImmutableList())
          );
-         this.featureSet = Suppliers.memoize(() -> p_186651_.stream().flatMap(HolderSet::stream).map(Holder::value).collect(Collectors.toSet()));
+         this.featureSet = Suppliers.memoize(() -> features.stream().flatMap(HolderSet::stream).map(Holder::value).collect(Collectors.toSet()));
 +        this.carversView = java.util.Collections.unmodifiableSet(carvers.keySet());
      }
  
-     public Iterable<Holder<ConfiguredWorldCarver<?>>> getCarvers(GenerationStep.Carving p_204188_) {
-         return Objects.requireNonNullElseGet(this.carvers.get(p_204188_), List::of);
+     public Iterable<Holder<ConfiguredWorldCarver<?>>> getCarvers(GenerationStep.Carving step) {
+         return Objects.requireNonNullElseGet(this.carvers.get(step), List::of);
 +    }
 +
 +    public java.util.Set<GenerationStep.Carving> getCarvingStages() {

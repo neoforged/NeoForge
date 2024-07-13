@@ -3,14 +3,14 @@
 @@ -58,12 +_,15 @@
  
              if (i < 3) {
-                 int j = p_222548_.getValue(AGE);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_222549_, p_222550_, p_222548_, true)) {
+                 int j = state.getValue(AGE);
++                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, true)) {
                  if (j == 15) {
-                     p_222549_.setBlockAndUpdate(p_222550_.above(), this.defaultBlockState());
-+                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_222549_, p_222550_.above(), this.defaultBlockState());
-                     p_222549_.setBlock(p_222550_, p_222548_.setValue(AGE, Integer.valueOf(0)), 4);
+                     level.setBlockAndUpdate(pos.above(), this.defaultBlockState());
++                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos.above(), this.defaultBlockState());
+                     level.setBlock(pos, state.setValue(AGE, Integer.valueOf(0)), 4);
                  } else {
-                     p_222549_.setBlock(p_222550_, p_222548_.setValue(AGE, Integer.valueOf(j + 1)), 4);
+                     level.setBlock(pos, state.setValue(AGE, Integer.valueOf(j + 1)), 4);
                  }
 +                }
              }
@@ -20,16 +20,16 @@
          if (blockstate.is(this)) {
              return true;
          } else {
-+            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_57176_, p_57177_.below(), Direction.UP, p_57175_);
++            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(level, pos.below(), Direction.UP, state);
 +            if (!soilDecision.isDefault()) return soilDecision.isTrue();
              if (blockstate.is(BlockTags.DIRT) || blockstate.is(BlockTags.SAND)) {
-                 BlockPos blockpos = p_57177_.below();
+                 BlockPos blockpos = pos.below();
  
                  for (Direction direction : Direction.Plane.HORIZONTAL) {
-                     BlockState blockstate1 = p_57176_.getBlockState(blockpos.relative(direction));
-                     FluidState fluidstate = p_57176_.getFluidState(blockpos.relative(direction));
+                     BlockState blockstate1 = level.getBlockState(blockpos.relative(direction));
+                     FluidState fluidstate = level.getFluidState(blockpos.relative(direction));
 -                    if (fluidstate.is(FluidTags.WATER) || blockstate1.is(Blocks.FROSTED_ICE)) {
-+                    if (p_57175_.canBeHydrated(p_57176_, p_57177_, fluidstate, blockpos.relative(direction)) || blockstate1.is(Blocks.FROSTED_ICE)) {
++                    if (state.canBeHydrated(level, pos, fluidstate, blockpos.relative(direction)) || blockstate1.is(Blocks.FROSTED_ICE)) {
                          return true;
                      }
                  }

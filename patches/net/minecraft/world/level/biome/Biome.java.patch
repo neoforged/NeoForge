@@ -24,10 +24,10 @@
      private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
              Long2FloatLinkedOpenHashMap long2floatlinkedopenhashmap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
 @@ -79,6 +_,7 @@
-         this.generationSettings = p_220532_;
-         this.mobSettings = p_220533_;
-         this.specialEffects = p_220531_;
-+        this.modifiableBiomeInfo = new net.neoforged.neoforge.common.world.ModifiableBiomeInfo(new net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo(p_220530_, p_220531_, p_220532_, p_220533_)); // FORGE: cache original biome info on construction so we can bypass our field read coremods where necessary
+         this.generationSettings = generationSettings;
+         this.mobSettings = mobSettings;
+         this.specialEffects = specialEffects;
++        this.modifiableBiomeInfo = new net.neoforged.neoforge.common.world.ModifiableBiomeInfo(new net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo(climateSettings, specialEffects, generationSettings, mobSettings)); // FORGE: cache original biome info on construction so we can bypass our field read coremods where necessary
      }
  
      public int getSkyColor() {

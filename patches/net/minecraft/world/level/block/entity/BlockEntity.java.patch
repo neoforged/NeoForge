@@ -16,27 +16,27 @@
 +    @Nullable
 +    private CompoundTag customPersistentData;
  
-     public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
-         this.type = p_155228_;
+     public BlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
+         this.type = type;
 @@ -61,6 +_,8 @@
      }
  
-     protected void loadAdditional(CompoundTag p_338466_, HolderLookup.Provider p_338445_) {
-+        if (p_338466_.contains("NeoForgeData", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.customPersistentData = p_338466_.getCompound("NeoForgeData");
-+        if (p_338466_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(p_338445_, p_338466_.getCompound(ATTACHMENTS_NBT_KEY));
+     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
++        if (tag.contains("NeoForgeData", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.customPersistentData = tag.getCompound("NeoForgeData");
++        if (tag.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(registries, tag.getCompound(ATTACHMENTS_NBT_KEY));
      }
  
-     public final void loadWithComponents(CompoundTag p_338356_, HolderLookup.Provider p_338558_) {
+     public final void loadWithComponents(CompoundTag tag, HolderLookup.Provider registries) {
 @@ -76,6 +_,9 @@
      }
  
-     protected void saveAdditional(CompoundTag p_187471_, HolderLookup.Provider p_323635_) {
-+        if (this.customPersistentData != null) p_187471_.put("NeoForgeData", this.customPersistentData.copy());
-+        var attachmentsTag = serializeAttachments(p_323635_);
-+        if (attachmentsTag != null) p_187471_.put(ATTACHMENTS_NBT_KEY, attachmentsTag);
+     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
++        if (this.customPersistentData != null) tag.put("NeoForgeData", this.customPersistentData.copy());
++        var attachmentsTag = serializeAttachments(registries);
++        if (attachmentsTag != null) tag.put(ATTACHMENTS_NBT_KEY, attachmentsTag);
      }
  
-     public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
+     public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
 @@ -205,10 +_,14 @@
  
      public void setRemoved() {
@@ -51,7 +51,7 @@
 +        invalidateCapabilities();
      }
  
-     public boolean triggerEvent(int p_58889_, int p_58890_) {
+     public boolean triggerEvent(int id, int type) {
 @@ -231,6 +_,27 @@
          return this.type;
      }
@@ -78,12 +78,12 @@
 +    }
 +
      @Deprecated
-     public void setBlockState(BlockState p_155251_) {
-         this.blockState = p_155251_;
+     public void setBlockState(BlockState blockState) {
+         this.blockState = blockState;
 @@ -309,5 +_,15 @@
-         <T> T get(DataComponentType<T> p_338658_);
+         <T> T get(DataComponentType<T> component);
  
-         <T> T getOrDefault(DataComponentType<? extends T> p_338573_, T p_338734_);
+         <T> T getOrDefault(DataComponentType<? extends T> component, T defaultValue);
 +
 +        // Neo: Utility for modded component types, to remove the need to invoke '.value()'
 +        @Nullable

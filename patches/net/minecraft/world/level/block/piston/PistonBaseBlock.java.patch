@@ -3,41 +3,41 @@
 @@ -186,6 +_,7 @@
          }
  
-         if (p_60195_ == 0) {
-+            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(p_60193_, p_60194_, direction, true)) return false;
-             if (!this.moveBlocks(p_60193_, p_60194_, direction, true)) {
+         if (id == 0) {
++            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, true)) return false;
+             if (!this.moveBlocks(level, pos, direction, true)) {
                  return false;
              }
 @@ -194,6 +_,7 @@
-             p_60193_.playSound(null, p_60194_, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, p_60193_.random.nextFloat() * 0.25F + 0.6F);
-             p_60193_.gameEvent(GameEvent.BLOCK_ACTIVATE, p_60194_, GameEvent.Context.of(blockstate));
-         } else if (p_60195_ == 1 || p_60195_ == 2) {
-+            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(p_60193_, p_60194_, direction, false)) return false;
-             BlockEntity blockentity = p_60193_.getBlockEntity(p_60194_.relative(direction));
+             level.playSound(null, pos, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.25F + 0.6F);
+             level.gameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Context.of(blockstate));
+         } else if (id == 1 || id == 2) {
++            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, false)) return false;
+             BlockEntity blockentity = level.getBlockEntity(pos.relative(direction));
              if (blockentity instanceof PistonMovingBlockEntity) {
                  ((PistonMovingBlockEntity)blockentity).finalTick();
 @@ -243,6 +_,7 @@
-             p_60193_.gameEvent(GameEvent.BLOCK_DEACTIVATE, p_60194_, GameEvent.Context.of(blockstate1));
+             level.gameEvent(GameEvent.BLOCK_DEACTIVATE, pos, GameEvent.Context.of(blockstate1));
          }
  
-+        net.neoforged.neoforge.event.EventHooks.onPistonMovePost(p_60193_, p_60194_, direction, (p_60195_ == 0));
++        net.neoforged.neoforge.event.EventHooks.onPistonMovePost(level, pos, direction, (id == 0));
          return true;
      }
  
 @@ -314,8 +_,7 @@
-                 BlockState blockstate1 = p_60182_.getBlockState(blockpos2);
-                 BlockEntity blockentity = blockstate1.hasBlockEntity() ? p_60182_.getBlockEntity(blockpos2) : null;
-                 dropResources(blockstate1, p_60182_, blockpos2, blockentity);
--                p_60182_.setBlock(blockpos2, Blocks.AIR.defaultBlockState(), 18);
--                p_60182_.gameEvent(GameEvent.BLOCK_DESTROY, blockpos2, GameEvent.Context.of(blockstate1));
-+                blockstate1.onDestroyedByPushReaction(p_60182_, blockpos2, direction, p_60182_.getFluidState(blockpos2));
+                 BlockState blockstate1 = level.getBlockState(blockpos2);
+                 BlockEntity blockentity = blockstate1.hasBlockEntity() ? level.getBlockEntity(blockpos2) : null;
+                 dropResources(blockstate1, level, blockpos2, blockentity);
+-                level.setBlock(blockpos2, Blocks.AIR.defaultBlockState(), 18);
+-                level.gameEvent(GameEvent.BLOCK_DESTROY, blockpos2, GameEvent.Context.of(blockstate1));
++                blockstate1.onDestroyedByPushReaction(level, blockpos2, direction, level.getFluidState(blockpos2));
                  if (!blockstate1.is(BlockTags.FIRE)) {
-                     p_60182_.addDestroyBlockEffect(blockpos2, blockstate1);
+                     level.addDestroyBlockEffect(blockpos2, blockstate1);
                  }
 @@ -387,6 +_,10 @@
      @Override
-     protected BlockState rotate(BlockState p_60215_, Rotation p_60216_) {
-         return p_60215_.setValue(FACING, p_60216_.rotate(p_60215_.getValue(FACING)));
+     protected BlockState rotate(BlockState state, Rotation rot) {
+         return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
 +    }
 +
 +    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {

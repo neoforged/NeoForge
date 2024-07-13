@@ -2,7 +2,7 @@
 +++ b/net/minecraft/client/gui/screens/ChatScreen.java
 @@ -89,7 +_,10 @@
              return true;
-         } else if (p_95591_ == 257 || p_95591_ == 335) {
+         } else if (keyCode == 257 || keyCode == 335) {
              this.handleChatInput(this.input.getValue(), true);
 -            this.minecraft.setScreen(null);
 +            // FORGE: Prevent closing the screen if another screen has been opened.
@@ -10,5 +10,5 @@
 +                this.minecraft.setScreen(null);
 +            }
              return true;
-         } else if (p_95591_ == 265) {
+         } else if (keyCode == 265) {
              this.moveInHistory(-1);

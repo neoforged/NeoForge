@@ -6,14 +6,14 @@
      protected ResourceLocation parentLocation;
 +    public final net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext customData = new net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext(this);
  
-     public static BlockModel fromStream(Reader p_111462_) {
--        return GsonHelper.fromJson(GSON, p_111462_, BlockModel.class);
-+        return GsonHelper.fromJson(net.neoforged.neoforge.client.model.ExtendedBlockModelDeserializer.INSTANCE, p_111462_, BlockModel.class);
+     public static BlockModel fromStream(Reader reader) {
+-        return GsonHelper.fromJson(GSON, reader, BlockModel.class);
++        return GsonHelper.fromJson(net.neoforged.neoforge.client.model.ExtendedBlockModelDeserializer.INSTANCE, reader, BlockModel.class);
      }
  
-     public static BlockModel fromString(String p_111464_) {
+     public static BlockModel fromString(String jsonString) {
 @@ -104,10 +_,15 @@
-         this.overrides = p_273099_;
+         this.overrides = overrides;
      }
  
 +    @Deprecated
@@ -29,11 +29,11 @@
          if (this.hasAmbientOcclusion != null) {
              return this.hasAmbientOcclusion;
 @@ -136,6 +_,10 @@
-         return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(p_250138_, p_251800_, this.overrides);
+         return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(baker, model, this.overrides);
      }
  
-+    public ItemOverrides getOverrides(ModelBaker p_250138_, BlockModel p_251800_, Function<Material, TextureAtlasSprite> spriteGetter) {
-+        return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(p_250138_, p_251800_, this.overrides, spriteGetter);
++    public ItemOverrides getOverrides(ModelBaker baker, BlockModel model, Function<Material, TextureAtlasSprite> spriteGetter) {
++        return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(baker, model, this.overrides, spriteGetter);
 +    }
 +
      @Override
@@ -44,25 +44,25 @@
          }
  
 +        if (customData.hasCustomGeometry()) {
-+            customData.getCustomGeometry().resolveParents(p_249059_, customData);
++            customData.getCustomGeometry().resolveParents(resolver, customData);
 +        }
 +
          this.overrides.forEach(p_247932_ -> {
-             UnbakedModel unbakedmodel1 = p_249059_.apply(p_247932_.getModel());
+             UnbakedModel unbakedmodel1 = resolver.apply(p_247932_.getModel());
              if (!Objects.equals(unbakedmodel1, this)) {
 @@ -198,6 +_,12 @@
      }
  
      public BakedModel bake(
-+            ModelBaker p_249720_, BlockModel p_111451_, Function<Material, TextureAtlasSprite> p_111452_, ModelState p_111453_, boolean p_111455_
++            ModelBaker baker, BlockModel model, Function<Material, TextureAtlasSprite> spriteGetter, ModelState state, boolean guiLight3d
 +    ) {
-+        return net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper.bake(this, p_249720_, p_111451_, p_111452_, p_111453_, p_111455_);
++        return net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper.bake(this, baker, model, spriteGetter, state, guiLight3d);
 +    }
 +
 +    public BakedModel bakeVanilla(
-         ModelBaker p_249720_, BlockModel p_111451_, Function<Material, TextureAtlasSprite> p_111452_, ModelState p_111453_, boolean p_111455_
+         ModelBaker baker, BlockModel model, Function<Material, TextureAtlasSprite> spriteGetter, ModelState state, boolean guiLight3d
      ) {
-         TextureAtlasSprite textureatlassprite = p_111452_.apply(this.getMaterial("particle"));
+         TextureAtlasSprite textureatlassprite = spriteGetter.apply(this.getMaterial("particle"));
 @@ -288,7 +_,18 @@
          ItemTransform itemtransform5 = this.getTransform(ItemDisplayContext.GUI);
          ItemTransform itemtransform6 = this.getTransform(ItemDisplayContext.GROUND);
@@ -82,7 +82,7 @@
 +        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7, builder.build());
      }
  
-     private ItemTransform getTransform(ItemDisplayContext p_270662_) {
+     private ItemTransform getTransform(ItemDisplayContext displayContext) {
 @@ -407,6 +_,8 @@
          public boolean lightLikeBlock() {
              return this == SIDE;

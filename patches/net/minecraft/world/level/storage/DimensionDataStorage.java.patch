@@ -2,14 +2,14 @@
 +++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
 @@ -54,16 +_,20 @@
      @Nullable
-     public <T extends SavedData> T get(SavedData.Factory<T> p_295091_, String p_164860_) {
-         SavedData saveddata = this.cache.get(p_164860_);
+     public <T extends SavedData> T get(SavedData.Factory<T> factory, String name) {
+         SavedData saveddata = this.cache.get(name);
 +        if (saveddata == net.neoforged.neoforge.common.util.DummySavedData.DUMMY) return null;
-         if (saveddata == null && !this.cache.containsKey(p_164860_)) {
-             saveddata = this.readSavedData(p_295091_.deserializer(), p_295091_.type(), p_164860_);
-             this.cache.put(p_164860_, saveddata);
+         if (saveddata == null && !this.cache.containsKey(name)) {
+             saveddata = this.readSavedData(factory.deserializer(), factory.type(), name);
+             this.cache.put(name, saveddata);
 +        } else if (saveddata == null) {
-+            this.cache.put(p_164860_, net.neoforged.neoforge.common.util.DummySavedData.DUMMY);
++            this.cache.put(name, net.neoforged.neoforge.common.util.DummySavedData.DUMMY);
 +            return null;
          }
  
@@ -17,18 +17,18 @@
      }
  
      @Nullable
--    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, DataFixTypes p_295832_, String p_164870_) {
-+    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, @Nullable DataFixTypes p_295832_, String p_164870_) {
+-    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> reader, DataFixTypes dataFixType, String filename) {
++    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> reader, @Nullable DataFixTypes dataFixType, String filename) {
          try {
-             File file1 = this.getDataFile(p_164870_);
+             File file1 = this.getDataFile(filename);
              if (file1.exists()) {
 @@ -81,7 +_,7 @@
-         this.cache.put(p_164856_, p_164857_);
+         this.cache.put(name, savedData);
      }
  
--    public CompoundTag readTagFromDisk(String p_78159_, DataFixTypes p_295038_, int p_78160_) throws IOException {
-+    public CompoundTag readTagFromDisk(String p_78159_, @Nullable DataFixTypes p_295038_, int p_78160_) throws IOException {
-         File file1 = this.getDataFile(p_78159_);
+-    public CompoundTag readTagFromDisk(String filename, DataFixTypes dataFixType, int version) throws IOException {
++    public CompoundTag readTagFromDisk(String filename, @Nullable DataFixTypes dataFixType, int version) throws IOException {
+         File file1 = this.getDataFile(filename);
  
          CompoundTag compoundtag1;
 @@ -98,8 +_,12 @@
@@ -36,10 +36,10 @@
              }
  
 -            int i = NbtUtils.getDataVersion(compoundtag, 1343);
--            compoundtag1 = p_295038_.update(this.fixerUpper, compoundtag, i, p_78160_);
-+            if (p_295038_ != null) {
+-            compoundtag1 = dataFixType.update(this.fixerUpper, compoundtag, i, version);
++            if (dataFixType != null) {
 +                int i = NbtUtils.getDataVersion(compoundtag, 1343);
-+                compoundtag1 = p_295038_.update(this.fixerUpper, compoundtag, i, p_78160_);
++                compoundtag1 = dataFixType.update(this.fixerUpper, compoundtag, i, version);
 +            } else {
 +                compoundtag1 = compoundtag;
 +            }

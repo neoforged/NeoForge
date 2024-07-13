@@ -11,4 +11,4 @@
 +        }
      };
  
-     public SpawnerBlockEntity(BlockPos p_155752_, BlockState p_155753_) {
+     public SpawnerBlockEntity(BlockPos pos, BlockState blockState) {

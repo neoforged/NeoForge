@@ -2,14 +2,14 @@
 +++ b/net/minecraft/client/renderer/blockentity/PistonHeadRenderer.java
 @@ -65,6 +_,10 @@
      private void renderBlock(
-         BlockPos p_112459_, BlockState p_112460_, PoseStack p_112461_, MultiBufferSource p_112462_, Level p_112463_, boolean p_112464_, int p_112465_
+         BlockPos pos, BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, Level level, boolean extended, int packedOverlay
      ) {
 +        if (true) {
-+            net.neoforged.neoforge.client.ClientHooks.renderPistonMovedBlocks(p_112459_, p_112460_, p_112461_, p_112462_, p_112463_, p_112464_, p_112465_, blockRenderer);
++            net.neoforged.neoforge.client.ClientHooks.renderPistonMovedBlocks(pos, state, poseStack, bufferSource, level, extended, packedOverlay, blockRenderer);
 +            return;
 +        }
-         RenderType rendertype = ItemBlockRenderTypes.getMovingBlockRenderType(p_112460_);
-         VertexConsumer vertexconsumer = p_112462_.getBuffer(rendertype);
+         RenderType rendertype = ItemBlockRenderTypes.getMovingBlockRenderType(state);
+         VertexConsumer vertexconsumer = bufferSource.getBuffer(rendertype);
          this.blockRenderer
 @@ -86,5 +_,10 @@
      @Override

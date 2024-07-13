@@ -23,10 +23,10 @@
      });
 +    private static net.neoforged.neoforge.common.IMinecartCollisionHandler COLLISIONS = null;
  
-     protected AbstractMinecart(EntityType<?> p_38087_, Level p_38088_) {
-         super(p_38087_, p_38088_);
+     protected AbstractMinecart(EntityType<?> entityType, Level level) {
+         super(entityType, level);
 @@ -97,6 +_,14 @@
-         this.zo = p_38094_;
+         this.zo = z;
      }
  
 +    public net.neoforged.neoforge.common.IMinecartCollisionHandler getCollisionHandler() {
@@ -38,8 +38,8 @@
 +    }
 +
      public static AbstractMinecart createMinecart(
-         ServerLevel p_305794_,
-         double p_38121_,
+         ServerLevel level,
+         double x,
 @@ -139,7 +_,7 @@
  
      @Override
@@ -111,13 +111,13 @@
      }
  
 @@ -361,18 +_,19 @@
-         d1 = (double)p_38156_.getY();
+         d1 = (double)pos.getY();
          boolean flag = false;
          boolean flag1 = false;
--        if (p_38157_.is(Blocks.POWERED_RAIL)) {
-+        BaseRailBlock baserailblock = (BaseRailBlock) p_38157_.getBlock();
+-        if (state.is(Blocks.POWERED_RAIL)) {
++        BaseRailBlock baserailblock = (BaseRailBlock) state.getBlock();
 +        if (baserailblock instanceof PoweredRailBlock && !((PoweredRailBlock) baserailblock).isActivatorRail()) {
-             flag = p_38157_.getValue(PoweredRailBlock.POWERED);
+             flag = state.getValue(PoweredRailBlock.POWERED);
              flag1 = !flag;
          }
  
@@ -128,8 +128,8 @@
          }
  
          Vec3 vec31 = this.getDeltaMovement();
--        RailShape railshape = p_38157_.getValue(((BaseRailBlock)p_38157_.getBlock()).getShapeProperty());
-+        RailShape railshape = ((BaseRailBlock)p_38157_.getBlock()).getRailDirection(p_38157_, this.level(), p_38156_, this);
+-        RailShape railshape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
++        RailShape railshape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, this.level(), pos, this);
          switch (railshape) {
              case ASCENDING_EAST:
                  this.setDeltaMovement(vec31.add(-d3, 0.0, 0.0));
@@ -150,17 +150,17 @@
 -        double d25 = this.getMaxSpeed();
 -        vec31 = this.getDeltaMovement();
 -        this.move(MoverType.SELF, new Vec3(Mth.clamp(d24 * vec31.x, -d25, d25), 0.0, Mth.clamp(d24 * vec31.z, -d25, d25)));
-+        this.moveMinecartOnRail(p_38156_);
-         if (vec3i.getY() != 0 && Mth.floor(this.getX()) - p_38156_.getX() == vec3i.getX() && Mth.floor(this.getZ()) - p_38156_.getZ() == vec3i.getZ()) {
++        this.moveMinecartOnRail(pos);
+         if (vec3i.getY() != 0 && Mth.floor(this.getX()) - pos.getX() == vec3i.getX() && Mth.floor(this.getZ()) - pos.getZ() == vec3i.getZ()) {
              this.setPos(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
-         } else if (vec3i1.getY() != 0 && Mth.floor(this.getX()) - p_38156_.getX() == vec3i1.getX() && Mth.floor(this.getZ()) - p_38156_.getZ() == vec3i1.getZ()
+         } else if (vec3i1.getY() != 0 && Mth.floor(this.getX()) - pos.getX() == vec3i1.getX() && Mth.floor(this.getZ()) - pos.getZ() == vec3i1.getZ()
 @@ -480,7 +_,10 @@
-             this.setDeltaMovement(d26 * (double)(j - p_38156_.getX()), vec35.y, d26 * (double)(i - p_38156_.getZ()));
+             this.setDeltaMovement(d26 * (double)(j - pos.getX()), vec35.y, d26 * (double)(i - pos.getZ()));
          }
  
 -        if (flag) {
 +        if (shouldDoRailFunctions())
-+             baserailblock.onMinecartPass(p_38157_, level(), p_38156_, this);
++             baserailblock.onMinecartPass(state, level(), pos, this);
 +
 +        if (flag && shouldDoRailFunctions()) {
              Vec3 vec36 = this.getDeltaMovement();
@@ -172,9 +172,9 @@
          if (BaseRailBlock.isRail(blockstate)) {
 -            RailShape railshape = blockstate.getValue(((BaseRailBlock)blockstate.getBlock()).getShapeProperty());
 +            RailShape railshape = ((BaseRailBlock)blockstate.getBlock()).getRailDirection(blockstate, this.level(), new BlockPos(i, j, k), this);
-             p_38098_ = (double)j;
+             y = (double)j;
              if (railshape.isAscending()) {
-                 p_38098_ = (double)(j + 1);
+                 y = (double)(j + 1);
 @@ -583,7 +_,7 @@
  
          BlockState blockstate = this.level().getBlockState(new BlockPos(i, j, k));
@@ -187,34 +187,34 @@
 @@ -647,6 +_,10 @@
  
      @Override
-     public void push(Entity p_38165_) {
+     public void push(Entity entity) {
 +        if (getCollisionHandler() != null) {
-+            getCollisionHandler().onEntityCollision(this, p_38165_);
++            getCollisionHandler().onEntityCollision(this, entity);
 +            return;
 +        }
          if (!this.level().isClientSide) {
-             if (!p_38165_.noPhysics && !this.noPhysics) {
-                 if (!this.hasPassenger(p_38165_)) {
+             if (!entity.noPhysics && !this.noPhysics) {
+                 if (!this.hasPassenger(entity)) {
 @@ -685,13 +_,11 @@
  
                              Vec3 vec32 = this.getDeltaMovement();
-                             Vec3 vec33 = p_38165_.getDeltaMovement();
--                            if (((AbstractMinecart)p_38165_).getMinecartType() == AbstractMinecart.Type.FURNACE
+                             Vec3 vec33 = entity.getDeltaMovement();
+-                            if (((AbstractMinecart)entity).getMinecartType() == AbstractMinecart.Type.FURNACE
 -                                && this.getMinecartType() != AbstractMinecart.Type.FURNACE) {
-+                            if (((AbstractMinecart)p_38165_).isPoweredCart() && !this.isPoweredCart()) {
++                            if (((AbstractMinecart)entity).isPoweredCart() && !this.isPoweredCart()) {
                                  this.setDeltaMovement(vec32.multiply(0.2, 1.0, 0.2));
                                  this.push(vec33.x - d0, 0.0, vec33.z - d1);
-                                 p_38165_.setDeltaMovement(vec33.multiply(0.95, 1.0, 0.95));
--                            } else if (((AbstractMinecart)p_38165_).getMinecartType() != AbstractMinecart.Type.FURNACE
+                                 entity.setDeltaMovement(vec33.multiply(0.95, 1.0, 0.95));
+-                            } else if (((AbstractMinecart)entity).getMinecartType() != AbstractMinecart.Type.FURNACE
 -                                && this.getMinecartType() == AbstractMinecart.Type.FURNACE) {
-+                            } else if (!((AbstractMinecart)p_38165_).isPoweredCart() && this.isPoweredCart()) {
-                                 p_38165_.setDeltaMovement(vec33.multiply(0.2, 1.0, 0.2));
-                                 p_38165_.push(vec32.x + d0, 0.0, vec32.z + d1);
++                            } else if (!((AbstractMinecart)entity).isPoweredCart() && this.isPoweredCart()) {
+                                 entity.setDeltaMovement(vec33.multiply(0.2, 1.0, 0.2));
+                                 entity.push(vec32.x + d0, 0.0, vec32.z + d1);
                                  this.setDeltaMovement(vec32.multiply(0.95, 1.0, 0.95));
 @@ -789,6 +_,93 @@
  
-     public void setCustomDisplay(boolean p_38139_) {
-         this.getEntityData().set(DATA_ID_CUSTOM_DISPLAY, p_38139_);
+     public void setCustomDisplay(boolean customDisplay) {
+         this.getEntityData().set(DATA_ID_CUSTOM_DISPLAY, customDisplay);
 +    }
 +
 +    // Neo: Controls whether a Minecrart is allowed on Rails or not

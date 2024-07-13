@@ -6,8 +6,8 @@
      private int blocksSetOnFire;
 +    private float damage = 5.0F;
  
-     public LightningBolt(EntityType<? extends LightningBolt> p_20865_, Level p_20866_) {
-         super(p_20865_, p_20866_);
+     public LightningBolt(EntityType<? extends LightningBolt> entityType, Level level) {
+         super(entityType, level);
 @@ -73,6 +_,14 @@
          }
      }

@@ -4,8 +4,8 @@
              WeightedBakedModel.Builder weightedbakedmodel$builder = new WeightedBakedModel.Builder();
  
              for (Variant variant : this.getVariants()) {
--                BakedModel bakedmodel = p_249016_.bake(variant.getModelLocation(), variant);
-+                BakedModel bakedmodel = p_249016_.bake(variant.getModelLocation(), variant, p_111851_);
+-                BakedModel bakedmodel = baker.bake(variant.getModelLocation(), variant);
++                BakedModel bakedmodel = baker.bake(variant.getModelLocation(), variant, spriteGetter);
                  weightedbakedmodel$builder.add(bakedmodel, variant.getWeight());
              }
  

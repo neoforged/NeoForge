@@ -4,7 +4,7 @@
  
                  if (entity instanceof ServerPlayer serverplayer) {
                      if (serverplayer.connection.isAcceptingMessages()) {
-+                        net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event = net.neoforged.neoforge.event.EventHooks.onEnderPearlLand(serverplayer, this.getX(), this.getY(), this.getZ(), this, 5.0F, p_37504_);
++                        net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event = net.neoforged.neoforge.event.EventHooks.onEnderPearlLand(serverplayer, this.getX(), this.getY(), this.getZ(), this, 5.0F, result);
 +                        if (!event.isCanceled()) { // Don't indent to lower patch size
                          if (this.random.nextFloat() < 0.05F && serverlevel.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
                              Endermite endermite = EntityType.ENDERMITE.create(serverlevel);

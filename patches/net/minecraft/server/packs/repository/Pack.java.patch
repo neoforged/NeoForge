@@ -16,15 +16,15 @@
 +    ); // Neo: Pack source for child packs; should not be otherwise used
  
      @Nullable
-     public static Pack readMetaAndCreate(PackLocationInfo p_326065_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, PackSelectionConfig p_326429_) {
+     public static Pack readMetaAndCreate(PackLocationInfo location, Pack.ResourcesSupplier resources, PackType packType, PackSelectionConfig selectionConfig) {
 @@ -32,6 +_,34 @@
      }
  
-     public Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_) {
-+        this(p_326123_, p_249377_, p_326375_, p_326282_, List.of());
+     public Pack(PackLocationInfo location, Pack.ResourcesSupplier resources, Pack.Metadata metadata, PackSelectionConfig selectionConfig) {
++        this(location, resources, metadata, selectionConfig, List.of());
 +    }
 +
-+    private Pack(PackLocationInfo p_326123_, Pack.ResourcesSupplier p_249377_, Pack.Metadata p_326375_, PackSelectionConfig p_326282_, List<Pack> children) {
++    private Pack(PackLocationInfo location, Pack.ResourcesSupplier resources, Pack.Metadata metadata, PackSelectionConfig selectionConfig, List<Pack> children) {
 +        List<Pack> flattenedChildren = new java.util.ArrayList<>();
 +        List<Pack> remainingChildren = children;
 +        // recursively flatten children
@@ -48,14 +48,14 @@
 +            }
 +        }
 +        this.children = List.copyOf(flattenedChildren);
-+        this.hidden = p_326375_.isHidden();
-         this.location = p_326123_;
-         this.resources = p_249377_;
-         this.metadata = p_326375_;
++        this.hidden = metadata.isHidden();
+         this.location = location;
+         this.resources = resources;
+         this.metadata = metadata;
 @@ -55,7 +_,7 @@
-                 PackCompatibility packcompatibility = PackCompatibility.forVersion(inclusiverange, p_326341_);
+                 PackCompatibility packcompatibility = PackCompatibility.forVersion(inclusiverange, version);
                  OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.TYPE);
-                 List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(p_326341_) : List.of();
+                 List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(version) : List.of();
 -                pack$metadata = new Pack.Metadata(packmetadatasection.description(), packcompatibility, featureflagset, list);
 +                pack$metadata = new Pack.Metadata(packmetadatasection.description(), packcompatibility, featureflagset, list, packresources.isHidden());
              }
@@ -98,8 +98,8 @@
 +    }
 +
      @Override
-     public boolean equals(Object p_10448_) {
-         if (this == p_10448_) {
+     public boolean equals(Object other) {
+         if (this == other) {
 @@ -146,7 +_,12 @@
          return this.location.hashCode();
      }

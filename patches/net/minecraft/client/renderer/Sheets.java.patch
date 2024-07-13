@@ -3,23 +3,23 @@
 @@ -146,11 +_,13 @@
      }
  
-     private static Material createSignMaterial(WoodType p_173386_) {
--        return new Material(SIGN_SHEET, ResourceLocation.withDefaultNamespace("entity/signs/" + p_173386_.name()));
-+        ResourceLocation location = ResourceLocation.parse(p_173386_.name());
+     private static Material createSignMaterial(WoodType woodType) {
+-        return new Material(SIGN_SHEET, ResourceLocation.withDefaultNamespace("entity/signs/" + woodType.name()));
++        ResourceLocation location = ResourceLocation.parse(woodType.name());
 +        return new Material(SIGN_SHEET, ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
      }
  
-     private static Material createHangingSignMaterial(WoodType p_251735_) {
--        return new Material(SIGN_SHEET, ResourceLocation.withDefaultNamespace("entity/signs/hanging/" + p_251735_.name()));
-+        ResourceLocation location = ResourceLocation.parse(p_251735_.name());
+     private static Material createHangingSignMaterial(WoodType woodType) {
+-        return new Material(SIGN_SHEET, ResourceLocation.withDefaultNamespace("entity/signs/hanging/" + woodType.name()));
++        ResourceLocation location = ResourceLocation.parse(woodType.name());
 +        return new Material(SIGN_SHEET, ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "entity/signs/hanging/" + location.getPath()));
      }
  
-     public static Material getSignMaterial(WoodType p_173382_) {
+     public static Material getSignMaterial(WoodType woodType) {
 @@ -209,6 +_,23 @@
              case SINGLE:
              default:
-                 return p_110773_;
+                 return doubleMaterial;
 +        }
 +    }
 +

@@ -1,9 +1,9 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
 @@ -81,6 +_,13 @@
-         this.key = p_265775_;
-         this.fallback = p_265204_;
-         this.args = p_265752_;
+         this.key = key;
+         this.fallback = fallback;
+         this.args = args;
 +        if (!net.neoforged.fml.loading.FMLEnvironment.production) {
 +            for (Object arg : this.args) {
 +                if (!(arg instanceof Component) && !isAllowedPrimitiveArgument(arg)) {
@@ -29,7 +29,7 @@
  
              try {
 @@ -170,6 +_,12 @@
-     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_237521_, Style p_237522_) {
+     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> styledContentConsumer, Style style) {
          this.decompose();
  
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
@@ -39,7 +39,7 @@
 +
 +        try {
          for (FormattedText formattedtext : this.decomposedParts) {
-             Optional<T> optional = formattedtext.visit(p_237521_, p_237522_);
+             Optional<T> optional = formattedtext.visit(styledContentConsumer, style);
              if (optional.isPresent()) {
 @@ -178,12 +_,21 @@
          }
@@ -51,7 +51,7 @@
      }
  
      @Override
-     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> p_237519_) {
+     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> contentConsumer) {
          this.decompose();
  
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
@@ -61,7 +61,7 @@
 +
 +        try {
          for (FormattedText formattedtext : this.decomposedParts) {
-             Optional<T> optional = formattedtext.visit(p_237519_);
+             Optional<T> optional = formattedtext.visit(contentConsumer);
              if (optional.isPresent()) {
 @@ -192,6 +_,9 @@
          }

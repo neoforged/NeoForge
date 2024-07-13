@@ -6,23 +6,23 @@
  @OnlyIn(Dist.CLIENT)
 -public interface VertexConsumer {
 +public interface VertexConsumer extends net.neoforged.neoforge.client.extensions.IVertexConsumerExtension {
-     VertexConsumer addVertex(float p_350761_, float p_350704_, float p_350711_);
+     VertexConsumer addVertex(float x, float y, float z);
  
-     VertexConsumer setColor(int p_350535_, int p_350875_, int p_350886_, int p_350775_);
+     VertexConsumer setColor(int red, int green, int blue, int alpha);
 @@ -131,11 +_,14 @@
-                     f5 = p_331397_[l] * p_85992_ * 255.0F;
+                     f5 = brightness[l] * blue * 255.0F;
                  }
  
 -                int i1 = FastColor.ARGB32.color(k, (int)f3, (int)f4, (int)f5);
--                int j1 = p_331378_[l];
+-                int j1 = lightmap[l];
 +                // Neo: also apply alpha that's coming from the baked quad
-+                int vertexAlpha = p_331268_ ? (int)((p_331416_ * (float) (bytebuffer.get(15) & 255) / 255.0F) * 255) : k;
++                int vertexAlpha = readAlpha ? (int)((alpha * (float) (bytebuffer.get(15) & 255) / 255.0F) * 255) : k;
 +                int i1 = FastColor.ARGB32.color(vertexAlpha, (int)f3, (int)f4, (int)f5);
-+                int j1 = applyBakedLighting(p_331378_[l], bytebuffer);
++                int j1 = applyBakedLighting(lightmap[l], bytebuffer);
                  float f10 = bytebuffer.getFloat(16);
                  float f9 = bytebuffer.getFloat(20);
                  Vector3f vector3f1 = matrix4f.transformPosition(f, f1, f2, new Vector3f());
-+                applyBakedNormals(vector3f, bytebuffer, p_85988_.normal());
-                 this.addVertex(vector3f1.x(), vector3f1.y(), vector3f1.z(), i1, f10, f9, p_85993_, j1, vector3f.x(), vector3f.y(), vector3f.z());
++                applyBakedNormals(vector3f, bytebuffer, pose.normal());
+                 this.addVertex(vector3f1.x(), vector3f1.y(), vector3f1.z(), i1, f10, f9, packedOverlay, j1, vector3f.x(), vector3f.y(), vector3f.z());
              }
          }

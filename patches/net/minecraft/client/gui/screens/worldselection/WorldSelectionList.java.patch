@@ -10,12 +10,12 @@
      static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
 @@ -405,6 +_,7 @@
              RenderSystem.enableBlend();
-             p_281612_.blit(this.icon.textureLocation(), p_282820_, p_283181_, 0.0F, 0.0F, 32, 32, 32, 32);
+             guiGraphics.blit(this.icon.textureLocation(), left, top, 0.0F, 0.0F, 32, 32, 32, 32);
              RenderSystem.disableBlend();
-+            renderExperimentalWarning(p_281612_, p_283204_, p_283025_, p_283181_, p_282820_);
-             if (this.minecraft.options.touchscreen().get() || p_283396_) {
-                 p_281612_.fill(p_282820_, p_283181_, p_282820_ + 32, p_283181_ + 32, -1601138544);
-                 int j = p_283204_ - p_282820_;
++            renderExperimentalWarning(guiGraphics, mouseX, mouseY, top, left);
+             if (this.minecraft.options.touchscreen().get() || hovering) {
+                 guiGraphics.fill(left, top, left + 32, top + 32, -1601138544);
+                 int j = mouseX - left;
 @@ -511,6 +_,7 @@
                                  this.doDeleteWorld();
                              }

@@ -7,5 +7,5 @@
 -                        ItemStack.STRICT_SINGLE_ITEM_CODEC.fieldOf("result").forGetter(p_300827_ -> p_300827_.result),
 +                        ItemStack.CODEC.fieldOf("result").forGetter(p_300827_ -> p_300827_.result),
                          Codec.FLOAT.fieldOf("experience").orElse(0.0F).forGetter(p_300826_ -> p_300826_.experience),
-                         Codec.INT.fieldOf("cookingtime").orElse(p_44331_).forGetter(p_300834_ -> p_300834_.cookingTime)
+                         Codec.INT.fieldOf("cookingtime").orElse(cookingTime).forGetter(p_300834_ -> p_300834_.cookingTime)
                      )

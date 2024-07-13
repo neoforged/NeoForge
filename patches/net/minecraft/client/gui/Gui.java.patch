@@ -29,12 +29,12 @@
 +     */
 +    public int rightHeight;
 +
-     public Gui(Minecraft p_232355_) {
-         this.minecraft = p_232355_;
-         this.debugOverlay = new DebugScreenOverlay(p_232355_);
+     public Gui(Minecraft minecraft) {
+         this.minecraft = minecraft;
+         this.debugOverlay = new DebugScreenOverlay(minecraft);
 @@ -170,27 +_,40 @@
-         this.bossOverlay = new BossHealthOverlay(p_232355_);
-         this.subtitleOverlay = new SubtitleOverlay(p_232355_);
+         this.bossOverlay = new BossHealthOverlay(minecraft);
+         this.subtitleOverlay = new SubtitleOverlay(minecraft);
          this.resetTitleTimes();
 -        LayeredDraw layereddraw = new LayeredDraw()
 -            .add(this::renderCameraOverlays)
@@ -78,7 +78,7 @@
 -            .add(this::renderChat)
 -            .add(this::renderTabList)
 -            .add((p_315816_, p_348512_) -> this.subtitleOverlay.render(p_315816_));
--        this.layers.add(layereddraw, () -> !p_232355_.options.hideGui).add(this::renderSleepOverlay).add(layereddraw1, () -> !p_232355_.options.hideGui);
+-        this.layers.add(layereddraw, () -> !minecraft.options.hideGui).add(this::renderSleepOverlay).add(layereddraw1, () -> !minecraft.options.hideGui);
 +            .add(SCOREBOARD_SIDEBAR, this::renderScoreboardSidebar)
 +            .add(OVERLAY_MESSAGE, this::renderOverlayMessage)
 +            .add(TITLE, this::renderTitle)
@@ -86,18 +86,18 @@
 +            .add(TAB_LIST, this::renderTabList)
 +            .add(SUBTITLE_OVERLAY, (p_315816_, p_315817_) -> this.subtitleOverlay.render(p_315816_))
 +            .add(SAVING_INDICATOR, this::renderSavingIndicator);
-+        this.layerManager.add(layereddraw, () -> !p_232355_.options.hideGui).add(SLEEP_OVERLAY, this::renderSleepOverlay).add(layereddraw1, () -> !p_232355_.options.hideGui);
++        this.layerManager.add(layereddraw, () -> !minecraft.options.hideGui).add(SLEEP_OVERLAY, this::renderSleepOverlay).add(layereddraw1, () -> !minecraft.options.hideGui);
      }
  
      public void resetTitleTimes() {
 @@ -201,7 +_,9 @@
  
-     public void render(GuiGraphics p_282884_, DeltaTracker p_348630_) {
+     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
          RenderSystem.enableDepthTest();
--        this.layers.render(p_282884_, p_348630_);
+-        this.layers.render(guiGraphics, deltaTracker);
 +        leftHeight = 39;
 +        rightHeight = 39;
-+        this.layerManager.render(p_282884_, p_348630_);
++        this.layerManager.render(guiGraphics, deltaTracker);
          RenderSystem.disableDepthTest();
      }
  
@@ -108,30 +108,30 @@
 +                //Include a shift based on the bar height plus the difference between the height that renderSelectedItemName
 +                // renders at (59) and the height that the overlay/status bar renders at (68) by default
 +                int yShift = Math.max(leftHeight, rightHeight) + (68 - 59);
-                 p_316291_.pose().pushPose();
--                p_316291_.pose().translate((float)(p_316291_.guiWidth() / 2), (float)(p_316291_.guiHeight() - 68), 0.0F);
+                 guiGraphics.pose().pushPose();
+-                guiGraphics.pose().translate((float)(guiGraphics.guiWidth() / 2), (float)(guiGraphics.guiHeight() - 68), 0.0F);
 +                //If y shift is smaller less than the default y level, just render it at the base y level
-+                p_316291_.pose().translate((float)(p_316291_.guiWidth() / 2), (float)(p_316291_.guiHeight() - Math.max(yShift, 68)), 0.0F);
++                guiGraphics.pose().translate((float)(guiGraphics.guiWidth() / 2), (float)(guiGraphics.guiHeight() - Math.max(yShift, 68)), 0.0F);
                  int j;
                  if (this.animateOverlayMessageColor) {
                      j = Mth.hsvToArgb(f / 50.0F, 0.7F, 0.6F, i);
 @@ -323,9 +_,19 @@
-     private void renderChat(GuiGraphics p_316307_, DeltaTracker p_348631_) {
+     private void renderChat(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
          if (!this.chat.isChatFocused()) {
              Window window = this.minecraft.getWindow();
 +            // Neo: Allow customizing position of chat component
 +            var chatBottomMargin = 40; // See ChatComponent#BOTTOM_MARGIN (used in translate calls in ChatComponent#render)
 +            var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
-+                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, p_316307_, p_348631_, 0, p_316307_.guiHeight() - chatBottomMargin)
++                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, guiGraphics, deltaTracker, 0, guiGraphics.guiHeight() - chatBottomMargin)
 +            );
 +
 +            // The event is given the absolute Y position; account for chat component's own offsetting here
-+            p_316307_.pose().pushPose();
-+            p_316307_.pose().translate(event.getPosX(), (event.getPosY() - p_316307_.guiHeight() + chatBottomMargin) / this.chat.getScale(), 0.0F);
++            guiGraphics.pose().pushPose();
++            guiGraphics.pose().translate(event.getPosX(), (event.getPosY() - guiGraphics.guiHeight() + chatBottomMargin) / this.chat.getScale(), 0.0F);
              int i = Mth.floor(this.minecraft.mouseHandler.xpos() * (double)window.getGuiScaledWidth() / (double)window.getScreenWidth());
              int j = Mth.floor(this.minecraft.mouseHandler.ypos() * (double)window.getGuiScaledHeight() / (double)window.getScreenHeight());
-             this.chat.render(p_316307_, this.tickCount, i, j, false);
-+            p_316307_.pose().popPose();
+             this.chat.render(guiGraphics, this.tickCount, i, j, false);
++            guiGraphics.pose().popPose();
          }
      }
  
@@ -143,12 +143,12 @@
 +                if (!renderer.isVisibleInGui(mobeffectinstance)) continue;
                  Holder<MobEffect> holder = mobeffectinstance.getEffect();
                  if (mobeffectinstance.showIcon()) {
-                     int i = p_282812_.guiWidth();
+                     int i = guiGraphics.guiWidth();
 @@ -471,6 +_,7 @@
                          }
                      }
  
-+                    if (renderer.renderGuiIcon(mobeffectinstance, this, p_282812_, i, j, 0, f)) continue;
++                    if (renderer.renderGuiIcon(mobeffectinstance, this, guiGraphics, i, j, 0, f)) continue;
                      TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(holder);
                      int l1 = i;
                      int i1 = j;
@@ -157,72 +157,72 @@
      }
  
 +    @Deprecated // Neo: Split up into different layers
-     private void renderHotbarAndDecorations(GuiGraphics p_316628_, DeltaTracker p_348543_) {
-+        renderHotbar(p_316628_, p_348543_);
-+        maybeRenderJumpMeter(p_316628_, p_348543_);
-+        maybeRenderExperienceBar(p_316628_, p_348543_);
-+        maybeRenderPlayerHealth(p_316628_, p_348543_);
-+        maybeRenderVehicleHealth(p_316628_, p_348543_);
-+        maybeRenderSelectedItemName(p_316628_, p_348543_);
-+        maybeRenderSpectatorTooltip(p_316628_, p_348543_);
+     private void renderHotbarAndDecorations(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
++        renderHotbar(guiGraphics, deltaTracker);
++        maybeRenderJumpMeter(guiGraphics, deltaTracker);
++        maybeRenderExperienceBar(guiGraphics, deltaTracker);
++        maybeRenderPlayerHealth(guiGraphics, deltaTracker);
++        maybeRenderVehicleHealth(guiGraphics, deltaTracker);
++        maybeRenderSelectedItemName(guiGraphics, deltaTracker);
++        maybeRenderSpectatorTooltip(guiGraphics, deltaTracker);
 +    }
 +
-+    private void renderHotbar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void renderHotbar(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
-             this.spectatorGui.renderHotbar(p_316628_);
+             this.spectatorGui.renderHotbar(guiGraphics);
          } else {
-             this.renderItemHotbar(p_316628_, p_348543_);
+             this.renderItemHotbar(guiGraphics, deltaTracker);
          }
 +    }
  
-+    private void maybeRenderJumpMeter(GuiGraphics p_316628_, DeltaTracker p_348543_) {
-         int i = p_316628_.guiWidth() / 2 - 91;
++    private void maybeRenderJumpMeter(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+         int i = guiGraphics.guiWidth() / 2 - 91;
          PlayerRideableJumping playerrideablejumping = this.minecraft.player.jumpableVehicle();
          if (playerrideablejumping != null) {
-             this.renderJumpMeter(playerrideablejumping, p_316628_, i);
+             this.renderJumpMeter(playerrideablejumping, guiGraphics, i);
 -        } else if (this.isExperienceBarVisible()) {
 +        }
 +
 +    }
 +
-+    private void maybeRenderExperienceBar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
-+        int i = p_316628_.guiWidth() / 2 - 91;
++    private void maybeRenderExperienceBar(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
++        int i = guiGraphics.guiWidth() / 2 - 91;
 +        if (this.minecraft.player.jumpableVehicle() == null && this.isExperienceBarVisible()) {
-             this.renderExperienceBar(p_316628_, i);
+             this.renderExperienceBar(guiGraphics, i);
          }
 +    }
  
-+    private void maybeRenderPlayerHealth(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void maybeRenderPlayerHealth(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.canHurtPlayer()) {
-             this.renderPlayerHealth(p_316628_);
+             this.renderPlayerHealth(guiGraphics);
          }
 +    }
  
-+    private void maybeRenderVehicleHealth(GuiGraphics p_316628_, DeltaTracker p_348543_) {
-         this.renderVehicleHealth(p_316628_);
++    private void maybeRenderVehicleHealth(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+         this.renderVehicleHealth(guiGraphics);
 +    }
 +
-+    private void maybeRenderSelectedItemName(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void maybeRenderSelectedItemName(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
--            this.renderSelectedItemName(p_316628_);
+-            this.renderSelectedItemName(guiGraphics);
 -        } else if (this.minecraft.player.isSpectator()) {
-+            this.renderSelectedItemName(p_316628_, Math.max(this.leftHeight, this.rightHeight));
++            this.renderSelectedItemName(guiGraphics, Math.max(this.leftHeight, this.rightHeight));
 +        }
 +    }
 +
-+    private void maybeRenderSpectatorTooltip(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++    private void maybeRenderSpectatorTooltip(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
 +        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && this.minecraft.player.isSpectator()) {
-             this.spectatorGui.renderTooltip(p_316628_);
+             this.spectatorGui.renderTooltip(guiGraphics);
          }
      }
 @@ -633,18 +_,23 @@
      }
  
-     private void renderSelectedItemName(GuiGraphics p_283501_) {
-+        renderSelectedItemName(p_283501_, 0);
+     private void renderSelectedItemName(GuiGraphics guiGraphics) {
++        renderSelectedItemName(guiGraphics, 0);
 +    }
 +
-+    public void renderSelectedItemName(GuiGraphics p_283501_, int yShift) {
++    public void renderSelectedItemName(GuiGraphics guiGraphics, int yShift) {
          this.minecraft.getProfiler().push("selectedItemName");
          if (this.toolHighlightTimer > 0 && !this.lastToolHighlight.isEmpty()) {
              MutableComponent mutablecomponent = Component.empty()
@@ -236,9 +236,9 @@
 -            int i = this.getFont().width(mutablecomponent);
 +            Component highlightTip = this.lastToolHighlight.getHighlightTip(mutablecomponent);
 +            int i = this.getFont().width(highlightTip);
-             int j = (p_283501_.guiWidth() - i) / 2;
--            int k = p_283501_.guiHeight() - 59;
-+            int k = p_283501_.guiHeight() - Math.max(yShift, 59);
+             int j = (guiGraphics.guiWidth() - i) / 2;
+-            int k = guiGraphics.guiHeight() - 59;
++            int k = guiGraphics.guiHeight() - Math.max(yShift, 59);
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  k += 14;
              }
@@ -246,13 +246,13 @@
              }
  
              if (l > 0) {
--                p_283501_.drawStringWithBackdrop(this.getFont(), mutablecomponent, j, k, i, FastColor.ARGB32.color(l, -1));
+-                guiGraphics.drawStringWithBackdrop(this.getFont(), mutablecomponent, j, k, i, FastColor.ARGB32.color(l, -1));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {
-+                    p_283501_.drawStringWithBackdrop(this.getFont(), highlightTip, j, k, i, FastColor.ARGB32.color(l, -1));
++                    guiGraphics.drawStringWithBackdrop(this.getFont(), highlightTip, j, k, i, FastColor.ARGB32.color(l, -1));
 +                } else {
-+                    j = (p_283501_.guiWidth() - font.width(highlightTip)) / 2;
-+                    p_283501_.drawStringWithBackdrop(font, highlightTip, j, k, i, FastColor.ARGB32.color(l, -1));
++                    j = (guiGraphics.guiWidth() - font.width(highlightTip)) / 2;
++                    guiGraphics.drawStringWithBackdrop(font, highlightTip, j, k, i, FastColor.ARGB32.color(l, -1));
 +                }
              }
          }
@@ -260,34 +260,34 @@
 @@ -663,7 +_,7 @@
      }
  
-     private void renderDemoOverlay(GuiGraphics p_281825_, DeltaTracker p_348679_) {
+     private void renderDemoOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
 -        if (this.minecraft.isDemo()) {
 +        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // Neo: Hide demo timer when F3 debug overlay is open; fixes MC-271166
              this.minecraft.getProfiler().push("demo");
              Component component;
              if (this.minecraft.level.getGameTime() >= 120500L) {
 @@ -778,7 +_,15 @@
-         return (int)Math.ceil((double)p_93013_ / 10.0);
+         return (int)Math.ceil((double)vehicleHealth / 10.0);
      }
  
 +    @Deprecated // Neo: Split up into different layers
-     private void renderPlayerHealth(GuiGraphics p_283143_) {
-+        renderHealthLevel(p_283143_);
-+        renderArmorLevel(p_283143_);
-+        renderFoodLevel(p_283143_);
-+        renderAirLevel(p_283143_);
+     private void renderPlayerHealth(GuiGraphics guiGraphics) {
++        renderHealthLevel(guiGraphics);
++        renderArmorLevel(guiGraphics);
++        renderFoodLevel(guiGraphics);
++        renderAirLevel(guiGraphics);
 +    }
 +
-+    private void renderHealthLevel(GuiGraphics p_283143_) {
++    private void renderHealthLevel(GuiGraphics guiGraphics) {
          Player player = this.getCameraPlayer();
          if (player != null) {
              int i = Mth.ceil(player.getHealth());
 @@ -803,35 +_,62 @@
              this.random.setSeed((long)(this.tickCount * 312871));
-             int l = p_283143_.guiWidth() / 2 - 91;
-             int i1 = p_283143_.guiWidth() / 2 + 91;
--            int j1 = p_283143_.guiHeight() - 39;
-+            int j1 = p_283143_.guiHeight() - leftHeight;
+             int l = guiGraphics.guiWidth() / 2 - 91;
+             int i1 = guiGraphics.guiWidth() / 2 + 91;
+-            int j1 = guiGraphics.guiHeight() - 39;
++            int j1 = guiGraphics.guiHeight() - leftHeight;
              float f = Math.max((float)player.getAttributeValue(Attributes.MAX_HEALTH), (float)Math.max(k, i));
              int k1 = Mth.ceil(player.getAbsorptionAmount());
              int l1 = Mth.ceil((f + (float)k1) / 2.0F / 10.0F);
@@ -300,20 +300,20 @@
              }
 -
 -            this.minecraft.getProfiler().push("armor");
--            renderArmor(p_283143_, player, j1, l1, i2, l);
+-            renderArmor(guiGraphics, player, j1, l1, i2, l);
 -            this.minecraft.getProfiler().popPush("health");
 +            this.minecraft.getProfiler().push("health");
-             this.renderHearts(p_283143_, player, l, j1, i2, k2, f, i, k, k1, flag);
+             this.renderHearts(guiGraphics, player, l, j1, i2, k2, f, i, k, k1, flag);
 +            this.minecraft.getProfiler().pop();
 +        }
 +    }
 +
-+    private void renderArmorLevel(GuiGraphics p_283143_) {
++    private void renderArmorLevel(GuiGraphics guiGraphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            int l = p_283143_.guiWidth() / 2 - 91;
++            int l = guiGraphics.guiWidth() / 2 - 91;
 +            this.minecraft.getProfiler().push("armor");
-+            renderArmor(p_283143_, player, p_283143_.guiHeight() - leftHeight + 10, 1, 0, l);
++            renderArmor(guiGraphics, player, guiGraphics.guiHeight() - leftHeight + 10, 1, 0, l);
 +            this.minecraft.getProfiler().pop();
 +            if (player.getArmorValue() > 0) {
 +                leftHeight += 10;
@@ -321,7 +321,7 @@
 +        }
 +    }
 +
-+    private void renderFoodLevel(GuiGraphics p_283143_) {
++    private void renderFoodLevel(GuiGraphics guiGraphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
              LivingEntity livingentity = this.getPlayerVehicleWithHealth();
@@ -329,9 +329,9 @@
              if (l2 == 0) {
 -                this.minecraft.getProfiler().popPush("food");
 +                this.minecraft.getProfiler().push("food");
-+                int i1 = p_283143_.guiWidth() / 2 + 91;
-+                int j1 = p_283143_.guiHeight() - rightHeight;
-                 this.renderFood(p_283143_, player, j1, i1);
++                int i1 = guiGraphics.guiWidth() / 2 + 91;
++                int j1 = guiGraphics.guiHeight() - rightHeight;
+                 this.renderFood(guiGraphics, player, j1, i1);
 -                j2 -= 10;
 +                rightHeight += 10;
 +                this.minecraft.getProfiler().pop();
@@ -341,10 +341,10 @@
 +        }
 +    }
 +
-+    private void renderAirLevel(GuiGraphics p_283143_) {
++    private void renderAirLevel(GuiGraphics guiGraphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            int i1 = p_283143_.guiWidth() / 2 + 91;
++            int i1 = guiGraphics.guiWidth() / 2 + 91;
 +
 +            this.minecraft.getProfiler().push("air");
              int i3 = player.getMaxAirSupply();
@@ -352,7 +352,7 @@
              if (player.isEyeInFluid(FluidTags.WATER) || j3 < i3) {
 -                int k3 = this.getVisibleVehicleHeartRows(l2) - 1;
 -                j2 -= k3 * 10;
-+                int j2 = p_283143_.guiHeight() - rightHeight;
++                int j2 = guiGraphics.guiHeight() - rightHeight;
                  int l3 = Mth.ceil((double)(j3 - 2) * 10.0 / (double)i3);
                  int i4 = Mth.ceil((double)j3 * 10.0 / (double)i3) - l3;
                  RenderSystem.enableBlend();
@@ -368,9 +368,9 @@
              if (i != 0) {
                  int j = (int)Math.ceil((double)livingentity.getHealth());
                  this.minecraft.getProfiler().popPush("mountHealth");
--                int k = p_283368_.guiHeight() - 39;
-+                int k = p_283368_.guiHeight() - rightHeight;
-                 int l = p_283368_.guiWidth() / 2 + 91;
+-                int k = guiGraphics.guiHeight() - 39;
++                int k = guiGraphics.guiHeight() - rightHeight;
+                 int l = guiGraphics.guiWidth() / 2 + 91;
                  int i1 = k;
                  int j1 = 0;
 @@ -1007,6 +_,7 @@
@@ -409,7 +409,7 @@
              } else {
                  gui$hearttype = NORMAL;
              }
-+            gui$hearttype = net.neoforged.neoforge.event.EventHooks.firePlayerHeartTypeEvent(p_168733_, gui$hearttype);
++            gui$hearttype = net.neoforged.neoforge.event.EventHooks.firePlayerHeartTypeEvent(player, gui$hearttype);
  
              return gui$hearttype;
 +        }

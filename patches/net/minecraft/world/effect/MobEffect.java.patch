@@ -11,12 +11,12 @@
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
 @@ -56,6 +_,7 @@
              int i = p_333517_.isAmbient() ? AMBIENT_ALPHA : 255;
-             return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(i, p_19452_));
+             return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(i, color));
          };
 +        initClient();
      }
  
-     protected MobEffect(MobEffectCategory p_333963_, int p_333864_, ParticleOptions p_333716_) {
+     protected MobEffect(MobEffectCategory category, int color, ParticleOptions particle) {
 @@ -179,6 +_,29 @@
      @Override
      public FeatureFlagSet requiredFeatures() {

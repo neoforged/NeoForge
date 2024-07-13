@@ -3,9 +3,9 @@
 @@ -59,7 +_,7 @@
      }
  
-     private void logNarratedMessage(String p_168788_) {
+     private void logNarratedMessage(String message) {
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
-             LOGGER.debug("Narrating: {}", p_168788_.replaceAll("\n", "\\\\n"));
+             LOGGER.debug("Narrating: {}", message.replaceAll("\n", "\\\\n"));
          }
      }

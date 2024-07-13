@@ -6,8 +6,8 @@
      private final boolean alwaysGenerate;
 +    private final Map<String, DataProvider> providersView = java.util.Collections.unmodifiableMap(this.providersToRun);
  
-     public DataGenerator(Path p_251724_, WorldVersion p_250554_, boolean p_251323_) {
-         this.rootOutputFolder = p_251724_;
+     public DataGenerator(Path rootOutputFolder, WorldVersion version, boolean alwaysGenerate) {
+         this.rootOutputFolder = rootOutputFolder;
 @@ -38,6 +_,7 @@
                  LOGGER.debug("Generator {} already run for version {}", p_254418_, this.version.getName());
              } else {
@@ -17,9 +17,9 @@
                  hashcache.applyUpdate(hashcache.generateUpdate(p_254418_, p_253750_::run).join());
                  stopwatch1.stop();
 @@ -56,6 +_,51 @@
-     public DataGenerator.PackGenerator getBuiltinDatapack(boolean p_253826_, String p_254134_) {
-         Path path = this.vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("minecraft").resolve("datapacks").resolve(p_254134_);
-         return new DataGenerator.PackGenerator(p_253826_, p_254134_, new PackOutput(path));
+     public DataGenerator.PackGenerator getBuiltinDatapack(boolean toRun, String providerPrefix) {
+         Path path = this.vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("minecraft").resolve("datapacks").resolve(providerPrefix);
+         return new DataGenerator.PackGenerator(toRun, providerPrefix, new PackOutput(path));
 +    }
 +
 +    public PackGenerator getBuiltinDatapack(boolean run, String namespace, String path) {

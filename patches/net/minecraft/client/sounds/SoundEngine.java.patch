@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/sounds/SoundEngine.java
 +++ b/net/minecraft/client/sounds/SoundEngine.java
 @@ -79,6 +_,7 @@
-         this.soundManager = p_120236_;
-         this.options = p_120237_;
-         this.soundBuffers = new SoundBufferLibrary(p_249332_);
+         this.soundManager = soundManager;
+         this.options = options;
+         this.soundBuffers = new SoundBufferLibrary(resourceManager);
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.sound.SoundEngineLoadEvent(this));
      }
  
@@ -18,19 +18,19 @@
      private synchronized void loadLibrary() {
 @@ -327,7 +_,8 @@
  
-     public void play(SoundInstance p_120313_) {
+     public void play(SoundInstance p_sound) {
          if (this.loaded) {
--            if (p_120313_.canPlaySound()) {
-+            p_120313_ = net.neoforged.neoforge.client.ClientHooks.playSound(this, p_120313_);
-+            if (p_120313_ != null && p_120313_.canPlaySound()) {
-                 WeighedSoundEvents weighedsoundevents = p_120313_.resolve(this.soundManager);
-                 ResourceLocation resourcelocation = p_120313_.getLocation();
+-            if (p_sound.canPlaySound()) {
++            p_sound = net.neoforged.neoforge.client.ClientHooks.playSound(this, p_sound);
++            if (p_sound != null && p_sound.canPlaySound()) {
+                 WeighedSoundEvents weighedsoundevents = p_sound.resolve(this.soundManager);
+                 ResourceLocation resourcelocation = p_sound.getLocation();
                  if (weighedsoundevents == null) {
 @@ -391,19 +_,22 @@
                                              p_194488_.setSelfPosition(vec3);
                                              p_194488_.setRelative(flag);
                                          });
-+                                        final SoundInstance soundinstance = p_120313_;
++                                        final SoundInstance soundinstance = p_sound;
                                          if (!flag2) {
                                              this.soundBuffers
                                                  .getCompleteBuffer(sound.getPath())

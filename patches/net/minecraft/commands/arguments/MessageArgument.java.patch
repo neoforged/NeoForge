@@ -3,9 +3,9 @@
 @@ -84,7 +_,7 @@
  
      public static record Message(String text, MessageArgument.Part[] parts) {
-         Component resolveComponent(CommandSourceStack p_232197_) throws CommandSyntaxException {
--            return this.toComponent(p_232197_, p_232197_.hasPermission(2));
-+            return this.toComponent(p_232197_, net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(p_232197_));
+         Component resolveComponent(CommandSourceStack source) throws CommandSyntaxException {
+-            return this.toComponent(source, source.hasPermission(2));
++            return this.toComponent(source, net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(source));
          }
  
-         public Component toComponent(CommandSourceStack p_96850_, boolean p_96851_) throws CommandSyntaxException {
+         public Component toComponent(CommandSourceStack source, boolean allowSelectors) throws CommandSyntaxException {

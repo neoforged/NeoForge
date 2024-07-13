@@ -3,10 +3,10 @@
 @@ -56,10 +_,15 @@
      }
  
-     public CompletableFuture<Void> submitAsync(Runnable p_18690_) {
+     public CompletableFuture<Void> submitAsync(Runnable task) {
 -        return CompletableFuture.supplyAsync(() -> {
 +        return CompletableFuture.<Void>supplyAsync(() -> {
-             p_18690_.run();
+             task.run();
              return null;
 -        }, this);
 +        }, this)

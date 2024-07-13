@@ -1,49 +1,49 @@
 --- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 @@ -40,6 +_,7 @@
-         this.blockColors = p_110999_;
+         this.blockColors = blockColors;
      }
  
 +    @Deprecated //Forge: Model data and render type parameter
      public void tesselateBlock(
-         BlockAndTintGetter p_234380_,
-         BakedModel p_234381_,
+         BlockAndTintGetter level,
+         BakedModel model,
 @@ -52,15 +_,35 @@
-         long p_234388_,
-         int p_234389_
+         long seed,
+         int packedOverlay
      ) {
--        boolean flag = Minecraft.useAmbientOcclusion() && p_234382_.getLightEmission() == 0 && p_234381_.useAmbientOcclusion();
-+        tesselateBlock(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
+-        boolean flag = Minecraft.useAmbientOcclusion() && state.getLightEmission() == 0 && model.useAmbientOcclusion();
++        tesselateBlock(level, model, state, pos, poseStack, consumer, checkSides, random, seed, packedOverlay, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 +    }
 +    public void tesselateBlock(
-+        BlockAndTintGetter p_234380_,
-+        BakedModel p_234381_,
-+        BlockState p_234382_,
-+        BlockPos p_234383_,
-+        PoseStack p_234384_,
-+        VertexConsumer p_234385_,
-+        boolean p_234386_,
-+        RandomSource p_234387_,
-+        long p_234388_,
-+        int p_234389_,
++        BlockAndTintGetter level,
++        BakedModel model,
++        BlockState state,
++        BlockPos pos,
++        PoseStack poseStack,
++        VertexConsumer consumer,
++        boolean checkSides,
++        RandomSource random,
++        long seed,
++        int packedOverlay,
 +        net.neoforged.neoforge.client.model.data.ModelData modelData,
 +        net.minecraft.client.renderer.RenderType renderType
 +    ) {
-+        boolean flag = Minecraft.useAmbientOcclusion() && switch(p_234381_.useAmbientOcclusion(p_234382_, modelData, renderType)) {
++        boolean flag = Minecraft.useAmbientOcclusion() && switch(model.useAmbientOcclusion(state, modelData, renderType)) {
 +            case TRUE -> true;
-+            case DEFAULT -> p_234382_.getLightEmission(p_234380_, p_234383_) == 0;
++            case DEFAULT -> state.getLightEmission(level, pos) == 0;
 +            case FALSE -> false;
 +        };
-         Vec3 vec3 = p_234382_.getOffset(p_234380_, p_234383_);
-         p_234384_.translate(vec3.x, vec3.y, vec3.z);
+         Vec3 vec3 = state.getOffset(level, pos);
+         poseStack.translate(vec3.x, vec3.y, vec3.z);
  
          try {
              if (flag) {
--                this.tesselateWithAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_);
-+                this.tesselateWithAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_, modelData, renderType);
+-                this.tesselateWithAO(level, model, state, pos, poseStack, consumer, checkSides, random, seed, packedOverlay);
++                this.tesselateWithAO(level, model, state, pos, poseStack, consumer, checkSides, random, seed, packedOverlay, modelData, renderType);
              } else {
--                this.tesselateWithoutAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_);
-+                this.tesselateWithoutAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_, modelData, renderType);
+-                this.tesselateWithoutAO(level, model, state, pos, poseStack, consumer, checkSides, random, seed, packedOverlay);
++                this.tesselateWithoutAO(level, model, state, pos, poseStack, consumer, checkSides, random, seed, packedOverlay, modelData, renderType);
              }
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block model");
@@ -53,144 +53,145 @@
  
 +    @Deprecated //Forge: Model data and render type parameter
      public void tesselateWithAO(
-         BlockAndTintGetter p_234391_,
-         BakedModel p_234392_,
-@@ -83,6 +_,22 @@
-         long p_234399_,
-         int p_234400_
-     ) {
-+         tesselateWithAO(p_234391_, p_234392_, p_234393_, p_234394_, p_234395_, p_234396_, p_234397_, p_234398_, p_234399_, p_234400_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
+         BlockAndTintGetter level,
+         BakedModel model,
+@@ -82,6 +_,22 @@
+         RandomSource random,
+         long seed,
+         int packedOverlay
++    ) {
++         tesselateWithAO(level, model, state, pos, poseStack, consumer, checkSides, random, seed, packedOverlay, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 +    }
 +    public void tesselateWithAO(
-+        BlockAndTintGetter p_234391_,
-+        BakedModel p_234392_,
-+        BlockState p_234393_,
-+        BlockPos p_234394_,
-+        PoseStack p_234395_,
-+        VertexConsumer p_234396_,
-+        boolean p_234397_,
-+        RandomSource p_234398_,
-+        long p_234399_,
-+        int p_234400_,
++        BlockAndTintGetter level,
++        BakedModel model,
++        BlockState state,
++        BlockPos pos,
++        PoseStack poseStack,
++        VertexConsumer consumer,
++        boolean checkSides,
++        RandomSource random,
++        long seed,
++        int packedOverlay,
 +        net.neoforged.neoforge.client.model.data.ModelData modelData,
 +        net.minecraft.client.renderer.RenderType renderType
-+    ) {
+     ) {
          float[] afloat = new float[DIRECTIONS.length * 2];
          BitSet bitset = new BitSet(3);
-         ModelBlockRenderer.AmbientOcclusionFace modelblockrenderer$ambientocclusionface = new ModelBlockRenderer.AmbientOcclusionFace();
 @@ -90,7 +_,7 @@
  
          for (Direction direction : DIRECTIONS) {
-             p_234398_.setSeed(p_234399_);
--            List<BakedQuad> list = p_234392_.getQuads(p_234393_, direction, p_234398_);
-+            List<BakedQuad> list = p_234392_.getQuads(p_234393_, direction, p_234398_, modelData, renderType);
+             random.setSeed(seed);
+-            List<BakedQuad> list = model.getQuads(state, direction, random);
++            List<BakedQuad> list = model.getQuads(state, direction, random, modelData, renderType);
              if (!list.isEmpty()) {
-                 blockpos$mutableblockpos.setWithOffset(p_234394_, direction);
-                 if (!p_234397_ || Block.shouldRenderFace(p_234393_, p_234391_, p_234394_, direction, blockpos$mutableblockpos)) {
+                 blockpos$mutableblockpos.setWithOffset(pos, direction);
+                 if (!checkSides || Block.shouldRenderFace(state, level, pos, direction, blockpos$mutableblockpos)) {
 @@ -102,7 +_,7 @@
          }
  
-         p_234398_.setSeed(p_234399_);
--        List<BakedQuad> list1 = p_234392_.getQuads(p_234393_, null, p_234398_);
-+        List<BakedQuad> list1 = p_234392_.getQuads(p_234393_, (Direction)null, p_234398_, modelData, renderType);
+         random.setSeed(seed);
+-        List<BakedQuad> list1 = model.getQuads(state, null, random);
++        List<BakedQuad> list1 = model.getQuads(state, (Direction)null, random, modelData, renderType);
          if (!list1.isEmpty()) {
              this.renderModelFaceAO(
-                 p_234391_, p_234393_, p_234394_, p_234395_, p_234396_, list1, afloat, bitset, modelblockrenderer$ambientocclusionface, p_234400_
+                 level, state, pos, poseStack, consumer, list1, afloat, bitset, modelblockrenderer$ambientocclusionface, packedOverlay
 @@ -110,6 +_,7 @@
          }
      }
  
 +    @Deprecated //Forge: Model data and render type parameter
      public void tesselateWithoutAO(
-         BlockAndTintGetter p_234402_,
-         BakedModel p_234403_,
+         BlockAndTintGetter level,
+         BakedModel model,
 @@ -122,12 +_,28 @@
-         long p_234410_,
-         int p_234411_
+         long seed,
+         int packedOverlay
      ) {
-+        tesselateWithoutAO(p_234402_, p_234403_, p_234404_, p_234405_, p_234406_, p_234407_, p_234408_, p_234409_, p_234410_, p_234411_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
++        tesselateWithoutAO(level, model, state, pos, poseStack, consumer, checkSides, random, seed, packedOverlay, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 +    }
 +    public void tesselateWithoutAO(
-+        BlockAndTintGetter p_234402_,
-+        BakedModel p_234403_,
-+        BlockState p_234404_,
-+        BlockPos p_234405_,
-+        PoseStack p_234406_,
-+        VertexConsumer p_234407_,
-+        boolean p_234408_,
-+        RandomSource p_234409_,
-+        long p_234410_,
-+        int p_234411_,
++        BlockAndTintGetter level,
++        BakedModel model,
++        BlockState state,
++        BlockPos pos,
++        PoseStack poseStack,
++        VertexConsumer consumer,
++        boolean checkSides,
++        RandomSource random,
++        long seed,
++        int packedOverlay,
 +        net.neoforged.neoforge.client.model.data.ModelData modelData,
 +        net.minecraft.client.renderer.RenderType renderType
 +    ) {
          BitSet bitset = new BitSet(3);
-         BlockPos.MutableBlockPos blockpos$mutableblockpos = p_234405_.mutable();
+         BlockPos.MutableBlockPos blockpos$mutableblockpos = pos.mutable();
  
          for (Direction direction : DIRECTIONS) {
-             p_234409_.setSeed(p_234410_);
--            List<BakedQuad> list = p_234403_.getQuads(p_234404_, direction, p_234409_);
-+            List<BakedQuad> list = p_234403_.getQuads(p_234404_, direction, p_234409_, modelData, renderType);
+             random.setSeed(seed);
+-            List<BakedQuad> list = model.getQuads(state, direction, random);
++            List<BakedQuad> list = model.getQuads(state, direction, random, modelData, renderType);
              if (!list.isEmpty()) {
-                 blockpos$mutableblockpos.setWithOffset(p_234405_, direction);
-                 if (!p_234408_ || Block.shouldRenderFace(p_234404_, p_234402_, p_234405_, direction, blockpos$mutableblockpos)) {
+                 blockpos$mutableblockpos.setWithOffset(pos, direction);
+                 if (!checkSides || Block.shouldRenderFace(state, level, pos, direction, blockpos$mutableblockpos)) {
 @@ -138,7 +_,7 @@
          }
  
-         p_234409_.setSeed(p_234410_);
--        List<BakedQuad> list1 = p_234403_.getQuads(p_234404_, null, p_234409_);
-+        List<BakedQuad> list1 = p_234403_.getQuads(p_234404_, null, p_234409_, modelData, renderType);
+         random.setSeed(seed);
+-        List<BakedQuad> list1 = model.getQuads(state, null, random);
++        List<BakedQuad> list1 = model.getQuads(state, null, random, modelData, renderType);
          if (!list1.isEmpty()) {
-             this.renderModelFaceFlat(p_234402_, p_234404_, p_234405_, -1, p_234411_, true, p_234406_, p_234407_, list1, bitset);
+             this.renderModelFaceFlat(level, state, pos, -1, packedOverlay, true, poseStack, consumer, list1, bitset);
          }
 @@ -158,6 +_,7 @@
      ) {
-         for (BakedQuad bakedquad : p_111018_) {
-             this.calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.getVertices(), bakedquad.getDirection(), p_111019_, p_111020_);
-+            if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_111020_.get(0), p_111021_.brightness, p_111021_.lightmap))
-             p_111021_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.getDirection(), p_111019_, p_111020_, bakedquad.isShade());
+         for (BakedQuad bakedquad : quads) {
+             this.calculateShape(level, state, pos, bakedquad.getVertices(), bakedquad.getDirection(), shape, shapeFlags);
++            if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(level, state, pos, bakedquad, shapeFlags.get(0), aoFace.brightness, aoFace.lightmap))
+             aoFace.calculate(level, state, pos, bakedquad.getDirection(), shape, shapeFlags, bakedquad.isShade());
              this.putQuadData(
-                 p_111013_,
+                 level,
 @@ -323,6 +_,7 @@
          }
      }
  
 +    @Deprecated //Forge: Model data and render type parameter
      public void renderModel(
-         PoseStack.Pose p_111068_,
-         VertexConsumer p_111069_,
-@@ -334,16 +_,32 @@
-         int p_111075_,
-         int p_111076_
-     ) {
-+        renderModel(p_111068_, p_111069_, p_111070_, p_111071_, p_111072_, p_111073_, p_111074_, p_111075_, p_111076_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
+         PoseStack.Pose pose,
+         VertexConsumer consumer,
+@@ -333,17 +_,33 @@
+         float blue,
+         int packedLight,
+         int packedOverlay
++    ) {
++        renderModel(pose, consumer, state, model, red, green, blue, packedLight, packedOverlay, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 +    }
 +
 +    public void renderModel(
-+        PoseStack.Pose p_111068_,
-+        VertexConsumer p_111069_,
-+        @Nullable BlockState p_111070_,
-+        BakedModel p_111071_,
-+        float p_111072_,
-+        float p_111073_,
-+        float p_111074_,
-+        int p_111075_,
-+        int p_111076_,
++        PoseStack.Pose pose,
++        VertexConsumer consumer,
++        @Nullable BlockState state,
++        BakedModel model,
++        float red,
++        float green,
++        float blue,
++        int packedLight,
++        int packedOverlay,
 +        net.neoforged.neoforge.client.model.data.ModelData modelData,
 +        net.minecraft.client.renderer.RenderType renderType
-+    ) {
+     ) {
          RandomSource randomsource = RandomSource.create();
          long i = 42L;
  
          for (Direction direction : DIRECTIONS) {
              randomsource.setSeed(42L);
--            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, direction, randomsource), p_111075_, p_111076_);
-+            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, direction, randomsource, modelData, renderType), p_111075_, p_111076_);
+-            renderQuadList(pose, consumer, red, green, blue, model.getQuads(state, direction, randomsource), packedLight, packedOverlay);
++            renderQuadList(pose, consumer, red, green, blue, model.getQuads(state, direction, randomsource, modelData, renderType), packedLight, packedOverlay);
          }
  
          randomsource.setSeed(42L);
--        renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, null, randomsource), p_111075_, p_111076_);
-+        renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, null, randomsource, modelData, renderType), p_111075_, p_111076_);
+-        renderQuadList(pose, consumer, red, green, blue, model.getQuads(state, null, randomsource), packedLight, packedOverlay);
++        renderQuadList(pose, consumer, red, green, blue, model.getQuads(state, null, randomsource, modelData, renderType), packedLight, packedOverlay);
      }
  
      private static void renderQuadList(

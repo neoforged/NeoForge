@@ -3,18 +3,18 @@
 @@ -25,16 +_,31 @@
      }
  
-     public static ForcedChunksSavedData load(CompoundTag p_151484_, HolderLookup.Provider p_323940_) {
--        return new ForcedChunksSavedData(new LongOpenHashSet(p_151484_.getLongArray("Forced")));
-+        ForcedChunksSavedData savedData = new ForcedChunksSavedData(new LongOpenHashSet(p_151484_.getLongArray("Forced")));
-+        net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readModForcedChunks(p_151484_, savedData.blockForcedChunks, savedData.entityForcedChunks);
+     public static ForcedChunksSavedData load(CompoundTag tag, HolderLookup.Provider registries) {
+-        return new ForcedChunksSavedData(new LongOpenHashSet(tag.getLongArray("Forced")));
++        ForcedChunksSavedData savedData = new ForcedChunksSavedData(new LongOpenHashSet(tag.getLongArray("Forced")));
++        net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readModForcedChunks(tag, savedData.blockForcedChunks, savedData.entityForcedChunks);
 +        return savedData;
      }
  
      @Override
-     public CompoundTag save(CompoundTag p_46120_, HolderLookup.Provider p_324573_) {
-         p_46120_.putLongArray("Forced", this.chunks.toLongArray());
-+        net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.writeModForcedChunks(p_46120_, this.blockForcedChunks, this.entityForcedChunks);
-         return p_46120_;
+     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+         tag.putLongArray("Forced", this.chunks.toLongArray());
++        net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.writeModForcedChunks(tag, this.blockForcedChunks, this.entityForcedChunks);
+         return tag;
      }
  
      public LongSet getChunks() {

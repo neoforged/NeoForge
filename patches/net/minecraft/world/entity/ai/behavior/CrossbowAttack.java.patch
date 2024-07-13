@@ -2,28 +2,28 @@
 +++ b/net/minecraft/world/entity/ai/behavior/CrossbowAttack.java
 @@ -25,7 +_,7 @@
  
-     protected boolean checkExtraStartConditions(ServerLevel p_22778_, E p_22779_) {
-         LivingEntity livingentity = getAttackTarget(p_22779_);
--        return p_22779_.isHolding(Items.CROSSBOW)
-+        return p_22779_.isHolding(is -> is.getItem() instanceof CrossbowItem)
-             && BehaviorUtils.canSee(p_22779_, livingentity)
-             && BehaviorUtils.isWithinAttackRange(p_22779_, livingentity, 0);
+     protected boolean checkExtraStartConditions(ServerLevel level, E owner) {
+         LivingEntity livingentity = getAttackTarget(owner);
+-        return owner.isHolding(Items.CROSSBOW)
++        return owner.isHolding(is -> is.getItem() instanceof CrossbowItem)
+             && BehaviorUtils.canSee(owner, livingentity)
+             && BehaviorUtils.isWithinAttackRange(owner, livingentity, 0);
      }
 @@ -45,7 +_,7 @@
-             p_22806_.stopUsingItem();
+             entity.stopUsingItem();
          }
  
--        if (p_22806_.isHolding(Items.CROSSBOW)) {
-+        if (p_22806_.isHolding(is -> is.getItem() instanceof CrossbowItem)) {
-             p_22806_.setChargingCrossbow(false);
-             p_22806_.getUseItem().set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
+-        if (entity.isHolding(Items.CROSSBOW)) {
++        if (entity.isHolding(is -> is.getItem() instanceof CrossbowItem)) {
+             entity.setChargingCrossbow(false);
+             entity.getUseItem().set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
          }
 @@ -53,7 +_,7 @@
  
-     private void crossbowAttack(E p_22787_, LivingEntity p_22788_) {
+     private void crossbowAttack(E shooter, LivingEntity target) {
          if (this.crossbowState == CrossbowAttack.CrossbowState.UNCHARGED) {
--            p_22787_.startUsingItem(ProjectileUtil.getWeaponHoldingHand(p_22787_, Items.CROSSBOW));
-+            p_22787_.startUsingItem(ProjectileUtil.getWeaponHoldingHand(p_22787_, item -> item instanceof CrossbowItem));
+-            shooter.startUsingItem(ProjectileUtil.getWeaponHoldingHand(shooter, Items.CROSSBOW));
++            shooter.startUsingItem(ProjectileUtil.getWeaponHoldingHand(shooter, item -> item instanceof CrossbowItem));
              this.crossbowState = CrossbowAttack.CrossbowState.CHARGING;
-             p_22787_.setChargingCrossbow(true);
+             shooter.setChargingCrossbow(true);
          } else if (this.crossbowState == CrossbowAttack.CrossbowState.CHARGING) {

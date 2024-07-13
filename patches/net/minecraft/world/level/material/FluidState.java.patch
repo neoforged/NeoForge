@@ -10,7 +10,7 @@
      public static final int AMOUNT_MAX = 9;
      public static final int AMOUNT_FULL = 8;
 @@ -113,6 +_,7 @@
-         return this.getType() == p_192918_;
+         return this.getType() == fluid;
      }
  
 +    @Deprecated //Forge: Use more sensitive version

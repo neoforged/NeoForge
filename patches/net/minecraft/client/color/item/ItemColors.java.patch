@@ -8,28 +8,28 @@
 +    // Neo: Use the item instance directly as non-Vanilla item ids are not constant
 +    private final java.util.Map<Item, ItemColor> itemColors = new java.util.IdentityHashMap<>();
  
-     public static ItemColors createDefault(BlockColors p_92684_) {
+     public static ItemColors createDefault(BlockColors colors) {
          ItemColors itemcolors = new ItemColors();
 @@ -105,17 +_,20 @@
                      : FastColor.ARGB32.opaque(p_329710_.getOrDefault(DataComponents.MAP_COLOR, MapItemColor.DEFAULT).rgb()),
              Items.FILLED_MAP
          );
-+        net.neoforged.neoforge.client.ClientHooks.onItemColorsInit(itemcolors, p_92684_);
++        net.neoforged.neoforge.client.ClientHooks.onItemColorsInit(itemcolors, colors);
          return itemcolors;
      }
  
-     public int getColor(ItemStack p_92677_, int p_92678_) {
--        ItemColor itemcolor = this.itemColors.byId(BuiltInRegistries.ITEM.getId(p_92677_.getItem()));
-+        ItemColor itemcolor = this.itemColors.get(p_92677_.getItem());
-         return itemcolor == null ? -1 : itemcolor.getColor(p_92677_, p_92678_);
+     public int getColor(ItemStack stack, int tintIndex) {
+-        ItemColor itemcolor = this.itemColors.byId(BuiltInRegistries.ITEM.getId(stack.getItem()));
++        ItemColor itemcolor = this.itemColors.get(stack.getItem());
+         return itemcolor == null ? -1 : itemcolor.getColor(stack, tintIndex);
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item} */
 +    @Deprecated
-     public void register(ItemColor p_92690_, ItemLike... p_92691_) {
-         for (ItemLike itemlike : p_92691_) {
--            this.itemColors.addMapping(p_92690_, Item.getId(itemlike.asItem()));
-+            this.itemColors.put(itemlike.asItem(), p_92690_);
+     public void register(ItemColor itemColor, ItemLike... items) {
+         for (ItemLike itemlike : items) {
+-            this.itemColors.addMapping(itemColor, Item.getId(itemlike.asItem()));
++            this.itemColors.put(itemlike.asItem(), itemColor);
          }
      }
  }

@@ -5,12 +5,12 @@
                      }
  
 -                    SoundType soundtype = blockstate1.getSoundType();
-+                    SoundType soundtype = blockstate1.getSoundType(level, blockpos, p_40577_.getPlayer());
++                    SoundType soundtype = blockstate1.getSoundType(level, blockpos, context.getPlayer());
                      level.playSound(
                          player,
                          blockpos,
 -                        this.getPlaceSound(blockstate1),
-+                        this.getPlaceSound(blockstate1, level, blockpos, p_40577_.getPlayer()),
++                        this.getPlaceSound(blockstate1, level, blockpos, context.getPlayer()),
                          SoundSource.BLOCKS,
                          (soundtype.getVolume() + 1.0F) / 2.0F,
                          soundtype.getPitch() * 0.8F
@@ -19,8 +19,8 @@
      }
  
 +    @Deprecated //Forge: Use more sensitive version {@link BlockItem#getPlaceSound(BlockState, IBlockReader, BlockPos, Entity) }
-     protected SoundEvent getPlaceSound(BlockState p_40588_) {
-         return p_40588_.getSoundType().getPlaceSound();
+     protected SoundEvent getPlaceSound(BlockState state) {
+         return state.getSoundType().getPlaceSound();
      }
  
 +    //Forge: Sensitive version of BlockItem#getPlaceSound
@@ -29,12 +29,12 @@
 +    }
 +
      @Nullable
-     public BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
-         return p_40609_;
+     public BlockPlaceContext updatePlacementContext(BlockPlaceContext context) {
+         return context;
 @@ -193,6 +_,10 @@
  
-     public void registerBlocks(Map<Block, Item> p_40607_, Item p_40608_) {
-         p_40607_.put(this.getBlock(), p_40608_);
+     public void registerBlocks(Map<Block, Item> blockToItemMap, Item item) {
+         blockToItemMap.put(this.getBlock(), item);
 +    }
 +
 +    public void removeFromBlockToItemMap(Map<Block, Item> blockToItemMap, Item itemIn) {

@@ -4,7 +4,7 @@
              }
          }
  
-+        net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(collection, p_138225_, p_138223_);
++        net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(collection, selectedIds, packRepository);
          return collection;
      }
  

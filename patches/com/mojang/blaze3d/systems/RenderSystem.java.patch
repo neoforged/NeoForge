@@ -1,7 +1,7 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
 @@ -932,4 +_,14 @@
-             void accept(it.unimi.dsi.fastutil.ints.IntConsumer p_157488_, int p_157489_);
+             void accept(it.unimi.dsi.fastutil.ints.IntConsumer consumer, int index);
          }
      }
 +

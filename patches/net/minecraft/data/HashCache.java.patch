@@ -26,7 +26,7 @@
              }
  
 @@ -222,10 +_,11 @@
-                 bufferedwriter.write(p_236145_);
+                 bufferedwriter.write(date);
                  bufferedwriter.newLine();
  
 -                for (Entry<Path, HashCode> entry : this.data.entrySet()) {
@@ -34,8 +34,8 @@
 +                for(Map.Entry<Path, HashCode> entry : this.data.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
                      bufferedwriter.write(entry.getValue().toString());
                      bufferedwriter.write(32);
--                    bufferedwriter.write(p_236143_.relativize(entry.getKey()).toString());
-+                    bufferedwriter.write(p_236143_.relativize(entry.getKey()).toString().replace("\\", "/")); // Forge: Standardize file paths.
+-                    bufferedwriter.write(rootDir.relativize(entry.getKey()).toString());
++                    bufferedwriter.write(rootDir.relativize(entry.getKey()).toString().replace("\\", "/")); // Forge: Standardize file paths.
                      bufferedwriter.newLine();
                  }
              } catch (IOException ioexception) {

@@ -3,8 +3,8 @@
 @@ -85,6 +_,7 @@
      }
  
-     protected void setGameMode(GameType p_105318_) {
-+        net.neoforged.neoforge.client.ClientHooks.onClientChangeGameType(this, this.gameMode, p_105318_);
-         this.gameMode = p_105318_;
+     protected void setGameMode(GameType gameMode) {
++        net.neoforged.neoforge.client.ClientHooks.onClientChangeGameType(this, this.gameMode, gameMode);
+         this.gameMode = gameMode;
      }
  

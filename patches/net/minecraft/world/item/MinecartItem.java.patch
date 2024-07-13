@@ -19,7 +19,7 @@
                  if (direction != Direction.DOWN && railshape1.isAscending()) {
                      d3 = -0.4;
 @@ -90,7 +_,7 @@
-             ItemStack itemstack = p_42943_.getItemInHand();
+             ItemStack itemstack = context.getItemInHand();
              if (level instanceof ServerLevel serverlevel) {
                  RailShape railshape = blockstate.getBlock() instanceof BaseRailBlock
 -                    ? blockstate.getValue(((BaseRailBlock)blockstate.getBlock()).getShapeProperty())

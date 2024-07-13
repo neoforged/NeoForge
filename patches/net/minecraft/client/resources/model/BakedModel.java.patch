@@ -8,7 +8,7 @@
 +public interface BakedModel extends net.neoforged.neoforge.client.extensions.IBakedModelExtension {
 +    /**@deprecated Forge: Use {@link #getQuads(BlockState, Direction, RandomSource, net.neoforged.neoforge.client.model.data.ModelData, net.minecraft.client.renderer.RenderType)}*/
 +    @Deprecated
-     List<BakedQuad> getQuads(@Nullable BlockState p_235039_, @Nullable Direction p_235040_, RandomSource p_235041_);
+     List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, RandomSource random);
  
      boolean useAmbientOcclusion();
 @@ -24,9 +_,13 @@

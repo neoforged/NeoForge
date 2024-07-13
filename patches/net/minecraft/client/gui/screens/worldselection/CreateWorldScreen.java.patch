@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 @@ -118,6 +_,7 @@
-     public static void openFresh(Minecraft p_232897_, @Nullable Screen p_232898_) {
-         queueLoadScreen(p_232897_, PREPARING_WORLD_DATA);
-         PackRepository packrepository = new PackRepository(new ServerPacksSource(p_232897_.directoryValidator()));
+     public static void openFresh(Minecraft minecraft, @Nullable Screen lastScreen) {
+         queueLoadScreen(minecraft, PREPARING_WORLD_DATA);
+         PackRepository packrepository = new PackRepository(new ServerPacksSource(minecraft.directoryValidator()));
 +        net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(packrepository, net.minecraft.server.packs.PackType.SERVER_DATA, false);
          WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
          CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
@@ -11,7 +11,7 @@
 @@ -243,6 +_,10 @@
              WorldCreationContext worldcreationcontext = this.uiState.getSettings();
              LevelSettings levelsettings = this.createLevelSettings(flag);
-             WorldData worlddata = new PrimaryLevelData(levelsettings, worldcreationcontext.options(), p_250577_, p_249994_);
+             WorldData worlddata = new PrimaryLevelData(levelsettings, worldcreationcontext.options(), specialWorldProperty, worldGenSettingsLifecycle);
 +            if(worlddata.worldGenSettingsLifecycle() != Lifecycle.stable()) {
 +                // Neo: set experimental settings confirmation flag so user is not shown warning on next open
 +                ((PrimaryLevelData)worlddata).withConfirmedWarning(true);
@@ -21,10 +21,10 @@
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, worlddata);
 @@ -428,7 +_,7 @@
                                          if (p_269627_) {
-                                             p_270552_.accept(this.uiState.getSettings().dataConfiguration());
+                                             consumer.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
--                                            p_270552_.accept(WorldDataConfiguration.DEFAULT);
-+                                            p_270552_.accept(new WorldDataConfiguration(new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()), FeatureFlags.VANILLA_SET)); // FORGE: Revert to *actual* vanilla data
+-                                            consumer.accept(WorldDataConfiguration.DEFAULT);
++                                            consumer.accept(new WorldDataConfiguration(new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()), FeatureFlags.VANILLA_SET)); // FORGE: Revert to *actual* vanilla data
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),

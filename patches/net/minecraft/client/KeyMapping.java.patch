@@ -15,22 +15,22 @@
 @@ -42,17 +_,17 @@
      private int clickCount;
  
-     public static void click(InputConstants.Key p_90836_) {
--        KeyMapping keymapping = MAP.get(p_90836_);
-+        for (KeyMapping keymapping : MAP.getAll(p_90836_))
+     public static void click(InputConstants.Key key) {
+-        KeyMapping keymapping = MAP.get(key);
++        for (KeyMapping keymapping : MAP.getAll(key))
          if (keymapping != null) {
              keymapping.clickCount++;
          }
      }
  
-     public static void set(InputConstants.Key p_90838_, boolean p_90839_) {
--        KeyMapping keymapping = MAP.get(p_90838_);
+     public static void set(InputConstants.Key key, boolean held) {
+-        KeyMapping keymapping = MAP.get(key);
 -        if (keymapping != null) {
--            keymapping.setDown(p_90839_);
+-            keymapping.setDown(held);
 -        }
-+        for (KeyMapping keymapping : MAP.getAll(p_90838_))
++        for (KeyMapping keymapping : MAP.getAll(key))
 +            if (keymapping != null) {
-+                keymapping.setDown(p_90839_);
++                keymapping.setDown(held);
 +            }
      }
  
@@ -60,17 +60,17 @@
 +        return  tCat.compareTo(oCat);
      }
  
-     public static Supplier<Component> createNameSupplier(String p_90843_) {
+     public static Supplier<Component> createNameSupplier(String key) {
 @@ -145,6 +_,20 @@
      }
  
-     public boolean same(KeyMapping p_90851_) {
-+        if (getKeyConflictContext().conflicts(p_90851_.getKeyConflictContext()) || p_90851_.getKeyConflictContext().conflicts(getKeyConflictContext())) {
+     public boolean same(KeyMapping binding) {
++        if (getKeyConflictContext().conflicts(binding.getKeyConflictContext()) || binding.getKeyConflictContext().conflicts(getKeyConflictContext())) {
 +            net.neoforged.neoforge.client.settings.KeyModifier keyModifier = getKeyModifier();
-+            net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = p_90851_.getKeyModifier();
-+            if (keyModifier.matches(p_90851_.getKey()) || otherKeyModifier.matches(getKey())) {
++            net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = binding.getKeyModifier();
++            if (keyModifier.matches(binding.getKey()) || otherKeyModifier.matches(getKey())) {
 +                return true;
-+            } else if (getKey().equals(p_90851_.getKey())) {
++            } else if (getKey().equals(binding.getKey())) {
 +                // IN_GAME key contexts have a conflict when at least one modifier is NONE.
 +                // For example: If you hold shift to crouch, you can still press E to open your inventory. This means that a Shift+E hotkey is in conflict with E.
 +                // GUI and other key contexts do not have this limitation.
@@ -79,7 +79,7 @@
 +                    (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
 +            }
 +        }
-         return this.key.equals(p_90851_.key);
+         return this.key.equals(binding.key);
      }
  
 @@ -163,11 +_,13 @@
@@ -99,8 +99,8 @@
      public String saveString() {
 @@ -176,5 +_,86 @@
  
-     public void setDown(boolean p_90846_) {
-         this.isDown = p_90846_;
+     public void setDown(boolean value) {
+         this.isDown = value;
 +    }
 +
 +    // Neo: Injected Key Mapping controls

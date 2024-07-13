@@ -5,7 +5,7 @@
                  this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.rightArm.yRot = 0.0F;
 +            default:
-+                this.rightArmPose.applyTransform(this, p_102876_, net.minecraft.world.entity.HumanoidArm.RIGHT);
++                this.rightArmPose.applyTransform(this, livingEntity, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
@@ -14,7 +14,7 @@
                  this.leftArm.xRot = this.leftArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.leftArm.yRot = 0.0F;
 +            default:
-+                this.leftArmPose.applyTransform(this, p_102879_, net.minecraft.world.entity.HumanoidArm.LEFT);
++                this.leftArmPose.applyTransform(this, livingEntity, net.minecraft.world.entity.HumanoidArm.LEFT);
          }
      }
  
@@ -35,8 +35,8 @@
 +        private final net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose;
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
-         private ArmPose(boolean p_102896_) {
-             this.twoHanded = p_102896_;
+         private ArmPose(boolean twoHanded) {
+             this.twoHanded = twoHanded;
 +            this.forgeArmPose = null;
 +        }
 +

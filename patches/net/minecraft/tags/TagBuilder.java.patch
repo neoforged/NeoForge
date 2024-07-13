@@ -21,8 +21,8 @@
      public static TagBuilder create() {
 @@ -34,5 +_,21 @@
  
-     public TagBuilder addOptionalTag(ResourceLocation p_215910_) {
-         return this.add(TagEntry.optionalTag(p_215910_));
+     public TagBuilder addOptionalTag(ResourceLocation tagLocation) {
+         return this.add(TagEntry.optionalTag(tagLocation));
 +    }
 +
 +    // FORGE: Set the replace property of this tag.

@@ -19,22 +19,22 @@
 +    }
 +
      private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> ArgumentTypeInfo<A, T> register(
-         Registry<ArgumentTypeInfo<?, ?>> p_235387_, String p_235388_, Class<? extends A> p_235389_, ArgumentTypeInfo<A, T> p_235390_
+         Registry<ArgumentTypeInfo<?, ?>> registry, String id, Class<? extends A> argumentClass, ArgumentTypeInfo<A, T> info
      ) {
 @@ -136,12 +_,14 @@
          register(
-             p_235385_, "loot_modifier", ResourceOrIdArgument.LootModifierArgument.class, SingletonArgumentInfo.contextAware(ResourceOrIdArgument::lootModifier)
+             registry, "loot_modifier", ResourceOrIdArgument.LootModifierArgument.class, SingletonArgumentInfo.contextAware(ResourceOrIdArgument::lootModifier)
          );
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        // Forge: Register before gametest arguments to provide forge server <-> vanilla client interop and matching int ids
-+        var uuidInfo = register(p_235385_, "uuid", UuidArgument.class, SingletonArgumentInfo.contextFree(UuidArgument::uuid));
++        var uuidInfo = register(registry, "uuid", UuidArgument.class, SingletonArgumentInfo.contextFree(UuidArgument::uuid));
 +        if (true) { // Forge: Always register gametest arguments to prevent issues when connecting from gametest-enabled client/server to non-gametest-enabled client/server
-             register(p_235385_, "test_argument", TestFunctionArgument.class, SingletonArgumentInfo.contextFree(TestFunctionArgument::testFunctionArgument));
-             register(p_235385_, "test_class", TestClassNameArgument.class, SingletonArgumentInfo.contextFree(TestClassNameArgument::testClassName));
+             register(registry, "test_argument", TestFunctionArgument.class, SingletonArgumentInfo.contextFree(TestFunctionArgument::testFunctionArgument));
+             register(registry, "test_class", TestClassNameArgument.class, SingletonArgumentInfo.contextFree(TestClassNameArgument::testClassName));
          }
  
--        return register(p_235385_, "uuid", UuidArgument.class, SingletonArgumentInfo.contextFree(UuidArgument::uuid));
+-        return register(registry, "uuid", UuidArgument.class, SingletonArgumentInfo.contextFree(UuidArgument::uuid));
 +        return uuidInfo;
      }
  
-     private static <T extends ArgumentType<?>> Class<T> fixClassType(Class<? super T> p_235396_) {
+     private static <T extends ArgumentType<?>> Class<T> fixClassType(Class<? super T> type) {

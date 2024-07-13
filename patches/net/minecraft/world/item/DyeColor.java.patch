@@ -7,14 +7,14 @@
 +    private final net.minecraft.tags.TagKey<Item> tag;
      private final int textColor;
  
-     private DyeColor(int p_41046_, String p_41047_, int p_41048_, MapColor p_285297_, int p_41050_, int p_41051_) {
+     private DyeColor(int id, String name, int textureDefuseColor, MapColor mapColor, int fireworkColor, int textColor) {
 @@ -50,6 +_,7 @@
-         this.name = p_41047_;
-         this.mapColor = p_285297_;
-         this.textColor = p_41051_;
-+        this.tag = net.minecraft.tags.ItemTags.create(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "dyes/" + p_41047_));
-         this.textureDiffuseColor = FastColor.ARGB32.opaque(p_41048_);
-         this.fireworkColor = p_41050_;
+         this.name = name;
+         this.mapColor = mapColor;
+         this.textColor = textColor;
++        this.tag = net.minecraft.tags.ItemTags.create(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "dyes/" + name));
+         this.textureDiffuseColor = FastColor.ARGB32.opaque(textureDefuseColor);
+         this.fireworkColor = fireworkColor;
      }
 @@ -102,5 +_,23 @@
      @Override

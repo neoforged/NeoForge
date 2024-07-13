@@ -10,4 +10,4 @@
 +
      public abstract RecipeBookType getRecipeBookType();
  
-     public abstract boolean shouldMoveToInventory(int p_150635_);
+     public abstract boolean shouldMoveToInventory(int slotIndex);

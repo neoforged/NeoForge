@@ -14,14 +14,14 @@
 +    private final java.util.function.Predicate<String> namespacePredicate;
  
 +    @Deprecated
-     public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_) {
-+        this(p_256643_, p_255780_, null);
+     public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
++        this(output, registries, null);
 +    }
 +
-+    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds) {
++    public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds) {
 +        this.namespacePredicate = modIds == null ? namespace -> true : modIds::contains;
-         this.registries = p_255780_;
-         this.output = p_256643_;
+         this.registries = registries;
+         this.output = output;
      }
 @@ -33,8 +_,7 @@
                  p_326736_ -> {
@@ -31,7 +31,7 @@
 -                            .stream()
 +                        net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions()
                              .flatMap(
-                                 p_256552_ -> this.dumpRegistryCap(p_255785_, p_326736_, dynamicops, (RegistryDataLoader.RegistryData<?>)p_256552_).stream()
+                                 p_256552_ -> this.dumpRegistryCap(output, p_326736_, dynamicops, (RegistryDataLoader.RegistryData<?>)p_256552_).stream()
                              )
 @@ -54,6 +_,7 @@
                      PackOutput.PathProvider packoutput$pathprovider = this.output.createRegistryElementsPathProvider(resourcekey);

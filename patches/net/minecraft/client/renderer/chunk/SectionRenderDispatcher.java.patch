@@ -2,11 +2,11 @@
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 @@ -441,14 +_,15 @@
  
-         public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
+         public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache regionCache) {
              boolean flag = this.cancelTasks();
--            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.origin));
+-            RenderChunkRegion renderchunkregion = regionCache.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.origin));
 +            var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(this.origin, SectionRenderDispatcher.this.level);
-+            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.origin), additionalRenderers.isEmpty());
++            RenderChunkRegion renderchunkregion = regionCache.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.origin), additionalRenderers.isEmpty());
              boolean flag1 = this.compiled.get() == SectionRenderDispatcher.CompiledSection.UNCOMPILED;
              if (flag1 && flag) {
                  this.initialCompilationCancelCount.incrementAndGet();
@@ -25,13 +25,13 @@
 +            private final List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers;
  
 +            @Deprecated
-             public RebuildTask(double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_) {
-+                this(p_294400_, p_294382_, p_295207_, List.of());
+             public RebuildTask(double distAtCreation, @Nullable RenderChunkRegion region, boolean isHighPriority) {
++                this(distAtCreation, region, isHighPriority, List.of());
 +            }
 +
-+            public RebuildTask(double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
-                 super(p_294400_, p_295207_);
-                 this.region = p_294382_;
++            public RebuildTask(double distAtCreation, @Nullable RenderChunkRegion region, boolean isHighPriority, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
+                 super(distAtCreation, isHighPriority);
+                 this.region = region;
 +                this.additionalRenderers = additionalRenderers;
              }
  
@@ -40,8 +40,8 @@
                      } else {
                          SectionPos sectionpos = SectionPos.of(RenderSection.this.origin);
                          SectionCompiler.Results sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler
--                            .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), p_296138_);
-+                            .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), p_296138_, this.additionalRenderers);
+-                            .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), sectionBufferBuilderPack);
++                            .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), sectionBufferBuilderPack, this.additionalRenderers);
                          RenderSection.this.updateGlobalBlockEntities(sectioncompiler$results.globalBlockEntities);
                          if (this.isCancelled.get()) {
                              sectioncompiler$results.release();

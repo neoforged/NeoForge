@@ -18,27 +18,27 @@
          return blockcolors;
      }
  
-     public int getColor(BlockState p_92583_, Level p_92584_, BlockPos p_92585_) {
--        BlockColor blockcolor = this.blockColors.byId(BuiltInRegistries.BLOCK.getId(p_92583_.getBlock()));
-+        BlockColor blockcolor = this.blockColors.get(p_92583_.getBlock());
+     public int getColor(BlockState state, Level level, BlockPos pos) {
+-        BlockColor blockcolor = this.blockColors.byId(BuiltInRegistries.BLOCK.getId(state.getBlock()));
++        BlockColor blockcolor = this.blockColors.get(state.getBlock());
          if (blockcolor != null) {
-             return blockcolor.getColor(p_92583_, null, null, 0);
+             return blockcolor.getColor(state, null, null, 0);
          } else {
 @@ -108,13 +_,15 @@
      }
  
-     public int getColor(BlockState p_92578_, @Nullable BlockAndTintGetter p_92579_, @Nullable BlockPos p_92580_, int p_92581_) {
--        BlockColor blockcolor = this.blockColors.byId(BuiltInRegistries.BLOCK.getId(p_92578_.getBlock()));
-+        BlockColor blockcolor = this.blockColors.get(p_92578_.getBlock());
-         return blockcolor == null ? -1 : blockcolor.getColor(p_92578_, p_92579_, p_92580_, p_92581_);
+     public int getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex) {
+-        BlockColor blockcolor = this.blockColors.byId(BuiltInRegistries.BLOCK.getId(state.getBlock()));
++        BlockColor blockcolor = this.blockColors.get(state.getBlock());
+         return blockcolor == null ? -1 : blockcolor.getColor(state, level, pos, tintIndex);
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block} */
 +    @Deprecated
-     public void register(BlockColor p_92590_, Block... p_92591_) {
-         for (Block block : p_92591_) {
--            this.blockColors.addMapping(p_92590_, BuiltInRegistries.BLOCK.getId(block));
-+            this.blockColors.put(block, p_92590_);
+     public void register(BlockColor blockColor, Block... blocks) {
+         for (Block block : blocks) {
+-            this.blockColors.addMapping(blockColor, BuiltInRegistries.BLOCK.getId(block));
++            this.blockColors.put(block, blockColor);
          }
      }
  

@@ -3,44 +3,44 @@
 @@ -17,32 +_,38 @@
  
      @Override
-     public VertexConsumer addVertex(float p_350653_, float p_350607_, float p_350347_) {
--        return this.delegate.addVertex(p_350653_, p_350607_, p_350347_);
-+        this.delegate.addVertex(p_350653_, p_350607_, p_350347_);
+     public VertexConsumer addVertex(float x, float y, float z) {
+-        return this.delegate.addVertex(x, y, z);
++        this.delegate.addVertex(x, y, z);
 +        return this; //Neo: Fix MC-263524 not working with chained methods
      }
  
      @Override
-     public VertexConsumer setColor(int p_350639_, int p_350295_, int p_350400_, int p_350645_) {
--        return this.delegate.setColor(p_350639_, p_350295_, p_350400_, p_350645_);
-+        this.delegate.setColor(p_350639_, p_350295_, p_350400_, p_350645_);
+     public VertexConsumer setColor(int red, int green, int blue, int alpha) {
+-        return this.delegate.setColor(red, green, blue, alpha);
++        this.delegate.setColor(red, green, blue, alpha);
 +        return this; //Neo: Fix MC-263524 not working with chained methods
      }
  
      @Override
-     public VertexConsumer setUv(float p_350609_, float p_350452_) {
--        return this.delegate.setUv(this.sprite.getU(p_350609_), this.sprite.getV(p_350452_));
-+        this.delegate.setUv(this.sprite.getU(p_350609_), this.sprite.getV(p_350452_));
+     public VertexConsumer setUv(float u, float v) {
+-        return this.delegate.setUv(this.sprite.getU(u), this.sprite.getV(v));
++        this.delegate.setUv(this.sprite.getU(u), this.sprite.getV(v));
 +        return this; //Neo: Fix MC-263524 not working with chained methods
      }
  
      @Override
-     public VertexConsumer setUv1(int p_351031_, int p_351048_) {
--        return this.delegate.setUv1(p_351031_, p_351048_);
-+        this.delegate.setUv1(p_351031_, p_351048_);
+     public VertexConsumer setUv1(int u, int v) {
+-        return this.delegate.setUv1(u, v);
++        this.delegate.setUv1(u, v);
 +        return this; //Neo: Fix MC-263524 not working with chained methods
      }
  
      @Override
-     public VertexConsumer setUv2(int p_350272_, int p_350390_) {
--        return this.delegate.setUv2(p_350272_, p_350390_);
-+        this.delegate.setUv2(p_350272_, p_350390_);
+     public VertexConsumer setUv2(int u, int v) {
+-        return this.delegate.setUv2(u, v);
++        this.delegate.setUv2(u, v);
 +        return this; //Neo: Fix MC-263524 not working with chained methods
      }
  
      @Override
-     public VertexConsumer setNormal(float p_350659_, float p_350518_, float p_350663_) {
--        return this.delegate.setNormal(p_350659_, p_350518_, p_350663_);
-+        this.delegate.setNormal(p_350659_, p_350518_, p_350663_);
+     public VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
+-        return this.delegate.setNormal(normalX, normalY, normalZ);
++        this.delegate.setNormal(normalX, normalY, normalZ);
 +        return this; //Neo: Fix MC-263524 not working with chained methods
      }
  

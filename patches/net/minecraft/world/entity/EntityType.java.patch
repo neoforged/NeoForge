@@ -8,40 +8,40 @@
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
 +
-     private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
-         return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
+     private static <T extends Entity> EntityType<T> register(String key, EntityType.Builder<T> builder) {
+         return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
      }
 @@ -860,6 +_,26 @@
-         int p_273451_,
-         FeatureFlagSet p_273518_
+         int updateInterval,
+         FeatureFlagSet requiredFeatures
      ) {
-+        this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_338404_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
++        this(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, dimensions, spawnDimensionsScale, clientTrackingRange, updateInterval, requiredFeatures, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
 +    }
 +
 +    public EntityType(
-+        EntityType.EntityFactory<T> p_273268_,
-+        MobCategory p_272918_,
-+        boolean p_273417_,
-+        boolean p_273389_,
-+        boolean p_273556_,
-+        boolean p_272654_,
-+        ImmutableSet<Block> p_273631_,
-+        EntityDimensions p_272946_,
-+        float p_338404_,
-+        int p_272895_,
-+        int p_273451_,
-+        FeatureFlagSet p_273518_,
++        EntityType.EntityFactory<T> factory,
++        MobCategory category,
++        boolean serialize,
++        boolean summon,
++        boolean fireImmune,
++        boolean canSpawnFarFromPlayer,
++        ImmutableSet<Block> immuneTo,
++        EntityDimensions dimensions,
++        float spawnDimensionsScale,
++        int clientTrackingRange,
++        int updateInterval,
++        FeatureFlagSet requiredFeatures,
 +        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier
 +    ) {
-         this.factory = p_273268_;
-         this.category = p_272918_;
-         this.canSpawnFarFromPlayer = p_272654_;
+         this.factory = factory;
+         this.category = category;
+         this.canSpawnFarFromPlayer = canSpawnFarFromPlayer;
 @@ -872,6 +_,9 @@
-         this.clientTrackingRange = p_272895_;
-         this.updateInterval = p_273451_;
-         this.requiredFeatures = p_273518_;
+         this.clientTrackingRange = clientTrackingRange;
+         this.updateInterval = updateInterval;
+         this.requiredFeatures = requiredFeatures;
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
@@ -51,7 +51,7 @@
 @@ -958,6 +_,15 @@
                  mob.yHeadRot = mob.getYRot();
                  mob.yBodyRot = mob.getYRot();
-                 mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_262666_, null);
+                 mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), spawnType, null);
 +
 +                if (mob.isSpawnCancelled()) {
 +                    // Neo: Discard mob, spawn was cancelled
@@ -105,9 +105,9 @@
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
 +
-         private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
-             this.factory = p_20696_;
-             this.category = p_20697_;
+         private Builder(EntityType.EntityFactory<T> factory, MobCategory category) {
+             this.factory = factory;
+             this.category = category;
 @@ -1314,6 +_,21 @@
              return this;
          }
@@ -127,9 +127,9 @@
 +             return this;
 +        }
 +
-         public EntityType<T> build(String p_20713_) {
+         public EntityType<T> build(String key) {
              if (this.serialize) {
-                 Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
+                 Util.fetchChoiceType(References.ENTITY_TREE, key);
 @@ -1331,7 +_,10 @@
                  this.spawnDimensionsScale,
                  this.clientTrackingRange,

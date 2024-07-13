@@ -3,25 +3,25 @@
 @@ -86,12 +_,13 @@
  
      @Override
-     public boolean canSurvive(BlockState p_277671_, LevelReader p_277477_, BlockPos p_278085_) {
--        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? false : super.canSurvive(p_277671_, p_277477_, p_278085_);
-+        net.neoforged.neoforge.common.util.TriState soilDecision = p_277477_.getBlockState(p_278085_.below()).canSustainPlant(p_277477_, p_278085_.below(), Direction.UP, p_277671_);
-+        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? soilDecision.isTrue() : super.canSurvive(p_277671_, p_277477_, p_278085_);
+     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+-        return isLower(state) && !sufficientLight(level, pos) ? false : super.canSurvive(state, level, pos);
++        net.neoforged.neoforge.common.util.TriState soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), Direction.UP, state);
++        return isLower(state) && !sufficientLight(level, pos) ? soilDecision.isTrue() : super.canSurvive(state, level, pos);
      }
  
      @Override
-     protected boolean mayPlaceOn(BlockState p_277418_, BlockGetter p_277461_, BlockPos p_277608_) {
--        return p_277418_.is(Blocks.FARMLAND);
-+        return p_277418_.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
+-        return state.is(Blocks.FARMLAND);
++        return state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
      }
  
      @Override
 @@ -125,7 +_,7 @@
  
      @Override
-     public void randomTick(BlockState p_277950_, ServerLevel p_277589_, BlockPos p_277937_, RandomSource p_277887_) {
--        float f = CropBlock.getGrowthSpeed(this, p_277589_, p_277937_);
-+        float f = CropBlock.getGrowthSpeed(p_277950_, p_277589_, p_277937_);
-         boolean flag = p_277887_.nextInt((int)(25.0F / f) + 1) == 0;
+     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-        float f = CropBlock.getGrowthSpeed(this, level, pos);
++        float f = CropBlock.getGrowthSpeed(state, level, pos);
+         boolean flag = random.nextInt((int)(25.0F / f) + 1) == 0;
          if (flag) {
-             this.grow(p_277589_, p_277950_, p_277937_, 1);
+             this.grow(level, state, pos, 1);

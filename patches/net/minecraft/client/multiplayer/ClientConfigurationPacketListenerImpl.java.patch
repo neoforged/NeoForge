@@ -8,12 +8,12 @@
 +    private boolean initializedConnection = false;
 +    private java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
  
-     public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
-         super(p_295262_, p_296339_, p_294706_);
+     public ClientConfigurationPacketListenerImpl(Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie) {
+         super(minecraft, connection, commonListenerCookie);
 @@ -82,6 +_,11 @@
      @Override
-     public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
-         this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
+     public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket packet) {
+         this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(packet.features());
 +        // Neo: Fallback detection layer for vanilla servers
 +        if (this.connectionType.isOther()) {
 +            this.initializedConnection = true;
@@ -54,8 +54,8 @@
  
      @Override
 @@ -154,5 +_,51 @@
-     public void onDisconnect(DisconnectionDetails p_351005_) {
-         super.onDisconnect(p_351005_);
+     public void onDisconnect(DisconnectionDetails details) {
+         super.onDisconnect(details);
          this.minecraft.clearDownloadedResourcePacks();
 +    }
 +
@@ -93,8 +93,8 @@
 +    }
 +
 +    @Override
-+    protected net.minecraft.client.gui.screens.Screen createDisconnectScreen(DisconnectionDetails p_350769_) {
-+        final net.minecraft.client.gui.screens.Screen superScreen = super.createDisconnectScreen(p_350769_);
++    protected net.minecraft.client.gui.screens.Screen createDisconnectScreen(DisconnectionDetails details) {
++        final net.minecraft.client.gui.screens.Screen superScreen = super.createDisconnectScreen(details);
 +        if (failureReasons.isEmpty())
 +            return superScreen;
 +

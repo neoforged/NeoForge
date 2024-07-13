@@ -3,15 +3,15 @@
 @@ -229,11 +_,13 @@
      }
  
-     public static ModelLayerLocation createSignModelName(WoodType p_171292_) {
--        return createLocation("sign/" + p_171292_.name(), "main");
-+        ResourceLocation location = ResourceLocation.parse(p_171292_.name());
+     public static ModelLayerLocation createSignModelName(WoodType woodType) {
+-        return createLocation("sign/" + woodType.name(), "main");
++        ResourceLocation location = ResourceLocation.parse(woodType.name());
 +        return new ModelLayerLocation(location.withPrefix("sign/"), "main");
      }
  
-     public static ModelLayerLocation createHangingSignModelName(WoodType p_252225_) {
--        return createLocation("hanging_sign/" + p_252225_.name(), "main");
-+        ResourceLocation location = ResourceLocation.parse(p_252225_.name());
+     public static ModelLayerLocation createHangingSignModelName(WoodType woodType) {
+-        return createLocation("hanging_sign/" + woodType.name(), "main");
++        ResourceLocation location = ResourceLocation.parse(woodType.name());
 +        return new ModelLayerLocation(location.withPrefix("hanging_sign/"), "main");
      }
  

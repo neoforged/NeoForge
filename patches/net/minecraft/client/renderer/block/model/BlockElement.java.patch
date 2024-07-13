@@ -7,17 +7,17 @@
 +    private net.neoforged.neoforge.client.model.ExtraFaceData faceData;
  
      public BlockElement(
-         Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_, @Nullable BlockElementRotation p_254229_, boolean p_253661_
+         Vector3f from, Vector3f to, Map<Direction, BlockElementFace> faces, @Nullable BlockElementRotation rotation, boolean shade
      ) {
-+      this(p_253626_, p_254426_, p_254454_, p_254229_, p_253661_, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++      this(from, to, faces, rotation, shade, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
 +    }
 +
-+    public BlockElement(Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_, @Nullable BlockElementRotation p_254229_, boolean p_253661_, net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
-         this.from = p_253626_;
-         this.to = p_254426_;
-         this.faces = p_254454_;
-         this.rotation = p_254229_;
-         this.shade = p_253661_;
++    public BlockElement(Vector3f from, Vector3f to, Map<Direction, BlockElementFace> faces, @Nullable BlockElementRotation rotation, boolean shade, net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
+         this.from = from;
+         this.to = to;
+         this.faces = faces;
+         this.rotation = rotation;
+         this.shade = shade;
          this.fillUvs();
 +        this.setFaceData(faceData);
 +        this.faces.values().forEach(face -> face.parent().setValue(this));

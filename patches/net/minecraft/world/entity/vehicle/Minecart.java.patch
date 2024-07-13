@@ -3,9 +3,9 @@
 @@ -19,6 +_,8 @@
  
      @Override
-     public InteractionResult interact(Player p_38483_, InteractionHand p_38484_) {
-+        InteractionResult ret = super.interact(p_38483_, p_38484_);
+     public InteractionResult interact(Player player, InteractionHand hand) {
++        InteractionResult ret = super.interact(player, hand);
 +        if (ret.consumesAction()) return ret;
-         if (p_38483_.isSecondaryUseActive()) {
+         if (player.isSecondaryUseActive()) {
              return InteractionResult.PASS;
          } else if (this.isVehicle()) {

@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/gui/components/Button.java
 +++ b/net/minecraft/client/gui/components/Button.java
 @@ -31,6 +_,11 @@
-         this.createNarration = p_259552_;
+         this.createNarration = createNarration;
      }
  
 +    protected Button(Builder builder) {

@@ -1,23 +1,23 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
 @@ -85,15 +_,24 @@
-     protected boolean canSurvive(BlockState p_54880_, LevelReader p_54881_, BlockPos p_54882_) {
-         BlockPos blockpos = p_54882_.below();
-         BlockState blockstate = p_54881_.getBlockState(blockpos);
-+        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, p_54880_);
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+         BlockPos blockpos = pos.below();
+         BlockState blockstate = level.getBlockState(blockpos);
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(level, blockpos, net.minecraft.core.Direction.UP, state);
          return blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)
              ? true
--            : p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
-+            : soilDecision.isDefault() ? (p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos)) : soilDecision.isTrue();
+-            : level.getRawBrightness(pos, 0) < 13 && this.mayPlaceOn(blockstate, level, blockpos);
++            : soilDecision.isDefault() ? (level.getRawBrightness(pos, 0) < 13 && this.mayPlaceOn(blockstate, level, blockpos)) : soilDecision.isTrue();
      }
  
-     public boolean growMushroom(ServerLevel p_221774_, BlockPos p_221775_, BlockState p_221776_, RandomSource p_221777_) {
-         Optional<? extends Holder<ConfiguredFeature<?, ?>>> optional = p_221774_.registryAccess()
+     public boolean growMushroom(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
+         Optional<? extends Holder<ConfiguredFeature<?, ?>>> optional = level.registryAccess()
              .registryOrThrow(Registries.CONFIGURED_FEATURE)
              .getHolder(this.feature);
 +
 +        // Neo: Fire the BlockGrowFeatureEvent and update the result of the Optional local with the new feature.
-+        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(p_221774_, p_221777_, p_221775_, optional.orElse(null));
++        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, optional.orElse(null));
 +        if (event.isCanceled()) {
 +            return false;
 +        }

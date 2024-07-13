@@ -3,15 +3,15 @@
 @@ -174,11 +_,12 @@
          .build();
  
-     public static AttributeSupplier getSupplier(EntityType<? extends LivingEntity> p_22298_) {
--        return SUPPLIERS.get(p_22298_);
-+        AttributeSupplier supplier = net.neoforged.neoforge.common.CommonHooks.getAttributesView().get(p_22298_);
-+        return supplier != null ? supplier : SUPPLIERS.get(p_22298_);
+     public static AttributeSupplier getSupplier(EntityType<? extends LivingEntity> livingEntity) {
+-        return SUPPLIERS.get(livingEntity);
++        AttributeSupplier supplier = net.neoforged.neoforge.common.CommonHooks.getAttributesView().get(livingEntity);
++        return supplier != null ? supplier : SUPPLIERS.get(livingEntity);
      }
  
-     public static boolean hasSupplier(EntityType<?> p_22302_) {
--        return SUPPLIERS.containsKey(p_22302_);
-+        return SUPPLIERS.containsKey(p_22302_) || net.neoforged.neoforge.common.CommonHooks.getAttributesView().containsKey(p_22302_);
+     public static boolean hasSupplier(EntityType<?> entityType) {
+-        return SUPPLIERS.containsKey(entityType);
++        return SUPPLIERS.containsKey(entityType) || net.neoforged.neoforge.common.CommonHooks.getAttributesView().containsKey(entityType);
      }
  
      public static void validate() {

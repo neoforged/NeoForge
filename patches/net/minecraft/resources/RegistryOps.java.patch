@@ -1,7 +1,7 @@
 --- a/net/minecraft/resources/RegistryOps.java
 +++ b/net/minecraft/resources/RegistryOps.java
 @@ -35,6 +_,11 @@
-         this.lookupProvider = p_255799_;
+         this.lookupProvider = lookupProvider;
      }
  
 +    protected RegistryOps(RegistryOps<T> other) {
@@ -9,8 +9,8 @@
 +        this.lookupProvider = other.lookupProvider;
 +    }
 +
-     public <U> RegistryOps<U> withParent(DynamicOps<U> p_330654_) {
-         return (RegistryOps<U>)(p_330654_ == this.delegate ? this : new RegistryOps<>(p_330654_, this.lookupProvider));
+     public <U> RegistryOps<U> withParent(DynamicOps<U> ops) {
+         return (RegistryOps<U>)(ops == this.delegate ? this : new RegistryOps<>(ops, this.lookupProvider));
      }
 @@ -74,6 +_,20 @@
                          : DataResult.error(() -> "Not a registry ops")
@@ -32,4 +32,4 @@
 +        });
      }
  
-     public static <E, O> RecordCodecBuilder<O, Holder.Reference<E>> retrieveElement(ResourceKey<E> p_256347_) {
+     public static <E, O> RecordCodecBuilder<O, Holder.Reference<E>> retrieveElement(ResourceKey<E> key) {

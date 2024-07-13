@@ -3,9 +3,9 @@
 @@ -85,6 +_,8 @@
  
      @Override
-     public InteractionResult interact(Player p_38522_, InteractionHand p_38523_) {
-+        InteractionResult ret = super.interact(p_38522_, p_38523_);
+     public InteractionResult interact(Player player, InteractionHand hand) {
++        InteractionResult ret = super.interact(player, hand);
 +        if (ret.consumesAction()) return ret;
-         return this.commandBlock.usedBy(p_38522_);
+         return this.commandBlock.usedBy(player);
      }
  

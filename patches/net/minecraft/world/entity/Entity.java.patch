@@ -38,7 +38,7 @@
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
      }
  
-     public boolean isColliding(BlockPos p_20040_, BlockState p_20041_) {
+     public boolean isColliding(BlockPos pos, BlockState state) {
 @@ -467,7 +_,7 @@
  
          if (this.isInLava()) {
@@ -81,36 +81,36 @@
                  return blockpos;
              } else {
                  BlockState blockstate = this.level().getBlockState(blockpos);
--                return (!((double)p_216987_ <= 0.5) || !blockstate.is(BlockTags.FENCES))
+-                return (!((double)yOffset <= 0.5) || !blockstate.is(BlockTags.FENCES))
 -                        && !blockstate.is(BlockTags.WALLS)
 -                        && !(blockstate.getBlock() instanceof FenceGateBlock)
-+                return (!((double)p_216987_ <= 0.5) || !blockstate.collisionExtendsVertically(this.level(), blockpos, this))
-                     ? blockpos.atY(Mth.floor(this.position.y - (double)p_216987_))
++                return (!((double)yOffset <= 0.5) || !blockstate.collisionExtendsVertically(this.level(), blockpos, this))
+                     ? blockpos.atY(Mth.floor(this.position.y - (double)yOffset))
                      : blockpos;
              }
 @@ -1076,19 +_,19 @@
-         return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? p_278049_ : blockpos;
+         return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? pos : blockpos;
      }
  
--    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_) {
--        SoundType soundtype = p_277472_.getSoundType();
-+    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_, BlockPos primaryPos, BlockPos secondaryPos) {
-+        SoundType soundtype = p_277472_.getSoundType(this.level, primaryPos, this);
+-    protected void playCombinationStepSounds(BlockState primaryState, BlockState secondaryState) {
+-        SoundType soundtype = primaryState.getSoundType();
++    protected void playCombinationStepSounds(BlockState primaryState, BlockState secondaryState, BlockPos primaryPos, BlockPos secondaryPos) {
++        SoundType soundtype = primaryState.getSoundType(this.level, primaryPos, this);
          this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
--        this.playMuffledStepSound(p_277630_);
-+        this.playMuffledStepSound(p_277630_, secondaryPos);
+-        this.playMuffledStepSound(secondaryState);
++        this.playMuffledStepSound(secondaryState, secondaryPos);
      }
  
--    protected void playMuffledStepSound(BlockState p_283110_) {
--        SoundType soundtype = p_283110_.getSoundType();
-+    protected void playMuffledStepSound(BlockState p_283110_, BlockPos pos) {
-+        SoundType soundtype = p_283110_.getSoundType(this.level, pos, this);
+-    protected void playMuffledStepSound(BlockState state) {
+-        SoundType soundtype = state.getSoundType();
++    protected void playMuffledStepSound(BlockState state, BlockPos pos) {
++        SoundType soundtype = state.getSoundType(this.level, pos, this);
          this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
      }
  
-     protected void playStepSound(BlockPos p_20135_, BlockState p_20136_) {
--        SoundType soundtype = p_20136_.getSoundType();
-+        SoundType soundtype = p_20136_.getSoundType(this.level, p_20135_, this);
+     protected void playStepSound(BlockPos pos, BlockState state) {
+-        SoundType soundtype = state.getSoundType();
++        SoundType soundtype = state.getSoundType(this.level, pos, this);
          this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
      }
  
@@ -185,10 +185,10 @@
      }
  
 +    @Deprecated // Forge: Use isEyeInFluidType instead
-     public boolean isEyeInFluid(TagKey<Fluid> p_204030_) {
-+        if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+        else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-         return this.fluidOnEyes.contains(p_204030_);
+     public boolean isEyeInFluid(TagKey<Fluid> fluidTag) {
++        if (fluidTag == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (fluidTag == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+         return this.fluidOnEyes.contains(fluidTag);
      }
  
      public boolean isInLava() {
@@ -196,30 +196,30 @@
 +        return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value()) > 0.0D;
      }
  
-     public void moveRelative(float p_19921_, Vec3 p_19922_) {
+     public void moveRelative(float amount, Vec3 relative) {
 @@ -1704,6 +_,10 @@
-                 p_20241_.put("Tags", listtag);
+                 compound.put("Tags", listtag);
              }
  
 +            CompoundTag attachments = serializeAttachments(registryAccess());
-+            if (attachments != null) p_20241_.put(ATTACHMENTS_NBT_KEY, attachments);
-+            if (persistentData != null) p_20241_.put("NeoForgeData", persistentData.copy());
++            if (attachments != null) compound.put(ATTACHMENTS_NBT_KEY, attachments);
++            if (persistentData != null) compound.put("NeoForgeData", persistentData.copy());
 +
-             this.addAdditionalSaveData(p_20241_);
+             this.addAdditionalSaveData(compound);
              if (this.isVehicle()) {
                  ListTag listtag1 = new ListTag();
 @@ -1784,6 +_,8 @@
-                 this.setGlowingTag(p_20259_.getBoolean("Glowing"));
-                 this.setTicksFrozen(p_20259_.getInt("TicksFrozen"));
-                 this.hasVisualFire = p_20259_.getBoolean("HasVisualFire");
-+                if (p_20259_.contains("NeoForgeData", 10)) persistentData = p_20259_.getCompound("NeoForgeData");
-+                if (p_20259_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(registryAccess(), p_20259_.getCompound(ATTACHMENTS_NBT_KEY));
-                 if (p_20259_.contains("Tags", 9)) {
+                 this.setGlowingTag(compound.getBoolean("Glowing"));
+                 this.setTicksFrozen(compound.getInt("TicksFrozen"));
+                 this.hasVisualFire = compound.getBoolean("HasVisualFire");
++                if (compound.contains("NeoForgeData", 10)) persistentData = compound.getCompound("NeoForgeData");
++                if (compound.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(registryAccess(), compound.getCompound(ATTACHMENTS_NBT_KEY));
+                 if (compound.contains("Tags", 9)) {
                      this.tags.clear();
-                     ListTag listtag3 = p_20259_.getList("Tags", 8);
+                     ListTag listtag3 = compound.getList("Tags", 8);
 @@ -1868,6 +_,8 @@
          } else {
-             ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double)p_19986_, this.getZ(), p_19985_);
+             ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double)offsetY, this.getZ(), stack);
              itementity.setDefaultPickUpDelay();
 +            if (captureDrops() != null) captureDrops().add(itementity);
 +            else
@@ -243,8 +243,8 @@
                  }
              }
  
-+        if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, p_19966_, true)) return false;
-             if (p_19967_ || this.canRide(p_19966_) && p_19966_.canAddPassenger(this)) {
++        if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, vehicle, true)) return false;
+             if (force || this.canRide(vehicle) && vehicle.canAddPassenger(this)) {
                  if (this.isPassenger()) {
                      this.stopRiding();
 @@ -2024,6 +_,7 @@
@@ -272,16 +272,16 @@
 +        return this.isVisuallySwimming() && !this.isInWater() && !this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType));
      }
  
-     public void setSwimming(boolean p_20283_) {
+     public void setSwimming(boolean swimming) {
 @@ -2366,7 +_,7 @@
              this.igniteForSeconds(8.0F);
          }
  
 -        this.hurt(this.damageSources().lightningBolt(), 5.0F);
-+        this.hurt(this.damageSources().lightningBolt(), p_19928_.getDamage());
++        this.hurt(this.damageSources().lightningBolt(), lightning.getDamage());
      }
  
-     public void onAboveBubbleCol(boolean p_20313_) {
+     public void onAboveBubbleCol(boolean downwards) {
 @@ -2461,7 +_,7 @@
      }
  
@@ -290,27 +290,27 @@
 +        return this.getType().getDescription(); // Forge: Use getter to allow overriding by mods
      }
  
-     public boolean is(Entity p_20356_) {
+     public boolean is(Entity entity) {
 @@ -2516,10 +_,11 @@
      }
  
-     public boolean isInvulnerableTo(DamageSource p_20122_) {
+     public boolean isInvulnerableTo(DamageSource source) {
 -        return this.isRemoved()
 +        boolean isVanillaInvulnerable = this.isRemoved()
-             || this.invulnerable && !p_20122_.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !p_20122_.isCreativePlayer()
-             || p_20122_.is(DamageTypeTags.IS_FIRE) && this.fireImmune()
-             || p_20122_.is(DamageTypeTags.IS_FALL) && this.getType().is(EntityTypeTags.FALL_DAMAGE_IMMUNE);
-+        return net.neoforged.neoforge.common.CommonHooks.isEntityInvulnerableTo(this, p_20122_, isVanillaInvulnerable);
+             || this.invulnerable && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !source.isCreativePlayer()
+             || source.is(DamageTypeTags.IS_FIRE) && this.fireImmune()
+             || source.is(DamageTypeTags.IS_FALL) && this.getType().is(EntityTypeTags.FALL_DAMAGE_IMMUNE);
++        return net.neoforged.neoforge.common.CommonHooks.isEntityInvulnerableTo(this, source, isVanillaInvulnerable);
      }
  
      public boolean isInvulnerable() {
 @@ -2544,6 +_,7 @@
  
      @Nullable
-     public Entity changeDimension(DimensionTransition p_350951_) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_350951_.newLevel().dimension())) return null;
+     public Entity changeDimension(DimensionTransition transition) {
++        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, transition.newLevel().dimension())) return null;
          if (this.level() instanceof ServerLevel serverlevel && !this.isRemoved()) {
-             ServerLevel serverlevel1 = p_350951_.newLevel();
+             ServerLevel serverlevel1 = transition.newLevel();
              List<Entity> list = this.getPassengers();
 @@ -2667,6 +_,7 @@
          return this.stringUUID;
@@ -330,14 +330,14 @@
          this.eyeHeight = entitydimensions1.eyeHeight();
          this.reapplyPosition();
 @@ -3110,9 +_,17 @@
-         return Mth.lerp(p_352259_, this.yRotO, this.yRot);
+         return Mth.lerp(partialTick, this.yRotO, this.yRot);
      }
  
 +    @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
-     public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
+     public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> fluidTag, double motionScale) {
 +        this.updateFluidHeightAndDoFluidPushing();
-+        if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+        else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
++        if(fluidTag == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (fluidTag == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
 +        else return false;
 +    }
 +
@@ -364,7 +364,7 @@
                      for (int j2 = i1; j2 < j1; j2++) {
                          blockpos$mutableblockpos.set(l1, i2, j2);
                          FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--                        if (fluidstate.is(p_204032_)) {
+-                        if (fluidstate.is(fluidTag)) {
 +                        net.neoforged.neoforge.fluids.FluidType fluidType = fluidstate.getFluidType();
 +                        if (!fluidType.isAir()) {
                              double d1 = (double)((float)i2 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
@@ -412,7 +412,7 @@
                  }
  
                  Vec3 vec32 = this.getDeltaMovement();
--                vec3 = vec3.scale(p_204033_);
+-                vec3 = vec3.scale(motionScale);
 +                interim.flowVector = interim.flowVector.scale(this.getFluidMotionScale(fluidType));
                  double d2 = 0.003;
 -                if (Math.abs(vec32.x) < 0.003 && Math.abs(vec32.z) < 0.003 && vec3.length() < 0.0045000000000000005) {
@@ -425,7 +425,7 @@
 +                this.setDeltaMovement(this.getDeltaMovement().add(interim.flowVector));
              }
  
--            this.fluidHeight.put(p_204032_, d0);
+-            this.fluidHeight.put(fluidTag, d0);
 -            return flag1;
 +            this.setFluidTypeHeight(fluidType, interim.fluidHeight);
 +            });
@@ -438,23 +438,23 @@
      }
  
 +    @Deprecated // Forge: Use getFluidTypeHeight instead
-     public double getFluidHeight(TagKey<Fluid> p_204037_) {
-+        if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+        else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-         return this.fluidHeight.getDouble(p_204037_);
+     public double getFluidHeight(TagKey<Fluid> fluidTag) {
++        if (fluidTag == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (fluidTag == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+         return this.fluidHeight.getDouble(fluidTag);
      }
  
 @@ -3323,6 +_,7 @@
  
              this.levelCallback.onMove();
          }
-+        if (this.isAddedToLevel() && !this.level.isClientSide && !this.isRemoved()) this.level.getChunk((int) Math.floor(p_20344_) >> 4, (int) Math.floor(p_20346_) >> 4); // Forge - ensure target chunk is loaded.
++        if (this.isAddedToLevel() && !this.level.isClientSide && !this.isRemoved()) this.level.getChunk((int) Math.floor(x) >> 4, (int) Math.floor(z) >> 4); // Forge - ensure target chunk is loaded.
      }
  
      public void checkDespawn() {
 @@ -3449,6 +_,126 @@
  
-     public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
+     public boolean mayInteract(Level level, BlockPos pos) {
          return true;
 +    }
 +

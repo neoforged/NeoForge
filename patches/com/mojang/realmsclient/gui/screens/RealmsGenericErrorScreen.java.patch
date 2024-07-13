@@ -13,6 +13,6 @@
 +    }
 +
 +    @Override
-     public void render(GuiGraphics p_283497_, int p_88680_, int p_88681_, float p_88682_) {
-         super.render(p_283497_, p_88680_, p_88681_, p_88682_);
-         p_283497_.drawCenteredString(this.font, this.lines.title, this.width / 2, 80, -1);
+     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+         super.render(guiGraphics, mouseX, mouseY, partialTick);
+         guiGraphics.drawCenteredString(this.font, this.lines.title, this.width / 2, 80, -1);

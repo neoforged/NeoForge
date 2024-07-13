@@ -14,7 +14,7 @@
 +            this.subEntities[i].setId(id + i + 1);
      }
  
-     public void setDragonFight(EndDragonFight p_287736_) {
+     public void setDragonFight(EndDragonFight dragonFight) {
 @@ -170,8 +_,12 @@
          return adouble;
      }
@@ -71,8 +71,8 @@
 +    }
 +
 +    @Override
-     public void recreateFromPacket(ClientboundAddEntityPacket p_218825_) {
-         super.recreateFromPacket(p_218825_);
+     public void recreateFromPacket(ClientboundAddEntityPacket packet) {
+         super.recreateFromPacket(packet);
 +        if (true) return; // Forge: Fix MC-158205: Moved into setId()
          EnderDragonPart[] aenderdragonpart = this.getSubEntities();
  

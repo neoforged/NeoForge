@@ -4,20 +4,20 @@
                      }
                  } else if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                      if (!this.level().isClientSide()) {
--                        this.usePlayerItem(p_28153_, p_28154_, itemstack);
+-                        this.usePlayerItem(player, hand, itemstack);
 -                        FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
 +                        FoodProperties foodproperties = itemstack.getFoodProperties(this);
                          this.heal(foodproperties != null ? (float)foodproperties.nutrition() : 1.0F);
-+                        this.usePlayerItem(p_28153_, p_28154_, itemstack);
++                        this.usePlayerItem(player, hand, itemstack);
                      }
  
                      return InteractionResult.sidedSuccess(this.level().isClientSide());
 @@ -430,7 +_,7 @@
      }
  
-     private void tryToTame(Player p_333858_) {
+     private void tryToTame(Player player) {
 -        if (this.random.nextInt(3) == 0) {
-+        if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_333858_)) {
-             this.tame(p_333858_);
++        if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, player)) {
+             this.tame(player);
              this.setOrderedToSit(true);
              this.level().broadcastEntityEvent(this, (byte)7);

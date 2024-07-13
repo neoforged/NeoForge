@@ -13,13 +13,13 @@
      private boolean strafingBackwards;
      private int strafingTime = -1;
  
-+    public <M extends Monster & RangedAttackMob> RangedBowAttackGoal(M p_25792_, double p_25793_, int p_25794_, float p_25795_) {
-+        this((T) p_25792_, p_25793_, p_25794_, p_25795_);
++    public <M extends Monster & RangedAttackMob> RangedBowAttackGoal(M mob, double speedModifier, int attackIntervalMin, float attackRadius) {
++        this((T) mob, speedModifier, attackIntervalMin, attackRadius);
 +    }
 +
-     public RangedBowAttackGoal(T p_25792_, double p_25793_, int p_25794_, float p_25795_) {
-         this.mob = p_25792_;
-         this.speedModifier = p_25793_;
+     public RangedBowAttackGoal(T mob, double speedModifier, int attackIntervalMin, float attackRadius) {
+         this.mob = mob;
+         this.speedModifier = speedModifier;
 @@ -38,7 +_,7 @@
      }
  

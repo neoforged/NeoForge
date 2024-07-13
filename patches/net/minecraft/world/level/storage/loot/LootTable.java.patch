@@ -12,56 +12,56 @@
                  .apply(p_338123_, LootTable::new)
      );
 @@ -53,7 +_,7 @@
-     LootTable(LootContextParamSet p_287716_, Optional<ResourceLocation> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
-         this.paramSet = p_287716_;
-         this.randomSequence = p_299055_;
--        this.pools = p_298390_;
-+        this.pools = Lists.newArrayList(p_298390_);
-         this.functions = p_298775_;
-         this.compositeFunction = LootItemFunctions.compose(p_298775_);
+     LootTable(LootContextParamSet paramSet, Optional<ResourceLocation> randomSequence, List<LootPool> pools, List<LootItemFunction> functions) {
+         this.paramSet = paramSet;
+         this.randomSequence = randomSequence;
+-        this.pools = pools;
++        this.pools = Lists.newArrayList(pools);
+         this.functions = functions;
+         this.compositeFunction = LootItemFunctions.compose(functions);
      }
 @@ -76,10 +_,12 @@
          };
      }
  
 +    @Deprecated // Use a non-'Raw' version of 'getRandomItems', so that the Forge Global Loot Modifiers will be applied
-     public void getRandomItemsRaw(LootParams p_287669_, Consumer<ItemStack> p_287781_) {
-         this.getRandomItemsRaw(new LootContext.Builder(p_287669_).create(this.randomSequence), p_287781_);
+     public void getRandomItemsRaw(LootParams params, Consumer<ItemStack> output) {
+         this.getRandomItemsRaw(new LootContext.Builder(params).create(this.randomSequence), output);
      }
  
 +    @Deprecated // Use a non-'Raw' version of 'getRandomItems', so that the Forge Global Loot Modifiers will be applied
-     public void getRandomItemsRaw(LootContext p_79132_, Consumer<ItemStack> p_79133_) {
+     public void getRandomItemsRaw(LootContext context, Consumer<ItemStack> output) {
          LootContext.VisitedEntry<?> visitedentry = LootContext.createVisitedEntry(this);
-         if (p_79132_.pushVisitedElement(visitedentry)) {
+         if (context.pushVisitedElement(visitedentry)) {
 @@ -96,18 +_,15 @@
      }
  
-     public void getRandomItems(LootParams p_287748_, long p_287729_, Consumer<ItemStack> p_287583_) {
+     public void getRandomItems(LootParams params, long seed, Consumer<ItemStack> output) {
 -        this.getRandomItemsRaw(
--            new LootContext.Builder(p_287748_).withOptionalRandomSeed(p_287729_).create(this.randomSequence),
--            createStackSplitter(p_287748_.getLevel(), p_287583_)
+-            new LootContext.Builder(params).withOptionalRandomSeed(seed).create(this.randomSequence),
+-            createStackSplitter(params.getLevel(), output)
 -        );
-+        this.getRandomItems((new LootContext.Builder(p_287748_)).withOptionalRandomSeed(p_287729_).create(this.randomSequence)).forEach(p_287583_);
++        this.getRandomItems((new LootContext.Builder(params)).withOptionalRandomSeed(seed).create(this.randomSequence)).forEach(output);
      }
  
-     public void getRandomItems(LootParams p_287704_, Consumer<ItemStack> p_287617_) {
--        this.getRandomItemsRaw(p_287704_, createStackSplitter(p_287704_.getLevel(), p_287617_));
-+        this.getRandomItems(p_287704_).forEach(p_287617_);
+     public void getRandomItems(LootParams params, Consumer<ItemStack> output) {
+-        this.getRandomItemsRaw(params, createStackSplitter(params.getLevel(), output));
++        this.getRandomItems(params).forEach(output);
      }
  
-     public void getRandomItems(LootContext p_79149_, Consumer<ItemStack> p_79150_) {
--        this.getRandomItemsRaw(p_79149_, createStackSplitter(p_79149_.getLevel(), p_79150_));
-+        this.getRandomItems(p_79149_).forEach(p_79150_);
+     public void getRandomItems(LootContext contextData, Consumer<ItemStack> output) {
+-        this.getRandomItemsRaw(contextData, createStackSplitter(contextData.getLevel(), output));
++        this.getRandomItems(contextData).forEach(output);
      }
  
-     public ObjectArrayList<ItemStack> getRandomItems(LootParams p_347545_, RandomSource p_347680_) {
+     public ObjectArrayList<ItemStack> getRandomItems(LootParams params, RandomSource random) {
 @@ -124,7 +_,8 @@
  
-     private ObjectArrayList<ItemStack> getRandomItems(LootContext p_230923_) {
+     private ObjectArrayList<ItemStack> getRandomItems(LootContext context) {
          ObjectArrayList<ItemStack> objectarraylist = new ObjectArrayList<>();
--        this.getRandomItems(p_230923_, objectarraylist::add);
-+        this.getRandomItemsRaw(p_230923_, createStackSplitter(p_230923_.getLevel(), objectarraylist::add));
-+        objectarraylist = net.neoforged.neoforge.common.CommonHooks.modifyLoot(this.getLootTableId(), objectarraylist, p_230923_);
+-        this.getRandomItems(context, objectarraylist::add);
++        this.getRandomItemsRaw(context, createStackSplitter(context.getLevel(), objectarraylist::add));
++        objectarraylist = net.neoforged.neoforge.common.CommonHooks.modifyLoot(this.getLootTableId(), objectarraylist, context);
          return objectarraylist;
      }
  

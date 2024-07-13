@@ -20,10 +20,10 @@
              this.checkLock();
              return new PlayerDataStorage(this, LevelStorageSource.this.fixerUpper);
 @@ -496,6 +_,7 @@
-             CompoundTag compoundtag = p_78292_.createTag(p_78291_, p_78293_);
+             CompoundTag compoundtag = serverConfiguration.createTag(registries, hostPlayerNBT);
              CompoundTag compoundtag1 = new CompoundTag();
              compoundtag1.put("Data", compoundtag);
-+            net.neoforged.neoforge.common.CommonHooks.writeAdditionalLevelSaveData(p_78292_, compoundtag1);
++            net.neoforged.neoforge.common.CommonHooks.writeAdditionalLevelSaveData(serverConfiguration, compoundtag1);
              this.saveLevelData(compoundtag1);
          }
  

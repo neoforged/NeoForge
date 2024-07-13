@@ -11,8 +11,8 @@
      public static final short MAX_STRING_LENGTH = 32767;
 @@ -1588,5 +_,10 @@
      @Override
-     public boolean release(int p_130347_) {
-         return this.source.release(p_130347_);
+     public boolean release(int decrement) {
+         return this.source.release(decrement);
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal

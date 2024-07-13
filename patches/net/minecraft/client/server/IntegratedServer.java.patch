@@ -16,7 +16,7 @@
 @@ -225,6 +_,7 @@
  
      @Override
-     public void halt(boolean p_120053_) {
+     public void halt(boolean waitForServer) {
 +        if (isRunning())
          this.executeBlocking(() -> {
              for (ServerPlayer serverplayer : Lists.newArrayList(this.getPlayerList().getPlayers())) {

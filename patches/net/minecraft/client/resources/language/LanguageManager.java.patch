@@ -3,10 +3,10 @@
 @@ -30,7 +_,7 @@
      private final Consumer<ClientLanguage> reloadCallback;
  
-     public LanguageManager(String p_118971_, Consumer<ClientLanguage> p_345582_) {
--        this.currentCode = p_118971_;
-+        setSelected(p_118971_);
-         this.reloadCallback = p_345582_;
+     public LanguageManager(String currentCode, Consumer<ClientLanguage> reloadFallback) {
+-        this.currentCode = currentCode;
++        setSelected(currentCode);
+         this.reloadCallback = reloadFallback;
      }
  
 @@ -69,8 +_,12 @@
@@ -15,9 +15,9 @@
  
 +    private java.util.Locale javaLocale; // Forge: add locale information for modders
 +    public java.util.Locale getJavaLocale() { return javaLocale; }
-     public void setSelected(String p_265224_) {
-         this.currentCode = p_265224_;
-+        final String[] langSplit = p_265224_.split("_", 2);
+     public void setSelected(String selected) {
+         this.currentCode = selected;
++        final String[] langSplit = selected.split("_", 2);
 +        this.javaLocale = langSplit.length == 1 ? new java.util.Locale(langSplit[0]) : new java.util.Locale(langSplit[0], langSplit[1]);
      }
  

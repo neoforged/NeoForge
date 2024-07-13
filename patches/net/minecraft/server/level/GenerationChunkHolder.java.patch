@@ -6,5 +6,5 @@
      private final AtomicInteger generationRefCount = new AtomicInteger();
 +    public net.minecraft.world.level.chunk.LevelChunk currentlyLoading; // Forge: Used to bypass future chain when loading chunks.
  
-     public GenerationChunkHolder(ChunkPos p_347689_) {
-         this.pos = p_347689_;
+     public GenerationChunkHolder(ChunkPos pos) {
+         this.pos = pos;

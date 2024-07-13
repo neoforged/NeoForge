@@ -18,9 +18,9 @@
          this(p_179834_.readJsonWithCodec(ServerStatus.CODEC));
      }
  
-     private void write(FriendlyByteBuf p_134899_) {
-+        if (cachedStatus != null) p_134899_.writeUtf(cachedStatus);
+     private void write(FriendlyByteBuf buffer) {
++        if (cachedStatus != null) buffer.writeUtf(cachedStatus);
 +        else
-         p_134899_.writeJsonWithCodec(ServerStatus.CODEC, this.status);
+         buffer.writeJsonWithCodec(ServerStatus.CODEC, this.status);
      }
  

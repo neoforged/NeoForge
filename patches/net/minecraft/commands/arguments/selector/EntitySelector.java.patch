@@ -3,9 +3,9 @@
 @@ -105,7 +_,7 @@
      }
  
-     private void checkPermissions(CommandSourceStack p_121169_) throws CommandSyntaxException {
--        if (this.usesSelector && !p_121169_.hasPermission(2)) {
-+        if (this.usesSelector && !net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(p_121169_)) {
+     private void checkPermissions(CommandSourceStack source) throws CommandSyntaxException {
+-        if (this.usesSelector && !source.hasPermission(2)) {
++        if (this.usesSelector && !net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(source)) {
              throw EntityArgument.ERROR_SELECTORS_NOT_ALLOWED.create();
          }
      }

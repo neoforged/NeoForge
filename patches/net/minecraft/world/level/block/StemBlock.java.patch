@@ -3,38 +3,38 @@
 @@ -74,23 +_,23 @@
  
      @Override
-     protected boolean mayPlaceOn(BlockState p_57053_, BlockGetter p_57054_, BlockPos p_57055_) {
--        return p_57053_.is(Blocks.FARMLAND);
-+        return p_57053_.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
+-        return state.is(Blocks.FARMLAND);
++        return state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
      }
  
      @Override
-     protected void randomTick(BlockState p_222538_, ServerLevel p_222539_, BlockPos p_222540_, RandomSource p_222541_) {
-+        if (!p_222539_.isAreaLoaded(p_222540_, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-         if (p_222539_.getRawBrightness(p_222540_, 0) >= 9) {
--            float f = CropBlock.getGrowthSpeed(this, p_222539_, p_222540_);
--            if (p_222541_.nextInt((int)(25.0F / f) + 1) == 0) {
-+            float f = CropBlock.getGrowthSpeed(p_222538_, p_222539_, p_222540_);
-+            if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_222539_, p_222540_, p_222538_, p_222541_.nextInt((int)(25.0F / f) + 1) == 0)) {
-                 int i = p_222538_.getValue(AGE);
+     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
++        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+         if (level.getRawBrightness(pos, 0) >= 9) {
+-            float f = CropBlock.getGrowthSpeed(this, level, pos);
+-            if (random.nextInt((int)(25.0F / f) + 1) == 0) {
++            float f = CropBlock.getGrowthSpeed(state, level, pos);
++            if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / f) + 1) == 0)) {
+                 int i = state.getValue(AGE);
                  if (i < 7) {
--                    p_222538_ = p_222538_.setValue(AGE, Integer.valueOf(i + 1));
--                    p_222539_.setBlock(p_222540_, p_222538_, 2);
-+                    p_222539_.setBlock(p_222540_, p_222538_.setValue(AGE, Integer.valueOf(i + 1)), 2);
+-                    state = state.setValue(AGE, Integer.valueOf(i + 1));
+-                    level.setBlock(pos, state, 2);
++                    level.setBlock(pos, state.setValue(AGE, Integer.valueOf(i + 1)), 2);
                  } else {
-                     Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(p_222541_);
-                     BlockPos blockpos = p_222540_.relative(direction);
-                     BlockState blockstate = p_222539_.getBlockState(blockpos.below());
--                    if (p_222539_.getBlockState(blockpos).isAir() && (blockstate.is(Blocks.FARMLAND) || blockstate.is(BlockTags.DIRT))) {
-+                    if (p_222539_.isEmptyBlock(blockpos) && (blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || blockstate.is(BlockTags.DIRT))) {
-                         Registry<Block> registry = p_222539_.registryAccess().registryOrThrow(Registries.BLOCK);
+                     Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
+                     BlockPos blockpos = pos.relative(direction);
+                     BlockState blockstate = level.getBlockState(blockpos.below());
+-                    if (level.getBlockState(blockpos).isAir() && (blockstate.is(Blocks.FARMLAND) || blockstate.is(BlockTags.DIRT))) {
++                    if (level.isEmptyBlock(blockpos) && (blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || blockstate.is(BlockTags.DIRT))) {
+                         Registry<Block> registry = level.registryAccess().registryOrThrow(Registries.BLOCK);
                          Optional<Block> optional = registry.getOptional(this.fruit);
                          Optional<Block> optional1 = registry.getOptional(this.attachedStem);
 @@ -100,6 +_,7 @@
                          }
                      }
                  }
-+                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_222539_, p_222540_, p_222538_);
++                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
              }
          }
      }

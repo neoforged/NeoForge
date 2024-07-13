@@ -6,8 +6,8 @@
  
 +        // Neo: Use supplier method instead
 +        @Deprecated
-         public FoodProperties.Builder effect(MobEffectInstance p_38763_, float p_38764_) {
-             this.effects.add(new FoodProperties.PossibleEffect(p_38763_, p_38764_));
+         public FoodProperties.Builder effect(MobEffectInstance effect, float probability) {
+             this.effects.add(new FoodProperties.PossibleEffect(effect, probability));
              return this;
          }
  
@@ -16,8 +16,8 @@
 +            return this;
 +        }
 +
-         public FoodProperties.Builder usingConvertsTo(ItemLike p_347650_) {
-             this.usingConvertsTo = Optional.of(new ItemStack(p_347650_));
+         public FoodProperties.Builder usingConvertsTo(ItemLike item) {
+             this.usingConvertsTo = Optional.of(new ItemStack(item));
              return this;
 @@ -93,7 +_,7 @@
          }

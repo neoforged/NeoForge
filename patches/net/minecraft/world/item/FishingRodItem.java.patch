@@ -1,17 +1,17 @@
 --- a/net/minecraft/world/item/FishingRodItem.java
 +++ b/net/minecraft/world/item/FishingRodItem.java
 @@ -24,7 +_,11 @@
-         if (p_41291_.fishing != null) {
-             if (!p_41290_.isClientSide) {
-                 int i = p_41291_.fishing.retrieve(itemstack);
+         if (player.fishing != null) {
+             if (!level.isClientSide) {
+                 int i = player.fishing.retrieve(itemstack);
 +                ItemStack original = itemstack.copy();
-                 itemstack.hurtAndBreak(i, p_41291_, LivingEntity.getSlotForHand(p_41292_));
+                 itemstack.hurtAndBreak(i, player, LivingEntity.getSlotForHand(hand));
 +                if(itemstack.isEmpty()) {
-+                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(p_41291_, original, p_41292_);
++                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, original, hand);
 +                }
              }
  
-             p_41290_.playSound(
+             level.playSound(
 @@ -65,5 +_,10 @@
      @Override
      public int getEnchantmentValue() {

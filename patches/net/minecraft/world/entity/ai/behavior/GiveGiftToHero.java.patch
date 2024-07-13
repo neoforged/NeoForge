@@ -12,15 +12,15 @@
 @@ -121,8 +_,12 @@
              return ImmutableList.of(new ItemStack(Items.POPPY));
          } else {
-             VillagerProfession villagerprofession = p_23010_.getVillagerData().getProfession();
+             VillagerProfession villagerprofession = villager.getVillagerData().getProfession();
 -            if (GIFTS.containsKey(villagerprofession)) {
--                LootTable loottable = p_23010_.level().getServer().reloadableRegistries().getLootTable(GIFTS.get(villagerprofession));
+-                LootTable loottable = villager.level().getServer().reloadableRegistries().getLootTable(GIFTS.get(villagerprofession));
 +            LootTable loottable = null;
 +            var gift = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(villagerprofession).getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
 +            if (gift != null) {
-+                loottable = p_23010_.level().getServer().reloadableRegistries().getLootTable(gift.lootTable());
++                loottable = villager.level().getServer().reloadableRegistries().getLootTable(gift.lootTable());
 +            }
 +            if (loottable != null) {
-                 LootParams lootparams = new LootParams.Builder((ServerLevel)p_23010_.level())
-                     .withParameter(LootContextParams.ORIGIN, p_23010_.position())
-                     .withParameter(LootContextParams.THIS_ENTITY, p_23010_)
+                 LootParams lootparams = new LootParams.Builder((ServerLevel)villager.level())
+                     .withParameter(LootContextParams.ORIGIN, villager.position())
+                     .withParameter(LootContextParams.THIS_ENTITY, villager)

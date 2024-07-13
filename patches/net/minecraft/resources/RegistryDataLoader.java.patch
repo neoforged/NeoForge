@@ -16,33 +16,33 @@
 -    );
 +    )); // Neo: Keep the list so custom registries can be added later
  
-     public static RegistryAccess.Frozen load(ResourceManager p_252046_, RegistryAccess p_249916_, List<RegistryDataLoader.RegistryData<?>> p_250344_) {
-         return load((p_321412_, p_321413_) -> p_321412_.loadFromResources(p_252046_, p_321413_), p_249916_, p_250344_);
+     public static RegistryAccess.Frozen load(ResourceManager resourceManager, RegistryAccess registryAccess, List<RegistryDataLoader.RegistryData<?>> registryData) {
+         return load((p_321412_, p_321413_) -> p_321412_.loadFromResources(resourceManager, p_321413_), registryAccess, registryData);
 @@ -204,11 +_,16 @@
-         Resource p_326141_,
-         RegistrationInfo p_326033_
+         Resource resource,
+         RegistrationInfo registrationInfo
      ) throws IOException {
-+        Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(p_326476_));
-         try (Reader reader = p_326141_.openAsReader()) {
++        Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(codec));
+         try (Reader reader = resource.openAsReader()) {
              JsonElement jsonelement = JsonParser.parseReader(reader);
--            DataResult<E> dataresult = p_326476_.parse(p_325932_, jsonelement);
+-            DataResult<E> dataresult = codec.parse(ops, jsonelement);
 -            E e = dataresult.getOrThrow();
-+            DataResult<Optional<E>> dataresult = decoder.parse(p_325932_, jsonelement);
++            DataResult<Optional<E>> dataresult = decoder.parse(ops, jsonelement);
 +            Optional<E> candidate = dataresult.getOrThrow();
 +            candidate.ifPresentOrElse(e -> {
-             p_326195_.register(p_326054_, e, p_326033_);
+             registry.register(resourceKey, e, registrationInfo);
 +            }, () -> {
-+                LOGGER.debug("Skipping loading registry entry {} as its conditions were not met", p_326054_);
++                LOGGER.debug("Skipping loading registry entry {} as its conditions were not met", resourceKey);
 +            });
          }
      }
  
 @@ -221,7 +_,7 @@
      ) {
-         String s = Registries.elementsDirPath(p_321557_.key());
+         String s = Registries.elementsDirPath(registry.key());
          FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
--        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_321612_);
-+        RegistryOps<JsonElement> registryops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, p_321612_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
+-        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, registryInfoLookup);
++        RegistryOps<JsonElement> registryops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, registryInfoLookup), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
  
-         for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
+         for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(resourceManager).entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();

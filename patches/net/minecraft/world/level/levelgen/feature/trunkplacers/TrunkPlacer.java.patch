@@ -2,10 +2,10 @@
 +++ b/net/minecraft/world/level/levelgen/feature/trunkplacers/TrunkPlacer.java
 @@ -64,7 +_,7 @@
      protected static void setDirtAt(
-         LevelSimulatedReader p_226170_, BiConsumer<BlockPos, BlockState> p_226171_, RandomSource p_226172_, BlockPos p_226173_, TreeConfiguration p_226174_
+         LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, TreeConfiguration config
      ) {
--        if (p_226174_.forceDirt || !isDirt(p_226170_, p_226173_)) {
-+        if (!(((net.minecraft.world.level.LevelReader) p_226170_).getBlockState(p_226173_).onTreeGrow((net.minecraft.world.level.LevelReader) p_226170_, p_226171_, p_226172_, p_226173_, p_226174_)) && (p_226174_.forceDirt || !isDirt(p_226170_, p_226173_))) {
-             p_226171_.accept(p_226173_, p_226174_.dirtProvider.getState(p_226172_, p_226173_));
+-        if (config.forceDirt || !isDirt(level, pos)) {
++        if (!(((net.minecraft.world.level.LevelReader) level).getBlockState(pos).onTreeGrow((net.minecraft.world.level.LevelReader) level, blockSetter, random, pos, config)) && (config.forceDirt || !isDirt(level, pos))) {
+             blockSetter.accept(pos, config.dirtProvider.getState(random, pos));
          }
      }

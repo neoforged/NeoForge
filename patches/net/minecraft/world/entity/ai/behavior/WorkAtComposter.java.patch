@@ -6,9 +6,9 @@
          int j = 10;
 -        int[] aint = new int[COMPOSTABLE_ITEMS.size()];
 +        it.unimi.dsi.fastutil.objects.Reference2IntMap<Item> amounts = new it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<>(COMPOSTABLE_ITEMS.size() * 2); // Neo: let's assume that there's roughly twice more villager compostables than in vanilla
-         SimpleContainer simplecontainer = p_24794_.getInventory();
+         SimpleContainer simplecontainer = villager.getInventory();
          int k = simplecontainer.getContainerSize();
-         BlockState blockstate = p_24796_;
+         BlockState blockstate = state;
  
          for (int l = k - 1; l >= 0 && i > 0; l--) {
              ItemStack itemstack = simplecontainer.getItem(l);

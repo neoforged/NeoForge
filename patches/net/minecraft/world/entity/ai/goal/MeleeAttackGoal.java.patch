@@ -7,8 +7,8 @@
 +    private int failedPathFindingPenalty = 0;
 +    private boolean canPenalize = false;
  
-     public MeleeAttackGoal(PathfinderMob p_25552_, double p_25553_, boolean p_25554_) {
-         this.mob = p_25552_;
+     public MeleeAttackGoal(PathfinderMob mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {
+         this.mob = mob;
 @@ -42,6 +_,15 @@
              } else if (!livingentity.isAlive()) {
                  return false;

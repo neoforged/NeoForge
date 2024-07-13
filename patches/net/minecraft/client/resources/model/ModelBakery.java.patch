@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
 @@ -117,6 +_,12 @@
-         p_252014_.popPush("special");
+         profilerFiller.popPush("special");
          this.loadSpecialItemModelAndDependencies(ItemRenderer.TRIDENT_IN_HAND_MODEL);
          this.loadSpecialItemModelAndDependencies(ItemRenderer.SPYGLASS_IN_HAND_MODEL);
 +        Set<ModelResourceLocation> additionalModels = new HashSet<>();
@@ -11,7 +11,7 @@
 +            this.registerModelAndLoadDependencies(rl, unbakedmodel);
 +        }
          this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
-         p_252014_.pop();
+         profilerFiller.pop();
      }
 @@ -246,14 +_,30 @@
          }
@@ -28,43 +28,43 @@
 +        }
 +
 +        @Override
-         public BakedModel bake(ResourceLocation p_252176_, ModelState p_249765_) {
-+            return bake(p_252176_, p_249765_, this.modelTextureGetter);
+         public BakedModel bake(ResourceLocation location, ModelState transform) {
++            return bake(location, transform, this.modelTextureGetter);
 +        }
 +
 +        @Override
-+        public BakedModel bake(ResourceLocation p_252176_, ModelState p_249765_, Function<Material, TextureAtlasSprite> sprites) {
-             ModelBakery.BakedCacheKey modelbakery$bakedcachekey = new ModelBakery.BakedCacheKey(p_252176_, p_249765_.getRotation(), p_249765_.isUvLocked());
++        public BakedModel bake(ResourceLocation location, ModelState transform, Function<Material, TextureAtlasSprite> sprites) {
+             ModelBakery.BakedCacheKey modelbakery$bakedcachekey = new ModelBakery.BakedCacheKey(location, transform.getRotation(), transform.isUvLocked());
              BakedModel bakedmodel = ModelBakery.this.bakedCache.get(modelbakery$bakedcachekey);
              if (bakedmodel != null) {
                  return bakedmodel;
              } else {
-                 UnbakedModel unbakedmodel = this.getModel(p_252176_);
--                BakedModel bakedmodel1 = this.bakeUncached(unbakedmodel, p_249765_);
-+                BakedModel bakedmodel1 = this.bakeUncached(unbakedmodel, p_249765_, sprites);
+                 UnbakedModel unbakedmodel = this.getModel(location);
+-                BakedModel bakedmodel1 = this.bakeUncached(unbakedmodel, transform);
++                BakedModel bakedmodel1 = this.bakeUncached(unbakedmodel, transform, sprites);
                  ModelBakery.this.bakedCache.put(modelbakery$bakedcachekey, bakedmodel1);
                  return bakedmodel1;
              }
 @@ -261,13 +_,19 @@
  
          @Nullable
-         BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_) {
-+            return bakeUncached(p_352386_, p_352194_, this.modelTextureGetter);
+         BakedModel bakeUncached(UnbakedModel model, ModelState state) {
++            return bakeUncached(model, state, this.modelTextureGetter);
 +        }
 +
 +        @Override
 +        @Nullable
-+        public BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_, Function<Material, TextureAtlasSprite> sprites) {
-             if (p_352386_ instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {
++        public BakedModel bakeUncached(UnbakedModel model, ModelState state, Function<Material, TextureAtlasSprite> sprites) {
+             if (model instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {
                  return ModelBakery.ITEM_MODEL_GENERATOR
 -                    .generateBlockModel(this.modelTextureGetter, blockmodel)
--                    .bake(this, blockmodel, this.modelTextureGetter, p_352194_, false);
+-                    .bake(this, blockmodel, this.modelTextureGetter, state, false);
 +                    .generateBlockModel(sprites, blockmodel)
-+                    .bake(this, blockmodel, sprites, p_352194_, false);
++                    .bake(this, blockmodel, sprites, state, false);
              }
  
--            return p_352386_.bake(this, this.modelTextureGetter, p_352194_);
-+            return p_352386_.bake(this, sprites, p_352194_);
+-            return model.bake(this, this.modelTextureGetter, state);
++            return model.bake(this, sprites, state);
          }
      }
  
