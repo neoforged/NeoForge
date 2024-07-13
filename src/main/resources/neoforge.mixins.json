@@ -3,8 +3,7 @@
   "package": "net.neoforged.neoforge.mixins",
   "mixins": [
     "BlockEntityTypeAccessor",
-    "MappedRegistryAccessor",
-    "VillagerAccessor"
+    "MappedRegistryAccessor"
   ],
   "client": [],
   "injectors": {
