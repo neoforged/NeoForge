@@ -23,7 +23,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
  * @apiNote Use of other operations and/or values will trigger undefined behavior, where no guarantees can be made if the attribute will be enabled or not.
  */
 public class BooleanAttribute extends Attribute {
-    protected BooleanAttribute(String descriptionId, boolean defaultValue) {
+    public BooleanAttribute(String descriptionId, boolean defaultValue) {
         super(descriptionId, defaultValue ? 1 : 0);
     }
 
