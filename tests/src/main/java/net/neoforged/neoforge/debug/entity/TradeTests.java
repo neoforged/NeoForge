@@ -9,6 +9,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.MerchantOffers;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
@@ -53,6 +55,14 @@ public class TradeTests {
                 })
                 .thenExecute(villager -> helper.assertTrue(villager.getOffers().size() == 9, "Weaponsmith did not get a new tier of trade"))
                 .thenExecute(villager -> helper.assertTrue(villager.getOffers().get(8).getResult().is(Items.NETHERITE_SWORD), "Netherite Sword was not in trade."))
+                .thenExecute(villager -> {
+                    try {
+                        MerchantOffers merchantoffers = villager.getOffers();
+                        MerchantOffers.CODEC.encodeStart(villager.registryAccess().createSerializationContext(NbtOps.INSTANCE), merchantoffers).getOrThrow();
+                    } catch (Exception e) {
+                        helper.fail("Villager's injected merchant offer failed to serialize without throwing exception");
+                    }
+                })
                 .thenSucceed());
     }
 
