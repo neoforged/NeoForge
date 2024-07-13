@@ -42,7 +42,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
-import net.neoforged.neoforge.common.*;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
@@ -519,6 +521,7 @@ public interface IItemStackExtension {
 
     /**
      * Logs component information and tag data for an itemstack that failed to save.
+     * 
      * <pre>
      * Example:
      * Error saving itemstack [1 minecraft:dirt]. Original cause: java.lang.NullPointerException
