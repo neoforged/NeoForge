@@ -11,7 +11,7 @@
                  level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
                  blockstate2 = blockstate1;
 -            } else if (blockstate.getBlock() instanceof CampfireBlock && blockstate.getValue(CampfireBlock.LIT)) {
-+            } else if ((blockstate2 = blockstate.getToolModifiedState(p_43119_, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DOWSE, false)) != null) {
++            } else if ((blockstate2 = blockstate.getToolModifiedState(p_43119_, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DOUSE, false)) != null) {
                  if (!level.isClientSide()) {
                      level.levelEvent(null, 1009, blockpos, 0);
                  }
