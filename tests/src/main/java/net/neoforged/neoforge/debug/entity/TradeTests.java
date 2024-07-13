@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.entity;
 
+import java.util.ArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.entity.EntityType;
@@ -24,13 +25,10 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-import java.util.ArrayList;
-
 @ForEachTest(groups = TradeTests.GROUP)
 public class TradeTests {
     public static final String GROUP = "level.entity.trades";
     private static final String MOD_ID = "villager_trade_test";
-
 
     @Mod(value = MOD_ID)
     public static class VillagerTradeTestMod {
@@ -52,8 +50,7 @@ public class TradeTests {
     @EmptyTemplate
     @TestHolder(description = "Verify we can add a trade to a villager")
     static void villagerTradeAdd(final DynamicTest test) {
-        test.onGameTest(helper ->
-            helper.startSequence(() -> helper.spawn(EntityType.VILLAGER, new BlockPos(1, 1, 1)))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawn(EntityType.VILLAGER, new BlockPos(1, 1, 1)))
                 .thenExecute(villager -> villager.setVillagerData(new VillagerData(VillagerType.PLAINS, VillagerProfession.WEAPONSMITH, 6)))
                 .thenExecute(villager -> helper.assertTrue(villager.getOffers().size() == 1, "Weaponsmith did not get a new tier of trade"))
                 .thenExecute(villager -> helper.assertTrue(villager.getOffers().getFirst().getResult().is(Items.NETHERITE_SWORD), "Netherite Sword was not in trade."))
