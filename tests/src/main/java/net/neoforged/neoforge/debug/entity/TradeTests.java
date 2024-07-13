@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -56,11 +58,19 @@ public class TradeTests {
                 .thenExecute(villager -> helper.assertTrue(villager.getOffers().size() == 9, "Weaponsmith did not get a new tier of trade"))
                 .thenExecute(villager -> helper.assertTrue(villager.getOffers().get(8).getResult().is(Items.NETHERITE_SWORD), "Netherite Sword was not in trade."))
                 .thenExecute(villager -> {
+                    MerchantOffers originalMerchantOffers = villager.getOffers();
+                    MerchantOffers newMerchantOffers;
                     try {
-                        MerchantOffers merchantoffers = villager.getOffers();
-                        MerchantOffers.CODEC.encodeStart(villager.registryAccess().createSerializationContext(NbtOps.INSTANCE), merchantoffers).getOrThrow();
+                        RegistryOps<Tag> registryOps = villager.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+                        Tag tag = MerchantOffers.CODEC.encodeStart(registryOps, originalMerchantOffers).getOrThrow();
+                        newMerchantOffers = MerchantOffers.CODEC.decode(registryOps, tag).getOrThrow().getFirst();
                     } catch (Exception e) {
-                        helper.fail("Villager's injected merchant offer failed to serialize without throwing exception");
+                        helper.fail("Villager's modified merchant offer failed to serialize without throwing exception");
+                        return;
+                    }
+
+                    if (newMerchantOffers.size() != originalMerchantOffers.size() || !newMerchantOffers.get(8).getResult().is(originalMerchantOffers.get(8).getResult().getItem())) {
+                        helper.fail("Failed to serialize and deserialized modified merchant offers properly.");
                     }
                 })
                 .thenSucceed());
