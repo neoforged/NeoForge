@@ -12,6 +12,10 @@ import net.minecraft.world.entity.item.ItemEntity;
  * lifespan. Adding extra life time will prevent the {@link ItemEntity} from being
  * flagged as dead, thus staying it's removal from the world.
  * <p>
+ * Note that using this event, you can ony extend the lifespan up to {@link Short#MAX_VALUE} - 1 ticks (27.5 minutes).
+ * To extend an item's lifespan above that, use either {@link ItemEntity#setExtendedLifetime()}
+ * or {@link ItemEntity#setUnlimitedLifetime}.
+ * <p>
  * This event will only be fired server-side.
  */
 public class ItemExpireEvent extends ItemEvent {
