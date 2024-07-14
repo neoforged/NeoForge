@@ -26,33 +26,21 @@ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketLis
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.minecraft.world.damagesource.DamageEffects;
-import net.minecraft.world.damagesource.DamageScaling;
-import net.minecraft.world.damagesource.DeathMessageType;
-import net.minecraft.world.inventory.RecipeBookType;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.level.biome.BiomeSpecialEffects;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
+import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
 import net.neoforged.fml.common.asm.enumextension.NetworkedEnum;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) implements ConfigurationTask {
     public static final Type TYPE = new Type(ResourceLocation.fromNamespaceAndPath("neoforge", "check_extensible_enum"));
-    private static final List<Class<? extends Enum<?>>> NETWORKED_EXTENSIBLE_ENUM_CLASSES = List.of(
-            DamageEffects.class,
-            DamageScaling.class,
-            DeathMessageType.class,
-            RecipeBookType.class,
-            ItemDisplayContext.class,
-            Rarity.class,
-            FireworkExplosion.Shape.class,
-            BiomeSpecialEffects.GrassColorModifier.class);
+    private static final org.objectweb.asm.Type NETWORKED_ENUM = org.objectweb.asm.Type.getType(NetworkedEnum.class);
+    private static final List<? extends Class<? extends Enum<?>>> NETWORKED_EXTENSIBLE_ENUM_CLASSES = collectNetworkedEnumClasses();
     private static Map<String, EnumEntry> enumEntries = null;
 
     @Override
@@ -179,6 +167,29 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
             return (ExtensionInfo) mth.invoke(null);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<? extends Class<? extends Enum<?>>> collectNetworkedEnumClasses() {
+        return ModList.get()
+                .getAllScanData()
+                .stream()
+                .map(ModFileScanData::getAnnotations)
+                .flatMap(Set::stream)
+                .filter(a -> NETWORKED_ENUM.equals(a.annotationType()))
+                .map(a -> classForName(a.clazz().getClassName()))
+                .filter(Class::isEnum)
+                .filter(IExtensibleEnum.class::isAssignableFrom)
+                .map(c -> (Class<? extends Enum<?>>) c)
+                .toList();
+    }
+
+    private static Class<?> classForName(String name) {
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Failed to load class specified by annotation data", e);
         }
     }
 

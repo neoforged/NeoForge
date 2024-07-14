@@ -1090,14 +1090,21 @@ public class ClientHooks {
     }
 
     private static final ExtensionInfo RECIPE_BOOK_TYPE_EXTENSION_INFO = RecipeBookType.getExtensionInfo();
+    private static final RecipeBookType[] RECIPE_BOOK_TYPES = RecipeBookType.values();
+    private static RecipeBookType @Nullable [] cachedFilteredTypes = null;
 
     public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
         ClientPacketListener listener = Minecraft.getInstance().getConnection();
         if (listener != null && !listener.getConnection().isMemoryConnection() && listener.getConnectionType().isOther()) {
-            if (RECIPE_BOOK_TYPE_EXTENSION_INFO.extended()) {
-                return Arrays.copyOfRange(RecipeBookType.values(), 0, RECIPE_BOOK_TYPE_EXTENSION_INFO.vanillaCount());
+            if (cachedFilteredTypes == null) {
+                if (RECIPE_BOOK_TYPE_EXTENSION_INFO.extended()) {
+                    cachedFilteredTypes = Arrays.copyOfRange(RECIPE_BOOK_TYPES, 0, RECIPE_BOOK_TYPE_EXTENSION_INFO.vanillaCount());
+                } else {
+                    cachedFilteredTypes = RECIPE_BOOK_TYPES;
+                }
             }
+            return cachedFilteredTypes;
         }
-        return RecipeBookType.values();
+        return RECIPE_BOOK_TYPES;
     }
 }
