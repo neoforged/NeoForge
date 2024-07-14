@@ -178,6 +178,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      * The label of list elements. Will be supplied the index into the list. Default: "%s:"
      */
     private static final String LIST_ELEMENT = LANG_PREFIX + "listelement";
+    /**
+     * How the range will be added to the tooltip when using translated tooltips. Mimics what the comment does in ModConfigSpec.
+     */
+    private static final String RANGE_TOOLTIP = LANG_PREFIX + "rangetooltip";
 
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline");
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan");
@@ -465,19 +469,22 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return valueSpec != null ? getValueSpec(key).getComment() : context.modSpec.getLevelComment(context.makeKeyList(key));
         }
 
-        protected <T> OptionInstance.TooltipSupplier<T> getTooltip(final String key) {
-            return OptionInstance.cachedConstantTooltip(getTooltipComponent(key));
+        protected <T> OptionInstance.TooltipSupplier<T> getTooltip(final String key, @Nullable Range<?> range) {
+            return OptionInstance.cachedConstantTooltip(getTooltipComponent(key, range));
         }
 
-        protected Component getTooltipComponent(final String key) {
+        protected Component getTooltipComponent(final String key, @Nullable Range<?> range) {
             final String tooltipKey = getTranslationKey(key) + ".tooltip";
             final String comment = getComment(key);
-            final MutableComponent baseComponent = Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD));
-            if (translationChecker.existsWithFallback(tooltipKey) || !Strings.isBlank(comment)) {
-                return baseComponent.append(Component.literal("\n\n")).append(Component.translatableWithFallback(tooltipKey, comment));
-            } else {
-                return baseComponent;
+            final boolean hasTranslatedTooltip = translationChecker.existsWithFallback(tooltipKey);
+            MutableComponent component = Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD));
+            if (hasTranslatedTooltip || !Strings.isBlank(comment)) {
+                component = component.append(Component.literal("\n\n")).append(Component.translatableWithFallback(tooltipKey, comment));
             }
+            if (hasTranslatedTooltip && range != null) {
+                component = component.append(Component.translatable(RANGE_TOOLTIP, range.toString()));
+            }
+            return component;
         }
 
         /**
@@ -540,7 +547,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 for (final Element element : elements) {
                     if (element != null) {
                         if (element.name() == null) {
-                            list.addSmall(List.of(element.getWidget(options)));
+                            list.addSmall(new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.empty(), font), element.getWidget(options));
                         } else {
                             final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, element.name, font).alignLeft();
                             label.setTooltip(Tooltip.create(element.tooltip));
@@ -585,7 +592,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
             // no filter or the user wouldn't be able to type
-            box.setTooltip(Tooltip.create(getTooltipComponent(key)));
+            box.setTooltip(Tooltip.create(getTooltipComponent(key, null)));
             box.setValue(source.get());
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
@@ -603,7 +610,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 }
                 box.setTextColor(0xFFFF0000);
             });
-            return new Element(getTranslationComponent(key), getTooltipComponent(key), box);
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), box);
         }
 
         /**
@@ -632,7 +639,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected Element createOtherValue(final String key, final ConfigValue<?> value) {
             final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.get())), font).alignLeft();
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
-            return new Element(getTranslationComponent(key), getTooltipComponent(key), label);
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label);
         }
 
         /**
@@ -667,8 +674,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         protected Element createBooleanValue(final String key, final ValueSpec spec, final Supplier<Boolean> source, final Consumer<Boolean> target) {
-            return new Element(getTranslationComponent(key), getTooltipComponent(key),
-                    new OptionInstance<>(getTranslationKey(key), getTooltip(key), OptionInstance.BOOLEAN_TO_STRING, Custom.BOOLEAN_VALUES_NO_PREFIX, source.get(), newValue -> {
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), OptionInstance.BOOLEAN_TO_STRING, Custom.BOOLEAN_VALUES_NO_PREFIX, source.get(), newValue -> {
                         // regarding change detection: new value always is different (cycle button)
                         undoManager.add(v -> {
                             target.accept(v);
@@ -687,8 +694,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
             final List<T> list = Arrays.stream(clazz.getEnumConstants()).filter(spec::test).toList();
 
-            return new Element(getTranslationComponent(key), getTooltipComponent(key),
-                    new OptionInstance<>(getTranslationKey(key), getTooltip(key), (caption, displayvalue) -> displayvalue instanceof TranslatableEnum tenum ? tenum.getTranslatedName() : Component.literal(displayvalue.name()),
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), (caption, displayvalue) -> displayvalue instanceof TranslatableEnum tenum ? tenum.getTranslatedName() : Component.literal(displayvalue.name()),
                             new Custom<>(list), source.get(), newValue -> {
                                 // regarding change detection: new value always is different (cycle button)
                                 undoManager.add(v -> {
@@ -707,16 +714,16 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             final Integer max = range != null ? range.getMax() : Integer.MAX_VALUE;
 
             if (max - min < 256) {
-                return createSlider(key, source, target, min, max);
+                return createSlider(key, source, target, range);
             } else {
                 return createNumberBox(key, spec, source, target, null, Integer::decode, 0);
             }
         }
 
-        protected Element createSlider(final String key, final Supplier<Integer> source, final Consumer<Integer> target, final Integer min, final Integer max) {
-            return new Element(getTranslationComponent(key), getTooltipComponent(key),
-                    new OptionInstance<>(getTranslationKey(key), getTooltip(key),
-                            (caption, displayvalue) -> Component.literal("" + displayvalue), new OptionInstance.IntRange(min, max),
+        protected Element createSlider(final String key, final Supplier<Integer> source, final Consumer<Integer> target, final @Nullable Range<Integer> range) {
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key, range),
+                            (caption, displayvalue) -> Component.literal("" + displayvalue), new OptionInstance.IntRange(range != null ? range.getMin() : 0, range != null ? range.getMax() : Integer.MAX_VALUE),
                             null, source.get(), newValue -> {
                                 if (!newValue.equals(source.get())) {
                                     undoManager.add(v -> {
@@ -749,7 +756,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                     return newValueString.isEmpty() || ((range == null || range.getMin().compareTo(zero) < 0) && newValueString.equals("-"));
                 }
             });
-            box.setTooltip(Tooltip.create(getTooltipComponent(key)));
+            box.setTooltip(Tooltip.create(getTooltipComponent(key, range)));
             box.setValue(source.get() + "");
             box.setResponder(newValueString -> {
                 try {
@@ -772,7 +779,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 }
                 box.setTextColor(0xFFFF0000);
             });
-            return new Element(getTranslationComponent(key), getTooltipComponent(key), box);
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), box);
         }
 
         protected Element createDoubleValue(final String key, final ValueSpec spec, final Supplier<Double> source, final Consumer<Double> target) {
@@ -786,18 +793,18 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                     Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
                                     k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet(), Component.translatable(getTranslationKey(key))).rebuild())))
-                            .tooltip(Tooltip.create(getTooltipComponent(key)))
+                            .tooltip(Tooltip.create(getTooltipComponent(key, null)))
                             .width(Button.DEFAULT_WIDTH)
                             // .width(BIG_BUTTON_WIDTH) TODO - reconsider this?
                             .build());
         }
 
         protected <T> Element createList(final String key, final ListValueSpec spec, final ModConfigSpec.ConfigValue<List<T>> list) {
-            return new Element(getTranslationComponent(key), getTooltipComponent(key),
+            return new Element(null, null,
                     Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
                                     k -> new ConfigurationListScreen<>(Context.list(context, this), key, Component.translatable(CRUMB, this.getTitle(), getTranslationComponent(key)), spec, list)).rebuild()))
-                            .tooltip(Tooltip.create(getTooltipComponent(key))).build());
+                            .tooltip(Tooltip.create(getTooltipComponent(key, null))).build());
         }
 
         @Override
@@ -1020,7 +1027,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected Element createOtherValue(final int idx, final T entry) {
             final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(entry)), font).alignLeft();
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
-            return new Element(getTranslationComponent(key), getTooltipComponent(key), label);
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label);
         }
 
         @SuppressWarnings("unchecked")

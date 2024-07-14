@@ -162,6 +162,16 @@
   "neoforge.configuration.uitext.listelementup": "\u23f6",
   "neoforge.configuration.uitext.listelementdown": "\u23f7",
   "neoforge.configuration.uitext.listelementremove": "\u274c",
+  "neoforge.configuration.uitext.rangetooltip": [
+    {
+      "text": "\n\nRange: ",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    }
+  ],
   "neoforge.configuration.uitext.common": "Common Options",
   "neoforge.configuration.uitext.client": "Client Options",
   "neoforge.configuration.uitext.server": "Server Options",
