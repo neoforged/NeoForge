@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.data.registries;
 import java.util.Set;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageEffects;
@@ -15,16 +16,18 @@ import net.minecraft.world.damagesource.DamageType;
 import net.neoforged.neoforge.common.conditions.FalseCondition;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = DatapackEntryTests.GROUP)
 public class DatapackEntryTests {
     public static final String GROUP = "resources";
 
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = "Tests that datapack entry conditions are generated correctly", enabledByDefault = true)
     static void conditionalDatapackEntries(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<DamageType> CONDITIONAL_FALSE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "conditional_false"));
@@ -48,27 +51,19 @@ public class DatapackEntryTests {
                 },
                 Set.of(reg.modId())));
 
-        test.eventListeners().forge().addListener((OnDatapackSyncEvent event) -> {
-            var registryAccess = event.getPlayerList().getServer().registryAccess();
-            var damageTypes = registryAccess.registryOrThrow(Registries.DAMAGE_TYPE);
+        test.onGameTest(helper -> {
+            var damageTypes = helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
 
-            if (damageTypes.containsKey(CONDITIONAL_FALSE_DAMAGE_TYPE)) {
-                test.fail("Damage type was loaded despite a FalseCondition");
-                return;
-            }
+            helper.assertTrue(!damageTypes.containsKey(CONDITIONAL_FALSE_DAMAGE_TYPE),
+                    "Damage type was loaded despite a FalseCondition");
 
-            if (!damageTypes.containsKey(CONDITIONAL_TRUE_DAMAGE_TYPE)) {
-                test.fail("Damage type was not loaded despite a TrueCondition");
-                return;
-            }
+            helper.assertTrue(damageTypes.containsKey(CONDITIONAL_TRUE_DAMAGE_TYPE),
+                    "Damage type was not loaded despite a TrueCondition");
 
-            // Sanity check
-            if (!damageTypes.containsKey(REGULAR_DAMAGE_TYPE)) {
-                test.fail("Unconditional damage type was not loaded");
-                return;
-            }
+            helper.assertTrue(damageTypes.containsKey(REGULAR_DAMAGE_TYPE),
+                    "Unconditional damage type was not loaded");
 
-            test.pass();
+            helper.succeed();
         });
     }
 }
