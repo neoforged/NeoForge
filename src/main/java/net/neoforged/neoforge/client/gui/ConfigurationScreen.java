@@ -133,18 +133,18 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             if (CLIENT.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("""
-                        \n	Dev warning - Untranslated configuration keys detected. Please translate your configuration keys so users can properly configure your mod.
+                        \n	Dev warning - Untranslated configuration keys encountered. Please translate your configuration keys so users can properly configure your mod.
                         """);
                 if (!untranslatables.isEmpty()) {
                     stringBuilder.append("\nUntranslated keys:");
                     for (String key : untranslatables) {
-                        stringBuilder.append("\n     ").append(key);
+                        stringBuilder.append("\n  \"").append(key).append("\": \"\",");
                     }
                 }
                 if (!untranslatablesWithFallback.isEmpty()) {
                     stringBuilder.append("\nThe following keys have fallbacks. Please check if those are suitable, and translate them if they're not.");
                     for (String key : untranslatablesWithFallback) {
-                        stringBuilder.append("\n     ").append(key);
+                        stringBuilder.append("\n  \"").append(key).append("\": \"\",");
                     }
                 }
 
