@@ -5,12 +5,16 @@
 
 package net.neoforged.neoforge.items;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-public interface IItemHandler {
+public interface IItemHandler extends Iterable<ItemStack> {
     /**
      * Returns the number of slots available
      *
@@ -99,4 +103,29 @@ public interface IItemHandler {
      *         false if the slot can never insert the ItemStack in any situation.
      */
     boolean isItemValid(int slot, ItemStack stack);
+
+    @Override
+    default Iterator<ItemStack> iterator() {
+        return new Iterator<>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < getSlots();
+            }
+
+            @Override
+            public ItemStack next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return getStackInSlot(index++);
+            }
+        };
+    }
+
+    @Override
+    default Spliterator<ItemStack> spliterator() {
+        return Spliterators.spliterator(iterator(), getSlots(), Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE);
+    }
 }
