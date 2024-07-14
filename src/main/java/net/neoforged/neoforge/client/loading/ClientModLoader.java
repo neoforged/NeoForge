@@ -109,7 +109,7 @@ public class ClientModLoader extends CommonModLoader {
         return anyOutdated ? VersionChecker.Status.OUTDATED : null;
     }
 
-    public static boolean completeModLoading() {
+    public static Runnable completeModLoading(Runnable initialScreensTask) {
         List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
         boolean showWarnings = true;
         try {
@@ -117,18 +117,18 @@ public class ClientModLoader extends CommonModLoader {
         } catch (NullPointerException | IllegalStateException e) {
             // We're in an early error state, config is not available. Assume true.
         }
-        File dumpedLocation = null;
+        File dumpedLocation;
         if (error == null) {
             // We can finally start the forge eventbus up
             NeoForge.EVENT_BUS.start();
+            dumpedLocation = null;
         } else {
             // Double check we have the langs loaded for forge
             LanguageHook.loadBuiltinLanguages();
             dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), mc.gameDirectory);
         }
         if (error != null) {
-            mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation));
-            return true;
+            return () -> mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, initialScreensTask));
         } else if (!warnings.isEmpty()) {
             if (!showWarnings) {
                 //User disabled warning screen, as least log them
@@ -136,13 +136,12 @@ public class ClientModLoader extends CommonModLoader {
                 for (var warning : warnings) {
                     LOGGER.warn(Logging.LOADING, "{} [{}]", warning.translationKey(), warning.translationArgs());
                 }
-                return false;
+                return initialScreensTask;
             } else {
-                mc.setScreen(new LoadingErrorScreen(warnings, dumpedLocation));
-                return true;
+                return () -> mc.setScreen(new LoadingErrorScreen(warnings, dumpedLocation, initialScreensTask));
             }
         } else {
-            return false;
+            return initialScreensTask;
         }
     }
 

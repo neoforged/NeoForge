@@ -35,11 +35,12 @@ public class LoadingErrorScreen extends ErrorScreen {
     private final List<FormattedIssue> modLoadWarnings;
     @Nullable
     private final Path dumpedLocation;
+    private final Runnable nextScreenTask;
     private LoadingEntryList entryList;
     private Component errorHeader;
     private Component warningHeader;
 
-    public LoadingErrorScreen(List<ModLoadingIssue> issues, @Nullable File dumpedLocation) {
+    public LoadingErrorScreen(List<ModLoadingIssue> issues, @Nullable File dumpedLocation, Runnable nextScreenTask) {
         super(Component.literal("Loading Error"), null);
         this.modLoadWarnings = issues.stream()
                 .filter(issue -> issue.severity() == ModLoadingIssue.Severity.WARNING)
@@ -52,6 +53,7 @@ public class LoadingErrorScreen extends ErrorScreen {
         this.modsDir = FMLPaths.MODSDIR.get();
         this.logFile = FMLPaths.GAMEDIR.get().resolve(Paths.get("logs", "latest.log"));
         this.dumpedLocation = dumpedLocation != null ? dumpedLocation.toPath() : null;
+        this.nextScreenTask = nextScreenTask;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class LoadingErrorScreen extends ErrorScreen {
         this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
         if (this.modLoadErrors.isEmpty()) {
             this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.continue.launch")), b -> {
-                this.minecraft.setScreen(null);
+                this.nextScreenTask.run();
             }));
         } else {
             this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.crashreport")), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
