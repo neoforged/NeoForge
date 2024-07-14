@@ -9,9 +9,14 @@
                      dispensiblecontaineritem.checkExtraContent(null, level, p_338251_, blockpos);
                      return this.consumeWithRemainder(p_338850_, p_338251_, new ItemStack(Items.BUCKET));
                  } else {
-@@ -282,9 +_,10 @@
-                 } else if (CampfireBlock.canLight(blockstate) || CandleBlock.canLight(blockstate) || CandleCakeBlock.canLight(blockstate)) {
-                     serverlevel.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
+@@ -279,12 +_,13 @@
+                 if (BaseFireBlock.canBePlacedAt(serverlevel, blockpos, direction)) {
+                     serverlevel.setBlockAndUpdate(blockpos, BaseFireBlock.getState(serverlevel, blockpos));
+                     serverlevel.gameEvent(null, GameEvent.BLOCK_PLACE, blockpos);
+-                } else if (CampfireBlock.canLight(blockstate) || CandleBlock.canLight(blockstate) || CandleCakeBlock.canLight(blockstate)) {
+-                    serverlevel.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
++                } else if (blockstate.getToolModifiedState(new net.minecraft.world.item.context.UseOnContext(p_338494_.level(), null, net.minecraft.world.InteractionHand.MAIN_HAND, p_338444_, new net.minecraft.world.phys.BlockHitResult(blockpos.getCenter(), direction.getOpposite(), blockpos, false)), net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false) instanceof BlockState blockstate2) {
++                    serverlevel.setBlockAndUpdate(blockpos, blockstate2);
                      serverlevel.gameEvent(null, GameEvent.BLOCK_CHANGE, blockpos);
 -                } else if (blockstate.getBlock() instanceof TntBlock) {
 -                    TntBlock.explode(serverlevel, blockpos);

@@ -31,7 +31,7 @@ public class Tags {
         // `neoforge` tags for functional behavior provided by NeoForge
         /**
          * Controls what blocks Endermen cannot place blocks onto.
-         * <p></p>
+         * <p>
          * This is patched into the following method: {@link net.minecraft.world.entity.monster.EnderMan.EndermanLeaveBlockGoal#canPlaceBlock(Level, BlockPos, BlockState, BlockState, BlockState, BlockPos)}
          */
         public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = neoforgeTag("enderman_place_on_blacklist");
@@ -197,7 +197,7 @@ public class Tags {
         /**
          * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
          * and has a mirror recipe to reverse the crafting with no loss in resources.
-         * <p></p>
+         * <p>
          * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
          * and so, it is considered a special case and not given a storage block tag.
          */
@@ -329,7 +329,7 @@ public class Tags {
          * Tag that holds all blocks and items that can be dyed a specific color.
          * (Does not include color blending items like leather armor
          * Use {@link net.minecraft.tags.ItemTags#DYEABLE} tag instead for color blending items)
-         * <p></p>
+         * <p>
          * Note: Use custom ingredients in recipes to do tag intersections and/or tag exclusions
          * to make more powerful recipes utilizing multiple tags such as dyed tags for an ingredient.
          * See {@link net.neoforged.neoforge.common.crafting.DifferenceIngredient} and {@link net.neoforged.neoforge.common.crafting.CompoundIngredient}
@@ -385,30 +385,34 @@ public class Tags {
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
          * Cherries would go here as they are considered a "stone fruit" within culinary fields.
          */
-        public static final TagKey<Item> FOODS_FRUITS = tag("foods/fruits");
+        public static final TagKey<Item> FOODS_FRUIT = tag("foods/fruit");
         /**
          * Tomatoes and other foods that are considered vegetables in the culinary field belong in this tag.
          */
-        public static final TagKey<Item> FOODS_VEGETABLES = tag("foods/vegetables");
+        public static final TagKey<Item> FOODS_VEGETABLE = tag("foods/vegetable");
         /**
          * Strawberries, raspberries, and other berry foods belong in this tag.
          * Cherries would NOT go here as they are considered a "stone fruit" within culinary fields.
          */
-        public static final TagKey<Item> FOODS_BERRIES = tag("foods/berries");
-        public static final TagKey<Item> FOODS_BREADS = tag("foods/breads");
-        public static final TagKey<Item> FOODS_COOKIES = tag("foods/cookies");
-        public static final TagKey<Item> FOODS_RAW_MEATS = tag("foods/raw_meats");
-        public static final TagKey<Item> FOODS_COOKED_MEATS = tag("foods/cooked_meats");
-        public static final TagKey<Item> FOODS_RAW_FISHES = tag("foods/raw_fishes");
-        public static final TagKey<Item> FOODS_COOKED_FISHES = tag("foods/cooked_fishes");
+        public static final TagKey<Item> FOODS_BERRY = tag("foods/berry");
+        public static final TagKey<Item> FOODS_BREAD = tag("foods/bread");
+        public static final TagKey<Item> FOODS_COOKIE = tag("foods/cookie");
+        public static final TagKey<Item> FOODS_RAW_MEAT = tag("foods/raw_meat");
+        public static final TagKey<Item> FOODS_COOKED_MEAT = tag("foods/cooked_meat");
+        public static final TagKey<Item> FOODS_RAW_FISH = tag("foods/raw_fish");
+        public static final TagKey<Item> FOODS_COOKED_FISH = tag("foods/cooked_fish");
         /**
          * Soups, stews, and other liquid food in bowls belongs in this tag.
          */
-        public static final TagKey<Item> FOODS_SOUPS = tag("foods/soups");
+        public static final TagKey<Item> FOODS_SOUP = tag("foods/soup");
         /**
          * Sweets and candies like lollipops or chocolate belong in this tag.
          */
-        public static final TagKey<Item> FOODS_CANDIES = tag("foods/candies");
+        public static final TagKey<Item> FOODS_CANDY = tag("foods/candy");
+        /**
+         * Any gold-based foods would go in this tag. Such as Golden Apples or Glistering Melon Slice.
+         */
+        public static final TagKey<Item> FOODS_GOLDEN = tag("foods/golden");
         /**
          * Foods like cake that can be eaten when placed in the world belong in this tag.
          */
@@ -559,7 +563,7 @@ public class Tags {
         /**
          * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
          * and has a mirror recipe to reverse the crafting with no loss in resources.
-         * <p></p>
+         * <p>
          * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
          * and so, it is considered a special case and not given a storage block tag.
          */
@@ -650,6 +654,51 @@ public class Tags {
          * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_BRUSH = tag("tools/brush");
+        /**
+         * A tag containing all existing fire starting tools such as Flint and Steel.
+         * Fire Charge is not a tool (no durability) and thus, does not go in this tag.
+         * Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_IGNITER = tag("tools/igniter");
+        /**
+         * A tag containing all existing maces. Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
+        /**
+         * A tag containing melee-based weapons for recipes and loot tables.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> MELEE_WEAPON_TOOLS = tag("tools/melee_weapon");
+        /**
+         * A tag containing ranged-based weapons for recipes and loot tables.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> RANGED_WEAPON_TOOLS = tag("tools/ranged_weapon");
+        /**
+         * A tag containing mining-based tools for recipes and loot tables.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> MINING_TOOL_TOOLS = tag("tools/mining_tool");
         /**
          * Collects the 4 vanilla armor tags into one parent collection for ease.
          */
@@ -815,7 +864,7 @@ public class Tags {
          * Biomes that spawn in the Overworld.
          * (This is for people who want to tag their biomes without getting
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_OVERWORLD}
-         * <p></p>
+         * <p>
          * NOTE: If you do not add to the vanilla Overworld tag, be sure to add to
          * {@link net.minecraft.tags.BiomeTags#HAS_STRONGHOLD} so some Strongholds do not go missing.)
          */
