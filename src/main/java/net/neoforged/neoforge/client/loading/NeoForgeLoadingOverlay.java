@@ -10,9 +10,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.BufferVertexConsumer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import java.util.Optional;
@@ -56,7 +56,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.reload = reloader;
         this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
-        displayWindow.addMojangTexture(mc.getTextureManager().getTexture(new ResourceLocation("textures/gui/title/mojangstudios.png")).getId());
+        displayWindow.addMojangTexture(mc.getTextureManager().getTexture(ResourceLocation.withDefaultNamespace("textures/gui/title/mojangstudios.png")).getId());
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
     }
 
@@ -99,13 +99,12 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         var wbottom = Mth.clamp(fbHeight * 0.5f + scale * theight, 0, fbHeight);
         GlStateManager.glActiveTexture(GlConst.GL_TEXTURE0);
         RenderSystem.disableCull();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
         RenderSystem.getModelViewMatrix().identity();
         RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0.0F, fbWidth, 0.0F, fbHeight, 0.1f, -0.1f), VertexSorting.ORTHOGRAPHIC_Z);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         // This is fill in around the edges - it's empty solid colour
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         // top box from hpos
         addQuad(bufferbuilder, 0, fbWidth, wtop, fbHeight, colour, fade);
         // bottom box to hpos
@@ -114,21 +113,21 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         addQuad(bufferbuilder, 0, wleft, wtop, wbottom, colour, fade);
         // right box from wpos
         addQuad(bufferbuilder, wright, fbWidth, wtop, wbottom, colour, fade);
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
         // This is the actual screen data from the loading screen
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, displayWindow.getFramebufferTextureId());
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.vertex(wleft, wbottom, 0f).uv(0, 0).color(1f, 1f, 1f, fade).endVertex();
-        bufferbuilder.vertex(wright, wbottom, 0f).uv(1, 0).color(1f, 1f, 1f, fade).endVertex();
-        bufferbuilder.vertex(wright, wtop, 0f).uv(1, 1).color(1f, 1f, 1f, fade).endVertex();
-        bufferbuilder.vertex(wleft, wtop, 0f).uv(0, 1).color(1f, 1f, 1f, fade).endVertex();
+        bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(wleft, wbottom, 0f).setUv(0, 0).setColor(1f, 1f, 1f, fade);
+        bufferbuilder.addVertex(wright, wbottom, 0f).setUv(1, 0).setColor(1f, 1f, 1f, fade);
+        bufferbuilder.addVertex(wright, wtop, 0f).setUv(1, 1).setColor(1f, 1f, 1f, fade);
+        bufferbuilder.addVertex(wleft, wtop, 0f).setUv(0, 1).setColor(1f, 1f, 1f, fade);
         GL30C.glTexParameterIi(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
         GL30C.glTexParameterIi(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
@@ -154,10 +153,10 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         }
     }
 
-    private static void addQuad(BufferVertexConsumer bufferbuilder, float x0, float x1, float y0, float y1, ColourScheme.Colour colour, float fade) {
-        bufferbuilder.vertex(x0, y0, 0f).color(colour.redf(), colour.greenf(), colour.bluef(), fade).endVertex();
-        bufferbuilder.vertex(x0, y1, 0f).color(colour.redf(), colour.greenf(), colour.bluef(), fade).endVertex();
-        bufferbuilder.vertex(x1, y1, 0f).color(colour.redf(), colour.greenf(), colour.bluef(), fade).endVertex();
-        bufferbuilder.vertex(x1, y0, 0f).color(colour.redf(), colour.greenf(), colour.bluef(), fade).endVertex();
+    private static void addQuad(VertexConsumer bufferbuilder, float x0, float x1, float y0, float y1, ColourScheme.Colour colour, float fade) {
+        bufferbuilder.addVertex(x0, y0, 0f).setColor(colour.redf(), colour.greenf(), colour.bluef(), fade);
+        bufferbuilder.addVertex(x0, y1, 0f).setColor(colour.redf(), colour.greenf(), colour.bluef(), fade);
+        bufferbuilder.addVertex(x1, y1, 0f).setColor(colour.redf(), colour.greenf(), colour.bluef(), fade);
+        bufferbuilder.addVertex(x1, y0, 0f).setColor(colour.redf(), colour.greenf(), colour.bluef(), fade);
     }
 }

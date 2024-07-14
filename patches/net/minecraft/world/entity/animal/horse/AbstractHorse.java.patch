@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/horse/AbstractHorse.java
-@@ -388,9 +_,9 @@
+@@ -396,9 +_,9 @@
      protected void playStepSound(BlockPos p_30584_, BlockState p_30585_) {
          if (!p_30585_.liquid()) {
              BlockState blockstate = this.level().getBlockState(p_30584_.above());
@@ -12,7 +12,7 @@
              }
  
              if (this.isVehicle() && this.canGallop) {
-@@ -808,6 +_,7 @@
+@@ -816,6 +_,7 @@
          this.setDeltaMovement(vec3.x, d0, vec3.z);
          this.setIsJumping(true);
          this.hasImpulse = true;
@@ -20,7 +20,7 @@
          if (p_275435_.z > 0.0) {
              float f = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
              float f1 = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
-@@ -1110,6 +_,11 @@
+@@ -1118,6 +_,11 @@
  
          this.randomizeAttributes(p_30555_.getRandom());
          return super.finalizeSpawn(p_30555_, p_30556_, p_30557_, p_30558_);

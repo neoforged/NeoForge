@@ -22,8 +22,8 @@
              }
  
              p_116951_.pushPose();
-@@ -70,5 +_,30 @@
-             this.elytraModel.renderToBuffer(p_116951_, vertexconsumer, p_116953_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+@@ -68,5 +_,30 @@
+             this.elytraModel.renderToBuffer(p_116951_, vertexconsumer, p_116953_, OverlayTexture.NO_OVERLAY);
              p_116951_.popPose();
          }
 +    }

@@ -35,7 +35,7 @@ configurations {
 }
 
 dependencies {
-    implementation(neoforgeProject)
+    implementation project(path: ':neoforge', configuration: 'runtimeElements')
     implementation(testframeworkProject)
 
     junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))

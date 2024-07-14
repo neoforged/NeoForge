@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.Window;
 import java.util.List;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.neoforged.bus.api.Event;
@@ -25,10 +26,10 @@ import org.jetbrains.annotations.ApiStatus;
 public abstract class CustomizeGuiOverlayEvent extends Event {
     private final Window window;
     private final GuiGraphics guiGraphics;
-    private final float partialTick;
+    private final DeltaTracker partialTick;
 
     @ApiStatus.Internal
-    protected CustomizeGuiOverlayEvent(Window window, GuiGraphics guiGraphics, float partialTick) {
+    protected CustomizeGuiOverlayEvent(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick) {
         this.window = window;
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
@@ -42,7 +43,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         return guiGraphics;
     }
 
-    public float getPartialTick() {
+    public DeltaTracker getPartialTick() {
         return partialTick;
     }
 
@@ -62,7 +63,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         private int increment;
 
         @ApiStatus.Internal
-        public BossEventProgress(Window window, GuiGraphics guiGraphics, float partialTick, LerpingBossEvent bossEvent, int x, int y, int increment) {
+        public BossEventProgress(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick, LerpingBossEvent bossEvent, int x, int y, int increment) {
             super(window, guiGraphics, partialTick);
             this.bossEvent = bossEvent;
             this.x = x;
@@ -122,7 +123,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         private final List<String> right;
 
         @ApiStatus.Internal
-        public DebugText(Window window, GuiGraphics guiGraphics, float partialTick, List<String> left, List<String> right) {
+        public DebugText(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick, List<String> left, List<String> right) {
             super(window, guiGraphics, partialTick);
             this.left = left;
             this.right = right;
@@ -156,7 +157,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         private int posY;
 
         @ApiStatus.Internal
-        public Chat(Window window, GuiGraphics guiGraphics, float partialTick, int posX, int posY) {
+        public Chat(Window window, GuiGraphics guiGraphics, DeltaTracker partialTick, int posX, int posY) {
             super(window, guiGraphics, partialTick);
             this.setPosX(posX);
             this.setPosY(posY);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -438,9 +_,11 @@
+@@ -439,9 +_,11 @@
                  }
  
                  entity.absMoveTo(d3, d4, d5, f, f1);
@@ -12,7 +12,7 @@
                      this.send(new ClientboundMoveVehiclePacket(entity));
                      return;
                  }
-@@ -459,6 +_,23 @@
+@@ -462,6 +_,23 @@
          }
      }
  
@@ -36,7 +36,7 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -936,7 +_,7 @@
+@@ -927,7 +_,7 @@
                                      && !flag1
                                      && this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR
                                      && !this.server.isFlightAllowed()
@@ -45,7 +45,7 @@
                                      && !this.player.hasEffect(MobEffects.LEVITATION)
                                      && !flag
                                      && !flag3
-@@ -1019,8 +_,10 @@
+@@ -1031,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {
                      ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
@@ -58,7 +58,7 @@
                      this.player.stopUsingItem();
                  }
  
-@@ -1048,7 +_,7 @@
+@@ -1060,7 +_,7 @@
                      .handleBlockBreakAction(
                          blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
                      );
@@ -67,7 +67,7 @@
                  return;
              default:
                  throw new IllegalArgumentException("Invalid player action");
-@@ -1067,7 +_,7 @@
+@@ -1079,7 +_,7 @@
      @Override
      public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
          PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
@@ -76,7 +76,7 @@
          ServerLevel serverlevel = this.player.serverLevel();
          InteractionHand interactionhand = p_9930_.getHand();
          ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1213,8 +_,9 @@
+@@ -1231,8 +_,9 @@
                  }
  
                  CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
@@ -87,7 +87,7 @@
                      PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
                      this.broadcastChatMessage(playerchatmessage1);
                  });
-@@ -1541,7 +_,11 @@
+@@ -1561,7 +_,11 @@
  
                          @Override
                          public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
@@ -100,7 +100,7 @@
                          }
  
                          @Override
-@@ -1733,7 +_,7 @@
+@@ -1753,7 +_,7 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
          PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
@@ -109,7 +109,7 @@
      }
  
      @Override
-@@ -1792,7 +_,7 @@
+@@ -1812,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -118,7 +118,7 @@
                  );
          }
      }
-@@ -1827,6 +_,7 @@
+@@ -1847,6 +_,7 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {

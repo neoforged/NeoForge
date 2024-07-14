@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -@OnlyIn(Dist.CLIENT)
-+// NeoForge: Make this client-only class also available on the server
++// Neo: Make this client-only class also available on the server
  public class LanServerPinger extends Thread {
      private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
      private static final Logger LOGGER = LogUtils.getLogger();

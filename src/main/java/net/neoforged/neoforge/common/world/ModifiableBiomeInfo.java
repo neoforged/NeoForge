@@ -5,9 +5,15 @@
 
 package net.neoforged.neoforge.common.world;
 
+import com.google.gson.JsonElement;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.ClimateSettings;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
@@ -15,6 +21,7 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Holds lazy-evaluable modified biome info.
@@ -22,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
  * without evaluating the biome info if it's accessed outside of a server context.
  */
 public class ModifiableBiomeInfo {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     private final BiomeInfo originalBiomeInfo;
     @Nullable
     private BiomeInfo modifiedBiomeInfo = null;
@@ -63,11 +72,13 @@ public class ModifiableBiomeInfo {
      * 
      * @param biome          named biome with original data.
      * @param biomeModifiers biome modifiers to apply.
+     *
+     * @return whether the biome's network-synced data was modified
      * 
      * @throws IllegalStateException if invoked more than once.
      */
     @ApiStatus.Internal
-    public void applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers) {
+    public boolean applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers, RegistryAccess registryAccess) {
         if (this.modifiedBiomeInfo != null)
             throw new IllegalStateException(String.format(Locale.ENGLISH, "Biome %s already modified", biome));
 
@@ -78,7 +89,15 @@ public class ModifiableBiomeInfo {
                 modifier.modify(biome, phase, builder);
             }
         }
+        DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registryAccess);
+        JsonElement originalJson = Biome.NETWORK_CODEC.encodeStart(ops, biome.value()).result().orElse(null);
         this.modifiedBiomeInfo = builder.build();
+        JsonElement modifiedJson = Biome.NETWORK_CODEC.encodeStart(ops, biome.value()).result().orElse(null);
+        if (originalJson == null || modifiedJson == null) {
+            LOGGER.warn("Failed to determine whether biome {} was modified", biome);
+            return true;
+        }
+        return !originalJson.equals(modifiedJson);
     }
 
     /**

@@ -37,10 +37,10 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "loot")
 public class LootPoolTest {
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_1 = ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("neoforge", "test_loot_table_1"));
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_2 = ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("neoforge", "test_loot_table_2"));
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_3 = ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("neoforge", "test_loot_table_3"));
-    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_4 = ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation("neoforge", "test_loot_table_4"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_1 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_1"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_2 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_2"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_3 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_3"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_4 = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("neoforge", "test_loot_table_4"));
 
     @GameTest
     @EmptyTemplate
@@ -50,7 +50,7 @@ public class LootPoolTest {
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
-                        new LootTableProvider.SubProviderEntry(() -> (provider, consumer) -> {
+                        new LootTableProvider.SubProviderEntry(provider -> (consumer) -> {
                             consumer.accept(
                                     TEST_LOOT_TABLE_1,
                                     LootTable.lootTable()
@@ -82,7 +82,7 @@ public class LootPoolTest {
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
-                        new LootTableProvider.SubProviderEntry(() -> (provider, consumer) -> {
+                        new LootTableProvider.SubProviderEntry(provider -> consumer -> {
                             consumer.accept(
                                     lootTableToUse,
                                     LootTable.lootTable()
@@ -121,7 +121,7 @@ public class LootPoolTest {
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
-                        new LootTableProvider.SubProviderEntry(() -> (provider, consumer) -> {
+                        new LootTableProvider.SubProviderEntry(provider -> (consumer) -> {
                             consumer.accept(
                                     lootTableToUse,
                                     LootTable.lootTable()
@@ -162,7 +162,7 @@ public class LootPoolTest {
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
-                        new LootTableProvider.SubProviderEntry(() -> (provider, consumer) -> {
+                        new LootTableProvider.SubProviderEntry(provider -> consumer -> {
                             consumer.accept(
                                     lootTableToUse,
                                     LootTable.lootTable()

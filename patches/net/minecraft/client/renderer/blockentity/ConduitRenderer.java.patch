@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/ConduitRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ConduitRenderer.java
-@@ -131,4 +_,10 @@
+@@ -135,4 +_,10 @@
              p_112401_.popPose();
          }
      }

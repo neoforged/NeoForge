@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record RegistryDataMapNegotiation(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
-    public static final ResourceLocation ID = new ResourceLocation("neoforge:registry_data_map_negotiation");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("neoforge", "registry_data_map_negotiation");
     public static final Type TYPE = new Type(ID);
 
     @Override

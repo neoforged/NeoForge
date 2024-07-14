@@ -1,33 +1,39 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormatElement.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormatElement.java
-@@ -91,6 +_,10 @@
-         this.usage.clearBufferState(this.index, p_166964_);
+@@ -78,6 +_,15 @@
+         return ELEMENTS.stream().filter(p_350573_ -> p_350573_ != null && (p_350349_ & p_350573_.mask()) != 0);
      }
  
-+     public int getElementCount() {
-+         return count;
-+     }
++    public static int findNextId() {
++        for (int i = 0; i < BY_ID.length; i++) {
++            if (BY_ID[i] == null) {
++                return i;
++            }
++        }
++        throw new IllegalStateException("VertexFormatElement count limit exceeded");
++    }
 +
      @OnlyIn(Dist.CLIENT)
      public static enum Type {
          FLOAT(4, "Float", 5126),
-@@ -125,7 +_,7 @@
+@@ -113,7 +_,8 @@
      }
  
      @OnlyIn(Dist.CLIENT)
 -    public static enum Usage {
-+    public static enum Usage implements net.neoforged.neoforge.common.IExtensibleEnum {
-         POSITION("Position", (p_167043_, p_167044_, p_167045_, p_167046_, p_167047_, p_167048_) -> {
-             GlStateManager._enableVertexAttribArray(p_167048_);
-             GlStateManager._vertexAttribPointer(p_167048_, p_167043_, p_167044_, false, p_167045_, p_167046_);
-@@ -186,6 +_,10 @@
++    @net.neoforged.fml.common.asm.enumextension.NamedEnum
++    public static enum Usage implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+         POSITION(
+             "Position",
+             (p_349733_, p_349734_, p_349735_, p_349736_, p_349737_) -> GlStateManager._vertexAttribPointer(
+@@ -163,6 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          public interface SetupState {
-             void setupBufferState(int p_167053_, int p_167054_, int p_167055_, long p_167056_, int p_167057_, int p_167058_);
+             void setupBufferState(int p_167053_, int p_167054_, int p_167055_, long p_167056_, int p_167057_);
 +        }
 +
-+        public static Usage create(String name, String usageName, SetupState setupState, ClearState clearState) {
-+            throw new IllegalArgumentException("Enum not extended");
++        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(VertexFormatElement.Usage.class);
          }
      }
  }

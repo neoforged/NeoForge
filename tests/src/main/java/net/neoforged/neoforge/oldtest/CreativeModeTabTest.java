@@ -32,9 +32,9 @@ public class CreativeModeTabTest {
     public static final String MOD_ID = "creative_mode_tab_test";
     private static final boolean ENABLED = true;
 
-    private static final ResourceKey<CreativeModeTab> LOGS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "logs"));
-    private static final ResourceKey<CreativeModeTab> STONE = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "stone"));
-    private static final ResourceKey<CreativeModeTab> DAMAGED_SWORDS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "damaged_swords"));
+    private static final ResourceKey<CreativeModeTab> LOGS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "logs"));
+    private static final ResourceKey<CreativeModeTab> STONE = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stone"));
+    private static final ResourceKey<CreativeModeTab> DAMAGED_SWORDS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "damaged_swords"));
 
     public CreativeModeTabTest(IEventBus modEventBus) {
         if (!ENABLED)
@@ -70,7 +70,7 @@ public class CreativeModeTabTest {
                     .withTabsAfter(CreativeModeTabs.BUILDING_BLOCKS)
                     .build());
 
-            helper.register(new ResourceLocation(MOD_ID, "colors"), CreativeModeTab.builder().title(Component.literal("Colors"))
+            helper.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "colors"), CreativeModeTab.builder().title(Component.literal("Colors"))
                     .displayItems((params, output) -> {
                         for (DyeColor color : DyeColor.values()) {
                             output.accept(DyeItem.byColor(color));
@@ -95,15 +95,15 @@ public class CreativeModeTabTest {
             List<Block> blocks = List.of(Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.COBBLESTONE);
             for (int i = 0; i < blocks.size(); i++) {
                 Block block = blocks.get(i);
-                helper.register(new ResourceLocation(MOD_ID, "dummy" + i), CreativeModeTab.builder()
+                helper.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "dummy" + i), CreativeModeTab.builder()
                         .title(Component.literal("Dummy " + i))
                         .icon(() -> new ItemStack(block))
                         .displayItems((params, output) -> output.accept(block))
                         .build());
             }
 
-            final ResourceLocation custom_tabs_image = new ResourceLocation(MOD_ID, "textures/gui/container/creative_inventory/custom_tabs.png");
-            helper.register(new ResourceLocation(MOD_ID, "with_tabs_image"), CreativeModeTab.builder()
+            final ResourceLocation custom_tabs_image = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/container/creative_inventory/custom_tabs.png");
+            helper.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "with_tabs_image"), CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.with_tabs_image"))
                     .icon(() -> new ItemStack(Blocks.BRICKS))
                     .displayItems((params, output) -> output.accept(Blocks.BRICKS))
@@ -117,28 +117,29 @@ public class CreativeModeTabTest {
     }
 
     private static void onCreativeModeTabBuildContents(BuildCreativeModeTabContentsEvent event) {
-        var entries = event.getEntries();
         var vis = TabVisibility.PARENT_AND_SEARCH_TABS;
         if (event.getTabKey() == LOGS) {
-            entries.putAfter(i(Blocks.ACACIA_LOG), i(Blocks.STRIPPED_ACACIA_LOG), vis);
-            entries.putAfter(i(Blocks.BIRCH_LOG), i(Blocks.STRIPPED_BIRCH_LOG), vis);
-            entries.putAfter(i(Blocks.DARK_OAK_LOG), i(Blocks.STRIPPED_DARK_OAK_LOG), vis);
-            entries.putAfter(i(Blocks.JUNGLE_LOG), i(Blocks.STRIPPED_JUNGLE_LOG), vis);
-            entries.putAfter(i(Blocks.OAK_LOG), i(Blocks.STRIPPED_OAK_LOG), vis);
-            entries.putAfter(i(Blocks.SPRUCE_LOG), i(Blocks.STRIPPED_SPRUCE_LOG), vis);
+            event.insertAfter(i(Blocks.ACACIA_LOG), i(Blocks.STRIPPED_ACACIA_LOG), vis);
+            event.insertAfter(i(Blocks.BIRCH_LOG), i(Blocks.STRIPPED_BIRCH_LOG), vis);
+            event.insertAfter(i(Blocks.DARK_OAK_LOG), i(Blocks.STRIPPED_DARK_OAK_LOG), vis);
+            event.insertAfter(i(Blocks.JUNGLE_LOG), i(Blocks.STRIPPED_JUNGLE_LOG), vis);
+            event.insertAfter(i(Blocks.OAK_LOG), i(Blocks.STRIPPED_OAK_LOG), vis);
+            event.insertAfter(i(Blocks.SPRUCE_LOG), i(Blocks.STRIPPED_SPRUCE_LOG), vis);
         }
 
         if (event.getTabKey() == STONE) {
-            entries.putBefore(i(Blocks.STONE), i(Blocks.SMOOTH_STONE), vis);
-            entries.putBefore(i(Blocks.GRANITE), i(Blocks.POLISHED_GRANITE), vis);
-            entries.putBefore(i(Blocks.DIORITE), i(Blocks.POLISHED_DIORITE), vis);
-            entries.putBefore(i(Blocks.ANDESITE), i(Blocks.POLISHED_ANDESITE), vis);
+            event.insertBefore(i(Blocks.STONE), i(Blocks.SMOOTH_STONE), vis);
+            event.insertBefore(i(Blocks.GRANITE), i(Blocks.POLISHED_GRANITE), vis);
+            event.insertBefore(i(Blocks.DIORITE), i(Blocks.POLISHED_DIORITE), vis);
+            event.insertBefore(i(Blocks.ANDESITE), i(Blocks.POLISHED_ANDESITE), vis);
         }
 
         // Adding this causes a crash (as it should) when opening the creative inventory
-//        if (event.getTabKey() == DAMAGED_SWORDS) {
-//            entries.putBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
-//        }
+        if (false) {
+            if (event.getTabKey() == DAMAGED_SWORDS) {
+                event.insertBefore(i(Items.WOODEN_SWORD), i(Items.WOODEN_SWORD), vis);
+            }
+        }
     }
 
     private static class CreativeModeColorTab extends CreativeModeTab {

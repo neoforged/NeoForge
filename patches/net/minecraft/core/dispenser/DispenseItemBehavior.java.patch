@@ -7,19 +7,19 @@
 -                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null)) {
 +                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null, p_338251_)) {
                      dispensiblecontaineritem.checkExtraContent(null, level, p_338251_, blockpos);
-                     return new ItemStack(Items.BUCKET);
+                     return this.consumeWithRemainder(p_338850_, p_338251_, new ItemStack(Items.BUCKET));
                  } else {
-@@ -293,9 +_,10 @@
+@@ -282,9 +_,10 @@
                  } else if (CampfireBlock.canLight(blockstate) || CandleBlock.canLight(blockstate) || CandleCakeBlock.canLight(blockstate)) {
-                     level.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
-                     level.gameEvent(null, GameEvent.BLOCK_CHANGE, blockpos);
+                     serverlevel.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
+                     serverlevel.gameEvent(null, GameEvent.BLOCK_CHANGE, blockpos);
 -                } else if (blockstate.getBlock() instanceof TntBlock) {
--                    TntBlock.explode(level, blockpos);
--                    level.removeBlock(blockpos, false);
-+                } else if (blockstate.isFlammable(level, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite())) {
-+                    blockstate.onCaughtFire(level, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite(), null);
+-                    TntBlock.explode(serverlevel, blockpos);
+-                    serverlevel.removeBlock(blockpos, false);
++                } else if (blockstate.isFlammable(serverlevel, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite())) {
++                    blockstate.onCaughtFire(serverlevel, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite(), null);
 +                    if (blockstate.getBlock() instanceof TntBlock)
-+                        level.removeBlock(blockpos, false);
++                        serverlevel.removeBlock(blockpos, false);
                  } else {
                      this.setSuccess(false);
                  }

@@ -26,17 +26,17 @@
          );
          this.connection
              .setupInboundProtocol(
--                GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)),
-+                GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType)),
+-                GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)),
++                GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType)),
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -135,12 +_,19 @@
-                         this.postDisconnectScreen,
-                         this.serverCookies,
+@@ -137,12 +_,19 @@
                          this.chatState,
--                        this.strictErrorHandling
-+                        this.strictErrorHandling,
+                         this.strictErrorHandling,
+                         this.customReportDetails,
+-                        this.serverLinks
++                        this.serverLinks,
 +                        this.connectionType
                      )
                  )
@@ -48,14 +48,14 @@
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
--        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)));
-+        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType)));
+-        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)));
++        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType)));
      }
  
      @Override
-@@ -152,5 +_,51 @@
-     public void onDisconnect(Component p_314649_) {
-         super.onDisconnect(p_314649_);
+@@ -154,5 +_,51 @@
+     public void onDisconnect(DisconnectionDetails p_351005_) {
+         super.onDisconnect(p_351005_);
          this.minecraft.clearDownloadedResourcePacks();
 +    }
 +
@@ -93,12 +93,12 @@
 +    }
 +
 +    @Override
-+    protected net.minecraft.client.gui.screens.Screen createDisconnectScreen(net.minecraft.network.chat.Component p_296470_) {
-+        final net.minecraft.client.gui.screens.Screen superScreen = super.createDisconnectScreen(p_296470_);
++    protected net.minecraft.client.gui.screens.Screen createDisconnectScreen(DisconnectionDetails p_350769_) {
++        final net.minecraft.client.gui.screens.Screen superScreen = super.createDisconnectScreen(p_350769_);
 +        if (failureReasons.isEmpty())
 +            return superScreen;
 +
-+        return new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(superScreen, p_296470_, failureReasons);
++        return new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(superScreen, net.minecraft.network.chat.Component.translatable("disconnect.lost"), failureReasons);
 +    }
 +
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {

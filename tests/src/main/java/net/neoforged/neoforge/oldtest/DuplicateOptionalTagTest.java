@@ -34,7 +34,7 @@ public class DuplicateOptionalTagTest {
     private static final Logger LOGGER = LogManager.getLogger();
 
     static final String MODID = "duplicate_optional_tag_test";
-    private static final ResourceLocation TAG_NAME = new ResourceLocation(MODID, "test_optional_tag");
+    private static final ResourceLocation TAG_NAME = ResourceLocation.fromNamespaceAndPath(MODID, "test_optional_tag");
 
     private static final Set<Block> TAG_A_DEFAULTS = Set.of(Blocks.BEDROCK);
     private static final Set<Block> TAG_B_DEFAULTS = Set.of(Blocks.WHITE_WOOL);

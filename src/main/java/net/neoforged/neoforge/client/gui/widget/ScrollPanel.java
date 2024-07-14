@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -223,7 +224,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Tesselator tess = Tesselator.getInstance();
-        BufferBuilder worldr = tess.getBuilder();
 
         double scale = client.getWindow().getGuiScale();
         RenderSystem.enableScissor((int) (left * scale), (int) (client.getWindow().getHeight() - (bottom * scale)),
@@ -251,36 +251,36 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
             int barBgBlue = this.barBgColor & 0xff;
 
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, this.bottom, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, this.bottom, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, this.top, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft, this.top, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            tess.end();
+            BufferBuilder worldr = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            worldr.addVertex(barLeft, this.bottom, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            worldr.addVertex(barLeft + barWidth, this.bottom, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            worldr.addVertex(barLeft + barWidth, this.top, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            worldr.addVertex(barLeft, this.top, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
+            BufferUploader.drawWithShader(worldr.buildOrThrow());
 
             int barAlpha = this.barColor >> 24 & 0xff;
             int barRed = this.barColor >> 16 & 0xff;
             int barGreen = this.barColor >> 8 & 0xff;
             int barBlue = this.barColor & 0xff;
 
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, barTop + barHeight, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, barTop + barHeight, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, barTop, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft, barTop, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            tess.end();
+            worldr = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            worldr.addVertex(barLeft, barTop + barHeight, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            worldr.addVertex(barLeft + barWidth, barTop + barHeight, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            worldr.addVertex(barLeft + barWidth, barTop, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            worldr.addVertex(barLeft, barTop, 0.0F).setColor(barRed, barGreen, barBlue, barAlpha);
+            BufferUploader.drawWithShader(worldr.buildOrThrow());
 
             int barBorderAlpha = this.barBorderColor >> 24 & 0xff;
             int barBorderRed = this.barBorderColor >> 16 & 0xff;
             int barBorderGreen = this.barBorderColor >> 8 & 0xff;
             int barBorderBlue = this.barBorderColor & 0xff;
 
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, barTop + barHeight - 1, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth - 1, barTop + barHeight - 1, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth - 1, barTop, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft, barTop, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            tess.end();
+            worldr = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            worldr.addVertex(barLeft, barTop + barHeight - 1, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            worldr.addVertex(barLeft + barWidth - 1, barTop + barHeight - 1, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            worldr.addVertex(barLeft + barWidth - 1, barTop, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            worldr.addVertex(barLeft, barTop, 0.0F).setColor(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha);
+            BufferUploader.drawWithShader(worldr.buildOrThrow());
         }
 
         RenderSystem.disableBlend();

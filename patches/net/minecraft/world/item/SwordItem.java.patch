@@ -26,14 +26,14 @@
          return ItemAttributeModifiers.builder()
              .add(
                  Attributes.ATTACK_DAMAGE,
-@@ -54,5 +_,10 @@
-     public boolean hurtEnemy(ItemStack p_43278_, LivingEntity p_43279_, LivingEntity p_43280_) {
-         p_43278_.hurtAndBreak(1, p_43280_, EquipmentSlot.MAINHAND);
-         return true;
+@@ -55,5 +_,10 @@
+     @Override
+     public void postHurtEnemy(ItemStack p_345553_, LivingEntity p_345771_, LivingEntity p_346282_) {
+         p_345553_.hurtAndBreak(1, p_346282_, EquipmentSlot.MAINHAND);
 +    }
 +
 +    @Override
-+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
-+        return net.neoforged.neoforge.common.ToolActions.DEFAULT_SWORD_ACTIONS.contains(toolAction);
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(itemAbility);
      }
  }

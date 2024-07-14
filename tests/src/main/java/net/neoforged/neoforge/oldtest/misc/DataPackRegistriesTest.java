@@ -57,7 +57,7 @@ public class DataPackRegistriesTest {
     private static final boolean ENABLED = false;
     public static final String MODID = "data_pack_registries_test";
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final ResourceLocation TEST_RL = new ResourceLocation(MODID, "test");
+    private static final ResourceLocation TEST_RL = ResourceLocation.fromNamespaceAndPath(MODID, "test");
 
     //TODO: Fix datapack generation for it.
     private final DeferredHolder<Unsyncable, Unsyncable> datagenTestObject = null;
@@ -69,8 +69,8 @@ public class DataPackRegistriesTest {
         final IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(ResourceKey.createRegistryKey(new ResourceLocation(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
-            event.dataPackRegistry(ResourceKey.createRegistryKey(new ResourceLocation(MODID, "syncable")), Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
+            event.dataPackRegistry(ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
+            event.dataPackRegistry(ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "syncable")), Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
         });
 
         modBus.addListener(this::onGatherData);
@@ -168,7 +168,7 @@ public class DataPackRegistriesTest {
     }
 
     public static class Unsyncable {
-        public static final ResourceKey<Registry<Unsyncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "unsyncable"));
+        public static final ResourceKey<Registry<Unsyncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "unsyncable"));
         public static final Codec<Unsyncable> DIRECT_CODEC = Codec.STRING.fieldOf("value").codec().xmap(Unsyncable::new, Unsyncable::value);
 
         private final String value;
@@ -183,7 +183,7 @@ public class DataPackRegistriesTest {
     }
 
     public static class Syncable {
-        public static final ResourceKey<Registry<Syncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "syncable"));
+        public static final ResourceKey<Registry<Syncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "syncable"));
         public static final Codec<Syncable> DIRECT_CODEC = Codec.STRING.fieldOf("value").codec().xmap(Syncable::new, Syncable::value);
 
         private final String value;

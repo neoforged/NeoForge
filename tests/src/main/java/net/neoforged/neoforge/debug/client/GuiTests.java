@@ -115,14 +115,14 @@ public class GuiTests {
     @TestHolder(description = "Checks that GUI layers can move hearts, air bubbles, etc")
     static void testGuiLayerLeftRightHeight(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
-            event.registerBelow(VanillaGuiLayers.PLAYER_HEALTH, new ResourceLocation(test.createModId(), "left1"), makeLeftOverlay(test, 3, 0x80FF0000));
-            event.registerBelow(VanillaGuiLayers.ARMOR_LEVEL, new ResourceLocation(test.createModId(), "left2"), makeLeftOverlay(test, 3, 0x80CC0000));
-            event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, new ResourceLocation(test.createModId(), "left3"), makeLeftOverlay(test, 3, 0x80990000));
+            event.registerBelow(VanillaGuiLayers.PLAYER_HEALTH, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left1"), makeLeftOverlay(test, 3, 0x80FF0000));
+            event.registerBelow(VanillaGuiLayers.ARMOR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left2"), makeLeftOverlay(test, 3, 0x80CC0000));
+            event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left3"), makeLeftOverlay(test, 3, 0x80990000));
 
-            event.registerBelow(VanillaGuiLayers.FOOD_LEVEL, new ResourceLocation(test.createModId(), "right1"), makeRightOverlay(test, 2, 0x8000FF00));
-            event.registerBelow(VanillaGuiLayers.VEHICLE_HEALTH, new ResourceLocation(test.createModId(), "right2"), makeRightOverlay(test, 2, 0x8000DD00));
-            event.registerBelow(VanillaGuiLayers.AIR_LEVEL, new ResourceLocation(test.createModId(), "right3"), makeRightOverlay(test, 2, 0x8000BB00));
-            event.registerAbove(VanillaGuiLayers.AIR_LEVEL, new ResourceLocation(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
+            event.registerBelow(VanillaGuiLayers.FOOD_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right1"), makeRightOverlay(test, 2, 0x8000FF00));
+            event.registerBelow(VanillaGuiLayers.VEHICLE_HEALTH, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right2"), makeRightOverlay(test, 2, 0x8000DD00));
+            event.registerBelow(VanillaGuiLayers.AIR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right3"), makeRightOverlay(test, 2, 0x8000BB00));
+            event.registerAbove(VanillaGuiLayers.AIR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
         });
 
         test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {

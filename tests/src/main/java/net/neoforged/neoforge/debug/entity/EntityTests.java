@@ -141,7 +141,7 @@ public class EntityTests {
     }
 
     public record CustomSyncPayload() implements CustomPacketPayload {
-        private static final CustomPacketPayload.Type<CustomSyncPayload> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation("test", "custom_sync_payload"));
+        private static final CustomPacketPayload.Type<CustomSyncPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath("test", "custom_sync_payload"));
         private static final StreamCodec<FriendlyByteBuf, CustomSyncPayload> STREAM_CODEC = StreamCodec.unit(new EntityTests.CustomSyncPayload());
 
         @Override

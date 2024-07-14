@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -76,6 +_,10 @@
-     protected final boolean strictErrorHandling;
-     private final List<ClientCommonPacketListenerImpl.DeferredPacket> deferredPackets = new ArrayList<>();
+@@ -88,6 +_,10 @@
      protected final Map<ResourceLocation, byte[]> serverCookies;
+     protected Map<String, String> customReportDetails;
+     protected ServerLinks serverLinks;
 +    /**
 +     * Holds the current connection type, based on the types of payloads that have been received so far.
 +     */
@@ -11,16 +11,16 @@
  
      protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
          this.minecraft = p_295454_;
-@@ -86,6 +_,8 @@
-         this.postDisconnectScreen = p_294647_.postDisconnectScreen();
-         this.serverCookies = p_294647_.serverCookies();
+@@ -100,6 +_,8 @@
          this.strictErrorHandling = p_294647_.strictErrorHandling();
+         this.customReportDetails = p_294647_.customReportDetails();
+         this.serverLinks = p_294647_.serverLinks();
 +        // Neo: Set the connection type based on the cookie from the previous phase.
 +        this.connectionType = p_294647_.connectionType();
      }
  
      @Override
-@@ -116,6 +_,23 @@
+@@ -149,6 +_,23 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
@@ -44,7 +44,7 @@
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
              PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-@@ -228,6 +_,8 @@
+@@ -285,6 +_,8 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -53,17 +53,17 @@
          this.connection.send(p_295097_);
      }
  
-@@ -235,6 +_,9 @@
-     public void onDisconnect(Component p_295485_) {
+@@ -292,6 +_,9 @@
+     public void onDisconnect(DisconnectionDetails p_350760_) {
          this.telemetryManager.onDisconnect();
-         this.minecraft.disconnect(this.createDisconnectScreen(p_295485_), this.isTransferring);
+         this.minecraft.disconnect(this.createDisconnectScreen(p_350760_), this.isTransferring);
 +        if (!this.connection.isMemoryConnection()) {
 +            net.neoforged.neoforge.registries.RegistryManager.revertToFrozen();
 +        }
-         LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
+         LOGGER.warn("Client disconnected with reason: {}", p_350760_.reason().getString());
      }
  
-@@ -354,5 +_,10 @@
+@@ -415,5 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }

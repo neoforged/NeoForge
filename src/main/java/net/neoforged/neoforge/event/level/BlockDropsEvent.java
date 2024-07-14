@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -54,9 +54,7 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
         this.breaker = breaker;
         this.tool = tool;
 
-        int fortuneLevel = tool.getEnchantmentLevel(Enchantments.FORTUNE);
-        int silkTouchLevel = tool.getEnchantmentLevel(Enchantments.SILK_TOUCH);
-        this.experience = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
+        this.experience = EnchantmentHelper.processBlockExperience(level, tool, state.getExpDrop(level, pos, blockEntity, breaker, tool));
     }
 
     /**
@@ -117,7 +115,7 @@ public class BlockDropsEvent extends BlockEvent implements ICancellableEvent {
     }
 
     /**
-     * Set the amount of experience points that will be dropped by the block
+     * Set the amount of experience points that will be dropped by the block. This is the true value, after enchantments have been applied.
      *
      * @param experience The new amount. Must not be negative.
      * @apiNote When cancelled, no experience is dropped, regardless of this value.

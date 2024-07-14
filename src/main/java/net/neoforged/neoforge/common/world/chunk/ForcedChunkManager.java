@@ -244,9 +244,9 @@ public class ForcedChunkManager {
             CompoundTag forcedEntry = forcedChunks.getCompound(i);
             ResourceLocation controllerId;
             if (forcedEntry.contains("Controller", Tag.TAG_STRING)) {
-                controllerId = new ResourceLocation(forcedEntry.getString("Controller"));
+                controllerId = ResourceLocation.parse(forcedEntry.getString("Controller"));
             } else {
-                controllerId = new ResourceLocation(forcedEntry.getString("Mod"), "default");
+                controllerId = ResourceLocation.fromNamespaceAndPath(forcedEntry.getString("Mod"), "default");
             }
             if (controllers.containsKey(controllerId)) {
                 ListTag modForced = forcedEntry.getList("ModForced", Tag.TAG_COMPOUND);

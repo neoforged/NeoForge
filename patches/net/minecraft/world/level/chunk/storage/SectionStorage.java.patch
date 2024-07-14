@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/SectionStorage.java
-@@ -231,4 +_,12 @@
+@@ -238,4 +_,12 @@
      public void close() throws IOException {
          this.simpleRegionStorage.close();
      }

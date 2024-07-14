@@ -58,15 +58,10 @@ import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
-    private final ModContainer owner;
-
-    public RegistrationHelperImpl(String modId, ModContainer owner) {
-        this.modId = modId;
-        this.owner = owner;
-    }
+    private ModContainer owner;
 
     public RegistrationHelperImpl(String modId) {
-        this(modId, null);
+        this.modId = modId;
     }
 
     private interface DataGenProvider<T extends DataProvider> {
@@ -92,7 +87,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         reg.register(BlockStateProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new BlockStateProvider(output, modId, existingFileHelper) {
             @Override
             protected void registerStatesAndModels() {
-                existingFileHelper.trackGenerated(new ResourceLocation("testframework:block/white"), ModelProvider.TEXTURE);
+                existingFileHelper.trackGenerated(ResourceLocation.fromNamespaceAndPath("testframework", "block/white"), ModelProvider.TEXTURE);
                 consumers.forEach(c -> c.accept(this));
             }
         });
@@ -216,8 +211,9 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     private IEventBus bus;
 
     @Override
-    public void register(IEventBus bus) {
+    public void register(IEventBus bus, ModContainer container) {
         this.bus = bus;
+        this.owner = container;
         bus.addListener(this::gather);
         listeners.forEach(bus::addListener);
         registrars.values().forEach(r -> r.register(bus));

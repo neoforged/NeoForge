@@ -126,7 +126,7 @@ public class GameTestTest {
     public static List<TestFunction> generateTests() {
         // An example test function, run in the default batch, with the test name "teststone", and the structure name "gametesttest.teststone" under the "gametest_test" namespace.
         // No rotation, 100 ticks until the test times out if it does not fail or succeed, 0 ticks for setup time, and the actual code to run.
-        TestFunction testStone = new TestFunction("defaultBatch", "teststone", new ResourceLocation(MODID, "gametesttest.teststone").toString(), Rotation.NONE,
+        TestFunction testStone = new TestFunction("defaultBatch", "teststone", ResourceLocation.fromNamespaceAndPath(MODID, "gametesttest.teststone").toString(), Rotation.NONE,
                 100, 0, true,
                 helper -> {
                     BlockPos stonePos = new BlockPos(1, 1, 1);

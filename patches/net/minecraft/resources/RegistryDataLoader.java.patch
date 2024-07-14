@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -92,7 +_,7 @@
+@@ -100,7 +_,7 @@
      public static final List<RegistryDataLoader.RegistryData<?>> DIMENSION_REGISTRIES = List.of(
          new RegistryDataLoader.RegistryData<>(Registries.LEVEL_STEM, LevelStem.CODEC)
      );
@@ -9,25 +9,16 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -101,7 +_,7 @@
-         new RegistryDataLoader.RegistryData<>(Registries.DIMENSION_TYPE, DimensionType.DIRECT_CODEC),
-         new RegistryDataLoader.RegistryData<>(Registries.DAMAGE_TYPE, DamageType.DIRECT_CODEC),
-         new RegistryDataLoader.RegistryData<>(Registries.BANNER_PATTERN, BannerPattern.DIRECT_CODEC)
+@@ -112,7 +_,7 @@
+         new RegistryDataLoader.RegistryData<>(Registries.BANNER_PATTERN, BannerPattern.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.ENCHANTMENT, Enchantment.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.JUKEBOX_SONG, JukeboxSong.DIRECT_CODEC)
 -    );
 +    )); // Neo: Keep the list so custom registries can be added later
  
      public static RegistryAccess.Frozen load(ResourceManager p_252046_, RegistryAccess p_249916_, List<RegistryDataLoader.RegistryData<?>> p_250344_) {
          return load((p_321412_, p_321413_) -> p_321412_.loadFromResources(p_252046_, p_321413_), p_249916_, p_250344_);
-@@ -182,7 +_,7 @@
-     }
- 
-     private static String registryDirPath(ResourceLocation p_252033_) {
--        return p_252033_.getPath();
-+        return net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
-     }
- 
-     private static <E> void loadElementFromResource(
-@@ -193,11 +_,16 @@
+@@ -204,11 +_,16 @@
          Resource p_326141_,
          RegistrationInfo p_326033_
      ) throws IOException {
@@ -46,9 +37,9 @@
          }
      }
  
-@@ -210,7 +_,7 @@
+@@ -221,7 +_,7 @@
      ) {
-         String s = registryDirPath(p_321557_.key().location());
+         String s = Registries.elementsDirPath(p_321557_.key());
          FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
 -        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_321612_);
 +        RegistryOps<JsonElement> registryops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, p_321612_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);

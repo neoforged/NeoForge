@@ -4,9 +4,9 @@
      private CompletableFuture<?> run(CachedOutput p_324447_, HolderLookup.Provider p_323978_) {
          WritableRegistry<LootTable> writableregistry = new MappedRegistry<>(Registries.LOOT_TABLE, Lifecycle.experimental());
          Map<RandomSupport.Seed128bit, ResourceLocation> map = new Object2ObjectOpenHashMap<>();
--        this.subProviders.forEach(p_329847_ -> p_329847_.provider().get().generate(p_323978_, (p_339366_, p_339367_) -> {
+-        this.subProviders.forEach(p_344197_ -> p_344197_.provider().apply(p_323978_).generate((p_339366_, p_339367_) -> {
 -                ResourceLocation resourcelocation = sequenceIdForLootTable(p_339366_);
-+        getTables().forEach(p_329847_ -> p_329847_.provider().get().generate(p_323978_, (p_335199_, p_335200_) -> {
++        getTables().forEach(p_329847_ -> p_329847_.provider().apply(p_323978_).generate((p_335199_, p_335200_) -> {
 +                ResourceLocation resourcelocation = sequenceIdForLootTable(p_335199_);
                  ResourceLocation resourcelocation1 = map.put(RandomSequence.seedForKey(resourcelocation), resourcelocation);
                  if (resourcelocation1 != null) {
@@ -15,7 +15,7 @@
                  }
  
 -                p_339367_.setRandomSequence(resourcelocation);
--                LootTable loottable = p_339367_.setParamSet(p_329847_.paramSet).build();
+-                LootTable loottable = p_339367_.setParamSet(p_344197_.paramSet).build();
 -                writableregistry.register(p_339366_, loottable, RegistrationInfo.BUILT_IN);
 +                p_335200_.setRandomSequence(resourcelocation);
 +                LootTable loottable = p_335200_.setParamSet(p_329847_.paramSet).build();

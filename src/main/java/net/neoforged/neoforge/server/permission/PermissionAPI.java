@@ -98,7 +98,7 @@ public final class PermissionAPI {
         Map<ResourceLocation, IPermissionHandlerFactory> availableHandlers = handlerEvent.getAvailablePermissionHandlerFactories();
 
         try {
-            ResourceLocation selectedPermissionHandler = new ResourceLocation(NeoForgeConfig.SERVER.permissionHandler.get());
+            ResourceLocation selectedPermissionHandler = ResourceLocation.parse(NeoForgeConfig.SERVER.permissionHandler.get());
             if (!availableHandlers.containsKey(selectedPermissionHandler)) {
                 LOGGER.error("Unable to find configured permission handler {}, will use {}", selectedPermissionHandler, DefaultPermissionHandler.IDENTIFIER);
                 selectedPermissionHandler = DefaultPermissionHandler.IDENTIFIER;

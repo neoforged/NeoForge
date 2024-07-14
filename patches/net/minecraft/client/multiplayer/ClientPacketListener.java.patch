@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -343,6 +_,7 @@
+@@ -344,6 +_,7 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final DebugSampleSubscriber debugSampleSubscriber;
@@ -8,7 +8,7 @@
      @Nullable
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
-@@ -364,6 +_,7 @@
+@@ -366,6 +_,7 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
  
@@ -16,7 +16,7 @@
          this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
      }
  
-@@ -425,6 +_,7 @@
+@@ -427,6 +_,7 @@
  
          this.minecraft.debugRenderer.clear();
          this.minecraft.player.resetPos();
@@ -24,17 +24,17 @@
          this.minecraft.player.setId(p_105030_.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
-@@ -824,7 +_,8 @@
-                         this.postDisconnectScreen,
-                         this.serverCookies,
+@@ -828,7 +_,8 @@
                          chatcomponent$state,
--                        this.strictErrorHandling
-+                        this.strictErrorHandling,
+                         this.strictErrorHandling,
+                         this.customReportDetails,
+-                        this.serverLinks
++                        this.serverLinks,
 +                        this.connectionType
                      )
                  )
              );
-@@ -1159,6 +_,7 @@
+@@ -1164,6 +_,7 @@
          }
  
          localplayer1.resetPos();
@@ -42,7 +42,7 @@
          this.level.addEntity(localplayer1);
          localplayer1.setYRot(-180.0F);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
-@@ -1300,10 +_,7 @@
+@@ -1306,10 +_,7 @@
          PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
          BlockPos blockpos = p_104976_.getPos();
          this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
@@ -54,7 +54,7 @@
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1470,7 +_,9 @@
+@@ -1471,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -65,15 +65,28 @@
      }
  
      @Override
-@@ -1492,6 +_,7 @@
+@@ -1493,6 +_,7 @@
          ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
          clientrecipebook.setupCollections(this.recipeManager.getOrderedRecipes(), this.minecraft.level.registryAccess());
-         this.minecraft.populateSearchTree(SearchRegistry.RECIPE_COLLECTIONS, clientrecipebook.getCollections());
+         this.searchTrees.updateRecipes(clientrecipebook, this.registryAccess);
 +        net.neoforged.neoforge.client.ClientHooks.onRecipesUpdated(this.recipeManager);
      }
  
      @Override
-@@ -2406,6 +_,8 @@
+@@ -1595,8 +_,10 @@
+         TagCollector tagcollector = new TagCollector();
+         p_294888_.getTags().forEach(tagcollector::append);
+         tagcollector.updateTags(this.registryAccess, this.connection.isMemoryConnection());
+-        List<ItemStack> list = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
+-        this.searchTrees.updateCreativeTags(list);
++        CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(tab -> {
++            List<ItemStack> list = List.copyOf(tab.getDisplayItems());
++            this.searchTrees.updateCreativeTags(list, net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(tab));
++        });
+     }
+ 
+     @Override
+@@ -2407,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -82,7 +95,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2415,6 +_,7 @@
+@@ -2416,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -90,7 +103,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2489,6 +_,10 @@
+@@ -2490,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

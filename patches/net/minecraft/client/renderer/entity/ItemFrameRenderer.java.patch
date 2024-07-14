@@ -4,7 +4,7 @@
          }
  
          if (!itemstack.isEmpty()) {
--            MapId mapid = p_115076_.getFramedMapId();
+-            MapId mapid = p_115076_.getFramedMapId(itemstack);
 +            MapItemSavedData mapitemsaveddata = MapItem.getSavedData(itemstack, p_115076_.level());
              if (flag) {
                  p_115079_.translate(0.0F, 0.0F, 0.5F);
@@ -27,7 +27,7 @@
                  if (mapitemsaveddata != null) {
                      int i = this.getLightVal(p_115076_, 15728850, p_115081_);
 -                    Minecraft.getInstance().gameRenderer.getMapRenderer().render(p_115079_, p_115080_, mapid, mapitemsaveddata, true, i);
-+                    Minecraft.getInstance().gameRenderer.getMapRenderer().render(p_115079_, p_115080_, p_115076_.getFramedMapId(), mapitemsaveddata, true, i);
++                    Minecraft.getInstance().gameRenderer.getMapRenderer().render(p_115079_, p_115080_, p_115076_.getFramedMapId(itemstack), mapitemsaveddata, true, i);
                  }
              } else {
                  int k = this.getLightVal(p_115076_, 15728880, p_115081_);

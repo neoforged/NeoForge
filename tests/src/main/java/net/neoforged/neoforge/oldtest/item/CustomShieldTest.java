@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.item;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -15,8 +16,8 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -49,7 +50,7 @@ public class CustomShieldTest {
         }
 
         @Override
-        public int getUseDuration(ItemStack stack) {
+        public int getUseDuration(ItemStack stack, LivingEntity entity) {
             return 72000;
         }
 
@@ -61,8 +62,8 @@ public class CustomShieldTest {
         }
 
         @Override
-        public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
-            return toolAction == ToolActions.SHIELD_BLOCK;
+        public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+            return itemAbility == ItemAbilities.SHIELD_BLOCK;
         }
     }
 }

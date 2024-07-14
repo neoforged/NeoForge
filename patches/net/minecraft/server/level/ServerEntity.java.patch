@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -100,9 +_,9 @@
+@@ -101,9 +_,9 @@
  
          if (this.entity instanceof ItemFrame itemframe && this.tickCount % 10 == 0) {
              ItemStack itemstack = itemframe.getItem();
@@ -12,7 +12,7 @@
                  if (mapitemsaveddata != null) {
                      for (ServerPlayer serverplayer : this.level.players()) {
                          mapitemsaveddata.tickCarriedBy(serverplayer, itemstack);
-@@ -230,16 +_,18 @@
+@@ -233,22 +_,25 @@
      public void removePairing(ServerPlayer p_8535_) {
          this.entity.stopSeenByPlayer(p_8535_);
          p_8535_.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));
@@ -33,9 +33,8 @@
          if (this.entity.isRemoved()) {
              LOGGER.warn("Fetching packet for removed entity {}", this.entity);
          }
-@@ -247,6 +_,7 @@
-         Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket();
-         this.yHeadRotp = Mth.floor(this.entity.getYHeadRot() * 256.0F / 360.0F);
+ 
+         Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket(this);
          p_289563_.accept(packet);
 +        this.entity.sendPairingData(p_289562_, p_289563_::accept);
          if (this.trackedDataValues != null) {

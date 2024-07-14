@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
++++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
+@@ -158,6 +_,7 @@
+                 )
+                 .build();
+             this.resetButton = Button.builder(RESET_BUTTON_TITLE, p_346334_ -> {
++                this.key.setToDefault();
+                 KeyBindsList.this.minecraft.options.setKey(p_345998_, p_345998_.getDefaultKey());
+                 KeyBindsList.this.resetMappingAndUpdateButtons();
+             }).bounds(0, 0, 50, 20).createNarration(p_344899_ -> Component.translatable("narrator.controls.reset", p_345196_)).build();
+@@ -210,7 +_,7 @@
+             MutableComponent mutablecomponent = Component.empty();
+             if (!this.key.isUnbound()) {
+                 for (KeyMapping keymapping : KeyBindsList.this.minecraft.options.keyMappings) {
+-                    if (keymapping != this.key && this.key.same(keymapping)) {
++                    if ((keymapping != this.key && this.key.same(keymapping)) || keymapping.hasKeyModifierConflict(this.key)) { // Neo: gracefully handle conflicts like SHIFT vs SHIFT+G
+                         if (this.hasCollision) {
+                             mutablecomponent.append(", ");
+                         }

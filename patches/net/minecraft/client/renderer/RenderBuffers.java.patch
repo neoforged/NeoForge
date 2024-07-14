@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/renderer/RenderBuffers.java
 +++ b/net/minecraft/client/renderer/RenderBuffers.java
-@@ -39,6 +_,7 @@
-             put((Object2ObjectLinkedOpenHashMap<RenderType, BufferBuilder>)p_307112_, RenderType.waterMask());
-             ModelBakery.DESTROY_TYPES.forEach(p_173062_ -> put(p_307112_, p_173062_));
+@@ -37,6 +_,7 @@
+             put((Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder>)p_349871_, RenderType.waterMask());
+             ModelBakery.DESTROY_TYPES.forEach(p_173062_ -> put(p_349871_, p_173062_));
          });
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent(sortedmap));
-         this.crumblingBufferSource = MultiBufferSource.immediate(new BufferBuilder(1536));
-         this.bufferSource = MultiBufferSource.immediateWithBuffers(sortedmap, new BufferBuilder(786432));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent(sequencedmap));
+         this.crumblingBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(1536));
+         this.bufferSource = MultiBufferSource.immediateWithBuffers(sequencedmap, new ByteBufferBuilder(786432));
          this.outlineBufferSource = new OutlineBufferSource(this.bufferSource);

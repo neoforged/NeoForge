@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public record AdvancedContainerSetDataPayload(byte containerId, short dataId, int value) implements CustomPacketPayload {
 
-    public static final Type<AdvancedContainerSetDataPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_container_set_data"));
+    public static final Type<AdvancedContainerSetDataPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "advanced_container_set_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedContainerSetDataPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BYTE,
             AdvancedContainerSetDataPayload::containerId,

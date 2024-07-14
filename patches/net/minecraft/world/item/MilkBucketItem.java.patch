@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/item/MilkBucketItem.java
 +++ b/net/minecraft/world/item/MilkBucketItem.java
-@@ -25,7 +_,7 @@
+@@ -24,7 +_,7 @@
+         }
  
-         p_42923_.consume(1, p_42925_);
          if (!p_42924_.isClientSide) {
 -            p_42925_.removeAllEffects();
 +            p_42925_.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.MILK);
          }
  
-         return p_42923_.isEmpty() ? new ItemStack(Items.BUCKET) : p_42923_;
+         if (p_42925_ instanceof Player player) {

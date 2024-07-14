@@ -1,7 +1,7 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -107,6 +_,8 @@
-     private volatile Component delayedDisconnect;
+     private volatile DisconnectionDetails delayedDisconnect;
      @Nullable
      BandwidthDebugMonitor bandwidthDebugMonitor;
 +    @Nullable
@@ -23,22 +23,21 @@
      }
  
      @Override
-@@ -140,6 +_,14 @@
-                     this.disconnect(Component.translatable("disconnect.timeout"));
+@@ -141,6 +_,13 @@
                  } else {
                      Component component = Component.translatable("disconnect.genericReason", "Internal Exception: " + p_129534_);
-+                    PacketListener listener = this.packetListener;
-+                    if (listener != null) {
-+                        ConnectionProtocol protocol = listener.protocol();
+                     PacketListener packetlistener = this.packetListener;
++                    if (packetlistener != null) {
++                        ConnectionProtocol protocol = packetlistener.protocol();
 +                        if (protocol == ConnectionProtocol.CONFIGURATION || protocol == ConnectionProtocol.PLAY) {
 +                            // Neo: Always log critical network exceptions for config and play packets
 +                            LOGGER.error("Exception caught in connection", p_129534_);
 +                        }
 +                    }
-                     if (flag) {
-                         LOGGER.debug("Failed to sent packet", p_129534_);
-                         if (this.getSending() == PacketFlow.CLIENTBOUND) {
-@@ -218,6 +_,7 @@
+                     DisconnectionDetails disconnectiondetails;
+                     if (packetlistener != null) {
+                         disconnectiondetails = packetlistener.createDisconnectionInfo(component, p_129534_);
+@@ -226,6 +_,7 @@
          if (p_320903_.flow() != this.getReceiving()) {
              throw new IllegalStateException("Invalid inbound protocol: " + p_320903_.id());
          } else {
@@ -46,7 +45,7 @@
              this.packetListener = p_320940_;
              this.disconnectListener = null;
              UnconfiguredPipelineHandler.InboundConfigurationTask unconfiguredpipelinehandler$inboundconfigurationtask = UnconfiguredPipelineHandler.setupInboundProtocol(
-@@ -246,7 +_,12 @@
+@@ -254,7 +_,12 @@
              if (bundlerinfo != null) {
                  PacketBundleUnpacker packetbundleunpacker = new PacketBundleUnpacker(bundlerinfo);
                  unconfiguredpipelinehandler$outboundconfigurationtask = unconfiguredpipelinehandler$outboundconfigurationtask.andThen(
@@ -60,7 +59,7 @@
                  );
              }
  
-@@ -419,7 +_,7 @@
+@@ -427,7 +_,7 @@
          if (this.address == null) {
              return "local";
          } else {
@@ -69,7 +68,7 @@
          }
      }
  
-@@ -458,6 +_,7 @@
+@@ -470,6 +_,7 @@
      }
  
      public static ChannelFuture connect(InetSocketAddress p_290034_, boolean p_290035_, final Connection p_290031_) {
@@ -77,7 +76,7 @@
          Class<? extends SocketChannel> oclass;
          EventLoopGroup eventloopgroup;
          if (Epoll.isAvailable() && p_290035_) {
-@@ -626,5 +_,17 @@
+@@ -638,5 +_,17 @@
  
      public void setBandwidthLogger(LocalSampleLogger p_323799_) {
          this.bandwidthDebugMonitor = new BandwidthDebugMonitor(p_323799_);

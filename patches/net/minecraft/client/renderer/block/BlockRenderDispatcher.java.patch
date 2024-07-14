@@ -9,7 +9,7 @@
          this.liquidBlockRenderer = new LiquidBlockRenderer();
      }
  
-@@ -45,12 +_,17 @@
+@@ -45,13 +_,30 @@
          return this.blockModelShaper;
      }
  
@@ -26,40 +26,44 @@
 -                .tesselateBlock(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.random, i, OverlayTexture.NO_OVERLAY);
 +                .tesselateBlock(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.random, i, OverlayTexture.NO_OVERLAY, modelData, null);
          }
++    }
++
++    public void renderBatched(
++            BlockState p_234356_,
++            BlockPos p_234357_,
++            BlockAndTintGetter p_234358_,
++            PoseStack p_234359_,
++            VertexConsumer p_234360_,
++            boolean p_234361_,
++            RandomSource p_234362_
++    ) {
++        renderBatched(p_234356_, p_234357_, p_234358_, p_234359_, p_234360_, p_234361_, p_234362_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
      }
  
-@@ -63,6 +_,19 @@
+     public void renderBatched(
+@@ -61,7 +_,9 @@
+         PoseStack p_234359_,
+         VertexConsumer p_234360_,
          boolean p_234361_,
-         RandomSource p_234362_
-     ) {
-+        renderBatched(p_234356_, p_234357_, p_234358_, p_234359_, p_234360_, p_234361_, p_234362_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
-+    }
-+    public void renderBatched(
-+        BlockState p_234356_,
-+        BlockPos p_234357_,
-+        BlockAndTintGetter p_234358_,
-+        PoseStack p_234359_,
-+        VertexConsumer p_234360_,
-+        boolean p_234361_,
+-        RandomSource p_234362_
 +        RandomSource p_234362_,
 +        net.neoforged.neoforge.client.model.data.ModelData modelData,
 +        net.minecraft.client.renderer.RenderType renderType
-+    ) {
+     ) {
          try {
-             RenderShape rendershape = p_234356_.getRenderShape();
-             if (rendershape == RenderShape.MODEL) {
-@@ -77,7 +_,9 @@
-                         p_234361_,
-                         p_234362_,
-                         p_234356_.getSeed(p_234357_),
--                        OverlayTexture.NO_OVERLAY
-+                        OverlayTexture.NO_OVERLAY,
-+                        modelData,
-+                        renderType
-                     );
-             }
+             this.modelRenderer
+@@ -75,7 +_,9 @@
+                     p_234361_,
+                     p_234362_,
+                     p_234356_.getSeed(p_234357_),
+-                    OverlayTexture.NO_OVERLAY
++                    OverlayTexture.NO_OVERLAY,
++                    modelData,
++                    renderType
+                 );
          } catch (Throwable throwable) {
-@@ -90,6 +_,7 @@
+             CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block in world");
+@@ -87,6 +_,7 @@
  
      public void renderLiquid(BlockPos p_234364_, BlockAndTintGetter p_234365_, VertexConsumer p_234366_, BlockState p_234367_, FluidState p_234368_) {
          try {
@@ -67,7 +71,7 @@
              this.liquidBlockRenderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating liquid in world");
-@@ -107,7 +_,11 @@
+@@ -104,7 +_,11 @@
          return this.blockModelShaper.getBlockModel(p_110911_);
      }
  
@@ -79,7 +83,7 @@
          RenderShape rendershape = p_110913_.getRenderShape();
          if (rendershape != RenderShape.INVISIBLE) {
              switch (rendershape) {
-@@ -117,22 +_,25 @@
+@@ -114,22 +_,25 @@
                      float f = (float)(i >> 16 & 0xFF) / 255.0F;
                      float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
                      float f2 = (float)(i & 0xFF) / 255.0F;
@@ -109,7 +113,7 @@
              }
          }
      }
-@@ -140,5 +_,9 @@
+@@ -137,5 +_,9 @@
      @Override
      public void onResourceManagerReload(ResourceManager p_110909_) {
          this.liquidBlockRenderer.setupSprites();

@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.oldtest.client.model;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -66,7 +66,7 @@ public class CompositeModelTest {
 
     public static DeferredItem<Item> composite_item = ITEMS.register("composite_block", () -> new BlockItem(composite_block.get(), new Item.Properties()) {
         @Override
-        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
+        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
             return armorType == EquipmentSlot.HEAD;
         }
     });

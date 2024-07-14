@@ -79,7 +79,7 @@ public class IngredientTests {
                         .requires(new TestEnabledIngredient(new BlockTagIngredient(BlockTags.CONVERTABLE_TO_MUD).toVanilla(), test.framework(), test.id()).toVanilla())
                         .requires(Items.WATER_BUCKET)
                         .unlockedBy("has_item", has(Items.WATER_BUCKET))
-                        .save(output, new ResourceLocation(reg.modId(), "block_tag"));
+                        .save(output, ResourceLocation.fromNamespaceAndPath(reg.modId(), "block_tag"));
             }
         });
 
@@ -114,7 +114,7 @@ public class IngredientTests {
                         .define('D', Items.DIAMOND)
                         .define('E', Items.EMERALD)
                         .unlockedBy("has_axe", has(Items.IRON_AXE))
-                        .save(output, new ResourceLocation(reg.modId(), "partial_nbt"));
+                        .save(output, ResourceLocation.fromNamespaceAndPath(reg.modId(), "partial_nbt"));
             }
         });
 
@@ -136,7 +136,7 @@ public class IngredientTests {
                 .thenIdle(5) // Crafter cooldown
 
                 // Axe is now damaged, we expect the recipe to work, even if we also add other random values to the compound
-                .thenExecute(crafter -> crafter.getItem(0).hurtAndBreak(2, helper.getLevel().random, null, () -> {}))
+                .thenExecute(crafter -> crafter.getItem(0).hurtAndBreak(2, helper.getLevel(), null, item -> {}))
                 .thenExecute(crafter -> CustomData.update(DataComponents.CUSTOM_DATA, crafter.getItem(0), tag -> tag.putFloat("abcd", helper.getLevel().random.nextFloat())))
 
                 .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
@@ -158,7 +158,7 @@ public class IngredientTests {
                                 test.framework(), test.id()).toVanilla())
                         .requires(Items.ACACIA_PLANKS)
                         .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))
-                        .save(output, new ResourceLocation(reg.modId(), "strict_nbt"));
+                        .save(output, ResourceLocation.fromNamespaceAndPath(reg.modId(), "strict_nbt"));
             }
         });
 
@@ -179,7 +179,7 @@ public class IngredientTests {
                 .thenIdle(5) // Crafter cooldown
 
                 // Pickaxe now has a damage value of 4, but superfluous nbt tags, so the recipe should still not work
-                .thenExecute(crafter -> crafter.getItem(1).hurtAndBreak(3, helper.getLevel().random, null, () -> {}))
+                .thenExecute(crafter -> crafter.getItem(1).hurtAndBreak(3, helper.getLevel(), null, item -> {}))
                 .thenExecute(crafter -> CustomData.update(DataComponents.CUSTOM_DATA, crafter.getItem(1), tag -> tag.putFloat("abcd", 12f)))
 
                 .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
@@ -234,7 +234,7 @@ public class IngredientTests {
 
     @OnInit
     static void register(final TestFramework framework) {
-        REG_HELPER.register(framework.modEventBus());
+        REG_HELPER.register(framework.modEventBus(), framework.container());
     }
 
     private static final DeferredHolder<RecipeSerializer<?>, CompressedShapelessRecipeSerializer> COMPRESSED_SHAPELESS_SERIALIZER = REG_HELPER
@@ -349,7 +349,7 @@ public class IngredientTests {
                                 test.framework(), test.id()).toVanilla(), 2)
                         .requires(Ingredient.of(Items.COAL, Items.CHARCOAL), 2)
                         .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))
-                        .save(output, new ResourceLocation(reg.modId(), "sized_ingredient_1"));
+                        .save(output, ResourceLocation.fromNamespaceAndPath(reg.modId(), "sized_ingredient_1"));
             }
         });
 

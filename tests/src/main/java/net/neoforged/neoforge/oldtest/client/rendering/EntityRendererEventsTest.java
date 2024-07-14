@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -45,7 +46,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 @Mod("entity_renderer_events_test")
 @EventBusSubscriber(modid = "entity_renderer_events_test", bus = EventBusSubscriber.Bus.MOD)
 public class EntityRendererEventsTest {
-    private static final ResourceLocation MY_ENTITY = new ResourceLocation("entity_renderer_events_test", "test_entity");
+    private static final ResourceLocation MY_ENTITY = ResourceLocation.fromNamespaceAndPath("entity_renderer_events_test", "test_entity");
 
     public static final DeferredHolder<EntityType<?>, EntityType<MyEntity>> MY_ENTITY_TYPE = DeferredHolder.create(Registries.ENTITY_TYPE, MY_ENTITY);
 
@@ -113,14 +114,14 @@ public class EntityRendererEventsTest {
             public void setupAnim(MyEntity p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_, float p_102623_) {}
 
             @Override
-            public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
-                headRenderer.render(poseStack, vertexConsumer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-                bodyRenderer.render(poseStack, vertexConsumer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+            public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+                headRenderer.render(poseStack, vertexConsumer, light, overlay, color);
+                bodyRenderer.render(poseStack, vertexConsumer, light, overlay, color);
             }
         }
 
         private static class MyEntityRenderer extends LivingEntityRenderer<MyEntity, MyEntityModel> {
-            private static final ResourceLocation TEXTURE = new ResourceLocation("entity_renderer_events_test:textures/entity/test_entity.png");
+            private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("entity_renderer_events_test", "textures/entity/test_entity.png");
 
             public MyEntityRenderer(EntityRendererProvider.Context context) {
                 super(context, new MyEntityModel(context.bakeLayer(MAIN_LAYER)), 1.0f);
@@ -135,18 +136,18 @@ public class EntityRendererEventsTest {
 
         private static class MyEntityLayer extends RenderLayer<MyEntity, MyEntityModel> {
             private final MyEntityModel model;
-            private final float r;
+            private final int color;
 
             public MyEntityLayer(MyEntityRenderer renderer, MyEntityModel model, float r) {
                 super(renderer);
                 this.model = model;
-                this.r = r;
+                this.color = FastColor.ARGB32.colorFromFloat(1F, r, 1F, 1F);
             }
 
             @Override
             public void render(PoseStack poseStack, MultiBufferSource bufferSource, int lightness, MyEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
                 VertexConsumer vertexConsumer = bufferSource.getBuffer(this.getParentModel().renderType(this.getTextureLocation(entity)));
-                model.renderToBuffer(poseStack, vertexConsumer, lightness, OverlayTexture.NO_OVERLAY, r, 1.0f, 1.0f, 1.0f);
+                model.renderToBuffer(poseStack, vertexConsumer, lightness, OverlayTexture.NO_OVERLAY, color);
             }
         }
     }
