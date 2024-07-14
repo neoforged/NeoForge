@@ -9,6 +9,10 @@ import com.google.common.collect.Sets;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
 
@@ -77,7 +81,9 @@ public class ItemAbilities {
 
     /**
      * This action is exposed by shears and corresponds to a harvest action that is triggered with a right click on a block that supports such behaviour.
-     * Example: Right click with shears on a beehive with honey level 5 to harvest it
+     * Example: Right click with shears on a beehive with honey level 5 to harvest it.
+     * 
+     * @see CommonHooks#tryDispenseShearsHarvestBlock(BlockSource, ItemStack, ServerLevel, BlockPos)
      */
     public static final ItemAbility SHEARS_HARVEST = ItemAbility.get("shears_harvest");
 
@@ -88,7 +94,7 @@ public class ItemAbilities {
 
     /**
      * This action is exposed by shears and corresponds to a carve action that is triggered with a right click on a block that supports such behaviour.
-     * Example: Right click with shears o a pumpkin to carve it
+     * Example: Right click with shears on a pumpkin to carve it.
      */
     public static final ItemAbility SHEARS_CARVE = ItemAbility.get("shears_carve");
 
@@ -97,6 +103,12 @@ public class ItemAbilities {
      * Example: Breaking a trip wire with shears to disarm it.
      */
     public static final ItemAbility SHEARS_DISARM = ItemAbility.get("shears_disarm");
+
+    /**
+     * This action is exposed by shears and corresponds to a trim action that is triggered with a right click on a block that supports such behavior.
+     * Example: Right click with shears on a {@link net.minecraft.world.level.block.GrowingPlantHeadBlock growing plant} to stop it from growing.
+     */
+    public static final ItemAbility SHEARS_TRIM = ItemAbility.get("shears_trim");
 
     /**
      * Passed onto {@link IBlockExtension#getToolModifiedState} when a hoe wants to turn dirt into soil
@@ -137,7 +149,7 @@ public class ItemAbilities {
     public static final Set<ItemAbility> DEFAULT_SHOVEL_ACTIONS = of(SHOVEL_DIG, SHOVEL_FLATTEN, SHOVEL_DOUSE);
     public static final Set<ItemAbility> DEFAULT_PICKAXE_ACTIONS = of(PICKAXE_DIG);
     public static final Set<ItemAbility> DEFAULT_SWORD_ACTIONS = of(SWORD_DIG, SWORD_SWEEP);
-    public static final Set<ItemAbility> DEFAULT_SHEARS_ACTIONS = of(SHEARS_DIG, SHEARS_HARVEST, SHEARS_REMOVE_ARMOR, SHEARS_CARVE, SHEARS_DISARM);
+    public static final Set<ItemAbility> DEFAULT_SHEARS_ACTIONS = of(SHEARS_DIG, SHEARS_HARVEST, SHEARS_REMOVE_ARMOR, SHEARS_CARVE, SHEARS_DISARM, SHEARS_TRIM);
     public static final Set<ItemAbility> DEFAULT_SHIELD_ACTIONS = of(SHIELD_BLOCK);
     public static final Set<ItemAbility> DEFAULT_FISHING_ROD_ACTIONS = of(FISHING_ROD_CAST);
     public static final Set<ItemAbility> DEFAULT_TRIDENT_ACTIONS = of(TRIDENT_THROW);
