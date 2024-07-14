@@ -117,32 +117,30 @@ public class ClientModLoader extends CommonModLoader {
         } catch (NullPointerException | IllegalStateException e) {
             // We're in an early error state, config is not available. Assume true.
         }
-        File dumpedLocation;
-        if (error == null) {
-            // We can finally start the forge eventbus up
-            NeoForge.EVENT_BUS.start();
-            dumpedLocation = null;
-        } else {
+
+        if (error != null) {
             // Double check we have the langs loaded for forge
             LanguageHook.loadBuiltinLanguages();
-            dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), mc.gameDirectory);
+            File dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), mc.gameDirectory);
+            // Ignore incoming initial screens task, the subsequent screens are unreachable in an error state
+            return () -> mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, () -> {}));
         }
-        if (error != null) {
-            return () -> mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, initialScreensTask));
-        } else if (!warnings.isEmpty()) {
-            if (!showWarnings) {
-                //User disabled warning screen, as least log them
-                LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
-                for (var warning : warnings) {
-                    LOGGER.warn(Logging.LOADING, "{} [{}]", warning.translationKey(), warning.translationArgs());
-                }
-                return initialScreensTask;
-            } else {
-                return () -> mc.setScreen(new LoadingErrorScreen(warnings, dumpedLocation, initialScreensTask));
+
+        // We can finally start the game eventbus up
+        NeoForge.EVENT_BUS.start();
+
+        if (!warnings.isEmpty()) {
+            if (showWarnings) {
+                return () -> mc.setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
             }
-        } else {
-            return initialScreensTask;
+
+            //User disabled warning screen, as least log them
+            LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
+            for (var warning : warnings) {
+                LOGGER.warn(Logging.LOADING, "{} [{}]", warning.translationKey(), warning.translationArgs());
+            }
         }
+        return initialScreensTask;
     }
 
     public static boolean isLoading() {
