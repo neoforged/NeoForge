@@ -45,7 +45,7 @@
          CachedOutput p_256502_, HolderLookup.Provider p_256492_, DynamicOps<JsonElement> p_256000_, RegistryDataLoader.RegistryData<T> p_256449_
      ) {
          ResourceKey<? extends Registry<T>> resourcekey = p_256449_.key();
-+        com.mojang.serialization.Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<T>>> conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec());
++        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec());
          return p_256492_.lookup(resourcekey)
              .map(
                  p_349921_ -> {
