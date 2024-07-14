@@ -9,40 +9,17 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
-@@ -56,6 +_,7 @@
-             int i = p_333517_.isAmbient() ? AMBIENT_ALPHA : 255;
-             return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(i, p_19452_));
-         };
-+        initClient();
-     }
- 
-     protected MobEffect(MobEffectCategory p_333963_, int p_333864_, ParticleOptions p_333716_) {
-@@ -179,6 +_,29 @@
+@@ -179,6 +_,14 @@
      @Override
      public FeatureFlagSet requiredFeatures() {
          return this.requiredFeatures;
 +    }
 +
-+    // Neo: Client rendering for MobEffects
-+    private Object effectRenderer;
-+
 +    /**
-+     * Neo: DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
-+     * TODO: Replace this with a better solution
-+     * Call {@link net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions#of(MobEffect)} instead
++     * Neo: Allowing mods to define client behavior for their MobEffects
++     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
 +     */
-+    public Object getEffectRendererInternal() {
-+        return effectRenderer;
-+    }
-+
-+    // Neo: Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
-+    private void initClient() {
-+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen()) {
-+            initializeClient(properties -> this.effectRenderer = properties);
-+        }
-+    }
-+
-+    // Neo: Allowing mods to define client behavior for their MobEffects
++    @Deprecated(forRemoval = true)
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
      }
  
