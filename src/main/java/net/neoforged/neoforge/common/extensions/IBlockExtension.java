@@ -12,6 +12,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -43,9 +45,13 @@ import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.CandleBlock;
+import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.GrowingPlantHeadBlock;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LadderBlock;
@@ -60,6 +66,7 @@ import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
@@ -407,7 +414,7 @@ public interface IBlockExtension {
      * @return True if the soil should be considered fertile.
      */
     default boolean isFertile(BlockState state, BlockGetter level, BlockPos pos) {
-        if (state.is(Blocks.FARMLAND))
+        if (state.getBlock() instanceof FarmBlock)
             return state.getValue(FarmBlock.MOISTURE) > 0;
 
         return false;
@@ -780,6 +787,23 @@ public interface IBlockExtension {
                     context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
                         return block == Blocks.COARSE_DIRT ? Blocks.DIRT.defaultBlockState() : Blocks.FARMLAND.defaultBlockState();
                     }
+        } else if (ItemAbilities.SHEARS_TRIM == itemAbility) {
+            if (state.getBlock() instanceof GrowingPlantHeadBlock growingPlant && !growingPlant.isMaxAge(state)) {
+                if (!simulate)
+                    context.getLevel().playSound(context.getPlayer(), context.getClickedPos(), SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return growingPlant.getMaxAgeState(state);
+            }
+        } else if (ItemAbilities.SHOVEL_DOUSE == itemAbility) {
+            if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {
+                if (!simulate) {
+                    CampfireBlock.dowse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
+                }
+                return state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
+            }
+        } else if (ItemAbilities.FIRESTARTER_LIGHT == itemAbility) {
+            if (CampfireBlock.canLight(state) || CandleBlock.canLight(state) || CandleCakeBlock.canLight(state)) {
+                return state.setValue(BlockStateProperties.LIT, Boolean.valueOf(true));
+            }
         }
 
         return null;
@@ -978,7 +1002,7 @@ public interface IBlockExtension {
 
     /**
      * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
-     * <p></p>
+     * <p>
      * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
      * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
      *

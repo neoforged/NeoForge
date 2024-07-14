@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "net.neoforged.neoforge.mixins",
+  "mixins": [
+    "BlockEntityTypeAccessor",
+    "MappedRegistryAccessor"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
