@@ -1,0 +1,32 @@
+--- a/net/minecraft/world/item/FireChargeItem.java
++++ b/net/minecraft/world/item/FireChargeItem.java
+@@ -33,7 +_,8 @@
+         BlockPos blockpos = p_41204_.getClickedPos();
+         BlockState blockstate = level.getBlockState(blockpos);
+         boolean flag = false;
+-        if (!CampfireBlock.canLight(blockstate) && !CandleBlock.canLight(blockstate) && !CandleCakeBlock.canLight(blockstate)) {
++        BlockState blockstate2 = blockstate.getToolModifiedState(p_41204_, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
++        if (blockstate2 == null) {
+             blockpos = blockpos.relative(p_41204_.getClickedFace());
+             if (BaseFireBlock.canBePlacedAt(level, blockpos, p_41204_.getHorizontalDirection())) {
+                 this.playSound(level, blockpos);
+@@ -43,7 +_,7 @@
+             }
+         } else {
+             this.playSound(level, blockpos);
+-            level.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
++            level.setBlockAndUpdate(blockpos, blockstate2);
+             level.gameEvent(p_41204_.getPlayer(), GameEvent.BLOCK_CHANGE, blockpos);
+             flag = true;
+         }
+@@ -87,5 +_,10 @@
+             .power(1.0F)
+             .overrideDispenseEvent(1018)
+             .build();
++    }
++
++    @Override
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_FIRECHARGE_ACTIONS.contains(itemAbility);
+     }
+ }
