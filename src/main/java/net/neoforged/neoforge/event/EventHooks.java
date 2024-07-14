@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
+import com.mojang.serialization.DynamicOps;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
@@ -100,17 +100,18 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
+import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
 import net.neoforged.neoforge.event.enchanting.EnchantmentLevelSetEvent;
@@ -274,7 +275,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * zombie.finalizeSpawn(level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
@@ -287,7 +288,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * EventHooks.finalizeMobSpawn(zombie, level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
@@ -483,8 +484,8 @@ public class EventHooks {
     }
 
     @Nullable
-    public static BlockState onToolUse(BlockState originalState, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        BlockToolModificationEvent event = new BlockToolModificationEvent(originalState, context, toolAction, simulate);
+    public static BlockState onToolUse(BlockState originalState, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        BlockToolModificationEvent event = new BlockToolModificationEvent(originalState, context, itemAbility, simulate);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getFinalState();
     }
 
@@ -680,12 +681,18 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, ray)).isCanceled();
     }
 
+    /**
+     * Fires the {@link LootTableLoadEvent} for non-empty loot tables and returns the table if the event was not
+     * canceled and the table was not set to {@link LootTable#EMPTY} in the event. Otherwise returns {@code null}
+     * which maps to an empty {@link Optional} in {@link LootDataType#deserialize(ResourceLocation, DynamicOps, Object)}
+     */
+    @Nullable
     public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
-            return table;
+            return null;
         LootTableLoadEvent event = new LootTableLoadEvent(name, table);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled())
-            return LootTable.EMPTY;
+        if (NeoForge.EVENT_BUS.post(event).isCanceled() || event.getTable() == LootTable.EMPTY)
+            return null;
         return event.getTable();
     }
 
@@ -799,14 +806,14 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions size, float eyeHeight) {
-        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, size, eyeHeight);
+    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions size) {
+        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, size);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
 
-    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize, float newEyeHeight) {
-        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, oldSize, newSize, entity.getEyeHeight(), newEyeHeight);
+    public static EntityEvent.Size getEntitySizeForge(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize) {
+        EntityEvent.Size evt = new EntityEvent.Size(entity, pose, oldSize, newSize);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
@@ -1075,34 +1082,31 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var searchDupes = new ObjectLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
-        // The ItemStackLinkedSet.TYPE_AND_TAG strategy cannot be used for the MutableHashedLinkedMap due to vanilla
-        // adding multiple identical ItemStacks with different TabVisibility values. The values also cannot be merged
-        // because it does not abide by the intended order. For example, vanilla adds all max enchanted books to the
-        // "ingredient" tab with "parent only" visibility, then also adds all enchanted books again in increasing order
-        // to their max values but with the "search only" visibility. Because the parent-only is added first and then
-        // the search-only entries are added after, the max enchantments would show up first and then the enchantments
-        // in increasing order up to max-1.
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(MutableHashedLinkedMap.BASIC, (stack, tabVisibility) -> {
-            if (!searchDupes.add(stack) && tabVisibility != CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
-                throw new IllegalStateException(
-                        "Accidentally adding the same item stack twice "
-                                + stack.getDisplayName().getString()
-                                + " to a Creative Mode Tab: "
-                                + tab.getDisplayName().getString());
-            }
-            return true;
-        });
+        final var parentEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
+        final var searchEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
-            entries.put(stack, vis);
-        });
-        ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
 
-        for (var entry : entries)
-            output.accept(entry.getKey(), entry.getValue());
+            if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
+                parentEntries.add(stack);
+            }
+
+            if (BuildCreativeModeTabContentsEvent.isSearchTab(vis)) {
+                searchEntries.add(stack);
+            }
+        });
+
+        ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, parentEntries, searchEntries));
+
+        for (var entry : parentEntries) {
+            output.accept(entry, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
+        }
+
+        for (var entry : searchEntries) {
+            output.accept(entry, CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+        }
     }
 
     /**

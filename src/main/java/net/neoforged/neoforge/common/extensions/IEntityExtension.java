@@ -39,12 +39,24 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         return (Entity) this;
     }
 
+    /**
+     * Deserialize from a compound tag.
+     * 
+     * @deprecated Use a data component/attachment to store info, or {@link Entity#load(CompoundTag)} as a replacement.
+     */
     @Override
+    @Deprecated(forRemoval = true, since = "21.0")
     default void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         self().load(nbt);
     }
 
+    /**
+     * Serialize metadata into a compound tag.
+     * 
+     * @deprecated Use a data component/attachment to store info. ({@link Entity#setData(AttachmentType, Object)})
+     */
     @Override
+    @Deprecated(forRemoval = true, since = "21.0")
     default CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag ret = new CompoundTag();
         String id = self().getEncodeId();
@@ -135,24 +147,17 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      *
      * @return True if this entity is being tracked by a world
      */
-    // TODO: rename in 1.19 to isAddedToLevel
-    boolean isAddedToWorld();
+    boolean isAddedToLevel();
 
     /**
-     * Called after the entity has been added to the world's
-     * ticking list. Can be overriden, but needs to call super
-     * to prevent MC-136995.
+     * Called after the entity has been added to the world's ticking list.
      */
-    // TODO: rename in 1.19 to onAddedToLevel
-    void onAddedToWorld();
+    void onAddedToLevel();
 
     /**
-     * Called after the entity has been removed to the world's
-     * ticking list. Can be overriden, but needs to call super
-     * to prevent MC-136995.
+     * Called after the entity has been removed to the world's ticking list.
      */
-    // TODO: rename in 1.19 to onRemovedFromLevel
-    void onRemovedFromWorld();
+    void onRemovedFromLevel();
 
     /**
      * Revives an entity that has been removed from a world.

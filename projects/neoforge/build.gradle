@@ -1,6 +1,10 @@
+import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
+import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'net.neoforged.jarcompatibilitychecker' version '0.1.9'
 }
 
 apply plugin: 'net.neoforged.gradleutils'
@@ -18,6 +22,24 @@ dynamicProject {
             rootProject.layout.projectDirectory.dir('rejects'))
 }
 
+final checkVersion = JCCPlugin.providePreviousVersion(
+        project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'})
+)
+final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
+    // Use the same jar that the patches were generated against
+    cleanJar.set(tasks.generateClientBinaryPatches.clean)
+    maven.set('https://maven.neoforged.net/releases')
+    artifact.set('net.neoforged:neoforge')
+    version.set(checkVersion)
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(java_version)
+    }
+}
+checkJarCompatibility {
+    isAPI = true
+    baseJar = createCompatJar.flatMap { it.output }
+}
+
 installerProfile {
     profile = 'NeoForge'
 }
@@ -28,6 +50,17 @@ minecraft {
 
     accessTransformers {
         file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
+
+tasks.configureEach { tsk ->
+    if (tsk.name == 'neoFormApplyUserAccessTransformer' && project.hasProperty('validateAccessTransformers')) {
+        tsk.inputs.property('validation', 'error')
+        tsk.logLevel('ERROR')
+        tsk.doFirst {
+            tsk.getRuntimeProgramArguments().addAll(tsk.getRuntimeProgramArguments().get())
+            tsk.getRuntimeProgramArguments().add('--access-transformer-validation=error')
+        }
     }
 }
 
@@ -393,6 +426,17 @@ dependencies {
     }
     modDevTestFixtures("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}") {
         endorseStrictVersions()
+    }
+}
+
+processResources {
+    inputs.property("version", project.version)
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand([
+                "global": [
+                        "neoForgeVersion": project.version
+                ]
+        ])
     }
 }
 

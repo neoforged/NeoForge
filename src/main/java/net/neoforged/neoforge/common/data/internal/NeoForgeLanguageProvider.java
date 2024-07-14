@@ -118,6 +118,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Blocks.VILLAGER_JOB_SITES, "Villager Job Sites");
+        add(Tags.Blocks.VILLAGER_FARMLANDS, "Villager Farmlands");
 
         // Items
         add(Tags.Items.BARRELS, "Barrels");
@@ -188,19 +189,20 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Items.FENCES_WOODEN, "Wooden Fences");
         add(Tags.Items.FOODS, "Foods");
-        add(Tags.Items.FOODS_BERRIES, "Berries");
-        add(Tags.Items.FOODS_BREADS, "Breads");
-        add(Tags.Items.FOODS_CANDIES, "Candies");
-        add(Tags.Items.FOODS_COOKED_FISHES, "Cooked Fishes");
-        add(Tags.Items.FOODS_COOKED_MEATS, "Cooked Meats");
-        add(Tags.Items.FOODS_COOKIES, "Cookies");
+        add(Tags.Items.FOODS_BERRY, "Berries");
+        add(Tags.Items.FOODS_BREAD, "Breads");
+        add(Tags.Items.FOODS_CANDY, "Candies");
+        add(Tags.Items.FOODS_COOKED_FISH, "Cooked Fishes");
+        add(Tags.Items.FOODS_COOKED_MEAT, "Cooked Meats");
+        add(Tags.Items.FOODS_COOKIE, "Cookies");
         add(Tags.Items.FOODS_EDIBLE_WHEN_PLACED, "Edible When Placed");
         add(Tags.Items.FOODS_FOOD_POISONING, "Food Poisoning Foods");
-        add(Tags.Items.FOODS_FRUITS, "Fruits");
-        add(Tags.Items.FOODS_RAW_FISHES, "Raw Fishes");
-        add(Tags.Items.FOODS_RAW_MEATS, "Raw Meats");
-        add(Tags.Items.FOODS_SOUPS, "Soups");
-        add(Tags.Items.FOODS_VEGETABLES, "Vegetables");
+        add(Tags.Items.FOODS_FRUIT, "Fruits");
+        add(Tags.Items.FOODS_GOLDEN, "Golden Foods");
+        add(Tags.Items.FOODS_RAW_FISH, "Raw Fishes");
+        add(Tags.Items.FOODS_RAW_MEAT, "Raw Meats");
+        add(Tags.Items.FOODS_SOUP, "Soups");
+        add(Tags.Items.FOODS_VEGETABLE, "Vegetables");
         add(Tags.Items.GEMS, "Gems");
         add(Tags.Items.GEMS_AMETHYST, "Amethyst Gems");
         add(Tags.Items.GEMS_DIAMOND, "Diamond Gems");
@@ -308,7 +310,11 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_CROSSBOW, "Crossbows");
         add(Tags.Items.TOOLS_FISHING_ROD, "Fishing Rods");
         add(Tags.Items.TOOLS_BRUSH, "Brushes");
+        add(Tags.Items.TOOLS_MACE, "Maces");
         add(Tags.Items.TOOLS_SPEAR, "Spears");
+        add(Tags.Items.MELEE_WEAPON_TOOLS, "Melee Weapons");
+        add(Tags.Items.RANGED_WEAPON_TOOLS, "Ranged Weapons");
+        add(Tags.Items.MINING_TOOL_TOOLS, "Mining Tools");
         add(Tags.Items.TOOLS, "Tools");
         add(Tags.Items.ARMORS, "Armors");
         add(Tags.Items.ENCHANTABLES, "Enchantables");
