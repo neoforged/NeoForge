@@ -182,6 +182,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      * How the range will be added to the tooltip when using translated tooltips. Mimics what the comment does in ModConfigSpec.
      */
     private static final String RANGE_TOOLTIP = LANG_PREFIX + "rangetooltip";
+    /**
+     * How the filename will be added to the tooltip.
+     */
+    private static final String FILENAME_TOOLTIP = LANG_PREFIX + "filenametooltip";
 
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline");
     public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan");
@@ -242,19 +246,22 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                     }
                     btn = Button.builder(Component.translatable(SECTION, translatableConfig(modConfig, "", LANG_PREFIX + "type." + modConfig.getType().name().toLowerCase(Locale.ROOT))),
                             button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig, translatableConfig(modConfig, ".title", LANG_PREFIX + "title." + type.name().toLowerCase(Locale.ROOT))))).width(BIG_BUTTON_WIDTH).build();
+                    MutableComponent tooltip = Component.empty();
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
-                        btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_NOT_LOADED));
+                        tooltip.append(TOOLTIP_CANNOT_EDIT_NOT_LOADED).append(Component.literal("\n\n"));
                         btn.active = false;
                         count = 99; // prevent autoClose
                     } else if (type == Type.SERVER && minecraft.getCurrentServer() != null && !minecraft.isSingleplayer()) {
-                        btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE));
+                        tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE).append(Component.literal("\n\n"));
                         btn.active = false;
                         count = 99; // prevent autoClose
                     } else if (type == Type.SERVER && minecraft.hasSingleplayerServer() && minecraft.getSingleplayerServer().isPublished()) {
-                        btn.setTooltip(Tooltip.create(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN));
+                        tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN).append(Component.literal("\n\n"));
                         btn.active = false;
                         count = 99; // prevent autoClose
                     }
+                    tooltip.append(Component.translatable(FILENAME_TOOLTIP, modConfig.getFileName()));
+                    btn.setTooltip(Tooltip.create(tooltip));
                     list.addSmall(btn, null);
                     count++;
                 }

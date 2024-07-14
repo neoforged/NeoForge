@@ -135,10 +135,30 @@
   "neoforge.configuration.uitext.title.common": "%s Common Configuration",
   "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
 
-  "neoforge.configuration.uitext.notonline": "Settings in here are determined by the server and cannot be changed while online.",
-  "neoforge.configuration.uitext.notlan": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
-  "neoforge.configuration.uitext.notloaded": "Settings in here are are ony available while a world is loaded.",
-  "neoforge.configuration.uitext.unsupportedelement": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+  "neoforge.configuration.uitext.notonline": [
+    {
+      "text": "Settings in here are determined by the server and cannot be changed while online.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notlan": [
+    {
+      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notloaded": [
+    {
+      "text": "Settings in here are are ony available while a world is loaded.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.unsupportedelement": [
+    {
+      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+      "color": "red"
+    }
+  ],
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.breadcrumb": [
     {
@@ -169,6 +189,20 @@
     },
     {
       "index": 0,
+      "color": "gray"
+    }
+  ],
+  "neoforge.configuration.uitext.filenametooltip": [
+    {
+      "text": "File: \"",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    },
+    {
+      "text": "\"",
       "color": "gray"
     }
   ],
