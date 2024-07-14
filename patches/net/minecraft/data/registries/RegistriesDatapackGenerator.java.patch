@@ -41,7 +41,14 @@
                              .flatMap(
                                  p_256552_ -> this.dumpRegistryCap(p_255785_, p_326736_, dynamicops, (RegistryDataLoader.RegistryData<?>)p_256552_).stream()
                              )
-@@ -54,13 +_,14 @@
+@@ -48,19 +_,21 @@
+         CachedOutput p_256502_, HolderLookup.Provider p_256492_, DynamicOps<JsonElement> p_256000_, RegistryDataLoader.RegistryData<T> p_256449_
+     ) {
+         ResourceKey<? extends Registry<T>> resourcekey = p_256449_.key();
++        com.mojang.serialization.Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<T>>> conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec());
+         return p_256492_.lookup(resourcekey)
+             .map(
+                 p_349921_ -> {
                      PackOutput.PathProvider packoutput$pathprovider = this.output.createRegistryElementsPathProvider(resourcekey);
                      return CompletableFuture.allOf(
                          p_349921_.listElements()
@@ -53,7 +60,7 @@
                                          p_256000_,
 -                                        p_256449_.elementCodec(),
 -                                        p_256105_.value()
-+                                        net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec()),
++                                        conditionalCodec,
 +                                        Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(p_256105_.key(), java.util.List.of()), p_256105_.value()))
                                      )
                              )
