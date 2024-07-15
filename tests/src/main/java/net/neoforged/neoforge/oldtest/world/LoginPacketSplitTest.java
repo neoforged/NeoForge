@@ -76,7 +76,7 @@ public class LoginPacketSplitTest {
     public static final String MOD_ID = "login_packet_split_test";
     public static final boolean ENABLED = true;
     private static final Gson GSON = new Gson();
-    public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(new ResourceLocation(MOD_ID, "big_data"));
+    public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MOD_ID, "big_data"));
 
     public LoginPacketSplitTest(IEventBus bus) {
         bus.addListener((final DataPackRegistryEvent.NewRegistry event) -> event.dataPackRegistry(BIG_DATA, BigData.CODEC, BigData.CODEC));
@@ -116,8 +116,8 @@ public class LoginPacketSplitTest {
             final JsonObject json = new JsonObject();
             json.addProperty("text", bigData.text);
             json.addProperty("number", bigData.number);
-            pack.putData(new ResourceLocation(MOD_ID, MOD_ID + "/big_data/entry_" + i + ".json"), json);
-            Registry.register(dummyRegistry, new ResourceLocation(MOD_ID, MOD_ID + "/big_data/entry_" + i), bigData);
+            pack.putData(ResourceLocation.fromNamespaceAndPath(MOD_ID, MOD_ID + "/big_data/entry_" + i + ".json"), json);
+            Registry.register(dummyRegistry, ResourceLocation.fromNamespaceAndPath(MOD_ID, MOD_ID + "/big_data/entry_" + i), bigData);
         }
         stopwatch.stop();
         LOG.warn("Setting up big data registry took " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " miliseconds.");

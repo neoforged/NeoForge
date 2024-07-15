@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
-@@ -74,6 +_,7 @@
+@@ -79,6 +_,7 @@
                  this.activeButton = -1;
              }
  
@@ -8,7 +8,7 @@
              boolean[] aboolean = new boolean[]{false};
              if (this.minecraft.getOverlay() == null) {
                  if (this.minecraft.screen == null) {
-@@ -86,13 +_,21 @@
+@@ -91,13 +_,21 @@
                      Screen screen = this.minecraft.screen;
                      if (flag) {
                          screen.afterMouseAction();
@@ -36,7 +36,7 @@
                      }
                  }
              }
-@@ -115,6 +_,7 @@
+@@ -120,6 +_,7 @@
                      }
                  }
              }
@@ -44,7 +44,7 @@
          }
      }
  
-@@ -128,7 +_,11 @@
+@@ -133,7 +_,11 @@
                  if (this.minecraft.screen != null) {
                      double d3 = this.xpos * (double)this.minecraft.getWindow().getGuiScaledWidth() / (double)this.minecraft.getWindow().getScreenWidth();
                      double d4 = this.ypos * (double)this.minecraft.getWindow().getGuiScaledHeight() / (double)this.minecraft.getWindow().getScreenHeight();
@@ -57,7 +57,7 @@
                      this.minecraft.screen.afterMouseAction();
                  } else if (this.minecraft.player != null) {
                      if (this.accumulatedScrollX != 0.0 && Math.signum(d1) != Math.signum(this.accumulatedScrollX)) {
-@@ -150,6 +_,7 @@
+@@ -155,6 +_,7 @@
                      this.accumulatedScrollX -= (double)j;
                      this.accumulatedScrollY -= (double)i;
                      int k = i == 0 ? -j : i;
@@ -65,7 +65,7 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);
-@@ -224,9 +_,11 @@
+@@ -244,9 +_,11 @@
                      double d5 = this.accumulatedDY
                          * (double)this.minecraft.getWindow().getGuiScaledHeight()
                          / (double)this.minecraft.getWindow().getScreenHeight();
@@ -80,7 +80,7 @@
                  }
  
                  screen.afterMouseMove();
-@@ -242,12 +_,13 @@
+@@ -262,12 +_,13 @@
      }
  
      private void turnPlayer(double p_316356_) {
@@ -96,7 +96,7 @@
              double d5 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d4, p_316356_ * d4);
              double d6 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d4, p_316356_ * d4);
              d0 = d5;
-@@ -293,6 +_,14 @@
+@@ -313,6 +_,14 @@
  
      public double ypos() {
          return this.ypos;

@@ -130,7 +130,7 @@ public class CustomHeadTest {
 
         @SubscribeEvent
         static void clientSetupEvent(FMLClientSetupEvent event) {
-            event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, new ResourceLocation("textures/entity/blaze.png")));
+            event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png")));
         }
 
         @SubscribeEvent

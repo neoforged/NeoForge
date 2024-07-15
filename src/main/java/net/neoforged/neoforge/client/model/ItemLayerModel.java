@@ -51,7 +51,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
         if (textures == null) {
             ImmutableList.Builder<Material> builder = ImmutableList.builder();
             for (int i = 0; context.hasMaterial("layer" + i); i++) {
@@ -71,7 +71,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
         for (int i = 0; i < textures.size(); i++) {
             TextureAtlasSprite sprite = spriteGetter.apply(textures.get(i));
             var unbaked = UnbakedGeometryHelper.createUnbakedItemElements(i, sprite, this.layerData.get(i));
-            var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, modelState, modelLocation);
+            var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, modelState);
             var renderTypeName = renderTypeNames.get(i);
             var renderTypes = renderTypeName != null ? context.getRenderType(renderTypeName) : null;
             builder.addQuads(renderTypes != null ? renderTypes : normalRenderTypes, quads);
@@ -89,7 +89,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
             if (jsonObject.has("render_types")) {
                 var renderTypes = jsonObject.getAsJsonObject("render_types");
                 for (Map.Entry<String, JsonElement> entry : renderTypes.entrySet()) {
-                    var renderType = new ResourceLocation(entry.getKey());
+                    var renderType = ResourceLocation.parse(entry.getKey());
                     for (var layer : entry.getValue().getAsJsonArray())
                         if (renderTypeNames.put(layer.getAsInt(), renderType) != null)
                             throw new JsonParseException("Registered duplicate render type for layer " + layer);

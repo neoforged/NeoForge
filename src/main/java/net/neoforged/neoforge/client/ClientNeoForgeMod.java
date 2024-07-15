@@ -33,13 +33,13 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
-        event.register(new ResourceLocation("neoforge", "empty"), EmptyModel.LOADER);
-        event.register(new ResourceLocation("neoforge", "elements"), ElementsModel.Loader.INSTANCE);
-        event.register(new ResourceLocation("neoforge", "obj"), ObjLoader.INSTANCE);
-        event.register(new ResourceLocation("neoforge", "fluid_container"), DynamicFluidContainerModel.Loader.INSTANCE);
-        event.register(new ResourceLocation("neoforge", "composite"), CompositeModel.Loader.INSTANCE);
-        event.register(new ResourceLocation("neoforge", "item_layers"), ItemLayerModel.Loader.INSTANCE);
-        event.register(new ResourceLocation("neoforge", "separate_transforms"), SeparateTransformsModel.Loader.INSTANCE);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "empty"), EmptyModel.LOADER);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "elements"), ElementsModel.Loader.INSTANCE);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "obj"), ObjLoader.INSTANCE);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "fluid_container"), DynamicFluidContainerModel.Loader.INSTANCE);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), CompositeModel.Loader.INSTANCE);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_layers"), ItemLayerModel.Loader.INSTANCE);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "separate_transforms"), SeparateTransformsModel.Loader.INSTANCE);
     }
 
     @SubscribeEvent
@@ -49,6 +49,6 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
-        event.register(new ResourceLocation("neoforge", "item_unlit"), RenderType.translucent(), NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_unlit"), RenderType.translucent(), NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
     }
 }

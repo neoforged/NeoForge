@@ -19,7 +19,6 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
@@ -37,7 +36,7 @@ public class ElementsModel extends SimpleUnbakedGeometry<ElementsModel> {
     }
 
     @Override
-    protected void addQuads(IGeometryBakingContext context, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation) {
+    protected void addQuads(IGeometryBakingContext context, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState) {
         // If there is a root transform, undo the ModelState transform, apply it, then re-apply the ModelState transform.
         // This is necessary because of things like UV locking, which should only respond to the ModelState, and as such
         // that is the only transform that should be applied during face bake.
@@ -49,14 +48,14 @@ public class ElementsModel extends SimpleUnbakedGeometry<ElementsModel> {
         for (BlockElement element : elements) {
             for (Direction direction : element.faces.keySet()) {
                 var face = element.faces.get(direction);
-                var sprite = spriteGetter.apply(context.getMaterial(face.texture));
-                var quad = BlockModel.bakeFace(element, face, sprite, direction, modelState, modelLocation);
+                var sprite = spriteGetter.apply(context.getMaterial(face.texture()));
+                var quad = BlockModel.bakeFace(element, face, sprite, direction, modelState);
                 postTransform.processInPlace(quad);
 
-                if (face.cullForDirection == null)
+                if (face.cullForDirection() == null)
                     modelBuilder.addUnculledFace(quad);
                 else
-                    modelBuilder.addCulledFace(modelState.getRotation().rotateTransform(face.cullForDirection), quad);
+                    modelBuilder.addCulledFace(modelState.getRotation().rotateTransform(face.cullForDirection()), quad);
             }
         }
     }

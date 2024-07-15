@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Set;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.Connection;
+import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.ChatType;
@@ -215,7 +216,7 @@ public class FakePlayer extends ServerPlayer {
         public void handlePaddleBoat(ServerboundPaddleBoatPacket packet) {}
 
         @Override
-        public void onDisconnect(Component message) {}
+        public void onDisconnect(DisconnectionDetails details) {}
 
         @Override
         public void send(Packet<?> packet) {}

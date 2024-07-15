@@ -13,6 +13,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.RecipeBookType;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
@@ -34,7 +35,7 @@ public class RecipeBookExtensionTest {
     public static final boolean ENABLED = false;
 
     public static final String MOD_ID = "recipe_book_extension_test";
-    public static final RecipeBookType TEST_TYPE = RecipeBookType.create("TESTING");
+    public static final RecipeBookType TEST_TYPE = RecipeBookType.valueOf("NEOTESTS_TESTING");
 
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MOD_ID);
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_SERIALIZER = RECIPE_SERIALIZER.register("test_recipe", RecipeBookTestRecipeSerializer::new);
@@ -65,7 +66,7 @@ public class RecipeBookExtensionTest {
     }
 
     public static ResourceLocation getId(String name) {
-        return new ResourceLocation(MOD_ID, name);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
     }
 
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
@@ -88,6 +89,10 @@ public class RecipeBookExtensionTest {
     public static class RecipeBookTestContainer extends SimpleContainer {
         public RecipeBookTestContainer() {
             super(8);
+        }
+
+        public CraftingInput asCraftingInput() {
+            return CraftingInput.of(2, 4, getItems());
         }
     }
 }

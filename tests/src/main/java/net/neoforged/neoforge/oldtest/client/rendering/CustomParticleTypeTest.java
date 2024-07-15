@@ -31,26 +31,26 @@ public class CustomParticleTypeTest {
     public static class ClientEvents {
         private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType() {
             @Override
-            public void begin(BufferBuilder buffer, TextureManager texMgr) {
+            public BufferBuilder begin(Tesselator tesselator, TextureManager texMgr) {
                 Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-                ParticleRenderType.TERRAIN_SHEET.begin(buffer, texMgr);
+                return ParticleRenderType.TERRAIN_SHEET.begin(tesselator, texMgr);
             }
 
             @Override
-            public void end(Tesselator tess) {
-                ParticleRenderType.TERRAIN_SHEET.end(tess);
+            public String toString() {
+                return "CUSTOM_TYPE";
             }
         };
         private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType() {
             @Override
-            public void begin(BufferBuilder buffer, TextureManager texMgr) {
+            public BufferBuilder begin(Tesselator tesselator, TextureManager texMgr) {
                 Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-                ParticleRenderType.TERRAIN_SHEET.begin(buffer, texMgr);
+                return ParticleRenderType.TERRAIN_SHEET.begin(tesselator, texMgr);
             }
 
             @Override
-            public void end(Tesselator tess) {
-                ParticleRenderType.TERRAIN_SHEET.end(tess);
+            public String toString() {
+                return "CUSTOM_TYPE_TWO";
             }
         };
 

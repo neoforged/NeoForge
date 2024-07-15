@@ -7,6 +7,7 @@ package net.neoforged.testframework.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -30,14 +31,12 @@ public class ClientUtils {
 
     private static void innerBlitAlpha(Matrix4f pMatrix, int pX1, int pX2, int pY1, int pY2, int pBlitOffset, float pMinU, float pMaxU, float pMinV, float pMaxV, float alpha) {
         setupAlpha(alpha);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.vertex(pMatrix, (float) pX1, (float) pY2, (float) pBlitOffset).uv(pMinU, pMaxV).endVertex();
-        bufferbuilder.vertex(pMatrix, (float) pX2, (float) pY2, (float) pBlitOffset).uv(pMaxU, pMaxV).endVertex();
-        bufferbuilder.vertex(pMatrix, (float) pX2, (float) pY1, (float) pBlitOffset).uv(pMaxU, pMinV).endVertex();
-        bufferbuilder.vertex(pMatrix, (float) pX1, (float) pY1, (float) pBlitOffset).uv(pMinU, pMinV).endVertex();
-        tesselator.end();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(pMatrix, (float) pX1, (float) pY2, (float) pBlitOffset).setUv(pMinU, pMaxV);
+        bufferbuilder.addVertex(pMatrix, (float) pX2, (float) pY2, (float) pBlitOffset).setUv(pMaxU, pMaxV);
+        bufferbuilder.addVertex(pMatrix, (float) pX2, (float) pY1, (float) pBlitOffset).setUv(pMaxU, pMinV);
+        bufferbuilder.addVertex(pMatrix, (float) pX1, (float) pY1, (float) pBlitOffset).setUv(pMinU, pMinV);
+        BufferUploader.draw(bufferbuilder.buildOrThrow());
         disableAlpha();
     }
 
@@ -54,14 +53,12 @@ public class ClientUtils {
     }
 
     private static void innerBlitAlphaSimple(Matrix4f pMatrix, int pX1, int pX2, int pY1, int pY2, int pBlitOffset, float pMinU, float pMaxU, float pMinV, float pMaxV) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.vertex(pMatrix, (float) pX1, (float) pY2, (float) pBlitOffset).uv(pMinU, pMaxV).endVertex();
-        bufferbuilder.vertex(pMatrix, (float) pX2, (float) pY2, (float) pBlitOffset).uv(pMaxU, pMaxV).endVertex();
-        bufferbuilder.vertex(pMatrix, (float) pX2, (float) pY1, (float) pBlitOffset).uv(pMaxU, pMinV).endVertex();
-        bufferbuilder.vertex(pMatrix, (float) pX1, (float) pY1, (float) pBlitOffset).uv(pMinU, pMinV).endVertex();
-        tesselator.end();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(pMatrix, (float) pX1, (float) pY2, (float) pBlitOffset).setUv(pMinU, pMaxV);
+        bufferbuilder.addVertex(pMatrix, (float) pX2, (float) pY2, (float) pBlitOffset).setUv(pMaxU, pMaxV);
+        bufferbuilder.addVertex(pMatrix, (float) pX2, (float) pY1, (float) pBlitOffset).setUv(pMaxU, pMinV);
+        bufferbuilder.addVertex(pMatrix, (float) pX1, (float) pY1, (float) pBlitOffset).setUv(pMinU, pMinV);
+        BufferUploader.draw(bufferbuilder.buildOrThrow());
     }
 
     public static void disableAlpha() {

@@ -44,7 +44,7 @@ public class VanillaInventoryCodeHooks {
                         if (!extractItem.isEmpty()) {
                             for (int j = 0; j < dest.getContainerSize(); j++) {
                                 ItemStack destStack = dest.getItem(j);
-                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemHandlerHelper.canItemStacksStack(extractItem, destStack))) {
+                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemStack.isSameItemSameComponents(extractItem, destStack))) {
                                     extractItem = handler.extractItem(i, 1, false);
                                     if (destStack.isEmpty())
                                         dest.setItem(j, extractItem);
@@ -142,7 +142,7 @@ public class VanillaInventoryCodeHooks {
                 destInventory.insertItem(slot, stack, false);
                 stack = ItemStack.EMPTY;
                 insertedItem = true;
-            } else if (ItemHandlerHelper.canItemStacksStack(itemstack, stack)) {
+            } else if (ItemStack.isSameItemSameComponents(itemstack, stack)) {
                 int originalSize = stack.getCount();
                 stack = destInventory.insertItem(slot, stack, false);
                 insertedItem = originalSize < stack.getCount();

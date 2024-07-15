@@ -50,7 +50,7 @@ public class CustomSpriteSourceTest {
     private static SpriteSourceType tasLoader;
 
     private void registerTextureAtlasSpriteLoaders(RegisterSpriteSourceTypesEvent event) {
-        tasLoader = event.register(new ResourceLocation(MOD_ID, "custom_sprite_source"), CustomSpriteSource.CODEC);
+        tasLoader = event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_sprite_source"), CustomSpriteSource.CODEC);
     }
 
     private record CustomSpriteSource(ResourceLocation id) implements SpriteSource {

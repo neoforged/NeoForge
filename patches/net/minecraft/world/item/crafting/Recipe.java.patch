@@ -1,26 +1,26 @@
 --- a/net/minecraft/world/item/crafting/Recipe.java
 +++ b/net/minecraft/world/item/crafting/Recipe.java
-@@ -16,6 +_,7 @@
+@@ -15,6 +_,7 @@
  
- public interface Recipe<C extends Container> {
+ public interface Recipe<T extends RecipeInput> {
      Codec<Recipe<?>> CODEC = BuiltInRegistries.RECIPE_SERIALIZER.byNameCodec().dispatch(Recipe::getSerializer, RecipeSerializer::codec);
 +    Codec<java.util.Optional<net.neoforged.neoforge.common.conditions.WithConditions<Recipe<?>>>> CONDITIONAL_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(CODEC);
      StreamCodec<RegistryFriendlyByteBuf, Recipe<?>> STREAM_CODEC = ByteBufCodecs.registry(Registries.RECIPE_SERIALIZER)
          .dispatch(Recipe::getSerializer, RecipeSerializer::streamCodec);
  
-@@ -31,9 +_,9 @@
-         NonNullList<ItemStack> nonnulllist = NonNullList.withSize(p_44004_.getContainerSize(), ItemStack.EMPTY);
+@@ -30,9 +_,9 @@
+         NonNullList<ItemStack> nonnulllist = NonNullList.withSize(p_345383_.size(), ItemStack.EMPTY);
  
          for (int i = 0; i < nonnulllist.size(); i++) {
--            Item item = p_44004_.getItem(i).getItem();
-+            ItemStack item = p_44004_.getItem(i);
+-            Item item = p_345383_.getItem(i).getItem();
++            ItemStack item = p_345383_.getItem(i);
              if (item.hasCraftingRemainingItem()) {
 -                nonnulllist.set(i, new ItemStack(item.getCraftingRemainingItem()));
 +                nonnulllist.set(i, item.getCraftingRemainingItem());
              }
          }
  
-@@ -66,6 +_,6 @@
+@@ -65,6 +_,6 @@
  
      default boolean isIncomplete() {
          NonNullList<Ingredient> nonnulllist = this.getIngredients();

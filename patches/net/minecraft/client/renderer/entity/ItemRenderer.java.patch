@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemRenderer.java
-@@ -68,7 +_,7 @@
+@@ -70,7 +_,7 @@
      public ItemRenderer(Minecraft p_266926_, TextureManager p_266774_, ModelManager p_266850_, ItemColors p_267016_, BlockEntityWithoutLevelRenderer p_267049_) {
          this.minecraft = p_266926_;
          this.textureManager = p_266774_;
@@ -9,7 +9,7 @@
          this.blockEntityRenderer = p_267049_;
  
          for (Item item : BuiltInRegistries.ITEM) {
-@@ -118,7 +_,7 @@
+@@ -120,7 +_,7 @@
                  }
              }
  
@@ -18,7 +18,7 @@
              p_115147_.translate(-0.5F, -0.5F, -0.5F);
              if (!p_115151_.isCustomRenderer() && (!p_115144_.is(Items.TRIDENT) || flag)) {
                  boolean flag1;
-@@ -129,7 +_,8 @@
+@@ -131,7 +_,8 @@
                      flag1 = true;
                  }
  
@@ -28,7 +28,7 @@
                  VertexConsumer vertexconsumer;
                  if (hasAnimatedTexture(p_115144_) && p_115144_.hasFoil()) {
                      PoseStack.Pose posestack$pose = p_115147_.last().copy();
-@@ -150,9 +_,11 @@
+@@ -148,9 +_,11 @@
                      vertexconsumer = getFoilBuffer(p_115148_, rendertype, true, p_115144_.hasFoil());
                  }
  
@@ -42,7 +42,7 @@
              }
  
              p_115147_.popPose();
-@@ -215,7 +_,7 @@
+@@ -203,7 +_,7 @@
              float f1 = (float)FastColor.ARGB32.red(i) / 255.0F;
              float f2 = (float)FastColor.ARGB32.green(i) / 255.0F;
              float f3 = (float)FastColor.ARGB32.blue(i) / 255.0F;
@@ -51,7 +51,7 @@
          }
      }
  
-@@ -268,5 +_,9 @@
+@@ -256,5 +_,9 @@
      @Override
      public void onResourceManagerReload(ResourceManager p_115105_) {
          this.itemModelShaper.rebuildCache();

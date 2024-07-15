@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 class DumpCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation("root"));
+    private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace("root"));
     private static final String ALPHABETICAL_SORT_PARAM = "alphabetical_sort";
     private static final String PRINT_NUMERIC_ID_PARAM = "print_numeric_ids";
 

@@ -12,9 +12,16 @@ import com.mojang.serialization.Codec;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -113,16 +120,36 @@ public class AttachmentTests {
             player.setData(lostOnDeathBoolean, true);
             player.setData(keptOnDeathBoolean, true);
 
-            var returningPlayer = player.getServer().getPlayerList().respawn(player, true);
+            var returningPlayer = player.getServer().getPlayerList().respawn(player, true, Entity.RemovalReason.CHANGED_DIMENSION);
 
             helper.assertTrue(returningPlayer.getData(lostOnDeathBoolean), "Lost-on-death attachment should have remained after end portal respawning.");
             helper.assertTrue(returningPlayer.getData(keptOnDeathBoolean), "Kept-on-death attachment should have remained after end portal respawning.");
 
-            var respawnedPlayer = player.getServer().getPlayerList().respawn(returningPlayer, false);
+            var respawnedPlayer = player.getServer().getPlayerList().respawn(returningPlayer, false, Entity.RemovalReason.KILLED);
 
             helper.assertFalse(respawnedPlayer.getData(lostOnDeathBoolean), "Lost-on-death attachment should not have remained after respawning.");
             helper.assertTrue(respawnedPlayer.getData(keptOnDeathBoolean), "Kept-on-death attachment should have remained after respawning.");
 
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that attachments with dynamic data are de/serialized well")
+    static void dynamicDataContentSerialization(DynamicTest test, RegistrationHelper reg) {
+        var stackType = reg.attachments()
+                .register("stack", () -> AttachmentType.builder(() -> new ItemStack(Items.IRON_AXE)).serialize(ItemStack.CODEC).build());
+        test.onGameTest(helper -> {
+            var player = helper.makeMockPlayer();
+            var stack = new ItemStack(Items.IRON_SWORD);
+            var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+            enchantments.set(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SHARPNESS), 3);
+            stack.set(DataComponents.ENCHANTMENTS, enchantments.toImmutable());
+            player.setData(stackType, stack);
+            helper.catchException(() -> {
+                player.serializeAttachments(helper.getLevel().registryAccess()); // This will throw if it fails
+            });
             helper.succeed();
         });
     }

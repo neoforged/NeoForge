@@ -29,8 +29,8 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
-        tag(Tags.EntityTypes.BOSSES).addOptionalTag(new ResourceLocation("forge", "bosses"));
-        tag(Tags.EntityTypes.MINECARTS).addOptionalTag(new ResourceLocation("forge", "minecarts"));
-        tag(Tags.EntityTypes.BOATS).addOptionalTag(new ResourceLocation("forge", "boats"));
+        tag(Tags.EntityTypes.BOSSES).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "bosses"));
+        tag(Tags.EntityTypes.MINECARTS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "minecarts"));
+        tag(Tags.EntityTypes.BOATS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "boats"));
     }
 }

@@ -35,7 +35,7 @@ configurations {
 }
 
 dependencies {
-    implementation(neoforgeProject)
+    implementation project(path: ':neoforge', configuration: 'runtimeElements')
     implementation(testframeworkProject)
 
     junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
@@ -109,8 +109,7 @@ afterEvaluate {
         args.set(outputIndex+1, file('src/generated/resources/').absolutePath);
         programArguments.set(args);
     }
-    runs.junit.modSources = runs.junit.modSources.get().stream()
-        .filter { it != sourceSets.main }.toList()
+    runs.junit.modSources.all().get().values().remove(sourceSets.main)
 }
 
 license {

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
@@ -53,7 +54,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     private void exclude(String name) {
-        excludes.add(new ResourceLocation(name));
+        excludes.add(ResourceLocation.parse(name));
     }
 
     private void replace(ItemLike item, TagKey<Item> tag) {
@@ -144,7 +145,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private ShapedRecipe enhance(ResourceLocation id, ShapedRecipe vanilla) {
         ShapedRecipePattern pattern = ObfuscationReflectionHelper.getPrivateValue(ShapedRecipe.class, vanilla, "pattern");
         if (pattern == null) throw new IllegalStateException(ShapedRecipe.class.getName() + " has no field pattern");
-        ShapedRecipePattern.Data data = pattern.data().orElseThrow(() -> new IllegalArgumentException("recipe " + id + " does not have pattern data"));
+        ShapedRecipePattern.Data data = ((Optional<ShapedRecipePattern.Data>) ObfuscationReflectionHelper.getPrivateValue(ShapedRecipePattern.class, pattern, "data")).orElseThrow(() -> new IllegalArgumentException("recipe " + id + " does not have pattern data"));
         Map<Character, Ingredient> ingredients = data.key();
         boolean modified = false;
         for (Character x : ingredients.keySet()) {

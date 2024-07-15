@@ -5,26 +5,10 @@
  import net.minecraft.tags.TagKey;
  
 -public interface Holder<T> {
-+public interface Holder<T> extends net.neoforged.neoforge.registries.datamaps.IWithData<T> {
++public interface Holder<T> extends net.neoforged.neoforge.common.extensions.IHolderExtension<T> {
      T value();
  
      boolean isBound();
-@@ -41,6 +_,15 @@
-         return this.unwrapKey().map(p_316542_ -> p_316542_.location().toString()).orElse("[unregistered]");
-     }
- 
-+    /**
-+     * {@return the holder that this holder wraps}
-+     *
-+     * Useful for holders that delegate to another holder.
-+     */
-+    default Holder<T> getDelegate() {
-+        return this;
-+    }
-+
-     static <T> Holder<T> direct(T p_205710_) {
-         return new Holder.Direct<>(p_205710_);
-     }
 @@ -220,6 +_,14 @@
              }
          }
@@ -37,25 +21,40 @@
 +            return null;
 +        }
 +
-         public void bindTags(Collection<TagKey<T>> p_205770_) {
+         void bindTags(Collection<TagKey<T>> p_205770_) {
              this.tags = Set.copyOf(p_205770_);
          }
-@@ -232,6 +_,18 @@
+@@ -232,6 +_,33 @@
          @Override
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";
 +        }
 +
-+        // Neo: Add DeferredHolder-compatible hashCode() and equals() overrides
++        // Neo: Add key getter that doesn't allocate
++        @Override
++        @org.jetbrains.annotations.Nullable
++        public ResourceKey<T> getKey() {
++            return this.key;
++        }
++
++        // Neo: Add DeferredHolder-compatible hashCode() overrides
 +        @Override
 +        public int hashCode() {
 +            return key().hashCode();
 +        }
 +
++        // Neo: Add DeferredHolder-compatible equals() overrides
 +        @Override
 +        public boolean equals(Object obj) {
 +            if (this == obj) return true;
-+            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key();
++            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.getKey() == this.key();
++        }
++
++        // Neo: Helper method to get the registry lookup from a holder
++        @Override
++        @org.jetbrains.annotations.Nullable
++        public HolderLookup.RegistryLookup<T> unwrapLookup() {
++            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
          }
  
-         public static enum Type {
+         protected static enum Type {

@@ -15,6 +15,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -95,7 +96,7 @@ public class MegaModelTest {
     public static class ClientEvents {
         @SubscribeEvent
         public static void onModelBakingCompleted(ModelEvent.ModifyBakingResult event) {
-            var name = new ModelResourceLocation(MOD_ID, REG_NAME, "");
+            var name = new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, REG_NAME), "");
             event.getModels().computeIfPresent(name, (n, m) -> new TransformingModelWrapper(m));
         }
     }

@@ -67,7 +67,7 @@ public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMisma
     }
 
     public record ModMismatchPayload() implements CustomPacketPayload {
-        private static final CustomPacketPayload.Type<ModMismatchPayload> TYPE = new Type<>(new ResourceLocation(MOD_ID, "mod_mismatch"));
+        private static final CustomPacketPayload.Type<ModMismatchPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "mod_mismatch"));
         private static final StreamCodec<FriendlyByteBuf, ModMismatchPayload> STREAM_CODEC = StreamCodec.unit(new ModMismatchTest.ModMismatchPayload());
 
         @Override

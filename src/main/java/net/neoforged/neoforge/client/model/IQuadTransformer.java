@@ -17,13 +17,13 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
  * @see QuadTransformers
  */
 public interface IQuadTransformer {
-    int STRIDE = DefaultVertexFormat.BLOCK.getIntegerSize();
-    int POSITION = findOffset(DefaultVertexFormat.ELEMENT_POSITION);
-    int COLOR = findOffset(DefaultVertexFormat.ELEMENT_COLOR);
-    int UV0 = findOffset(DefaultVertexFormat.ELEMENT_UV0);
-    int UV1 = findOffset(DefaultVertexFormat.ELEMENT_UV1);
-    int UV2 = findOffset(DefaultVertexFormat.ELEMENT_UV2);
-    int NORMAL = findOffset(DefaultVertexFormat.ELEMENT_NORMAL);
+    int STRIDE = DefaultVertexFormat.BLOCK.getVertexSize() / 4;
+    int POSITION = findOffset(VertexFormatElement.POSITION);
+    int COLOR = findOffset(VertexFormatElement.COLOR);
+    int UV0 = findOffset(VertexFormatElement.UV0);
+    int UV1 = findOffset(VertexFormatElement.UV1);
+    int UV2 = findOffset(VertexFormatElement.UV2);
+    int NORMAL = findOffset(VertexFormatElement.NORMAL);
 
     void processInPlace(BakedQuad quad);
 
@@ -55,8 +55,10 @@ public interface IQuadTransformer {
     }
 
     private static int findOffset(VertexFormatElement element) {
-        // Divide by 4 because we want the int offset
-        var index = DefaultVertexFormat.BLOCK.getElements().indexOf(element);
-        return index < 0 ? -1 : DefaultVertexFormat.BLOCK.getOffset(index) / 4;
+        if (DefaultVertexFormat.BLOCK.contains(element)) {
+            // Divide by 4 because we want the int offset
+            return DefaultVertexFormat.BLOCK.getOffset(element) / 4;
+        }
+        return -1;
     }
 }

@@ -23,6 +23,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.testframework.DynamicTest;
@@ -44,7 +45,7 @@ public class EntityDataSerializerTest {
 
     @OnInit
     static void register(final TestFramework framework) {
-        REG_HELPER.register(framework.modEventBus());
+        REG_HELPER.register(framework.modEventBus(), framework.container());
     }
 
     @GameTest
@@ -63,7 +64,7 @@ public class EntityDataSerializerTest {
             }
             var pkt = new ClientboundSetEntityDataPacket(entity.getId(), items);
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            ClientboundSetEntityDataPacket.STREAM_CODEC.encode(new RegistryFriendlyByteBuf(buf, helper.getLevel().registryAccess()), pkt);
+            ClientboundSetEntityDataPacket.STREAM_CODEC.encode(new RegistryFriendlyByteBuf(buf, helper.getLevel().registryAccess(), ConnectionType.NEOFORGE), pkt);
             helper.assertTrue(buf.readVarInt() == entity.getId(), "Entity ID didn't match"); // Drop entity ID
             buf.readByte(); // Drop item ID
             int expectedId = NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(TEST_SERIALIZER.get()) + CommonHooks.VANILLA_SERIALIZER_LIMIT;

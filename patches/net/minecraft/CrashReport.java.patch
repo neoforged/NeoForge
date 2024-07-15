@@ -1,6 +1,6 @@
 --- a/net/minecraft/CrashReport.java
 +++ b/net/minecraft/CrashReport.java
-@@ -59,14 +_,8 @@
+@@ -58,14 +_,8 @@
          if (this.uncategorizedStackTrace != null && this.uncategorizedStackTrace.length > 0) {
              p_127520_.append("-- Head --\n");
              p_127520_.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
@@ -17,7 +17,7 @@
          }
  
          for (CrashReportCategory crashreportcategory : this.details) {
-@@ -74,6 +_,7 @@
+@@ -73,6 +_,7 @@
              p_127520_.append("\n\n");
          }
  
@@ -25,7 +25,7 @@
          this.systemReport.appendToCrashReportString(p_127520_);
      }
  
-@@ -93,23 +_,13 @@
+@@ -92,18 +_,7 @@
              throwable.setStackTrace(this.exception.getStackTrace());
          }
  
@@ -44,10 +44,4 @@
 +        return net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(throwable);
      }
  
-     public String getFriendlyReport() {
-         StringBuilder stringbuilder = new StringBuilder();
-         stringbuilder.append("---- Minecraft Crash Report ----\n");
-+        net.neoforged.neoforge.logging.CrashReportExtender.addCrashReportHeader(stringbuilder, this);
-         stringbuilder.append("// ");
-         stringbuilder.append(getErrorComment());
-         stringbuilder.append("\n\n");
+     public String getFriendlyReport(ReportType p_350860_, List<String> p_350563_) {

@@ -1,17 +1,15 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -430,8 +_,9 @@
+@@ -441,14 +_,15 @@
+ 
+         public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
              boolean flag = this.cancelTasks();
-             BlockPos blockpos = this.origin.immutable();
-             int i = 1;
-+            var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(blockpos, SectionRenderDispatcher.this.level);
-             RenderChunkRegion renderchunkregion = p_295324_.createRegion(
--                SectionRenderDispatcher.this.level, blockpos.offset(-1, -1, -1), blockpos.offset(16, 16, 16), 1
-+                SectionRenderDispatcher.this.level, blockpos.offset(-1, -1, -1), blockpos.offset(16, 16, 16), 1, additionalRenderers.isEmpty()
-             );
+-            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.origin));
++            var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(this.origin, SectionRenderDispatcher.this.level);
++            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.origin), additionalRenderers.isEmpty());
              boolean flag1 = this.compiled.get() == SectionRenderDispatcher.CompiledSection.UNCOMPILED;
              if (flag1 && flag) {
-@@ -439,7 +_,7 @@
+                 this.initialCompilationCancelCount.incrementAndGet();
              }
  
              this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(
@@ -20,7 +18,7 @@
              );
              return this.lastRebuildTask;
          }
-@@ -501,10 +_,17 @@
+@@ -523,10 +_,17 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
              protected RenderChunkRegion region;
@@ -38,50 +36,12 @@
              }
  
              @Override
-@@ -606,7 +_,11 @@
-                         }
- 
-                         if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
--                            RenderType rendertype2 = ItemBlockRenderTypes.getChunkRenderType(blockstate);
-+                            var model = blockrenderdispatcher.getBlockModel(blockstate);
-+                            var modelData = renderchunkregion.getModelData(blockpos2);
-+                            modelData = model.getModelData(renderchunkregion, blockpos2, blockstate, modelData);
-+                            randomsource.setSeed(blockstate.getSeed(blockpos2));
-+                            for (RenderType rendertype2 : model.getRenderTypes(blockstate, randomsource, modelData)) {
-                             BufferBuilder bufferbuilder2 = p_294319_.builder(rendertype2);
-                             if (set.add(rendertype2)) {
-                                 RenderSection.this.beginLayer(bufferbuilder2);
-@@ -614,10 +_,20 @@
- 
-                             posestack.pushPose();
-                             posestack.translate((float)(blockpos2.getX() & 15), (float)(blockpos2.getY() & 15), (float)(blockpos2.getZ() & 15));
--                            blockrenderdispatcher.renderBatched(blockstate, blockpos2, renderchunkregion, posestack, bufferbuilder2, true, randomsource);
-+                            blockrenderdispatcher.renderBatched(blockstate, blockpos2, renderchunkregion, posestack, bufferbuilder2, true, randomsource, modelData, rendertype2);
-                             posestack.popPose();
-+                            }
-                         }
-                     }
-+                    net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(
-+                        additionalRenderers, type -> {
-+                            BufferBuilder builder = p_294319_.builder(type);
-+                            if (set.add(type)) {
-+                                RenderSection.this.beginLayer(builder);
-+                            }
-+                            return builder;
-+                        }, renderchunkregion, posestack
-+                    );
- 
-                     if (set.contains(RenderType.translucent())) {
-                         BufferBuilder bufferbuilder1 = p_294319_.builder(RenderType.translucent());
-@@ -648,9 +_,10 @@
-             private <E extends BlockEntity> void handleBlockEntity(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults p_294198_, E p_296214_) {
-                 BlockEntityRenderer<E> blockentityrenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(p_296214_);
-                 if (blockentityrenderer != null) {
--                    p_294198_.blockEntities.add(p_296214_);
-                     if (blockentityrenderer.shouldRenderOffScreen(p_296214_)) {
-                         p_294198_.globalBlockEntities.add(p_296214_);
-+                    } else {
-+                        p_294198_.blockEntities.add(p_296214_);
-                     }
-                 }
-             }
+@@ -552,7 +_,7 @@
+                     } else {
+                         SectionPos sectionpos = SectionPos.of(RenderSection.this.origin);
+                         SectionCompiler.Results sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler
+-                            .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), p_296138_);
++                            .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), p_296138_, this.additionalRenderers);
+                         RenderSection.this.updateGlobalBlockEntities(sectioncompiler$results.globalBlockEntities);
+                         if (this.isCancelled.get()) {
+                             sectioncompiler$results.release();

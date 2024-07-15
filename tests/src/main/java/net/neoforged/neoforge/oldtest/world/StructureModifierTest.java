@@ -43,9 +43,9 @@ public class StructureModifierTest {
     public static final String MODID = "structure_modifiers_test";
     public static final boolean ENABLED = true;
     public static final String TEST = "test";
-    public static final ResourceLocation ADD_SPAWNS_TO_STRUCTURE_RL = new ResourceLocation(MODID, TEST);
+    public static final ResourceLocation ADD_SPAWNS_TO_STRUCTURE_RL = ResourceLocation.fromNamespaceAndPath(MODID, TEST);
     public static final String MODIFY_STRONGHOLD = "modify_stronghold";
-    public static final ResourceLocation MODIFY_STRONGHOLD_RL = new ResourceLocation(MODID, MODIFY_STRONGHOLD);
+    public static final ResourceLocation MODIFY_STRONGHOLD_RL = ResourceLocation.fromNamespaceAndPath(MODID, MODIFY_STRONGHOLD);
 
     public StructureModifierTest(IEventBus modBus) {
         if (!ENABLED)

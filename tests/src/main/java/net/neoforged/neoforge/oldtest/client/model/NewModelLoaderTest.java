@@ -17,8 +17,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -83,7 +83,7 @@ public class NewModelLoaderTest {
 
     public static DeferredItem<Item> obj_item = ITEMS.register("obj_block", () -> new BlockItem(obj_block.get(), new Item.Properties()) {
         @Override
-        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
+        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
             return armorType == EquipmentSlot.HEAD;
         }
     });
@@ -120,7 +120,7 @@ public class NewModelLoaderTest {
     }
 
     public void modelRegistry(ModelEvent.RegisterGeometryLoaders event) {
-        event.register(new ResourceLocation(MODID, "custom_loader"), new TestLoader());
+        event.register(ResourceLocation.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
     }
 
     static class TestLoader implements IGeometryLoader<TestModel> {
@@ -132,20 +132,20 @@ public class NewModelLoaderTest {
 
     static class TestModel extends SimpleUnbakedGeometry<TestModel> {
         @Override
-        protected void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ResourceLocation modelLocation) {
+        protected void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
             TextureAtlasSprite texture = spriteGetter.apply(owner.getMaterial("particle"));
 
-            var quadBaker = new QuadBakingVertexConsumer.Buffered();
+            var quadBaker = new QuadBakingVertexConsumer();
 
             quadBaker.setDirection(Direction.UP);
             quadBaker.setSprite(texture);
 
-            quadBaker.vertex(0, 1, 0.5f).color(255, 255, 255, 255).uv(texture.getU(0), texture.getV(0)).uv2(0).normal(0, 0, 0).endVertex();
-            quadBaker.vertex(0, 0, 0.5f).color(255, 255, 255, 255).uv(texture.getU(0), texture.getV(16)).uv2(0).normal(0, 0, 0).endVertex();
-            quadBaker.vertex(1, 0, 0.5f).color(255, 255, 255, 255).uv(texture.getU(16), texture.getV(16)).uv2(0).normal(0, 0, 0).endVertex();
-            quadBaker.vertex(1, 1, 0.5f).color(255, 255, 255, 255).uv(texture.getU(16), texture.getV(0)).uv2(0).normal(0, 0, 0).endVertex();
+            quadBaker.addVertex(0, 1, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(0), texture.getV(0)).setOverlay(0).setNormal(0, 0, 0);
+            quadBaker.addVertex(0, 0, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(0), texture.getV(16)).setOverlay(0).setNormal(0, 0, 0);
+            quadBaker.addVertex(1, 0, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(16), texture.getV(16)).setOverlay(0).setNormal(0, 0, 0);
+            quadBaker.addVertex(1, 1, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(16), texture.getV(0)).setOverlay(0).setNormal(0, 0, 0);
 
-            modelBuilder.addUnculledFace(quadBaker.getQuad());
+            modelBuilder.addUnculledFace(quadBaker.bakeQuad());
         }
     }
 
@@ -192,7 +192,7 @@ public class NewModelLoaderTest {
             BlockModelBuilder model = models()
                     .getBuilder(NewModelLoaderTest.obj_block.getId().getPath())
                     .customLoader(ObjModelBuilder::begin)
-                    .modelLocation(new ResourceLocation("new_model_loader_test:models/item/sugar_glider.obj"))
+                    .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/sugar_glider.obj"))
                     .flipV(true)
                     .end()
                     .texture("qr", "minecraft:block/oak_planks")

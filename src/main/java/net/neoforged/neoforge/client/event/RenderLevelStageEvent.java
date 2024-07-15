@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -40,11 +41,11 @@ public class RenderLevelStageEvent extends Event {
     private final Matrix4f modelViewMatrix;
     private final Matrix4f projectionMatrix;
     private final int renderTick;
-    private final float partialTick;
+    private final DeltaTracker partialTick;
     private final Camera camera;
     private final Frustum frustum;
 
-    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, float partialTick, Camera camera, Frustum frustum) {
+    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum) {
         this.stage = stage;
         this.levelRenderer = levelRenderer;
         this.poseStack = poseStack != null ? poseStack : new PoseStack();
@@ -102,7 +103,7 @@ public class RenderLevelStageEvent extends Event {
     /**
      * {@return the current partialTick value used for rendering}
      */
-    public float getPartialTick() {
+    public DeltaTracker getPartialTick() {
         return partialTick;
     }
 
@@ -219,7 +220,7 @@ public class RenderLevelStageEvent extends Event {
         }
 
         private static Stage register(String name, @Nullable RenderType renderType) throws IllegalArgumentException {
-            return register(new ResourceLocation(name), renderType);
+            return register(ResourceLocation.parse(name), renderType);
         }
 
         @Override

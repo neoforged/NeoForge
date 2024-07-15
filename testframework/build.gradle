@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation project(':neoforge')
+    implementation project(path: ':neoforge', configuration: 'runtimeElements')
 
     compileOnly(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
     compileOnly "org.junit.jupiter:junit-jupiter-params"
@@ -43,7 +43,9 @@ tasks.withType(ProcessResources).configureEach {
     inputs.properties version: version
 
     filesMatching(['META-INF/neoforge.mods.toml']) {
-        expand version: version
+        expand file: [
+                jarVersion: version
+        ]
     }
 }
 

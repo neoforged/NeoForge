@@ -46,7 +46,7 @@ public class ShaderResourcesTest {
                 event.registerShader(
                         new ShaderInstance(
                                 event.getResourceProvider(),
-                                new ResourceLocation(MODID, "vertex_cubemap"),
+                                ResourceLocation.fromNamespaceAndPath(MODID, "vertex_cubemap"),
                                 DefaultVertexFormat.POSITION),
                         shader -> {
                             LOGGER.info("Completely loaded shader {} with no issues", shader.getName());

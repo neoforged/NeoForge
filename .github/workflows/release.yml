@@ -16,7 +16,7 @@ jobs:
   release:
     uses: neoforged/actions/.github/workflows/gradle-publish.yml@main
     with:
-      java: 17
+      java: 21
       pre_gradle_tasks: setup
       gradle_tasks: publish '-Pneogradle.runtime.platform.installer.debug=false'
       version_labels: -beta, -stable
@@ -30,4 +30,3 @@ jobs:
       GPG_SUBKEY: ${{ secrets.GPG_SUBKEY }}
       GPG_SUBKEY_ID: ${{ secrets.GPG_SUBKEY_ID }}
       GPG_SUBKEY_PASSWORD: ${{ secrets.GPG_SUBKEY_PASSWORD }}
-      

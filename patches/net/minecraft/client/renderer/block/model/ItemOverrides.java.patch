@@ -47,4 +47,4 @@
 +        return com.google.common.collect.ImmutableList.copyOf(overrides);
      }
  
-     public @OnlyIn(Dist.CLIENT)
+     @OnlyIn(Dist.CLIENT)

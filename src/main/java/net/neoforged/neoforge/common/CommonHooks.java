@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +42,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -63,6 +66,7 @@ import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
@@ -86,19 +90,19 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -110,10 +114,9 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
@@ -124,7 +127,10 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.GameMasterBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -143,7 +149,11 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
@@ -163,10 +173,11 @@ import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -176,24 +187,25 @@ import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
-import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -218,6 +230,20 @@ public class CommonHooks {
         return false;
     }
 
+    /**
+     * Fires the {@link ItemStackedOnOtherEvent}, allowing items to handle custom behavior relating to being stacked together (i.e. how the bundle operates).
+     * <p>
+     * Called from {@link AbstractContainerMenu#doClick} in the utility method {@link AbstractContainerMenu#tryItemClickBehaviourOverride} before either
+     * {@link ItemStack#overrideStackedOnOther} or {@link ItemStack#overrideOtherStackedOnMe} is called.
+     * 
+     * @param carriedItem       The item currently held by the player, being clicked <i>into</i> the slot
+     * @param stackedOnItem     The item currently present in the clicked slot
+     * @param slot              The {@link Slot} being clicked
+     * @param action            The click action being performed
+     * @param player            The player who clicked the slot
+     * @param carriedSlotAccess A slot access permitting changing the carried item.
+     * @return True if the event was cancelled, indicating that a mod has handled the click; false otherwise
+     */
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
         return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
     }
@@ -226,19 +252,39 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new DifficultyChangeEvent(difficulty, oldDifficulty));
     }
 
-    public static LivingChangeTargetEvent onLivingChangeTarget(LivingEntity entity, LivingEntity originalTarget, LivingChangeTargetEvent.ILivingTargetType targetType) {
+    public static LivingChangeTargetEvent onLivingChangeTarget(LivingEntity entity, @Nullable LivingEntity originalTarget, LivingChangeTargetEvent.ILivingTargetType targetType) {
         LivingChangeTargetEvent event = new LivingChangeTargetEvent(entity, originalTarget, targetType);
         NeoForge.EVENT_BUS.post(event);
 
         return event;
     }
 
-    public static boolean onLivingAttack(LivingEntity entity, DamageSource src, float amount) {
-        return entity instanceof Player || !NeoForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
+    /**
+     * Creates and posts an {@link EntityInvulnerabilityCheckEvent}. This is invoked in
+     * {@link Entity#isInvulnerableTo(DamageSource)} and returns a post-listener result
+     * to the invulnerability status of the entity to the damage source.
+     *
+     * @param entity  the entity being checked for invulnerability
+     * @param source  the damage source being applied for this check
+     * @param isInvul whether this entity is invulnerable according to preceding/vanilla logic
+     * @return if this entity is invulnerable
+     */
+    public static boolean isEntityInvulnerableTo(Entity entity, DamageSource source, boolean isInvul) {
+        return NeoForge.EVENT_BUS.post(new EntityInvulnerabilityCheckEvent(entity, source, isInvul)).isInvulnerable();
     }
 
-    public static boolean onPlayerAttack(LivingEntity entity, DamageSource src, float amount) {
-        return !NeoForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
+    /**
+     * Called after invulnerability checks in {@link LivingEntity#hurt(DamageSource, float)},
+     * this method creates and posts the first event in the LivingEntity damage sequence,
+     * {@link LivingIncomingDamageEvent}.
+     *
+     * @param entity    the entity to receive damage
+     * @param container the newly instantiated container for damage to be dealt. Most properties of
+     *                  the container will be empty at this stage.
+     * @return if the event is cancelled and no damage will be applied to the entity
+     */
+    public static boolean onEntityIncomingDamage(LivingEntity entity, DamageContainer container) {
+        return NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(entity, container)).isCanceled();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ) {
@@ -251,43 +297,71 @@ public class CommonHooks {
         return !NeoForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand)).isCanceled();
     }
 
-    public static float onLivingHurt(LivingEntity entity, DamageSource src, float amount) {
-        LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
-        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
+    /**
+     * Creates and posts an {@link LivingDamageEvent.Pre}. This is invoked in
+     * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
+     * and requires access to the internal field {@link LivingEntity#damageContainers} as a parameter.
+     *
+     * @param entity    the entity to receive damage
+     * @param container the container object holding the final values of the damage pipeline while they are still mutable
+     * @return the current damage value to be applied to the entity's health
+     *
+     */
+    public static float onLivingDamagePre(LivingEntity entity, DamageContainer container) {
+        return NeoForge.EVENT_BUS.post(new LivingDamageEvent.Pre(entity, container)).getNewDamage();
     }
 
-    public static float onLivingDamage(LivingEntity entity, DamageSource src, float amount) {
-        LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
-        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
+    /**
+     * Creates and posts a {@link LivingDamageEvent.Post}. This is invoked in
+     * {@link LivingEntity#actuallyHurt(DamageSource, float)} and {@link Player#actuallyHurt(DamageSource, float)}
+     * and requires access to the internal field {@link LivingEntity#damageContainers} as a parameter.
+     *
+     * @param entity    the entity to receive damage
+     * @param container the container object holding the truly final values of the damage pipeline. The values
+     *                  of this container and used to instantiate final fields in the event.
+     */
+    public static void onLivingDamagePost(LivingEntity entity, DamageContainer container) {
+        NeoForge.EVENT_BUS.post(new LivingDamageEvent.Post(entity, container));
+    }
+
+    /**
+     * This is invoked in {@link LivingEntity#doHurtEquipment(DamageSource, float, EquipmentSlot...)}
+     * and replaces the existing item hurt and break logic with an event-sensitive version.
+     * <br>
+     * Each armor slot is collected and passed into a {@link ArmorHurtEvent} and posted. If not cancelled,
+     * the final durability loss values for each equipment item from the event will be applied.
+     *
+     * @param source        the damage source applied to the entity and armor
+     * @param slots         an array of applicable slots for damage
+     * @param damage        the durability damage individual items will receive
+     * @param armoredEntity the entity wearing the armor
+     */
+    public static void onArmorHurt(DamageSource source, EquipmentSlot[] slots, float damage, LivingEntity armoredEntity) {
+        EnumMap<EquipmentSlot, ArmorHurtEvent.ArmorEntry> armorMap = new EnumMap<>(EquipmentSlot.class);
+        for (EquipmentSlot slot : slots) {
+            ItemStack armorPiece = armoredEntity.getItemBySlot(slot);
+            if (armorPiece.isEmpty()) continue;
+            float damageAfterFireResist = (armorPiece.getItem() instanceof ArmorItem && armorPiece.canBeHurtBy(source)) ? damage : 0;
+            armorMap.put(slot, new ArmorHurtEvent.ArmorEntry(armorPiece, damageAfterFireResist));
+        }
+
+        ArmorHurtEvent event = NeoForge.EVENT_BUS.post(new ArmorHurtEvent(armorMap, armoredEntity));
+        if (event.isCanceled()) return;
+        event.getArmorMap().forEach((slot, entry) -> entry.armorItemStack.hurtAndBreak((int) entry.newDamage, armoredEntity, slot));
     }
 
     public static boolean onLivingDeath(LivingEntity entity, DamageSource src) {
         return NeoForge.EVENT_BUS.post(new LivingDeathEvent(entity, src)).isCanceled();
     }
 
-    public static boolean onLivingDrops(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit) {
-        return NeoForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit)).isCanceled();
+    public static boolean onLivingDrops(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, boolean recentlyHit) {
+        return NeoForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, recentlyHit)).isCanceled();
     }
 
     @Nullable
     public static float[] onLivingFall(LivingEntity entity, float distance, float damageMultiplier) {
         LivingFallEvent event = new LivingFallEvent(entity, distance, damageMultiplier);
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? null : new float[] { event.getDistance(), event.getDamageMultiplier() });
-    }
-
-    public static int getLootingLevel(Entity target, @Nullable Entity killer, @Nullable DamageSource cause) {
-        int looting = 0;
-        if (killer instanceof LivingEntity)
-            looting = EnchantmentHelper.getMobLooting((LivingEntity) killer);
-        if (target instanceof LivingEntity)
-            looting = getLootingLevel((LivingEntity) target, cause, looting);
-        return looting;
-    }
-
-    public static int getLootingLevel(LivingEntity target, @Nullable DamageSource cause, int level) {
-        LootingLevelEvent event = new LootingLevelEvent(target, cause, level);
-        NeoForge.EVENT_BUS.post(event);
-        return event.getLootingLevel();
     }
 
     public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier) {
@@ -440,27 +514,46 @@ public class CommonHooks {
         return ichat;
     }
 
-    public static void dropXpForBlock(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack) {
-        int fortuneLevel = stack.getEnchantmentLevel(Enchantments.FORTUNE);
-        int silkTouchLevel = stack.getEnchantmentLevel(Enchantments.SILK_TOUCH);
-        int exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
-        if (exp > 0)
-            state.getBlock().popExperience(level, pos, exp);
+    /**
+     * Fires the {@link BlockDropsEvent} when block drops (items and experience) are determined.
+     * If the event is not cancelled, all drops will be added to the world, and then {@link BlockBehaviour#spawnAfterBreak} will be called.
+     *
+     * @param level       The level
+     * @param pos         The broken block's position
+     * @param state       The broken block's state
+     * @param blockEntity The block entity from the given position
+     * @param drops       The list of all items dropped by the block, captured from {@link Block#getDrops}
+     * @param breaker     The entity who broke the block, or null if unknown
+     * @param tool        The tool used when breaking the block; may be empty
+     */
+    public static void handleBlockDrops(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, List<ItemEntity> drops, @Nullable Entity breaker, ItemStack tool) {
+        BlockDropsEvent event = new BlockDropsEvent(level, pos, state, blockEntity, drops, breaker, tool);
+        NeoForge.EVENT_BUS.post(event);
+        if (!event.isCanceled()) {
+            for (ItemEntity entity : event.getDrops()) {
+                level.addFreshEntity(entity);
+            }
+            // Always pass false for the dropXP (last) param to spawnAfterBreak since we handle XP.
+            state.spawnAfterBreak((ServerLevel) level, pos, tool, false);
+            if (event.getDroppedExperience() > 0) {
+                state.getBlock().popExperience(level, pos, event.getDroppedExperience());
+            }
+        }
     }
 
     /**
      * Fires {@link BlockEvent.BreakEvent}, pre-emptively canceling the event based on the conditions that will cause the block to not be broken anyway.
      * <p>
      * Note that undoing the pre-cancel will not permit breaking the block, since the vanilla conditions will always be checked.
-     * 
+     *
      * @param level    The level
      * @param gameType The game type of the breaking player
      * @param player   The breaking player
      * @param pos      The position of the block being broken
      * @param state    The state of the block being broken
-     * @return The experience dropped by the broken block, or -1 if the break event was canceled.
+     * @return The event
      */
-    public static int fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
+    public static BlockEvent.BreakEvent fireBlockBreak(Level level, GameType gameType, ServerPlayer player, BlockPos pos, BlockState state) {
         boolean preCancelEvent = false;
 
         ItemStack itemstack = player.getMainHandItem();
@@ -486,7 +579,7 @@ public class CommonHooks {
             player.connection.send(new ClientboundBlockUpdatePacket(pos, state));
         }
 
-        return event.isCanceled() ? -1 : event.getExpToDrop();
+        return event;
     }
 
     public static InteractionResult onPlaceItemIntoWorld(UseOnContext context) {
@@ -782,7 +875,7 @@ public class CommonHooks {
 
     /**
      * Checks if a crop can grow by firing {@link CropGrowEvent.Pre}.
-     * 
+     *
      * @param level The level the crop is in
      * @param pos   The position of the crop
      * @param state The state of the crop
@@ -801,7 +894,7 @@ public class CommonHooks {
 
     /**
      * Fires the {@link CriticalHitEvent} and returns the resulting event.
-     * 
+     *
      * @param player          The attacking player
      * @param target          The attack target
      * @param vanillaCritical If the attack would have been a critical hit by vanilla's rules in {@link Player#attack(Entity)}.
@@ -814,10 +907,10 @@ public class CommonHooks {
     /**
      * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#forEachModifier(EquipmentSlot, BiConsumer)} instead.
      */
-    public static Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Holder<Attribute>, AttributeModifier> attributes) {
-        ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, equipmentSlot, attributes);
+    public static ItemAttributeModifiers computeModifiedAttributes(ItemStack stack, ItemAttributeModifiers defaultModifiers) {
+        ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, defaultModifiers);
         NeoForge.EVENT_BUS.post(event);
-        return event.getModifiers();
+        return event.build();
     }
 
     /**
@@ -992,8 +1085,19 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new EntityEvent.EnteringSection(entity, packedOldPos, packedNewPos));
     }
 
-    public static ShieldBlockEvent onShieldBlock(LivingEntity blocker, DamageSource source, float blocked) {
-        ShieldBlockEvent e = new ShieldBlockEvent(blocker, source, blocked);
+    /**
+     * Creates, posts, and returns a {@link LivingShieldBlockEvent}. This method is invoked in
+     * {@link LivingEntity#hurt(DamageSource, float)} and requires internal access to the top entry
+     * in the protected field {@link LivingEntity#damageContainers} as a parameter.
+     *
+     * @param blocker         the entity performing the block
+     * @param container       the entity's internal damage container for accessing current values
+     *                        in the damage pipeline at the time of this invocation.
+     * @param originalBlocked whether this entity is blocking according to preceding/vanilla logic
+     * @return the event object after event listeners have been invoked.
+     */
+    public static LivingShieldBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, boolean originalBlocked) {
+        LivingShieldBlockEvent e = new LivingShieldBlockEvent(blocker, container, originalBlocked);
         NeoForge.EVENT_BUS.post(e);
         return e;
     }
@@ -1129,7 +1233,7 @@ public class CommonHooks {
             return fallback;
         }
         try {
-            return BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(registryName));
+            return BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(registryName));
         } catch (ResourceLocationException e) {
             return fallback;
         }
@@ -1368,7 +1472,7 @@ public class CommonHooks {
 
     /**
      * Checks if a mob effect can be applied to an entity by firing {@link MobEffectEvent.Applicable}.
-     * 
+     *
      * @param entity The target entity the mob effect is being applied to.
      * @param effect The mob effect being applied.
      * @return True if the mob effect can be applied, otherwise false.
@@ -1376,5 +1480,62 @@ public class CommonHooks {
     public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
         var event = new MobEffectEvent.Applicable(entity, effect);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
+    }
+
+    /**
+     * Attempts to resolve a {@link RegistryLookup} using the current global state.
+     * <p>
+     * Prioritizes the server's lookup, only attempting to retrieve it from the client if the server is unavailable.
+     *
+     * @param <T> The type of registry being looked up
+     * @param key The resource key for the target registry
+     * @return A registry access, if one was available.
+     */
+    @Nullable
+    public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            return server.registryAccess().lookup(key).orElse(null);
+        } else if (FMLEnvironment.dist.isClient()) {
+            return ClientHooks.resolveLookup(key);
+        }
+        return null;
+    }
+
+    /**
+     * Creates a {@link UseOnContext} for {@link net.minecraft.core.dispenser.DispenseItemBehavior dispense behavior}.
+     * 
+     * @param source the {@link BlockSource block source} context of the dispense behavior
+     * @param stack  the dispensed item stack
+     * @return a {@link UseOnContext} representing the dispense behavior
+     */
+    public static UseOnContext dispenseUseOnContext(BlockSource source, ItemStack stack) {
+        Direction facing = source.state().getValue(DispenserBlock.FACING);
+        BlockPos pos = source.pos().relative(facing);
+        Direction blockFace = facing.getOpposite();
+        BlockHitResult hitResult = new BlockHitResult(new Vec3(
+                pos.getX() + 0.5 + blockFace.getStepX() * 0.5,
+                pos.getY() + 0.5 + blockFace.getStepY() * 0.5,
+                pos.getZ() + 0.5 + blockFace.getStepZ() * 0.5), blockFace, pos, false);
+        return new UseOnContext(source.level(), null, InteractionHand.MAIN_HAND, stack, hitResult);
+    }
+
+    /**
+     * Attempts to modify target block using {@link ItemAbilities#SHEARS_HARVEST} in {@link ShearsDispenseItemBehavior},
+     * consistent with vanilla beehive harvest behavior (also controlled by {@link ItemAbilities#SHEARS_HARVEST}).
+     * <p>
+     * The beehive harvest behavior is not implemented by {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)}
+     * and thus will still be controlled by {@link ShearsDispenseItemBehavior#tryShearBeehive(ServerLevel, BlockPos)} by default.
+     * <p>
+     * Mods may subscribe to {@link BlockEvent.BlockToolModificationEvent}
+     * to override vanilla beehive harvest behavior by setting a non-null {@link BlockState} result.
+     */
+    public static boolean tryDispenseShearsHarvestBlock(BlockSource source, ItemStack stack, ServerLevel level, BlockPos pos) {
+        BlockState blockstate = source.state().getToolModifiedState(dispenseUseOnContext(source, stack), ItemAbilities.SHEARS_HARVEST, false);
+        if (blockstate == null)
+            return false;
+        level.setBlock(pos, blockstate, 3);
+        level.gameEvent(null, GameEvent.SHEAR, pos);
+        return true;
     }
 }

@@ -111,7 +111,7 @@ public class NeoForgeDataMaps {
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
     private static ResourceLocation id(final String name) {
-        return new ResourceLocation(NeoForgeVersion.MOD_ID, name);
+        return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name);
     }
 
     @SubscribeEvent

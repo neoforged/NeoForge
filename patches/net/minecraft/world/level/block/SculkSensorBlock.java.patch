@@ -1,17 +1,19 @@
 --- a/net/minecraft/world/level/block/SculkSensorBlock.java
 +++ b/net/minecraft/world/level/block/SculkSensorBlock.java
-@@ -292,8 +_,11 @@
+@@ -292,8 +_,13 @@
      @Override
      protected void spawnAfterBreak(BlockState p_222142_, ServerLevel p_222143_, BlockPos p_222144_, ItemStack p_222145_, boolean p_222146_) {
          super.spawnAfterBreak(p_222142_, p_222143_, p_222144_, p_222145_, p_222146_);
 -        if (p_222146_) {
 -            this.tryDropExperience(p_222143_, p_222144_, p_222145_, ConstantInt.of(5));
 -        }
-+
 +    }
 +
++    // Neo: Patch-in override for getExpDrop. Original vanilla logic passes ConstantInt.of(5) to tryDropExperience.
 +    @Override
-+    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
-+        return silkTouchLevel == 0 ? 5 : 0;
++    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelAccessor level, BlockPos pos,
++            @org.jetbrains.annotations.Nullable net.minecraft.world.level.block.entity.BlockEntity blockEntity,
++            @org.jetbrains.annotations.Nullable net.minecraft.world.entity.Entity breaker, ItemStack tool) {
++        return 5;
      }
  }

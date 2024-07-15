@@ -202,13 +202,13 @@ public final class AttachmentType<T> {
             return serialize(new IAttachmentSerializer<>() {
                 @Override
                 public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
-                    return codec.parse(NbtOps.INSTANCE, tag).result().get();
+                    return codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag).result().get();
                 }
 
                 @Nullable
                 @Override
                 public Tag write(T attachment, HolderLookup.Provider provider) {
-                    return shouldSerialize.test(attachment) ? codec.encodeStart(NbtOps.INSTANCE, attachment).result().get() : null;
+                    return shouldSerialize.test(attachment) ? codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment).result().get() : null;
                 }
             });
         }

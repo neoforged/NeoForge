@@ -14,7 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record MinecraftRegisterPayload(Set<ResourceLocation> newChannels) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation("register");
+    public static final ResourceLocation ID = ResourceLocation.withDefaultNamespace("register");
     public static final Type<MinecraftRegisterPayload> TYPE = new Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, MinecraftRegisterPayload> STREAM_CODEC = DinnerboneProtocolUtils.CHANNELS_CODEC.map(MinecraftRegisterPayload::new, MinecraftRegisterPayload::newChannels);
 

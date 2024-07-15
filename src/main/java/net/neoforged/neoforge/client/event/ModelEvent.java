@@ -14,6 +14,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -45,12 +46,12 @@ public abstract class ModelEvent extends Event {
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
-        private final Map<ResourceLocation, BakedModel> models;
+        private final Map<ModelResourceLocation, BakedModel> models;
         private final Function<Material, TextureAtlasSprite> textureGetter;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, Function<Material, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
+        public ModifyBakingResult(Map<ModelResourceLocation, BakedModel> models, Function<Material, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
             this.models = models;
             this.textureGetter = textureGetter;
             this.modelBakery = modelBakery;
@@ -59,7 +60,7 @@ public abstract class ModelEvent extends Event {
         /**
          * @return the modifiable registry map of models and their model names
          */
-        public Map<ResourceLocation, BakedModel> getModels() {
+        public Map<ModelResourceLocation, BakedModel> getModels() {
             return models;
         }
 
@@ -94,11 +95,11 @@ public abstract class ModelEvent extends Event {
      */
     public static class BakingCompleted extends ModelEvent implements IModBusEvent {
         private final ModelManager modelManager;
-        private final Map<ResourceLocation, BakedModel> models;
+        private final Map<ModelResourceLocation, BakedModel> models;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public BakingCompleted(ModelManager modelManager, Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
+        public BakingCompleted(ModelManager modelManager, Map<ModelResourceLocation, BakedModel> models, ModelBakery modelBakery) {
             this.modelManager = modelManager;
             this.models = models;
             this.modelBakery = modelBakery;
@@ -114,7 +115,7 @@ public abstract class ModelEvent extends Event {
         /**
          * @return an unmodifiable view of the registry map of models and their model names
          */
-        public Map<ResourceLocation, BakedModel> getModels() {
+        public Map<ModelResourceLocation, BakedModel> getModels() {
             return models;
         }
 
@@ -128,24 +129,30 @@ public abstract class ModelEvent extends Event {
 
     /**
      * Fired when the {@link net.minecraft.client.resources.model.ModelBakery} is notified of the resource manager reloading.
-     * Allows developers to register models to be loaded, along with their dependencies.
+     * Allows developers to register models to be loaded, along with their dependencies. Models registered through this
+     * event must use the {@link ModelResourceLocation#STANDALONE_VARIANT} variant.
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterAdditional extends ModelEvent implements IModBusEvent {
-        private final Set<ResourceLocation> models;
+        private final Set<ModelResourceLocation> models;
 
         @ApiStatus.Internal
-        public RegisterAdditional(Set<ResourceLocation> models) {
+        public RegisterAdditional(Set<ModelResourceLocation> models) {
             this.models = models;
         }
 
         /**
          * Registers a model to be loaded, along with its dependencies.
+         * <p>
+         * The {@link ModelResourceLocation} passed to this method must later be used to recover the loaded model.
          */
-        public void register(ResourceLocation model) {
+        public void register(ModelResourceLocation model) {
+            Preconditions.checkArgument(
+                    model.getVariant().equals(ModelResourceLocation.STANDALONE_VARIANT),
+                    "Side-loaded models must use the '" + ModelResourceLocation.STANDALONE_VARIANT + "' variant");
             models.add(model);
         }
     }

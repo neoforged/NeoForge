@@ -136,7 +136,7 @@ public class ExistingFileHelper {
     }
 
     private ResourceLocation getLocation(ResourceLocation base, String suffix, String prefix) {
-        return new ResourceLocation(base.getNamespace(), prefix + "/" + base.getPath() + suffix);
+        return ResourceLocation.fromNamespaceAndPath(base.getNamespace(), prefix + "/" + base.getPath() + suffix);
     }
 
     /**

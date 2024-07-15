@@ -211,7 +211,7 @@ public class DeferredRegister<T> {
             throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegisterEvent has been fired.");
         Objects.requireNonNull(name);
         Objects.requireNonNull(func);
-        final ResourceLocation key = new ResourceLocation(namespace, name);
+        final ResourceLocation key = ResourceLocation.fromNamespaceAndPath(namespace, name);
 
         DeferredHolder<T, I> ret = createHolder(this.registryKey, key);
 
@@ -263,7 +263,7 @@ public class DeferredRegister<T> {
      */
     public TagKey<T> createTagKey(String path) {
         Objects.requireNonNull(path);
-        return createTagKey(new ResourceLocation(this.namespace, path));
+        return createTagKey(ResourceLocation.fromNamespaceAndPath(this.namespace, path));
     }
 
     /**

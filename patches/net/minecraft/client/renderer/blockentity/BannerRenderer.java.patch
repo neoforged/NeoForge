@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 @@ -139,4 +_,11 @@
-         float[] afloat = p_332728_.getTextureDiffuseColors();
-         p_332732_.render(p_332737_, p_332704_.buffer(p_332758_, RenderType::entityNoOutline), p_332821_, p_332828_, afloat[0], afloat[1], afloat[2], 1.0F);
+         int i = p_332728_.getTextureDiffuseColor();
+         p_332732_.render(p_332737_, p_332704_.buffer(p_332758_, RenderType::entityNoOutline), p_332821_, p_332828_, i);
      }
 +
 +    @Override

@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record FrozenRegistrySyncStartPayload(List<ResourceLocation> toAccess) implements CustomPacketPayload {
-    public static final Type<FrozenRegistrySyncStartPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "frozen_registry_sync_start"));
+    public static final Type<FrozenRegistrySyncStartPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "frozen_registry_sync_start"));
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistrySyncStartPayload> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()),
             FrozenRegistrySyncStartPayload::toAccess,

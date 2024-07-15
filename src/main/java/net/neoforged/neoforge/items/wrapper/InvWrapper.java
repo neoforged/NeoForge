@@ -8,7 +8,6 @@ package net.neoforged.neoforge.items.wrapper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class InvWrapper implements IItemHandlerModifiable {
     private final Container inv;
@@ -56,7 +55,7 @@ public class InvWrapper implements IItemHandlerModifiable {
             if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                 return stack;
 
-            if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
+            if (!ItemStack.isSameItemSameComponents(stack, stackInSlot))
                 return stack;
 
             if (!getInv().canPlaceItem(slot, stack))

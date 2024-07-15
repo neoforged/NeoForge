@@ -33,7 +33,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
     private final IntSet layersWithRenderTypes = new IntOpenHashSet();
 
     protected ItemLayerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(new ResourceLocation("neoforge:item_layers"), parent, existingFileHelper, false);
+        super(ResourceLocation.fromNamespaceAndPath("neoforge", "item_layers"), parent, existingFileHelper, false);
     }
 
     /**
@@ -100,9 +100,9 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         Preconditions.checkNotNull(renderType, "Render type must not be null");
         ResourceLocation asLoc;
         if (renderType.contains(":"))
-            asLoc = new ResourceLocation(renderType);
+            asLoc = ResourceLocation.parse(renderType);
         else
-            asLoc = new ResourceLocation(parent.getLocation().getNamespace(), renderType);
+            asLoc = ResourceLocation.fromNamespaceAndPath(parent.getLocation().getNamespace(), renderType);
         return renderType(asLoc, layers);
     }
 

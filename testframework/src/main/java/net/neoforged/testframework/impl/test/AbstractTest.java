@@ -97,14 +97,14 @@ public abstract class AbstractTest implements Test {
         if (template != null) {
             var size = EmptyTemplate.Size.parse(template.value());
             if (template.floor()) {
-                templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size + "_floor");
+                templateFromPattern = ResourceLocation.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size + "_floor");
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.withSize(size.length(), size.height() + 1, size.width())
                             .fill(0, 0, 0, size.length() - 1, 0, size.width() - 1, Blocks.IRON_BLOCK.defaultBlockState())
                             .build());
                 }
             } else {
-                templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size);
+                templateFromPattern = ResourceLocation.fromNamespaceAndPath(framework.id().getNamespace(), "empty_" + size);
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.empty(size.length(), size.height(), size.width()));
                 }
@@ -113,7 +113,7 @@ public abstract class AbstractTest implements Test {
 
         this.gameTestData = new GameTestData(
                 gameTest.batch().equals("defaultBatch") ? null : gameTest.batch(),
-                gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
+                gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : ResourceLocation.fromNamespaceAndPath(gameTest.templateNamespace(), gameTest.template()).toString(),
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
                 StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()),
@@ -275,8 +275,8 @@ public abstract class AbstractTest implements Test {
 
         @Override
         public RegistrationHelper registrationHelper(String modId) {
-            final var helper = new RegistrationHelperImpl(modId, framework.container());
-            helper.register(framework.modEventBus());
+            final var helper = new RegistrationHelperImpl(modId);
+            helper.register(framework.modEventBus(), framework.container());
             return helper;
         }
 

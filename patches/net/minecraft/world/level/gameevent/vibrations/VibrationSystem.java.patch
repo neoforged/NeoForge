@@ -21,7 +21,7 @@
      static int getGameEventFrequency(ResourceKey<GameEvent> p_316800_) {
 -        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_316800_);
 +        var holder = net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.getHolder(p_316800_);
-+        return holder.isPresent() ? getGameEventFrequency(holder.get()) : VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_316800_);
++        return holder.map(VibrationSystem::getGameEventFrequency).orElse(0);
      }
  
      static ResourceKey<GameEvent> getResonanceEventByFrequency(int p_282105_) {
