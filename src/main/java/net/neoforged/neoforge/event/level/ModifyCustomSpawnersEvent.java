@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.event.level;
 
+import java.util.List;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.CustomSpawner;
 import net.neoforged.bus.api.Event;
-
-import java.util.List;
 
 /**
  * This event is fired on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server} when a {@link ServerLevel} is building its {@linkplain CustomSpawner custom spawners}.
