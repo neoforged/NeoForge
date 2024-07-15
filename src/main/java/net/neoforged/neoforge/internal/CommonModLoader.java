@@ -24,6 +24,7 @@ import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Internal class for handling the steps of mod loading that are common for client, data and server runs.
@@ -34,6 +35,7 @@ import net.neoforged.neoforge.registries.RegistryManager;
  * <li>Datagen only runs {@link #begin}.</li>
  * </ul>
  */
+@ApiStatus.Internal
 public abstract class CommonModLoader {
     private static boolean registriesLoaded = false;
 
