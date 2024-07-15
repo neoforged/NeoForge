@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/item/alchemy/Potion.java
++++ b/net/minecraft/world/item/alchemy/Potion.java
+@@ -24,6 +_,7 @@
+     private final String name;
+     private final List<MobEffectInstance> effects;
+     private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
++    private final java.util.Set<net.minecraft.resources.ResourceLocation> requiredFlags = new java.util.HashSet<>();
+ 
+     public Potion(MobEffectInstance... p_43487_) {
+         this(null, p_43487_);
+@@ -34,6 +_,7 @@
+         this.effects = List.of(p_43485_);
+     }
+ 
++    @Deprecated // prefer `requiredFlags`
+     public Potion requiredFeatures(FeatureFlag... p_338520_) {
+         this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_338520_);
+         return this;
+@@ -42,6 +_,16 @@
+     @Override
+     public FeatureFlagSet requiredFeatures() {
+         return this.requiredFeatures;
++    }
++
++    public Potion requiredFlags(net.minecraft.resources.ResourceLocation... requiredFlags) {
++        java.util.Collections.addAll(this.requiredFlags, requiredFlags);
++        return this;
++    }
++
++    @Override
++    public java.util.Set<net.minecraft.resources.ResourceLocation> requiredFlags() {
++        return requiredFlags;
+     }
+ 
+     public static String getName(Optional<Holder<Potion>> p_330503_, String p_43493_) {

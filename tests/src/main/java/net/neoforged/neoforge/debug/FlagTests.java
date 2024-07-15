@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.flag.FlagProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -13,7 +14,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 
 @ForEachTest(groups = "modded_feature_flags")
 public interface FlagTests {
-    @TestHolder(description = "Generates custom modded feature flag")
+    @TestHolder(description = "Registers custom modded flag and item which requires it")
     static void test(DynamicTest test) {
         var registration = test.registrationHelper();
         var modId = test.createModId();
@@ -25,5 +26,9 @@ public interface FlagTests {
                 flag(ResourceLocation.fromNamespaceAndPath(modId, "disabled"));
             }
         });
+
+        registration.items().register("flagged_item", () -> new Item(new Item.Properties()
+                .requiredFlags(ResourceLocation.fromNamespaceAndPath(modId, "disabled"))
+        ));
     }
 }
