@@ -395,7 +395,7 @@ public class ModListScreen extends Screen {
                         }
                     }), new Size2i(logo.getWidth(), logo.getHeight()));
                 }
-            } catch (IOException e) {}
+            } catch (IOException | IllegalArgumentException e) {}
             return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
         }).orElse(Pair.of(null, new Size2i(0, 0)));
 

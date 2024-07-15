@@ -38,6 +38,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
+import net.neoforged.neoforge.common.util.DataComponentUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -270,7 +271,7 @@ public final class FluidStack implements MutableDataComponentHolder {
         if (this.isEmpty()) {
             throw new IllegalStateException("Cannot encode empty FluidStack");
         } else {
-            return CODEC.encode(this, lookupProvider.createSerializationContext(NbtOps.INSTANCE), prefix).getOrThrow();
+            return DataComponentUtil.wrapEncodingExceptions(this, CODEC, lookupProvider, prefix);
         }
     }
 
@@ -283,7 +284,7 @@ public final class FluidStack implements MutableDataComponentHolder {
         if (this.isEmpty()) {
             throw new IllegalStateException("Cannot encode empty FluidStack");
         } else {
-            return CODEC.encodeStart(lookupProvider.createSerializationContext(NbtOps.INSTANCE), this).getOrThrow();
+            return DataComponentUtil.wrapEncodingExceptions(this, CODEC, lookupProvider);
         }
     }
 

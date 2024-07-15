@@ -42,12 +42,13 @@
      }
  
      public static RenderType lightning() {
-@@ -1454,4 +_,17 @@
+@@ -1453,5 +_,17 @@
+         public String toString() {
              return this.name;
          }
-     }
++    }
 +
-+    // FORGE START
++    // Neo: Assign internal IDs for RenderType to be used in rendering
 +    private int chunkLayerId = -1;
 +    /** {@return the unique ID of this {@link RenderType} for chunk rendering purposes, or {@literal -1} if this is not a chunk {@link RenderType}} */
 +    public final int getChunkLayerId() {
@@ -57,6 +58,5 @@
 +        int i = 0;
 +        for (var layer : chunkBufferLayers())
 +            layer.chunkLayerId = i++;
-+    }
-+    // FORGE END
+     }
  }

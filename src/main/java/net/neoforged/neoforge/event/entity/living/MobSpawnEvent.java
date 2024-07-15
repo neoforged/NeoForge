@@ -21,7 +21,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,8 +93,8 @@ public abstract class MobSpawnEvent extends EntityEvent {
      * <p>
      * This event is not fired for mob spawners which utilize {@link CustomSpawnRules}, as they do not check spawn placements.
      * 
-     * @apiNote If your modifications are for a single entity, and do not vary at runtime, use {@link SpawnPlacementRegisterEvent}.
-     * @see SpawnPlacementRegisterEvent
+     * @apiNote If your modifications are for a single entity, and do not vary at runtime, use {@link RegisterSpawnPlacementsEvent}.
+     * @see RegisterSpawnPlacementsEvent
      */
     public static class SpawnPlacementCheck extends Event {
         private final EntityType<?> entityType;
@@ -230,7 +230,7 @@ public abstract class MobSpawnEvent extends EntityEvent {
      * This event is only fired on the {@linkplain LogicalSide#SERVER logical server}.
      *
      * @apiNote This event fires after Spawn Placement checks, which are the primary set of spawn checks.
-     * @see {@link SpawnPlacementRegisterEvent} To modify spawn placements statically at startup.
+     * @see {@link RegisterSpawnPlacementsEvent} To modify spawn placements statically at startup.
      * @see {@link SpawnPlacementCheck} To modify the result of spawn placements at runtime.
      */
     public static class PositionCheck extends MobSpawnEvent {
