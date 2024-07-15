@@ -1,0 +1,9 @@
+[
+  {
+    "enabled": true,
+    "name": "neotests_test:enabled_by_default"
+  },
+  {
+    "name": "neotests_test:disabled"
+  }
+]

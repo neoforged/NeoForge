@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.flag.FlagPayloads;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -94,6 +95,12 @@ public class NetworkInitialization {
                 .playToClient(
                         ClientboundCustomSetTimePayload.TYPE,
                         ClientboundCustomSetTimePayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle);
+                        ClientPayloadHandler::handle)
+                .playToClient(FlagPayloads.Known.TYPE,
+                        FlagPayloads.Known.STREAM_CODEC,
+                        FlagPayloads.Known::handle)
+                .playToClient(FlagPayloads.Enabled.TYPE,
+                        FlagPayloads.Enabled.STREAM_CODEC,
+                        FlagPayloads.Enabled::handle);
     }
 }
