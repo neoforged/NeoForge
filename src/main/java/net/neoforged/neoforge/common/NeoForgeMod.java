@@ -524,7 +524,7 @@ public class NeoForgeMod {
             event.dataPackRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
             event.dataPackRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
         });
-        FlagManager.INSTANCE.setup();
+        FlagManager.setup();
         modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::gatherData);
         modEventBus.addListener(this::loadComplete);

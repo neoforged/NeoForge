@@ -1,9 +1,3 @@
 [
-  {
-    "enabled": true,
-    "name": "neotests_test:enabled_by_default"
-  },
-  {
-    "name": "neotests_test:disabled"
-  }
+  "neotests_test:test_flag"
 ]

@@ -5,12 +5,13 @@
 
 package net.neoforged.neoforge.flag;
 
-import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,6 +21,7 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.CommonColors;
 
 public interface FlagCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
@@ -30,16 +32,19 @@ public interface FlagCommand {
                             var src = context.getSource();
                             src.sendSuccess(() -> {
                                 var component = Component.literal("Flags: [ ");
-                                var known = FlagManager.getKnownFlags();
+                                var known = Flags.getFlags();
                                 var i = 0;
 
                                 for (var flag : known) {
+                                    var isEnabled = Flags.isEnabled(flag);
+
                                     component.append(Component.literal(flag.toString())
                                             .withStyle(style -> style
+                                                    .withColor(isEnabled ? CommonColors.GREEN : CommonColors.SOFT_RED)
                                                     .withItalic(true)
                                                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(flag.toString())
                                                             .append(" [Enabled=")
-                                                            .append(FlagManager.isEnabled(flag) ? "TRUE" : "FALSE")
+                                                            .append(isEnabled ? "TRUE" : "FALSE")
                                                             .append("]")))));
 
                                     if (i + 1 < known.size())
@@ -55,28 +60,34 @@ public interface FlagCommand {
                 .then(literal("enable")
                         .then(argument("flag", ResourceLocationArgument.id())
                                 .suggests((context, builder) -> {
-                                    var knownFlagNames = FlagManager.getKnownFlags().stream().filter(Predicate.not(FlagManager::isEnabled)).map(Objects::toString);
-                                    return SharedSuggestionProvider.suggest(knownFlagNames, builder);
+                                    var disabledFlagNames = Flags.getFlags().stream().filter(Predicate.not(Flags::isEnabled)).map(Objects::toString);
+                                    return SharedSuggestionProvider.suggest(disabledFlagNames, builder);
                                 })
-                                .executes(ctx -> {
-                                    var flag = ctx.getArgument("flag", ResourceLocation.class);
-                                    var src = ctx.getSource();
-                                    FlagManager.INSTANCE.setEnabled(flag, true);
-                                    src.sendSuccess(() -> Component.literal("Enabled flag: ").append(flag.toString()), false);
-                                    return SINGLE_SUCCESS;
-                                })))
+                                .executes(ctx -> toggleFlag(ctx, true))))
                 .then(literal("disable")
                         .then(argument("flag", ResourceLocationArgument.id())
                                 .suggests((context, builder) -> {
-                                    var enabledFlagNames = FlagManager.getKnownFlags().stream().filter(FlagManager::isEnabled).map(Objects::toString);
+                                    var enabledFlagNames = Flags.getFlags().stream().filter(Flags::isEnabled).map(Objects::toString);
                                     return SharedSuggestionProvider.suggest(enabledFlagNames, builder);
                                 })
-                                .executes(ctx -> {
-                                    var flag = ctx.getArgument("flag", ResourceLocation.class);
-                                    var src = ctx.getSource();
-                                    FlagManager.INSTANCE.setEnabled(flag, false);
-                                    src.sendSuccess(() -> Component.literal("Disabled flag: ").append(flag.toString()), false);
-                                    return SINGLE_SUCCESS;
-                                })));
+                                .executes(ctx -> toggleFlag(ctx, false))));
+    }
+
+    private static int toggleFlag(CommandContext<CommandSourceStack> context, boolean enable) throws CommandSyntaxException {
+        var flag = context.getArgument("flag", ResourceLocation.class);
+        var src = context.getSource();
+        var changed = FlagManager.INSTANCE.setEnabled(flag, enable);
+
+        if (changed) {
+            src.sendSuccess(() -> Component.literal(enable ? "Enabled flag: " : "Disabled flag: ").append(flag.toString()), false);
+            FlagManager.INSTANCE.markDirty(true, true);
+            return Command.SINGLE_SUCCESS;
+        }
+
+        src.sendSuccess(() -> Component.literal("Flag: ")
+                .append(flag.toString())
+                .append(" already ")
+                .append(enable ? "Enabled" : "Disabled"), false);
+        return Command.SINGLE_SUCCESS;
     }
 }

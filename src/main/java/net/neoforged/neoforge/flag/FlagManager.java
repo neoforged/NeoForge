@@ -5,148 +5,83 @@
 
 package net.neoforged.neoforge.flag;
 
-import com.google.common.collect.Sets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.Internal
 public final class FlagManager {
-    public static Set<ResourceLocation> getKnownFlags() {
-        return INSTANCE.flagsView;
-    }
-
-    public static Set<ResourceLocation> getEnabledFlags() {
-        return INSTANCE.enabledFlagsView;
-    }
-
-    public static boolean isKnown(ResourceLocation flag) {
-        return getKnownFlags().contains(flag);
-    }
-
-    public static boolean isEnabled(ResourceLocation flag) {
-        return isKnown(flag) && getEnabledFlags().contains(flag);
-    }
-
-    public static boolean isEnabled(ResourceLocation... flags) {
-        for (var flag : flags) {
-            if (!isEnabled(flag))
-                return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isEnabled(Iterable<ResourceLocation> flags) {
-        for (var flag : flags) {
-            if (!isEnabled(flag))
-                return false;
-        }
-
-        return true;
-    }
-
-    // region: Internal
-    @ApiStatus.Internal
     public static final FlagManager INSTANCE = new FlagManager();
-    public static final Logger LOGGER = LogManager.getLogger();
 
-    private final Set<ResourceLocation> flags = Sets.newHashSet();
-    private final Set<ResourceLocation> enabledFlags = Sets.newHashSet();
-    private final Set<ResourceLocation> flagsView = Collections.unmodifiableSet(flags);
-    private final Set<ResourceLocation> enabledFlagsView = Collections.unmodifiableSet(enabledFlags);
+    final Object2BooleanMap<ResourceLocation> enabledFlags = new Object2BooleanOpenHashMap<>();
+    final Object2BooleanMap<ResourceLocation> enabledFlagsView = Object2BooleanMaps.unmodifiable(enabledFlags);
 
     private FlagManager() {}
 
-    public void setup() {
-        NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> event.addListener(new FlagLoader()));
-
-        NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, event -> {
-            if (event.getEntity() instanceof ServerPlayer player)
-                syncToClient(player);
-        });
-    }
-
-    public void setEnabled(ResourceLocation flag, boolean enabled) {
-        if (!flags.contains(flag))
-            return;
-
-        var sync = false;
-
-        if (enabled) {
-            if (enabledFlags.add(flag)) {
-                LOGGER.debug("Enabled flag: {}", flag);
-                sync = true;
-            }
-        } else {
-            if (enabledFlags.remove(flag)) {
-                sync = true;
-                LOGGER.debug("Disabled flag: {}", flag);
-            }
-        }
-
+    void markDirty(boolean savedData, boolean sync) {
+        if (savedData)
+            FlagSavedData.accept(SavedData::setDirty);
         if (sync)
             syncToClient(null);
     }
 
+    boolean setEnabled(ResourceLocation flag, boolean enabled) {
+        var wasEnabled = enabledFlags.getOrDefault(flag, false);
+        enabledFlags.put(flag, enabled);
+        var isEnabled = enabledFlags.getOrDefault(flag, false);
+        return wasEnabled != isEnabled;
+    }
+
+    boolean setEnabled(Object2BooleanMap<ResourceLocation> flags, boolean reset) {
+        var changed = false;
+
+        if (reset) {
+            enabledFlags.clear();
+            changed = true;
+        }
+
+        for (var entry : flags.object2BooleanEntrySet()) {
+            if (setEnabled(entry.getKey(), entry.getBooleanValue()))
+                changed = true;
+        }
+
+        return changed;
+    }
+
     private void syncToClient(@Nullable ServerPlayer player) {
         if (player == null) {
-            var server = ServerLifecycleHooks.getCurrentServer();
-
-            if (server == null)
+            if (ServerLifecycleHooks.getCurrentServer() == null)
                 return;
 
-            PacketDistributor.sendToAllPlayers(new FlagPayloads.Known(flags), new FlagPayloads.Enabled(enabledFlags));
+            PacketDistributor.sendToAllPlayers(new SyncFlagsPayload(enabledFlags));
             return;
         }
 
-        PacketDistributor.sendToPlayer(player, new FlagPayloads.Known(flags), new FlagPayloads.Enabled(enabledFlags));
+        PacketDistributor.sendToPlayer(player, new SyncFlagsPayload(enabledFlags));
     }
 
-    void loadFromJson(Iterable<FlagLoader.FlagData> flagData) {
-        var oldEnabledFlags = Set.copyOf(enabledFlags);
+    public static void setup() {
+        NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> event.addListener(new FlagLoader()));
 
-        flags.clear();
-        enabledFlags.clear();
+        NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, event -> {
+            if (event.getEntity() instanceof ServerPlayer player)
+                INSTANCE.syncToClient(player);
+        });
 
-        for (var flag : flagData) {
-            var name = flag.name();
-
-            flags.add(name);
-
-            if (flag.enabledByDefault() || oldEnabledFlags.contains(name))
-                enabledFlags.add(name);
-        }
-
-        LOGGER.debug("Loaded {} flags from json (Enabled {} flags by default)", flags.size(), enabledFlags.size());
-
-        if (FMLEnvironment.dist.isDedicatedServer())
-            syncToClient(null);
+        NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, event -> {
+            // exists purely to load the saved data
+            FlagSavedData.get(event.getServer());
+        });
     }
-
-    void loadKnownFromRemote(Collection<ResourceLocation> remote) {
-        flags.clear();
-        flags.addAll(remote);
-
-        LOGGER.debug("Synced {} known flags from remote", flags.size());
-    }
-
-    void loadEnabledFromRemote(Collection<ResourceLocation> remote) {
-        enabledFlags.clear();
-        enabledFlags.addAll(remote);
-
-        LOGGER.debug("Synced {} enabled flags from remote", enabledFlags.size());
-    }
-    // endregion
 }

@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -21,17 +21,18 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 
-final class FlagLoader extends SimplePreparableReloadListener<Set<FlagLoader.FlagData>> {
+final class FlagLoader extends SimplePreparableReloadListener<Set<ResourceLocation>> {
     static final String FILE = "flags.json";
+    static final Codec<List<ResourceLocation>> CODEC = ResourceLocation.CODEC.listOf();
 
     private final Gson gson = new GsonBuilder().create();
 
     FlagLoader() {}
 
     @Override
-    protected Set<FlagData> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected Set<ResourceLocation> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
         profiler.startTick();
-        var flags = Sets.<FlagData>newHashSet();
+        var flags = Sets.<ResourceLocation>newHashSet();
 
         for (var namespace : resourceManager.getNamespaces()) {
             profiler.push(namespace);
@@ -47,7 +48,7 @@ final class FlagLoader extends SimplePreparableReloadListener<Set<FlagLoader.Fla
 
                         var json = GsonHelper.fromJson(gson, reader, JsonElement.class);
 
-                        FlagData.CODEC.parse(JsonOps.INSTANCE, json)
+                        CODEC.parse(JsonOps.INSTANCE, json)
                                 .ifSuccess(flags::addAll);
 
                         profiler.pop();
@@ -69,18 +70,11 @@ final class FlagLoader extends SimplePreparableReloadListener<Set<FlagLoader.Fla
     }
 
     @Override
-    protected void apply(Set<FlagData> flags, ResourceManager resourceManager, ProfilerFiller profiler) {
-        FlagManager.INSTANCE.loadFromJson(flags);
-    }
+    protected void apply(Set<ResourceLocation> flags, ResourceManager resourceManager, ProfilerFiller profiler) {
+        var flagMap = new Object2BooleanOpenHashMap<ResourceLocation>(flags.size());
+        flags.forEach(flag -> flagMap.put(flag, true));
 
-    public record FlagData(ResourceLocation name, boolean enabledByDefault) {
-        static Codec<List<FlagData>> CODEC = Codec.withAlternative(
-                RecordCodecBuilder.create(builder -> builder.group(
-                        ResourceLocation.CODEC.fieldOf("name").forGetter(FlagData::name),
-                        Codec.BOOL.optionalFieldOf("enabled", false).forGetter(FlagData::enabledByDefault)).apply(builder, FlagData::new)),
-                ResourceLocation.CODEC.xmap(
-                        name -> new FlagData(name, false),
-                        FlagData::name))
-                .listOf();
+        if (FlagManager.INSTANCE.setEnabled(flagMap, false))
+            FlagManager.INSTANCE.markDirty(true, true);
     }
 }

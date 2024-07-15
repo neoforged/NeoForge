@@ -12,6 +12,6 @@ public interface FlagElement {
     Set<ResourceLocation> requiredFlags();
 
     default boolean isEnabled() {
-        return FlagManager.isEnabled(requiredFlags());
+        return Flags.isEnabled(requiredFlags());
     }
 }

@@ -18,17 +18,16 @@ public interface FlagTests {
     static void test(DynamicTest test) {
         var registration = test.registrationHelper();
         var modId = test.createModId();
+        var testFlag = ResourceLocation.fromNamespaceAndPath(modId, "test_flag");
 
         registration.addProvider(event -> new FlagProvider(event.getGenerator().getPackOutput(), modId, event.getLookupProvider()) {
             @Override
             protected void generate() {
-                flag(ResourceLocation.fromNamespaceAndPath(modId, "enabled_by_default"), true);
-                flag(ResourceLocation.fromNamespaceAndPath(modId, "disabled"));
+                flag(testFlag);
             }
         });
 
         registration.items().register("flagged_item", () -> new Item(new Item.Properties()
-                .requiredFlags(ResourceLocation.fromNamespaceAndPath(modId, "disabled"))
-        ));
+                .requiredFlags(testFlag)));
     }
 }
