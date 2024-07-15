@@ -64,7 +64,16 @@
                          && d0 < (double)((float)blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos))) {
                          if (!fluidstate.isSource()) {
                              return Boat.Status.UNDER_FLOWING_WATER;
-@@ -839,7 +_,7 @@
+@@ -832,14 +_,15 @@
+                             }
+ 
+                             for (int j = 0; j < 2; j++) {
+-                                this.spawnAtLocation(Items.STICK);
++                                // Neo: allow dropping material-specific sticks instead of just generic wooden sticks
++                                this.spawnAtLocation(this.getVariant().getSticks());
+                             }
+                         }
+                     }
                  }
  
                  this.resetFallDistance();
@@ -93,7 +102,7 @@
          OAK(Blocks.OAK_PLANKS, "oak"),
          SPRUCE(Blocks.SPRUCE_PLANKS, "spruce"),
          BIRCH(Blocks.BIRCH_PLANKS, "birch"),
-@@ -923,16 +_,48 @@
+@@ -923,16 +_,59 @@
          CHERRY(Blocks.CHERRY_PLANKS, "cherry"),
          DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),
          MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove"),
@@ -107,6 +116,7 @@
 +        private final java.util.function.Supplier<Block> planksSupplier;
 +        final java.util.function.Supplier<Item> boatItem;
 +        final java.util.function.Supplier<Item> chestBoatItem;
++        private final java.util.function.Supplier<Item> stickItem;
 +        private final boolean raft;
          public static final StringRepresentable.EnumCodec<Boat.Type> CODEC = StringRepresentable.fromEnum(Boat.Type::values);
          private static final IntFunction<Boat.Type> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
@@ -123,6 +133,7 @@
 +            this.planksSupplier = () -> p_38427_;
 +            this.boatItem = () -> Items.AIR;
 +            this.chestBoatItem = () -> Items.AIR;
++            this.stickItem = () -> Items.STICK;
 +            this.raft = raft;
 +        }
 +
@@ -131,24 +142,37 @@
 +         * @param name The name of this boat type
 +         * @param boatItem A supplier of the item to be dropped when a normal boat or raft of this type is picked up
 +         * @param chestBoatItem A supplier of the item to be dropped when a chest boat or raft of this type is picked up
++         * @param stickItem A supplier of the stick item to be dropped when the boat is destroyed by fall damage
 +         * @param raft Whether this boat type is a "standard" boat or a raft
 +         */
-+        private Type(java.util.function.Supplier<Block> planks, String name, java.util.function.Supplier<Item> boatItem, java.util.function.Supplier<Item> chestBoatItem, boolean raft) {
++        private Type(
++                java.util.function.Supplier<Block> planks,
++                String name,
++                java.util.function.Supplier<Item> boatItem,
++                java.util.function.Supplier<Item> chestBoatItem,
++                java.util.function.Supplier<Item> stickItem,
++                boolean raft
++        ) {
 +            this.name = name;
 +            this.planks = Blocks.AIR;
 +            this.planksSupplier = planks;
 +            this.boatItem = boatItem;
 +            this.chestBoatItem = chestBoatItem;
++            this.stickItem = stickItem;
 +            this.raft = raft;
          }
  
          @Override
-@@ -945,7 +_,11 @@
+@@ -945,7 +_,15 @@
          }
  
          public Block getPlanks() {
 -            return this.planks;
 +            return this.planksSupplier.get();
++        }
++
++        public Item getSticks() {
++            return this.stickItem.get();
 +        }
 +
 +        public boolean isRaft() {

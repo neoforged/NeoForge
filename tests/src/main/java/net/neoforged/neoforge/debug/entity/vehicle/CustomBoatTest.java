@@ -24,6 +24,7 @@ public class CustomBoatTest {
     private static final String BOAT_NAME = "neotests:paper";
     private static final String RAFT_NAME = "neotests:paper_raft";
     private static Supplier<Block> paperBlock;
+    private static Supplier<Item> paperStickItem;
     private static Supplier<BoatItem> paperBoatItem;
     private static Supplier<BoatItem> paperChestBoatItem;
     private static Supplier<BoatItem> paperRaftItem;
@@ -33,6 +34,7 @@ public class CustomBoatTest {
     @TestHolder(description = "Tests that custom boat types work")
     static void customBoatType(final DynamicTest test, final RegistrationHelper reg) {
         paperBlock = reg.blocks().registerSimpleBlock("paper", BlockBehaviour.Properties.of()).withBlockItem().withLang("Paper");
+        paperStickItem = reg.items().registerSimpleItem("paper_stick").withLang("Paper Stick");
 
         paperBoatItem = reg.items().registerItem("paper_boat", props -> new BoatItem(false, Boat.Type.byName(BOAT_NAME), props))
                 .withLang("Paper Boat");
@@ -54,7 +56,8 @@ public class CustomBoatTest {
             case 1 -> type.cast(BOAT_NAME);
             case 2 -> type.cast((Supplier<Item>) () -> paperBoatItem.get());
             case 3 -> type.cast((Supplier<Item>) () -> paperChestBoatItem.get());
-            case 4 -> false;
+            case 4 -> type.cast((Supplier<Item>) () -> paperStickItem.get());
+            case 5 -> false;
             default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
         };
     }
@@ -66,7 +69,8 @@ public class CustomBoatTest {
             case 1 -> type.cast(RAFT_NAME);
             case 2 -> type.cast((Supplier<Item>) () -> paperRaftItem.get());
             case 3 -> type.cast((Supplier<Item>) () -> paperChestRaftItem.get());
-            case 4 -> true;
+            case 4 -> type.cast((Supplier<Item>) () -> paperStickItem.get());
+            case 5 -> true;
             default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
         };
     }
