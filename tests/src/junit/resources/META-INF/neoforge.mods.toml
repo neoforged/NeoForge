@@ -8,3 +8,5 @@ modId="block_entity_type_valid_blocks_event_test"
 modId="creative_tab_order_test"
 [[mods]]
 modId="startup_config_test"
+[[mods]]
+modId="conditional_operation_test"

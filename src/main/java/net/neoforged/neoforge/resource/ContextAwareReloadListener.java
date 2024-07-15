@@ -11,9 +11,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.neoforged.neoforge.common.conditions.ConditionalOperation;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
+import net.neoforged.neoforge.common.conditions.InterceptingOps;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -50,8 +52,15 @@ public abstract class ContextAwareReloadListener implements PreparableReloadList
 
     /**
      * Creates a new {@link ConditionalOps} using {@link #getContext()} and {@link #getRegistryLookup()} ()}.
+     *
+     * @deprecated Use {@link ContextAwareReloadListener#createInterceptingConditionOps()} and the provided {@link InterceptingOps}
      */
+    @Deprecated
     protected final ConditionalOps<JsonElement> makeConditionalOps() {
         return new ConditionalOps<>(getRegistryLookup().createSerializationContext(JsonOps.INSTANCE), getContext());
+    }
+
+    protected final InterceptingOps<JsonElement, ICondition.IContext> createInterceptingConditionOps() {
+        return ConditionalOperation.getOps(JsonOps.INSTANCE, getRegistryLookup(), this::getContext);
     }
 }

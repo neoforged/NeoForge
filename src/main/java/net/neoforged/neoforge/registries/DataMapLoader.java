@@ -33,7 +33,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.ConditionalOperation;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
@@ -129,7 +129,7 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     private static Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, ProfilerFiller profiler, RegistryAccess access, ICondition.IContext context) {
-        final RegistryOps<JsonElement> ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, access), context);
+        final RegistryOps<JsonElement> ops = ConditionalOperation.getOps(JsonOps.INSTANCE, access, () -> context);
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
         access.registries().forEach(registryEntry -> {

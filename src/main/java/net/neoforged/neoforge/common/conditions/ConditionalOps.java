@@ -21,7 +21,11 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 /**
  * Extension of {@link RegistryOps} that also encapsulates a {@link ICondition.IContext}.
  * This allows getting the {@link ICondition.IContext} while decoding an entry from within a codec.
+ *
+ * @deprecated Use {@link InterceptingOps} with {@link ConditionalOperation}
+ * @see ConditionalOperation#getOps
  */
+@Deprecated
 public class ConditionalOps<T> extends RegistryOps<T> {
     private final ICondition.IContext context;
 
@@ -46,7 +50,8 @@ public class ConditionalOps<T> extends RegistryOps<T> {
     /**
      * Key used for the conditions inside an object.
      */
-    public static final String DEFAULT_CONDITIONS_KEY = "neoforge:conditions";
+    @Deprecated
+    public static final String DEFAULT_CONDITIONS_KEY = ConditionalOperation.OLD_CONDITIONS_KEY;
     /**
      * Key used to store the value associated with conditions,
      * when the value is not represented as a map.
@@ -62,8 +67,10 @@ public class ConditionalOps<T> extends RegistryOps<T> {
     public static final String CONDITIONAL_VALUE_KEY = "neoforge:value";
 
     /**
-     * @see #createConditionalCodec(Codec, String)
+     * @deprecated Conditions are now automatically supported on all levels of all json structures parsed using an
+     *             ops from {@link net.neoforged.neoforge.common.conditions.ConditionalOperation#getOps}
      */
+    @Deprecated
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec) {
         return createConditionalCodec(ownerCodec, DEFAULT_CONDITIONS_KEY);
     }
@@ -72,14 +79,22 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * Creates a conditional codec.
      *
      * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
+     *
+     * @deprecated Conditions are now automatically supported on all levels of all json structures parsed using an
+     *             ops from {@link net.neoforged.neoforge.common.conditions.ConditionalOperation#getOps}
      */
+    @Deprecated
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec, String conditionalsKey) {
         return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new WithConditions<>(List.of(), i)));
     }
 
     /**
      * Creates a codec that can decode a list of elements, and will check for conditions on each element.
+     *
+     * @deprecated Conditions are now automatically supported on all levels of all json structures parsed using an
+     *             ops from {@link net.neoforged.neoforge.common.conditions.ConditionalOperation#getOps}
      */
+    @Deprecated
     public static <T> Codec<List<T>> decodeListWithElementConditions(final Codec<T> ownerCodec) {
         return Codec.of(
                 ownerCodec.listOf(),
@@ -88,7 +103,11 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
     /**
      * @see #createConditionalCodecWithConditions(Codec, String)
+     *
+     * @deprecated Conditions are now automatically supported on all levels of all json structures parsed using an
+     *             ops from {@link net.neoforged.neoforge.common.conditions.ConditionalOperation#getOps}
      */
+    @Deprecated
     public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec) {
         return createConditionalCodecWithConditions(ownerCodec, DEFAULT_CONDITIONS_KEY);
     }
@@ -97,7 +116,11 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * Creates a conditional codec.
      *
      * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
+     *
+     * @deprecated Conditions are now automatically supported on all levels of all json structures parsed using an
+     *             ops from {@link net.neoforged.neoforge.common.conditions.ConditionalOperation#getOps}
      */
+    @Deprecated
     public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec, String conditionalsKey) {
         return Codec.of(
                 new ConditionalEncoder<>(conditionalsKey, ICondition.LIST_CODEC, ownerCodec),

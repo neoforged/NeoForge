@@ -67,6 +67,7 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.FLUID_INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
+        event.register(NeoForgeRegistries.CONDITIONAL_OPERATION_CODECS);
         event.register(NeoForgeRegistries.ATTACHMENT_TYPES);
     }
 

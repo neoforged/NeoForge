@@ -92,6 +92,7 @@ import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPr
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.SnowBootsEntityPredicate;
 import net.neoforged.neoforge.common.conditions.AndCondition;
+import net.neoforged.neoforge.common.conditions.ConditionalOperationCodecCache;
 import net.neoforged.neoforge.common.conditions.FalseCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.ItemExistsCondition;
@@ -100,6 +101,9 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
+import net.neoforged.neoforge.common.conditions.operations.FieldRemove;
+import net.neoforged.neoforge.common.conditions.operations.OrNull;
+import net.neoforged.neoforge.common.conditions.operations.SimpleAlternative;
 import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
@@ -387,6 +391,11 @@ public class NeoForgeMod {
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TagEmptyCondition>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
 
+    private static final DeferredRegister<ConditionalOperationCodecCache> CONDITIONAL_OPERATION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITIONAL_OPERATION_CODECS, NeoForgeVersion.MOD_ID);
+    public static final DeferredHolder<ConditionalOperationCodecCache, ConditionalOperationCodecCache> OR_NULL = CONDITIONAL_OPERATION_CODECS.register("or_null", () -> OrNull.CODECS);
+    public static final DeferredHolder<ConditionalOperationCodecCache, ConditionalOperationCodecCache> SIMPLE_ALTERNATIVE = CONDITIONAL_OPERATION_CODECS.register("alternative", () -> SimpleAlternative.CODECS);
+    public static final DeferredHolder<ConditionalOperationCodecCache, ConditionalOperationCodecCache> REMOVE_FIELDS = CONDITIONAL_OPERATION_CODECS.register("remove_fields", () -> FieldRemove.CODECS);
+
     private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<PiglinNeutralArmorEntityPredicate>> PIGLIN_NEUTRAL_ARMOR_PREDICATE = ENTITY_PREDICATE_CODECS.register("piglin_neutral_armor", () -> PiglinNeutralArmorEntityPredicate.CODEC);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<SnowBootsEntityPredicate>> SNOW_BOOTS_PREDICATE = ENTITY_PREDICATE_CODECS.register("snow_boots", () -> SnowBootsEntityPredicate.CODEC);
@@ -600,6 +609,7 @@ public class NeoForgeMod {
         ITEM_SUB_PREDICATES.register(modEventBus);
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
+        CONDITIONAL_OPERATION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         container.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
