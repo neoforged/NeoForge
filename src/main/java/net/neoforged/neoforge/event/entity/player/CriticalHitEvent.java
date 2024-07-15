@@ -45,8 +45,6 @@ public class CriticalHitEvent extends PlayerEvent {
      * The damage multiplier is applied to the base attack's damage if the attack {@linkplain #isCriticalHit() critically hits}.
      * <p>
      * A damage multiplier of 1.0 will not change the damage, a value of 1.5 will increase the damage by 50%, and so on.
-     * 
-     * @param modifier The new damage modifier.
      */
     public float getDamageMultiplier() {
         return this.dmgMultiplier;
@@ -57,7 +55,7 @@ public class CriticalHitEvent extends PlayerEvent {
      * <p>
      * Changing the damage modifier to zero does not guarantee that the attack does zero damage.
      * 
-     * @param modifier The new damage modifier. Must not be negative.
+     * @param dmgMultiplier The new damage modifier. Must not be negative.
      * @see #getDamageMultiplier()
      */
     public void setDamageMultiplier(float dmgMultiplier) {
