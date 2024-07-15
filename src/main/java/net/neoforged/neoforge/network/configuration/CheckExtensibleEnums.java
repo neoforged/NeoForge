@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network.configuration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.ByteBuf;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,10 +36,12 @@ import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
 
 @ApiStatus.Internal
 public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) implements ConfigurationTask {
     public static final Type TYPE = new Type(ResourceLocation.fromNamespaceAndPath("neoforge", "check_extensible_enum"));
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final org.objectweb.asm.Type NETWORKED_ENUM = org.objectweb.asm.Type.getType(NetworkedEnum.class);
     private static final List<? extends Class<? extends Enum<?>>> NETWORKED_EXTENSIBLE_ENUM_CLASSES = collectNetworkedEnumClasses();
     private static Map<String, EnumEntry> enumEntries = null;
@@ -52,13 +55,13 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
 
         Map<String, EnumEntry> enumEntries = getEnumEntries();
         if (listener.getConnectionType().isOther()) {
-            List<EnumEntry> extendedServerboundEnums = enumEntries.values()
+            List<EnumEntry> extendedClientboundEnums = enumEntries.values()
                     .stream()
                     .filter(entry -> entry.isClientbound() && entry.isExtended())
                     .toList();
-            if (!extendedServerboundEnums.isEmpty()) {
-                // TODO: proper translated message
-                listener.disconnect(Component.literal("Server has extended enums"));
+            if (!extendedClientboundEnums.isEmpty()) {
+                // Use plain components as vanilla connections will be missing our translation keys
+                listener.disconnect(Component.literal("This server does not support vanilla clients as it has extended enums used in clientbound networking"));
             } else {
                 listener.finishCurrentTask(TYPE);
             }
@@ -74,8 +77,7 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
 
         Set<String> keyDiff = Sets.symmetricDifference(localEnumEntries.keySet(), remoteEnumEntries.keySet());
         if (!keyDiff.isEmpty()) {
-            // TODO: proper translated message
-            context.disconnect(Component.literal("Set of extensible enums doesn't match"));
+            context.disconnect(Component.translatable("neoforge.network.extensible_enums.enum_set_mismatch"));
             return;
         }
 
@@ -114,8 +116,32 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
         }
 
         if (!mismatched.isEmpty()) {
-            // TODO: proper translated message
-            context.disconnect(Component.literal("Enum entry mismatch between server and client"));
+            context.disconnect(Component.translatable("neoforge.network.extensible_enums.enum_entry_mismatch"));
+            StringBuilder message = new StringBuilder("The configuration or set of values added to extensible enums on the client and server do not match");
+            for (Map.Entry<String, Mismatch> entry : mismatched.entrySet()) {
+                String enumClass = entry.getKey();
+                message.append("\n").append(enumClass).append(": ");
+                switch (entry.getValue()) {
+                    case NETWORK_CHECK -> message.append("Mismatched NetworkCheck (server: ")
+                            .append(remoteEnumEntries.get(enumClass).networkCheck)
+                            .append(", client: ")
+                            .append(localEnumEntries.get(enumClass).networkCheck)
+                            .append(")");
+                    case EXTENSION -> {
+                        if (remoteEnumEntries.get(enumClass).isExtended()) {
+                            message.append("Enum has additional entries on the server but not on the client");
+                        } else {
+                            message.append("Enum has additional entries on the client but not on the server");
+                        }
+                    }
+                    case ENTRY_COUNT, ENTRY_MISMATCH -> message.append("Set of entries does not match (server: ")
+                            .append(remoteEnumEntries.get(enumClass).data.orElseThrow().entries)
+                            .append(", client: ")
+                            .append(localEnumEntries.get(enumClass).data.orElseThrow().entries)
+                            .append(")");
+                }
+            }
+            LOGGER.warn(message.toString());
             return;
         }
 
@@ -129,8 +155,7 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
     public static boolean handleVanillaServerConnection(ClientConfigurationPacketListener listener) {
         Collection<EnumEntry> enumEntries = getEnumEntries().values();
         if (enumEntries.stream().anyMatch(entry -> entry.isServerbound() && entry.isExtended())) {
-            // TODO: proper translated message
-            listener.disconnect(Component.literal("Client has extended enums"));
+            listener.disconnect(Component.translatable("neoforge.network.extensible_enums.no_vanilla_server"));
             return false;
         }
         return true;
