@@ -41,7 +41,7 @@ public abstract class CommonModLoader {
         return registriesLoaded;
     }
 
-    protected static void begin(Runnable periodicTask) {
+    protected static void begin(Runnable periodicTask, boolean datagen) {
         var syncExecutor = ModWorkManager.syncExecutor();
 
         ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
@@ -54,12 +54,14 @@ public abstract class CommonModLoader {
             registriesLoaded = true;
         });
 
-        ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
-            if (FMLEnvironment.dist == Dist.CLIENT) {
-                ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
-            }
-            ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
-        });
+        if (!datagen) {
+            ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
+                if (FMLEnvironment.dist == Dist.CLIENT) {
+                    ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
+                }
+                ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
+            });
+        }
     }
 
     protected static void load(Executor syncExecutor, Executor parallelExecutor) {
