@@ -172,8 +172,8 @@ import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.ModifyCustomSpawnersEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
-import net.neoforged.neoforge.event.level.ServerLevelEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -1130,14 +1130,14 @@ public class EventHooks {
     }
 
     /**
-     * Fires the {@link ServerLevelEvent.CustomSpawners}. Returns the custom spawners list.
+     * Fires the {@link ModifyCustomSpawnersEvent}. Returns the custom spawners list.
      * 
      * @param serverLevel    The server level.
      * @param customSpawners The original custom spawners.
      * @return The new custom spawners list.
      */
     public static List<CustomSpawner> getCustomSpawners(ServerLevel serverLevel, List<CustomSpawner> customSpawners) {
-        ServerLevelEvent.CustomSpawners event = new ServerLevelEvent.CustomSpawners(serverLevel, new ArrayList<>(customSpawners));
+        ModifyCustomSpawnersEvent event = new ModifyCustomSpawnersEvent(serverLevel, new ArrayList<>(customSpawners));
         NeoForge.EVENT_BUS.post(event);
         return event.getCustomSpawners();
     }
