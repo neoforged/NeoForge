@@ -22,6 +22,7 @@ public class CriticalHitEvent extends PlayerEvent {
 
     private float dmgMultiplier;
     private boolean isCriticalHit;
+    private boolean disableSweepAttack;
 
     /**
      * Fire via {@link CommonHooks#fireCriticalHit(Player, Entity, boolean, float)}
@@ -30,7 +31,7 @@ public class CriticalHitEvent extends PlayerEvent {
         super(player);
         this.target = target;
         this.dmgMultiplier = this.vanillaDmgMultiplier = dmgMultiplier;
-        this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
+        this.disableSweepAttack = this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
     }
 
     /**
@@ -80,6 +81,24 @@ public class CriticalHitEvent extends PlayerEvent {
      */
     public void setCriticalHit(boolean isCriticalHit) {
         this.isCriticalHit = isCriticalHit;
+    }
+
+    /**
+     * {@return if the attack disables sweep attack like vanilla critical hit}
+     * Not used if {@link #isCriticalHit()} is false.
+     */
+    public boolean disableSweepAttack() {
+        return this.disableSweepAttack;
+    }
+
+    /**
+     * Set if the attack should disable sweep attack like vanilla critical hit.
+     * Not used if {@link #isCriticalHit()} is false.
+     * 
+     * @param disableSweepAttack true if the attack disables sweep attack.
+     */
+    public void setDisableSweepAttack(boolean disableSweepAttack) {
+        this.disableSweepAttack = disableSweepAttack;
     }
 
     /**
