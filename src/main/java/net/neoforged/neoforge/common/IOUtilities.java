@@ -9,6 +9,8 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -19,6 +21,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -27,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 public final class IOUtilities {
     private static final String TEMP_FILE_SUFFIX = ".neoforge-tmp";
     private static final OpenOption[] OPEN_OPTIONS = {
-            StandardOpenOption.DSYNC,
             StandardOpenOption.WRITE,
             StandardOpenOption.TRUNCATE_EXISTING
     };
@@ -35,8 +37,8 @@ public final class IOUtilities {
     private IOUtilities() {}
 
     /**
-     * Cleans up any temporary files which may have been created due to previous
-     * writes to {@link #atomicWrite(Path, WriteCallback)}.
+     * Cleans up any temporary files that may have been left over from interrupted
+     * calls to {@link #atomicWrite(Path, WriteCallback)}.
      *
      * @param targetPath The target path to clean up temporary files in.
      * @param prefix     The prefix of temporary files to clean up, or null if all
@@ -62,7 +64,7 @@ public final class IOUtilities {
     /**
      * Behaves much the same as {@link NbtIo#writeCompressed(CompoundTag, Path)},
      * but uses {@link #atomicWrite(Path, WriteCallback)} behind the scenes to
-     * ensure the data is stored resilliently.
+     * ensure the data is stored resiliently.
      *
      * @param tag  The tag to write.
      * @param path The path to write the NBT to.
@@ -80,7 +82,7 @@ public final class IOUtilities {
     /**
      * Behaves much the same as {@link NbtIo#write(CompoundTag, Path)},
      * but uses {@link #atomicWrite(Path, WriteCallback)} behind the scenes to
-     * ensure the data is stored resilliently.
+     * ensure the data is stored resiliently.
      *
      * @param tag  The tag to write.
      * @param path The path to write the NBT to.
@@ -98,7 +100,7 @@ public final class IOUtilities {
 
     /**
      * Writes data to the given path "atomically", such that a crash will not
-     * leave the the file containing corrupted or otherwise half-written data.
+     * leave the file containing corrupted or otherwise half-written data.
      * <p>
      * This method operates by creating a temporary file, writing to that file,
      * and then moving the temporary file to the correct location after flushing.
@@ -122,8 +124,13 @@ public final class IOUtilities {
                 TEMP_FILE_SUFFIX);
 
         try {
-            try (OutputStream writeStream = Files.newOutputStream(tempPath, OPEN_OPTIONS)) {
-                writeCallback.write(writeStream);
+            try (var channel = FileChannel.open(tempPath, OPEN_OPTIONS)) {
+                // We need to prevent the callback from closing the channel, since that
+                // would prevent us from flushing it.
+                var stream = CloseShieldOutputStream.wrap((Channels.newOutputStream(channel)));
+                writeCallback.write(stream);
+                // Ensure the file is fully flushed to disk before moving it into place
+                channel.force(true);
             }
 
             // Now we try and move the file to the correct location, atomically if possible.
