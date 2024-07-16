@@ -1,19 +1,29 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
-@@ -80,6 +_,7 @@
+@@ -80,10 +_,14 @@
          this.visible = p_19532_;
          this.showIcon = p_19533_;
          this.hiddenEffect = p_316863_;
 +        this.effect.value().fillEffectCures(this.cures, this);
++        this.defaultCures = com.google.common.collect.ImmutableSet.copyOf(this.cures);
      }
  
      public MobEffectInstance(MobEffectInstance p_19543_) {
-@@ -97,6 +_,8 @@
+         this.effect = p_19543_.effect;
++        this.effect.value().fillEffectCures(this.cures, this);
++        this.defaultCures = com.google.common.collect.ImmutableSet.copyOf(this.cures);
+         this.setDetailsFrom(p_19543_);
+     }
+ 
+@@ -97,6 +_,11 @@
              p_324529_.showIcon(),
              p_324529_.hiddenEffect().map(p_323227_ -> new MobEffectInstance(p_324441_, p_323227_)).orElse(null)
          );
-+        this.cures.clear();
-+        p_324529_.cures().ifPresent(this.cures::addAll);
++        p_324529_.cures.ifPresent(cures -> {
++            java.util.Set<net.neoforged.neoforge.common.EffectCure> newCures = com.google.common.collect.Sets.newIdentityHashSet();
++            newCures.addAll(cures);
++            this.setCures(newCures);
++        });
      }
  
      private MobEffectInstance.Details asDetails() {
@@ -23,19 +33,42 @@
              this.showIcon(),
 -            Optional.ofNullable(this.hiddenEffect).map(MobEffectInstance::asDetails)
 +            Optional.ofNullable(this.hiddenEffect).map(MobEffectInstance::asDetails),
-+            Optional.of(this.getCures()).filter(cures -> !cures.isEmpty())
++            this.cures.equals(this.defaultCures) ? Optional.empty() : Optional.of(this.cures)
          );
      }
  
-@@ -124,6 +_,8 @@
+@@ -124,6 +_,7 @@
          this.ambient = p_19549_.ambient;
          this.visible = p_19549_.visible;
          this.showIcon = p_19549_.showIcon;
-+        this.cures.clear();
-+        this.cures.addAll(p_19549_.cures);
++        this.setCures(p_19549_);
      }
  
      public boolean update(MobEffectInstance p_19559_) {
+@@ -141,14 +_,23 @@
+ 
+             this.amplifier = p_19559_.amplifier;
+             this.duration = p_19559_.duration;
++            // Neo: use the cures of the stronger effect
++            this.setCures(p_19559_);
+             flag = true;
+         } else if (this.isShorterDurationThan(p_19559_)) {
+             if (p_19559_.amplifier == this.amplifier) {
+                 this.duration = p_19559_.duration;
++                // Neo: use the cures of the longer effect
++                this.setCures(p_19559_);
+                 flag = true;
+             } else if (this.hiddenEffect == null) {
+                 this.hiddenEffect = new MobEffectInstance(p_19559_);
++                // Neo: make the new hidden effect use this effect's cures
++                this.hiddenEffect.setCures(this);
+             } else {
++                // Neo: update the hidden effect with the input effect using the correct cures
++                p_19559_ = new MobEffectInstance(p_19559_);
++                p_19559_.setCures(this);
+                 this.hiddenEffect.update(p_19559_);
+             }
+         }
 @@ -324,11 +_,11 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
@@ -50,17 +83,50 @@
                  .result();
      }
  
-@@ -348,6 +_,15 @@
+@@ -348,6 +_,48 @@
          this.blendState.setImmediate(this);
      }
  
-+    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
++    private final net.neoforged.neoforge.common.util.SetReference<net.neoforged.neoforge.common.EffectCure, java.util.Set<net.neoforged.neoforge.common.EffectCure>> cures =
++            new net.neoforged.neoforge.common.util.SetReference<>(com.google.common.collect.Sets.newIdentityHashSet());
++    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> defaultCures;
 +
 +    /**
-+     * {@return the {@link net.neoforged.neoforge.common.EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}}
++     * @return an <a href="#unmodifiable">unmodifiable</a> view of the {@link net.neoforged.neoforge.common.EffectCure cures} which can cure the {@link MobEffect} held by this {@link MobEffectInstance}.
++     * <p>
++     * May differ from the set returned by {@link #getCures()} as cures may be modified.
++     * @see net.neoforged.neoforge.common.extensions.IMobEffectExtension#fillEffectCures(java.util.Set, MobEffectInstance)
++     */
++    public java.util.Set<net.neoforged.neoforge.common.EffectCure> getDefaultCures() {
++        return this.defaultCures;
++    }
++
++    /**
++     * @return the {@link net.neoforged.neoforge.common.EffectCure cures} which can cure this {@link MobEffectInstance}.
 +     */
 +    public java.util.Set<net.neoforged.neoforge.common.EffectCure> getCures() {
-+        return cures;
++        return this.cures;
++    }
++
++    /**
++     * Set the {@link #cures} of this {@link MobEffectInstance} with new cures,
++     * this will recursively set the {@link #cures} of the {@link #hiddenEffect},
++     * so the cures of hidden effects always matches the active effect.<br>
++     * @param cures the new cures.
++     */
++    private void setCures(java.util.Set<net.neoforged.neoforge.common.EffectCure> cures) {
++        if (this.hiddenEffect != null) {
++            this.hiddenEffect.setCures(cures);
++        }
++        this.cures.set(cures);
++    }
++
++    /**
++     * Set the {@link #cures} of this {@link MobEffectInstance} with the {@link #cures} of another {@link MobEffectInstance}.
++     * @param mobEffectInstance the {@link MobEffectInstance} to copy the cures.
++     */
++    private void setCures(MobEffectInstance mobEffectInstance) {
++        this.setCures(mobEffectInstance.cures.get());
 +    }
 +
      static class BlendState {
