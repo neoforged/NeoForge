@@ -100,6 +100,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.ArmorItem;
@@ -116,6 +117,7 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
@@ -711,21 +713,67 @@ public class CommonHooks {
         return true;
     }
 
-    private static ThreadLocal<Player> craftingPlayer = new ThreadLocal<Player>();
+    public static final class CraftingContext {
+        public final @Nullable Player player;
+        public final Level level;
+        public final @Nullable CraftingContainer container;
+        private @Nullable CraftingInput.Positioned positionedInput;
 
-    public static void setCraftingPlayer(Player player) {
-        craftingPlayer.set(player);
+        public CraftingContext(@Nullable Player player, Level level, @Nullable CraftingContainer container, @Nullable CraftingInput.Positioned positionedInput) {
+            this.player = player;
+            this.level = level;
+            this.container = container;
+            this.positionedInput = positionedInput;
+        }
+
+        @Nullable
+        CraftingInput.Positioned getPositionedInput() {
+            // calculating this is somewhat expensive, so we avoid precalculating it
+            // and cache / use the one from the vanilla code if possible
+            if (positionedInput == null && container != null)
+                positionedInput = container.asPositionedCraftInput();
+            return positionedInput;
+        }
     }
 
-    public static Player getCraftingPlayer() {
-        return craftingPlayer.get();
+    private static ThreadLocal<CraftingContext> craftingContext = new ThreadLocal<>();
+
+    public static void setCraftingContext(@Nullable CraftingContext context) {
+        craftingContext.set(context);
     }
 
+    public static void setCraftingContext(Level level, @Nullable Player player, @Nullable CraftingContainer container) {
+        craftingContext.set(new CraftingContext(player, level, container, null));
+    }
+
+    public static void setCraftingContext(Level level, @Nullable Player player, @Nullable CraftingContainer container, CraftingInput.Positioned positionedInput) {
+        craftingContext.set(new CraftingContext(player, level, container, positionedInput));
+    }
+
+    public static @Nullable CraftingContext getCraftingContext() {
+        return craftingContext.get();
+    }
+
+    @Deprecated(since = "1.21")
+    public static void setCraftingPlayer(@Nullable Player player) {
+        craftingContext.set(player == null ? null : new CraftingContext(player, player.level(), null, null));
+    }
+
+    @Deprecated(since = "1.21")
+    public static @Nullable Player getCraftingPlayer() {
+        CraftingContext context = craftingContext.get();
+        if (context == null) return null;
+        return context.player;
+    }
+
+    // TODO this is not called and the whole PlayerDestroyItemEvent probably needs to be reworked
     public static ItemStack getCraftingRemainingItem(ItemStack stack) {
         if (stack.getItem().hasCraftingRemainingItem(stack)) {
             stack = stack.getItem().getCraftingRemainingItem(stack);
             if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
-                EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
+                CraftingContext context = getCraftingContext();
+                if (context != null && context.player != null)
+                    EventHooks.onPlayerDestroyItem(context.player, stack, null);
                 return ItemStack.EMPTY;
             }
             return stack;

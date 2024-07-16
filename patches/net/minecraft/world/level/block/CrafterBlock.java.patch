@@ -1,0 +1,19 @@
+--- a/net/minecraft/world/level/block/CrafterBlock.java
++++ b/net/minecraft/world/level/block/CrafterBlock.java
+@@ -157,6 +_,8 @@
+     protected void dispenseFrom(BlockState p_307495_, ServerLevel p_307310_, BlockPos p_307672_) {
+         if (p_307310_.getBlockEntity(p_307672_) instanceof CrafterBlockEntity crafterblockentity) {
+             CraftingInput craftinginput = crafterblockentity.asCraftInput();
++
++            net.neoforged.neoforge.common.CommonHooks.setCraftingContext(p_307310_, null, crafterblockentity);
+             Optional<RecipeHolder<CraftingRecipe>> optional = getPotentialResults(p_307310_, craftinginput);
+             if (optional.isEmpty()) {
+                 p_307310_.levelEvent(1050, p_307672_, 0);
+@@ -185,6 +_,7 @@
+                     crafterblockentity.setChanged();
+                 }
+             }
++            net.neoforged.neoforge.common.CommonHooks.setCraftingContext(null);
+         }
+     }
+ 

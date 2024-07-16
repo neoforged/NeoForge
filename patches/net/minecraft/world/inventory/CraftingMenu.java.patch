@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/inventory/CraftingMenu.java
++++ b/net/minecraft/world/inventory/CraftingMenu.java
+@@ -70,6 +_,7 @@
+             CraftingInput craftinginput = p_150550_.asCraftInput();
+             ServerPlayer serverplayer = (ServerPlayer)p_150549_;
+             ItemStack itemstack = ItemStack.EMPTY;
++            net.neoforged.neoforge.common.CommonHooks.setCraftingContext(p_150548_, serverplayer, p_150550_);
+             Optional<RecipeHolder<CraftingRecipe>> optional = p_150548_.getServer()
+                 .getRecipeManager()
+                 .getRecipeFor(RecipeType.CRAFTING, craftinginput, p_150548_, p_345124_);
+@@ -83,6 +_,7 @@
+                     }
+                 }
+             }
++            net.neoforged.neoforge.common.CommonHooks.setCraftingContext(null);
+ 
+             p_150551_.setItem(0, itemstack);
+             p_150547_.setRemoteSlot(0, itemstack);
