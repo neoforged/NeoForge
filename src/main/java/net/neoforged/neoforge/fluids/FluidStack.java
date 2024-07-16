@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.fluids;
 
+import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -12,16 +13,20 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -30,11 +35,17 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
@@ -421,7 +432,49 @@ public final class FluidStack implements MutableDataComponentHolder {
      * Returns the hover name of this stack.
      */
     public Component getHoverName() {
+        @Nullable
+        Component customName = get(DataComponents.CUSTOM_NAME);
+        if (customName != null) return customName;
+        @Nullable
+        Component itemName = get(DataComponents.ITEM_NAME);
+        if (itemName != null) return itemName;
         return getFluidType().getDescription(this);
+    }
+
+    /**
+     * Returns the amount of this stack as a Component.
+     */
+    public Component getHoverAmount() {
+        FluidUnitSpec list = getFluidType().getUnits();
+        return ComponentUtils.formatList(list.getTooltipComponents(getAmount()), Component.translatable("fluid_unit.separator"));
+    }
+
+    /**
+     * Returns a tooltip for this fluid stack.
+     */
+    public List<Component> getTooltipLines(Item.TooltipContext pTooltipContext, @Nullable Player pPlayer, TooltipFlag pTooltipFlag) {
+        if (!pTooltipFlag.isCreative() && this.has(DataComponents.HIDE_TOOLTIP)) {
+            return List.of();
+        } else {
+            List<Component> list = Lists.newArrayList();
+            MutableComponent name = Component.empty().append(this.getHoverName());
+            @Nullable
+            Rarity rarity = get(DataComponents.RARITY);
+            if (rarity != null) name.withStyle(rarity.getStyleModifier());
+            if (has(DataComponents.CUSTOM_NAME)) name.withStyle(ChatFormatting.ITALIC);
+            list.add(name);
+
+            list.add(getHoverAmount());
+
+            Consumer<Component> consumer = list::add;
+            if (!this.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)) {
+                this.getFluid().getFluidType().appendHoverText(this, pTooltipContext, list, pTooltipFlag);
+            }
+
+            this.addToTooltip(DataComponents.LORE, pTooltipContext, consumer, pTooltipFlag);
+
+            return list;
+        }
     }
 
     /**
