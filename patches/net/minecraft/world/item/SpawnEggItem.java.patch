@@ -24,7 +24,7 @@
          return BY_ID.get(p_43214_);
      }
  
-@@ -143,12 +_,12 @@
+@@ -143,12 +_,17 @@
  
      public EntityType<?> getType(ItemStack p_330335_) {
          CustomData customdata = p_330335_.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
@@ -36,6 +36,11 @@
      public FeatureFlagSet requiredFeatures() {
 -        return this.defaultType.requiredFeatures();
 +        return this.getDefaultType().requiredFeatures();
++    }
++
++    @Override
++    public boolean isEnabled() {
++        return super.isEnabled() && getDefaultType().isEnabled();
      }
  
      public Optional<Mob> spawnOffspringFromSpawnEgg(
