@@ -115,6 +115,10 @@
   "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "No pregeneration currently running. Run `/neoforge generate help` to see commands for starting generation.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Generates a square centered on the given position that is chunkRadius * 2 on each side.\n§2/neoforge generate stop §r§f- Stops the current generation and displays progress that it had completed.\n§2/neoforge generate status §r- Displays the progress completed for the currently running generation.\n§2/neoforge generate help §r- Displays this message.\nGeneral tips: If running from a server console, you can run generate in different dimensions by using /execute in <dimension> neoforge generate...",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
 
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",

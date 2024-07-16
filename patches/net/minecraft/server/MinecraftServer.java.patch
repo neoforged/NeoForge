@@ -173,6 +173,29 @@
              GameTestTicker.SINGLETON.tick();
          }
  
+@@ -1043,11 +_,17 @@
+     }
+ 
+     private void synchronizeTime(ServerLevel p_276371_) {
+-        this.playerList
+-            .broadcastAll(
+-                new ClientboundSetTimePacket(p_276371_.getGameTime(), p_276371_.getDayTime(), p_276371_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)),
+-                p_276371_.dimension()
+-            );
++        ClientboundSetTimePacket vanillaPacket = new ClientboundSetTimePacket(p_276371_.getGameTime(), p_276371_.getDayTime(), p_276371_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT));
++        net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload neoPacket = new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_276371_.getGameTime(), p_276371_.getDayTime(), p_276371_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT), p_276371_.getDayTimeFraction(), p_276371_.getDayTimePerTick());
++        for (ServerPlayer serverplayer : playerList.getPlayers()) {
++            if (serverplayer.level().dimension() == p_276371_.dimension()) {
++          	    if (serverplayer.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
++							      serverplayer.connection.send(neoPacket);
++          	    } else {
++                    serverplayer.connection.send(vanillaPacket);
++          	    }
++            }
++        }
+     }
+ 
+     public void forceTimeSynchronization() {
 @@ -1118,7 +_,7 @@
  
      @DontObfuscate
