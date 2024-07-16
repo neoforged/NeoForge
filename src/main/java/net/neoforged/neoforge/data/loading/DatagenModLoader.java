@@ -40,7 +40,7 @@ public class DatagenModLoader extends CommonModLoader {
         LOGGER.info("Initializing Data Gatherer for mods {}", mods);
         runningDataGen = true;
         Bootstrap.bootStrap();
-        begin(() -> {});
+        begin(() -> {}, true);
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
         dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, serverGenerators,
                 clientGenerators, devToolGenerators, reportsGenerator, structureValidator, flat);

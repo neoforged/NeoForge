@@ -29,7 +29,7 @@ public class ServerModLoader extends CommonModLoader {
         });
         LanguageHook.loadBuiltinLanguages();
         try {
-            begin(() -> {});
+            begin(() -> {}, false);
             load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
             finish(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
         } catch (ModLoadingException error) {
