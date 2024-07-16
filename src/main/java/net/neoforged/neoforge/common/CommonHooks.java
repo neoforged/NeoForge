@@ -130,6 +130,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -169,6 +170,7 @@ import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.neoforge.event.ModMismatchEvent;
 import net.neoforged.neoforge.event.RegisterStructureConversionsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.ValidityEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
@@ -1537,5 +1539,17 @@ public class CommonHooks {
         level.setBlock(pos, blockstate, 3);
         level.gameEvent(null, GameEvent.SHEAR, pos);
         return true;
+    }
+
+    public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance) {
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.Menu(player, level, blockPos, distance)).getResult();
+    }
+
+    public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance, AbstractContainerMenu menu) {
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.ContainerMenu(player, level, blockPos, distance, menu)).getResult();
+    }
+
+    public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance, SignBlockEntity signBlockEntity) {
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.Sign(player, level, blockPos, distance, signBlockEntity)).getResult();
     }
 }

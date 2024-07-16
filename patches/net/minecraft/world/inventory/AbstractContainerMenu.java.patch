@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
+@@ -69,7 +_,7 @@
+ 
+     protected static boolean stillValid(ContainerLevelAccess p_38890_, Player p_38891_, Block p_38892_) {
+         return p_38890_.evaluate(
+-            (p_339522_, p_339523_) -> !p_339522_.getBlockState(p_339523_).is(p_38892_) ? false : p_38891_.canInteractWithBlock(p_339523_, 4.0), true
++            (p_339522_, p_339523_) -> !p_339522_.getBlockState(p_339523_).is(p_38892_) ? false : net.neoforged.neoforge.common.CommonHooks.menuValidity(p_38891_, p_339522_, p_339523_, 4.0), true
+         );
+     }
+ 
 @@ -511,6 +_,11 @@
      }
  

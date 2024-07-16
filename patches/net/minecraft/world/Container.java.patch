@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/Container.java
++++ b/net/minecraft/world/Container.java
+@@ -88,7 +_,7 @@
+         if (level == null) {
+             return false;
+         } else {
+-            return level.getBlockEntity(blockpos) != p_272877_ ? false : p_272670_.canInteractWithBlock(blockpos, (double)p_320837_);
++            return level.getBlockEntity(blockpos) != p_272877_ ? false : net.neoforged.neoforge.common.CommonHooks.menuValidity(p_272670_, level, blockpos, (double)p_320837_);
+         }
+     }
+ }
