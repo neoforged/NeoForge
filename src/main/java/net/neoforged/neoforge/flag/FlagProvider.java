@@ -15,6 +15,12 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Simple data generator to be used by modders to generate their {@code flags.json} files.
+ * <p>
+ * All flags within the generated file will be marked as enabled at runtime.<br>
+ * <sub>Only if the contained datapack is enabled</sub>
+ */
 public abstract class FlagProvider implements DataProvider {
     private final Set<ResourceLocation> flags = Sets.newHashSet();
     private final PackOutput pack;

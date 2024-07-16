@@ -20,6 +20,11 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Main brains for the whole flag system.
+ * <p>
+ * Not to be used directly, modders should use {@linkplain Flags}.
+ */
 @ApiStatus.Internal
 public final class FlagManager {
     public static final FlagManager INSTANCE = new FlagManager();

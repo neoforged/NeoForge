@@ -14,7 +14,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Payload used when syncing flags to clients.
+ * <p>
+ * Not to be used by modders.
+ */
+@ApiStatus.Internal
 public record SyncFlagsPayload(Object2BooleanMap<ResourceLocation> enabledFlags) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SyncFlagsPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "modded_feature_flags"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncFlagsPayload> STREAM_CODEC = StreamCodec.of(

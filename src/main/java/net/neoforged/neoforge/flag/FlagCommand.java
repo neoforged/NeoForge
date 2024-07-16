@@ -22,7 +22,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.CommonColors;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Command provided for easier flag testing.
+ * <p>
+ * Provided in development workspaces only, not to be used in production builds.
+ * <p>
+ * Requires op level of {@linkplain Commands#LEVEL_ADMINS}
+ * <ul>
+ * <li>{@code /neoforge flag list} - Lists all known flags and whether ot not they are enabled</li>
+ * <li>{@code /neoforge flag [enable|disable] <flag>} - Enables/Disables the given flag</li>
+ * </ul>
+ */
+@ApiStatus.Internal
 public interface FlagCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return literal("flag")
