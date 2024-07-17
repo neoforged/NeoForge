@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.entity.living;
 
-import java.lang.invoke.MethodHandle;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Objects;
@@ -27,7 +26,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.animal.allay.Allay;
@@ -64,7 +62,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTestPlayer;
-import net.neoforged.testframework.impl.ReflectionUtils;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = { LivingEntityTests.GROUP + ".event", "event" })
@@ -339,13 +336,7 @@ public class LivingEntityEventTests {
         /* This event captures the change in new damage from the previous event for use in checks.*/
         test.eventListeners().forge().addListener((final LivingDamageEvent.Post event) -> {
             if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
-                try {
-                    MethodHandle methodHandle = ReflectionUtils.fieldHandle(LivingEntity.class.getDeclaredField("damageContainers"));
-                    player.setData(VALUE_ABSORPTION, ((java.util.Stack<net.neoforged.neoforge.common.damagesource.DamageContainer>) methodHandle.invoke(player)).peek().getReduction(DamageContainer.Reduction.ABSORPTION));
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-
+                player.setData(VALUE_ABSORPTION, event.getReduction(DamageContainer.Reduction.ABSORPTION));
                 player.setData(VALUE_NEW_DAMAGE, event.getNewDamage());
             }
         });
