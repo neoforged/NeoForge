@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
@@ -139,6 +140,7 @@ import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.flag.FlagAttachment;
+import net.neoforged.neoforge.flag.Flags;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -527,6 +529,11 @@ public class NeoForgeMod {
 
         CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getFmlVersion);
         CrashReportCallables.registerCrashCallable("NeoForge", NeoForgeVersion::getVersion);
+
+        CrashReportCallables.registerCrashCallable("Enabled Feature Flags (Modded)", () -> Flags.getFlags().stream()
+                .filter(Flags::isEnabled)
+                .map(Object::toString)
+                .collect(Collectors.joining(", ")));
 
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
