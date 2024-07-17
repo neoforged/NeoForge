@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
@@ -50,13 +51,13 @@ public final class ClientExtensionsManager {
         }
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "1.21")
     public static void earlyInit() {
         // Minecraft instance isn't available in datagen, so don't initialize client extensions in datagen
-        if (net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen()) return;
+        if (DatagenModLoader.isRunningDataGen()) return;
 
         if (earlyInitialized) {
-            throw new IllegalStateException("Duplicate initialization of ClientExtensionsManager");
+            throw new IllegalStateException("Duplicate early initialization of ClientExtensionsManager");
         }
 
         earlyInitialized = true;
@@ -68,7 +69,7 @@ public final class ClientExtensionsManager {
 
     public static void init() {
         // Minecraft instance isn't available in datagen, so don't initialize client extensions in datagen
-        if (net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen()) return;
+        if (DatagenModLoader.isRunningDataGen()) return;
 
         if (initialized) {
             throw new IllegalStateException("Duplicate initialization of ClientExtensionsManager");

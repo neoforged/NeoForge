@@ -849,7 +849,7 @@ public class FluidType {
     /**
      * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "1.21")
     public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {}
 
     /**

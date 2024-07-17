@@ -152,7 +152,7 @@
 +     * Neo: Allowing mods to define client behavior for their Blocks
 +     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
 +     */
-+    @Deprecated(forRemoval = true)
++    @Deprecated(forRemoval = true, since = "1.21")
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions> consumer) {
 +    }
 +
