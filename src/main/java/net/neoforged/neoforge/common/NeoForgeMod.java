@@ -494,8 +494,7 @@ public class NeoForgeMod {
             .builder(() -> new FlagAttachment(new Object2BooleanOpenHashMap<>()))
             .serialize(FlagAttachment.CODEC)
             .copyHandler((attachment, holder, provider) -> new FlagAttachment(new Object2BooleanOpenHashMap<>(attachment.flags())))
-            .build()
-    );
+            .build());
 
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket

@@ -33,13 +33,13 @@ public final class FlagManager {
     public void markDirty() {
         var server = ServerLifecycleHooks.getCurrentServer();
 
-        if(server == null)
+        if (server == null)
             return;
 
         var level = server.overworld();
         level.setData(NeoForgeMod.LEVEL_FLAG_DATA, new FlagAttachment(enabledFlagsView));
 
-        if(!level.isClientSide)
+        if (!level.isClientSide)
             syncToClient(null);
     }
 
@@ -52,7 +52,7 @@ public final class FlagManager {
     }
 
     public boolean setEnabled(ResourceLocation flag, boolean enabled) {
-        if(setEnabledBatched(flag, enabled)) {
+        if (setEnabledBatched(flag, enabled)) {
             markDirty();
             return true;
         }
@@ -73,7 +73,7 @@ public final class FlagManager {
                 changed = true;
         }
 
-        if(changed)
+        if (changed)
             markDirty();
     }
 
