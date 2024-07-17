@@ -127,7 +127,7 @@ public final class IOUtilities {
             try (var channel = FileChannel.open(tempPath, OPEN_OPTIONS)) {
                 // We need to prevent the callback from closing the channel, since that
                 // would prevent us from flushing it.
-                var stream = CloseShieldOutputStream.wrap((Channels.newOutputStream(channel)));
+                var stream = CloseShieldOutputStream.wrap(Channels.newOutputStream(channel));
                 writeCallback.write(stream);
                 // Ensure the file is fully flushed to disk before moving it into place
                 channel.force(true);
