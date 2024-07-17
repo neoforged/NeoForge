@@ -515,10 +515,9 @@ public class EventHooks {
         return event;
     }
 
-    public static int onItemExpire(ItemEntity entity, ItemStack item) {
-        if (item.isEmpty()) return -1;
-        ItemExpireEvent event = new ItemExpireEvent(entity, (item.isEmpty() ? 6000 : item.getItem().getEntityLifespan(item, entity.level())));
-        if (!NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
+    public static int onItemExpire(ItemEntity entity) {
+        ItemExpireEvent event = new ItemExpireEvent(entity);
+        NeoForge.EVENT_BUS.post(event);
         return event.getExtraLife();
     }
 
