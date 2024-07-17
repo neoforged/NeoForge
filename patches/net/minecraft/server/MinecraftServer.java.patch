@@ -186,11 +186,11 @@
 +        net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload neoPacket = new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_276371_.getGameTime(), p_276371_.getDayTime(), p_276371_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT), p_276371_.getDayTimeFraction(), p_276371_.getDayTimePerTick());
 +        for (ServerPlayer serverplayer : playerList.getPlayers()) {
 +            if (serverplayer.level().dimension() == p_276371_.dimension()) {
-+          	    if (serverplayer.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
-+							      serverplayer.connection.send(neoPacket);
-+          	    } else {
++                if (serverplayer.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
++                    serverplayer.connection.send(neoPacket);
++                } else {
 +                    serverplayer.connection.send(vanillaPacket);
-+          	    }
++                }
 +            }
 +        }
      }

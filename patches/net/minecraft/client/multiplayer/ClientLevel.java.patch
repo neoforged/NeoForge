@@ -136,7 +136,7 @@
  
          public void onSectionChange(Entity p_233660_) {
          }
-     }
++    }
 +
 +    @Override
 +    public java.util.Collection<net.neoforged.neoforge.entity.PartEntity<?>> getPartEntities() {
@@ -168,20 +168,20 @@
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void setDayTimeFraction(float dayTimeFraction) {
-+		    this.dayTimeFraction = dayTimeFraction;
-+		}
++        this.dayTimeFraction = dayTimeFraction;
++    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+		public float getDayTimeFraction() {
-+		    return dayTimeFraction;
-+		}
++    public float getDayTimeFraction() {
++        return dayTimeFraction;
++    }
 +
-+		public float getDayTimePerTick() {
-+		    return dayTimePerTick;
-+		}
++    public float getDayTimePerTick() {
++        return dayTimePerTick;
++    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+		public void setDayTimePerTick(float dayTimePerTick) {
-+		    this.dayTimePerTick = dayTimePerTick;
-+		}
++    public void setDayTimePerTick(float dayTimePerTick) {
++        this.dayTimePerTick = dayTimePerTick;
+     }
  }

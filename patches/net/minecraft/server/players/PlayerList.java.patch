@@ -108,7 +108,7 @@
          WorldBorder worldborder = this.server.overworld().getWorldBorder();
          p_11230_.connection.send(new ClientboundInitializeBorderPacket(worldborder));
 +        if (p_11230_.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
-+          p_11230_.connection.send(new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT), p_11231_.getDayTimeFraction(), p_11231_.getDayTimePerTick()));
++            p_11230_.connection.send(new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT), p_11231_.getDayTimeFraction(), p_11231_.getDayTimePerTick()));
 +        } else {
          p_11230_.connection
              .send(new ClientboundSetTimePacket(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)));

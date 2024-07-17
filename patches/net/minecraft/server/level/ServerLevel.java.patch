@@ -203,7 +203,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1733,24 +_,104 @@
+@@ -1733,24 +_,106 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
@@ -272,21 +272,21 @@
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void setDayTimeFraction(float dayTimeFraction) {
-+    	serverLevelData.setDayTimeFraction(dayTimeFraction);
-+		}
++        serverLevelData.setDayTimeFraction(dayTimeFraction);
++    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+		public float getDayTimeFraction() {
-+			return serverLevelData.getDayTimeFraction();
-+		}
++    public float getDayTimeFraction() {
++        return serverLevelData.getDayTimeFraction();
++    }
 +
 +    /**
 +     * Returns the current ratio between game ticks and clock ticks. If this value is negative, no
 +     * speed has been set and those two are coupled 1:1 (i.e. vanilla mode).
 +     */
-+		public float getDayTimePerTick() {
-+			return serverLevelData.getDayTimePerTick();
-+		}
++    public float getDayTimePerTick() {
++        return serverLevelData.getDayTimePerTick();
++    }
 +
 +    /**
 +     * This allows mods to set the rate time flows in a level. By default, each game tick the clock time
@@ -294,7 +294,7 @@
 +     * forming a Minecraft day.
 +     * <p>
 +     * This can be sped up for shorter days by giving a higher number, or slowed down for longer days
-+     * with a smaller number.
++     * with a smaller number. A negative value will reset it back to vanilla logic.
 +     * <p>
 +     * This value can also be changed with the command <code>/neoforge day</code>, where you can set
 +     * either the speed or a day length in minutes.
@@ -306,8 +306,10 @@
 +     */
 +    @Override
 +    public void setDayTimePerTick(float dayTimePerTick) {
-+    	  serverLevelData.setDayTimePerTick(dayTimePerTick);
-+        server.forceTimeSynchronization();
++        if (dayTimePerTick != getDayTimePerTick() && dayTimePerTick != 0f) {
++            serverLevelData.setDayTimePerTick(dayTimePerTick);
++            server.forceTimeSynchronization();
++        }
 +    }
 +
  }
