@@ -20,6 +20,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
@@ -34,7 +35,6 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.flag.FlagAttachment;
 import net.neoforged.neoforge.flag.FlagLoader;
@@ -183,11 +183,10 @@ public class NeoForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void serverStarted(ServerStartedEvent event) {
-        event.getServer()
-                .overworld()
-                .getExistingData(NeoForgeMod.LEVEL_FLAG_DATA)
-                .map(FlagAttachment::flags)
-                .ifPresent(flags -> FlagManager.INSTANCE.setEnabled(flags, true));
+    public void levelLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level && level.dimension() == Level.OVERWORLD)
+            level.getExistingData(NeoForgeMod.LEVEL_FLAG_DATA)
+                    .map(FlagAttachment::flags)
+                    .ifPresent(flags -> FlagManager.INSTANCE.setEnabled(flags, true));
     }
 }
