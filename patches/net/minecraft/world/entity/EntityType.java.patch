@@ -124,11 +124,14 @@
  
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
-@@ -1309,11 +_,32 @@
+@@ -1309,11 +_,35 @@
              return this;
          }
  
-+        @Deprecated // prefer `requiredFlags`
++        /**
++         * @deprecated For modded feature flags, use {@linkplain #requiredFlags(ResourceLocation...)} instead.
++         */
++        @Deprecated
          public EntityType.Builder<T> requiredFeatures(FeatureFlag... p_251646_) {
              this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_251646_);
              return this;

@@ -205,11 +205,14 @@
          }
  
          public BlockBehaviour.Properties ignitedByLava() {
-@@ -1215,8 +_,14 @@
+@@ -1215,8 +_,17 @@
              return this;
          }
  
-+        @Deprecated // prefer `requiredFlags`
++        /**
++         * @deprecated For modded feature flags, use {@linkplain #requiredFlags(ResourceLocation...)} instead.
++         */
++        @Deprecated
          public BlockBehaviour.Properties requiredFeatures(FeatureFlag... p_248792_) {
              this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_248792_);
 +            return this;

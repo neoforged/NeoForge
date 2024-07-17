@@ -8,10 +8,13 @@
  
      public Potion(MobEffectInstance... p_43487_) {
          this(null, p_43487_);
-@@ -34,6 +_,7 @@
+@@ -34,6 +_,10 @@
          this.effects = List.of(p_43485_);
      }
  
++    /**
++     * @deprecated For modded feature flags, use {@linkplain #requiredFlags(net.minecraft.resources.ResourceLocation...)} instead.
++     */
 +    @Deprecated // prefer `requiredFlags`
      public Potion requiredFeatures(FeatureFlag... p_338520_) {
          this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_338520_);
