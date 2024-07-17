@@ -12,6 +12,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackLinkedSet;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,7 +129,9 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      */
     public final FluidStack[] getStacks() {
         if (stacks == null) {
-            stacks = generateStacks().toArray(FluidStack[]::new);
+            stacks = generateStacks()
+                    .collect(Collectors.toCollection(FluidStackLinkedSet::createTypeAndComponentsSet))
+                    .toArray(FluidStack[]::new);
         }
 
         return stacks;

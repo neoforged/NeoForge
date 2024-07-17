@@ -113,13 +113,13 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         if (isParentTab(visibility)) {
             assertTargetExists(parentEntries, existingEntry);
             assertNewEntryDoesNotAlreadyExists(parentEntries, newEntry);
-            parentEntries.addBefore(existingEntry, newEntry);
+            parentEntries.addAfter(existingEntry, newEntry);
         }
 
         if (isSearchTab(visibility)) {
             assertTargetExists(searchEntries, existingEntry);
             assertNewEntryDoesNotAlreadyExists(searchEntries, newEntry);
-            searchEntries.addBefore(existingEntry, newEntry);
+            searchEntries.addAfter(existingEntry, newEntry);
         }
     }
 
@@ -135,13 +135,13 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
         if (isParentTab(visibility)) {
             assertTargetExists(parentEntries, existingEntry);
             assertNewEntryDoesNotAlreadyExists(parentEntries, newEntry);
-            parentEntries.addAfter(existingEntry, newEntry);
+            parentEntries.addBefore(existingEntry, newEntry);
         }
 
         if (isSearchTab(visibility)) {
             assertTargetExists(searchEntries, existingEntry);
             assertNewEntryDoesNotAlreadyExists(searchEntries, newEntry);
-            searchEntries.addAfter(existingEntry, newEntry);
+            searchEntries.addBefore(existingEntry, newEntry);
         }
     }
 
