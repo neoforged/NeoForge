@@ -10,7 +10,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 /**
  * Event that is fired when an {@link ItemEntity}'s age has reached its maximum
  * lifespan. Adding extra life time will prevent the {@link ItemEntity} from being
- * flagged as dead, thus staying it's removal from the world.
+ * flagged as dead, thus staying its removal from the world.
  * <p>
  * Note that using this event, you can ony extend the lifespan up to {@link Short#MAX_VALUE} - 1 ticks (27.5 minutes).
  * To extend an item's lifespan above that, use either {@link ItemEntity#setExtendedLifetime()}
