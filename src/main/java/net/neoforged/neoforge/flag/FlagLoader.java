@@ -20,14 +20,23 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.jetbrains.annotations.ApiStatus;
 
-final class FlagLoader extends SimplePreparableReloadListener<Set<ResourceLocation>> {
+/**
+ * Main resource loader for {@code flags.json} data file.
+ * <p>
+ * Not to be used by modders.
+ */
+@ApiStatus.Internal
+public final class FlagLoader extends SimplePreparableReloadListener<Set<ResourceLocation>> {
+    public static final FlagLoader INSTANCE = new FlagLoader();
+
     static final String FILE = "flags.json";
     static final Codec<List<ResourceLocation>> CODEC = ResourceLocation.CODEC.listOf();
 
     private final Gson gson = new GsonBuilder().create();
 
-    FlagLoader() {}
+    private FlagLoader() {}
 
     @Override
     protected Set<ResourceLocation> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
@@ -73,8 +82,6 @@ final class FlagLoader extends SimplePreparableReloadListener<Set<ResourceLocati
     protected void apply(Set<ResourceLocation> flags, ResourceManager resourceManager, ProfilerFiller profiler) {
         var flagMap = new Object2BooleanOpenHashMap<ResourceLocation>(flags.size());
         flags.forEach(flag -> flagMap.put(flag, true));
-
-        if (FlagManager.INSTANCE.setEnabled(flagMap, false))
-            FlagManager.INSTANCE.markDirty(true, true);
+        FlagManager.INSTANCE.setEnabled(flagMap, false);
     }
 }

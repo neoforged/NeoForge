@@ -10,11 +10,7 @@ import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
@@ -34,21 +30,37 @@ public final class FlagManager {
 
     private FlagManager() {}
 
-    void markDirty(boolean savedData, boolean sync) {
-        if (savedData)
-            FlagSavedData.accept(SavedData::setDirty);
-        if (sync)
+    public void markDirty() {
+        var server = ServerLifecycleHooks.getCurrentServer();
+
+        if(server == null)
+            return;
+
+        var level = server.overworld();
+        level.setData(NeoForgeMod.LEVEL_FLAG_DATA, new FlagAttachment(enabledFlagsView));
+
+        if(!level.isClientSide)
             syncToClient(null);
     }
 
-    boolean setEnabled(ResourceLocation flag, boolean enabled) {
+    // must invoke markDirty if result == true
+    public boolean setEnabledBatched(ResourceLocation flag, boolean enabled) {
         var wasEnabled = enabledFlags.getOrDefault(flag, false);
         enabledFlags.put(flag, enabled);
         var isEnabled = enabledFlags.getOrDefault(flag, false);
         return wasEnabled != isEnabled;
     }
 
-    boolean setEnabled(Object2BooleanMap<ResourceLocation> flags, boolean reset) {
+    public boolean setEnabled(ResourceLocation flag, boolean enabled) {
+        if(setEnabledBatched(flag, enabled)) {
+            markDirty();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void setEnabled(Object2BooleanMap<ResourceLocation> flags, boolean reset) {
         var changed = false;
 
         if (reset) {
@@ -57,14 +69,15 @@ public final class FlagManager {
         }
 
         for (var entry : flags.object2BooleanEntrySet()) {
-            if (setEnabled(entry.getKey(), entry.getBooleanValue()))
+            if (setEnabledBatched(entry.getKey(), entry.getBooleanValue()))
                 changed = true;
         }
 
-        return changed;
+        if(changed)
+            markDirty();
     }
 
-    private void syncToClient(@Nullable ServerPlayer player) {
+    public void syncToClient(@Nullable ServerPlayer player) {
         if (player == null) {
             if (ServerLifecycleHooks.getCurrentServer() == null)
                 return;
@@ -74,19 +87,5 @@ public final class FlagManager {
         }
 
         PacketDistributor.sendToPlayer(player, new SyncFlagsPayload(enabledFlags));
-    }
-
-    public static void setup() {
-        NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> event.addListener(new FlagLoader()));
-
-        NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, event -> {
-            if (event.getEntity() instanceof ServerPlayer player)
-                INSTANCE.syncToClient(player);
-        });
-
-        NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, event -> {
-            // exists purely to load the saved data
-            FlagSavedData.get(event.getServer());
-        });
     }
 }

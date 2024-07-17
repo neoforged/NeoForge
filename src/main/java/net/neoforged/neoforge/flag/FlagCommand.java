@@ -93,7 +93,6 @@ public interface FlagCommand {
 
         if (changed) {
             src.sendSuccess(() -> Component.literal(enable ? "Enabled flag: " : "Disabled flag: ").append(flag.toString()), false);
-            FlagManager.INSTANCE.markDirty(true, true);
             return Command.SINGLE_SUCCESS;
         }
 
