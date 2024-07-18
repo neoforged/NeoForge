@@ -12,7 +12,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
