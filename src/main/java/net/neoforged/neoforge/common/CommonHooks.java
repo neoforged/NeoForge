@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -100,6 +102,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.ArmorItem;
@@ -149,6 +152,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -1539,6 +1543,22 @@ public class CommonHooks {
         level.setBlock(pos, blockstate, 3);
         level.gameEvent(null, GameEvent.SHEAR, pos);
         return true;
+    }
+
+    public static Map<RecipeBookType, Pair<String, String>> buildRecipeBookTypeTagFields(Map<RecipeBookType, Pair<String, String>> vanillaMap) {
+        ExtensionInfo extInfo = RecipeBookType.getExtensionInfo();
+        if (extInfo.extended()) {
+            vanillaMap = new HashMap<>(vanillaMap);
+            for (RecipeBookType type : RecipeBookType.values()) {
+                if (type.ordinal() < extInfo.vanillaCount()) {
+                    continue;
+                }
+                String name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, type.name());
+                vanillaMap.put(type, Pair.of("is" + name + "GuiOpen", "is" + name + "FilteringCraftable"));
+            }
+            vanillaMap = Map.copyOf(vanillaMap);
+        }
+        return vanillaMap;
     }
 
     public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance) {

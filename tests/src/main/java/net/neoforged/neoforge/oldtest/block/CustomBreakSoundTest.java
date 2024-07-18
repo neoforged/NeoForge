@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
-import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -18,7 +17,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -38,7 +39,7 @@ public class CustomBreakSoundTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("testblock", TestBlock::new, BlockBehaviour.Properties.of());
+    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("testblock", Block::new, BlockBehaviour.Properties.of());
     private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
     public CustomBreakSoundTest(IEventBus modBus) {
@@ -46,6 +47,10 @@ public class CustomBreakSoundTest {
             BLOCKS.register(modBus);
             ITEMS.register(modBus);
             modBus.addListener(CustomBreakSoundTest::addCreative);
+
+            if (FMLEnvironment.dist.isClient()) {
+                modBus.addListener(ClientEvents::onRegisterClientExtensions);
+            }
         }
     }
 
@@ -54,14 +59,9 @@ public class CustomBreakSoundTest {
             event.accept(TEST_BLOCK_ITEM);
     }
 
-    private static class TestBlock extends Block {
-        public TestBlock(Properties props) {
-            super(props);
-        }
-
-        @Override
-        public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
-            consumer.accept(new IClientBlockExtensions() {
+    private static final class ClientEvents {
+        private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerBlock(new IClientBlockExtensions() {
                 @Override
                 public boolean playBreakSound(BlockState state, Level level, BlockPos pos) {
                     SoundEvent sound = switch (Math.abs(pos.getX()) % 3) {
@@ -73,7 +73,7 @@ public class CustomBreakSoundTest {
                     level.playLocalSound(pos, sound, SoundSource.BLOCKS, 1.0F, 0.8F, false);
                     return true;
                 }
-            });
+            }, TEST_BLOCK.get());
         }
     }
 }
