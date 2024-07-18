@@ -81,4 +81,11 @@ public interface IPlayerExtension {
         // TODO 1.20.5: consider forcing mods to use the attribute
         return self().getAbilities().mayfly || self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
     }
+
+    /**
+     * {@return whether this player is a fake player}
+     */
+    default boolean isFakePlayer() {
+        return false;
+    }
 }
