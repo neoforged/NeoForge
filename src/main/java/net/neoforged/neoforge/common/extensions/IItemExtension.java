@@ -726,7 +726,7 @@ public interface IItemExtension {
     }
 
     /**
-     * @return false to make item entity immune to the damage.
+     * {@return false to make item entity immune to the damage.}
      */
     default boolean canBeHurtBy(ItemStack stack, DamageSource source) {
         return true;
