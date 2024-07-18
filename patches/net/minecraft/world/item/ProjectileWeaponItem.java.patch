@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
-@@ -24,12 +_,28 @@
+@@ -24,12 +_,43 @@
          super(p_43009_);
      }
  
 +    /**
-+     * Use ItemStack sensitive version instead
++     * @deprecated Use ItemStack sensitive version {@link ProjectileWeaponItem#getSupportedHeldProjectiles(ItemStack)}
 +     */
 +    @Deprecated
      public Predicate<ItemStack> getSupportedHeldProjectiles() {
@@ -13,15 +13,30 @@
      }
  
 +    /**
-+     * Use ItemStack sensitive version instead
++     * If the allowed projectile is weapon stack dependent, return {@code ItemStack.EMPTY}
++     * @deprecated Use ItemStack sensitive version {@link ProjectileWeaponItem#getAllSupportedProjectiles(ItemStack)}
 +     */
 +    @Deprecated
      public abstract Predicate<ItemStack> getAllSupportedProjectiles();
  
++    /**
++     * Override this method if the weapon stack allows special projectile that would only be used if it's in hand.
++     * The default return value is a union-predicate of {@link ProjectileWeaponItem#getAllSupportedProjectiles(ItemStack)}
++     * and {@link ProjectileWeaponItem#getSupportedHeldProjectiles()}
++     *
++     * @param stack The ProjectileWeapon stack
++     * @return A predicate that returns true for supported projectile stack in hand
++     */
 +    public Predicate<ItemStack> getSupportedHeldProjectiles(ItemStack stack) {
-+        return this.getSupportedHeldProjectiles();
++        return getAllSupportedProjectiles(stack).or(getSupportedHeldProjectiles());
 +    }
 +
++    /**
++     * Override this method if the allowed projectile is weapon stack dependent.
++     *
++     * @param stack The ProjectileWeapon stack
++     * @return A predicate that returns true for all supported projectile stack regardless of position
++     */
 +    public Predicate<ItemStack> getAllSupportedProjectiles(ItemStack stack) {
 +        return getAllSupportedProjectiles();
 +    }
