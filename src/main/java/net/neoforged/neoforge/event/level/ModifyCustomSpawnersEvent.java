@@ -9,6 +9,7 @@ import java.util.List;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.CustomSpawner;
 import net.neoforged.bus.api.Event;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * This event is fired on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server} when a {@link ServerLevel} is building its {@linkplain CustomSpawner custom spawners}.
@@ -21,6 +22,7 @@ public class ModifyCustomSpawnersEvent extends Event {
     private final ServerLevel serverLevel;
     private final List<CustomSpawner> customSpawners;
 
+    @ApiStatus.Internal
     public ModifyCustomSpawnersEvent(ServerLevel serverLevel, List<CustomSpawner> customSpawners) {
         this.serverLevel = serverLevel;
         this.customSpawners = customSpawners;
