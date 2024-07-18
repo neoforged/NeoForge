@@ -58,7 +58,7 @@ public class ClientModLoader extends CommonModLoader {
         LogicalSidedProvider.setClient(() -> minecraft);
         LanguageHook.loadBuiltinLanguages();
         try {
-            begin(ImmediateWindowHandler::renderTick);
+            begin(ImmediateWindowHandler::renderTick, false);
         } catch (ModLoadingException e) {
             error = e;
         }
