@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -28,6 +_,8 @@
+@@ -28,9 +_,11 @@
              ItemStack itemstack = player.getProjectile(p_40667_);
              if (!itemstack.isEmpty()) {
                  int i = this.getUseDuration(p_40667_, p_40669_) - p_40670_;
@@ -8,15 +8,24 @@
 +                if (i < 0) return;
                  float f = getPowerForTime(i);
                  if (!((double)f < 0.1)) {
-                     List<ItemStack> list = draw(p_40667_, itemstack, player);
-@@ -82,6 +_,10 @@
+-                    List<ItemStack> list = draw(p_40667_, itemstack, player);
++                    List<ItemStack> list = net.neoforged.neoforge.event.EventHooks.onProjectileWeaponLoadPost(p_40669_, p_40667_, itemstack, draw(p_40667_, itemstack, player));
+                     if (p_40668_ instanceof ServerLevel serverlevel && !list.isEmpty()) {
+                         this.shoot(serverlevel, player, player.getUsedItemHand(), p_40667_, list, f * 3.0F, 1.0F, f == 1.0F, null);
+                     }
+@@ -81,8 +_,13 @@
+     @Override
      public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
          ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
-         boolean flag = !p_40673_.getProjectile(itemstack).isEmpty();
+-        boolean flag = !p_40673_.getProjectile(itemstack).isEmpty();
+-        if (!p_40673_.hasInfiniteMaterials() && !flag) {
++        ItemStack projectile = p_40673_.getProjectile(itemstack);
++        boolean flag = !projectile.isEmpty();
 +
 +        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(itemstack, p_40672_, p_40673_, p_40674_, flag);
 +        if (ret != null) return ret;
 +
-         if (!p_40673_.hasInfiniteMaterials() && !flag) {
++        if (net.neoforged.neoforge.event.EventHooks.onProjectileWeaponLoadPre(p_40673_, itemstack, projectile, p_40674_, p_40673_.hasInfiniteMaterials() || flag)) {
              return InteractionResultHolder.fail(itemstack);
          } else {
+             p_40673_.startUsingItem(p_40674_);

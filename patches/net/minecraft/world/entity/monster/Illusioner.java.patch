@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Illusioner.java
 +++ b/net/minecraft/world/entity/monster/Illusioner.java
-@@ -174,9 +_,11 @@
+@@ -174,16 +_,28 @@
  
      @Override
      public void performRangedAttack(LivingEntity p_32918_, float p_32919_) {
@@ -13,3 +13,22 @@
          double d0 = p_32918_.getX() - this.getX();
          double d1 = p_32918_.getY(0.3333333333333333) - abstractarrow.getY();
          double d2 = p_32918_.getZ() - this.getZ();
+         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+-        abstractarrow.shoot(d0, d1 + d3 * 0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
++        var event = net.neoforged.neoforge.event.EventHooks.onProjectileWeaponShootPre(this, abstractarrow, p_32918_, itemstack, itemstack1, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
++        if (event.isCanceled()) return;
++        net.minecraft.world.entity.projectile.Projectile projectile = event.getProjectile();
++        if (projectile instanceof AbstractArrow) {
++            abstractarrow = (AbstractArrow) projectile;
++            // Neo: keep the original AbstractArrow#shoot call, so we don't break old/multiloader mixins
++            abstractarrow.shoot(d0, d1 + d3 * 0.2F, d2, event.getPower(), event.getDivergence());
++        } else {
++            projectile.shoot(d0, d1 + d3 * 0.2F, d2, event.getPower(), event.getDivergence());
++        }
+         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+-        this.level().addFreshEntity(abstractarrow);
++        this.level().addFreshEntity(projectile);
++        net.neoforged.neoforge.event.EventHooks.onProjectileWeaponShootPost(this, projectile, p_32918_, itemstack, itemstack1, 0);
+     }
+ 
+     @Override

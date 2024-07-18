@@ -10,6 +10,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DynamicOps;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -135,6 +136,8 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
+import net.neoforged.neoforge.event.entity.living.ProjectileWeaponLoadEvent;
+import net.neoforged.neoforge.event.entity.living.ProjectileWeaponShootEvent;
 import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -1119,5 +1122,29 @@ public class EventHooks {
         var event = new MobSplitEvent(parent, children);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    public static boolean onProjectileWeaponLoadPre(LivingEntity entity, ItemStack weaponItem, ItemStack projectileItem, InteractionHand hand, boolean canLoad) {
+        var event = new ProjectileWeaponLoadEvent.Pre(entity, weaponItem, projectileItem, hand, canLoad);
+        NeoForge.EVENT_BUS.post(event);
+        return event.canLoad();
+    }
+
+    public static List<ItemStack> onProjectileWeaponLoadPost(LivingEntity entity, ItemStack weapon, ItemStack projectile, List<ItemStack> loadedProjectiles) {
+        var event = new ProjectileWeaponLoadEvent.Post(entity, weapon, projectile, loadedProjectiles instanceof ArrayList ? loadedProjectiles : new ArrayList<>(loadedProjectiles));
+        NeoForge.EVENT_BUS.post(event);
+        return event.isCanceled() ? List.of() : event.getLoadedProjectiles();
+    }
+
+    public static ProjectileWeaponShootEvent.Pre onProjectileWeaponShootPre(LivingEntity entity, Projectile projectile, @Nullable LivingEntity target, ItemStack weaponItem, ItemStack projectileItem, float power, float divergence) {
+        var event = new ProjectileWeaponShootEvent.Pre(entity, projectile, target, weaponItem, projectileItem, power, divergence);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
+    }
+
+    public static int onProjectileWeaponShootPost(LivingEntity entity, Projectile projectile, @Nullable LivingEntity target, ItemStack weaponItem, ItemStack projectileItem, int weaponDamage) {
+        var event = new ProjectileWeaponShootEvent.Post(entity, projectile, target, weaponItem, projectileItem, weaponDamage);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getWeaponDamage();
     }
 }

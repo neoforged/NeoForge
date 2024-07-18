@@ -29,12 +29,15 @@
      }
  
      @Override
-@@ -132,7 +_,7 @@
+@@ -132,7 +_,10 @@
                      }
                  }
              } else if (--this.attackTime <= 0 && this.seeTime >= -60) {
 -                this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, Items.BOW));
-+                this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof BowItem));
++                var hand = ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof BowItem);
++                var bow = this.mob.getItemInHand(hand);
++                if (net.neoforged.neoforge.event.EventHooks.onProjectileWeaponLoadPre(this.mob, bow, this.mob.getProjectile(bow), hand, true))
++                this.mob.startUsingItem(hand);
              }
          }
      }

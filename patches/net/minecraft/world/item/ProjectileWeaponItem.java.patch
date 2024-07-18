@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
+@@ -67,9 +_,16 @@
+                 float f4 = f2 + f3 * (float)((i + 1) / 2) * f1;
+                 f3 = -f3;
+                 Projectile projectile = this.createProjectile(p_346125_, p_330728_, p_330646_, itemstack, p_331107_);
++                var event = net.neoforged.neoforge.event.EventHooks.onProjectileWeaponShootPre(p_330728_, projectile, p_331167_, p_330646_, itemstack, p_331007_, p_331445_);
++                if (event.isCanceled()) continue;
++                projectile = event.getProjectile();
++                p_331007_ = event.getPower();
++                p_331445_ = event.getDivergence();
+                 this.shootProjectile(p_330728_, projectile, i, p_331007_, p_331445_, f4, p_331167_);
+                 p_346125_.addFreshEntity(projectile);
+-                p_330646_.hurtAndBreak(this.getDurabilityUse(itemstack), p_330728_, LivingEntity.getSlotForHand(p_331152_));
++                int damage = net.neoforged.neoforge.event.EventHooks.onProjectileWeaponShootPost(p_330728_, projectile, p_331167_, p_330646_, itemstack, this.getDurabilityUse(itemstack));
++                if (damage > 0)
++                    p_330646_.hurtAndBreak(damage, p_330728_, LivingEntity.getSlotForHand(p_331152_));
+                 if (p_330646_.isEmpty()) {
+                     break;
+                 }
 @@ -92,7 +_,7 @@
              abstractarrow.setCritArrow(true);
          }

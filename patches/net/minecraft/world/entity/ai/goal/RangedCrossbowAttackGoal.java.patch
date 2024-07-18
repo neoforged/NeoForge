@@ -29,12 +29,18 @@
      }
  
      @Override
-@@ -99,7 +_,7 @@
+@@ -99,9 +_,13 @@
              this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
              if (this.crossbowState == RangedCrossbowAttackGoal.CrossbowState.UNCHARGED) {
                  if (!flag2) {
 -                    this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, Items.CROSSBOW));
-+                    this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
++                    var hand = ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem);
++                    var crossbow = this.mob.getItemInHand(hand);
++                    if (net.neoforged.neoforge.event.EventHooks.onProjectileWeaponLoadPre(this.mob, crossbow, this.mob.getProjectile(crossbow), hand, true)) {
++                    this.mob.startUsingItem(hand);
                      this.crossbowState = RangedCrossbowAttackGoal.CrossbowState.CHARGING;
                      this.mob.setChargingCrossbow(true);
++                    }
                  }
+             } else if (this.crossbowState == RangedCrossbowAttackGoal.CrossbowState.CHARGING) {
+                 if (!this.mob.isUsingItem()) {

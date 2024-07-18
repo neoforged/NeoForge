@@ -1,5 +1,26 @@
 --- a/net/minecraft/world/item/CrossbowItem.java
 +++ b/net/minecraft/world/item/CrossbowItem.java
+@@ -72,7 +_,9 @@
+         if (chargedprojectiles != null && !chargedprojectiles.isEmpty()) {
+             this.performShooting(p_40920_, p_40921_, p_40922_, itemstack, getShootingPower(chargedprojectiles), 1.0F, null);
+             return InteractionResultHolder.consume(itemstack);
+-        } else if (!p_40921_.getProjectile(itemstack).isEmpty()) {
++        }
++        ItemStack projectile = p_40921_.getProjectile(itemstack);
++        if (net.neoforged.neoforge.event.EventHooks.onProjectileWeaponLoadPre(p_40921_, itemstack, projectile, p_40922_, !projectile.isEmpty())) {
+             this.startSoundPlayed = false;
+             this.midLoadSoundPlayed = false;
+             p_40921_.startUsingItem(p_40922_);
+@@ -109,7 +_,8 @@
+     }
+ 
+     private static boolean tryLoadProjectiles(LivingEntity p_40860_, ItemStack p_40861_) {
+-        List<ItemStack> list = draw(p_40861_, p_40860_.getProjectile(p_40861_), p_40860_);
++        ItemStack projectile = p_40860_.getProjectile(p_40861_);
++        List<ItemStack> list = net.neoforged.neoforge.event.EventHooks.onProjectileWeaponLoadPost(p_40860_, p_40861_, projectile, draw(p_40861_, projectile, p_40860_));
+         if (!list.isEmpty()) {
+             p_40861_.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(list));
+             return true;
 @@ -181,6 +_,7 @@
          Level p_40888_, LivingEntity p_40889_, InteractionHand p_40890_, ItemStack p_40891_, float p_40892_, float p_40893_, @Nullable LivingEntity p_331602_
      ) {
