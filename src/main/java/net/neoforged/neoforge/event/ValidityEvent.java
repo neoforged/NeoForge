@@ -12,6 +12,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -71,6 +73,7 @@ public class ValidityEvent extends PlayerEvent {
     }
 
     public static class Menu extends ValidityEvent {
+        @ApiStatus.Internal
         public Menu(Player player, Level level, BlockPos blockPos, double distance) {
             super(player, level, blockPos, distance);
         }
@@ -79,6 +82,7 @@ public class ValidityEvent extends PlayerEvent {
     public static class ContainerMenu extends Menu {
         private final AbstractContainerMenu menu;
 
+        @ApiStatus.Internal
         public ContainerMenu(Player player, Level level, BlockPos blockPos, double distance, AbstractContainerMenu menu) {
             super(player, level, blockPos, distance);
             this.menu = menu;
@@ -92,6 +96,7 @@ public class ValidityEvent extends PlayerEvent {
     public static class Sign extends ValidityEvent {
         private final SignBlockEntity signBlockEntity;
 
+        @ApiStatus.Internal
         public Sign(Player player, Level level, BlockPos blockPos, double distance, SignBlockEntity signBlockEntity) {
             super(player, level, blockPos, distance);
             this.signBlockEntity = signBlockEntity;
