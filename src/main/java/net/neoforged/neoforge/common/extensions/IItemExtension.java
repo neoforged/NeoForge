@@ -724,4 +724,11 @@ public interface IItemExtension {
     default boolean canGrindstoneRepair(ItemStack stack) {
         return false;
     }
+
+    /**
+     * @return false to make item entity immune to the damage.
+     */
+    default boolean canBeHurtBy(ItemStack stack, DamageSource source) {
+        return true;
+    }
 }
