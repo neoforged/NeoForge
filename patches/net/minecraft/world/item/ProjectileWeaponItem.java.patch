@@ -1,5 +1,34 @@
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
+@@ -24,12 +_,28 @@
+         super(p_43009_);
+     }
+ 
++    /**
++     * Use ItemStack sensitive version instead
++     */
++    @Deprecated
+     public Predicate<ItemStack> getSupportedHeldProjectiles() {
+         return this.getAllSupportedProjectiles();
+     }
+ 
++    /**
++     * Use ItemStack sensitive version instead
++     */
++    @Deprecated
+     public abstract Predicate<ItemStack> getAllSupportedProjectiles();
+ 
++    public Predicate<ItemStack> getSupportedHeldProjectiles(ItemStack stack) {
++        return this.getSupportedHeldProjectiles();
++    }
++
++    public Predicate<ItemStack> getAllSupportedProjectiles(ItemStack stack) {
++        return getAllSupportedProjectiles();
++    }
++
+     public static ItemStack getHeldProjectile(LivingEntity p_43011_, Predicate<ItemStack> p_43012_) {
+         if (p_43012_.test(p_43011_.getItemInHand(InteractionHand.OFF_HAND))) {
+             return p_43011_.getItemInHand(InteractionHand.OFF_HAND);
 @@ -92,7 +_,7 @@
              abstractarrow.setCritArrow(true);
          }
