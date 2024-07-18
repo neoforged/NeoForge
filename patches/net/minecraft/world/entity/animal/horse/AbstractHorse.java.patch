@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+@@ -143,7 +_,7 @@
+ 
+         @Override
+         public boolean stillValid(Player p_324170_) {
+-            return p_324170_.getVehicle() == AbstractHorse.this || p_324170_.canInteractWithEntity(AbstractHorse.this, 4.0);
++            return p_324170_.getVehicle() == AbstractHorse.this || net.neoforged.neoforge.common.CommonHooks.menuValidity(p_324170_, AbstractHorse.this, 4.0);
+         }
+     };
+ 
 @@ -396,9 +_,9 @@
      protected void playStepSound(BlockPos p_30584_, BlockState p_30585_) {
          if (!p_30585_.liquid()) {

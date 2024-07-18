@@ -98,6 +98,7 @@ import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
@@ -1565,8 +1566,12 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(new ValidityEvent.Menu(player, level, blockPos, distance)).getResult();
     }
 
-    public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance, AbstractContainerMenu menu) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.ContainerMenu(player, level, blockPos, distance, menu)).getResult();
+    public static boolean menuValidity(Player player, Entity entity, double distance) {
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.EntityMenu(player, entity, distance)).getResult();
+    }
+
+    public static boolean menuValidity(Player player, ContainerEntity entity, double distance) {
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.ContainerEntityMenu(player, entity, distance)).getResult();
     }
 
     public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance, SignBlockEntity signBlockEntity) {
