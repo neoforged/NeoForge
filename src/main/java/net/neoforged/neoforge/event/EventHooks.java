@@ -1132,7 +1132,7 @@ public class EventHooks {
      * @param projectileItem The projectile weapon item stack.
      * @param hand           The hand helding the projectile weapon.
      * @param canLoad        If the projectile weapon can start loading.
-     * @return If the event is cancelled.
+     * @return If the projectile weapon can start loading.
      */
     public static boolean onProjectileWeaponLoadPre(LivingEntity entity, ItemStack weaponItem, ItemStack projectileItem, InteractionHand hand, boolean canLoad) {
         var event = new ProjectileWeaponLoadEvent.Pre(entity, weaponItem, projectileItem, hand, canLoad);

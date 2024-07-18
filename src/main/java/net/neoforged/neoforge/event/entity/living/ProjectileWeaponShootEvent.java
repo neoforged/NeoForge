@@ -24,7 +24,7 @@ public abstract class ProjectileWeaponShootEvent extends LivingEvent {
     private final ItemStack weaponItem;
     private final ItemStack projectileItem;
 
-    public ProjectileWeaponShootEvent(LivingEntity entity, @Nullable LivingEntity target, ItemStack weaponItem, ItemStack projectileItem) {
+    ProjectileWeaponShootEvent(LivingEntity entity, @Nullable LivingEntity target, ItemStack weaponItem, ItemStack projectileItem) {
         super(entity);
         this.target = target;
         this.weaponItem = weaponItem;
