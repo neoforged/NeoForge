@@ -10,6 +10,15 @@
          }
  
          this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
+@@ -133,7 +_,7 @@
+ 
+     private void scanForEntities() {
+         if (this.followingPlayer == null || this.followingPlayer.distanceToSqr(this) > 64.0) {
+-            this.followingPlayer = this.level().getNearestPlayer(this, 8.0);
++            this.followingPlayer = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.entity.XpOrbTargetingEvent(this, 8.0)).getFollowingPlayer();
+         }
+ 
+         if (this.level() instanceof ServerLevel) {
 @@ -228,6 +_,7 @@
      public void playerTouch(Player p_20792_) {
          if (p_20792_ instanceof ServerPlayer serverplayer) {
