@@ -9,12 +9,23 @@
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-@@ -298,6 +_,8 @@
+@@ -232,7 +_,6 @@
+         );
+         this.tickTime = p_215009_;
+         this.server = p_214999_;
+-        this.customSpawners = p_215008_;
+         this.serverLevelData = p_215002_;
+         ChunkGenerator chunkgenerator = p_215004_.generator();
+         boolean flag = p_214999_.forceSynchronousWrites();
+@@ -298,6 +_,11 @@
          this.randomSequences = Objects.requireNonNullElseGet(
              p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.factory(i), "random_sequences")
          );
 +
 +        net.neoforged.neoforge.attachment.LevelAttachmentsSavedData.init(this);
++        // Neo: Move the initialization of customSpawners to the end of costructor
++        // Providing a fully initialized ServerLevel instance for the ServerLevelEvent.CustomSpawners
++        this.customSpawners = net.neoforged.neoforge.event.EventHooks.getCustomSpawners(this, p_215008_);
      }
  
      @Deprecated

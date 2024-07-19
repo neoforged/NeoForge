@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -48,6 +50,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -98,6 +102,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.ArmorItem;
@@ -125,6 +130,7 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -145,11 +151,13 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
@@ -1496,5 +1504,58 @@ public class CommonHooks {
             return ClientHooks.resolveLookup(key);
         }
         return null;
+    }
+
+    /**
+     * Creates a {@link UseOnContext} for {@link net.minecraft.core.dispenser.DispenseItemBehavior dispense behavior}.
+     * 
+     * @param source the {@link BlockSource block source} context of the dispense behavior
+     * @param stack  the dispensed item stack
+     * @return a {@link UseOnContext} representing the dispense behavior
+     */
+    public static UseOnContext dispenseUseOnContext(BlockSource source, ItemStack stack) {
+        Direction facing = source.state().getValue(DispenserBlock.FACING);
+        BlockPos pos = source.pos().relative(facing);
+        Direction blockFace = facing.getOpposite();
+        BlockHitResult hitResult = new BlockHitResult(new Vec3(
+                pos.getX() + 0.5 + blockFace.getStepX() * 0.5,
+                pos.getY() + 0.5 + blockFace.getStepY() * 0.5,
+                pos.getZ() + 0.5 + blockFace.getStepZ() * 0.5), blockFace, pos, false);
+        return new UseOnContext(source.level(), null, InteractionHand.MAIN_HAND, stack, hitResult);
+    }
+
+    /**
+     * Attempts to modify target block using {@link ItemAbilities#SHEARS_HARVEST} in {@link ShearsDispenseItemBehavior},
+     * consistent with vanilla beehive harvest behavior (also controlled by {@link ItemAbilities#SHEARS_HARVEST}).
+     * <p>
+     * The beehive harvest behavior is not implemented by {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)}
+     * and thus will still be controlled by {@link ShearsDispenseItemBehavior#tryShearBeehive(ServerLevel, BlockPos)} by default.
+     * <p>
+     * Mods may subscribe to {@link BlockEvent.BlockToolModificationEvent}
+     * to override vanilla beehive harvest behavior by setting a non-null {@link BlockState} result.
+     */
+    public static boolean tryDispenseShearsHarvestBlock(BlockSource source, ItemStack stack, ServerLevel level, BlockPos pos) {
+        BlockState blockstate = source.state().getToolModifiedState(dispenseUseOnContext(source, stack), ItemAbilities.SHEARS_HARVEST, false);
+        if (blockstate == null)
+            return false;
+        level.setBlock(pos, blockstate, 3);
+        level.gameEvent(null, GameEvent.SHEAR, pos);
+        return true;
+    }
+
+    public static Map<RecipeBookType, Pair<String, String>> buildRecipeBookTypeTagFields(Map<RecipeBookType, Pair<String, String>> vanillaMap) {
+        ExtensionInfo extInfo = RecipeBookType.getExtensionInfo();
+        if (extInfo.extended()) {
+            vanillaMap = new HashMap<>(vanillaMap);
+            for (RecipeBookType type : RecipeBookType.values()) {
+                if (type.ordinal() < extInfo.vanillaCount()) {
+                    continue;
+                }
+                String name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, type.name());
+                vanillaMap.put(type, Pair.of("is" + name + "GuiOpen", "is" + name + "FilteringCraftable"));
+            }
+            vanillaMap = Map.copyOf(vanillaMap);
+        }
+        return vanillaMap;
     }
 }

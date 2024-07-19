@@ -1,0 +1,32 @@
+--- a/net/minecraft/world/item/FlintAndSteelItem.java
++++ b/net/minecraft/world/item/FlintAndSteelItem.java
+@@ -29,7 +_,8 @@
+         Level level = p_41297_.getLevel();
+         BlockPos blockpos = p_41297_.getClickedPos();
+         BlockState blockstate = level.getBlockState(blockpos);
+-        if (!CampfireBlock.canLight(blockstate) && !CandleBlock.canLight(blockstate) && !CandleCakeBlock.canLight(blockstate)) {
++        BlockState blockstate2 = blockstate.getToolModifiedState(p_41297_, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
++        if (blockstate2 == null) {
+             BlockPos blockpos1 = blockpos.relative(p_41297_.getClickedFace());
+             if (BaseFireBlock.canBePlacedAt(level, blockpos1, p_41297_.getHorizontalDirection())) {
+                 level.playSound(player, blockpos1, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+@@ -48,7 +_,7 @@
+             }
+         } else {
+             level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+-            level.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)), 11);
++            level.setBlock(blockpos, blockstate2, 11);
+             level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockpos);
+             if (player != null) {
+                 p_41297_.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41297_.getHand()));
+@@ -56,5 +_,10 @@
+ 
+             return InteractionResult.sidedSuccess(level.isClientSide());
+         }
++    }
++
++    @Override
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_FLINT_ACTIONS.contains(itemAbility);
+     }
+ }
