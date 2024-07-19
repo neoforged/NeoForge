@@ -117,48 +117,131 @@
   "neoforge.update.beta.2": "Môžu sa vyskytnúť závažné problémy, overte ich pred nahlásením.",
   "neoforge.update.newversion": "K dispozícii je nová verzia NeoForge: %s",
   "neoforge.menu.updatescreen.title": "Aktualizácia módu",
-  "neoforge.configgui.removeErroringEntities.tooltip": "Nastavte toto na hodnotu true, pre odstránenie akejkoľvek entity ktorá spôsobí error vo svojej obnovovacej metóde namiesto zatvorenia servera a nahlásenia spadnutia hry (crash log). UPOZORŇUJEME, ŽE TOTO MÔŽE POŠKODIŤ VŠETKO, POUŽÍVAJTE ZRIEDKAVO, NEZODPOVEDÁME ZA ŠKODY.",
-  "neoforge.configgui.removeErroringEntities": "Odstrániť entity spôsobujúce error",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Nastavte toto na hodnotu true, pre odstránenie akejkoľvek blokovej entity ktorá spôsobí error vo svojej obnovovacej metóde namiesto zatvorenia servera a nahlásenia spadnutia hry (crash log). UPOZORŇUJEME, ŽE TOTO MÔŽE POŠKODIŤ VŠETKO, POUŽÍVAJTE ZRIEDKAVO, NEZODPOVEDÁME ZA ŠKODY.",
-  "neoforge.configgui.removeErroringBlockEntities": "Odstrániť blokové entity spôsobujúce error",
-  "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Nastavte toto na hodnotu true, aby ste skontrolovali ohraničujúci rámček kolízie celej entity pre rebríky namiesto len bloku, v ktorom sa nachádzajú. Spôsobuje viditeľné zmeny v mechanike hry, takže predvolené je základné správanie. Predvolená hodnota: false.",
-  "neoforge.configgui.fullBoundingBoxLadders": "Úplné vymedzovanie boxov rebríkov",
-  "neoforge.configgui.logCascadingWorldGeneration.tooltip": "Problémy s generovaním kaskádových chunkov pri populovaní terénu.",
-  "neoforge.configgui.logCascadingWorldGeneration": "Log Kaskádovania World Genu",
-  "neoforge.configgui.fixVanillaCascading.tooltip": "Opraviť vanilla problémy ktoré spôsobujú kaskádovanie generácie sveta. Toto NEMENÍ vanilla generáciu svetu, takže NENAHLASUJTE chyby spojené zo svetovými rozdielmi keď je toto nastavenie zapnuté.",
-  "neoforge.configgui.fixVanillaCascading": "Opraviť Vanilla Kaskádovanie",
-  "neoforge.configgui.dimensionUnloadQueueDelay.tooltip": "Časové tiky serveru počkajú keď bude dimenzia v poradí pre odčítanie. Toto môže byť užitočné pri načítavaní a odčítavaní dimenzií, ako napríklad pri hádzaní vecí cez nether portál niekoľko krát za sekundu.",
-  "neoforge.configgui.dimensionUnloadQueueDelay": "Opozdenie pri odčítavaní dimenzie",
-  "neoforge.configgui.clumpingThreshold.tooltip": "Riadi číselný prah, pri ktorom je Packet51 preferovaný pred Packet52, predvolené a minimálne je 64, maximálne 1024.",
-  "neoforge.configgui.clumpingThreshold": "Prah Zhlukovania Paketov",
-  "neoforge.configgui.treatEmptyTagsAsAir.tooltip": "Základná hra bude zaobchádzať s výrobnými receptami pomocou prázdnych štítkov ako so vzduchom, a umožní vám vyrábať bez ničoho v tomto políčku. Toto zmení prázdne štítky tak, aby sa ako položka použila BARIÉRA. Pre prevenciu výroby so vzduchom.",
-  "neoforge.configgui.treatEmptyTagsAsAir": "Považovať prázdne označenia za vzduch",
-  "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "Preskočte kontrolu, pokiaľ je ingrediencia prázdna počas deserializácie beztvarého receptu, pre predídenie tomu, aby sa zložité ingrediencie uložili do vyrovnávacej pamäte príliš skoro.",
-  "neoforge.configgui.skipEmptyShapelessCheck": "Preskočte kontrolu pre prázdne ingrediencie v deserializácii beztvarého receptu",
-  "neoforge.configgui.forceSystemNanoTime.tooltip": "Prinútiť použite systému System.nanoTime namiesto glfwGetTime ako hlavného poskytovateľa času pre klienta.",
-  "neoforge.configgui.forceSystemNanoTime": "Prinútiť použitie systému System.nanoTime",
-  "neoforge.configgui.zoomInMissingModelTextInGui.tooltip": "Vypnúť aby sa chýbajúce texty modelov v gui zmestili do políčok.",
-  "neoforge.configgui.zoomInMissingModelTextInGui": "Priblížennie v chýbajúcom texte modelu v GUI",
-  "neoforge.configgui.forgeCloudsEnabled.tooltip": "Povoliť nahrávanie cloudovej geometrie do grafickej karty pre rýchlejšie vykresľovanie.",
-  "neoforge.configgui.forgeCloudsEnabled": "Použiť cloudové vykresľovanie od NeoForge",
-  "neoforge.configgui.disableStairSlabCulling.tooltip": "Zakázať vyraďovanie skrytých tvárí vedľa schodov a slabov. Spôsobuje extra vykresľovanie, ale môže opraviť niektoré balíčky zdrojov, ktoré využívajú túto základnú mechaniku.",
-  "neoforge.configgui.disableStairSlabCulling": "Zakázať Schodové/Slabové vyraďovanie",
-  "neoforge.configgui.alwaysSetupTerrainOffThread.tooltip": "Povoľte aby NeoForge zaradil všetky aktualizácie chunkov do vlákna aktualizácie chunkov. Môže výrazne zvýšiť FPS, ale môže tiež spôsobiť zvláštne sekanie vykresľovania. Neodporúča sa pre počítače bez veľkého počtu dostupných jadier.",
-  "neoforge.configgui.alwaysSetupTerrainOffThread": "Prikázať vláknové vykresľovanie chunkov",
+  "neoforge.configuration.uitext.title": "%s Configuration",
+  "neoforge.configuration.uitext.type.client": "Client Settings",
+  "neoforge.configuration.uitext.type.server": "Server Settings",
+  "neoforge.configuration.uitext.type.common": "Common settings",
+  "neoforge.configuration.uitext.type.startup": "Startup settings",
+  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
+  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
+  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
+  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.notonline": [
+    {
+      "text": "Settings in here are determined by the server and cannot be changed while online.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notlan": [
+    {
+      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notloaded": [
+    {
+      "text": "Settings in here are are ony available while a world is loaded.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.unsupportedelement": [
+    {
+      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.section": "%s...",
+  "neoforge.configuration.uitext.breadcrumb": [
+    {
+      "index": 0
+    },
+    {
+      "text": " > ",
+      "color": "gold",
+      "bold": true
+    },
+    {
+      "index": 1
+    }
+  ],
+  "neoforge.configuration.uitext.listelement": "%s:",
+  "neoforge.configuration.uitext.undo": "Undo",
+  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
+  "neoforge.configuration.uitext.reset": "Reset",
+  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.newlistelement": "+",
+  "neoforge.configuration.uitext.listelementup": "⏶",
+  "neoforge.configuration.uitext.listelementdown": "⏷",
+  "neoforge.configuration.uitext.listelementremove": "❌",
+  "neoforge.configuration.uitext.rangetooltip": [
+    {
+      "text": "\n\nRange: ",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    }
+  ],
+  "neoforge.configuration.uitext.filenametooltip": [
+    {
+      "text": "File: \"",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    },
+    {
+      "text": "\"",
+      "color": "gray"
+    }
+  ],
+  "neoforge.configuration.uitext.common": "Common Options",
+  "neoforge.configuration.uitext.client": "Client Options",
+  "neoforge.configuration.uitext.server": "Server Options",
+  "neoforge.configuration.uitext.startup": "Startup Options",
+  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
+  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed only take effect when the game is started.",
+  "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
+  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
+  "neoforge.configuration.uitext.restart.return": "Not yet...",
+  "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
+  "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
+  "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Povoliť kanál vykresľovania blokov NeoForge – opravuje osvetlenie vlastných modelov.",
-  "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline Povolený",
-  "neoforge.configgui.selectiveResourceReloadEnabled.tooltip": "Keď je toto povolené, tvorí určité obnovovacie úlohy, ako zmenu jazyka rýchlejšie pre spustenie.",
-  "neoforge.configgui.selectiveResourceReloadEnabled": "Povoliť Selektívne Načítavanie Zdrojov",
-  "neoforge.configgui.showLoadWarnings.tooltip": "Keď je toto povolené, NeoForge zobrazí všetky varovania, ktoré nastali počas načítavania.",
+  "neoforge.configgui.fullBoundingBoxLadders": "Úplné vymedzovanie boxov rebríkov",
+  "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Nastavte toto na hodnotu true, aby ste skontrolovali ohraničujúci rámček kolízie celej entity pre rebríky namiesto len bloku, v ktorom sa nachádzajú. Spôsobuje viditeľné zmeny v mechanike hry, takže predvolené je základné správanie. Predvolená hodnota: false.",
+  "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
+  "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.",
+  "neoforge.configgui.logUntranslatedItemTagWarnings": "Log Untranslated Item Tags",
+  "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.",
+  "neoforge.configgui.permissionHandler": "Permission Handler",
+  "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
+  "neoforge.configgui.removeErroringBlockEntities": "Odstrániť blokové entity spôsobujúce error",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
+    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    {
+      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "color": "red",
+      "bold": true
+    }
+  ],
+  "neoforge.configgui.removeErroringEntities": "Odstrániť entity spôsobujúce error",
+  "neoforge.configgui.removeErroringEntities.tooltip": [
+    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    {
+      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "color": "red",
+      "bold": true
+    }
+  ],
   "neoforge.configgui.showLoadWarnings": "Zobraziť Varovania Načítavania",
-  "neoforge.configgui.disableVersionCheck.tooltip": "Nastavením na hodnotu „true“ vypnete mechaniku kontroly verzie NeoForge. NeoForge požiada o informácie o verzii malý súbor „JSON“ na našom serveri. Ďalšie podrobnosti nájdete v triede „ForgeVersion“ na našom „GitHube“.",
-  "neoforge.configgui.disableVersionCheck": "Zakázať Kontrolu Verzie NeoForgu",
-  "neoforge.configgui.cachePackAccess.tooltip": "Nastavte túto možnosť na hodnotu „true“, ak chcete, aby sa do vyrovnávacej pamäte ukladali zoznamy zdrojov a dátových balíkov",
-  "neoforge.configgui.cachePackAccess": "Prístup k balíku vyrovnávacej pamäte",
-  "neoforge.configgui.indexVanillaPackCachesOnThread.tooltip": "Ak chcete indexovať základný zdroj a dátové balíky vo vlákne, nastavte toto na hodnotu „true“",
-  "neoforge.configgui.indexVanillaPackCachesOnThread": "Indexovanie základných balíkov zdrojov vo vlákne",
-  "neoforge.configgui.indexModPackCachesOnThread.tooltip": "Ak chcete indexovať módový zdroj a dátové balíky vo vlákne, nastavte toto na hodnotu „true“",
-  "neoforge.configgui.indexModPackCachesOnThread": "Indexovanie módových balíkov zdrojov vo vlákne",
+  "neoforge.configgui.showLoadWarnings.tooltip": "Keď je toto povolené, NeoForge zobrazí všetky varovania, ktoré nastali počas načítavania.",
+  "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",
+  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
