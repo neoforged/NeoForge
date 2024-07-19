@@ -16,12 +16,12 @@ import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemHandlerHelper {
-    public static ItemStack insertItem(IItemHandler dest, ItemStack stack, boolean simulate) {
-        if (dest == null || stack.isEmpty())
+    public static ItemStack insertItem(@Nullable IItemHandler inventory, ItemStack stack, boolean simulate) {
+        if (inventory == null || stack.isEmpty())
             return stack;
 
-        for (int i = 0; i < dest.getSlots(); i++) {
-            stack = dest.insertItem(i, stack, simulate);
+        for (var slot : inventory) {
+            stack = slot.insert(stack, simulate);
             if (stack.isEmpty()) {
                 return ItemStack.EMPTY;
             }
@@ -35,7 +35,7 @@ public class ItemHandlerHelper {
      * This is equivalent to the behaviour of a player picking up an item.
      * Note: This function stacks items without subtypes with different metadata together.
      */
-    public static ItemStack insertItemStacked(IItemHandler inventory, ItemStack stack, boolean simulate) {
+    public static ItemStack insertItemStacked(@Nullable IItemHandler inventory, ItemStack stack, boolean simulate) {
         if (inventory == null || stack.isEmpty())
             return stack;
 
@@ -44,29 +44,23 @@ public class ItemHandlerHelper {
             return insertItem(inventory, stack, simulate);
         }
 
-        int sizeInventory = inventory.getSlots();
-
         // go through the inventory and try to fill up already existing items
-        for (int i = 0; i < sizeInventory; i++) {
-            ItemStack slot = inventory.getStackInSlot(i);
-            if (ItemStack.isSameItemSameComponents(slot, stack)) {
-                stack = inventory.insertItem(i, stack, simulate);
-
+        for (var slot : inventory) {
+            if (ItemStack.isSameItemSameComponents(slot.get(), stack)) {
+                stack = slot.insert(stack, simulate);
                 if (stack.isEmpty()) {
-                    break;
+                    return ItemStack.EMPTY;
                 }
             }
         }
 
         // insert remainder into empty slots
-        if (!stack.isEmpty()) {
+        for (var slot : inventory) {
             // find empty slot
-            for (int i = 0; i < sizeInventory; i++) {
-                if (inventory.getStackInSlot(i).isEmpty()) {
-                    stack = inventory.insertItem(i, stack, simulate);
-                    if (stack.isEmpty()) {
-                        break;
-                    }
+            if (slot.get().isEmpty()) {
+                stack = slot.insert(stack, simulate);
+                if (stack.isEmpty()) {
+                    return ItemStack.EMPTY;
                 }
             }
         }
@@ -123,27 +117,26 @@ public class ItemHandlerHelper {
      * This method uses the standard vanilla algorithm to calculate a comparator output for how "full" the inventory is.
      * This method is an adaptation of Container#calcRedstoneFromInventory(IInventory).
      * 
-     * @param inv The inventory handler to test.
+     * @param inventory The inventory handler to test.
      * @return A redstone value in the range [0,15] representing how "full" this inventory is.
      */
-    public static int calcRedstoneFromInventory(@Nullable IItemHandler inv) {
-        if (inv == null) {
+    public static int calcRedstoneFromInventory(@Nullable IItemHandler inventory) {
+        if (inventory == null) {
             return 0;
         } else {
-            int itemsFound = 0;
+            boolean hasItem = false;
             float proportion = 0.0F;
 
-            for (int j = 0; j < inv.getSlots(); ++j) {
-                ItemStack itemstack = inv.getStackInSlot(j);
-
-                if (!itemstack.isEmpty()) {
-                    proportion += (float) itemstack.getCount() / (float) Math.min(inv.getSlotLimit(j), itemstack.getMaxStackSize());
-                    ++itemsFound;
+            for (var slot : inventory) {
+                ItemStack stack = slot.get();
+                if (!stack.isEmpty()) {
+                    proportion += stack.getCount() / (float) Math.min(slot.limit(), stack.getMaxStackSize());
+                    hasItem = true;
                 }
             }
 
-            proportion = proportion / (float) inv.getSlots();
-            return Mth.floor(proportion * 14.0F) + (itemsFound > 0 ? 1 : 0);
+            proportion = proportion / inventory.getSlots();
+            return Mth.floor(proportion * 14.0F) + (hasItem ? 1 : 0);
         }
     }
 }

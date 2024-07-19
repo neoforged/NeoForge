@@ -5,12 +5,21 @@
 
 package net.neoforged.neoforge.items;
 
+import com.google.common.base.Preconditions;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-public interface IItemHandler {
+public interface IItemHandler extends Iterable<IItemHandler.Slot> {
     /**
      * Returns the number of slots available
      *
@@ -99,4 +108,173 @@ public interface IItemHandler {
      *         false if the slot can never insert the ItemStack in any situation.
      */
     boolean isItemValid(int slot, ItemStack stack);
+
+    /**
+     * Returns a {@link Slot} of a specific index. The default implementation always return a new {@link Slot} obejct,
+     * however it's encouraged for implementation to return existing {@link Slot} (from list) for better performance.
+     * 
+     * @throws IndexOutOfBoundsException if the index is out of range
+     *                                   ({@code index < 0 || index >= getSlots()})
+     * @param index the index of the slot
+     * @return the {@link Slot} of the index.
+     */
+    default Slot getSlot(int index) {
+        Preconditions.checkElementIndex(index, this.getSlots());
+        return new Slot() {
+            @Override
+            public boolean test(ItemStack stack) {
+                return IItemHandler.this.isItemValid(index, stack);
+            }
+
+            @Override
+            public ItemStack get() {
+                return IItemHandler.this.getStackInSlot(index);
+            }
+
+            @Override
+            public ItemStack insert(ItemStack stack, boolean simulate) {
+                return IItemHandler.this.insertItem(index, stack, simulate);
+            }
+
+            @Override
+            public ItemStack extract(int amount, boolean simulate) {
+                return IItemHandler.this.extractItem(index, amount, simulate);
+            }
+
+            @Override
+            public int limit() {
+                return IItemHandler.this.getSlotLimit(index);
+            }
+
+            @Override
+            public int index() {
+                return index;
+            }
+
+            @Override
+            public IItemHandler handler() {
+                return IItemHandler.this;
+            }
+
+            @Override
+            public boolean equals(Object other) {
+                if (this == other)
+                    return true;
+                if (!(other instanceof Slot slot))
+                    return false;
+                return IItemHandler.this == slot.handler() && index == slot.index();
+            }
+
+            @Override
+            public int hashCode() {
+                return IItemHandler.this.hashCode() + index * 31;
+            }
+        };
+    }
+
+    /**
+     * @return an {@link Iterator} of the {@link Slot slots}, the default implementation expects continuous slot indices,
+     *         and has no check for concurrent modification.
+     */
+    default Iterator<Slot> iterator() {
+        return new Iterator<>() {
+            private int slot = 0;
+
+            @Override
+            public boolean hasNext() {
+                return this.slot < IItemHandler.this.getSlots();
+            }
+
+            @Override
+            public Slot next() {
+                if (!hasNext())
+                    throw new NoSuchElementException();
+                return IItemHandler.this.getSlot(this.slot++);
+            }
+        };
+    }
+
+    /**
+     * Creates a {@link Spliterator} of the {@link Slot slots}.
+     * <p>
+     * The {@code Spliterator} reports {@link Spliterator#SIZED}, {@link Spliterator#ORDERED}, {@link Spliterator#NONNULL} and {@link Spliterator#IMMUTABLE}.
+     * <p>
+     * Implementations should document the reporting of additional characteristic values.
+     * 
+     * @return a {@link Spliterator} of the {@link Slot slots}.
+     */
+    @Override
+    default Spliterator<Slot> spliterator() {
+        return Spliterators.spliterator(iterator(), this.getSlots(), Spliterator.SIZED | Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE);
+    }
+
+    /**
+     * @return a sequenced {@link Stream} of the {@link Slot slots}.
+     */
+    default Stream<Slot> stream() {
+        return StreamSupport.stream(this.spliterator(), false);
+    }
+
+    /**
+     * Interface representing a slot of the {@link IItemHandler}.
+     */
+    interface Slot extends Supplier<ItemStack>, Predicate<ItemStack> {
+        /**
+         * @see IItemHandler#isItemValid(int, ItemStack)
+         */
+        @Override
+        boolean test(ItemStack stack);
+
+        /**
+         * @see IItemHandler#getStackInSlot(int)
+         */
+        @Override
+        ItemStack get();
+
+        /**
+         * Only supported by {@link IItemHandlerModifiable}.
+         * 
+         * @see IItemHandlerModifiable#setStackInSlot(int, ItemStack)
+         */
+        default void set(ItemStack stack) {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * @see IItemHandler#insertItem(int, ItemStack, boolean)
+         */
+        ItemStack insert(ItemStack stack, boolean simulate);
+
+        /**
+         * @see IItemHandler#extractItem(int, int, boolean)
+         */
+        ItemStack extract(int amount, boolean simulate);
+
+        /**
+         * @see IItemHandler#getSlotLimit(int)
+         */
+        int limit();
+
+        /**
+         * @return the index of this slot.
+         */
+        int index();
+
+        /**
+         * @return the {@link IItemHandler} which this slot belongs.
+         */
+        IItemHandler handler();
+
+        /**
+         * @implSpec Returns true if and only if the other {@link Slot} is of the same {@link IItemHandler} object and same index.
+         */
+        @Override
+        boolean equals(Object other);
+
+        /**
+         * @implSpec Result must be identical for the same {@link IItemHandler} object and same index.
+         */
+        @Override
+        int hashCode();
+    }
 }

@@ -13,38 +13,46 @@ import net.minecraft.world.item.ItemStack;
 
 public class SlotItemHandler extends Slot {
     private static Container emptyInventory = new SimpleContainer(0);
-    private final IItemHandler itemHandler;
-    private final int index;
+    private final IItemHandler.Slot slot;
 
     public SlotItemHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(emptyInventory, index, xPosition, yPosition);
-        this.itemHandler = itemHandler;
-        this.index = index;
+        this.slot = itemHandler.getSlot(index);
+    }
+
+    public SlotItemHandler(IItemHandler.Slot slot, int index, int xPosition, int yPosition) {
+        super(emptyInventory, index, xPosition, yPosition);
+        this.slot = slot;
+    }
+
+    public SlotItemHandler(IItemHandler.Slot slot, int xPosition, int yPosition) {
+        super(emptyInventory, slot.index(), xPosition, yPosition);
+        this.slot = slot;
     }
 
     @Override
     public boolean mayPlace(ItemStack stack) {
         if (stack.isEmpty())
             return false;
-        return itemHandler.isItemValid(index, stack);
+        return slot.test(stack);
     }
 
     @Override
     public ItemStack getItem() {
-        return this.getItemHandler().getStackInSlot(index);
+        return slot.get();
     }
 
     // Override if your IItemHandler does not implement IItemHandlerModifiable
     @Override
     public void set(ItemStack stack) {
-        ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(index, stack);
+        slot.set(stack);
         this.setChanged();
     }
 
     // Override if your IItemHandler does not implement IItemHandlerModifiable
     // @Override
     public void initialize(ItemStack stack) {
-        ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(index, stack);
+        slot.set(stack);
         this.setChanged();
     }
 
@@ -53,48 +61,33 @@ public class SlotItemHandler extends Slot {
 
     @Override
     public int getMaxStackSize() {
-        return this.itemHandler.getSlotLimit(this.index);
+        return slot.limit();
     }
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        ItemStack maxAdd = stack.copy();
-        int maxInput = stack.getMaxStackSize();
-        maxAdd.setCount(maxInput);
+        int maxSize = stack.getMaxStackSize();
+        ItemStack maxStack = stack.copyWithCount(maxSize);
 
-        IItemHandler handler = this.getItemHandler();
-        ItemStack currentStack = handler.getStackInSlot(index);
-        if (handler instanceof IItemHandlerModifiable) {
-            IItemHandlerModifiable handlerModifiable = (IItemHandlerModifiable) handler;
-
-            handlerModifiable.setStackInSlot(index, ItemStack.EMPTY);
-
-            ItemStack remainder = handlerModifiable.insertItem(index, maxAdd, true);
-
-            handlerModifiable.setStackInSlot(index, currentStack);
-
-            return maxInput - remainder.getCount();
-        } else {
-            ItemStack remainder = handler.insertItem(index, maxAdd, true);
-
-            int current = currentStack.getCount();
-            int added = maxInput - remainder.getCount();
-            return current + added;
-        }
+        ItemStack currentStack = this.slot.get();
+        ItemStack remainder = this.slot.insert(maxStack, true);
+        int current = currentStack.getCount();
+        int added = maxSize - remainder.getCount();
+        return current + added;
     }
 
     @Override
     public boolean mayPickup(Player playerIn) {
-        return !this.getItemHandler().extractItem(index, 1, true).isEmpty();
+        return !this.slot.extract(1, true).isEmpty();
     }
 
     @Override
     public ItemStack remove(int amount) {
-        return this.getItemHandler().extractItem(index, amount, false);
+        return this.slot.extract(amount, false);
     }
 
     public IItemHandler getItemHandler() {
-        return itemHandler;
+        return slot.handler();
     }
 /* TODO Slot patches
 @Override
