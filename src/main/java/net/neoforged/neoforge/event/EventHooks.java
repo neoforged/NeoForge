@@ -10,6 +10,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DynamicOps;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -135,6 +136,8 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
+import net.neoforged.neoforge.event.entity.living.ProjectileWeaponLoadEvent;
+import net.neoforged.neoforge.event.entity.living.ProjectileWeaponShootEvent;
 import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -1119,5 +1122,71 @@ public class EventHooks {
         var event = new MobSplitEvent(parent, children);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    /**
+     * Fires the {@link ProjectileWeaponLoadEvent.Pre}. Returns if the event is cancelled.
+     * 
+     * @param entity         The living entity using the projectile weapon.
+     * @param weaponItem     The projectile weapon item stack.
+     * @param projectileItem The projectile weapon item stack.
+     * @param hand           The hand helding the projectile weapon.
+     * @param canLoad        If the projectile weapon can start loading.
+     * @return If the projectile weapon can start loading.
+     */
+    public static boolean onProjectileWeaponLoadPre(LivingEntity entity, ItemStack weaponItem, ItemStack projectileItem, InteractionHand hand, boolean canLoad) {
+        var event = new ProjectileWeaponLoadEvent.Pre(entity, weaponItem, projectileItem, hand, canLoad);
+        NeoForge.EVENT_BUS.post(event);
+        return event.canLoad();
+    }
+
+    /**
+     * Fires the {@link ProjectileWeaponLoadEvent.Post}. Returns the loaded projectile item stacks.
+     * 
+     * @param entity            The living entity using the projectile weapon.
+     * @param weaponItem        The projectile weapon item stack.
+     * @param projectileItem    The projectile item stack.
+     * @param loadedProjectiles The loaded projectile weapon item stacks.
+     * @return The loaded projectile item stacks.
+     */
+    public static List<ItemStack> onProjectileWeaponLoadPost(LivingEntity entity, ItemStack weaponItem, ItemStack projectileItem, List<ItemStack> loadedProjectiles) {
+        var event = new ProjectileWeaponLoadEvent.Post(entity, weaponItem, projectileItem, loadedProjectiles instanceof ArrayList ? loadedProjectiles : new ArrayList<>(loadedProjectiles));
+        NeoForge.EVENT_BUS.post(event);
+        return event.isCanceled() ? List.of() : event.getLoadedProjectiles();
+    }
+
+    /**
+     * Fires the {@link ProjectileWeaponShootEvent.Pre}. Returns the event object.
+     * 
+     * @param entity         The living entity using the projectile weapon.
+     * @param projectile     The projectile entity to shoot.
+     * @param target         The target of the living entity, could be null.
+     * @param weaponItem     The projectile weapon item stack.
+     * @param projectileItem The projectile item stack.
+     * @param power          The power of the projectile.
+     * @param divergence     The divergence of the projectile.
+     * @return The event object.
+     */
+    public static ProjectileWeaponShootEvent.Pre onProjectileWeaponShootPre(LivingEntity entity, Projectile projectile, @Nullable LivingEntity target, ItemStack weaponItem, ItemStack projectileItem, float power, float divergence) {
+        var event = new ProjectileWeaponShootEvent.Pre(entity, projectile, target, weaponItem, projectileItem, power, divergence);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
+    }
+
+    /**
+     * Fires the {@link ProjectileWeaponShootEvent.Post}. Returns the damage to the projectile weapon item stack.
+     * 
+     * @param entity         The living entity using the projectile weapon.
+     * @param projectile     he projectile entity to shoot.
+     * @param target         The target of the living entity, could be null.
+     * @param weaponItem     The projectile weapon item stack.
+     * @param projectileItem The projectile item stack.
+     * @param weaponDamage   The damage to the projectile weapon item stack.
+     * @return The damage to the projectile weapon item stack, could be ignored if the damage should not be applied anyway (like in {@link net.minecraft.world.entity.monster.AbstractSkeleton#performRangedAttack(LivingEntity, float)}).
+     */
+    public static int onProjectileWeaponShootPost(LivingEntity entity, Projectile projectile, @Nullable LivingEntity target, ItemStack weaponItem, ItemStack projectileItem, int weaponDamage) {
+        var event = new ProjectileWeaponShootEvent.Post(entity, projectile, target, weaponItem, projectileItem, weaponDamage);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getWeaponDamage();
     }
 }
