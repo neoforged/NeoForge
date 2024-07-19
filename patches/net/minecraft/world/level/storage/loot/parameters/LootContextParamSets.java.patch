@@ -14,7 +14,7 @@
      );
      public static final LootContextParamSet FISHING = register(
 -        "fishing", p_81446_ -> p_81446_.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY)
-+        "fishing", p_81446_ -> p_81446_.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY).required(LootContextParams.ATTACKING_ENTITY) //Forge: Add the fisher as a killer.
++        "fishing", p_81446_ -> p_81446_.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY) //Forge: Add the fisher as a killer.
      );
      public static final LootContextParamSet ENTITY = register(
          "entity",

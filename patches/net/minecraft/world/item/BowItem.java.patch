@@ -4,7 +4,7 @@
              ItemStack itemstack = player.getProjectile(p_40667_);
              if (!itemstack.isEmpty()) {
                  int i = this.getUseDuration(p_40667_, p_40669_) - p_40670_;
-+                i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(itemstack, p_40668_, player, i, !itemstack.isEmpty());
++                i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty());
 +                if (i < 0) return;
                  float f = getPowerForTime(i);
                  if (!((double)f < 0.1)) {
