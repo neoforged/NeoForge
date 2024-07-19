@@ -117,48 +117,131 @@
   "neoforge.update.beta.2": "Можуть виникнути серйозні проблеми, перевірте їх перед надсиланням звіту.",
   "neoforge.update.newversion": "Нова версія NeoForge доступна: %s",
   "neoforge.menu.updatescreen.title": "Оновлення моду",
-  "neoforge.configgui.removeErroringEntities.tooltip": "Встановіть значення \"true\", для видалення будь-якої сутності, яка спричиняє помилки в методі оновлення замість повної зупинки серверу і створення краш-логу. БУДЬТЕ УВАЖНІ, ЦЕ МОЖЕ ВСЕ ЗРУЙНУВАТИ, ВИКОРИСТОВУЙТЕ З ОБЕРЕЖНІСТЮ, МИ НЕ ВІДПОВІДАЛЬНІ ЗА ШКОДУ.",
-  "neoforge.configgui.removeErroringEntities": "Видалити сутності, які викликають помилки",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Встановіть значення \"true\", для видалення будь-якої блок-сутності, яка спричиняє помилки в методі оновлення замість повної зупинки серверу і створення краш-логу. БУДЬТЕ УВАЖНІ, ЦЕ МОЖЕ ВСЕ ЗРУЙНУВАТИ, ВИКОРИСТОВУЙТЕ З ОБЕРЕЖНІСТЮ, МИ НЕ ВІДПОВІДАЛЬНІ ЗА ШКОДУ.",
-  "neoforge.configgui.removeErroringBlockEntities": "Видалити блок-сутності, які викликають помилки",
-  "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Встановіть значення \"true\", для повної перевірки колізії сутностей з драбинами, замість просто блоку, в якому вони знаходяться. Спричиняє помітні відмінності в механіці, тому за замовчуванням використовується ванільна поведінка. За замовчуванням: false.",
-  "neoforge.configgui.fullBoundingBoxLadders": "Повні області колізії з драбиною",
-  "neoforge.configgui.logCascadingWorldGeneration.tooltip": "Логує проблеми каскадної генерації чанків при формуванні місцевості.",
-  "neoforge.configgui.logCascadingWorldGeneration": "Записувати каскадне генерування світу",
-  "neoforge.configgui.fixVanillaCascading.tooltip": "Виправити ванільні помилки, що призводять до каскадної генерації світу. Це ТОЧНО змінює ванільну генерацію, так що НЕ повідомляйте про помилки, пов'язані з різницями світів, коли цей прапор увімкнено.",
-  "neoforge.configgui.fixVanillaCascading": "Виправити ванільне каскадування",
-  "neoforge.configgui.dimensionUnloadQueueDelay.tooltip": "Час в тіках, при якому сервер буде чекати, поки вимір в черзі на відвантаження. Це може бути корисним при швидкому завантаженні та вивантаженні вимірів, як, наприклад, кидання предметів через портал в незер кілька разів на секунду.",
-  "neoforge.configgui.dimensionUnloadQueueDelay": "Затримка при відвантаженні виміру",
-  "neoforge.configgui.clumpingThreshold.tooltip": "Керує порогом, при якому надається перевага Packet51 перед Packet52, за замовчуванням 64, максимально 1024.",
-  "neoforge.configgui.clumpingThreshold": "Поріг об'єднання пакетів",
-  "neoforge.configgui.treatEmptyTagsAsAir.tooltip": "Ваніла буде розглядати рецепти крафту, використовуючи пусті теги як повітря, і дозволить вам крафтити, не маючи нічого в цьому слоті. Це змінює порожні теги використання бар'єру як предмет, щоб запобігти крафту з повітрям.",
-  "neoforge.configgui.treatEmptyTagsAsAir": "Вважати порожні теги як повітря",
-  "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "Пропустити перевірку на наявність порожніх рецептів під час десеріалізації безформних рецептів, щоб запобігти занадто раннє кешування тегів складних інгредієнтів.",
-  "neoforge.configgui.skipEmptyShapelessCheck": "Пропуск перевірки порожніх інгредієнтів під час десереалізації безформних рецептів",
-  "neoforge.configgui.forceSystemNanoTime.tooltip": "Примусово використовувати System.nanoTime замість glfwGetTime як основного провайдера клієнтського часу.",
-  "neoforge.configgui.forceSystemNanoTime": "Примусити System.nanoTime",
-  "neoforge.configgui.zoomInMissingModelTextInGui.tooltip": "Вимкніть, щоб текст відсутньої моделі в GUI поміщався в слот.",
-  "neoforge.configgui.zoomInMissingModelTextInGui": "Збільшити текст відсутньої моделі в GUI",
-  "neoforge.configgui.forgeCloudsEnabled.tooltip": "Вмикає завантаження геометрії хмар в GPU для прискорення рендерингу.",
-  "neoforge.configgui.forgeCloudsEnabled": "Використовувати рендерер хмар NeoForge",
-  "neoforge.configgui.disableStairSlabCulling.tooltip": "Вимкнути вибракування прихованих сторін сходів і планів. Призводить до додаткового рендерингу, але може виправити деякі пакети ресурсів, які використовують цю ванільну механіку.",
-  "neoforge.configgui.disableStairSlabCulling": "Вимкнути вибракування сходів/плиток",
-  "neoforge.configgui.alwaysSetupTerrainOffThread.tooltip": "Активує можливість NeoForge для додавання всіх оновлень чанків в чергу потоку оновлення чанків.\nЦе може значно підвищити FPS, але також може викликати дивні затримки при рендерингу.\nНе рекомендується для комп'ютерів з невеликою кількістю доступних ядер.",
-  "neoforge.configgui.alwaysSetupTerrainOffThread": "Примушувати багатопотоковий рендеринг чанків",
+  "neoforge.configuration.uitext.title": "%s Configuration",
+  "neoforge.configuration.uitext.type.client": "Client Settings",
+  "neoforge.configuration.uitext.type.server": "Server Settings",
+  "neoforge.configuration.uitext.type.common": "Common settings",
+  "neoforge.configuration.uitext.type.startup": "Startup settings",
+  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
+  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
+  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
+  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.notonline": [
+    {
+      "text": "Settings in here are determined by the server and cannot be changed while online.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notlan": [
+    {
+      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notloaded": [
+    {
+      "text": "Settings in here are are ony available while a world is loaded.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.unsupportedelement": [
+    {
+      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.section": "%s...",
+  "neoforge.configuration.uitext.breadcrumb": [
+    {
+      "index": 0
+    },
+    {
+      "text": " > ",
+      "color": "gold",
+      "bold": true
+    },
+    {
+      "index": 1
+    }
+  ],
+  "neoforge.configuration.uitext.listelement": "%s:",
+  "neoforge.configuration.uitext.undo": "Undo",
+  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
+  "neoforge.configuration.uitext.reset": "Reset",
+  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.newlistelement": "+",
+  "neoforge.configuration.uitext.listelementup": "⏶",
+  "neoforge.configuration.uitext.listelementdown": "⏷",
+  "neoforge.configuration.uitext.listelementremove": "❌",
+  "neoforge.configuration.uitext.rangetooltip": [
+    {
+      "text": "\n\nRange: ",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    }
+  ],
+  "neoforge.configuration.uitext.filenametooltip": [
+    {
+      "text": "File: \"",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    },
+    {
+      "text": "\"",
+      "color": "gray"
+    }
+  ],
+  "neoforge.configuration.uitext.common": "Common Options",
+  "neoforge.configuration.uitext.client": "Client Options",
+  "neoforge.configuration.uitext.server": "Server Options",
+  "neoforge.configuration.uitext.startup": "Startup Options",
+  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
+  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed only take effect when the game is started.",
+  "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
+  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
+  "neoforge.configuration.uitext.restart.return": "Not yet...",
+  "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
+  "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
+  "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Активує конвеєр NeoForge для рендерингу блоків — виправляє освітлення користувацьких моделей.",
-  "neoforge.configgui.forgeLightPipelineEnabled": "Конвеєр світла NeoForge увімкнено",
-  "neoforge.configgui.selectiveResourceReloadEnabled.tooltip": "Коли ввімкнено, пришвидшує деякі завдання перезавантаження, такі як зміна мови.",
-  "neoforge.configgui.selectiveResourceReloadEnabled": "Увімкнути вибіркове завантаження ресурсів",
-  "neoforge.configgui.showLoadWarnings.tooltip": "Коли увімкнено, NeoForge покаже всі попередження, що сталися під час завантаження.",
+  "neoforge.configgui.fullBoundingBoxLadders": "Повні області колізії з драбиною",
+  "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Встановіть значення \"true\", для повної перевірки колізії сутностей з драбинами, замість просто блоку, в якому вони знаходяться. Спричиняє помітні відмінності в механіці, тому за замовчуванням використовується ванільна поведінка. За замовчуванням: false.",
+  "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
+  "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.",
+  "neoforge.configgui.logUntranslatedItemTagWarnings": "Log Untranslated Item Tags",
+  "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.",
+  "neoforge.configgui.permissionHandler": "Permission Handler",
+  "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
+  "neoforge.configgui.removeErroringBlockEntities": "Видалити блок-сутності, які викликають помилки",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
+    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    {
+      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "color": "red",
+      "bold": true
+    }
+  ],
+  "neoforge.configgui.removeErroringEntities": "Видалити сутності, які викликають помилки",
+  "neoforge.configgui.removeErroringEntities.tooltip": [
+    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    {
+      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "color": "red",
+      "bold": true
+    }
+  ],
   "neoforge.configgui.showLoadWarnings": "Показувати попередження при завантаженні",
-  "neoforge.configgui.disableVersionCheck.tooltip": "Встановіть значення \"true\", щоб вимкнути механіку перевірки версій NeoForge. NeoForge запитує маленький json файл на нашому сервері для отримання інформації про версії. Для більш детальної інформації дивіться клас ForgeVersion у нашому GitHub.",
-  "neoforge.configgui.disableVersionCheck": "Вимкнути перевірку версій NeoForge",
-  "neoforge.configgui.cachePackAccess.tooltip": "Встановіть значення \"true\" для кешування списки ресурсів в наборах ресурсів та даних",
-  "neoforge.configgui.cachePackAccess": "Кешувати доступ до пакетів",
-  "neoforge.configgui.indexVanillaPackCachesOnThread.tooltip": "Встановіть значення \"true\" для індексування ванільних пакетів ресурсів та даних в потоці",
-  "neoforge.configgui.indexVanillaPackCachesOnThread": "Індексувати ванільні пакети ресурсів в потоці",
-  "neoforge.configgui.indexModPackCachesOnThread.tooltip": "Встановіть значення \"true\" для індексування наборів ресурсів і пакетів даних у потоці",
-  "neoforge.configgui.indexModPackCachesOnThread": "Індексувати пакет ресурсів модів у потоці",
+  "neoforge.configgui.showLoadWarnings.tooltip": "Коли увімкнено, NeoForge покаже всі попередження, що сталися під час завантаження.",
+  "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",
+  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
