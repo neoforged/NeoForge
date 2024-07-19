@@ -1140,18 +1140,18 @@ public class EventHooks {
     }
 
     /**
-     * Fires the {@link ObtainItemEvent}. Returns the stack to be added to player inventory.
+     * Fires {@link ObtainItemEvent}.
      *
      * @param entity The entity that obtains the item
      * @param stack  The stack to be obtained
      * @return If part of the stack is taken away
      */
-    public static boolean onObtainItem(LivingEntity entity, ItemStack stack) {
+    public static boolean onObtainItem(LivingEntity entity, ItemStack stack, ObtainItemEvent.Source source) {
         if (stack.isEmpty())
             return false;
         // make a copy to prevent listeners of this event to modify stack data
         ItemStack copy = stack.copy();
-        ObtainItemEvent event = new ObtainItemEvent(entity, copy);
+        ObtainItemEvent event = new ObtainItemEvent(entity, copy, source);
         NeoForge.EVENT_BUS.post(event);
         if (!FMLEnvironment.production && !copy.isEmpty()) {
             if (!ItemStack.isSameItemSameComponents(copy, stack)) {
@@ -1167,4 +1167,16 @@ public class EventHooks {
         }
         return false;
     }
+
+    /**
+     * Fires {@link ObtainItemEvent} and give the remainder to player.
+     *
+     * @param player The player that obtains the item
+     * @param stack  The stack to be obtained
+     * @return If part of the stack is taken away by event listeners or the player
+     */
+    public static boolean addToInventory(Player player, ItemStack stack, ObtainItemEvent.Source source) {
+        return onObtainItem(player, stack, source) | player.getInventory().add(stack);
+    }
+
 }
