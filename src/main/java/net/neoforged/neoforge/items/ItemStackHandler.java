@@ -199,7 +199,7 @@ public class ItemStackHandler implements IItemHandlerModifiable, INBTSerializabl
     }
 
     @Override
-    public IItemHandler.Slot getSlot(int slot) {
+    public Slot getSlot(int slot) {
         validateSlotIndex(slot);
         return this.slots.get(slot);
     }
@@ -213,7 +213,7 @@ public class ItemStackHandler implements IItemHandlerModifiable, INBTSerializabl
 
     protected void onContentsChanged(int slot) {}
 
-    protected class Slot implements IItemHandler.Slot {
+    public class Slot implements IItemHandler.Slot {
         private final int index;
 
         protected Slot(int index) {

@@ -15,6 +15,9 @@ import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 /**
  * Variant of {@link ItemStackHandler} for use with data components.
  * <p>
@@ -29,6 +32,7 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
     protected final MutableDataComponentHolder parent;
     protected final DataComponentType<ItemContainerContents> component;
     protected final int size;
+    protected final List<Slot> slots;
 
     /**
      * Creates a new {@link ComponentItemHandler} with target size. If the existing component is smaller than the given size, it will be expanded on write.
@@ -41,7 +45,13 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
         this.parent = parent;
         this.component = component;
         this.size = size;
+        this.slots = IntStream.range(0, size).mapToObj(Slot::new).toList();
         Preconditions.checkArgument(size <= 256, "The max size of ItemContainerContents is 256 slots.");
+    }
+
+    @Override
+    public Slot getSlot(int index) {
+        return this.slots.get(index);
     }
 
     @Override
@@ -198,6 +208,68 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
     protected final void validateSlotIndex(int slot) {
         if (slot < 0 || slot >= getSlots()) {
             throw new RuntimeException("Slot " + slot + " not in valid range - [0," + getSlots() + ")");
+        }
+    }
+
+    public class Slot implements IItemHandler.Slot {
+        private final int index;
+
+        protected Slot(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public boolean test(ItemStack stack) {
+            return ComponentItemHandler.this.isItemValid(index, stack);
+        }
+
+        @Override
+        public ItemStack get() {
+            return ComponentItemHandler.this.getStackInSlot(index);
+        }
+
+        @Override
+        public void set(ItemStack stack) {
+            ComponentItemHandler.this.setStackInSlot(index, stack);
+        }
+
+        @Override
+        public ItemStack insert(ItemStack stack, boolean simulate) {
+            return ComponentItemHandler.this.insertItem(index, stack, simulate);
+        }
+
+        @Override
+        public ItemStack extract(int amount, boolean simulate) {
+            return ComponentItemHandler.this.extractItem(index, amount, simulate);
+        }
+
+        @Override
+        public int limit() {
+            return ComponentItemHandler.this.getSlotLimit(index);
+        }
+
+        @Override
+        public int index() {
+            return index;
+        }
+
+        @Override
+        public IItemHandler handler() {
+            return ComponentItemHandler.this;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other)
+                return true;
+            if (!(other instanceof IItemHandler.Slot slot))
+                return false;
+            return ComponentItemHandler.this == slot.handler() && index == slot.index();
+        }
+
+        @Override
+        public int hashCode() {
+            return ComponentItemHandler.this.hashCode() + index * 31;
         }
     }
 }
