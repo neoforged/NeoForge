@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/item/PotionItem.java
++++ b/net/minecraft/world/item/PotionItem.java
+@@ -44,6 +_,8 @@
+ 
+     @Override
+     public ItemStack finishUsingItem(ItemStack p_42984_, Level p_42985_, LivingEntity p_42986_) {
++        // Make a copy for ObtainItemEvent
++        ItemStack copy = p_42984_.copy();
+         Player player = p_42986_ instanceof Player ? (Player)p_42986_ : null;
+         if (player instanceof ServerPlayer) {
+             CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer)player, p_42984_);
+@@ -67,11 +_,11 @@
+ 
+         if (player == null || !player.hasInfiniteMaterials()) {
+             if (p_42984_.isEmpty()) {
+-                return new ItemStack(Items.GLASS_BOTTLE);
++                return net.neoforged.neoforge.event.EventHooks.returnToUsingHand(p_42986_, new ItemStack(Items.GLASS_BOTTLE), copy);
+             }
+ 
+             if (player != null) {
+-                player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
++                net.neoforged.neoforge.event.EventHooks.givePlayer(player, new ItemStack(Items.GLASS_BOTTLE), net.neoforged.neoforge.event.entity.item.ObtainItemEvent.container(copy, false));
+             }
+         }
+ 

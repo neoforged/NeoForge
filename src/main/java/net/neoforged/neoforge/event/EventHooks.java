@@ -1196,4 +1196,18 @@ public class EventHooks {
         if (stack.isEmpty()) return;
         player.drop(stack, false);
     }
+
+    /**
+     * Called when entity consumes an item as last of the stack and returns the container to the using hand.
+     * Fires {@link ObtainItemEvent}. Returns the remainder.
+     *
+     * @param entity   The entity using item
+     * @param stack    The stack expected to be given to player as the container
+     * @param original The item consumed
+     * @return The container to be put back on hand, if any
+     */
+    public static ItemStack returnToUsingHand(LivingEntity entity, ItemStack stack, ItemStack original) {
+        onObtainItem(entity, stack, ObtainItemEvent.container(original, true));
+        return stack;
+    }
 }
