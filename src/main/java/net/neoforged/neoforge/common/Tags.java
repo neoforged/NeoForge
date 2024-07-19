@@ -380,6 +380,11 @@ public class Tags {
         public static final TagKey<Item> FENCES = tag("fences");
         public static final TagKey<Item> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Item> FENCES_WOODEN = tag("fences/wooden");
+        /**
+         * For bonemeal-like items that can grow plants.
+         * (Note: Could include durability-based modded bonemeal-like items. Check for durability DataComponent to handle them properly)
+         */
+        public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.

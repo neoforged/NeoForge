@@ -188,6 +188,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FENCES, "Fences");
         add(Tags.Items.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Items.FENCES_WOODEN, "Wooden Fences");
+        add(Tags.Items.FERTILIZERS, "Fertilizers");
         add(Tags.Items.FOODS, "Foods");
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");
