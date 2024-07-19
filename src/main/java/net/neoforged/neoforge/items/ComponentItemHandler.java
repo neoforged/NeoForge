@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.items;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
+import java.util.stream.IntStream;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
@@ -14,9 +16,6 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-
-import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Variant of {@link ItemStackHandler} for use with data components.
