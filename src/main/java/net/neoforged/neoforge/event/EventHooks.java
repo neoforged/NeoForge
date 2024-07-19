@@ -1144,6 +1144,7 @@ public class EventHooks {
      *
      * @param entity The entity that obtains the item
      * @param stack  The stack to be obtained
+     * @param source The source of the obtained item. See {@link ObtainItemEvent}
      * @return If part of the stack is taken away
      */
     public static boolean onObtainItem(LivingEntity entity, ItemStack stack, ObtainItemEvent.Source source) {
@@ -1173,9 +1174,26 @@ public class EventHooks {
      *
      * @param player The player that obtains the item
      * @param stack  The stack to be obtained
+     * @param source The source of the obtained item. See {@link ObtainItemEvent}
      * @return If part of the stack is taken away by event listeners or the player
      */
     public static boolean addToInventory(Player player, ItemStack stack, ObtainItemEvent.Source source) {
         return onObtainItem(player, stack, source) | player.getInventory().add(stack);
+    }
+
+    /**
+     * Fires {@link ObtainItemEvent}. Give the remainder to player. Then drop the remainder on ground.
+     *
+     * @param player The player that obtains the item
+     * @param stack  The stack to be obtained
+     * @param source The source of the obtained item. See {@link ObtainItemEvent}
+     */
+    public static void givePlayer(Player player, ItemStack stack, ObtainItemEvent.Source source) {
+        if (stack.isEmpty()) return;
+        onObtainItem(player, stack, source);
+        if (stack.isEmpty()) return;
+        player.getInventory().add(stack);
+        if (stack.isEmpty()) return;
+        player.drop(stack, false);
     }
 }

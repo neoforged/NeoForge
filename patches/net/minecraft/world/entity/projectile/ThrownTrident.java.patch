@@ -5,7 +5,7 @@
      @Override
      protected boolean tryPickup(Player p_150196_) {
 -        return super.tryPickup(p_150196_) || this.isNoPhysics() && this.ownedBy(p_150196_) && p_150196_.getInventory().add(this.getPickupItem());
-+        return super.tryPickup(p_150196_) || this.isNoPhysics() && this.ownedBy(p_150196_) && net.neoforged.neoforge.event.EventHooks.addToInventory(p_150196_, this.getPickupItem(), new net.neoforged.neoforge.event.entity.item.ObtainItemEvent.ProjectileSource(this));
++        return super.tryPickup(p_150196_) || this.isNoPhysics() && this.ownedBy(p_150196_) && net.neoforged.neoforge.event.EventHooks.addToInventory(p_150196_, this.getPickupItem(), net.neoforged.neoforge.event.entity.item.ObtainItemEvent.entity(this));
      }
  
      @Override

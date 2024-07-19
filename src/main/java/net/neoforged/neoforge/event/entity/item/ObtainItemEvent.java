@@ -25,9 +25,10 @@ import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
  * Default Sources:
  * <li>ItemEntitySource for item entity pickup</li>
  * <li>ProjectileSource for arrow and trident</li>
+ * <li>ItemContainerReturn for container return when consuming items (Not being used by NeoForge yet)</li>
  * <li>COMMAND for loot and give commands</li>
  * <li>REWARD for advancement rewards and modded</li>
- * <li>DROPS for modded ways of giving drops to player without creating item entities</li>
+ * <li>DROPS for modded ways of giving drops to player without creating item entities (Not being used by NeoForge yet)</li>
  * <br>
  * One example use case of this event is for backpack mods to redirect item pickup,
  * allowing them to also account for mod behaviors that directly add item to players,
@@ -37,6 +38,31 @@ public class ObtainItemEvent extends Event {
     public static final Source REWARD = new SimpleSource("Reward");
     public static final Source COMMAND = new SimpleSource("Command");
     public static final Source DROPS = new SimpleSource("Drops");
+
+    /**
+     * @param entity The ItemEntity to be picked up
+     */
+    public static ItemEntitySource entity(ItemEntity entity) {
+        return new ItemEntitySource(entity);
+    }
+
+    /**
+     * @param entity The projectile entity to be picked up as item
+     */
+    public static ProjectileSource entity(Projectile entity) {
+        return new ProjectileSource(entity);
+    }
+
+    /**
+     * Triggers when an ItemStack is being consumed and its container is to be returned to the user
+     * 
+     * @param original The original ItemStack which the container used to hold.
+     * @param toHand   Whether the container item is originally expected to be return to the hand using the item.
+     *                 Usually true when the original item is the last item and is consumed.
+     */
+    public static ItemContainerReturn container(ItemStack original, boolean toHand) {
+        return new ItemContainerReturn(original, toHand);
+    }
 
     private final ItemStack stack;
     private final LivingEntity entity;
@@ -77,6 +103,17 @@ public class ObtainItemEvent extends Event {
     }
 
     public record ProjectileSource(Projectile entity) implements EntitySource {
+
+    }
+
+    /**
+     * Triggers when an ItemStack is being consumed and its container is to be returned to the user
+     * 
+     * @param originalContent The original ItemStack which the container used to hold.
+     * @param returnToHand    Whether the container item is originally expected to be return to the hand using the item.
+     *                        Usually true when the original item is the last item and is consumed.
+     */
+    public record ItemContainerReturn(ItemStack originalContent, boolean returnToHand) implements Source {
 
     }
 }

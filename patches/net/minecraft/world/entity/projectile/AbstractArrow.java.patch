@@ -25,7 +25,7 @@
          return switch (this.pickup) {
              case DISALLOWED -> false;
 -            case ALLOWED -> p_150121_.getInventory().add(this.getPickupItem());
-+            case ALLOWED -> net.neoforged.neoforge.event.EventHooks.addToInventory(p_150121_, this.getPickupItem(), new net.neoforged.neoforge.event.entity.item.ObtainItemEvent.ProjectileSource(this));
++            case ALLOWED -> net.neoforged.neoforge.event.EventHooks.addToInventory(p_150121_, this.getPickupItem(), net.neoforged.neoforge.event.entity.item.ObtainItemEvent.entity(this));
              case CREATIVE_ONLY -> p_150121_.hasInfiniteMaterials();
          };
      }

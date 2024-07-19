@@ -114,7 +114,7 @@
 +            // Make a copy of the original stack for use in ItemEntityPickupEvent.Post
 +            ItemStack originalCopy = itemstack.copy();
 +            // Subvert the vanilla conditions (pickup delay and target check) if the result is true.
-+            if ((result.isTrue() || this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID()))) && net.neoforged.neoforge.event.EventHooks.addToInventory(p_32040_, itemstack, new net.neoforged.neoforge.event.entity.item.ObtainItemEvent.ItemEntitySource(this))) {
++            if ((result.isTrue() || this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID()))) && net.neoforged.neoforge.event.EventHooks.addToInventory(p_32040_, itemstack, net.neoforged.neoforge.event.entity.item.ObtainItemEvent.entity(this))) {
 +                // Fire ItemEntityPickupEvent.Post
 +                net.neoforged.neoforge.event.EventHooks.fireItemPickupPost(this, p_32040_, originalCopy);
 +                // Update `i` to reflect the actual pickup amount. Vanilla is wrong here and always reports the whole stack.
