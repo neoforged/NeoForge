@@ -26,7 +26,7 @@ public interface IClientMobEffectExtensions {
     }
 
     static IClientMobEffectExtensions of(MobEffect effect) {
-        return effect.getEffectRendererInternal() instanceof IClientMobEffectExtensions r ? r : DEFAULT;
+        return ClientExtensionsManager.MOB_EFFECT_EXTENSIONS.getOrDefault(effect, DEFAULT);
     }
 
     /**

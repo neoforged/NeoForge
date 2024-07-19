@@ -170,6 +170,7 @@ import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.event.ToastAddEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
+import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
@@ -1003,6 +1004,7 @@ public class ClientHooks {
         }
         initializedClientHooks = true;
 
+        ClientExtensionsManager.init();
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
