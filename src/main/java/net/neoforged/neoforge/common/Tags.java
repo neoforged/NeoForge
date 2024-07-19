@@ -674,6 +674,7 @@ public class Tags {
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
         /**
          * A tag containing melee-based weapons for recipes and loot tables.
+         * Tools are considered melee if they contain an ATTACK_DAMAGE attribute.
          * Do not use this tag for determining a tool's behavior in-code.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
@@ -683,6 +684,7 @@ public class Tags {
         public static final TagKey<Item> MELEE_WEAPON_TOOLS = tag("tools/melee_weapon");
         /**
          * A tag containing ranged-based weapons for recipes and loot tables.
+         * Tools are considered ranged if they have the ability to damage targets at a distance.
          * Do not use this tag for determining a tool's behavior in-code.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
