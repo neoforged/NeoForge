@@ -7,7 +7,6 @@ package net.neoforged.neoforge.event.entity.item;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
@@ -24,38 +23,37 @@ import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
  * such as wrench picking up machines, or ender pickaxe teleporting drops to player inventory.
  */
 public class ObtainItemEvent extends Event {
-	private final ItemStack stack;
-	private final LivingEntity entity;
-	private final Source source;
+    private final ItemStack stack;
+    private final LivingEntity entity;
+    private final Source source;
 
-	public ObtainItemEvent(LivingEntity entity, ItemStack stack, Source source) {
-		this.stack = stack;
-		this.entity = entity;
-		this.source = source;
-	}
+    public ObtainItemEvent(LivingEntity entity, ItemStack stack, Source source) {
+        this.stack = stack;
+        this.entity = entity;
+        this.source = source;
+    }
 
-	public ItemStack getStack() {
-		return stack;
-	}
+    public ItemStack getStack() {
+        return stack;
+    }
 
-	public LivingEntity getEntity() {
-		return entity;
-	}
+    public LivingEntity getEntity() {
+        return entity;
+    }
 
-	public Source getSource() {
-		return source;
-	}
+    public Source getSource() {
+        return source;
+    }
 
-	public interface Source {
+    public interface Source {
 
-	}
+    }
 
-	public record ItemEntitySource(ItemEntity entity) implements Source {
+    public record ItemEntitySource(ItemEntity entity) implements Source {
 
-	}
+    }
 
-	public record ProjectileSource(Projectile projectile) implements Source {
+    public record ProjectileSource(Projectile projectile) implements Source {
 
-	}
-
+    }
 }

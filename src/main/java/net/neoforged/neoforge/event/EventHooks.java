@@ -1178,5 +1178,4 @@ public class EventHooks {
     public static boolean addToInventory(Player player, ItemStack stack, ObtainItemEvent.Source source) {
         return onObtainItem(player, stack, source) | player.getInventory().add(stack);
     }
-
 }
