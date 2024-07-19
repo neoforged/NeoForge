@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/GiveCommand.java
++++ b/net/minecraft/server/commands/GiveCommand.java
+@@ -65,7 +_,7 @@
+                     int l = Math.min(i, k);
+                     k -= l;
+                     ItemStack itemstack1 = p_137780_.createItemStack(l, false);
+-                    boolean flag = serverplayer.getInventory().add(itemstack1);
++                    boolean flag = net.neoforged.neoforge.event.EventHooks.addToInventory(serverplayer, itemstack1, net.neoforged.neoforge.event.entity.item.ObtainItemEvent.COMMAND);
+                     if (flag && itemstack1.isEmpty()) {
+                         ItemEntity itementity1 = serverplayer.drop(itemstack, false);
+                         if (itementity1 != null) {
