@@ -134,7 +134,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -1563,18 +1562,18 @@ public class CommonHooks {
     }
 
     public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.Menu(player, level, blockPos, distance)).getResult();
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.Menu(player, level, blockPos, distance, player.canInteractWithBlock(blockPos, distance))).getStillValid();
     }
 
     public static boolean menuValidity(Player player, Entity entity, double distance) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.EntityMenu(player, entity, distance)).getResult();
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.EntityMenu(player, entity, distance)).getStillValid();
     }
 
-    public static boolean menuValidity(Player player, ContainerEntity entity, double distance) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.ContainerEntityMenu(player, entity, distance)).getResult();
+    public static boolean menuValidity(Player player, ContainerEntity containerEntity, double distance) {
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.ContainerEntityMenu(player, containerEntity, distance, player.canInteractWithEntity(containerEntity.getBoundingBox(), distance))).getStillValid();
     }
 
-    public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance, SignBlockEntity signBlockEntity) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.Sign(player, level, blockPos, distance, signBlockEntity)).getResult();
+    public static boolean menuValidity(Player player, BlockEntity blockEntity, double distance) {
+        return NeoForge.EVENT_BUS.post(new ValidityEvent.BlockEntityMenu(player, blockEntity, distance, player.canInteractWithBlock(blockEntity.getBlockPos(), distance))).getStillValid();
     }
 }
