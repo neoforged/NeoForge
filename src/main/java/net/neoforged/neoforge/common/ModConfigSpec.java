@@ -359,63 +359,244 @@ public class ModConfigSpec implements IConfigSpec {
             return define(path, defaultSupplier, acceptableValues::contains);
         }
 
+        /**
+         * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".<br>
+         * This variant takes its default value directly and wraps it in a supplier.<br>
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineList(String, List, Supplier, Predicate)}
+         */
+        @Deprecated
         public <T> ConfigValue<List<? extends T>> defineList(String path, List<? extends T> defaultValue, Predicate<Object> elementValidator) {
             return defineList(split(path), defaultValue, elementValidator);
         }
 
+        /**
+         * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".<br>
+         * This variant takes its default value directly and wraps it in a supplier.
+         * 
+         */
+        public <T> ConfigValue<List<? extends T>> defineList(String path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineList(split(path), defaultValue, newElementSupplier, elementValidator);
+        }
+
+        /**
+         * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".<br>
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineList(String, Supplier, Supplier, Predicate)}
+         */
+        @Deprecated
         public <T> ConfigValue<List<? extends T>> defineList(String path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
             return defineList(split(path), defaultSupplier, elementValidator);
         }
 
+        /**
+         * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".
+         * 
+         */
+        public <T> ConfigValue<List<? extends T>> defineList(String path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineList(split(path), defaultSupplier, newElementSupplier, elementValidator);
+        }
+
+        /**
+         * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its default value directly and wraps it in a supplier.<br>
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineList(List, List, Supplier, Predicate)}
+         */
+        @Deprecated
         public <T> ConfigValue<List<? extends T>> defineList(List<String> path, List<? extends T> defaultValue, Predicate<Object> elementValidator) {
             return defineList(path, () -> defaultValue, elementValidator);
         }
 
-        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
-            context.setClazz(List.class);
-            return define(path, new ValueSpec(defaultSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), context, path) {
-                @Override
-                public Object correct(Object value) {
-                    if (!(value instanceof List<?> currentList) || currentList.isEmpty()) {
-                        LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction. It is null, not a list, or an empty list. Modders, consider defineListAllowEmpty?", path.get(path.size() - 1));
-                        return getDefault();
-                    }
-                    List<?> list = Lists.newArrayList(currentList);
-                    list.removeIf(elementValidator.negate());
-                    if (list.isEmpty()) {
-                        LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction. It failed validation.", path.get(path.size() - 1));
-                        return getDefault();
-                    }
-                    return list;
-                }
-            }, defaultSupplier);
+        /**
+         * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its default value directly and wraps it in a supplier.
+         * 
+         */
+        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineList(path, () -> defaultValue, newElementSupplier, elementValidator);
         }
 
+        /**
+         * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineList(List, Supplier, Supplier, Predicate)}
+         */
+        @Deprecated
+        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
+            return defineList(path, defaultSupplier, null, elementValidator);
+        }
+
+        /**
+         * Build a new config value that holds a {@link List}.<p>
+         * 
+         * This list cannot be empty. See also {@link #defineList(List, Supplier, Supplier, Predicate, Range)} for more control over the list size.
+         * 
+         * @param <T>                The class of element of the list. Directly supported are {@link String}, {@link Boolean}, {@link Integer}, {@link Long} and {@link Double}.
+         *                           Other classes will be saved using their string representation and will be read back from the config file as strings.
+         * @param path               The key for the config value in list form, i.e. pre-split into section and key.
+         * @param defaultSupplier    A {@link Supplier} for the default value of the list. This will be used if the config file doesn't exist or if it reads as invalid.
+         * @param newElementSupplier A {@link Supplier} for new elements to be added to the list. This is only used in the UI when the user presses the "add" button.
+         *                           The supplied value doesn't have to validate as correct, but it should provide a good starting point for the user to make it correct.
+         *                           If this parameter is null, there will be no "add" button in the UI (if the default UI is used).
+         * @param elementValidator   A {@link Predicate} to verify if a list element is valid. Elements that are read from the config file are removed from the list if the
+         *                           validator rejects them.
+         * @return A {@link ConfigValue} object that can be used to access the config value and that will live-update if the value changed, i.e. because the config file
+         *         was updated or the config UI was used.
+         */
+        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineList(path, defaultSupplier, newElementSupplier, elementValidator, new Range<Integer>(Integer.class, 1, Integer.MAX_VALUE));
+        }
+
+        /**
+         * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".<br>
+         * This variant takes its default value directly and wraps it in a supplier.<br>
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineListAllowEmpty(String, List, Supplier, Predicate)}
+         */
+        @Deprecated
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, List<? extends T> defaultValue, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(split(path), defaultValue, elementValidator);
         }
 
+        /**
+         * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".<br>
+         * This variant takes its default value directly and wraps it in a supplier.
+         * 
+         */
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(split(path), defaultValue, newElementSupplier, elementValidator);
+        }
+
+        /**
+         * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".<br>
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineListAllowEmpty(String, Supplier, Supplier, Predicate)}
+         */
+        @Deprecated
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(split(path), defaultSupplier, elementValidator);
         }
 
+        /**
+         * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its key as a string and splits it on ".".
+         * 
+         */
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(split(path), defaultSupplier, newElementSupplier, elementValidator);
+        }
+
+        /**
+         * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its default value directly and wraps it in a supplier.<br>
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineListAllowEmpty(List, List, Supplier, Predicate)}
+         */
+        @Deprecated
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, List<? extends T> defaultValue, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(path, () -> defaultValue, elementValidator);
         }
 
+        /**
+         * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant takes its default value directly and wraps it in a supplier.
+         * 
+         */
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(path, () -> defaultValue, newElementSupplier, elementValidator);
+        }
+
+        /**
+         * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
+         * 
+         * This variant has no supplier for new elements, so no new elements can be added in the config UI.
+         * 
+         * @deprecated Use {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)}
+         */
+        @Deprecated
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, Supplier<List<? extends T>> defaultSupplier, Predicate<Object> elementValidator) {
+            return defineListAllowEmpty(path, defaultSupplier, null, elementValidator);
+        }
+
+        /**
+         * Build a new config value that holds a {@link List}.<p>
+         * 
+         * This list can be empty. See also {@link #defineList(List, Supplier, Supplier, Predicate, Range)} for more control over the list size.
+         * 
+         * @param <T>                The class of element of the list. Directly supported are {@link String}, {@link Boolean}, {@link Integer}, {@link Long} and {@link Double}.
+         *                           Other classes will be saved using their string representation and will be read back from the config file as strings.
+         * @param path               The key for the config value in list form, i.e. pre-split into section and key.
+         * @param defaultSupplier    A {@link Supplier} for the default value of the list. This will be used if the config file doesn't exist or if it reads as invalid.
+         * @param newElementSupplier A {@link Supplier} for new elements to be added to the list. This is only used in the UI when the user presses the "add" button.
+         *                           The supplied value doesn't have to validate as correct, but it should provide a good starting point for the user to make it correct.
+         *                           If this parameter is null, there will be no "add" button in the UI (if the default UI is used).
+         * @param elementValidator   A {@link Predicate} to verify if a list element is valid. Elements that are read from the config file are removed from the list if the
+         *                           validator rejects them.
+         * @return A {@link ConfigValue} object that can be used to access the config value and that will live-update if the value changed, i.e. because the config file
+         *         was updated or the config UI was used.
+         */
+        public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
+            return defineList(path, defaultSupplier, newElementSupplier, elementValidator, null);
+        }
+
+        /**
+         * Build a new config value that holds a {@link List}.<p>
+         * 
+         * @param <T>                The class of element of the list. Directly supported are {@link String}, {@link Boolean}, {@link Integer}, {@link Long} and {@link Double}.
+         *                           Other classes will be saved using their string representation and will be read back from the config file as strings.
+         * @param path               The key for the config value in list form, i.e. pre-split into section and key.
+         * @param defaultSupplier    A {@link Supplier} for the default value of the list. This will be used if the config file doesn't exist or if it reads as invalid.
+         * @param newElementSupplier A {@link Supplier} for new elements to be added to the list. This is only used in the UI when the user presses the "add" button.
+         *                           The supplied value doesn't have to validate as correct, but it should provide a good starting point for the user to make it correct.
+         *                           If this parameter is null, there will be no "add" button in the UI (if the default UI is used).
+         * @param elementValidator   A {@link Predicate} to verify if a list element is valid. Elements that are read from the config file are removed from the list if the
+         *                           validator rejects them.
+         * @param sizeRange          A {@link Range} defining the valid length of the list. Lists read from the config file that don't validate with this Range will be replaced
+         *                           with the default.
+         * @return A {@link ConfigValue} object that can be used to access the config value and that will live-update if the value changed, i.e. because the config file
+         *         was updated or the config UI was used.
+         */
+        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, @Nullable Supplier<T> newElementSupplier, Predicate<Object> elementValidator, Range<Integer> sizeRange) {
             context.setClazz(List.class);
-            return define(path, new ValueSpec(defaultSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), context, path) {
+            return define(path, new ListValueSpec(defaultSupplier, newElementSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), elementValidator, context, path, sizeRange) {
                 @Override
-                public Object correct(@Nullable Object value) {
-                    if (!(value instanceof List)) {
-                        LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction, as it is null or not a list.", path.get(path.size() - 1));
+                public Object correct(Object value) {
+                    if (!(value instanceof List) || (getSizeRange() != null && !getSizeRange().test(((List<?>) value).size()))) {
+                        LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction, as it is null, not a list, or the wrong size.", path.getLast());
                         return getDefault();
                     }
                     List<?> list = Lists.newArrayList((List<?>) value);
                     list.removeIf(elementValidator.negate());
                     if (list.isEmpty()) {
-                        LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction. It failed validation.", path.get(path.size() - 1));
+                        LOGGER.debug(Logging.CORE, "List on key {} is deemed to need correction. It failed validation.", path.getLast());
                         return getDefault();
                     }
                     return list;
@@ -897,6 +1078,59 @@ public class ModConfigSpec implements IConfigSpec {
 
         public Object getDefault() {
             return supplier.get();
+        }
+    }
+
+    public static class ListValueSpec extends ValueSpec {
+        private static final Range<Integer> MAX_ELEMENTS = new Range<>(Integer.class, 0, Integer.MAX_VALUE);
+
+        @Nullable
+        private final Supplier<?> newElementSupplier;
+        @Nullable
+        private final Range<Integer> sizeRange;
+        private final Predicate<Object> elementValidator;
+
+        private ListValueSpec(Supplier<?> supplier, @Nullable Supplier<?> newElementSupplier, Predicate<Object> listValidator, Predicate<Object> elementValidator, BuilderContext context, List<String> path, @Nullable Range<Integer> sizeRange) {
+            super(supplier, listValidator, context, path);
+            Objects.requireNonNull(elementValidator, "ElementValidator can not be null");
+
+            this.newElementSupplier = newElementSupplier;
+            this.elementValidator = elementValidator;
+            this.sizeRange = Objects.requireNonNullElse(sizeRange, MAX_ELEMENTS);
+        }
+
+        /**
+         * Creates a new empty element that can be added to the end of the list or null if the list doesn't support adding elements.<p>
+         * 
+         * The element does not need to validate with either {@link #test(Object)} or {@link #testElement(Object)}, but it should give the user a good starting point for their edit.<p>
+         * 
+         * Only used by the UI!
+         */
+        @Nullable
+        public Supplier<?> getNewElementSupplier() {
+            return newElementSupplier;
+        }
+
+        /**
+         * Determines if a given object can be part of the list.<p>
+         * 
+         * Note that the list-level validator overrules this.<p>
+         * 
+         * Only used by the UI!
+         */
+        public boolean testElement(Object value) {
+            return elementValidator.test(value);
+        }
+
+        /**
+         * The allowable range of the size of the list.
+         * <p>
+         * Note that the validator overrules this.
+         * <p>
+         * Only used by the UI!
+         */
+        public Range<Integer> getSizeRange() {
+            return sizeRange;
         }
     }
 
