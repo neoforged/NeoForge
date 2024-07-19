@@ -107,6 +107,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
@@ -125,6 +126,7 @@ import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
+import net.neoforged.neoforge.event.entity.item.ObtainItemEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
@@ -1135,5 +1137,34 @@ public class EventHooks {
         ModifyCustomSpawnersEvent event = new ModifyCustomSpawnersEvent(serverLevel, new ArrayList<>(customSpawners));
         NeoForge.EVENT_BUS.post(event);
         return event.getCustomSpawners();
+    }
+
+    /**
+     * Fires the {@link ObtainItemEvent}. Returns the stack to be added to player inventory.
+     *
+     * @param entity The entity that obtains the item
+     * @param stack  The stack to be obtained
+     * @return If part of the stack is taken away
+     */
+    public static boolean onObtainItem(LivingEntity entity, ItemStack stack) {
+        if (stack.isEmpty())
+            return false;
+        // make a copy to prevent listeners of this event to modify stack data
+        ItemStack copy = stack.copy();
+        ObtainItemEvent event = new ObtainItemEvent(entity, copy);
+        NeoForge.EVENT_BUS.post(event);
+        if (!FMLEnvironment.production && !copy.isEmpty()) {
+            if (!ItemStack.isSameItemSameComponents(copy, stack)) {
+                throw new IllegalStateException("Modification of stack data component is not allowed!");
+            }
+            if (copy.getCount() > stack.getCount()) {
+                throw new IllegalStateException("Increasing stack count is not allowed!");
+            }
+        }
+        if (copy.getCount() < stack.getCount()) {
+            stack.setCount(copy.getCount());
+            return true;
+        }
+        return false;
     }
 }
