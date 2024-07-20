@@ -81,6 +81,13 @@ import org.slf4j.Logger;
  */
 @ApiStatus.Internal
 public class NetworkRegistry {
+    /**
+     * Declared common networking versions currently supported by NeoForge.
+     * <p>
+     * At the time of writing, the only version in existence is 1.
+     */
+    public static final List<Integer> SUPPORTED_COMMON_NETWORKING_VERSIONS = List.of(1);
+
     private static final Logger LOGGER = LogUtils.getLogger();
 
     /**
@@ -702,6 +709,24 @@ public class NetworkRegistry {
                 .filter(registration -> registration.getValue().optional())
                 .forEach(registration -> nowForgottenChannels.add(registration.getKey()));
         return nowForgottenChannels.build();
+    }
+
+    /**
+     * Called when a {@link CommonVersionPayload} is received.
+     * Triggers a disconnect if none of the supplied version match our supported ones.
+     * Since we only support one version, we don't need to do further handling or record the "active" version just yet.
+     * <p>
+     * Invoked on the network thread.
+     * 
+     * @param connection The current connection.
+     * @param payload    The incoming version payload.
+     */
+    public static void checkCommonVersion(Connection connection, CommonVersionPayload payload) {
+        List<Integer> otherVersions = payload.versions();
+        if (otherVersions.stream().noneMatch(SUPPORTED_COMMON_NETWORKING_VERSIONS::contains)) {
+            String versions = String.join(", ", SUPPORTED_COMMON_NETWORKING_VERSIONS.stream().map(i -> i.toString()).toList());
+            connection.disconnect(Component.literal("Unsupported common network version. This installation of NeoForge only supports: " + versions));
+        }
     }
 
     /**

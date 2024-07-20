@@ -35,8 +35,8 @@
 +            return;
 +        }
 +
-+        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.CommonVersionPayload) {
-+            // no-op
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.CommonVersionPayload commonVersionPayload) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.checkCommonVersion(this.getConnection(), commonVersionPayload);
 +            return;
 +        }
 +
