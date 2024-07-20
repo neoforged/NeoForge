@@ -117,37 +117,37 @@
   "neoforge.update.beta.2": "Es könnten gravierende Probleme auftreten, bitte überprüfe diese, bevor du sie meldest.",
   "neoforge.update.newversion": "Neue NeoForge-Version verfügbar: %s",
   "neoforge.menu.updatescreen.title": "Mod Update",
-  "neoforge.configuration.uitext.title": "%s Configuration",
-  "neoforge.configuration.uitext.type.client": "Client Settings",
-  "neoforge.configuration.uitext.type.server": "Server Settings",
-  "neoforge.configuration.uitext.type.common": "Common settings",
-  "neoforge.configuration.uitext.type.startup": "Startup settings",
-  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
-  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
-  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
-  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.title": "%s Einstellungen",
+  "neoforge.configuration.uitext.type.client": "Clienteinstellungen",
+  "neoforge.configuration.uitext.type.server": "Servereinstellungen",
+  "neoforge.configuration.uitext.type.common": "Gemeinsame Einstellungen",
+  "neoforge.configuration.uitext.type.startup": "Starteinstellungen",
+  "neoforge.configuration.uitext.title.client": "%s Clienteinstellungen",
+  "neoforge.configuration.uitext.title.server": "%s Servereinstellungen",
+  "neoforge.configuration.uitext.title.common": "%s Gemeinsame Einstellungen",
+  "neoforge.configuration.uitext.title.startup": "%s Starteinstellungen",
   "neoforge.configuration.uitext.notonline": [
     {
-      "text": "Settings in here are determined by the server and cannot be changed while online.",
-      "color": "red"
+      "text": "Diese Einstellungen werden vom Server übernommen und können nicht geändert werden während Du online bist.",
+      "color": "rot"
     }
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
-      "color": "red"
+      "text": "Diese Einstellungen können nicht geändert werden während Du Dein Spiel für andere geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
+      "color": "rot"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are are ony available while a world is loaded.",
-      "color": "red"
+      "text": "Diese Einstellungen sind nur verfügbar während ein Spiel läuft.",
+      "color": "rot"
     }
   ],
   "neoforge.configuration.uitext.unsupportedelement": [
     {
-      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
-      "color": "red"
+      "text": "Diese Einstellungen können nicht in der Benutzeroberfläche bearbeitet werden. Kontaktiere die/den Autor:Innen des/der Mod(s) und bitte ihn/sie ein angepasstes Bedienelement zu implementieren.",
+      "color": "rot"
     }
   ],
   "neoforge.configuration.uitext.section": "%s...",
@@ -157,55 +157,55 @@
     },
     {
       "text": " > ",
-      "color": "gold",
+      "color": "Gold",
       "bold": true
     },
     {
-      "index": 1
+      "index": 0
     }
   ],
   "neoforge.configuration.uitext.listelement": "%s:",
-  "neoforge.configuration.uitext.undo": "Undo",
-  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
-  "neoforge.configuration.uitext.reset": "Reset",
-  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.undo": "Rückgängig",
+  "neoforge.configuration.uitext.undo.tooltip": "Änderungen werden nur auf diesem Bildschirm rückgängig gemacht.",
+  "neoforge.configuration.uitext.reset": "Zurücksetzen",
+  "neoforge.configuration.uitext.reset.tooltip": "Alles auf diesem Bildschirm auf den Standardwert zurücksetzen.",
   "neoforge.configuration.uitext.newlistelement": "+",
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
   "neoforge.configuration.uitext.rangetooltip": [
     {
-      "text": "\n\nRange: ",
-      "color": "gray"
+      "text": "\n\nWertebereich: ",
+      "color": "grau"
     },
     {
       "index": 0,
-      "color": "gray"
+      "color": "grau"
     }
   ],
   "neoforge.configuration.uitext.filenametooltip": [
     {
-      "text": "File: \"",
-      "color": "gray"
+      "text": "Datei: \"",
+      "color": "grau"
     },
     {
       "index": 0,
-      "color": "gray"
+      "color": "grau"
     },
     {
       "text": "\"",
-      "color": "gray"
+      "color": "grau"
     }
   ],
-  "neoforge.configuration.uitext.common": "Common Options",
-  "neoforge.configuration.uitext.client": "Client Options",
-  "neoforge.configuration.uitext.server": "Server Options",
-  "neoforge.configuration.uitext.startup": "Startup Options",
-  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
-  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed only take effect when the game is started.",
-  "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
-  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
-  "neoforge.configuration.uitext.restart.return": "Not yet...",
+  "neoforge.configuration.uitext.common": "Gemeinsame Einstellungen",
+  "neoforge.configuration.uitext.client": "Clienteinstellungen",
+  "neoforge.configuration.uitext.server": "Servereinstellungen",
+  "neoforge.configuration.uitext.startup": "Starteinstellungen",
+  "neoforge.configuration.uitext.restart.game.title": "Minecraft muss neu gestartet werden",
+  "neoforge.configuration.uitext.restart.game.text": "Eine oder mehrere der geänderten Einstellungen beeinflussen wie das Spiel startet.",
+  "neoforge.configuration.uitext.restart.server.title": "Spielstand muss neu geladen werden",
+  "neoforge.configuration.uitext.restart.server.text": "Eine oder mehrere der geänderten Einstellungen beeinflussen wie ein Spielstand geladen wird.",
+  "neoforge.configuration.uitext.restart.return": "Noch nicht...",
   "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
