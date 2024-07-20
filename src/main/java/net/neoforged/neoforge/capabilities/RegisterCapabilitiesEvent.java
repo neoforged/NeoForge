@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired to register capability providers at an appropriate time.
@@ -35,7 +36,7 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
      * {@link Level#invalidateCapabilities(BlockPos)} MUST be called to notify the caches.</b>
      * See {@link IBlockCapabilityProvider} for details.
      */
-    public <T, C> void registerBlock(BlockCapability<T, C> capability, IBlockCapabilityProvider<T, C> provider, Block... blocks) {
+    public <T, C extends @Nullable Object> void registerBlock(BlockCapability<T, C> capability, IBlockCapabilityProvider<T, C> provider, Block... blocks) {
         Objects.requireNonNull(provider);
         // Probably a programmer error
         if (blocks.length == 0)
@@ -54,7 +55,7 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
      * {@link Level#invalidateCapabilities(BlockPos)} MUST be called to notify the caches.</b>
      * See {@link IBlockCapabilityProvider} for details.
      */
-    public <T, C, BE extends BlockEntity> void registerBlockEntity(BlockCapability<T, C> capability, BlockEntityType<BE> blockEntityType, ICapabilityProvider<? super BE, C, T> provider) {
+    public <T, C extends @Nullable Object, BE extends BlockEntity> void registerBlockEntity(BlockCapability<T, C> capability, BlockEntityType<BE> blockEntityType, ICapabilityProvider<? super BE, C, T> provider) {
         Objects.requireNonNull(provider);
 
         IBlockCapabilityProvider<T, C> adaptedProvider = (level, pos, state, blockEntity, context) -> {
@@ -83,7 +84,7 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
     /**
      * Register a capability provider for some entity type.
      */
-    public <T, C, E extends Entity> void registerEntity(EntityCapability<T, C> capability, EntityType<E> entityType, ICapabilityProvider<? super E, C, T> provider) {
+    public <T, C extends @Nullable Object, E extends Entity> void registerEntity(EntityCapability<T, C> capability, EntityType<E> entityType, ICapabilityProvider<? super E, C, T> provider) {
         Objects.requireNonNull(provider);
         capability.providers.computeIfAbsent(entityType, et -> new ArrayList<>()).add((ICapabilityProvider<Entity, C, T>) provider);
     }
@@ -101,7 +102,7 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
     /**
      * Register a capability provider for some items.
      */
-    public <T, C> void registerItem(ItemCapability<T, C> capability, ICapabilityProvider<ItemStack, C, T> provider, ItemLike... items) {
+    public <T, C extends @Nullable Object> void registerItem(ItemCapability<T, C> capability, ICapabilityProvider<ItemStack, C, T> provider, ItemLike... items) {
         Objects.requireNonNull(provider);
         // Probably a programmer error
         if (items.length == 0)

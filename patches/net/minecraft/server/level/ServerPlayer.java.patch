@@ -40,14 +40,14 @@
          } else {
              boolean flag = block.isPossibleToRespawnInThis(blockstate);
              BlockState blockstate1 = p_348505_.getBlockState(p_348607_.above());
-@@ -870,6 +_,7 @@
-                 p_350472_.postDimensionTransition().onTransition(this);
-                 return this;
-             } else {
-+                if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_350472_.newLevel().dimension())) return null;
-                 this.isChangingDimension = true;
-                 LevelData leveldata = serverlevel.getLevelData();
-                 this.connection.send(new ClientboundRespawnPacket(this.createCommonSpawnInfo(serverlevel), (byte)3));
+@@ -854,6 +_,7 @@
+     @Nullable
+     @Override
+     public Entity changeDimension(DimensionTransition p_350472_) {
++        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_350472_.newLevel().dimension())) return null;
+         if (this.isRemoved()) {
+             return null;
+         } else {
 @@ -877,7 +_,7 @@
                  PlayerList playerlist = this.server.getPlayerList();
                  playerlist.sendPlayerPermissionLevel(this);
