@@ -1,5 +1,31 @@
 --- a/net/minecraft/world/food/FoodProperties.java
 +++ b/net/minecraft/world/food/FoodProperties.java
+@@ -49,6 +_,25 @@
+         return (int)(this.eatSeconds * 20.0F);
+     }
+ 
++    public boolean equals(Object otherObject) {// Neo: Fix MC-272643
++        if(otherObject == this) return true;
++        if (!(otherObject instanceof FoodProperties other)) return false;
++        boolean ans = nutrition == other.nutrition &&
++                saturation == other.saturation &&
++                canAlwaysEat == other.canAlwaysEat &&
++                eatSeconds == other.eatSeconds;
++        if (!ans) return false;
++        if (!effects.equals(other.effects)) return false;
++        boolean selfEmpty = usingConvertsTo.isEmpty();
++        boolean otherEmpty = other.usingConvertsTo.isEmpty();
++        if (selfEmpty && otherEmpty) return true;
++        if (selfEmpty ^ otherEmpty) return false;
++        ItemStack selfContainer = usingConvertsTo.get();
++        ItemStack otherContainer = other.usingConvertsTo.get();
++        if (selfContainer == otherContainer) return true;
++        return selfContainer.getCount() == otherContainer.getCount() && ItemStack.isSameItemSameComponents(selfContainer, otherContainer);
++    }
++
+     public static class Builder {
+         private int nutrition;
+         private float saturationModifier;
 @@ -77,11 +_,18 @@
              return this;
          }
