@@ -4,7 +4,7 @@
          return (int)(this.eatSeconds * 20.0F);
      }
  
-+    public boolean equals(Object otherObject) {
++    public boolean equals(Object otherObject) {// Neo: Fix MC-272643
 +        if(otherObject == this) return true;
 +        if (!(otherObject instanceof FoodProperties other)) return false;
 +        boolean ans = nutrition == other.nutrition &&
