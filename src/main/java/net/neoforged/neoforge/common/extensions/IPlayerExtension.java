@@ -17,6 +17,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 public interface IPlayerExtension {
@@ -83,7 +84,7 @@ public interface IPlayerExtension {
     }
 
     /**
-     * {@return whether this player is a fake player}
+     * {@return whether this player is a fake player, such as {@link FakePlayer}}
      */
     default boolean isFakePlayer() {
         return false;
