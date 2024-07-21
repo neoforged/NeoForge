@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.enchantment;
 
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -24,8 +25,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
-
-import java.util.Objects;
 
 @ForEachTest(groups = EnchantmentLevelTests.GROUP)
 public class EnchantmentLevelTests {
@@ -89,7 +88,7 @@ public class EnchantmentLevelTests {
                 .thenExecute(player -> player.containerMenu = Objects.requireNonNull(Objects.requireNonNull(
                         Objects.requireNonNull(helper.getBlockEntity(pos, EnchantingTableBlockEntity.class)).getBlockState()
                                 .getMenuProvider(player.level(), helper.absolutePos(pos)))
-                                .createMenu(1, player.getInventory(), player)))
+                        .createMenu(1, player.getInventory(), player)))
                 //simulate putting an iron sword in the first slot
                 .thenExecute(player -> player.containerMenu.setItem(0, player.containerMenu.getStateId(), new ItemStack(Items.IRON_SWORD)))
                 //simulate putting the lapis into the second slot

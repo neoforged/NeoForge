@@ -82,7 +82,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.inventory.EnchantmentMenu;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -103,6 +102,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.EnchantmentMenu;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
@@ -668,11 +668,12 @@ public class CommonHooks {
         return ret;
     }
 
-    /**Fires {@link PlayerEnchantItemEvent} in {@link EnchantmentMenu#clickMenuButton(Player, int)} for each enchantment
+    /**
+     * Fires {@link PlayerEnchantItemEvent} in {@link EnchantmentMenu#clickMenuButton(Player, int)} for each enchantment
      * applied to the item.
      *
-     * @param player the player who clicked the menu button
-     * @param stack the item being enchanted
+     * @param player   the player who clicked the menu button
+     * @param stack    the item being enchanted
      * @param instance the specific enchantment being applied in this call.
      */
     public static void onPlayerEnchantItem(Player player, ItemStack stack, EnchantmentInstance instance) {
