@@ -10,6 +10,9 @@ license="LGPL v2.1"
     description="NeoForge tests. Change the language to fr_fr and the description should change too."
     enumExtensions="META-INF/enumextensions.json"
 [[mods]]
+    modId="configui"
+    displayName="A Config UI Test" # (Ab)use the ordering of the mod list screen so that this appears first
+[[mods]]
     modId="client_command_test"
 [[mods]]
     modId="structure_modifiers_test"
