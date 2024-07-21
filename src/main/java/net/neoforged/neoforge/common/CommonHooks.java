@@ -669,15 +669,15 @@ public class CommonHooks {
     }
 
     /**
-     * Fires {@link PlayerEnchantItemEvent} in {@link EnchantmentMenu#clickMenuButton(Player, int)} for each enchantment
+     * Fires {@link PlayerEnchantItemEvent} in {@link EnchantmentMenu#clickMenuButton(Player, int)} after the enchants are
      * applied to the item.
      *
-     * @param player   the player who clicked the menu button
-     * @param stack    the item being enchanted
-     * @param instance the specific enchantment being applied in this call.
+     * @param player    the player who clicked the menu button
+     * @param stack     the item enchanted
+     * @param instances the specific enchantments that were applied to the item.
      */
-    public static void onPlayerEnchantItem(Player player, ItemStack stack, EnchantmentInstance instance) {
-        NeoForge.EVENT_BUS.post(new PlayerEnchantItemEvent(player, stack, instance));
+    public static void onPlayerEnchantItem(Player player, ItemStack stack, List<EnchantmentInstance> instances) {
+        NeoForge.EVENT_BUS.post(new PlayerEnchantItemEvent(player, stack, instances));
     }
 
     public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {

@@ -37,14 +37,14 @@
                      }
  
                      for (int l = 0; l < 3; l++) {
-@@ -169,6 +_,7 @@
-                                 }
- 
+@@ -171,6 +_,7 @@
                                  for (EnchantmentInstance enchantmentinstance : list) {
-+                                    net.neoforged.neoforge.common.CommonHooks.onPlayerEnchantItem(p_39465_, itemstack2, enchantmentinstance);
                                      itemstack2.enchant(enchantmentinstance.enchantment, enchantmentinstance.level);
                                  }
++                                net.neoforged.neoforge.common.CommonHooks.onPlayerEnchantItem(p_39465_, itemstack2, list);
  
+                                 itemstack1.consume(i, p_39465_);
+                                 if (itemstack1.isEmpty()) {
 @@ -249,7 +_,7 @@
                  if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
                      return ItemStack.EMPTY;
