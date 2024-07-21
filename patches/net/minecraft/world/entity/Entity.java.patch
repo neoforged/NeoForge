@@ -569,12 +569,12 @@
 +
 +    // Neo: Hookup Capabilities getters to entities
 +    @Nullable
-+    public final <T, C> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, C> capability, @org.jetbrains.annotations.UnknownNullability C context) {
++    public final <T, C extends @org.jetbrains.annotations.Nullable Object> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, C> capability, C context) {
 +        return capability.getCapability(this, context);
 +    }
 +
 +    @Nullable
-+    public final <T> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, Void> capability) {
++    public final <T> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, @org.jetbrains.annotations.Nullable Void> capability) {
 +        return capability.getCapability(this, null);
      }
  

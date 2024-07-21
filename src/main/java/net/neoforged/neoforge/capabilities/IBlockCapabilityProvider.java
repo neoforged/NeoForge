@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
-public interface IBlockCapabilityProvider<T, C> {
+public interface IBlockCapabilityProvider<T, C extends @Nullable Object> {
     /**
      * Returns the capability, or {@code null} if not available.
      *
