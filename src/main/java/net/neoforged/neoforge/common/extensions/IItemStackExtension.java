@@ -463,12 +463,12 @@ public interface IItemStackExtension {
     }
 
     @Nullable
-    default <T, C> T getCapability(ItemCapability<T, C> capability, C context) {
+    default <T, C extends @Nullable Object> T getCapability(ItemCapability<T, C> capability, C context) {
         return capability.getCapability(self(), context);
     }
 
     @Nullable
-    default <T> T getCapability(ItemCapability<T, Void> capability) {
+    default <T> T getCapability(ItemCapability<T, @Nullable Void> capability) {
         return capability.getCapability(self(), null);
     }
 
