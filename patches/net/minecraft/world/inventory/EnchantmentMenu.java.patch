@@ -37,6 +37,7 @@
                      }
  
                      for (int l = 0; l < 3; l++) {
+@@ -163,14 +_,10 @@
                              List<EnchantmentInstance> list = this.getEnchantmentList(p_347276_.registryAccess(), itemstack, p_39466_, this.costs[p_39466_]);
                              if (!list.isEmpty()) {
                                  p_39465_.onEnchantmentPerformed(itemstack, i);
@@ -44,7 +45,7 @@
 -                                    itemstack2 = itemstack.transmuteCopy(Items.ENCHANTED_BOOK);
 -                                    this.enchantSlots.setItem(0, itemstack2);
 -                                }
- 
+-
 -                                for (EnchantmentInstance enchantmentinstance : list) {
 -                                    itemstack2.enchant(enchantmentinstance.enchantment, enchantmentinstance.level);
 -                                }
