@@ -60,7 +60,7 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(ObjLoader.INSTANCE);
+        event.addListener(ObjLoader.ID, ObjLoader.INSTANCE);
     }
 
     @SubscribeEvent

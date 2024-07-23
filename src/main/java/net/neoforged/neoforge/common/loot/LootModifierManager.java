@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LootModifierManager extends SimpleJsonResourceReloadListener {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("neoforge", "loot_modifiers");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Logger LOGGER = LogManager.getLogger();
 

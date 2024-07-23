@@ -181,6 +181,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.mixins.ReloadableResourceManagerAccessor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -1008,7 +1009,7 @@ public class ClientHooks {
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
-        ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
+        postClientReloadListeners(resourceManager);
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ClientTooltipComponentManager.init();
@@ -1021,6 +1022,17 @@ public class ClientHooks {
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
+    }
+
+    private static void postClientReloadListeners(ReloadableResourceManager resourceManager) {
+        var event = new RegisterClientReloadListenersEvent();
+        ModLoader.postEvent(event);
+
+        var base = ((ReloadableResourceManagerAccessor) resourceManager).neoforge$getListeners();
+        var newListeners = event.getSortedListeners(base, Map.of());
+
+        base.clear();
+        base.addAll(newListeners);
     }
 
     /**

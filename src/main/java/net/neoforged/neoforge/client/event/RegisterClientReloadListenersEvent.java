@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.base.ReloadListenerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -25,20 +25,18 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterClientReloadListenersEvent extends Event implements IModBusEvent {
-    private final ReloadableResourceManager resourceManager;
-
+public class RegisterClientReloadListenersEvent extends ReloadListenerEvent implements IModBusEvent {
     @ApiStatus.Internal
-    public RegisterClientReloadListenersEvent(ReloadableResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
+    public RegisterClientReloadListenersEvent() {}
 
     /**
      * Registers the given reload listener to the client-side resource manager.
      *
      * @param reloadListener the reload listener
+     * @deprecated Use the {@link #addListener(ResourceLocation, PreparableReloadListener) variant with an ID} instead
      */
+    @Deprecated(forRemoval = true, since = "1.21")
     public void registerReloadListener(PreparableReloadListener reloadListener) {
-        resourceManager.registerReloadListener(reloadListener);
+        addListener(null, reloadListener);
     }
 }

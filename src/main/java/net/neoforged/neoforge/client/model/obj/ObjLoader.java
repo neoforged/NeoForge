@@ -26,7 +26,8 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
  * {@link ObjMaterialLibrary material library} override.
  */
 public class ObjLoader implements IGeometryLoader<ObjModel>, ResourceManagerReloadListener {
-    public static ObjLoader INSTANCE = new ObjLoader();
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("neoforge", "obj_loader");
+    public static final ObjLoader INSTANCE = new ObjLoader();
 
     private final Map<ObjModel.ModelSettings, ObjModel> modelCache = Maps.newConcurrentMap();
     private final Map<ResourceLocation, ObjMaterialLibrary> materialCache = Maps.newConcurrentMap();

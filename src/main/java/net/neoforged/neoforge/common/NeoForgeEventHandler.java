@@ -152,8 +152,8 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void onResourceReload(AddReloadListenerEvent event) {
         INSTANCE = new LootModifierManager();
-        event.addListener(INSTANCE);
-        event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+        event.addListener(LootModifierManager.ID, INSTANCE);
+        event.addListener(DataMapLoader.ID, DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
     }
 
     static LootModifierManager getLootModifierManager() {
@@ -164,7 +164,7 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(CreativeModeTabRegistry.getReloadListener());
+        event.addListener(ResourceLocation.fromNamespaceAndPath("neoforge", "creative_mode_tab_ordering"), CreativeModeTabRegistry.getReloadListener());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

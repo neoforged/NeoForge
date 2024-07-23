@@ -5,21 +5,19 @@
 
 package net.neoforged.neoforge.event;
 
-import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.event.base.ReloadListenerEvent;
 import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 
 /**
@@ -28,8 +26,7 @@ import net.neoforged.neoforge.resource.ContextAwareReloadListener;
  * The event is fired on each reload and lets modders add their own ReloadListeners, for server-side resources.
  * The event is fired on the {@link NeoForge#EVENT_BUS}
  */
-public class AddReloadListenerEvent extends Event {
-    private final List<PreparableReloadListener> listeners = new ArrayList<>();
+public class AddReloadListenerEvent extends ReloadListenerEvent {
     private final ReloadableServerResources serverResources;
     private final RegistryAccess registryAccess;
 
@@ -40,13 +37,11 @@ public class AddReloadListenerEvent extends Event {
 
     /**
      * @param listener the listener to add to the ResourceManager on reload
+     * @deprecated Use {@link #addListener(ResourceLocation, PreparableReloadListener) the variant with an ID instead}
      */
+    @Deprecated(forRemoval = true, since = "1.21")
     public void addListener(PreparableReloadListener listener) {
-        listeners.add(new WrappedStateAwareListener(listener));
-    }
-
-    public List<PreparableReloadListener> getListeners() {
-        return ImmutableList.copyOf(listeners);
+        addListener(null, listener);
     }
 
     /**
@@ -75,6 +70,11 @@ public class AddReloadListenerEvent extends Event {
         return registryAccess;
     }
 
+    @Override
+    protected PreparableReloadListener wrap(PreparableReloadListener listener) {
+        return new WrappedStateAwareListener(listener);
+    }
+
     private static class WrappedStateAwareListener extends ContextAwareReloadListener implements PreparableReloadListener {
         private final PreparableReloadListener wrapped;
 
@@ -94,7 +94,7 @@ public class AddReloadListenerEvent extends Event {
             if (!ModLoader.hasErrors())
                 return wrapped.reload(stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
             else
-                return CompletableFuture.completedFuture(null);
+                return CompletableFuture.<Void>completedFuture(null).thenCompose(stage::wait);
         }
     }
 }
