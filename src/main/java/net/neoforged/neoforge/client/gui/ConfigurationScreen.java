@@ -375,6 +375,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      * <code>options</code> to our superclass' constructor.
      */
     public static class ConfigurationSectionScreen extends OptionsSubScreen {
+        protected static final long MAX_SLIDER_SIZE = 256L;
+
         public record Context(String modId, Screen parent, ModConfig modConfig, ModConfigSpec modSpec,
                 Set<? extends Entry> entries, Map<String, Object> valueSpecs, List<String> keylist, Filter filter) {
             public static Context top(final String modId, final Screen parent, final ModConfig modConfig, Filter filter) {
@@ -769,7 +771,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             final int min = range != null ? range.getMin() : 0;
             final int max = range != null ? range.getMax() : Integer.MAX_VALUE;
 
-            if ((long) max - (long) min < 256L) {
+            if ((long) max - (long) min < MAX_SLIDER_SIZE) {
                 return createSlider(key, source, target, range);
             } else {
                 return createNumberBox(key, spec, source, target, null, Integer::decode, 0);
