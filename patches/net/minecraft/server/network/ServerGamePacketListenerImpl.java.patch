@@ -1,22 +1,5 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -126,6 +_,7 @@
- import net.minecraft.resources.ResourceKey;
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.server.MinecraftServer;
-+import net.minecraft.server.level.ClientInformation;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.util.FutureChain;
-@@ -184,6 +_,8 @@
- import net.minecraft.world.phys.shapes.BooleanOp;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
-+import net.neoforged.neoforge.common.NeoForge;
-+import net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent;
- import org.slf4j.Logger;
- 
- public class ServerGamePacketListenerImpl
 @@ -439,9 +_,11 @@
                  }
  
@@ -128,9 +111,9 @@
      @Override
      public void handleClientInformation(ServerboundClientInformationPacket p_301979_) {
          PacketUtils.ensureRunningOnSameThread(p_301979_, this, this.player.serverLevel());
-+        ClientInformation oldInfo = this.player.clientInformation();
++        net.minecraft.server.level.ClientInformation oldInfo = this.player.clientInformation();
          this.player.updateOptions(p_301979_.information());
-+        NeoForge.EVENT_BUS.post(new ClientInformationUpdatedEvent(this.player, oldInfo, p_301979_.information()));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent(this.player, oldInfo, p_301979_.information()));
      }
  
      @Override
