@@ -16,12 +16,12 @@ import net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent;
  */
 @Mod(ClientInformationUpdatedTest.MOD_ID)
 public class ClientInformationUpdatedTest {
-	public static final String MOD_ID = "client_information_updated_test";
+    public static final String MOD_ID = "client_information_updated_test";
 
-	public ClientInformationUpdatedTest() {
-		NeoForge.EVENT_BUS.addListener((ClientInformationUpdatedEvent event) -> {
-			event.getEntity().sendSystemMessage(Component.literal("old: " + event.getOldInformation()));
-			event.getEntity().sendSystemMessage(Component.literal("new: " + event.getUpdatedInformation()));
-		});
-	}
+    public ClientInformationUpdatedTest() {
+        NeoForge.EVENT_BUS.addListener((ClientInformationUpdatedEvent event) -> {
+            event.getEntity().sendSystemMessage(Component.literal("old: " + event.getOldInformation()));
+            event.getEntity().sendSystemMessage(Component.literal("new: " + event.getUpdatedInformation()));
+        });
+    }
 }
