@@ -73,6 +73,7 @@ import net.neoforged.neoforge.common.TranslatableEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -379,6 +380,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
         public record Context(String modId, Screen parent, ModConfig modConfig, ModConfigSpec modSpec,
                 Set<? extends Entry> entries, Map<String, Object> valueSpecs, List<String> keylist, Filter filter) {
+            @ApiStatus.Internal
+            public Context {}
+
             public static Context top(final String modId, final Screen parent, final ModConfig modConfig, Filter filter) {
                 return new Context(modId, parent, modConfig, (ModConfigSpec) modConfig.getSpec(), ((ModConfigSpec) modConfig.getSpec()).getValues().entrySet(),
                         ((ModConfigSpec) modConfig.getSpec()).getSpec().valueMap(), List.of(), filter);
@@ -403,6 +407,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         public record Element(@Nullable Component name, @Nullable Component tooltip, @Nullable AbstractWidget widget, @Nullable OptionInstance<?> option, boolean undoable) {
+            @ApiStatus.Internal
+            public Element {}
+
             public Element(@Nullable final Component name, @Nullable final Component tooltip, final AbstractWidget widget) {
                 this(name, tooltip, widget, null, true);
             }
@@ -457,8 +464,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param modConfig The actual config to show and edit.
          */
         public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig, Component title) {
-            this(Context.top(modConfig.getModId(), parent, modConfig, (c, k, e) -> e), title);
-            needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
+            this(parent, type, modConfig, title, (c, k, e) -> e);
         }
 
         /**
