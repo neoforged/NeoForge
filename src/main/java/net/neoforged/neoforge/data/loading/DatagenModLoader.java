@@ -19,6 +19,7 @@ import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.CommonModLoader;
+import net.neoforged.neoforge.internal.RegistrationEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +42,8 @@ public class DatagenModLoader extends CommonModLoader {
         runningDataGen = true;
         Bootstrap.bootStrap();
         begin(() -> {}, true);
+        // Modify components as the (modified) defaults may be required in datagen, i.e. stack size
+        RegistrationEvents.modifyComponents();
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
         dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, serverGenerators,
                 clientGenerators, devToolGenerators, reportsGenerator, structureValidator, flat);
