@@ -159,6 +159,12 @@
       "color": "red"
     }
   ],
+  "neoforge.configuration.uitext.longstring": [
+    {
+      "text": "This value is too long to be edited in the UI. Please edit it in the config file.",
+      "color": "red"
+    }
+  ],
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Edit",
   "neoforge.configuration.uitext.breadcrumb": [

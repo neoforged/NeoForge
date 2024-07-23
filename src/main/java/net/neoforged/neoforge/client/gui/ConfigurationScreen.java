@@ -57,6 +57,7 @@ import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
@@ -203,6 +204,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component MOVE_LIST_ELEMENT_DOWN = Component.translatable(LANG_PREFIX + "listelementdown");
     public static final Component REMOVE_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "listelementremove");
     public static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement");
+    public static final Component LONG_STRING = Component.translatable(LANG_PREFIX + "longstring");
     public static final Component GAME_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.game.title");
     public static final Component GAME_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.game.text");
     public static final Component GAME_RESTART_YES = Component.translatable("menu.quit"); // TitleScreen.init() et.al.
@@ -649,10 +651,17 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
         @Nullable
         protected Element createStringValue(final String key, final Predicate<String> tester, final Supplier<String> source, final Consumer<String> target) {
+            if (source.get().length() > 192) {
+                // That's just too much for the UI
+                final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(source.get().substring(0, 128)), font).alignLeft();
+                label.setTooltip(Tooltip.create(LONG_STRING));
+                return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
+            }
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
             // no filter or the user wouldn't be able to type
             box.setTooltip(Tooltip.create(getTooltipComponent(key, null)));
+            box.setMaxLength(Mth.clamp(source.get().length() + 5, 128, 192));
             box.setValue(source.get());
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
