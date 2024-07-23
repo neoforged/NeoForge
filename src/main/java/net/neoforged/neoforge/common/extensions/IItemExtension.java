@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -44,6 +45,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -730,5 +732,26 @@ public interface IItemExtension {
      */
     default boolean canBeHurtBy(ItemStack stack, DamageSource source) {
         return true;
+    }
+
+    /**
+     * Handles enchanting an item (i.e. in the enchanting table), potentially transforming it to a new item in the process.
+     * <p>
+     * {@linkplain Items#BOOK Books} use this functionality to transform themselves into enchanted books.
+     *
+     * @param stack        The stack being enchanted.
+     * @param enchantments The enchantments being applied.
+     * @return The newly-enchanted stack.
+     */
+    default ItemStack applyEnchantments(ItemStack stack, List<EnchantmentInstance> enchantments) {
+        if (stack.is(Items.BOOK)) {
+            stack = stack.transmuteCopy(Items.ENCHANTED_BOOK);
+        }
+
+        for (EnchantmentInstance inst : enchantments) {
+            stack.enchant(inst.enchantment, inst.level);
+        }
+
+        return stack;
     }
 }
