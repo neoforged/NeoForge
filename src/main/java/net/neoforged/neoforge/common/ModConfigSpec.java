@@ -173,7 +173,7 @@ public class ModConfigSpec implements IConfigSpec {
     @ApiStatus.Internal
     public void resetWorldCaches() {
         forEachValue(getValues().valueMap().values(), configValue -> {
-            if (configValue.getSpec().restartType == RestartType.GAME) {
+            if (configValue.getSpec().restartType == RestartType.WORLD) {
                 configValue.clearCache();
             }
         });
