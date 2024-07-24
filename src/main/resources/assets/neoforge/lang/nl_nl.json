@@ -111,6 +111,10 @@
   "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Geen pregeneratie is op dit moment bezig. Run `/neoforge generate help` om commandos te zijn om generatie te starten.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Genereerd een vierkant gecentreerd om de gegeven positie heen die chunkRadius * 2 om elke kant groot is \n§2/neoforge generate stop §r§f- Stopt de huidige generatie en laat de voortgang zien die het al heeft voltooid.\n§2/neoforge generate status §r- Laat de huidige voortgang zien voor de generatie die op dit moment plaatsvindt. \n§2/neoforge generate help §r- Laat dit bericht zien\nAlgemene tips: Als je het van een server console, kan je het ook in verschillende dimensie runnen door '/execute in <dimension> neoforge generate...' te gebruiken",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "Configuratie voor %s van type %s gevonden bij %s",
   "commands.config.noconfig": "Configuratie voor %s van type %s niet gevonden",
   "neoforge.update.beta.1": "%sWAARSCHUWING: %sNeoForge Beta",
@@ -291,5 +295,8 @@
   "neoforge.network.aux_light_data.failed": "Fout bij verwerking van hulplichtgegevens voor chunk %s: %s",
   "neoforge.network.data_maps.failed": "Fout bij het verwerken van registry data map sync voor registry %s: %s",
   "neoforge.network.data_maps.missing_our": "Kan geen verbinding maken met de server omdat het verplichte registry data maps mist die aanwezig zijn op de client: %s",
-  "neoforge.network.data_maps.missing_their": "Kan geen verbinding maken met de server omdat het verplichte registry data maps bevat die niet aanwezig zijn op de client: %s"
+  "neoforge.network.data_maps.missing_their": "Kan geen verbinding maken met de server omdat het verplichte registry data maps bevat die niet aanwezig zijn op de client: %s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }
