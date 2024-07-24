@@ -180,7 +180,6 @@ public class ItemHandlerHelper {
         int totalMoved = 0;
 
         int fromSlots = from.getSlots();
-        slotsLoop:
         for (int i = 0; i < fromSlots; ++i) {
             // Check filter
             if (!filter.test(from.getStackInSlot(i))) {
@@ -192,7 +191,7 @@ public class ItemHandlerHelper {
                 // Simulate extraction
                 var available = from.extractItem(i, Integer.MAX_VALUE, true);
                 if (available.isEmpty()) {
-                    continue slotsLoop;
+                    break;
                 }
                 int availableCount = available.getCount();
 
@@ -200,13 +199,13 @@ public class ItemHandlerHelper {
                 var simulationLeftover = stackInTarget ? insertItemStacked(to, available, true) : insertItem(to, available, true);
                 int canFit = availableCount - simulationLeftover.getCount();
                 if (canFit <= 0) {
-                    continue slotsLoop;
+                    break;
                 }
 
                 // Perform extraction
                 var extracted = from.extractItem(i, canFit, false);
                 if (extracted.isEmpty()) {
-                    continue slotsLoop;
+                    break;
                 }
                 int extractedCount = extracted.getCount();
 
