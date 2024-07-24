@@ -3,7 +3,13 @@
   "category": "redstone",
   "ingredients": [
     {
-      "tag": "c:chests/wooden"
+      "type": "neoforge:difference",
+      "base": {
+        "tag": "c:chests/wooden"
+      },
+      "subtracted": {
+        "tag": "c:chests/trapped"
+      }
     },
     {
       "item": "minecraft:tripwire_hook"

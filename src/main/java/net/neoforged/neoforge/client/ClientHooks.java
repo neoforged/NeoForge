@@ -175,6 +175,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
+import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -802,11 +803,15 @@ public class ClientHooks {
     }
 
     public static List<ClientTooltipComponent> gatherTooltipComponents(ItemStack stack, List<? extends FormattedText> textElements, Optional<TooltipComponent> itemComponent, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
-        Font font = getTooltipFont(stack, fallbackFont);
         List<Either<FormattedText, TooltipComponent>> elements = textElements.stream()
                 .map((Function<FormattedText, Either<FormattedText, TooltipComponent>>) Either::left)
                 .collect(Collectors.toCollection(ArrayList::new));
         itemComponent.ifPresent(c -> elements.add(1, Either.right(c)));
+        return gatherTooltipComponentsFromElements(stack, elements, mouseX, screenWidth, screenHeight, fallbackFont);
+    }
+
+    public static List<ClientTooltipComponent> gatherTooltipComponentsFromElements(ItemStack stack, List<Either<FormattedText, TooltipComponent>> elements, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
+        Font font = getTooltipFont(stack, fallbackFont);
 
         var event = new RenderTooltipEvent.GatherComponents(stack, screenWidth, screenHeight, elements, -1);
         NeoForge.EVENT_BUS.post(event);
@@ -1021,6 +1026,7 @@ public class ClientHooks {
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
+        MapDecorationRendererManager.init();
     }
 
     /**
