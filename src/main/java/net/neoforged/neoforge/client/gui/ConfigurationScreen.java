@@ -547,7 +547,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected void onChanged(final String key) {
             changed = true;
             final ValueSpec valueSpec = getValueSpec(key);
-            if (valueSpec != null && valueSpec.needsWorldRestart()) {
+            if (valueSpec != null && valueSpec.restartType() == ModConfigSpec.RestartType.WORLD) {
                 needsRestart = needsRestart.with(RestartType.SERVER);
             }
         }
