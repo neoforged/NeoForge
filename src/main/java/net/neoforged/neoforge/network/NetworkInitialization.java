@@ -8,6 +8,7 @@ package net.neoforged.neoforge.network;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
@@ -16,7 +17,10 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
+import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
+import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
@@ -56,10 +60,18 @@ public class NetworkInitialization {
                         KnownRegistryDataMapsPayload.TYPE,
                         KnownRegistryDataMapsPayload.STREAM_CODEC,
                         ClientRegistryManager::handleKnownDataMaps)
+                .configurationToClient(
+                        ExtensibleEnumDataPayload.TYPE,
+                        ExtensibleEnumDataPayload.STREAM_CODEC,
+                        CheckExtensibleEnums::handleClientboundPayload)
                 .configurationToServer(
                         KnownRegistryDataMapsReplyPayload.TYPE,
                         KnownRegistryDataMapsReplyPayload.STREAM_CODEC,
                         RegistryManager::handleKnownDataMapsReply)
+                .configurationToServer(
+                        ExtensibleEnumAcknowledgePayload.TYPE,
+                        ExtensibleEnumAcknowledgePayload.STREAM_CODEC,
+                        CheckExtensibleEnums::handleServerboundPayload)
                 .playToClient(
                         AdvancedAddEntityPayload.TYPE,
                         AdvancedAddEntityPayload.STREAM_CODEC,
@@ -78,6 +90,10 @@ public class NetworkInitialization {
                         ClientRegistryManager::handleDataMapSync)
                 .playToClient(AdvancedContainerSetDataPayload.TYPE,
                         AdvancedContainerSetDataPayload.STREAM_CODEC,
+                        ClientPayloadHandler::handle)
+                .playToClient(
+                        ClientboundCustomSetTimePayload.TYPE,
+                        ClientboundCustomSetTimePayload.STREAM_CODEC,
                         ClientPayloadHandler::handle);
     }
 }

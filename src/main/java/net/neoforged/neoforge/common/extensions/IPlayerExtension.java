@@ -17,6 +17,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 public interface IPlayerExtension {
@@ -80,5 +81,12 @@ public interface IPlayerExtension {
     default boolean mayFly() {
         // TODO 1.20.5: consider forcing mods to use the attribute
         return self().getAbilities().mayfly || self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
+    }
+
+    /**
+     * {@return whether this player is a fake player, such as {@link FakePlayer}}
+     */
+    default boolean isFakePlayer() {
+        return false;
     }
 }
