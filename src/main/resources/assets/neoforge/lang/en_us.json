@@ -160,6 +160,7 @@
     }
   ],
   "neoforge.configuration.uitext.section": "%s...",
+  "neoforge.configuration.uitext.sectiontext": "Edit",
   "neoforge.configuration.uitext.breadcrumb": [
     {
       "index": 0

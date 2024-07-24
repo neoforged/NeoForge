@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
+import java.util.Random;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -32,7 +33,9 @@ public class ConfigUITest {
     @Mod(value = "configui", dist = Dist.CLIENT)
     public static class ConfigUIClient {
         public ConfigUIClient(final ModContainer container) {
-            container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+            final Random r = new Random();
+            container.registerExtensionPoint(IConfigScreenFactory.class,
+                    (a, b) -> new ConfigurationScreen(a, b, (context, key, element) -> r.nextFloat() > 0.75f ? null : element));
         }
     }
 
@@ -159,6 +162,9 @@ public class ConfigUITest {
             BUILDER.comment("intentionally untranslated entry").define("missing", false);
             BUILDER.define("missing_no_tooltip", false);
             BUILDER.translation("missing_empty_tooltip").define("missing_empty_tooltip", false);
+
+            BUILDER.comment("Integer overflow range").defineInRange("overflow", 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            BUILDER.define("x_offset", 0);
         }
 
         static final ModConfigSpec SPEC = BUILDER.build();
