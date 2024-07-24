@@ -111,6 +111,10 @@
   "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Предварительная генерация не запущена. Выполните команду `/neoforge generate help`, чтобы увидеть команды для запуска генерации.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [шкалапрогресса] §r§f- создаёт квадрат, центрированный на указанной точке, с длиной сторон, равной chunkRadius * 2.\n§2/neoforge generate stop §r§f- останавливает текущую генерацию и отображает завершённый прогресс.\n§2/neoforge generate status §r- отображает прогресс текущей генерации.\n§2/neoforge generate help §r- отображает данное сообщение.\nСовет: Если вы запускаете команды из консоли сервера, вы можете выполнять генерацию в разных измерениях с помощью /execute in <dimension> neoforge generate…",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "Конфиг для %s типа %s обнаружен в %s",
   "commands.config.noconfig": "Конфиг для %s типа %s не найден",
   "neoforge.update.beta.1": "%sВНИМАНИЕ: %sNeoForge Бета",
@@ -291,5 +295,8 @@
   "neoforge.network.aux_light_data.failed": "Не удалось обработать вспомогательные данные освещения для чанка %s: %s",
   "neoforge.network.data_maps.failed": "Не удалось обработать синхронизацию данных реестра %s: %s",
   "neoforge.network.data_maps.missing_our": "Не удается подключиться к серверу, так как там отсутствуют обязательные данные реестра, имеющиеся на клиенте: %s",
-  "neoforge.network.data_maps.missing_their": "Не удается подключиться к серверу, так как присутствуют обязательные данные реестра, отсутствующие на клиенте: %s"
+  "neoforge.network.data_maps.missing_their": "Не удается подключиться к серверу, так как присутствуют обязательные данные реестра, отсутствующие на клиенте: %s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }
