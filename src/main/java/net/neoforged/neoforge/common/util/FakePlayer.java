@@ -6,12 +6,15 @@
 package net.neoforged.neoforge.common.util;
 
 import com.mojang.authlib.GameProfile;
+import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.Connection;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.PacketSendListener;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
@@ -71,8 +74,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.stats.Stat;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.RelativeMovement;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +97,7 @@ public class FakePlayer extends ServerPlayer {
     public void displayClientMessage(Component chatComponent, boolean actionBar) {}
 
     @Override
-    public void awardStat(Stat stat, int amount) {}
+    public void awardStat(Stat<?> stat, int amount) {}
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
@@ -112,9 +119,27 @@ public class FakePlayer extends ServerPlayer {
     public void updateOptions(ClientInformation p_301998_) {}
 
     @Override
+    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
+        return OptionalInt.empty();
+    }
+
+    @Override
+    public void openHorseInventory(AbstractHorse horse, Container container) {}
+
+    @Override
+    public boolean startRiding(Entity entity, boolean force) {
+        return false;
+    }
+
+    @Override
     @Nullable
     public MinecraftServer getServer() {
         return ServerLifecycleHooks.getCurrentServer();
+    }
+
+    @Override
+    public boolean isFakePlayer() {
+        return true;
     }
 
     @ParametersAreNonnullByDefault
