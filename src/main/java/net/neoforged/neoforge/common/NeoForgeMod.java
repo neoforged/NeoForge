@@ -78,6 +78,7 @@ import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
@@ -578,6 +579,13 @@ public class NeoForgeMod {
 
     public void serverStopping(ServerStoppingEvent evt) {
         WorldWorkerManager.clear();
+
+        // Reset WORLD type config caches
+        ModConfigs.getFileMap().values().forEach(config -> {
+            if (config.getSpec() instanceof ModConfigSpec spec) {
+                spec.resetWorldCaches();
+            }
+        });
     }
 
     public void gatherData(GatherDataEvent event) {

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -28,7 +29,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
@@ -38,10 +41,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -104,6 +109,7 @@ public class ModConfigSpec implements IConfigSpec {
         return levelTranslationKeys.get(path);
     }
 
+    @Override
     public void acceptConfig(@Nullable ILoadedConfig config) {
         this.loadedConfig = config;
         if (config != null && !isCorrect(config.config())) {
@@ -117,6 +123,16 @@ public class ModConfigSpec implements IConfigSpec {
             config.save();
         }
         this.afterReload();
+    }
+
+    @Override
+    public void validateSpec(ModConfig config) {
+        forEachValue(getValues().valueMap().values(), configValue -> {
+            if (!configValue.getSpec().restartType().isValid(config.getType())) {
+                throw new IllegalArgumentException("Configuration value " + String.join(".", configValue.getPath())
+                        + " defined in config " + config.getFileName() + " has restart of type " + configValue.getSpec().restartType() + " which cannot be used for configs of type " + config.getType());
+            }
+        });
     }
 
     public boolean isLoaded() {
@@ -136,15 +152,29 @@ public class ModConfigSpec implements IConfigSpec {
     }
 
     private void resetCaches(final Iterable<Object> configValues) {
+        forEachValue(configValues, configValue -> {
+            // Only clear the caches of configs that don't need a restart
+            if (configValue.getSpec().restartType == RestartType.NONE) {
+                configValue.clearCache();
+            }
+        });
+    }
+
+    private void forEachValue(Iterable<Object> configValues, Consumer<ConfigValue<?>> consumer) {
         configValues.forEach(value -> {
             if (value instanceof ConfigValue<?> configValue) {
-                // Only clear the caches of configs that don't need a game restart and of those that don't need a world restart, and if they do
-                // the config is being unloaded
-                if (configValue.getSpec().restartType.canClearCache(loadedConfig == null)) {
-                    configValue.clearCache();
-                }
+                consumer.accept(configValue);
             } else if (value instanceof Config innerConfig) {
-                this.resetCaches(innerConfig.valueMap().values());
+                forEachValue(innerConfig.valueMap().values(), consumer);
+            }
+        });
+    }
+
+    @ApiStatus.Internal
+    public void resetWorldCaches() {
+        forEachValue(getValues().valueMap().values(), configValue -> {
+            if (configValue.getSpec().restartType == RestartType.GAME) {
+                configValue.clearCache();
             }
         });
     }
@@ -952,7 +982,7 @@ public class ModConfigSpec implements IConfigSpec {
             validate(hasComment(), "Non-empty comment when empty expected");
             validate(langKey, "Non-null translation key when null expected");
             validate(range, "Non-null range when null expected");
-            validate(restartType == RestartType.NONE, "Dangling restart value set to " + restartType);
+            validate(restartType != RestartType.NONE, "Dangling restart value set to " + restartType);
         }
 
         private void validate(@Nullable Object value, String message) {
@@ -1350,13 +1380,20 @@ public class ModConfigSpec implements IConfigSpec {
         WORLD,
         /**
          * Require a game restart.
+         * <p>
+         * Cannot be used for {@linkplain ModConfig.Type#SERVER server configs}.
          */
-        GAME;
+        GAME(ModConfig.Type.SERVER);
 
-        private boolean canClearCache(boolean configUnloaded) {
-            if (this == GAME) return false;
-            if (this == WORLD) return configUnloaded;
-            return true;
+        private final Set<ModConfig.Type> invalidTypes;
+
+        RestartType(ModConfig.Type... invalidTypes) {
+            this.invalidTypes = EnumSet.noneOf(ModConfig.Type.class);
+            this.invalidTypes.addAll(Arrays.asList(invalidTypes));
+        }
+
+        private boolean isValid(ModConfig.Type type) {
+            return !invalidTypes.contains(type);
         }
     }
 }
