@@ -111,58 +111,58 @@
   "commands.neoforge.chunkgen.status": "Статус генерації! %1$s з %2$s чанків згенеровано. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Жодна прегенерація наразі не виконується. Запустіть `/neoforge generate help`, щоб побачити команди для початку генерації.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Генерує квадратну область з центром в наданих координатах і довжиною сторін chunkRadius * 2.\n§2/neoforge generate stop §r§f- Зупиняє поточну генерацію і відображає досягнутий прогрес.\n§2/neoforge generate status §r- Відображає поточний прогрес активної генерації.\n§2/neoforge generate help §r- Відображає це повідомлення.\nЗагальні рекомендації: Якщо команди виконуються з серверної консолі, ви зможете запустити генерацію для різних вимірів, використовуючи /execute in <dimension> neoforge generate...",
-  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
-  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
-  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
-  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
+  "commands.neoforge.timespeed.query": "Час в %s тече зі швидкістю %sx (%s хвилин на день).",
+  "commands.neoforge.timespeed.query.default": "Час в %s тече нормально (20 хвилин на день).",
+  "commands.neoforge.timespeed.set": "Встановіть час в %s до %sx (%s хвилин на день).",
+  "commands.neoforge.timespeed.set.default": "Встановіть потік часу в %s за замовчуванням (20 хвилин на день).",
   "commands.config.getwithtype": "Конфіг для %s типу %s знайдена в %s",
   "commands.config.noconfig": "Конфіг для %s типу %s не знайдено",
   "neoforge.update.beta.1": "%sПОПЕРЕДЖЕННЯ: %sNeoForge Beta",
   "neoforge.update.beta.2": "Можуть виникнути серйозні проблеми, перевірте їх перед надсиланням звіту.",
   "neoforge.update.newversion": "Нова версія NeoForge доступна: %s",
   "neoforge.menu.updatescreen.title": "Оновлення моду",
-  "neoforge.configuration.uitext.title": "%s Configuration",
-  "neoforge.configuration.uitext.type.client": "Client Settings",
-  "neoforge.configuration.uitext.type.server": "Server Settings",
-  "neoforge.configuration.uitext.type.common": "Common settings",
-  "neoforge.configuration.uitext.type.startup": "Startup settings",
-  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
-  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
-  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
-  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.title": "Конфігурація %s",
+  "neoforge.configuration.uitext.type.client": "Клієнтські налаштування",
+  "neoforge.configuration.uitext.type.server": "Серверні налаштування",
+  "neoforge.configuration.uitext.type.common": "Загальні налаштування",
+  "neoforge.configuration.uitext.type.startup": "Запускові налаштування",
+  "neoforge.configuration.uitext.title.client": "Клієнтська конфігурація %s",
+  "neoforge.configuration.uitext.title.server": "Серверна конфігурація %s",
+  "neoforge.configuration.uitext.title.common": "Загальна конфігурація %s",
+  "neoforge.configuration.uitext.title.startup": "Запускова конфігурація %s",
   "neoforge.configuration.uitext.notonline": [
     {
       "text": "Settings in here are determined by the server and cannot be changed while online.",
-      "color": "red"
+      "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.notlan": [
     {
       "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
-      "color": "red"
+      "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
       "text": "Settings in here are are ony available while a world is loaded.",
-      "color": "red"
+      "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.unsupportedelement": [
     {
       "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
-      "color": "red"
+      "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.section": "%s...",
-  "neoforge.configuration.uitext.sectiontext": "Edit",
+  "neoforge.configuration.uitext.sectiontext": "Змінити",
   "neoforge.configuration.uitext.breadcrumb": [
     {
       "index": 0
     },
     {
       "text": " > ",
-      "color": "gold",
+      "color": "золотий",
       "bold": true
     },
     {
@@ -170,65 +170,65 @@
     }
   ],
   "neoforge.configuration.uitext.listelement": "%s:",
-  "neoforge.configuration.uitext.undo": "Undo",
+  "neoforge.configuration.uitext.undo": "Скасувати",
   "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
-  "neoforge.configuration.uitext.reset": "Reset",
-  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.reset": "Скинути",
+  "neoforge.configuration.uitext.reset.tooltip": "Повертає все на цьому екрані до значень за замовчуванням.",
   "neoforge.configuration.uitext.newlistelement": "+",
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
   "neoforge.configuration.uitext.rangetooltip": [
     {
-      "text": "\n\nRange: ",
-      "color": "gray"
+      "text": "\n\nДіапазон: ",
+      "color": "сірий"
     },
     {
       "index": 0,
-      "color": "gray"
+      "color": "сірий"
     }
   ],
   "neoforge.configuration.uitext.filenametooltip": [
     {
-      "text": "File: \"",
-      "color": "gray"
+      "text": "Файл: \"",
+      "color": "сірий"
     },
     {
       "index": 0,
-      "color": "gray"
+      "color": "сірий"
     },
     {
       "text": "\"",
-      "color": "gray"
+      "color": "сірий"
     }
   ],
-  "neoforge.configuration.uitext.common": "Common Options",
-  "neoforge.configuration.uitext.client": "Client Options",
-  "neoforge.configuration.uitext.server": "Server Options",
-  "neoforge.configuration.uitext.startup": "Startup Options",
-  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
+  "neoforge.configuration.uitext.common": "Загальні параметри",
+  "neoforge.configuration.uitext.client": "Клієнтські параметри",
+  "neoforge.configuration.uitext.server": "Серверні параметри",
+  "neoforge.configuration.uitext.startup": "Запускові параметри",
+  "neoforge.configuration.uitext.restart.game.title": "Minecraft повинен бути перезавантаженим",
   "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed only take effect when the game is started.",
-  "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
-  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
-  "neoforge.configuration.uitext.restart.return": "Not yet...",
-  "neoforge.configuration.title": "NeoForge Configuration",
-  "neoforge.configuration.section.neoforge.client.toml": "Client settings",
-  "neoforge.configuration.section.neoforge.client.toml.title": "Client settings",
-  "neoforge.configuration.section.neoforge.common.toml": "Common settings",
-  "neoforge.configuration.section.neoforge.common.toml.title": "Common settings",
-  "neoforge.configuration.section.neoforge.server.toml": "Server settings",
-  "neoforge.configuration.section.neoforge.server.toml.title": "Server settings",
-  "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
+  "neoforge.configuration.uitext.restart.server.title": "Світ має бути перезавантажений",
+  "neoforge.configuration.uitext.restart.server.text": "Один чи кілька варіантів конфігурації, які були змінені, набудуть чинності лише після запуску чи завантаження світу.",
+  "neoforge.configuration.uitext.restart.return": "Поки ні...",
+  "neoforge.configuration.title": "Конфігурація NeoForge",
+  "neoforge.configuration.section.neoforge.client.toml": "Клієнтські налаштування",
+  "neoforge.configuration.section.neoforge.client.toml.title": "Клієнтські налаштування",
+  "neoforge.configuration.section.neoforge.common.toml": "Загальні налаштування",
+  "neoforge.configuration.section.neoforge.common.toml.title": "Загальні налаштування",
+  "neoforge.configuration.section.neoforge.server.toml": "Серверні налаштування",
+  "neoforge.configuration.section.neoforge.server.toml.title": "Серверні налаштування",
+  "neoforge.configgui.advertiseDedicatedServerToLan": "Показати виділений сервер для локальної мережі",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
-  "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
+  "neoforge.configgui.forgeLightPipelineEnabled": "Конвеєр світла NeoForge",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Активує конвеєр NeoForge для рендерингу блоків — виправляє освітлення користувацьких моделей.",
   "neoforge.configgui.fullBoundingBoxLadders": "Повні області колізії з драбиною",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Встановіть значення \"true\", для повної перевірки колізії сутностей з драбинами, замість просто блоку, в якому вони знаходяться. Спричиняє помітні відмінності в механіці, тому за замовчуванням використовується ванільна поведінка. За замовчуванням: false.",
-  "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
+  "neoforge.configgui.logLegacyTagWarnings": "Записувати старі мітки",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
-  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Записувати неперекладені ключі конфігурації",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.",
-  "neoforge.configgui.logUntranslatedItemTagWarnings": "Log Untranslated Item Tags",
+  "neoforge.configgui.logUntranslatedItemTagWarnings": "Записувати неперекладені теги предметів",
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.",
   "neoforge.configgui.permissionHandler": "Permission Handler",
   "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
@@ -236,8 +236,8 @@
   "neoforge.configgui.removeErroringBlockEntities.tooltip": [
     "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
+      "text": "УВАГА: ЦЕ МОЖЕ ПОШКОДИТИ ВСЕ.\nВИКОРИСТОВУЙТЕ ОБЕРЕЖНО.\nМИ НЕ ВІДПОВІДАЛЬНІ ЗА ПОШКОДЖЕННЯ.",
+      "color": "червоний",
       "bold": true
     }
   ],
@@ -245,8 +245,8 @@
   "neoforge.configgui.removeErroringEntities.tooltip": [
     "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
+      "text": "УВАГА: ЦЕ МОЖЕ ПОШКОДИТИ ВСЕ.\nВИКОРИСТОВУЙТЕ ОБЕРЕЖНО.\nМИ НЕ ВІДПОВІДАЛЬНІ ЗА ПОШКОДЖЕННЯ.",
+      "color": "червоний",
       "bold": true
     }
   ],
