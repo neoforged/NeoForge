@@ -406,14 +406,19 @@
          return this.decorateDisplayNameComponent(mutablecomponent);
      }
  
-@@ -2012,24 +_,26 @@
-             Predicate<ItemStack> predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getSupportedHeldProjectiles();
+@@ -2009,27 +_,29 @@
+         if (!(p_36349_.getItem() instanceof ProjectileWeaponItem)) {
+             return ItemStack.EMPTY;
+         } else {
+-            Predicate<ItemStack> predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getSupportedHeldProjectiles();
++            Predicate<ItemStack> predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getSupportedHeldProjectiles(p_36349_);
              ItemStack itemstack = ProjectileWeaponItem.getHeldProjectile(this, predicate);
              if (!itemstack.isEmpty()) {
 -                return itemstack;
 +                return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, p_36349_, itemstack);
              } else {
-                 predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getAllSupportedProjectiles();
+-                predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getAllSupportedProjectiles();
++                predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getAllSupportedProjectiles(p_36349_);
  
                  for (int i = 0; i < this.inventory.getContainerSize(); i++) {
                      ItemStack itemstack1 = this.inventory.getItem(i);
