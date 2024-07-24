@@ -22,6 +22,7 @@ import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.internal.RegistrationEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
 public class DatagenModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -33,6 +34,7 @@ public class DatagenModLoader extends CommonModLoader {
         return runningDataGen;
     }
 
+    @ApiStatus.Internal
     public static void begin(final Set<String> mods, final Path path, final Collection<Path> inputs, Collection<Path> existingPacks,
             Set<String> existingMods, final boolean serverGenerators, final boolean clientGenerators, final boolean devToolGenerators, final boolean reportsGenerator,
             final boolean structureValidator, final boolean flat, final String assetIndex, final File assetsDir) {
