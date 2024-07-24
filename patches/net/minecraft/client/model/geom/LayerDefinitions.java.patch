@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/model/geom/LayerDefinitions.java
 +++ b/net/minecraft/client/model/geom/LayerDefinitions.java
+@@ -316,7 +_,7 @@
+         LayerDefinition layerdefinition22 = ChestRaftModel.createBodyModel();
+ 
+         for (Boat.Type boat$type : Boat.Type.values()) {
+-            if (boat$type == Boat.Type.BAMBOO) {
++            if (boat$type.isRaft()) {
+                 builder.put(ModelLayers.createBoatModelName(boat$type), layerdefinition21);
+                 builder.put(ModelLayers.createChestBoatModelName(boat$type), layerdefinition22);
+             } else {
 @@ -329,6 +_,7 @@
          WoodType.values().forEach(p_171114_ -> builder.put(ModelLayers.createSignModelName(p_171114_), layerdefinition23));
          LayerDefinition layerdefinition24 = HangingSignRenderer.createHangingSignLayer();
