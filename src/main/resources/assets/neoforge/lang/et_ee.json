@@ -111,6 +111,10 @@
   "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Eel-generatsioon ei ole hetkel käimas. Generatsiooni käivitamise käskluste vaatamiseks käivita \"/neoforge generate help\".",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <kamakaRaadius> [progressiRiba] §r§f- Genereerib antud positsiooni keskpunktis oleva ruudu, mille mõlemad küljed on kamakaRaadius * 2.\n§2/neoforge generate stop §r§f- Peatab käimasoleva genereerimise ja kuvab lõpule viidud progressi.\n§2/neoforge generate status §r- Kuvab hetkel käimasoleva genereerimise progressi.\n§2/neoforge generate help §r- Kuvab seda sõnumit\nÜldine nõuanne: Serverikonsoolis sisestades saad genereerimist käivitada erinevates dimensioonides, kasutades /execute in <dimensioon> neoforge generate...",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "Seadistus %s jaoks tüübiga %s leiti asukohast %s",
   "commands.config.noconfig": "Seadistust %s jaoks tüübiga %s ei leitud",
   "neoforge.update.beta.1": "%sHOIATUS: %sNeoForge beeta",
@@ -291,5 +295,8 @@
   "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s",
   "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
   "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
-  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
+  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }
