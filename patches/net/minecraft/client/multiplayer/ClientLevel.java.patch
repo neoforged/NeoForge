@@ -41,6 +41,15 @@
      }
  
      public void queueLightUpdate(Runnable p_194172_) {
+@@ -238,7 +_,7 @@
+     private void tickTime() {
+         this.setGameTime(this.levelData.getGameTime() + 1L);
+         if (this.levelData.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
+-            this.setDayTime(this.levelData.getDayTime() + 1L);
++            this.setDayTime(this.levelData.getDayTime() + advanceDaytime());
+         }
+     }
+ 
 @@ -282,7 +_,11 @@
          p_104640_.setOldPosAndRot();
          p_104640_.tickCount++;
@@ -100,7 +109,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1069,14 +_,51 @@
+@@ -1069,14 +_,75 @@
              if (p_171712_ instanceof AbstractClientPlayer) {
                  ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
              }
@@ -150,5 +159,29 @@
 +        if (!shade)
 +            return constantAmbientLight ? 0.9F : 1.0F;
 +        return net.neoforged.neoforge.client.model.lighting.QuadLighter.calculateShade(normalX, normalY, normalZ, constantAmbientLight);
++    }
++
++    // Neo: Variable day time code
++
++    private float dayTimeFraction = 0.0f;
++    private float dayTimePerTick = -1.0f;
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void setDayTimeFraction(float dayTimeFraction) {
++        this.dayTimeFraction = dayTimeFraction;
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public float getDayTimeFraction() {
++        return dayTimeFraction;
++    }
++
++    public float getDayTimePerTick() {
++        return dayTimePerTick;
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void setDayTimePerTick(float dayTimePerTick) {
++        this.dayTimePerTick = dayTimePerTick;
      }
  }

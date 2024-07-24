@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/MapRenderer.java
++++ b/net/minecraft/client/gui/MapRenderer.java
+@@ -122,6 +_,10 @@
+ 
+             for (MapDecoration mapdecoration : this.data.getDecorations()) {
+                 if (!p_93294_ || mapdecoration.renderOnFrame()) {
++                    if (net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager.render(mapdecoration, p_93292_, p_93293_, data, MapRenderer.this.decorationTextures, p_93294_, p_93295_, k)) {
++                        k++;
++                        continue;
++                    }
+                     p_93292_.pushPose();
+                     p_93292_.translate(0.0F + (float)mapdecoration.x() / 2.0F + 64.0F, 0.0F + (float)mapdecoration.y() / 2.0F + 64.0F, -0.02F);
+                     p_93292_.mulPose(Axis.ZP.rotationDegrees((float)(mapdecoration.rot() * 360) / 16.0F));
