@@ -175,6 +175,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
+import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -1025,6 +1026,7 @@ public class ClientHooks {
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
+        MapDecorationRendererManager.init();
     }
 
     /**
