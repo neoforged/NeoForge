@@ -49,6 +49,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
@@ -561,6 +562,11 @@ public class NetworkRegistry {
                         "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.", NeoForgeVersion.getVersion()));
                 return;
             }
+        }
+
+        // We are on the client, connected to a vanilla server, make sure we don't have any extended enums that may be sent to the server
+        if (!CheckExtensibleEnums.handleVanillaServerConnection(listener)) {
+            return;
         }
 
         // We are on the client, connected to a vanilla server, We have to load the default configs.

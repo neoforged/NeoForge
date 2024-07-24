@@ -21,7 +21,7 @@
          return itemenchantments.getLevel(p_346179_);
      }
 @@ -122,6 +_,12 @@
-     private static void runIterationOnItem(ItemStack p_345425_, EnchantmentHelper.EnchantmentVisitor p_345023_) {
+     public static void runIterationOnItem(ItemStack p_345425_, EnchantmentHelper.EnchantmentVisitor p_345023_) {
          ItemEnchantments itemenchantments = p_345425_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
 +        // Neo: Respect gameplay-only enchantments when doing iterations

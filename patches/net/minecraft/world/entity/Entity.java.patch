@@ -448,7 +448,7 @@
  
              this.levelCallback.onMove();
          }
-+        if (this.isAddedToWorld() && !this.level.isClientSide && !this.isRemoved()) this.level.getChunk((int) Math.floor(p_20344_) >> 4, (int) Math.floor(p_20346_) >> 4); // Forge - ensure target chunk is loaded.
++        if (this.isAddedToLevel() && !this.level.isClientSide && !this.isRemoved()) this.level.getChunk((int) Math.floor(p_20344_) >> 4, (int) Math.floor(p_20346_) >> 4); // Forge - ensure target chunk is loaded.
      }
  
      public void checkDespawn() {
@@ -502,16 +502,16 @@
 +     * allow guarantees that entity position changes will force a chunk load, avoiding
 +     * potential issues with entity desyncing and bad chunk data.
 +     */
-+    private boolean isAddedToWorld;
++    private boolean isAddedToLevel;
 +
 +    @Override
-+    public final boolean isAddedToWorld() { return this.isAddedToWorld; }
++    public final boolean isAddedToLevel() { return this.isAddedToLevel; }
 +
 +    @Override
-+    public void onAddedToWorld() { this.isAddedToWorld = true; }
++    public void onAddedToLevel() { this.isAddedToLevel = true; }
 +
 +    @Override
-+    public void onRemovedFromWorld() { this.isAddedToWorld = false; }
++    public void onRemovedFromLevel() { this.isAddedToLevel = false; }
 +
 +    // Neo: Helper method to stop an entity from being removed if already marked for removal
 +    @Override
@@ -569,12 +569,12 @@
 +
 +    // Neo: Hookup Capabilities getters to entities
 +    @Nullable
-+    public final <T, C> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, C> capability, @org.jetbrains.annotations.UnknownNullability C context) {
++    public final <T, C extends @org.jetbrains.annotations.Nullable Object> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, C> capability, C context) {
 +        return capability.getCapability(this, context);
 +    }
 +
 +    @Nullable
-+    public final <T> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, Void> capability) {
++    public final <T> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, @org.jetbrains.annotations.Nullable Void> capability) {
 +        return capability.getCapability(this, null);
      }
  

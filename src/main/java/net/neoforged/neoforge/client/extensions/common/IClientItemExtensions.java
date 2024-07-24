@@ -40,7 +40,7 @@ public interface IClientItemExtensions {
     }
 
     static IClientItemExtensions of(Item item) {
-        return item.getRenderPropertiesInternal() instanceof IClientItemExtensions e ? e : DEFAULT;
+        return ClientExtensionsManager.ITEM_EXTENSIONS.getOrDefault(item, DEFAULT);
     }
 
     /**

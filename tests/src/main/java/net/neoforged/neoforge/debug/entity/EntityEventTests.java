@@ -21,10 +21,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -117,6 +119,49 @@ public class EntityEventTests {
                 .thenExecute(pig -> helper.getLevel().explode(null, helper.getLevel().damageSources().generic(), null, helper.absolutePos(new BlockPos(7, 2, 7)).getCenter(), 2f, false, Level.ExplosionInteraction.TNT))
                 .thenExecute(pig -> helper.assertEntityProperty(pig, p -> pig.getDeltaMovement().x() == 0 && pig.getDeltaMovement().y() != 0 && pig.getDeltaMovement().z() == 0, "Check explosion Knockback"))
                 .thenIdle(10)
+                .thenExecute(helper::killAllEntities)
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the EntityTravelToDimensionEvent fires correctly and if cancelling it prevents the transition")
+    static void entityTravelToDimensionEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final EntityTravelToDimensionEvent event) -> {
+            // Only affect the entities with a custom name to not interfere with other tests
+            if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("travel-to-dimension-test"))) {
+                return;
+            }
+            event.setCanceled(true);
+            test.pass();
+        });
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenSequence(seq -> seq
+                        .thenMap(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 0, 2, 0))
+                        .thenExecute(pig -> pig.setCustomName(Component.literal("travel-to-dimension-test")))
+                        .thenExecute(pig -> pig.changeDimension(new DimensionTransition(helper.getLevel(), pig.position().add(1.0, 0.0, 0.0), Vec3.ZERO, 0.0f, 0.0f,
+                                DimensionTransition.DO_NOTHING)))
+                        .thenExecute(() -> {
+                            helper.assertEntityPresent(EntityType.PIG, 0, 2, 0);
+                            helper.assertEntityNotPresent(EntityType.PIG, 1, 2, 0);
+                        })
+                        .thenExecute(pig -> pig.changeDimension(new DimensionTransition(helper.getLevel().getServer().getLevel(Level.NETHER), Vec3.ZERO, Vec3.ZERO, 0.0f, 0.0f, DimensionTransition.DO_NOTHING)))
+                        .thenExecute(pig -> helper.assertTrue(pig.level().dimension() == Level.OVERWORLD, "Dimension change was not prevented")))
+
+                .thenSequence(seq -> seq
+                        .thenMap(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+                        .thenExecute(player -> player.setCustomName(Component.literal("travel-to-dimension-test")))
+                        .thenExecute(player -> player.changeDimension(new DimensionTransition(helper.getLevel(), player.position().add(1.0, 0.0, 0.0), Vec3.ZERO, 0.0f, 0.0f, DimensionTransition.DO_NOTHING)))
+                        .thenExecute(() -> {
+                            helper.assertEntityPresent(EntityType.PLAYER, 0, 2, 0);
+                            helper.assertEntityNotPresent(EntityType.PLAYER, 1, 2, 0);
+                        })
+                        .thenExecute(player -> player.changeDimension(new DimensionTransition(helper.getLevel().getServer().getLevel(Level.NETHER), Vec3.ZERO, Vec3.ZERO, 0.0f, 0.0f, DimensionTransition.DO_NOTHING)))
+                        .thenExecute(player -> {
+                            helper.assertEntityPresent(EntityType.PLAYER, 0, 2, 0);
+                            helper.assertTrue(player.level().dimension() == Level.OVERWORLD, "Dimension change was not prevented");
+                        }))
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
     }
