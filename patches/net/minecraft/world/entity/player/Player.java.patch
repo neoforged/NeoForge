@@ -420,7 +420,7 @@
          return this.decorateDisplayNameComponent(mutablecomponent);
      }
  
-@@ -2009,21 +_,21 @@
+@@ -2009,31 +_,33 @@
          if (!(p_36349_.getItem() instanceof ProjectileWeaponItem)) {
              return ItemStack.EMPTY;
          } else {
@@ -447,15 +447,30 @@
              }
          }
      }
-@@ -2047,7 +_,10 @@
+ 
+     @Override
+     public ItemStack eat(Level p_36185_, ItemStack p_36186_, FoodProperties p_347562_) {
++        // Make a copy for ObtainItemEvent
++        ItemStack copy = p_36186_.copy();
+         this.getFoodData().eat(p_347562_);
+         this.awardStat(Stats.ITEM_USED.get(p_36186_.getItem()));
+         p_36185_.playSound(
+-            null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, p_36185_.random.nextFloat() * 0.1F + 0.9F
++                null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, p_36185_.random.nextFloat() * 0.1F + 0.9F
+         );
+         if (this instanceof ServerPlayer) {
+             CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer)this, p_36186_);
+@@ -2043,11 +_,11 @@
+         Optional<ItemStack> optional = p_347562_.usingConvertsTo();
+         if (optional.isPresent() && !this.hasInfiniteMaterials()) {
+             if (itemstack.isEmpty()) {
+-                return optional.get().copy();
++                return net.neoforged.neoforge.event.EventHooks.returnToUsingHand(this, optional.get().copy(), copy);
              }
  
              if (!this.level().isClientSide()) {
 -                this.getInventory().add(optional.get().copy());
-+                ItemStack container = optional.get().copy();
-+                if (!getInventory().add(container)) {
-+                    drop(container, false);
-+                }
++                net.neoforged.neoforge.event.EventHooks.givePlayer(this, optional.get().copy(), net.neoforged.neoforge.event.entity.item.ObtainItemEvent.container(copy, false));
              }
          }
  
