@@ -38,6 +38,9 @@ jobs:
       - name: Setup with Gradle
         run: ./gradlew :neoforge:setup
 
+      - name: Gen package infos
+        run: ./gradlew generatePackageInfos
+
       - name: Gen patches
         run: ./gradlew :neoforge:unpackSourcePatches
 
