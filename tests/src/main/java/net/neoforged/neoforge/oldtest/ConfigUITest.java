@@ -91,7 +91,7 @@ public class ConfigUITest {
             builder.translation("configuitest.common.section2")
                     .push("section2");
 
-            builder.translation("configuitest.common.numbers").defineListAllowEmpty("numbers", List.of(1, 2), () -> 0, e -> true);
+            value = wrap(builder.translation("configuitest.common.numbers").defineListAllowEmpty("numbers", List.of(1, 2), () -> 0, e -> true));
 
             builder.pop(2);
 
