@@ -219,12 +219,10 @@
                          this.neighborChanged(blockstate, blockpos, p_46719_, p_46718_, false);
                      }
                  }
-@@ -1076,6 +_,18 @@
-     @Override
-     public BiomeManager getBiomeManager() {
+@@ -1078,6 +_,18 @@
          return this.biomeManager;
-+    }
-+
+     }
+ 
 +    private double maxEntityRadius = 2.0D;
 +    @Override
 +    public double getMaxEntityRadius() {
@@ -235,6 +233,47 @@
 +        if (value > maxEntityRadius)
 +            maxEntityRadius = value;
 +        return maxEntityRadius;
-     }
- 
++    }
++
      public final boolean isDebug() {
+         return this.isDebug;
+     }
+@@ -1118,5 +_,38 @@
+         public String getSerializedName() {
+             return this.id;
+         }
++    }
++
++    // Neo: Variable day time code
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public abstract void setDayTimeFraction(float dayTimeFraction);
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public abstract float getDayTimeFraction();
++
++    /**
++     * Returns the current ratio between game ticks and clock ticks. If this value is negative, no
++     * speed has been set and those two are coupled 1:1 (i.e. vanilla mode).
++     */
++    public abstract float getDayTimePerTick();
++
++    /**
++     * DO NOT CALL.
++     * <p>
++     * Use {@link net.minecraft.server.level.ServerLevel#setDayTimePerTick(float)} instead.
++     */
++    public abstract void setDayTimePerTick(float dayTimePerTick);
++
++    // advances the fractional daytime, returns the integer part of it
++    @org.jetbrains.annotations.ApiStatus.Internal
++    protected long advanceDaytime() {
++        if (getDayTimePerTick() < 0) {
++            return 1L; // avoid doing math (and rounding errors) if no speed has been set
++        }
++        float dayTimeStep = getDayTimeFraction() + getDayTimePerTick();
++        long result = (long)dayTimeStep;
++        setDayTimeFraction(dayTimeStep - result);
++        return result;
+     }
+ }
