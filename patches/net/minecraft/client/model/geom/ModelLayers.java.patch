@@ -1,6 +1,30 @@
 --- a/net/minecraft/client/model/geom/ModelLayers.java
 +++ b/net/minecraft/client/model/geom/ModelLayers.java
-@@ -229,11 +_,13 @@
+@@ -213,27 +_,33 @@
+     }
+ 
+     public static ModelLayerLocation createRaftModelName(Boat.Type p_252002_) {
+-        return createLocation("raft/" + p_252002_.getName(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_252002_.getName());
++        return new ModelLayerLocation(location.withPrefix("raft/"), "main");
+     }
+ 
+     public static ModelLayerLocation createChestRaftModelName(Boat.Type p_248520_) {
+-        return createLocation("chest_raft/" + p_248520_.getName(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_248520_.getName());
++        return new ModelLayerLocation(location.withPrefix("chest_raft/"), "main");
+     }
+ 
+     public static ModelLayerLocation createBoatModelName(Boat.Type p_171290_) {
+-        return createLocation("boat/" + p_171290_.getName(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_171290_.getName());
++        return new ModelLayerLocation(location.withPrefix("boat/"), "main");
+     }
+ 
+     public static ModelLayerLocation createChestBoatModelName(Boat.Type p_233551_) {
+-        return createLocation("chest_boat/" + p_233551_.getName(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_233551_.getName());
++        return new ModelLayerLocation(location.withPrefix("chest_boat/"), "main");
      }
  
      public static ModelLayerLocation createSignModelName(WoodType p_171292_) {

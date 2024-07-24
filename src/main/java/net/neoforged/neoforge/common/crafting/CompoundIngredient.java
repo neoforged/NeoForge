@@ -16,13 +16,13 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 /** Ingredient that matches if any of the child ingredients match */
 public record CompoundIngredient(List<Ingredient> children) implements ICustomIngredient {
+
     public CompoundIngredient {
         if (children.isEmpty()) {
             // Empty ingredients are always represented as Ingredient.EMPTY.
             throw new IllegalArgumentException("Compound ingredient must have at least one child");
         }
     }
-
     public static final MapCodec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::children);
 
     /** Creates a compound ingredient from the given list of ingredients */

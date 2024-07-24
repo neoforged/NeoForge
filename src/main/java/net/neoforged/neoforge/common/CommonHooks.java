@@ -241,7 +241,7 @@ public class CommonHooks {
      * <p>
      * Called from {@link AbstractContainerMenu#doClick} in the utility method {@link AbstractContainerMenu#tryItemClickBehaviourOverride} before either
      * {@link ItemStack#overrideStackedOnOther} or {@link ItemStack#overrideOtherStackedOnMe} is called.
-     * 
+     *
      * @param carriedItem       The item currently held by the player, being clicked <i>into</i> the slot
      * @param stackedOnItem     The item currently present in the clicked slot
      * @param slot              The {@link Slot} being clicked
@@ -1510,7 +1510,7 @@ public class CommonHooks {
 
     /**
      * Creates a {@link UseOnContext} for {@link net.minecraft.core.dispenser.DispenseItemBehavior dispense behavior}.
-     * 
+     *
      * @param source the {@link BlockSource block source} context of the dispense behavior
      * @param stack  the dispensed item stack
      * @return a {@link UseOnContext} representing the dispense behavior
@@ -1575,5 +1575,12 @@ public class CommonHooks {
 
     public static boolean menuValidity(Player player, BlockEntity blockEntity, double distance) {
         return NeoForge.EVENT_BUS.post(new ValidityEvent.BlockEntityMenu(player, blockEntity, distance, player.canInteractWithBlock(blockEntity.getBlockPos(), distance))).getStillValid();
+    }
+
+    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
+        if (FMLEnvironment.dist.isClient()) {
+            return ClientHooks.getFilteredRecipeBookTypeValues();
+        }
+        return RecipeBookType.values();
     }
 }

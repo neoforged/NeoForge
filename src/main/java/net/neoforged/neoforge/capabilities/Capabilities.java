@@ -20,7 +20,7 @@ public final class Capabilities {
     public static final class EnergyStorage {
         public static final BlockCapability<IEnergyStorage, @Nullable Direction> BLOCK = BlockCapability.createSided(create("energy"), IEnergyStorage.class);
         public static final EntityCapability<IEnergyStorage, @Nullable Direction> ENTITY = EntityCapability.createSided(create("energy"), IEnergyStorage.class);
-        public static final ItemCapability<IEnergyStorage, Void> ITEM = ItemCapability.createVoid(create("energy"), IEnergyStorage.class);
+        public static final ItemCapability<IEnergyStorage, @Nullable Void> ITEM = ItemCapability.createVoid(create("energy"), IEnergyStorage.class);
 
         private EnergyStorage() {}
     }
@@ -28,7 +28,7 @@ public final class Capabilities {
     public static final class FluidHandler {
         public static final BlockCapability<IFluidHandler, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_handler"), IFluidHandler.class);
         public static final EntityCapability<IFluidHandler, @Nullable Direction> ENTITY = EntityCapability.createSided(create("fluid_handler"), IFluidHandler.class);
-        public static final ItemCapability<IFluidHandlerItem, Void> ITEM = ItemCapability.createVoid(create("fluid_handler"), IFluidHandlerItem.class);
+        public static final ItemCapability<IFluidHandlerItem, @Nullable Void> ITEM = ItemCapability.createVoid(create("fluid_handler"), IFluidHandlerItem.class);
 
         private FluidHandler() {}
     }
@@ -39,13 +39,13 @@ public final class Capabilities {
          * Capability for the inventory of an entity.
          * If an entity has multiple inventory "subparts", this capability should give a combined view of all the subparts.
          */
-        public static final EntityCapability<IItemHandler, Void> ENTITY = EntityCapability.createVoid(create("item_handler"), IItemHandler.class);
+        public static final EntityCapability<IItemHandler, @Nullable Void> ENTITY = EntityCapability.createVoid(create("item_handler"), IItemHandler.class);
         /**
          * Capability for an inventory of entity that should be accessible to automation,
          * in the sense that droppers, hoppers, and similar modded devices will try to use it.
          */
         public static final EntityCapability<IItemHandler, @Nullable Direction> ENTITY_AUTOMATION = EntityCapability.createSided(create("item_handler_automation"), IItemHandler.class);
-        public static final ItemCapability<IItemHandler, Void> ITEM = ItemCapability.createVoid(create("item_handler"), IItemHandler.class);
+        public static final ItemCapability<IItemHandler, @Nullable Void> ITEM = ItemCapability.createVoid(create("item_handler"), IItemHandler.class);
 
         private ItemHandler() {}
     }
