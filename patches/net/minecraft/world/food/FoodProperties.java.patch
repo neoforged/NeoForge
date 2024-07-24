@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/food/FoodProperties.java
 +++ b/net/minecraft/world/food/FoodProperties.java
-@@ -49,6 +_,25 @@
+@@ -49,6 +_,22 @@
          return (int)(this.eatSeconds * 20.0F);
      }
  
@@ -13,13 +13,10 @@
 +                eatSeconds == other.eatSeconds;
 +        if (!ans) return false;
 +        if (!effects.equals(other.effects)) return false;
-+        boolean selfEmpty = usingConvertsTo.isEmpty();
-+        boolean otherEmpty = other.usingConvertsTo.isEmpty();
-+        if (selfEmpty && otherEmpty) return true;
-+        if (selfEmpty ^ otherEmpty) return false;
-+        ItemStack selfContainer = usingConvertsTo.get();
-+        ItemStack otherContainer = other.usingConvertsTo.get();
++        ItemStack selfContainer = usingConvertsTo.orElse(null);
++        ItemStack otherContainer = other.usingConvertsTo.orElse(null);
 +        if (selfContainer == otherContainer) return true;
++        if (selfContainer == null || otherContainer == null) return false;
 +        return selfContainer.getCount() == otherContainer.getCount() && ItemStack.isSameItemSameComponents(selfContainer, otherContainer);
 +    }
 +
