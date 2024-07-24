@@ -24,6 +24,7 @@ import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Internal class for handling the steps of mod loading that are common for client, data and server runs.
@@ -34,6 +35,7 @@ import net.neoforged.neoforge.registries.RegistryManager;
  * <li>Datagen only runs {@link #begin}.</li>
  * </ul>
  */
+@ApiStatus.Internal
 public abstract class CommonModLoader {
     private static boolean registriesLoaded = false;
 
@@ -41,7 +43,7 @@ public abstract class CommonModLoader {
         return registriesLoaded;
     }
 
-    protected static void begin(Runnable periodicTask) {
+    protected static void begin(Runnable periodicTask, boolean datagen) {
         var syncExecutor = ModWorkManager.syncExecutor();
 
         ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
@@ -53,17 +55,19 @@ public abstract class CommonModLoader {
             GameData.freezeData();
             registriesLoaded = true;
         });
+
+        if (!datagen) {
+            ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
+                if (FMLEnvironment.dist == Dist.CLIENT) {
+                    ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
+                }
+                ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
+            });
+        }
     }
 
     protected static void load(Executor syncExecutor, Executor parallelExecutor) {
         Runnable periodicTask = () -> {}; // server: no progress screen; client: minecraft has already opened its loading screen and ticks it for us
-
-        ModLoader.runInitTask("Config loading", syncExecutor, periodicTask, () -> {
-            if (FMLEnvironment.dist == Dist.CLIENT) {
-                ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.CLIENT, FMLPaths.CONFIGDIR.get());
-            }
-            ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
-        });
 
         ModLoader.dispatchParallelEvent("Common setup", syncExecutor, parallelExecutor, periodicTask, FMLCommonSetupEvent::new);
         ModLoader.dispatchParallelEvent("Sided setup", syncExecutor, parallelExecutor, periodicTask,

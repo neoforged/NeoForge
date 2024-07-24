@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -17,11 +_,22 @@
+@@ -17,13 +_,30 @@
  import net.minecraft.resources.RegistryDataLoader;
  import net.minecraft.resources.ResourceKey;
  
@@ -12,17 +12,25 @@
      private final PackOutput output;
      private final CompletableFuture<HolderLookup.Provider> registries;
 +    private final java.util.function.Predicate<String> namespacePredicate;
++    private final java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions;
  
 +    @Deprecated
      public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_) {
-+        this(p_256643_, p_255780_, null);
++        this(p_256643_, p_255780_, null, java.util.Map.of());
 +    }
 +
 +    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds) {
++        this(p_256643_, p_255780_, modIds, java.util.Map.of());
++    }
++
++    public RegistriesDatapackGenerator(PackOutput p_256643_, CompletableFuture<HolderLookup.Provider> p_255780_, @org.jetbrains.annotations.Nullable java.util.Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions) {
 +        this.namespacePredicate = modIds == null ? namespace -> true : modIds::contains;
          this.registries = p_255780_;
          this.output = p_256643_;
++        this.conditions = conditions;
      }
+ 
+     @Override
 @@ -33,8 +_,7 @@
                  p_326736_ -> {
                      DynamicOps<JsonElement> dynamicops = p_326736_.createSerializationContext(JsonOps.INSTANCE);
@@ -33,7 +41,14 @@
                              .flatMap(
                                  p_256552_ -> this.dumpRegistryCap(p_255785_, p_326736_, dynamicops, (RegistryDataLoader.RegistryData<?>)p_256552_).stream()
                              )
-@@ -54,6 +_,7 @@
+@@ -48,19 +_,21 @@
+         CachedOutput p_256502_, HolderLookup.Provider p_256492_, DynamicOps<JsonElement> p_256000_, RegistryDataLoader.RegistryData<T> p_256449_
+     ) {
+         ResourceKey<? extends Registry<T>> resourcekey = p_256449_.key();
++        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec());
+         return p_256492_.lookup(resourcekey)
+             .map(
+                 p_349921_ -> {
                      PackOutput.PathProvider packoutput$pathprovider = this.output.createRegistryElementsPathProvider(resourcekey);
                      return CompletableFuture.allOf(
                          p_349921_.listElements()
@@ -41,3 +56,21 @@
                              .map(
                                  p_256105_ -> dumpValue(
                                          packoutput$pathprovider.json(p_256105_.key().location()),
+                                         p_256502_,
+                                         p_256000_,
+-                                        p_256449_.elementCodec(),
+-                                        p_256105_.value()
++                                        conditionalCodec,
++                                        Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(p_256105_.key(), java.util.List.of()), p_256105_.value()))
+                                     )
+                             )
+                             .toArray(CompletableFuture[]::new)
+@@ -70,7 +_,7 @@
+     }
+ 
+     private static <E> CompletableFuture<?> dumpValue(
+-        Path p_255678_, CachedOutput p_256438_, DynamicOps<JsonElement> p_256127_, Encoder<E> p_255938_, E p_256590_
++        Path p_255678_, CachedOutput p_256438_, DynamicOps<JsonElement> p_256127_, Encoder<java.util.Optional<net.neoforged.neoforge.common.conditions.WithConditions<E>>> p_255938_, java.util.Optional<net.neoforged.neoforge.common.conditions.WithConditions<E>> p_256590_
+     ) {
+         return p_255938_.encodeStart(p_256127_, p_256590_)
+             .mapOrElse(

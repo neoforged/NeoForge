@@ -8,7 +8,6 @@ package net.neoforged.neoforge.oldtest.fluid;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -41,6 +40,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -87,10 +87,71 @@ public class FluidTypeTest {
                 .bucket(TEST_FLUID_BUCKET);
     }
 
-    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true).addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)) {
-        @Override
-        public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-            consumer.accept(new IClientFluidTypeExtensions() {
+    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()
+            .supportsBoating(true)
+            .canHydrate(true)
+            .addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)));
+    private static final DeferredHolder<Fluid, FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
+    private static final DeferredHolder<Fluid, Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
+    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID.get(), BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
+    private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+
+    public FluidTypeTest(IEventBus modEventBus) {
+        if (ENABLE) {
+            logger = LogManager.getLogger();
+            NeoForgeMod.enableMilkFluid();
+
+            FLUID_TYPES.register(modEventBus);
+            FLUIDS.register(modEventBus);
+            BLOCKS.register(modEventBus);
+            ITEMS.register(modEventBus);
+
+            modEventBus.addListener(this::commonSetup);
+            modEventBus.addListener(this::addCreative);
+
+            if (FMLEnvironment.dist.isClient()) {
+                new FluidTypeTestClient(modEventBus);
+            }
+        }
+    }
+
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
+            event.accept(TEST_FLUID_BUCKET);
+    }
+
+    private void commonSetup(FMLCommonSetupEvent event) {
+        // Add Interactions for sources
+        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.value(), Blocks.GOLD_BLOCK.defaultBlockState()));
+        FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.value(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
+
+        // Log Fluid Types for all fluids
+        event.enqueueWork(() -> BuiltInRegistries.FLUID.forEach(fluid -> logger.info("Fluid {} has FluidType {}", BuiltInRegistries.FLUID.getKey(fluid), NeoForgeRegistries.FLUID_TYPES.getKey(fluid.getFluidType()))));
+    }
+
+    private static class FluidTypeTestClient {
+        private FluidTypeTestClient(IEventBus modEventBus) {
+            modEventBus.addListener(this::clientSetup);
+            modEventBus.addListener(this::registerBlockColors);
+            modEventBus.addListener(this::registerClientExtensions);
+        }
+
+        private void clientSetup(FMLClientSetupEvent event) {
+            Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(DeferredHolder::get)
+                    .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, RenderType.translucent()));
+        }
+
+        private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
+            event.register((state, getter, pos, index) -> {
+                if (getter != null && pos != null) {
+                    FluidState fluidState = getter.getFluidState(pos);
+                    return IClientFluidTypeExtensions.of(fluidState).getTintColor(fluidState, getter, pos);
+                } else return 0xAF7FFFD4;
+            }, TEST_FLUID_BLOCK.get());
+        }
+
+        private void registerClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerFluidType(new IClientFluidTypeExtensions() {
                 private static final ResourceLocation STILL = ResourceLocation.withDefaultNamespace("block/water_still"),
                         FLOW = ResourceLocation.withDefaultNamespace("block/water_flow"),
                         OVERLAY = ResourceLocation.withDefaultNamespace("block/obsidian"),
@@ -157,65 +218,7 @@ public class FluidTypeTest {
                     Minecraft.getInstance().getBlockRenderer().getLiquidBlockRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
                     return true;
                 }
-            });
-        }
-    });
-    private static final DeferredHolder<Fluid, FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
-    private static final DeferredHolder<Fluid, Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
-    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID.get(), BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
-    private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
-
-    public FluidTypeTest(IEventBus modEventBus) {
-        if (ENABLE) {
-            logger = LogManager.getLogger();
-            NeoForgeMod.enableMilkFluid();
-
-            FLUID_TYPES.register(modEventBus);
-            FLUIDS.register(modEventBus);
-            BLOCKS.register(modEventBus);
-            ITEMS.register(modEventBus);
-
-            modEventBus.addListener(this::commonSetup);
-            modEventBus.addListener(this::addCreative);
-
-            if (FMLEnvironment.dist.isClient()) {
-                new FluidTypeTestClient(modEventBus);
-            }
-        }
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
-            event.accept(TEST_FLUID_BUCKET);
-    }
-
-    private void commonSetup(FMLCommonSetupEvent event) {
-        // Add Interactions for sources
-        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.value(), Blocks.GOLD_BLOCK.defaultBlockState()));
-        FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.value(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
-
-        // Log Fluid Types for all fluids
-        event.enqueueWork(() -> BuiltInRegistries.FLUID.forEach(fluid -> logger.info("Fluid {} has FluidType {}", BuiltInRegistries.FLUID.getKey(fluid), NeoForgeRegistries.FLUID_TYPES.getKey(fluid.getFluidType()))));
-    }
-
-    private static class FluidTypeTestClient {
-        private FluidTypeTestClient(IEventBus modEventBus) {
-            modEventBus.addListener(this::clientSetup);
-            modEventBus.addListener(this::registerBlockColors);
-        }
-
-        private void clientSetup(FMLClientSetupEvent event) {
-            Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(DeferredHolder::get)
-                    .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, RenderType.translucent()));
-        }
-
-        private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-            event.register((state, getter, pos, index) -> {
-                if (getter != null && pos != null) {
-                    FluidState fluidState = getter.getFluidState(pos);
-                    return IClientFluidTypeExtensions.of(fluidState).getTintColor(fluidState, getter, pos);
-                } else return 0xAF7FFFD4;
-            }, TEST_FLUID_BLOCK.get());
+            }, TEST_FLUID_TYPE.value());
         }
     }
 }

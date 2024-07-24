@@ -15,7 +15,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  * @param canVillagerCompost whether farmer villagers can compost the item
  */
 public record Compostable(float chance, boolean canVillagerCompost) {
-
     public static final Codec<Compostable> CHANCE_CODEC = Codec.floatRange(0f, 1f)
             .xmap(Compostable::new, Compostable::chance);
     public static final Codec<Compostable> CODEC = Codec.withAlternative(
@@ -23,6 +22,7 @@ public record Compostable(float chance, boolean canVillagerCompost) {
                     Codec.floatRange(0f, 1f).fieldOf("chance").forGetter(Compostable::chance),
                     Codec.BOOL.optionalFieldOf("can_villager_compost", false).forGetter(Compostable::canVillagerCompost)).apply(in, Compostable::new)),
             CHANCE_CODEC);
+
     /**
      * Constructs a {@link Compostable} that cannot be composted by farmer villagers.
      * 
