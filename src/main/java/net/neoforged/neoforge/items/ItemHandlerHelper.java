@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.items;
 
 import com.mojang.logging.LogUtils;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.sounds.SoundEvents;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -170,7 +172,7 @@ public class ItemHandlerHelper {
             Predicate<ItemStack> filter,
             int maxAmount,
             boolean stackInTarget) {
-        Objects.requireNonNull(filter);
+        Objects.requireNonNull(filter, "filter");
         if (from == null || to == null || maxAmount <= 0) {
             return 0;
         }
@@ -218,9 +220,15 @@ public class ItemHandlerHelper {
                     leftover = from.insertItem(i, leftover, false);
 
                     if (!leftover.isEmpty()) {
-                        LOGGER.warn(
-                                "Trying to move up to {} items from {} to {}, but destination rejected {} that could not be inserted back in the source.",
+                        String message = String.format(
+                                Locale.ROOT,
+                                "Trying to move up to %d items from %s to %s, but destination rejected %s that could not be inserted back in the source.",
                                 maxAmount, from, to, leftover);
+                        if (FMLEnvironment.production) {
+                            LOGGER.warn(message);
+                        } else {
+                            LOGGER.warn(message, new Throwable());
+                        }
                     }
                 }
 
