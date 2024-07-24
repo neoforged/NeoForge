@@ -111,6 +111,10 @@
   "commands.neoforge.chunkgen.status": "Статус генерації! %1$s з %2$s чанків згенеровано. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Жодна прегенерація наразі не виконується. Запустіть `/neoforge generate help`, щоб побачити команди для початку генерації.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Генерує квадратну область з центром в наданих координатах і довжиною сторін chunkRadius * 2.\n§2/neoforge generate stop §r§f- Зупиняє поточну генерацію і відображає досягнутий прогрес.\n§2/neoforge generate status §r- Відображає поточний прогрес активної генерації.\n§2/neoforge generate help §r- Відображає це повідомлення.\nЗагальні рекомендації: Якщо команди виконуються з серверної консолі, ви зможете запустити генерацію для різних вимірів, використовуючи /execute in <dimension> neoforge generate...",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "Конфіг для %s типу %s знайдена в %s",
   "commands.config.noconfig": "Конфіг для %s типу %s не знайдено",
   "neoforge.update.beta.1": "%sПОПЕРЕДЖЕННЯ: %sNeoForge Beta",
@@ -291,5 +295,8 @@
   "neoforge.network.aux_light_data.failed": "Не вдалося опрацювати допоміжні дані для освітлення чанку %s: %s",
   "neoforge.network.data_maps.failed": "Не вдалося опрацювати синхронізацію реєстрових мап даних для реєстру %s: %s",
   "neoforge.network.data_maps.missing_our": "Не вдається приєднатися до сервера, оскільки на клієнті відсутні обов'язкові мапи даних реєстру: %s",
-  "neoforge.network.data_maps.missing_their": "Не вдається приєднатися до сервера, оскільки присутні обов'язкові мапи даних реєстру, що відсутні на клієнті: %s"
+  "neoforge.network.data_maps.missing_their": "Не вдається приєднатися до сервера, оскільки присутні обов'язкові мапи даних реєстру, що відсутні на клієнті: %s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }
