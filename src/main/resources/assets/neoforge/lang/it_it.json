@@ -111,6 +111,10 @@
   "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Nessuna pregenerazione attualmente in esecuzione. Esegui `/neoforge genera help` per vedere i comandi per iniziare la generazione.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Genera un quadrato centrato sulla posizione data di chunkRadius * 2 su ogni lato.\n§2/neoforge generate stop §r§f- Ferma la generazione corrente e mostra i progressi che aveva completato.\n§2/neoforge generate status §r- Visualizza i progressi completati per la generazione corrente.\n§2/neoforge generate help §r- Visualizza questo messaggio.\nSuggerimenti generali: Se eseguito da una console server, è possibile eseguire la generazione in diverse dimensioni utilizzando /execute in <dimension> neoforge generate...",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "Configurazione per %s di tipo %s trovata in %s",
   "commands.config.noconfig": "Configurazione per %s di tipo %s non trovata",
   "neoforge.update.beta.1": "%sATTENZIONE: %sNeoForge Beta",
@@ -291,5 +295,8 @@
   "neoforge.network.aux_light_data.failed": "Errore durante la gestione dei dati della luce per il chunk %s: %s",
   "neoforge.network.data_maps.failed": "Gestione della sincronizzazione del registro della mappa dati fallita per il registro %s: %s",
   "neoforge.network.data_maps.missing_our": "Impossibile connettersi al server in quanto manca un registro della mappa dati obbligatorio presente nel client: %s",
-  "neoforge.network.data_maps.missing_their": "Impossibile connettersi al server in quanto presenta un registro della mappa dati obbligatorio assente nel client: %s"
+  "neoforge.network.data_maps.missing_their": "Impossibile connettersi al server in quanto presenta un registro della mappa dati obbligatorio assente nel client: %s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }
