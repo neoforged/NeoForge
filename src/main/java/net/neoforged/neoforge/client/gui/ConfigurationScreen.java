@@ -13,6 +13,7 @@ import com.electronwill.nightconfig.core.UnmodifiableConfig.Entry;
 import com.google.common.collect.ImmutableList;
 import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,6 +69,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ListValueSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.Range;
+import net.neoforged.neoforge.common.ModConfigSpec.RawSupplier;
+import net.neoforged.neoforge.common.ModConfigSpec.RestartType;
 import net.neoforged.neoforge.common.ModConfigSpec.ValueSpec;
 import net.neoforged.neoforge.common.TranslatableEnum;
 import org.apache.logging.log4j.LogManager;
@@ -104,6 +107,30 @@ import org.jetbrains.annotations.Nullable;
  * 
  */
 public final class ConfigurationScreen extends OptionsSubScreen {
+    private static final class TooltipConfirmScreen extends ConfirmScreen {
+        boolean seenYes = false;
+
+        private TooltipConfirmScreen(BooleanConsumer p_95658_, Component p_95659_, Component p_95660_, Component p_95661_, Component p_95662_) {
+            super(p_95658_, p_95659_, p_95660_, p_95661_, p_95662_);
+        }
+
+        @Override
+        protected void init() {
+            seenYes = false;
+            super.init();
+        }
+
+        @Override
+        protected void addExitButton(Button button) {
+            if (seenYes) {
+                button.setTooltip(Tooltip.create(RESTART_NO_TOOLTIP));
+            } else {
+                seenYes = true;
+            }
+            super.addExitButton(button);
+        }
+    }
+
     public static class TranslationChecker {
         private static final Logger LOGGER = LogManager.getLogger();
         private final Set<String> untranslatables = new HashSet<>();
@@ -157,14 +184,6 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
     }
 
-    public enum RestartType {
-        NONE, SERVER, GAME;
-
-        RestartType with(RestartType other) {
-            return other == NONE ? this : (other == GAME || this == GAME) ? GAME : SERVER;
-        }
-    }
-
     /**
      * Prefix for static keys the configuration screens use internally.
      */
@@ -210,6 +229,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component RETURN_TO_MENU = Component.translatable("menu.returnToMenu"); // PauseScreen.RETURN_TO_MENU
     public static final Component SAVING_LEVEL = Component.translatable("menu.savingLevel"); // PauseScreen.SAVING_LEVEL
     public static final Component RESTART_NO = Component.translatable(LANG_PREFIX + "restart.return");
+    public static final Component RESTART_NO_TOOLTIP = Component.translatable(LANG_PREFIX + "restart.return.tooltip");
     public static final Component UNDO = Component.translatable(LANG_PREFIX + "undo");
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
     public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
@@ -303,24 +323,24 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         translationChecker.finish();
         switch (needsRestart) {
             case GAME -> {
-                minecraft.setScreen(new ConfirmScreen(b -> {
+                minecraft.setScreen(new TooltipConfirmScreen(b -> {
                     if (b) {
                         minecraft.stop();
                     } else {
-                        minecraft.setScreen(this);
+                        super.onClose();
                     }
                 }, GAME_RESTART_TITLE, GAME_RESTART_MESSAGE, GAME_RESTART_YES, RESTART_NO));
                 return;
             }
-            case SERVER -> {
+            case WORLD -> {
                 if (minecraft.level != null) {
-                    minecraft.setScreen(new ConfirmScreen(b -> {
+                    minecraft.setScreen(new TooltipConfirmScreen(b -> {
                         if (b) {
                             // when changing server configs from the client is added, this is where we tell the server to restart and activate the new config.
                             // also needs a different text in MP ("server will restart/exit, yada yada") than in SP
                             onDisconnect();
                         } else {
-                            minecraft.setScreen(this);
+                            super.onClose();
                         }
                     }, SERVER_RESTART_TITLE, SERVER_RESTART_MESSAGE, minecraft.isLocalServer() ? RETURN_TO_MENU : CommonComponents.GUI_DISCONNECT, RESTART_NO));
                     return;
@@ -547,8 +567,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected void onChanged(final String key) {
             changed = true;
             final ValueSpec valueSpec = getValueSpec(key);
-            if (valueSpec != null && valueSpec.restartType() == ModConfigSpec.RestartType.WORLD) {
-                needsRestart = needsRestart.with(RestartType.SERVER);
+            if (valueSpec != null) {
+                needsRestart = needsRestart.with(valueSpec.restartType());
             }
         }
 
@@ -627,7 +647,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         protected boolean isNonDefault(ModConfigSpec.ConfigValue<?> cv) {
-            return !Objects.equals(cv.get(), cv.getDefault());
+            return !Objects.equals(cv.getRaw(), cv.getDefault());
         }
 
         protected boolean isAnyNondefault() {
@@ -642,22 +662,22 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createStringValue(final String key, final Predicate<String> tester, final Supplier<String> source, final Consumer<String> target) {
+        protected Element createStringValue(final String key, final Predicate<String> tester, final RawSupplier<String> source, final Consumer<String> target) {
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
             // no filter or the user wouldn't be able to type
             box.setTooltip(Tooltip.create(getTooltipComponent(key, null)));
-            box.setValue(source.get());
+            box.setValue(source.getRaw());
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
-                    if (!newValue.equals(source.get())) {
+                    if (!newValue.equals(source.getRaw())) {
                         undoManager.add(v -> {
                             target.accept(v);
                             onChanged(key);
                         }, newValue, v -> {
                             target.accept(v);
                             onChanged(key);
-                        }, source.get());
+                        }, source.getRaw());
                     }
                     box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
                     return;
@@ -692,7 +712,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          */
         @Nullable
         protected Element createOtherValue(final String key, final ConfigValue<?> value) {
-            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.get())), font).alignLeft();
+            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.getRaw())), font).alignLeft();
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
         }
@@ -729,9 +749,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createBooleanValue(final String key, final ValueSpec spec, final Supplier<Boolean> source, final Consumer<Boolean> target) {
+        protected Element createBooleanValue(final String key, final ValueSpec spec, final RawSupplier<Boolean> source, final Consumer<Boolean> target) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
-                    new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), OptionInstance.BOOLEAN_TO_STRING, Custom.BOOLEAN_VALUES_NO_PREFIX, source.get(), newValue -> {
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), OptionInstance.BOOLEAN_TO_STRING, Custom.BOOLEAN_VALUES_NO_PREFIX, source.getRaw(), newValue -> {
                         // regarding change detection: new value always is different (cycle button)
                         undoManager.add(v -> {
                             target.accept(v);
@@ -739,12 +759,12 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         }, newValue, v -> {
                             target.accept(v);
                             onChanged(key);
-                        }, source.get());
+                        }, source.getRaw());
                     }));
         }
 
         @Nullable
-        protected <T extends Enum<T>> Element createEnumValue(final String key, final ValueSpec spec, final Supplier<T> source, final Consumer<T> target) {
+        protected <T extends Enum<T>> Element createEnumValue(final String key, final ValueSpec spec, final RawSupplier<T> source, final Consumer<T> target) {
             @SuppressWarnings("unchecked")
             final Class<T> clazz = (Class<T>) spec.getClazz();
             assert clazz != null;
@@ -753,7 +773,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), (caption, displayvalue) -> displayvalue instanceof TranslatableEnum tenum ? tenum.getTranslatedName() : Component.literal(displayvalue.name()),
-                            new Custom<>(list), source.get(), newValue -> {
+                            new Custom<>(list), source.getRaw(), newValue -> {
                                 // regarding change detection: new value always is different (cycle button)
                                 undoManager.add(v -> {
                                     target.accept(v);
@@ -761,12 +781,12 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                                 }, newValue, v -> {
                                     target.accept(v);
                                     onChanged(key);
-                                }, source.get());
+                                }, source.getRaw());
                             }));
         }
 
         @Nullable
-        protected Element createIntegerValue(final String key, final ValueSpec spec, final Supplier<Integer> source, final Consumer<Integer> target) {
+        protected Element createIntegerValue(final String key, final ValueSpec spec, final RawSupplier<Integer> source, final Consumer<Integer> target) {
             final Range<Integer> range = spec.getRange();
             final int min = range != null ? range.getMin() : 0;
             final int max = range != null ? range.getMax() : Integer.MAX_VALUE;
@@ -779,31 +799,31 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createSlider(final String key, final Supplier<Integer> source, final Consumer<Integer> target, final @Nullable Range<Integer> range) {
+        protected Element createSlider(final String key, final RawSupplier<Integer> source, final Consumer<Integer> target, final @Nullable Range<Integer> range) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key, range),
                             (caption, displayvalue) -> Component.literal("" + displayvalue), new OptionInstance.IntRange(range != null ? range.getMin() : 0, range != null ? range.getMax() : Integer.MAX_VALUE),
-                            null, source.get(), newValue -> {
-                                if (!newValue.equals(source.get())) {
+                            null, source.getRaw(), newValue -> {
+                                if (!newValue.equals(source.getRaw())) {
                                     undoManager.add(v -> {
                                         target.accept(v);
                                         onChanged(key);
                                     }, newValue, v -> {
                                         target.accept(v);
                                         onChanged(key);
-                                    }, source.get());
+                                    }, source.getRaw());
                                 }
                             }));
         }
 
         @Nullable
-        protected Element createLongValue(final String key, final ValueSpec spec, final Supplier<Long> source, final Consumer<Long> target) {
+        protected Element createLongValue(final String key, final ValueSpec spec, final RawSupplier<Long> source, final Consumer<Long> target) {
             return createNumberBox(key, spec, source, target, null, Long::decode, 0L);
         }
 
         // if someone knows how to get a proper zero inside...
         @Nullable
-        protected <T extends Number & Comparable<? super T>> Element createNumberBox(final String key, final ValueSpec spec, final Supplier<T> source,
+        protected <T extends Number & Comparable<? super T>> Element createNumberBox(final String key, final ValueSpec spec, final RawSupplier<T> source,
                 final Consumer<T> target, @Nullable final Predicate<T> tester, final Function<String, T> parser, final T zero) {
             final Range<T> range = spec.getRange();
 
@@ -818,19 +838,19 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 }
             });
             box.setTooltip(Tooltip.create(getTooltipComponent(key, range)));
-            box.setValue(source.get() + "");
+            box.setValue(source.getRaw() + "");
             box.setResponder(newValueString -> {
                 try {
                     final T newValue = parser.apply(newValueString);
                     if (tester != null ? tester.test(newValue) : (newValue != null && (range == null || range.test(newValue)) && spec.test(newValue))) {
-                        if (!newValue.equals(source.get())) {
+                        if (!newValue.equals(source.getRaw())) {
                             undoManager.add(v -> {
                                 target.accept(v);
                                 onChanged(key);
                             }, newValue, v -> {
                                 target.accept(v);
                                 onChanged(key);
-                            }, source.get());
+                            }, source.getRaw());
                         }
                         box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
                         return;
@@ -844,7 +864,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createDoubleValue(final String key, final ValueSpec spec, final Supplier<Double> source, final Consumer<Double> target) {
+        protected Element createDoubleValue(final String key, final ValueSpec spec, final RawSupplier<Double> source, final Consumer<Double> target) {
             return createNumberBox(key, spec, source, target, null, Double::parseDouble, 0.0);
         }
 
@@ -921,7 +941,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         }, getValueSpec(key).correct(null), v -> {
                             cv.set(v);
                             onChanged(key);
-                        }, cv.get()));
+                        }, cv.getRaw()));
                     }
                 }
                 undoManager.add(list);
@@ -986,7 +1006,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             this.key = key;
             this.spec = spec;
             this.valueList = valueList; // === (ListValueSpec)getValueSpec(key)
-            this.cfgList = new ArrayList<>(valueList.get());
+            this.cfgList = new ArrayList<>(valueList.getRaw());
         }
 
         @Override

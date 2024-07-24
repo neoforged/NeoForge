@@ -1184,7 +1184,12 @@ public class ModConfigSpec implements IConfigSpec {
         }
     }
 
-    public static class ConfigValue<T> implements Supplier<T> {
+    @FunctionalInterface
+    public interface RawSupplier<T> {
+        T getRaw();
+    }
+
+    public static class ConfigValue<T> implements Supplier<T>, RawSupplier<T> {
         private final Builder parent;
         private final List<String> path;
         private final Supplier<T> defaultSupplier;
@@ -1219,14 +1224,23 @@ public class ModConfigSpec implements IConfigSpec {
          */
         @Override
         public T get() {
+            if (cachedValue == null) {
+                cachedValue = getRaw();
+            }
+            return cachedValue;
+        }
+
+        /**
+         * Returns the uncached value for the configuration setting, throwing if the config has not yet been loaded.
+         * <p>
+         * <em>Do not call this for any other purpose than editing the value. Use {@link #get()} instead.</em>
+         */
+        @Override
+        public T getRaw() {
             Preconditions.checkNotNull(spec, "Cannot get config value before spec is built");
             var loadedConfig = spec.loadedConfig;
             Preconditions.checkState(loadedConfig != null, "Cannot get config value before config is loaded.");
-
-            if (cachedValue == null) {
-                cachedValue = getRaw(loadedConfig.config(), path, defaultSupplier);
-            }
-            return cachedValue;
+            return getRaw(loadedConfig.config(), path, defaultSupplier);
         }
 
         public T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
@@ -1394,6 +1408,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         private boolean isValid(ModConfig.Type type) {
             return !invalidTypes.contains(type);
+        }
+
+        public RestartType with(RestartType other) {
+            return other == NONE ? this : (other == GAME || this == GAME) ? GAME : WORLD;
         }
     }
 }
