@@ -111,6 +111,10 @@
   "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "无进行中的预生成。运行 `/neoforge generate help` 以查看开始生成的命令。",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- 生成一个以给定坐标为中心的、边长为 chunkRadius * 2 的正方形。\n§2/neoforge generate stop §r§f- 停止当前生成，显示完成进度。\n§2/neoforge generate status §r- 显示当前生成的完成进度。\n§2/neoforge generate help §r- 显示此消息\n通用提示：如果从服务器控制台执行，可以通过 '/execute in <dimension> neoforge generate...' 在特定维度执行。",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "%s 类型 %s 的配置在 %s 发现",
   "commands.config.noconfig": "未发现 %s（类型为 %s）的配置",
   "neoforge.update.beta.1": "%s警告：%s NeoForge 为测试版",
@@ -291,5 +295,8 @@
   "neoforge.network.aux_light_data.failed": "无法处理区块 %s 的辅助光线数据：%s",
   "neoforge.network.data_maps.failed": "处理注册表数据映射同步失败 %s: %s",
   "neoforge.network.data_maps.missing_our": "无法连接至服务器，因为客户端缺少必要的注册表数据映射：%s",
-  "neoforge.network.data_maps.missing_their": "无法连接至服务器，因为客户端上不存在必要的注册表数据映射：%s"
+  "neoforge.network.data_maps.missing_their": "无法连接至服务器，因为客户端上不存在必要的注册表数据映射：%s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }
