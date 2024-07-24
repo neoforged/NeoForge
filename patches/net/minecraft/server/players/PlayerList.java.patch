@@ -103,6 +103,19 @@
          this.ops.remove(p_11281_);
          ServerPlayer serverplayer = this.getPlayer(p_11281_.getId());
          if (serverplayer != null) {
+@@ -682,8 +_,12 @@
+     public void sendLevelInfo(ServerPlayer p_11230_, ServerLevel p_11231_) {
+         WorldBorder worldborder = this.server.overworld().getWorldBorder();
+         p_11230_.connection.send(new ClientboundInitializeBorderPacket(worldborder));
++        if (p_11230_.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
++            p_11230_.connection.send(new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT), p_11231_.getDayTimeFraction(), p_11231_.getDayTimePerTick()));
++        } else {
+         p_11230_.connection
+             .send(new ClientboundSetTimePacket(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)));
++        }
+         p_11230_.connection.send(new ClientboundSetDefaultSpawnPositionPacket(p_11231_.getSharedSpawnPos(), p_11231_.getSharedSpawnAngle()));
+         if (p_11231_.isRaining()) {
+             p_11230_.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.START_RAINING, 0.0F));
 @@ -808,13 +_,6 @@
          if (serverstatscounter == null) {
              File file1 = this.server.getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();

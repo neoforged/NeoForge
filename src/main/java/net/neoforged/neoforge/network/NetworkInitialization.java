@@ -17,6 +17,7 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
@@ -89,6 +90,10 @@ public class NetworkInitialization {
                         ClientRegistryManager::handleDataMapSync)
                 .playToClient(AdvancedContainerSetDataPayload.TYPE,
                         AdvancedContainerSetDataPayload.STREAM_CODEC,
+                        ClientPayloadHandler::handle)
+                .playToClient(
+                        ClientboundCustomSetTimePayload.TYPE,
+                        ClientboundCustomSetTimePayload.STREAM_CODEC,
                         ClientPayloadHandler::handle);
     }
 }
