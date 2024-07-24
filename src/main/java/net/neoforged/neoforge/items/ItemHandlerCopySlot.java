@@ -11,17 +11,17 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Slot class that can be used with immutable {@link IItemHandler}s
- * like {@link ComponentItemHandler}
+ * like {@link ComponentItemHandler}.
  */
-public class SlotItemHandlerImmutable extends StackCopySlot {
+public class ItemHandlerCopySlot extends StackCopySlot {
     private final SlotItemHandler slotItemHandler;
 
-    public SlotItemHandlerImmutable(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+    public ItemHandlerCopySlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(xPosition, yPosition);
         slotItemHandler = new SlotItemHandler(itemHandler, index, xPosition, yPosition);
     }
 
-    public SlotItemHandlerImmutable(SlotItemHandler slotItemHandler) {
+    public ItemHandlerCopySlot(SlotItemHandler slotItemHandler) {
         super(slotItemHandler.x, slotItemHandler.y);
         this.slotItemHandler = slotItemHandler;
     }

@@ -12,9 +12,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Slot to handle immutable itemstack storages (Ex: {@link ComponentItemHandler})
+ * Slot to handle immutable itemstack storages (Ex: {@link ComponentItemHandler}).
  * <p>
- * For an implementation for use with an {@link IItemHandler} see {@link SlotItemHandlerImmutable}
+ * For an implementation for use with an {@link IItemHandler} see {@link ItemHandlerCopySlot}.
  * <p>
  * Vanilla MC code modifies the stack returned by `getStack()` directly, but it
  * calls {@code setChanged()} when that happens, so we just cache the returned stack,
@@ -31,16 +31,16 @@ public abstract class StackCopySlot extends Slot {
     }
 
     /**
-     * Gets the immutable itemstack from the storage
+     * Gets the itemstack from the storage.
      *
-     * @return The immutable stack in this slot
+     * @return the stack in this slot
      */
     protected abstract ItemStack getStackCopy();
 
     /**
-     * Sets the immutable itemstack from the storage
+     * Sets the itemstack from the storage.
      *
-     * @param stack The stack to put into this slot
+     * @param stack the stack to put into this slot
      */
     protected abstract void setStackCopy(ItemStack stack);
 
