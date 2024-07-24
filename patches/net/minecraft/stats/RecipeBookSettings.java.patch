@@ -18,3 +18,13 @@
      private final Map<RecipeBookType, RecipeBookSettings.TypeSettings> states;
  
      private RecipeBookSettings(Map<RecipeBookType, RecipeBookSettings.TypeSettings> p_12730_) {
+@@ -54,7 +_,8 @@
+     public static RecipeBookSettings read(FriendlyByteBuf p_12753_) {
+         Map<RecipeBookType, RecipeBookSettings.TypeSettings> map = Maps.newEnumMap(RecipeBookType.class);
+ 
+-        for (RecipeBookType recipebooktype : RecipeBookType.values()) {
++        // Neo: filter out modded RecipeBookTypes when connected to a vanilla server
++        for (RecipeBookType recipebooktype : net.neoforged.neoforge.common.CommonHooks.getFilteredRecipeBookTypeValues()) {
+             boolean flag = p_12753_.readBoolean();
+             boolean flag1 = p_12753_.readBoolean();
+             map.put(recipebooktype, new RecipeBookSettings.TypeSettings(flag, flag1));

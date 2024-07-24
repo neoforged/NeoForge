@@ -19,6 +19,7 @@ import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -57,6 +58,7 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.particle.ParticleEngine;
@@ -112,6 +114,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -133,6 +136,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -1089,5 +1093,24 @@ public class ClientHooks {
         var event = new GatherEffectScreenTooltipsEvent(screen, effectInst, tooltip);
         NeoForge.EVENT_BUS.post(event);
         return event.getTooltip();
+    }
+
+    private static final ExtensionInfo RECIPE_BOOK_TYPE_EXTENSION_INFO = RecipeBookType.getExtensionInfo();
+    private static final RecipeBookType[] RECIPE_BOOK_TYPES = RecipeBookType.values();
+    private static RecipeBookType @Nullable [] cachedFilteredTypes = null;
+
+    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
+        ClientPacketListener listener = Minecraft.getInstance().getConnection();
+        if (listener != null && !listener.getConnection().isMemoryConnection() && listener.getConnectionType().isOther()) {
+            if (cachedFilteredTypes == null) {
+                if (RECIPE_BOOK_TYPE_EXTENSION_INFO.extended()) {
+                    cachedFilteredTypes = Arrays.copyOfRange(RECIPE_BOOK_TYPES, 0, RECIPE_BOOK_TYPE_EXTENSION_INFO.vanillaCount());
+                } else {
+                    cachedFilteredTypes = RECIPE_BOOK_TYPES;
+                }
+            }
+            return cachedFilteredTypes;
+        }
+        return RECIPE_BOOK_TYPES;
     }
 }
