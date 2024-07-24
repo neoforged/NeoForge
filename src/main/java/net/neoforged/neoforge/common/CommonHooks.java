@@ -174,7 +174,6 @@ import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.neoforge.event.ModMismatchEvent;
 import net.neoforged.neoforge.event.RegisterStructureConversionsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
-import net.neoforged.neoforge.event.ValidityEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
@@ -203,6 +202,7 @@ import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInMenuRangeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -1561,20 +1561,20 @@ public class CommonHooks {
         return vanillaMap;
     }
 
-    public static boolean menuValidity(Player player, Level level, BlockPos blockPos, double distance) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.Menu(player, level, blockPos, distance, player.canInteractWithBlock(blockPos, distance))).getStillValid();
+    public static boolean menuRangeValidity(Player player, Level level, BlockPos blockPos, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.BlockMenu(player, level, blockPos, distance, player.canInteractWithBlock(blockPos, distance))).getStillValid();
     }
 
-    public static boolean menuValidity(Player player, Entity entity, double distance) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.EntityMenu(player, entity, distance)).getStillValid();
+    public static boolean menuRangeValidity(Player player, Entity entity, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.EntityMenu(player, entity, distance)).getStillValid();
     }
 
-    public static boolean menuValidity(Player player, ContainerEntity containerEntity, double distance) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.ContainerEntityMenu(player, containerEntity, distance, player.canInteractWithEntity(containerEntity.getBoundingBox(), distance))).getStillValid();
+    public static boolean menuRangeValidity(Player player, ContainerEntity containerEntity, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.ContainerEntityMenu(player, containerEntity, distance, player.canInteractWithEntity(containerEntity.getBoundingBox(), distance))).getStillValid();
     }
 
-    public static boolean menuValidity(Player player, BlockEntity blockEntity, double distance) {
-        return NeoForge.EVENT_BUS.post(new ValidityEvent.BlockEntityMenu(player, blockEntity, distance, player.canInteractWithBlock(blockEntity.getBlockPos(), distance))).getStillValid();
+    public static boolean menuRangeValidity(Player player, BlockEntity blockEntity, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.BlockEntityMenu(player, blockEntity, distance, player.canInteractWithBlock(blockEntity.getBlockPos(), distance))).getStillValid();
     }
 
     public static RecipeBookType[] getFilteredRecipeBookTypeValues() {

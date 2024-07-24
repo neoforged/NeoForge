@@ -5,7 +5,7 @@
          return this.access
              .evaluate(
 -                (p_339525_, p_339526_) -> !this.isValidBlock(p_339525_.getBlockState(p_339526_)) ? false : p_39780_.canInteractWithBlock(p_339526_, 4.0), true
-+                (p_339525_, p_339526_) -> !this.isValidBlock(p_339525_.getBlockState(p_339526_)) ? false : net.neoforged.neoforge.common.CommonHooks.menuValidity(p_39780_, p_339525_, p_339526_, 4.0), true
++                (p_339525_, p_339526_) -> !this.isValidBlock(p_339525_.getBlockState(p_339526_)) ? false : net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_39780_, p_339525_, p_339526_, 4.0), true
              );
      }
  

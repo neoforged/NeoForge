@@ -5,7 +5,7 @@
              return false;
          } else {
 -            return level.getBlockEntity(blockpos) != p_272877_ ? false : p_272670_.canInteractWithBlock(blockpos, (double)p_320837_);
-+            return level.getBlockEntity(blockpos) != p_272877_ ? false : net.neoforged.neoforge.common.CommonHooks.menuValidity(p_272670_, level, blockpos, (double)p_320837_);
++            return level.getBlockEntity(blockpos) != p_272877_ ? false : net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_272670_, level, blockpos, (double)p_320837_);
          }
      }
  }

@@ -5,7 +5,7 @@
              && this.armorContainer.stillValid(p_39661_)
              && this.horse.isAlive()
 -            && p_39661_.canInteractWithEntity(this.horse, 4.0);
-+            && net.neoforged.neoforge.common.CommonHooks.menuValidity(p_39661_, this.horse, 4.0);
++            && net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_39661_, this.horse, 4.0);
      }
  
      @Override

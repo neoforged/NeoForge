@@ -40,7 +40,7 @@
      @Override
      public boolean stillValid(Player p_36009_) {
 -        return p_36009_.canInteractWithEntity(this.player, 4.0);
-+        return net.neoforged.neoforge.common.CommonHooks.menuValidity(p_36009_, this.player, 4.0);
++        return net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_36009_, this.player, 4.0);
      }
  
      public boolean contains(ItemStack p_36064_) {

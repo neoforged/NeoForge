@@ -5,7 +5,7 @@
          @Override
          public boolean stillValid(Player p_324170_) {
 -            return p_324170_.getVehicle() == AbstractHorse.this || p_324170_.canInteractWithEntity(AbstractHorse.this, 4.0);
-+            return p_324170_.getVehicle() == AbstractHorse.this || net.neoforged.neoforge.common.CommonHooks.menuValidity(p_324170_, AbstractHorse.this, 4.0);
++            return p_324170_.getVehicle() == AbstractHorse.this || net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_324170_, AbstractHorse.this, 4.0);
          }
      };
  

@@ -15,6 +15,6 @@
  
      default boolean isChestVehicleStillValid(Player p_219955_) {
 -        return !this.isRemoved() && p_219955_.canInteractWithEntity(this.getBoundingBox(), 4.0);
-+        return !this.isRemoved() && net.neoforged.neoforge.common.CommonHooks.menuValidity(p_219955_, this, 4.0);
++        return !this.isRemoved() && net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_219955_, this, 4.0);
      }
  }
