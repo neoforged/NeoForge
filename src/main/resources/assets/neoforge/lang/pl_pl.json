@@ -111,6 +111,10 @@
   "commands.neoforge.chunkgen.status": "Status generacji! %1$s z %2$s chunków wygenerowanych. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Aktualnie brak uruchomionych pregeneracji. Uruchom `/neoforge generate help` aby zobaczyć polecenia do rozpoczęcia generacji.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Generates a square centered on the given position that is chunkRadius * 2 on each side.\n§2/neoforge generate stop §r§f- Stops the current generation and displays progress that it had completed.\n§2/neoforge generate status §r- Displays the progress completed for the currently running generation.\n§2/neoforge generate help §r- Displays this message.\nGeneral tips: If running from a server console, you can run generate in different dimensions by using /execute in <dimension> neoforge generate...",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",
   "neoforge.update.beta.1": "%sWARNING: %sNeoForge Beta",
@@ -291,5 +295,8 @@
   "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s",
   "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
   "neoforge.network.data_maps.missing_our": "Nie można połączyć się z serwerem, ponieważ brakuje obowiązkowych map danych rejestru znajdujących się w kliencie: %s",
-  "neoforge.network.data_maps.missing_their": "Nie można połączyć się z serwerem, ponieważ brakuje obowiązkowych map danych rejestru znajdujących się w kliencie: %s"
+  "neoforge.network.data_maps.missing_their": "Nie można połączyć się z serwerem, ponieważ brakuje obowiązkowych map danych rejestru znajdujących się w kliencie: %s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }
