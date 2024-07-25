@@ -100,8 +100,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.FENCES, Tags.Items.FENCES);
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
-        tag(Tags.Items.FOODS_FRUITS).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
-        tag(Tags.Items.FOODS_VEGETABLES).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.MELON_SLICE, Items.BEETROOT);
+        tag(Tags.Items.FOODS_FRUITS).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.MELON_SLICE);
+        tag(Tags.Items.FOODS_VEGETABLES).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.BEETROOT);
         tag(Tags.Items.FOODS_BERRIES).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
         tag(Tags.Items.FOODS_BREADS).add(Items.BREAD);
         tag(Tags.Items.FOODS_COOKIES).add(Items.COOKIE);
