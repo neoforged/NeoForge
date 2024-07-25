@@ -132,25 +132,25 @@
   "neoforge.configuration.uitext.title.startup": "Запускова конфігурація %s",
   "neoforge.configuration.uitext.notonline": [
     {
-      "text": "Settings in here are determined by the server and cannot be changed while online.",
+      "text": "Налаштування тут визначаються сервером і не можуть бути змінені доки ви в мережі.",
       "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
+      "text": "Налаштування тут не можуть бути відредаговані, поки ваша гра відкрита для локальної мережі. Будь ласка, поверніться до головного меню і завантажте світ ще раз.",
       "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are are ony available while a world is loaded.",
+      "text": "Налаштування тут доступні після завантаження світу.",
       "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.unsupportedelement": [
     {
-      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+      "text": "Це значення не можна редагувати в інтерфейсі. Будь ласка, зв'яжіться з автором мода про надання користувацького інтерфейсу для нього.",
       "color": "червоний"
     }
   ],
