@@ -1184,12 +1184,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
     }
 
-    @FunctionalInterface
-    public interface RawSupplier<T> {
-        T getRaw();
-    }
-
-    public static class ConfigValue<T> implements Supplier<T>, RawSupplier<T> {
+    public static class ConfigValue<T> implements Supplier<T> {
         private final Builder parent;
         private final List<String> path;
         private final Supplier<T> defaultSupplier;
