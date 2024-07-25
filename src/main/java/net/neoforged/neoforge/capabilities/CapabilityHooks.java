@@ -26,7 +26,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.transfer.fluids.wrappers.BucketHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.AggregateResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingHandlerWrapper;
-import net.neoforged.neoforge.transfer.items.templates.ItemStorage;
+import net.neoforged.neoforge.transfer.items.templates.ContainerContentsItemStorage;
 import net.neoforged.neoforge.transfer.items.wrappers.*;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -118,7 +118,7 @@ public class CapabilityHooks {
         if (NeoForgeMod.MILK.isBound()) {
             event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), Items.MILK_BUCKET);
         }
-        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ItemStorage.Item(ctx, DataComponents.CONTAINER, 27),
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ContainerContentsItemStorage(ctx, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
                 Items.BLUE_SHULKER_BOX,

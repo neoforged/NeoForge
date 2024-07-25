@@ -22,7 +22,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
 import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.items.templates.ItemStorage;
+import net.neoforged.neoforge.transfer.items.templates.ContainerContentsItemStorage;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -55,7 +55,7 @@ public class ItemInventoryTests {
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(e -> {
             e.registerItem(ItemHandler.ITEM, (stack, ctx) -> {
-                return new ItemStorage.Item(ctx, DataComponents.CONTAINER, SLOTS);
+                return new ContainerContentsItemStorage(ctx, DataComponents.CONTAINER, SLOTS);
             }, BACKPACK);
         });
     }

@@ -13,13 +13,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
-import net.neoforged.neoforge.transfer.fluids.templates.ItemFluidStorage;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.fluids.templates.SingleFluidStorageItem;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
@@ -31,11 +32,11 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 @ForEachTest(groups = "capabilities.fluidtemplates")
 public class FluidTemplatesTests {
     private static final RegistrationHelper REG_HELPER = RegistrationHelper.create("neotests_capabilities_fluidtemplates");
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SimpleFluidContent>> SIMPLE_FLUID_CONTENT = REG_HELPER
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SIMPLE_FLUID_CONTENT = REG_HELPER
             .registrar(Registries.DATA_COMPONENT_TYPE)
-            .register("simple_fluid_content", () -> DataComponentType.<SimpleFluidContent>builder()
-                    .persistent(SimpleFluidContent.CODEC)
-                    .networkSynchronized(SimpleFluidContent.STREAM_CODEC).build());
+            .register("simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
+                    .persistent(ResourceStack.codec(FluidResource.CODEC))
+                    .networkSynchronized(ResourceStack.streamCodec(FluidResource.OPTIONAL_STREAM_CODEC)).build());
 
     @OnInit
     static void register(final TestFramework framework) {
@@ -50,7 +51,7 @@ public class FluidTemplatesTests {
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance());
         IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
-        var fluidHandler = new ItemFluidStorage(SIMPLE_FLUID_CONTENT, context, capacity);
+        var fluidHandler = new SingleFluidStorageItem(context, SIMPLE_FLUID_CONTENT.get(), capacity);
 
         if (fluidHandler.size() != 1) {
             helper.fail("Expected a single tank");

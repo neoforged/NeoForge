@@ -31,7 +31,7 @@ import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.transfer.fluids.templates.SimpleItemFluidStorage;
+import net.neoforged.neoforge.transfer.fluids.templates.SteppedFluidStorageItem;
 
 @Mod(CustomFluidContainerTest.MODID)
 public class CustomFluidContainerTest {
@@ -61,7 +61,7 @@ public class CustomFluidContainerTest {
     }
 
     private void registerCaps(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new SimpleItemFluidStorage(FluidType.BUCKET_VOLUME, SIMPLE_FLUID_CONTENT, ctx), CUSTOM_FLUID_CONTAINER.get());
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new SteppedFluidStorageItem(FluidType.BUCKET_VOLUME, SIMPLE_FLUID_CONTENT, ctx), CUSTOM_FLUID_CONTAINER.get());
     }
 
     /**

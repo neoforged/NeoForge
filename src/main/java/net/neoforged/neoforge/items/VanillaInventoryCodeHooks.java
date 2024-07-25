@@ -23,6 +23,10 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.items.ItemResource;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -131,27 +135,14 @@ public class VanillaInventoryCodeHooks {
     /**
      * Copied from TileEntityHopper#insertStack and added capability support
      */
-    private static ItemStack insertStack(BlockEntity source, Object destination, IItemHandler destInventory, ItemStack stack, int slot) {
-        ItemStack itemstack = destInventory.getStackInSlot(slot);
+    private static ItemStack insertStack(BlockEntity source, Object destination, IResourceHandler<ItemResource> destInventory, ItemStack stack, int slot) {
+        ItemResource resource = ItemResource.of(stack);
+        if (destInventory.insert(slot, resource, stack.getCount(), TransferAction.SIMULATE) > 0) {
+            boolean inventoryWasEmpty = HandlerUtil.isEmpty(destInventory);
+            int inserted = destInventory.insert(slot, resource, stack.getCount(), TransferAction.EXECUTE);
 
-        if (destInventory.insertItem(slot, stack, true).isEmpty()) {
-            boolean insertedItem = false;
-            boolean inventoryWasEmpty = isEmpty(destInventory);
-
-            if (itemstack.isEmpty()) {
-                destInventory.insertItem(slot, stack, false);
-                stack = ItemStack.EMPTY;
-                insertedItem = true;
-            } else if (ItemStack.isSameItemSameComponents(itemstack, stack)) {
-                int originalSize = stack.getCount();
-                stack = destInventory.insertItem(slot, stack, false);
-                insertedItem = originalSize < stack.getCount();
-            }
-
-            if (insertedItem) {
-                if (inventoryWasEmpty && destination instanceof HopperBlockEntity) {
-                    HopperBlockEntity destinationHopper = (HopperBlockEntity) destination;
-
+            if (inserted > 0) {
+                if (inventoryWasEmpty && destination instanceof HopperBlockEntity destinationHopper) {
                     if (!destinationHopper.isOnCustomCooldown()) {
                         int k = 0;
                         if (source instanceof HopperBlockEntity) {
@@ -168,35 +159,15 @@ public class VanillaInventoryCodeHooks {
         return stack;
     }
 
-    private static boolean isFull(IItemHandler itemHandler) {
-        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
-            if (stackInSlot.isEmpty() || stackInSlot.getCount() < itemHandler.getSlotLimit(slot)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isEmpty(IItemHandler itemHandler) {
-        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
-            if (stackInSlot.getCount() > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static Optional<Pair<IItemHandler, Object>> getAttachedItemHandler(Level level, BlockPos pos, Direction direction) {
+    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getAttachedItemHandler(Level level, BlockPos pos, Direction direction) {
         return getItemHandlerAt(level, pos.getX() + direction.getStepX() + 0.5, pos.getY() + direction.getStepY() + 0.5, pos.getZ() + direction.getStepZ() + 0.5, direction.getOpposite());
     }
 
-    private static Optional<Pair<IItemHandler, Object>> getSourceItemHandler(Level level, Hopper hopper) {
+    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getSourceItemHandler(Level level, Hopper hopper) {
         return getItemHandlerAt(level, hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ(), Direction.DOWN);
     }
 
-    private static Optional<Pair<IItemHandler, Object>> getItemHandlerAt(Level worldIn, double x, double y, double z, final Direction side) {
+    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getItemHandlerAt(Level worldIn, double x, double y, double z, final Direction side) {
         BlockPos blockpos = BlockPos.containing(x, y, z);
         BlockState state = worldIn.getBlockState(blockpos);
         BlockEntity blockEntity = state.hasBlockEntity() ? worldIn.getBlockEntity(blockpos) : null;
@@ -212,7 +183,7 @@ public class VanillaInventoryCodeHooks {
         if (!list.isEmpty()) {
             Collections.shuffle(list);
             for (Entity entity : list) {
-                IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+                var entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
                 if (entityCap != null)
                     return Optional.of(ImmutablePair.of(entityCap, entity));
             }

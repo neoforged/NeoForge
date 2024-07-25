@@ -27,8 +27,10 @@ import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.fluids.FluidUtil;
-import net.neoforged.neoforge.transfer.fluids.templates.AttachmentFluidStorage;
+import net.neoforged.neoforge.transfer.fluids.templates.FluidStorage;
+import net.neoforged.neoforge.transfer.fluids.templates.FluidStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ResourceStorageContents;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -51,14 +53,14 @@ public class FluidUtilTest {
     private static final RegistrationHelper HELPER = RegistrationHelper.create("item_fluid_util_tests");
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = HELPER.attachments();
 
-    private static final Supplier<AttachmentType<ResourceStack<FluidResource>>> FLUID_COMPONENT = ATTACHMENTS.register("test_fluid", AttachmentType.builder(() -> FluidResource.EMPTY_STACK)::build);
+    private static final Supplier<AttachmentType<ResourceStorageContents<FluidResource>>> FLUID_COMPONENT = ATTACHMENTS.register("test_fluid", AttachmentType.builder(() -> new ResourceStorageContents<>(1, FluidResource.NONE))::build);
 
     @OnInit
     static void init(final TestFramework framework) {
         ATTACHMENTS.register(framework.modEventBus());
         framework.modEventBus().addListener((RegisterCapabilitiesEvent event) -> {
-            event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, BlockEntityType.FURNACE, (holder, ctx) -> {
-                return new AttachmentFluidStorage(holder, FLUID_COMPONENT.get(), FluidType.BUCKET_VOLUME);
+            event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, BlockEntityType.FURNACE, (holder, dir) -> {
+                return new FluidStorage.Attachment(holder, FLUID_COMPONENT.get(), 1, FluidType.BUCKET_VOLUME);
             });
         });
     }

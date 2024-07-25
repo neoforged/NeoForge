@@ -1,39 +1,46 @@
-/*
- * Copyright (c) NeoForged and contributors
- * SPDX-License-Identifier: LGPL-2.1-only
- */
+package net.neoforged.neoforge.transfer.handlers.templates;
 
-package net.neoforged.neoforge.transfer.fluids.templates;
-
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.fluids.SimpleFluidContent;
+import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.items.ItemResource;
 
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
-public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResource> {
-    private final AttachmentHolder holder;
-    private final AttachmentType<ResourceStack<FluidResource>> attachmentType;
-    private final int limit;
-    private Predicate<FluidResource> validator = r -> true;
+public class SingleResourceStorageAttachment<T extends IResource> implements ISingleResourceHandler<T> {
+    protected final AttachmentHolder holder;
+    protected final AttachmentType<ResourceStack<T>> attachmentType;
 
-    public AttachmentFluidStorage(AttachmentHolder holder, AttachmentType<ResourceStack<FluidResource>> attachmentType, int limit) {
+    protected final int capacity;
+
+    protected final T emptyResource;
+    protected final ResourceStack<T> emptyStack;
+
+    protected Predicate<T> validator = r -> true;
+
+    public SingleResourceStorageAttachment(AttachmentHolder holder, AttachmentType<ResourceStack<T>> attachmentType, T emptyResource, int capacity) {
         this.holder = holder;
         this.attachmentType = attachmentType;
-        this.limit = limit;
+
+        this.emptyResource = emptyResource;
+        this.emptyStack = new ResourceStack<>(emptyResource, 0);
+
+        this.capacity = capacity;
     }
 
-    public AttachmentFluidStorage setValidator(Predicate<FluidResource> validator) {
+    public SingleResourceStorageAttachment<T> setValidator(Predicate<T> validator) {
         this.validator = validator;
         return this;
     }
 
     @Override
-    public FluidResource getResource() {
+    public T getResource() {
         return holder.getData(attachmentType).resource();
     }
 
@@ -43,17 +50,17 @@ public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public int getCapacity(FluidResource resource) {
-        return limit;
+    public int getCapacity(T resource) {
+        return capacity;
     }
 
     @Override
     public int getCapacity() {
-        return 0;
+        return capacity;
     }
 
     @Override
-    public boolean isValid(FluidResource resource) {
+    public boolean isValid(T resource) {
         return validator.test(resource);
     }
 
@@ -62,7 +69,7 @@ public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public int insert(FluidResource resource, int amount, TransferAction action) {
+    public int insert(T resource, int amount, TransferAction action) {
         if (resource.isEmpty() || amount <= 0 || !isValid(resource) || (!isEmpty() && !getResource().equals(resource))) return 0;
         int inserted = Math.min(amount, getCapacity(resource) - getAmount());
         if (inserted > 0 && action.isExecuting()) {
@@ -72,12 +79,12 @@ public class AttachmentFluidStorage implements ISingleResourceHandler<FluidResou
     }
 
     @Override
-    public int extract(FluidResource resource, int amount, TransferAction action) {
+    public int extract(T resource, int amount, TransferAction action) {
         if (resource.isEmpty() || amount <= 0 || !isValid(resource) || (isEmpty() || !getResource().equals(resource))) return 0;
         int extracted = Math.min(amount, getAmount());
         if (extracted > 0 && action.isExecuting()) {
             int newAmount = getAmount() - extracted;
-            holder.setData(attachmentType, newAmount <= 0 ? FluidResource.EMPTY_STACK : new ResourceStack<>(resource, newAmount));
+            holder.setData(attachmentType, newAmount <= 0 ? emptyStack : new ResourceStack<>(resource, newAmount));
         }
         return extracted;
     }

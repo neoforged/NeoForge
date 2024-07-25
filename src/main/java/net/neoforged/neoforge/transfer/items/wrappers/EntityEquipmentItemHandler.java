@@ -72,17 +72,22 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     }
 
     @Override
+    public int getCapacity(int index) {
+        return 0;
+    }
+
+    @Override
     public boolean isValid(int index, ItemResource resource) {
         return resource.canEquip(validateSlotIndex(index), entity);
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean allowsInsertion(int index) {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean allowsExtraction(int index) {
         return true;
     }
 
