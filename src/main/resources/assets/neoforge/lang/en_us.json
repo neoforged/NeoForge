@@ -274,6 +274,8 @@
   "neoforge.swim_speed": "Swim Speed",
   "neoforge.name_tag_distance": "Nametag Render Distance",
   "neoforge.creative_flight": "Creative Flight",
+  "neoforge.attribute.modifier.enable": "Enables %s",
+  "neoforge.attribute.modifier.disable": "Disables %s",
 
   "fluid_type.minecraft.milk": "Milk",
   "fluid_type.minecraft.flowing_milk": "Milk",

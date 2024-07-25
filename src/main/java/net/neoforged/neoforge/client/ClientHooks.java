@@ -1113,4 +1113,12 @@ public class ClientHooks {
         }
         return RECIPE_BOOK_TYPES;
     }
+
+    /**
+     * @return the current local player.
+     */
+    @Nullable
+    public static Player getPlayer() {
+        return Minecraft.getInstance().player;
+    }
 }

@@ -5,8 +5,11 @@
 
 package net.neoforged.neoforge.common;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A boolean attribute only has two states, on or off, represented by a value of 0 (false) or 1 (true).
@@ -33,5 +36,21 @@ public class BooleanAttribute extends Attribute {
             return 0;
         }
         return value > 0 ? 1 : 0;
+    }
+
+    @Override
+    @Nullable
+    public Component getModifierDescription(@Nullable Player player, AttributeModifier modifier) {
+        double amount = modifier.amount();
+        AttributeModifier.Operation op = modifier.operation();
+        if (amount == 1 && op == AttributeModifier.Operation.ADD_VALUE) {
+            return Component.translatable("neoforge.attribute.modifier.enable", Component.translatable(this.getDescriptionId()))
+                    .withStyle(this.getStyle(true));
+        }
+        if (amount == -1 && op == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
+            return Component.translatable("neoforge.attribute.modifier.disable", Component.translatable(this.getDescriptionId()))
+                    .withStyle(this.getStyle(false));
+        }
+        return super.getModifierDescription(player, modifier);
     }
 }

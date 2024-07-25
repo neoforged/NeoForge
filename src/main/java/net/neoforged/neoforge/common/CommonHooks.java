@@ -149,6 +149,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
@@ -1564,5 +1565,16 @@ public class CommonHooks {
             return ClientHooks.getFilteredRecipeBookTypeValues();
         }
         return RecipeBookType.values();
+    }
+
+    /**
+     * @return the current local player in {@link Dist#CLIENT}, or null in {@link Dist#DEDICATED_SERVER}.
+     */
+    @Nullable
+    public static Player getPlayer() {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            return ClientHooks.getPlayer();
+        }
+        return null;
     }
 }

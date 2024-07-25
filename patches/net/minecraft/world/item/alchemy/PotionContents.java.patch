@@ -1,0 +1,64 @@
+--- a/net/minecraft/world/item/alchemy/PotionContents.java
++++ b/net/minecraft/world/item/alchemy/PotionContents.java
+@@ -142,6 +_,14 @@
+     }
+ 
+     public static void addPotionTooltip(Iterable<MobEffectInstance> p_331825_, Consumer<Component> p_331296_, float p_332038_, float p_332014_) {
++        addPotionTooltip(p_331825_, p_331296_, p_332038_, p_332014_, Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
++    }
++
++    public void addPotionTooltip(Consumer<Component> p_331688_, float p_330466_, float p_332190_, Component consumeDesciption) {
++        addPotionTooltip(this.getAllEffects(), p_331688_, p_330466_, p_332190_, consumeDesciption);
++    }
++
++    public static void addPotionTooltip(Iterable<MobEffectInstance> p_331825_, Consumer<Component> p_331296_, float p_332038_, float p_332014_, Component consumeDescription) {
+         List<Pair<Holder<Attribute>, AttributeModifier>> list = Lists.newArrayList();
+         boolean flag = true;
+ 
+@@ -171,18 +_,18 @@
+ 
+         if (!list.isEmpty()) {
+             p_331296_.accept(CommonComponents.EMPTY);
+-            p_331296_.accept(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
++            p_331296_.accept(consumeDescription);
+ 
+             for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
+                 AttributeModifier attributemodifier = pair.getSecond();
+-                double d1 = attributemodifier.amount();
+-                double d0;
+-                if (attributemodifier.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+-                    && attributemodifier.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
+-                    d0 = attributemodifier.amount();
+-                } else {
+-                    d0 = attributemodifier.amount() * 100.0;
++                Attribute attribute = pair.getFirst().value();
++                Component description = attribute.getModifierDescription(net.neoforged.neoforge.common.CommonHooks.getPlayer(), attributemodifier);
++                if (description != null) {
++                    p_331296_.accept(description);
++                    continue;
+                 }
++                double d1 = attributemodifier.amount();
++                double d0 = attribute.getAmountForDisplay(attributemodifier);
+ 
+                 if (d1 > 0.0) {
+                     p_331296_.accept(
+@@ -191,7 +_,8 @@
+                                 ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d0),
+                                 Component.translatable(pair.getFirst().value().getDescriptionId())
+                             )
+-                            .withStyle(ChatFormatting.BLUE)
++                            .withStyle(attribute.getStyle(true))
++                            //Neo: use Attribute#getStyle for consistency
+                     );
+                 } else if (d1 < 0.0) {
+                     d0 *= -1.0;
+@@ -201,7 +_,8 @@
+                                 ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d0),
+                                 Component.translatable(pair.getFirst().value().getDescriptionId())
+                             )
+-                            .withStyle(ChatFormatting.RED)
++                            .withStyle(attribute.getStyle(false))
++                            //Neo: use Attribute#getStyle for consistency
+                     );
+                 }
+             }

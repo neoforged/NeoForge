@@ -163,6 +163,28 @@
          if (itemattributemodifiers.showInTooltip()) {
              for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
                  MutableBoolean mutableboolean = new MutableBoolean(true);
+@@ -819,15 +_,13 @@
+             }
+         }
+ 
+-        double d1;
+-        if (p_331252_.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+-            || p_331252_.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
+-            d1 = d0 * 100.0;
+-        } else if (p_330626_.is(Attributes.KNOCKBACK_RESISTANCE)) {
+-            d1 = d0 * 10.0;
+-        } else {
+-            d1 = d0;
++        Attribute attribute = p_330626_.value();
++        Component description = attribute.getModifierDescription(p_330317_, p_331252_);
++        if (description != null) {
++            p_331062_.accept(description);
++            return;
+         }
++        double d1 = flag ? d0 : attribute.getAmountForDisplay(p_331252_);
+ 
+         if (flag) {
+             p_331062_.accept(
 @@ -897,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
