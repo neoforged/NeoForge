@@ -12,6 +12,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -43,9 +45,13 @@ import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.CandleBlock;
+import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.GrowingPlantHeadBlock;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LadderBlock;
@@ -60,6 +66,7 @@ import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
@@ -73,10 +80,10 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.IPlantable;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -360,24 +367,19 @@ public interface IBlockExtension {
     }
 
     /**
-     * Determines if this block can support the passed in plant, allowing it to be planted and grow.
-     * Some examples:
-     * Reeds check if its a reed, or if its sand/dirt/grass and adjacent to water
-     * Cacti checks if its a cacti, or if its sand
-     * Nether types check for soul sand
-     * Crops check for tilled soil
-     * Caves check if it's a solid surface
-     * Plains check if its grass or dirt
-     * Water check if its still water
+     * Determines if this block either force allow or force disallow a plant from being placed on it. (Or pass and let the plant's decision win)
+     * This will be called in plant's canSurvive method and/or mayPlace method.
      *
-     * @param state     The Current state
-     * @param level     The current level
-     *
-     * @param facing    The direction relative to the given position the plant wants to be, typically its UP
-     * @param plantable The plant that wants to check
-     * @return True to allow the plant to be planted/stay.
+     * @param state        The current state
+     * @param level        The current level
+     * @param soilPosition The current position of the block that will sustain the plant
+     * @param facing       The direction relative to the given position the plant wants to be, typically its UP
+     * @param plant        The plant that is checking survivability
+     * @return {@link TriState#TRUE} to allow the plant to be planted/stay. {@link TriState#FALSE} to disallow the plant from placing. {@link TriState#DEFAULT} to allow the plant to make the decision to stay or not.
      */
-    boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, IPlantable plantable);
+    default TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos soilPosition, Direction facing, BlockState plant) {
+        return TriState.DEFAULT;
+    }
 
     /**
      * Called when a tree grows on top of this block and tries to set it to dirt by the trunk placer.
@@ -412,7 +414,7 @@ public interface IBlockExtension {
      * @return True if the soil should be considered fertile.
      */
     default boolean isFertile(BlockState state, BlockGetter level, BlockPos pos) {
-        if (state.is(Blocks.FARMLAND))
+        if (state.getBlock() instanceof FarmBlock)
             return state.getValue(FarmBlock.MOISTURE) > 0;
 
         return false;
@@ -749,31 +751,31 @@ public interface IBlockExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ToolActions#AXE_STRIP an axe can strip},
-     * {@link ToolActions#SHOVEL_FLATTEN a shovel can path}, or {@link ToolActions#HOE_TILL a hoe can till}.
+     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
+     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
-     * @param state      The current state
-     * @param context    The use on context that the action was performed in
-     * @param toolAction The action being performed by the tool
-     * @param simulate   If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
+     * @param state       The current state
+     * @param context     The use on context that the action was performed in
+     * @param itemAbility The action being performed by the tool
+     * @param simulate    If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
      * @return The resulting state after the action has been performed
      */
     @Nullable
-    default BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
+    default BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!itemStack.canPerformAction(itemAbility))
             return null;
 
-        if (ToolActions.AXE_STRIP == toolAction) {
+        if (ItemAbilities.AXE_STRIP == itemAbility) {
             return AxeItem.getAxeStrippingState(state);
-        } else if (ToolActions.AXE_SCRAPE == toolAction) {
+        } else if (ItemAbilities.AXE_SCRAPE == itemAbility) {
             return WeatheringCopper.getPrevious(state).orElse(null);
-        } else if (ToolActions.AXE_WAX_OFF == toolAction) {
+        } else if (ItemAbilities.AXE_WAX_OFF == itemAbility) {
             return Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(state.getBlock())).map(block -> block.withPropertiesOf(state)).orElse(null);
-        } else if (ToolActions.SHOVEL_FLATTEN == toolAction) {
+        } else if (ItemAbilities.SHOVEL_FLATTEN == itemAbility) {
             return ShovelItem.getShovelPathingState(state);
-        } else if (ToolActions.HOE_TILL == toolAction) {
+        } else if (ItemAbilities.HOE_TILL == itemAbility) {
             // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
             Block block = state.getBlock();
             if (block == Blocks.ROOTED_DIRT) {
@@ -785,6 +787,23 @@ public interface IBlockExtension {
                     context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
                         return block == Blocks.COARSE_DIRT ? Blocks.DIRT.defaultBlockState() : Blocks.FARMLAND.defaultBlockState();
                     }
+        } else if (ItemAbilities.SHEARS_TRIM == itemAbility) {
+            if (state.getBlock() instanceof GrowingPlantHeadBlock growingPlant && !growingPlant.isMaxAge(state)) {
+                if (!simulate)
+                    context.getLevel().playSound(context.getPlayer(), context.getClickedPos(), SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return growingPlant.getMaxAgeState(state);
+            }
+        } else if (ItemAbilities.SHOVEL_DOUSE == itemAbility) {
+            if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {
+                if (!simulate) {
+                    CampfireBlock.dowse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
+                }
+                return state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
+            }
+        } else if (ItemAbilities.FIRESTARTER_LIGHT == itemAbility) {
+            if (CampfireBlock.canLight(state) || CandleBlock.canLight(state) || CandleCakeBlock.canLight(state)) {
+                return state.setValue(BlockStateProperties.LIT, Boolean.valueOf(true));
+            }
         }
 
         return null;
@@ -983,7 +1002,7 @@ public interface IBlockExtension {
 
     /**
      * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
-     * <p></p>
+     * <p>
      * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
      * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
      *

@@ -17,8 +17,6 @@ import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.DataPackConfig;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
@@ -38,9 +36,10 @@ import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-@OnlyIn(Dist.CLIENT)
+@ApiStatus.Internal
 public class ClientModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean loading;
@@ -58,7 +57,7 @@ public class ClientModLoader extends CommonModLoader {
         LogicalSidedProvider.setClient(() -> minecraft);
         LanguageHook.loadBuiltinLanguages();
         try {
-            begin(ImmediateWindowHandler::renderTick);
+            begin(ImmediateWindowHandler::renderTick, false);
         } catch (ModLoadingException e) {
             error = e;
         }
@@ -109,7 +108,7 @@ public class ClientModLoader extends CommonModLoader {
         return anyOutdated ? VersionChecker.Status.OUTDATED : null;
     }
 
-    public static boolean completeModLoading() {
+    public static Runnable completeModLoading(Runnable initialScreensTask) {
         List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
         boolean showWarnings = true;
         try {
@@ -117,33 +116,30 @@ public class ClientModLoader extends CommonModLoader {
         } catch (NullPointerException | IllegalStateException e) {
             // We're in an early error state, config is not available. Assume true.
         }
-        File dumpedLocation = null;
-        if (error == null) {
-            // We can finally start the forge eventbus up
-            NeoForge.EVENT_BUS.start();
-        } else {
+
+        if (error != null) {
             // Double check we have the langs loaded for forge
             LanguageHook.loadBuiltinLanguages();
-            dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), mc.gameDirectory);
+            File dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), mc.gameDirectory);
+            // Ignore incoming initial screens task, the subsequent screens are unreachable in an error state
+            return () -> mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, () -> {}));
         }
-        if (error != null) {
-            mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation));
-            return true;
-        } else if (!warnings.isEmpty()) {
-            if (!showWarnings) {
-                //User disabled warning screen, as least log them
-                LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
-                for (var warning : warnings) {
-                    LOGGER.warn(Logging.LOADING, "{} [{}]", warning.translationKey(), warning.translationArgs());
-                }
-                return false;
-            } else {
-                mc.setScreen(new LoadingErrorScreen(warnings, dumpedLocation));
-                return true;
+
+        // We can finally start the game eventbus up
+        NeoForge.EVENT_BUS.start();
+
+        if (!warnings.isEmpty()) {
+            if (showWarnings) {
+                return () -> mc.setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
             }
-        } else {
-            return false;
+
+            //User disabled warning screen, as least log them
+            LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
+            for (var warning : warnings) {
+                LOGGER.warn(Logging.LOADING, "{} [{}]", warning.translationKey(), warning.translationArgs());
+            }
         }
+        return initialScreensTask;
     }
 
     public static boolean isLoading() {

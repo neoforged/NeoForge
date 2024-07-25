@@ -64,7 +64,7 @@ public interface ILevelExtension {
      * pass them via {@link #getCapability(BlockCapability, BlockPos, BlockState, BlockEntity, Object)} instead.
      */
     @Nullable
-    default <T, C> T getCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
+    default <T, C extends @Nullable Object> T getCapability(BlockCapability<T, C> cap, BlockPos pos, C context) {
         return cap.getCapability(self(), pos, null, null, context);
     }
 
@@ -82,8 +82,37 @@ public interface ILevelExtension {
      * @param blockEntity the block entity, if known, or {@code null} if unknown
      */
     @Nullable
-    default <T, C> T getCapability(BlockCapability<T, C> cap, BlockPos pos, @Nullable BlockState state, @Nullable BlockEntity blockEntity, C context) {
+    default <T, C extends @Nullable Object> T getCapability(BlockCapability<T, C> cap, BlockPos pos, @Nullable BlockState state, @Nullable BlockEntity blockEntity, C context) {
         return cap.getCapability(self(), pos, state, blockEntity, context);
+    }
+
+    /**
+     * Retrieve a block capability with no context.
+     *
+     * <p>If the block state and/or the block entity is known,
+     * pass them via {@link #getCapability(BlockCapability, BlockPos, BlockState, BlockEntity)} instead.
+     */
+    @Nullable
+    default <T> T getCapability(BlockCapability<T, @Nullable Void> cap, BlockPos pos) {
+        return cap.getCapability(self(), pos, null, null, null);
+    }
+
+    /**
+     * Retrieve a block capability with no context.
+     *
+     * <p>Use this override if the block state and/or the block entity is known,
+     * otherwise prefer the shorter {@link #getCapability(BlockCapability, BlockPos)}.
+     *
+     * <p>If either the block state or the block entity is unknown, simply pass {@code null}.
+     * This function will fetch {@code null} parameters from the level,
+     * with some extra checks to attempt to skip unnecessary fetches.
+     *
+     * @param state       the block state, if known, or {@code null} if unknown
+     * @param blockEntity the block entity, if known, or {@code null} if unknown
+     */
+    @Nullable
+    default <T> T getCapability(BlockCapability<T, @Nullable Void> cap, BlockPos pos, @Nullable BlockState state, @Nullable BlockEntity blockEntity) {
+        return cap.getCapability(self(), pos, state, blockEntity, null);
     }
 
     /**

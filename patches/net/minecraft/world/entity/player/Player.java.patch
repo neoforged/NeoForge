@@ -10,13 +10,14 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final HumanoidArm DEFAULT_MAIN_HAND = HumanoidArm.RIGHT;
      public static final int DEFAULT_MODEL_CUSTOMIZATION = 0;
-@@ -193,6 +_,9 @@
+@@ -193,6 +_,10 @@
      public Entity currentExplosionCause;
      private boolean ignoreFallDamageFromCurrentImpulse;
      private int currentImpulseContextResetGraceTime;
 +    private final java.util.Collection<MutableComponent> prefixes = new java.util.LinkedList<>();
 +    private final java.util.Collection<MutableComponent> suffixes = new java.util.LinkedList<>();
 +    @Nullable private Pose forcedPose;
++    private long lastDayTimeTick = -1L; // Neo: Used to limit TIME_SINCE_REST increases when day length is non-standard. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
  
      public Player(Level p_250508_, BlockPos p_250289_, float p_251702_, GameProfile p_252153_) {
          super(EntityType.PLAYER, p_250508_);
@@ -47,6 +48,19 @@
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
+@@ -291,7 +_,11 @@
+             }
+ 
+             if (!this.isSleeping()) {
+-                this.awardStat(Stats.TIME_SINCE_REST);
++                // Neo: Advance TIME_SINCE_REST if (a) vanilla daytime handling in effect, or (b) days are shorter, or (c) dayTime has ticked, or (d) dayTime advances are off and we need to ignore day length
++                if (level().getDayTimeFraction() < 0 || level().getDayTimeFraction() >= 1 || lastDayTimeTick != level().getDayTime() || !level().getGameRules().getRule(GameRules.RULE_DAYLIGHT).get()) {
++                    lastDayTimeTick = level().getDayTime();
++                    this.awardStat(Stats.TIME_SINCE_REST);
++                }
+             }
+         }
+ 
 @@ -318,6 +_,7 @@
          if (this.currentImpulseContextResetGraceTime > 0) {
              this.currentImpulseContextResetGraceTime--;
@@ -132,7 +146,7 @@
      @Override
      protected void hurtCurrentlyUsedShield(float p_36383_) {
 -        if (this.useItem.is(Items.SHIELD)) {
-+        if (this.useItem.canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
++        if (this.useItem.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHIELD_BLOCK)) {
              if (!this.level().isClientSide) {
                  this.awardStat(Stats.ITEM_USED.get(this.useItem.getItem()));
              }
@@ -162,12 +176,12 @@
 -            float f = p_36313_ - f1;
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ARMOR, this.damageContainers.peek().getNewDamage() - this.getDamageAfterArmorAbsorb(p_36312_, this.damageContainers.peek().getNewDamage()));
 +            this.getDamageAfterMagicAbsorb(p_36312_, this.damageContainers.peek().getNewDamage());
-+            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, this.getAbsorptionAmount());
-+            float f1 = Math.max(this.damageContainers.peek().getNewDamage() - this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION), 0.0F);
-+            this.setAbsorptionAmount(this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION) - (this.damageContainers.peek().getNewDamage() - f1));
-+            f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
-+            if (f1 <= 0) return;
-+            float f = this.damageContainers.peek().getNewDamage() - f1;
++            float damage = this.damageContainers.peek().getNewDamage();
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION, Math.min(this.getAbsorptionAmount(), damage));
++            float absorbed = Math.min(damage, this.damageContainers.peek().getReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ABSORPTION));
++            this.setAbsorptionAmount(Math.max(0, this.getAbsorptionAmount() - absorbed));
++            float f1 = net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre(this, this.damageContainers.peek());
++            float f = absorbed;
              if (f > 0.0F && f < 3.4028235E37F) {
                  this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(f * 10.0F));
              }
@@ -261,7 +275,7 @@
 -                        if (itemstack1.getItem() instanceof SwordItem) {
 -                            flag2 = true;
 -                        }
-+                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_SWEEP);
++                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_SWEEP);
                      }
  
                      float f6 = 0.0F;
@@ -406,14 +420,19 @@
          return this.decorateDisplayNameComponent(mutablecomponent);
      }
  
-@@ -2012,18 +_,18 @@
-             Predicate<ItemStack> predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getSupportedHeldProjectiles();
+@@ -2009,21 +_,21 @@
+         if (!(p_36349_.getItem() instanceof ProjectileWeaponItem)) {
+             return ItemStack.EMPTY;
+         } else {
+-            Predicate<ItemStack> predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getSupportedHeldProjectiles();
++            Predicate<ItemStack> predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getSupportedHeldProjectiles(p_36349_);
              ItemStack itemstack = ProjectileWeaponItem.getHeldProjectile(this, predicate);
              if (!itemstack.isEmpty()) {
 -                return itemstack;
 +                return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, p_36349_, itemstack);
              } else {
-                 predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getAllSupportedProjectiles();
+-                predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getAllSupportedProjectiles();
++                predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getAllSupportedProjectiles(p_36349_);
  
                  for (int i = 0; i < this.inventory.getContainerSize(); i++) {
                      ItemStack itemstack1 = this.inventory.getItem(i);
@@ -428,13 +447,25 @@
              }
          }
      }
-@@ -2201,5 +_,39 @@
+@@ -2047,7 +_,10 @@
+             }
+ 
+             if (!this.level().isClientSide()) {
+-                this.getInventory().add(optional.get().copy());
++                ItemStack container = optional.get().copy();
++                if (!getInventory().add(container)) {
++                    drop(container, false);
++                }
+             }
+         }
+ 
+@@ -2201,5 +_,41 @@
          public Component getMessage() {
              return this.message;
          }
 +    }
 +
-+    // =========== FORGE START ==============//
++    // Neo: Getters for the Player's name prefixes and suffixes
 +    public Collection<MutableComponent> getPrefixes() {
 +         return this.prefixes;
 +    }
@@ -444,15 +475,16 @@
 +    }
 +
 +    private Component displayname = null;
++
 +    /**
-+     * Force the displayed name to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
++     * Neo: Force the displayed name to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
 +     */
 +    public void refreshDisplayName() {
 +        this.displayname = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
 +    }
 +
 +    /**
-+     * Force a pose for the player. If set, the vanilla pose determination and clearance check is skipped. Make sure the pose is clear yourself (e.g. in PlayerTick).
++     * Neo: Force a pose for the player. If set, the vanilla pose determination and clearance check is skipped. Make sure the pose is clear yourself (e.g. in PlayerTick).
 +     * This has to be set just once, do not set it every tick.
 +     * Make sure to clear (null) the pose if not required anymore and only use if necessary.
 +     */
@@ -461,6 +493,7 @@
 +    }
 +
 +    /**
++     * Neo:
 +     * @return The forced pose if set, null otherwise
 +     */
 +    @Nullable

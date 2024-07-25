@@ -1,11 +1,20 @@
 --- a/net/minecraft/world/level/block/BambooSaplingBlock.java
 +++ b/net/minecraft/world/level/block/BambooSaplingBlock.java
+@@ -50,6 +_,8 @@
+ 
+     @Override
+     protected boolean canSurvive(BlockState p_48986_, LevelReader p_48987_, BlockPos p_48988_) {
++        net.neoforged.neoforge.common.util.TriState soilDecision = p_48987_.getBlockState(p_48988_.below()).canSustainPlant(p_48987_, p_48988_.below(), net.minecraft.core.Direction.UP, p_48986_);
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
+         return p_48987_.getBlockState(p_48988_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
+     }
+ 
 @@ -88,7 +_,7 @@
  
      @Override
      protected float getDestroyProgress(BlockState p_48981_, Player p_48982_, BlockGetter p_48983_, BlockPos p_48984_) {
 -        return p_48982_.getMainHandItem().getItem() instanceof SwordItem ? 1.0F : super.getDestroyProgress(p_48981_, p_48982_, p_48983_, p_48984_);
-+        return p_48982_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_DIG) ? 1.0F : super.getDestroyProgress(p_48981_, p_48982_, p_48983_, p_48984_);
++        return p_48982_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG) ? 1.0F : super.getDestroyProgress(p_48981_, p_48982_, p_48983_, p_48984_);
      }
  
      protected void growBamboo(Level p_48973_, BlockPos p_48974_) {

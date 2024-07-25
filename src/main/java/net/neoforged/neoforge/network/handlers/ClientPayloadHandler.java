@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -23,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.GameRules;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -32,6 +34,7 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
@@ -39,9 +42,12 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApiStatus.Internal
 public final class ClientPayloadHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientPayloadHandler.class);
     private static final Set<ResourceLocation> toSynchronize = Sets.newConcurrentHashSet();
     private static final Map<ResourceLocation, RegistrySnapshot> synchronizedRegistries = Maps.newConcurrentMap();
 
@@ -75,12 +81,13 @@ public final class ClientPayloadHandler {
             synchronizedRegistries.clear();
             context.reply(FrozenRegistrySyncCompletedPayload.INSTANCE);
         } catch (Throwable t) {
-            context.disconnect(Component.translatable("neoforge.network.registries.sync.failed", t.getMessage()));
+            LOGGER.error("Failed to handle registry sync from server.", t);
+            context.disconnect(Component.translatable("neoforge.network.registries.sync.failed", t.toString()));
         }
     }
 
     public static void handle(ConfigFilePayload payload, IPayloadContext context) {
-        ConfigSync.INSTANCE.receiveSyncedConfig(payload.contents(), payload.fileName());
+        ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
     }
 
     public static void handle(AdvancedAddEntityPayload advancedAddEntityPayload, IPayloadContext context) {
@@ -95,7 +102,8 @@ public final class ClientPayloadHandler {
                 }
             }
         } catch (Throwable t) {
-            context.disconnect(Component.translatable("neoforge.network.advanced_add_entity.failed", t.getMessage()));
+            LOGGER.error("Failed to handle advanced add entity from server.", t);
+            context.disconnect(Component.translatable("neoforge.network.advanced_add_entity.failed", t.toString()));
         }
     }
 
@@ -106,7 +114,8 @@ public final class ClientPayloadHandler {
         try {
             createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
         } catch (Throwable t) {
-            context.disconnect(Component.translatable("neoforge.network.advanced_open_screen.failed", t.getMessage()));
+            LOGGER.error("Failed to handle advanced open screen from server.", t);
+            context.disconnect(Component.translatable("neoforge.network.advanced_open_screen.failed", t.toString()));
         } finally {
             buf.release();
         }
@@ -131,11 +140,22 @@ public final class ClientPayloadHandler {
                 manager.handleLightDataSync(msg.entries());
             }
         } catch (Throwable t) {
-            context.disconnect(Component.translatable("neoforge.network.aux_light_data.failed", msg.pos().toString(), t.getMessage()));
+            LOGGER.error("Failed to handle auxiliary light data from server.", t);
+            context.disconnect(Component.translatable("neoforge.network.aux_light_data.failed", msg.pos().toString(), t.toString()));
         }
     }
 
     public static void handle(AdvancedContainerSetDataPayload msg, IPayloadContext context) {
         context.handle(msg.toVanillaPacket());
+    }
+
+    public static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
+        @SuppressWarnings("resource")
+        final ClientLevel level = Minecraft.getInstance().level;
+        level.setGameTime(payload.gameTime());
+        level.setDayTime(payload.dayTime());
+        level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(payload.gameRule(), null);
+        level.setDayTimeFraction(payload.dayTimeFraction());
+        level.setDayTimePerTick(payload.dayTimePerTick());
     }
 }

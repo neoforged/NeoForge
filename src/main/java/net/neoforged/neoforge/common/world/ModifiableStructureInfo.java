@@ -55,7 +55,7 @@ public class ModifiableStructureInfo {
     }
 
     /**
-     * Internal forge method; the game will crash if mods invoke this.
+     * Internal neoforge method; the game will crash if mods invoke this.
      * Creates and caches the modified structure info.
      * 
      * @param structure          named structure with original data.

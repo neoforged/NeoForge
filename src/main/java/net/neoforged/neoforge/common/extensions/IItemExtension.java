@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -44,13 +45,14 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.ApiStatus;
@@ -383,13 +385,13 @@ public interface IItemExtension {
 
     /**
      * Queries if an item can perform the given action.
-     * See {@link ToolActions} for a description of each stock action
+     * See {@link ItemAbilities} for a description of each stock action
      * 
-     * @param stack      The stack being used
-     * @param toolAction The action being queried
+     * @param stack       The stack being used
+     * @param itemAbility The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+    default boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
         return false;
     }
 
@@ -723,5 +725,33 @@ public interface IItemExtension {
      */
     default boolean canGrindstoneRepair(ItemStack stack) {
         return false;
+    }
+
+    /**
+     * {@return false to make item entity immune to the damage.}
+     */
+    default boolean canBeHurtBy(ItemStack stack, DamageSource source) {
+        return true;
+    }
+
+    /**
+     * Handles enchanting an item (i.e. in the enchanting table), potentially transforming it to a new item in the process.
+     * <p>
+     * {@linkplain Items#BOOK Books} use this functionality to transform themselves into enchanted books.
+     *
+     * @param stack        The stack being enchanted.
+     * @param enchantments The enchantments being applied.
+     * @return The newly-enchanted stack.
+     */
+    default ItemStack applyEnchantments(ItemStack stack, List<EnchantmentInstance> enchantments) {
+        if (stack.is(Items.BOOK)) {
+            stack = stack.transmuteCopy(Items.ENCHANTED_BOOK);
+        }
+
+        for (EnchantmentInstance inst : enchantments) {
+            stack.enchant(inst.enchantment, inst.level);
+        }
+
+        return stack;
     }
 }

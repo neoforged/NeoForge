@@ -21,7 +21,7 @@
          return this.chunks;
 +    }
 +
-+    /* ======================================== FORGE START =====================================*/
++    // Neo: Keep track of forced loaded chunks caused by entities or blocks.
 +    private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> blockForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>();
 +    private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<java.util.UUID> entityForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>();
 +
