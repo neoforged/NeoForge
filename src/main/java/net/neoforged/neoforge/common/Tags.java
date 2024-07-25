@@ -560,7 +560,7 @@ public class Tags {
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
          */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
-        public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
+        public static final TagKey<Item> SLIME_BALLS = tag("slime_balls");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
          */
