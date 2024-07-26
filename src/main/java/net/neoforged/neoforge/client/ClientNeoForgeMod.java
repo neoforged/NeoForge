@@ -54,7 +54,7 @@ public class ClientNeoForgeMod {
         NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingOut event) -> {
             ModConfigs.getFileMap().values().forEach(config -> {
                 if (config.getSpec() instanceof ModConfigSpec spec) {
-                    spec.resetWorldCaches();
+                    spec.resetCaches(ModConfigSpec.RestartType.WORLD);
                 }
             });
         });

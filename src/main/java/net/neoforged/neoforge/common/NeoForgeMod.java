@@ -583,7 +583,7 @@ public class NeoForgeMod {
         // Reset WORLD type config caches
         ModConfigs.getFileMap().values().forEach(config -> {
             if (config.getSpec() instanceof ModConfigSpec spec) {
-                spec.resetWorldCaches();
+                spec.resetCaches(ModConfigSpec.RestartType.WORLD);
             }
         });
     }

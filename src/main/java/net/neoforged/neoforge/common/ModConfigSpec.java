@@ -147,19 +147,6 @@ public class ModConfigSpec implements IConfigSpec {
         return this.values;
     }
 
-    public void afterReload() {
-        this.resetCaches(getValues().valueMap().values());
-    }
-
-    private void resetCaches(final Iterable<Object> configValues) {
-        forEachValue(configValues, configValue -> {
-            // Only clear the caches of configs that don't need a restart
-            if (configValue.getSpec().restartType == RestartType.NONE) {
-                configValue.clearCache();
-            }
-        });
-    }
-
     private void forEachValue(Iterable<Object> configValues, Consumer<ConfigValue<?>> consumer) {
         configValues.forEach(value -> {
             if (value instanceof ConfigValue<?> configValue) {
@@ -170,10 +157,15 @@ public class ModConfigSpec implements IConfigSpec {
         });
     }
 
+    public void afterReload() {
+        // Only clear the caches of configs that don't need a restart
+        this.resetCaches(RestartType.NONE);
+    }
+
     @ApiStatus.Internal
-    public void resetWorldCaches() {
+    public void resetCaches(RestartType restartType) {
         forEachValue(getValues().valueMap().values(), configValue -> {
-            if (configValue.getSpec().restartType == RestartType.WORLD) {
+            if (configValue.getSpec().restartType == restartType) {
                 configValue.clearCache();
             }
         });
