@@ -1222,7 +1222,6 @@ public class ModConfigSpec implements IConfigSpec {
          * <p>
          * <em>Do not call this for any other purpose than editing the value. Use {@link #get()} instead.</em>
          */
-        @Override
         public T getRaw() {
             Preconditions.checkNotNull(spec, "Cannot get config value before spec is built");
             var loadedConfig = spec.loadedConfig;
