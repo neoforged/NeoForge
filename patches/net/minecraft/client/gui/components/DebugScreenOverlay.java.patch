@@ -1,45 +1,54 @@
 --- a/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/net/minecraft/client/gui/components/DebugScreenOverlay.java
-@@ -135,8 +_,13 @@
+@@ -135,8 +_,15 @@
          this.block = entity.pick(20.0, 0.0F, false);
          this.liquid = entity.pick(20.0, 0.0F, true);
          p_281427_.drawManaged(() -> {
 -            this.drawGameInformation(p_281427_);
 -            this.drawSystemInformation(p_281427_);
-+            final List<String> gameInformation = new java.util.ArrayList<>();
-+            final List<String> systemInformation = new java.util.ArrayList<>();
++            final List<String> gameInformation = this.drawGameInformation(p_281427_);
++            final List<String> systemInformation = this.drawSystemInformation(p_281427_);
++
 +            var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getTimer(), gameInformation, systemInformation);
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
 +
-+            this.drawGameInformation(p_281427_, gameInformation);
-+            this.drawSystemInformation(p_281427_, systemInformation);
++            this.renderLines(p_281427_, gameInformation, true);
++            this.renderLines(p_281427_, systemInformation, false);
++
              if (this.renderFpsCharts) {
                  int i = p_281427_.guiWidth();
                  int j = i / 2;
-@@ -161,7 +_,7 @@
+@@ -161,7 +_,10 @@
          this.minecraft.getProfiler().pop();
      }
  
 -    protected void drawGameInformation(GuiGraphics p_281525_) {
-+    protected void drawGameInformation(GuiGraphics p_281525_, List<String> gameInformation) {
++    /**
++     * Neo: Patched to not draw and instead return game information for {@link net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText} to modify
++     */
++    protected List<String> drawGameInformation(GuiGraphics p_281525_) {
          List<String> list = this.getGameInformation();
          list.add("");
          boolean flag = this.minecraft.getSingleplayerServer() != null;
-@@ -176,11 +_,13 @@
+@@ -176,12 +_,15 @@
                  + (this.renderNetworkCharts ? " visible" : " hidden")
          );
          list.add("For help: press F3 + Q");
-+        list.addAll(gameInformation);
-         this.renderLines(p_281525_, list, true);
+-        this.renderLines(p_281525_, list, true);
++        return list;
      }
  
 -    protected void drawSystemInformation(GuiGraphics p_281261_) {
-+    protected void drawSystemInformation(GuiGraphics p_281261_, List<String> systemInformation) {
++    /**
++     * Neo: Patched to not draw and instead return system information for {@link net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText} to modify
++     */
++    protected List<String> drawSystemInformation(GuiGraphics p_281261_) {
          List<String> list = this.getSystemInformation();
-+        list.addAll(systemInformation);
-         this.renderLines(p_281261_, list, false);
+-        this.renderLines(p_281261_, list, false);
++        return list;
      }
  
+     private void renderLines(GuiGraphics p_286519_, List<String> p_286665_, boolean p_286644_) {
 @@ -509,6 +_,13 @@
              GlUtil.getRenderer(),
              GlUtil.getOpenGLVersion()
