@@ -27,7 +27,6 @@ import net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed;
 import net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonReleased;
 import net.neoforged.neoforge.client.event.ScreenEvent.MouseDragged;
 import net.neoforged.neoforge.client.event.ScreenEvent.MouseScrolled;
-import net.neoforged.neoforge.client.extensions.IGuiGraphicsExtension;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -235,6 +234,7 @@ public abstract class ScreenEvent extends Event {
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+     * 
      * @deprecated Planned on being removed in 1.21.1 due to extreme maintenance burden to make this event fire consistently for most screens.
      */
     @Deprecated(forRemoval = true, since = "21.0")
