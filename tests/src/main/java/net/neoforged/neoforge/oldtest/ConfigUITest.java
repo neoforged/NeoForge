@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -18,6 +19,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.EnumValue;
 import net.neoforged.neoforge.common.TranslatableEnum;
 
 @Mod("configui")
@@ -28,6 +30,11 @@ public class ConfigUITest {
         container.registerConfig(ModConfig.Type.SERVER, Server.SPEC);
         container.registerConfig(ModConfig.Type.STARTUP, Startup.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, MDKConfig.SPEC, "mdk");
+
+        // Test: Accessing this COMMON config value during startup should work:
+        final var a = Common.value.get().size();
+        // Test: Accessing a STARTUP config value should also work:
+        final var b = Startup.value.get();
     }
 
     @Mod(value = "configui", dist = Dist.CLIENT)
@@ -73,6 +80,7 @@ public class ConfigUITest {
 
     public static class Common {
         public static final ModConfigSpec SPEC;
+        public static Supplier<List<? extends Integer>> value;
 
         static {
             final var builder = new ModConfigSpec.Builder();
@@ -83,23 +91,33 @@ public class ConfigUITest {
             builder.translation("configuitest.common.section2")
                     .push("section2");
 
-            builder.translation("configuitest.common.numbers").defineListAllowEmpty("numbers", List.of(1, 2), () -> 0, e -> true);
+            value = wrap(builder.translation("configuitest.common.numbers").defineListAllowEmpty("numbers", List.of(1, 2), () -> 0, e -> true));
 
             builder.pop(2);
 
             SPEC = builder.build();
         }
+
+        static <T> Supplier<T> wrap(final ModConfigSpec.ConfigValue<T> cfg) {
+            return new Wrap<>(cfg);
+        }
+
+        public record Wrap<T>(ModConfigSpec.ConfigValue<T> cfg) implements Supplier<T> {
+            @Override
+            public T get() {
+                return SPEC.isLoaded() ? cfg.get() : cfg.getDefault();
+            }
+        }
     }
 
     public static class Startup {
         public static final ModConfigSpec SPEC;
+        public static EnumValue<StartupSpeed> value;
 
         static {
             final var builder = new ModConfigSpec.Builder();
 
-            builder.translation("configuitest.startup.speed")
-                    .comment("Do you want SPEEED????")
-                    .defineEnum("startupspeed", StartupSpeed.SLOW);
+            value = builder.translation("configuitest.startup.speed").comment("Do you want SPEEED????").defineEnum("startupspeed", StartupSpeed.SLOW);
 
             SPEC = builder.build();
         }
