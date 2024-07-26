@@ -47,6 +47,7 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
         buf.writeResourceKey(registryKey);
         buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceLocation, (b1, key, attach) -> {
             final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
+            // TODO - make datamaps use stream codecs once datapack registries use them too
             b1.writeMap(attach, FriendlyByteBuf::writeResourceKey, (bf, value) -> writeJsonWithRegistryCodec((RegistryFriendlyByteBuf) bf, (Codec) dataMap.networkCodec(), value));
         });
     }
@@ -66,6 +67,6 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
 
     private static <T> void writeJsonWithRegistryCodec(RegistryFriendlyByteBuf buf, Codec<T> codec, T value) {
         DataResult<JsonElement> dataresult = codec.encodeStart(buf.registryAccess().createSerializationContext(JsonOps.INSTANCE), value);
-        buf.writeUtf(GSON.toJson(dataresult.getOrThrow(p_339402_ -> new EncoderException("Failed to encode: " + p_339402_ + " " + value))));
+        buf.writeUtf(GSON.toJson(dataresult.getOrThrow(message -> new EncoderException("Failed to encode: " + message + " " + value))));
     }
 }
