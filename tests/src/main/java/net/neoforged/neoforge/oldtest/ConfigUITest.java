@@ -67,6 +67,8 @@ public class ConfigUITest {
         static {
             final var builder = new ModConfigSpec.Builder();
 
+            builder.worldRestart().define("worldRestart", false);
+
             SPEC = builder.build();
         }
     }
@@ -86,6 +88,9 @@ public class ConfigUITest {
             builder.translation("configuitest.common.numbers").defineListAllowEmpty("numbers", List.of(1, 2), () -> 0, e -> true);
 
             builder.pop(2);
+
+            builder.worldRestart().define("worldRestart", false);
+            builder.gameRestart().define("gameRestart", false);
 
             SPEC = builder.build();
         }

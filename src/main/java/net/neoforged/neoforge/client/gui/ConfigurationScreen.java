@@ -13,6 +13,7 @@ import com.electronwill.nightconfig.core.UnmodifiableConfig.Entry;
 import com.google.common.collect.ImmutableList;
 import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,6 +69,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ListValueSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.Range;
+import net.neoforged.neoforge.common.ModConfigSpec.RestartType;
 import net.neoforged.neoforge.common.ModConfigSpec.ValueSpec;
 import net.neoforged.neoforge.common.TranslatableEnum;
 import org.apache.logging.log4j.LogManager;
@@ -104,6 +106,30 @@ import org.jetbrains.annotations.Nullable;
  * 
  */
 public final class ConfigurationScreen extends OptionsSubScreen {
+    private static final class TooltipConfirmScreen extends ConfirmScreen {
+        boolean seenYes = false;
+
+        private TooltipConfirmScreen(BooleanConsumer p_95658_, Component p_95659_, Component p_95660_, Component p_95661_, Component p_95662_) {
+            super(p_95658_, p_95659_, p_95660_, p_95661_, p_95662_);
+        }
+
+        @Override
+        protected void init() {
+            seenYes = false;
+            super.init();
+        }
+
+        @Override
+        protected void addExitButton(Button button) {
+            if (seenYes) {
+                button.setTooltip(Tooltip.create(RESTART_NO_TOOLTIP));
+            } else {
+                seenYes = true;
+            }
+            super.addExitButton(button);
+        }
+    }
+
     public static class TranslationChecker {
         private static final Logger LOGGER = LogManager.getLogger();
         private final Set<String> untranslatables = new HashSet<>();
@@ -157,14 +183,6 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
     }
 
-    public enum RestartType {
-        NONE, SERVER, GAME;
-
-        RestartType with(RestartType other) {
-            return other == NONE ? this : (other == GAME || this == GAME) ? GAME : SERVER;
-        }
-    }
-
     /**
      * Prefix for static keys the configuration screens use internally.
      */
@@ -210,6 +228,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component RETURN_TO_MENU = Component.translatable("menu.returnToMenu"); // PauseScreen.RETURN_TO_MENU
     public static final Component SAVING_LEVEL = Component.translatable("menu.savingLevel"); // PauseScreen.SAVING_LEVEL
     public static final Component RESTART_NO = Component.translatable(LANG_PREFIX + "restart.return");
+    public static final Component RESTART_NO_TOOLTIP = Component.translatable(LANG_PREFIX + "restart.return.tooltip");
     public static final Component UNDO = Component.translatable(LANG_PREFIX + "undo");
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
     public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
@@ -303,24 +322,24 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         translationChecker.finish();
         switch (needsRestart) {
             case GAME -> {
-                minecraft.setScreen(new ConfirmScreen(b -> {
+                minecraft.setScreen(new TooltipConfirmScreen(b -> {
                     if (b) {
                         minecraft.stop();
                     } else {
-                        minecraft.setScreen(this);
+                        super.onClose();
                     }
                 }, GAME_RESTART_TITLE, GAME_RESTART_MESSAGE, GAME_RESTART_YES, RESTART_NO));
                 return;
             }
-            case SERVER -> {
+            case WORLD -> {
                 if (minecraft.level != null) {
-                    minecraft.setScreen(new ConfirmScreen(b -> {
+                    minecraft.setScreen(new TooltipConfirmScreen(b -> {
                         if (b) {
                             // when changing server configs from the client is added, this is where we tell the server to restart and activate the new config.
                             // also needs a different text in MP ("server will restart/exit, yada yada") than in SP
                             onDisconnect();
                         } else {
-                            minecraft.setScreen(this);
+                            super.onClose();
                         }
                     }, SERVER_RESTART_TITLE, SERVER_RESTART_MESSAGE, minecraft.isLocalServer() ? RETURN_TO_MENU : CommonComponents.GUI_DISCONNECT, RESTART_NO));
                     return;
@@ -547,8 +566,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected void onChanged(final String key) {
             changed = true;
             final ValueSpec valueSpec = getValueSpec(key);
-            if (valueSpec != null && valueSpec.restartType() == ModConfigSpec.RestartType.WORLD) {
-                needsRestart = needsRestart.with(RestartType.SERVER);
+            if (valueSpec != null) {
+                needsRestart = needsRestart.with(valueSpec.restartType());
             }
         }
 
@@ -572,11 +591,11 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             var valueSpec = getValueSpec(key);
                             var element = switch (valueSpec) {
                                 case ListValueSpec listValueSpec -> createList(key, listValueSpec, cv);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof String -> createStringValue(key, valueSpec::test, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Integer -> createIntegerValue(key, valueSpec, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Long -> createLongValue(key, valueSpec, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Double -> createDoubleValue(key, valueSpec, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Enum<?> -> createEnumValue(key, valueSpec, cv, cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof String -> createStringValue(key, valueSpec::test, () -> (String) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Integer -> createIntegerValue(key, valueSpec, () -> (Integer) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Long -> createLongValue(key, valueSpec, () -> (Long) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Double -> createDoubleValue(key, valueSpec, () -> (Double) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Enum<?> -> createEnumValue(key, valueSpec, (Supplier) cv::getRaw, (Consumer) cv::set);
                                 case null -> null;
 
                                 default -> switch (cv) {
@@ -627,7 +646,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         protected boolean isNonDefault(ModConfigSpec.ConfigValue<?> cv) {
-            return !Objects.equals(cv.get(), cv.getDefault());
+            return !Objects.equals(cv.getRaw(), cv.getDefault());
         }
 
         protected boolean isAnyNondefault() {
@@ -692,7 +711,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          */
         @Nullable
         protected Element createOtherValue(final String key, final ConfigValue<?> value) {
-            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.get())), font).alignLeft();
+            final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.getRaw())), font).alignLeft();
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
         }
@@ -921,7 +940,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         }, getValueSpec(key).correct(null), v -> {
                             cv.set(v);
                             onChanged(key);
-                        }, cv.get()));
+                        }, cv.getRaw()));
                     }
                 }
                 undoManager.add(list);
@@ -986,7 +1005,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             this.key = key;
             this.spec = spec;
             this.valueList = valueList; // === (ListValueSpec)getValueSpec(key)
-            this.cfgList = new ArrayList<>(valueList.get());
+            this.cfgList = new ArrayList<>(valueList.getRaw());
         }
 
         @Override
