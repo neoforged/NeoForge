@@ -57,12 +57,14 @@ import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen.ConfigurationSectionScreen.Filter;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ListValueSpec;
@@ -72,6 +74,7 @@ import net.neoforged.neoforge.common.TranslatableEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -97,7 +100,9 @@ import org.jetbrains.annotations.Nullable;
  * }
  * }
  * 
- * For extending the system, see the documentation on {@link ConfigurationSectionScreen}.
+ * For extending the system, see the documentation on {@link ConfigurationSectionScreen}.<p>
+ * 
+ * If you only want to suppress certain elements from being displayed, you can also supply a {@link Filter} as the third parameter instead of subclassing the whole {@link ConfigurationSectionScreen}.
  * 
  */
 public final class ConfigurationScreen extends OptionsSubScreen {
@@ -171,6 +176,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      */
     private static final String SECTION = LANG_PREFIX + "section";
     /**
+     * A default for the labels of buttons that open a new screen. Default: "Edit"
+     */
+    private static final String SECTION_TEXT = LANG_PREFIX + "sectiontext";
+    /**
      * The breadcrumb separator. Default: "%s > %s"
      */
     private static final String CRUMB = LANG_PREFIX + "breadcrumb";
@@ -195,6 +204,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component MOVE_LIST_ELEMENT_DOWN = Component.translatable(LANG_PREFIX + "listelementdown");
     public static final Component REMOVE_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "listelementremove");
     public static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement");
+    public static final Component LONG_STRING = Component.translatable(LANG_PREFIX + "longstring");
     public static final Component GAME_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.game.title");
     public static final Component GAME_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.game.text");
     public static final Component GAME_RESTART_YES = Component.translatable("menu.quit"); // TitleScreen.init() et.al.
@@ -222,6 +232,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
     public ConfigurationScreen(final ModContainer mod, final Screen parent) {
         this(mod, parent, ConfigurationSectionScreen::new);
+    }
+
+    public ConfigurationScreen(final ModContainer mod, final Screen parent, ConfigurationSectionScreen.Filter filter) {
+        this(mod, parent, (a, b, c, d) -> new ConfigurationSectionScreen(a, b, c, d, filter));
     }
 
     @SuppressWarnings("resource")
@@ -364,22 +378,27 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      * <code>options</code> to our superclass' constructor.
      */
     public static class ConfigurationSectionScreen extends OptionsSubScreen {
+        protected static final long MAX_SLIDER_SIZE = 256L;
+
         public record Context(String modId, Screen parent, ModConfig modConfig, ModConfigSpec modSpec,
-                Set<? extends Entry> entries, Map<String, Object> valueSpecs, List<String> keylist) {
-            public static Context top(final String modId, final Screen parent, final ModConfig modConfig) {
+                Set<? extends Entry> entries, Map<String, Object> valueSpecs, List<String> keylist, Filter filter) {
+            @ApiStatus.Internal
+            public Context {}
+
+            public static Context top(final String modId, final Screen parent, final ModConfig modConfig, Filter filter) {
                 return new Context(modId, parent, modConfig, (ModConfigSpec) modConfig.getSpec(), ((ModConfigSpec) modConfig.getSpec()).getValues().entrySet(),
-                        ((ModConfigSpec) modConfig.getSpec()).getSpec().valueMap(), List.of());
+                        ((ModConfigSpec) modConfig.getSpec()).getSpec().valueMap(), List.of(), filter);
             }
 
             public static Context section(final Context parentContext, final Screen parent, final Set<? extends Entry> entries, final Map<String, Object> valueSpecs,
                     final String key) {
                 return new Context(parentContext.modId, parent, parentContext.modConfig, parentContext.modSpec, entries, valueSpecs,
-                        parentContext.makeKeyList(key));
+                        parentContext.makeKeyList(key), parentContext.filter);
             }
 
             public static Context list(final Context parentContext, final Screen parent) {
                 return new Context(parentContext.modId, parent, parentContext.modConfig, parentContext.modSpec,
-                        parentContext.entries, parentContext.valueSpecs, parentContext.keylist);
+                        parentContext.entries, parentContext.valueSpecs, parentContext.keylist, null);
             }
 
             private ArrayList<String> makeKeyList(final String key) {
@@ -389,13 +408,24 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
         }
 
-        public record Element(@Nullable Component name, @Nullable Component tooltip, @Nullable AbstractWidget widget, @Nullable OptionInstance<?> option) {
+        public record Element(@Nullable Component name, @Nullable Component tooltip, @Nullable AbstractWidget widget, @Nullable OptionInstance<?> option, boolean undoable) {
+            @ApiStatus.Internal
+            public Element {}
+
             public Element(@Nullable final Component name, @Nullable final Component tooltip, final AbstractWidget widget) {
-                this(name, tooltip, widget, null);
+                this(name, tooltip, widget, null, true);
+            }
+
+            public Element(@Nullable final Component name, @Nullable final Component tooltip, final AbstractWidget widget, boolean undoable) {
+                this(name, tooltip, widget, null, undoable);
             }
 
             public Element(final Component name, final Component tooltip, final OptionInstance<?> option) {
-                this(name, tooltip, null, option);
+                this(name, tooltip, null, option, true);
+            }
+
+            public Element(final Component name, final Component tooltip, final OptionInstance<?> option, boolean undoable) {
+                this(name, tooltip, null, option, undoable);
             }
 
             public AbstractWidget getWidget(final Options options) {
@@ -406,6 +436,16 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             public Object any() {
                 return widget != null ? widget : option;
             }
+        }
+
+        /**
+         * A filter callback to suppress certain elements from being shown in the configuration UI.
+         * <p>
+         * Return null to suppress the element or return a modified Element.
+         */
+        public interface Filter {
+            @Nullable
+            Element filterEntry(Context context, String key, Element original);
         }
 
         protected final Context context;
@@ -426,7 +466,20 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param modConfig The actual config to show and edit.
          */
         public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig, Component title) {
-            this(Context.top(modConfig.getModId(), parent, modConfig), title);
+            this(parent, type, modConfig, title, (c, k, e) -> e);
+        }
+
+        /**
+         * Constructs a new section screen for the top-most section in a {@link ModConfig}.
+         * 
+         * @param parent    The screen to return to when the user presses escape or the "Done" button.
+         *                  If this is a {@link ConfigurationScreen}, additional information is passed before closing.
+         * @param type      The {@link Type} this configuration is for. Only used to generate the title of the screen.
+         * @param filter    The {@link Filter} to use.
+         * @param modConfig The actual config to show and edit.
+         */
+        public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig, Component title, Filter filter) {
+            this(Context.top(modConfig.getModId(), parent, modConfig, filter), title);
             needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
         }
 
@@ -527,7 +580,11 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             var valueSpec = getValueSpec(key);
                             var element = switch (valueSpec) {
                                 case ListValueSpec listValueSpec -> createList(key, listValueSpec, cv);
-                                case ValueSpec spec when spec.getDefault() instanceof String -> createStringValue(key, valueSpec::test, cv, cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof String -> createStringValue(key, valueSpec::test, cv, cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Integer -> createIntegerValue(key, valueSpec, cv, cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Long -> createLongValue(key, valueSpec, cv, cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Double -> createDoubleValue(key, valueSpec, cv, cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Enum<?> -> createEnumValue(key, valueSpec, cv, cv::set);
                                 case null -> null;
 
                                 default -> switch (cv) {
@@ -539,14 +596,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                                     default -> createOtherValue(key, cv);
                                 };
                             };
-
-                            if (element != null) {
-                                elements.add(element);
-                                hasUndoableElements = true;
-                            }
+                            elements.add(context.filter.filterEntry(context, key, element));
                         }
                         case UnmodifiableConfig subsection when context.valueSpecs.get(key) instanceof UnmodifiableConfig subconfig -> elements.add(createSection(key, subconfig, subsection));
-                        default -> elements.add(createOtherSection(key, rawValue));
+                        default -> elements.add(context.filter.filterEntry(context, key, createOtherSection(key, rawValue)));
                     }
                 }
                 elements.addAll(createSyntheticValues());
@@ -560,6 +613,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             label.setTooltip(Tooltip.create(element.tooltip));
                             list.addSmall(label, element.getWidget(options));
                         }
+                        hasUndoableElements |= element.undoable;
                     }
                 }
 
@@ -595,11 +649,19 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return false;
         }
 
+        @Nullable
         protected Element createStringValue(final String key, final Predicate<String> tester, final Supplier<String> source, final Consumer<String> target) {
+            if (source.get().length() > 192) {
+                // That's just too much for the UI
+                final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(source.get().substring(0, 128)), font).alignLeft();
+                label.setTooltip(Tooltip.create(LONG_STRING));
+                return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
+            }
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
             // no filter or the user wouldn't be able to type
             box.setTooltip(Tooltip.create(getTooltipComponent(key, null)));
+            box.setMaxLength(Mth.clamp(source.get().length() + 5, 128, 192));
             box.setValue(source.get());
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
@@ -643,10 +705,11 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param value The entry itself.
          * @return null if no UI element should be added or an {@link Element} to be added to the UI.
          */
+        @Nullable
         protected Element createOtherValue(final String key, final ConfigValue<?> value) {
             final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(value.get())), font).alignLeft();
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
-            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label);
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
         }
 
         /**
@@ -680,6 +743,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             public static final Custom<Boolean> BOOLEAN_VALUES_NO_PREFIX = new Custom<>(ImmutableList.of(Boolean.TRUE, Boolean.FALSE));
         }
 
+        @Nullable
         protected Element createBooleanValue(final String key, final ValueSpec spec, final Supplier<Boolean> source, final Consumer<Boolean> target) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), OptionInstance.BOOLEAN_TO_STRING, Custom.BOOLEAN_VALUES_NO_PREFIX, source.get(), newValue -> {
@@ -694,6 +758,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                     }));
         }
 
+        @Nullable
         protected <T extends Enum<T>> Element createEnumValue(final String key, final ValueSpec spec, final Supplier<T> source, final Consumer<T> target) {
             @SuppressWarnings("unchecked")
             final Class<T> clazz = (Class<T>) spec.getClazz();
@@ -715,18 +780,20 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             }));
         }
 
+        @Nullable
         protected Element createIntegerValue(final String key, final ValueSpec spec, final Supplier<Integer> source, final Consumer<Integer> target) {
             final Range<Integer> range = spec.getRange();
-            final Integer min = range != null ? range.getMin() : 0;
-            final Integer max = range != null ? range.getMax() : Integer.MAX_VALUE;
+            final int min = range != null ? range.getMin() : 0;
+            final int max = range != null ? range.getMax() : Integer.MAX_VALUE;
 
-            if (max - min < 256) {
+            if ((long) max - (long) min < MAX_SLIDER_SIZE) {
                 return createSlider(key, source, target, range);
             } else {
                 return createNumberBox(key, spec, source, target, null, Integer::decode, 0);
             }
         }
 
+        @Nullable
         protected Element createSlider(final String key, final Supplier<Integer> source, final Consumer<Integer> target, final @Nullable Range<Integer> range) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key, range),
@@ -744,11 +811,13 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             }));
         }
 
+        @Nullable
         protected Element createLongValue(final String key, final ValueSpec spec, final Supplier<Long> source, final Consumer<Long> target) {
             return createNumberBox(key, spec, source, target, null, Long::decode, 0L);
         }
 
         // if someone knows how to get a proper zero inside...
+        @Nullable
         protected <T extends Number & Comparable<? super T>> Element createNumberBox(final String key, final ValueSpec spec, final Supplier<T> source,
                 final Consumer<T> target, @Nullable final Predicate<T> tester, final Function<String, T> parser, final T zero) {
             final Range<T> range = spec.getRange();
@@ -760,7 +829,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                     parser.apply(newValueString);
                     return true;
                 } catch (final NumberFormatException e) {
-                    return newValueString.isEmpty() || ((range == null || range.getMin().compareTo(zero) < 0) && newValueString.equals("-"));
+                    return isPartialNumber(newValueString, (range == null || range.getMin().compareTo(zero) < 0));
                 }
             });
             box.setTooltip(Tooltip.create(getTooltipComponent(key, range)));
@@ -782,13 +851,31 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         return;
                     }
                 } catch (final NumberFormatException e) {
-                    // field probably is just empty, ignore that
+                    // field probably is just empty/partial, ignore that
                 }
                 box.setTextColor(0xFFFF0000);
             });
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null), box);
         }
 
+        protected boolean isPartialNumber(String value, boolean allowNegative) {
+            return switch (value) {
+                case "" -> true;
+                case "0" -> true;
+                case "0x" -> true;
+                case "0X" -> true;
+                case "#" -> true; // not valid for doubles, but not worth making a special case
+                case "-" -> allowNegative;
+                case "-0" -> allowNegative;
+                case "-0x" -> allowNegative;
+                case "-0X" -> allowNegative;
+                // case "-#" -> allowNegative; // Java allows this, but no thanks, that's just cursed.
+                // doubles can also do NaN, inf, and 0e0. Again, not worth making a special case for those, I say.
+                default -> false;
+            };
+        }
+
+        @Nullable
         protected Element createDoubleValue(final String key, final ValueSpec spec, final Supplier<Double> source, final Consumer<Double> target) {
             return createNumberBox(key, spec, source, target, null, Double::parseDouble, 0.0);
         }
@@ -796,22 +883,24 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         @Nullable
         protected Element createSection(final String key, final UnmodifiableConfig subconfig, final UnmodifiableConfig subsection) {
             if (subconfig.isEmpty()) return null;
-            return new Element(null, null,
-                    Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
+            return new Element(Component.translatable(SECTION, getTranslationComponent(key)), getTooltipComponent(key, null),
+                    Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(key + ".button", SECTION_TEXT))),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
                                     k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet(), Component.translatable(getTranslationKey(key))).rebuild())))
                             .tooltip(Tooltip.create(getTooltipComponent(key, null)))
                             .width(Button.DEFAULT_WIDTH)
-                            // .width(BIG_BUTTON_WIDTH) TODO - reconsider this?
-                            .build());
+                            .build(),
+                    false);
         }
 
+        @Nullable
         protected <T> Element createList(final String key, final ListValueSpec spec, final ModConfigSpec.ConfigValue<List<T>> list) {
-            return new Element(null, null,
-                    Button.builder(Component.translatable(SECTION, getTranslationComponent(key)),
+            return new Element(Component.translatable(SECTION, getTranslationComponent(key)), getTooltipComponent(key, null),
+                    Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(key + ".button", SECTION_TEXT))),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
                                     k -> new ConfigurationListScreen<>(Context.list(context, this), key, Component.translatable(CRUMB, this.getTitle(), getTranslationComponent(key)), spec, list)).rebuild()))
-                            .tooltip(Tooltip.create(getTooltipComponent(key, null))).build());
+                            .tooltip(Tooltip.create(getTooltipComponent(key, null))).build(),
+                    false);
         }
 
         @Override
@@ -1031,33 +1120,39 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param entry The entry itself.
          * @return null if this element should be skipped or an {@link Element} to be added to the UI.
          */
+        @Nullable
         protected Element createOtherValue(final int idx, final T entry) {
             final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(Objects.toString(entry)), font).alignLeft();
             label.setTooltip(Tooltip.create(UNSUPPORTED_ELEMENT));
-            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label);
+            return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
         }
 
         @SuppressWarnings("unchecked")
+        @Nullable
         protected Element createStringListValue(final int idx, final String value) {
             return createStringValue(key, v -> spec.test(List.of(v)), () -> value, newValue -> cfgList.set(idx, (T) newValue));
         }
 
         @SuppressWarnings("unchecked")
+        @Nullable
         protected Element createDoubleListValue(final int idx, final Double value) {
             return createNumberBox(key, spec, () -> value, newValue -> cfgList.set(idx, (T) newValue), v -> spec.test(List.of(v)), Double::parseDouble, 0.0);
         }
 
         @SuppressWarnings("unchecked")
+        @Nullable
         protected Element createLongListValue(final int idx, final Long value) {
             return createNumberBox(key, spec, () -> value, newValue -> cfgList.set(idx, (T) newValue), v -> spec.test(List.of(v)), Long::decode, 0L);
         }
 
         @SuppressWarnings("unchecked")
+        @Nullable
         protected Element createIntegerListValue(final int idx, final Integer value) {
             return createNumberBox(key, spec, () -> value, newValue -> cfgList.set(idx, (T) newValue), v -> spec.test(List.of(v)), Integer::decode, 0);
         }
 
         @SuppressWarnings("unchecked")
+        @Nullable
         protected Element createBooleanListValue(final int idx, final Boolean value) {
             return createBooleanValue(key, spec, () -> value, newValue -> cfgList.set(idx, (T) newValue));
         }

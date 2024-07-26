@@ -107,6 +107,24 @@
                 "class": "net/neoforged/neoforge/oldtest/world/RaidEnumTest",
                 "field": "RAIDER_ENUM_PARAMS"
             }
+        },
+        {
+            "enum": "net/minecraft/world/entity/vehicle/Boat$Type",
+            "name": "NEOTESTS_PAPER",
+            "constructor": "(Ljava/util/function/Supplier;Ljava/lang/String;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Z)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/entity/vehicle/CustomBoatTest",
+                "method": "getBoatTypeParameter"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/entity/vehicle/Boat$Type",
+            "name": "NEOTESTS_PAPER_RAFT",
+            "constructor": "(Ljava/util/function/Supplier;Ljava/lang/String;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Z)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/entity/vehicle/CustomBoatTest",
+                "method": "getRaftTypeParameter"
+            }
         }
     ]
 }
