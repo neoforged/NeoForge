@@ -69,7 +69,6 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ListValueSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.Range;
-import net.neoforged.neoforge.common.ModConfigSpec.RawSupplier;
 import net.neoforged.neoforge.common.ModConfigSpec.RestartType;
 import net.neoforged.neoforge.common.ModConfigSpec.ValueSpec;
 import net.neoforged.neoforge.common.TranslatableEnum;
@@ -592,11 +591,11 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             var valueSpec = getValueSpec(key);
                             var element = switch (valueSpec) {
                                 case ListValueSpec listValueSpec -> createList(key, listValueSpec, cv);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof String -> createStringValue(key, valueSpec::test, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Integer -> createIntegerValue(key, valueSpec, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Long -> createLongValue(key, valueSpec, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Double -> createDoubleValue(key, valueSpec, cv, cv::set);
-                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Enum<?> -> createEnumValue(key, valueSpec, cv, cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof String -> createStringValue(key, valueSpec::test, () -> (String) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Integer -> createIntegerValue(key, valueSpec, () -> (Integer) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Long -> createLongValue(key, valueSpec, () -> (Long) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Double -> createDoubleValue(key, valueSpec, () -> (Double) cv.getRaw(), cv::set);
+                                case ValueSpec spec when cv.getClass() == ConfigValue.class && spec.getDefault() instanceof Enum<?> -> createEnumValue(key, valueSpec, (Supplier) cv::getRaw, (Consumer) cv::set);
                                 case null -> null;
 
                                 default -> switch (cv) {
@@ -662,22 +661,22 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createStringValue(final String key, final Predicate<String> tester, final RawSupplier<String> source, final Consumer<String> target) {
+        protected Element createStringValue(final String key, final Predicate<String> tester, final Supplier<String> source, final Consumer<String> target) {
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
             // no filter or the user wouldn't be able to type
             box.setTooltip(Tooltip.create(getTooltipComponent(key, null)));
-            box.setValue(source.getRaw());
+            box.setValue(source.get());
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
-                    if (!newValue.equals(source.getRaw())) {
+                    if (!newValue.equals(source.get())) {
                         undoManager.add(v -> {
                             target.accept(v);
                             onChanged(key);
                         }, newValue, v -> {
                             target.accept(v);
                             onChanged(key);
-                        }, source.getRaw());
+                        }, source.get());
                     }
                     box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
                     return;
@@ -749,9 +748,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createBooleanValue(final String key, final ValueSpec spec, final RawSupplier<Boolean> source, final Consumer<Boolean> target) {
+        protected Element createBooleanValue(final String key, final ValueSpec spec, final Supplier<Boolean> source, final Consumer<Boolean> target) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
-                    new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), OptionInstance.BOOLEAN_TO_STRING, Custom.BOOLEAN_VALUES_NO_PREFIX, source.getRaw(), newValue -> {
+                    new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), OptionInstance.BOOLEAN_TO_STRING, Custom.BOOLEAN_VALUES_NO_PREFIX, source.get(), newValue -> {
                         // regarding change detection: new value always is different (cycle button)
                         undoManager.add(v -> {
                             target.accept(v);
@@ -759,12 +758,12 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         }, newValue, v -> {
                             target.accept(v);
                             onChanged(key);
-                        }, source.getRaw());
+                        }, source.get());
                     }));
         }
 
         @Nullable
-        protected <T extends Enum<T>> Element createEnumValue(final String key, final ValueSpec spec, final RawSupplier<T> source, final Consumer<T> target) {
+        protected <T extends Enum<T>> Element createEnumValue(final String key, final ValueSpec spec, final Supplier<T> source, final Consumer<T> target) {
             @SuppressWarnings("unchecked")
             final Class<T> clazz = (Class<T>) spec.getClazz();
             assert clazz != null;
@@ -773,7 +772,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key, null), (caption, displayvalue) -> displayvalue instanceof TranslatableEnum tenum ? tenum.getTranslatedName() : Component.literal(displayvalue.name()),
-                            new Custom<>(list), source.getRaw(), newValue -> {
+                            new Custom<>(list), source.get(), newValue -> {
                                 // regarding change detection: new value always is different (cycle button)
                                 undoManager.add(v -> {
                                     target.accept(v);
@@ -781,12 +780,12 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                                 }, newValue, v -> {
                                     target.accept(v);
                                     onChanged(key);
-                                }, source.getRaw());
+                                }, source.get());
                             }));
         }
 
         @Nullable
-        protected Element createIntegerValue(final String key, final ValueSpec spec, final RawSupplier<Integer> source, final Consumer<Integer> target) {
+        protected Element createIntegerValue(final String key, final ValueSpec spec, final Supplier<Integer> source, final Consumer<Integer> target) {
             final Range<Integer> range = spec.getRange();
             final int min = range != null ? range.getMin() : 0;
             final int max = range != null ? range.getMax() : Integer.MAX_VALUE;
@@ -799,31 +798,31 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createSlider(final String key, final RawSupplier<Integer> source, final Consumer<Integer> target, final @Nullable Range<Integer> range) {
+        protected Element createSlider(final String key, final Supplier<Integer> source, final Consumer<Integer> target, final @Nullable Range<Integer> range) {
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null),
                     new OptionInstance<>(getTranslationKey(key), getTooltip(key, range),
                             (caption, displayvalue) -> Component.literal("" + displayvalue), new OptionInstance.IntRange(range != null ? range.getMin() : 0, range != null ? range.getMax() : Integer.MAX_VALUE),
-                            null, source.getRaw(), newValue -> {
-                                if (!newValue.equals(source.getRaw())) {
+                            null, source.get(), newValue -> {
+                                if (!newValue.equals(source.get())) {
                                     undoManager.add(v -> {
                                         target.accept(v);
                                         onChanged(key);
                                     }, newValue, v -> {
                                         target.accept(v);
                                         onChanged(key);
-                                    }, source.getRaw());
+                                    }, source.get());
                                 }
                             }));
         }
 
         @Nullable
-        protected Element createLongValue(final String key, final ValueSpec spec, final RawSupplier<Long> source, final Consumer<Long> target) {
+        protected Element createLongValue(final String key, final ValueSpec spec, final Supplier<Long> source, final Consumer<Long> target) {
             return createNumberBox(key, spec, source, target, null, Long::decode, 0L);
         }
 
         // if someone knows how to get a proper zero inside...
         @Nullable
-        protected <T extends Number & Comparable<? super T>> Element createNumberBox(final String key, final ValueSpec spec, final RawSupplier<T> source,
+        protected <T extends Number & Comparable<? super T>> Element createNumberBox(final String key, final ValueSpec spec, final Supplier<T> source,
                 final Consumer<T> target, @Nullable final Predicate<T> tester, final Function<String, T> parser, final T zero) {
             final Range<T> range = spec.getRange();
 
@@ -838,19 +837,19 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 }
             });
             box.setTooltip(Tooltip.create(getTooltipComponent(key, range)));
-            box.setValue(source.getRaw() + "");
+            box.setValue(source.get() + "");
             box.setResponder(newValueString -> {
                 try {
                     final T newValue = parser.apply(newValueString);
                     if (tester != null ? tester.test(newValue) : (newValue != null && (range == null || range.test(newValue)) && spec.test(newValue))) {
-                        if (!newValue.equals(source.getRaw())) {
+                        if (!newValue.equals(source.get())) {
                             undoManager.add(v -> {
                                 target.accept(v);
                                 onChanged(key);
                             }, newValue, v -> {
                                 target.accept(v);
                                 onChanged(key);
-                            }, source.getRaw());
+                            }, source.get());
                         }
                         box.setTextColor(EditBox.DEFAULT_TEXT_COLOR);
                         return;
@@ -864,7 +863,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Nullable
-        protected Element createDoubleValue(final String key, final ValueSpec spec, final RawSupplier<Double> source, final Consumer<Double> target) {
+        protected Element createDoubleValue(final String key, final ValueSpec spec, final Supplier<Double> source, final Consumer<Double> target) {
             return createNumberBox(key, spec, source, target, null, Double::parseDouble, 0.0);
         }
 
