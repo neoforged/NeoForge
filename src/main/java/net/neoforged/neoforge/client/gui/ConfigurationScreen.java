@@ -58,6 +58,7 @@ import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
@@ -75,6 +76,7 @@ import net.neoforged.neoforge.common.TranslatableEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -220,6 +222,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component MOVE_LIST_ELEMENT_DOWN = Component.translatable(LANG_PREFIX + "listelementdown");
     public static final Component REMOVE_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "listelementremove");
     public static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement");
+    public static final Component LONG_STRING = Component.translatable(LANG_PREFIX + "longstring");
     public static final Component GAME_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.game.title");
     public static final Component GAME_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.game.text");
     public static final Component GAME_RESTART_YES = Component.translatable("menu.quit"); // TitleScreen.init() et.al.
@@ -398,6 +401,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
         public record Context(String modId, Screen parent, ModConfig modConfig, ModConfigSpec modSpec,
                 Set<? extends Entry> entries, Map<String, Object> valueSpecs, List<String> keylist, Filter filter) {
+            @ApiStatus.Internal
+            public Context {}
+
             public static Context top(final String modId, final Screen parent, final ModConfig modConfig, Filter filter) {
                 return new Context(modId, parent, modConfig, (ModConfigSpec) modConfig.getSpec(), ((ModConfigSpec) modConfig.getSpec()).getValues().entrySet(),
                         ((ModConfigSpec) modConfig.getSpec()).getSpec().valueMap(), List.of(), filter);
@@ -422,6 +428,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         public record Element(@Nullable Component name, @Nullable Component tooltip, @Nullable AbstractWidget widget, @Nullable OptionInstance<?> option, boolean undoable) {
+            @ApiStatus.Internal
+            public Element {}
+
             public Element(@Nullable final Component name, @Nullable final Component tooltip, final AbstractWidget widget) {
                 this(name, tooltip, widget, null, true);
             }
@@ -476,8 +485,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * @param modConfig The actual config to show and edit.
          */
         public ConfigurationSectionScreen(final Screen parent, final ModConfig.Type type, final ModConfig modConfig, Component title) {
-            this(Context.top(modConfig.getModId(), parent, modConfig, (c, k, e) -> e), title);
-            needsRestart = type == Type.STARTUP ? RestartType.GAME : RestartType.NONE;
+            this(parent, type, modConfig, title, (c, k, e) -> e);
         }
 
         /**
@@ -662,10 +670,17 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
         @Nullable
         protected Element createStringValue(final String key, final Predicate<String> tester, final Supplier<String> source, final Consumer<String> target) {
+            if (source.get().length() > 192) {
+                // That's just too much for the UI
+                final StringWidget label = new StringWidget(Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, Component.literal(source.get().substring(0, 128)), font).alignLeft();
+                label.setTooltip(Tooltip.create(LONG_STRING));
+                return new Element(getTranslationComponent(key), getTooltipComponent(key, null), label, false);
+            }
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
             // no filter or the user wouldn't be able to type
             box.setTooltip(Tooltip.create(getTooltipComponent(key, null)));
+            box.setMaxLength(Mth.clamp(source.get().length() + 5, 128, 192));
             box.setValue(source.get());
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
@@ -833,7 +848,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                     parser.apply(newValueString);
                     return true;
                 } catch (final NumberFormatException e) {
-                    return newValueString.isEmpty() || ((range == null || range.getMin().compareTo(zero) < 0) && newValueString.equals("-"));
+                    return isPartialNumber(newValueString, (range == null || range.getMin().compareTo(zero) < 0));
                 }
             });
             box.setTooltip(Tooltip.create(getTooltipComponent(key, range)));
@@ -855,11 +870,28 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                         return;
                     }
                 } catch (final NumberFormatException e) {
-                    // field probably is just empty, ignore that
+                    // field probably is just empty/partial, ignore that
                 }
                 box.setTextColor(0xFFFF0000);
             });
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null), box);
+        }
+
+        protected boolean isPartialNumber(String value, boolean allowNegative) {
+            return switch (value) {
+                case "" -> true;
+                case "0" -> true;
+                case "0x" -> true;
+                case "0X" -> true;
+                case "#" -> true; // not valid for doubles, but not worth making a special case
+                case "-" -> allowNegative;
+                case "-0" -> allowNegative;
+                case "-0x" -> allowNegative;
+                case "-0X" -> allowNegative;
+                // case "-#" -> allowNegative; // Java allows this, but no thanks, that's just cursed.
+                // doubles can also do NaN, inf, and 0e0. Again, not worth making a special case for those, I say.
+                default -> false;
+            };
         }
 
         @Nullable

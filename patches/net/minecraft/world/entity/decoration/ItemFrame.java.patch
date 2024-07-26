@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/decoration/ItemFrame.java
++++ b/net/minecraft/world/entity/decoration/ItemFrame.java
+@@ -212,7 +_,7 @@
+     private void removeFramedMap(ItemStack p_31811_) {
+         MapId mapid = this.getFramedMapId(p_31811_);
+         if (mapid != null) {
+-            MapItemSavedData mapitemsaveddata = MapItem.getSavedData(mapid, this.level());
++            MapItemSavedData mapitemsaveddata = MapItem.getSavedData(p_31811_, this.level());
+             if (mapitemsaveddata != null) {
+                 mapitemsaveddata.removedFromFrame(this.pos, this.getId());
+                 mapitemsaveddata.setDirty(true);
