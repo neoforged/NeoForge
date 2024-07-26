@@ -5,7 +5,13 @@
 
 package net.neoforged.neoforge.network.payload;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
 import java.util.Map;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,6 +20,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.ApiStatus;
@@ -29,23 +36,36 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
     public static <T> RegistryDataMapSyncPayload<T> decode(RegistryFriendlyByteBuf buf) {
         //noinspection RedundantCast javac complains about this cast
         final ResourceKey<Registry<T>> registryKey = (ResourceKey<Registry<T>>) (Object) buf.readRegistryKey();
-        final Map<ResourceLocation, Map<ResourceKey<T>, ?>> attach = buf.readRegistryMap(FriendlyByteBuf::readResourceLocation, (b1, key) -> {
+        final Map<ResourceLocation, Map<ResourceKey<T>, ?>> attach = buf.readMap(FriendlyByteBuf::readResourceLocation, (b1, key) -> {
             final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
-            return b1.readRegistryMap(bf -> bf.readResourceKey(registryKey), bf -> bf.readJsonWithRegistryCodec(dataMap.networkCodec()));
+            return b1.readMap(bf -> bf.readResourceKey(registryKey), bf -> readJsonWithRegistryCodec((RegistryFriendlyByteBuf) bf, dataMap.networkCodec()));
         });
         return new RegistryDataMapSyncPayload<>(registryKey, attach);
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeResourceKey(registryKey);
-        buf.writeRegistryMap(dataMaps, FriendlyByteBuf::writeResourceLocation, (b1, key, attach) -> {
+        buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceLocation, (b1, key, attach) -> {
             final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
-            b1.writeRegistryMap(attach, FriendlyByteBuf::writeResourceKey, (bf, value) -> bf.writeJsonWithRegistryCodec((Codec) dataMap.networkCodec(), value));
+            b1.writeMap(attach, FriendlyByteBuf::writeResourceKey, (bf, value) -> writeJsonWithRegistryCodec((RegistryFriendlyByteBuf) bf, (Codec) dataMap.networkCodec(), value));
         });
     }
 
     @Override
     public Type<RegistryDataMapSyncPayload<?>> type() {
         return TYPE;
+    }
+
+    private static final Gson GSON = new Gson();
+
+    private static <T> T readJsonWithRegistryCodec(RegistryFriendlyByteBuf buf, Codec<T> codec) {
+        JsonElement jsonelement = GsonHelper.fromJson(GSON, buf.readUtf(), JsonElement.class);
+        DataResult<T> dataresult = codec.parse(buf.registryAccess().createSerializationContext(JsonOps.INSTANCE), jsonelement);
+        return dataresult.getOrThrow(name -> new DecoderException("Failed to decode json: " + name));
+    }
+
+    private static <T> void writeJsonWithRegistryCodec(RegistryFriendlyByteBuf buf, Codec<T> codec, T value) {
+        DataResult<JsonElement> dataresult = codec.encodeStart(buf.registryAccess().createSerializationContext(JsonOps.INSTANCE), value);
+        buf.writeUtf(GSON.toJson(dataresult.getOrThrow(p_339402_ -> new EncoderException("Failed to encode: " + p_339402_ + " " + value))));
     }
 }
