@@ -1,17 +1,38 @@
 --- a/net/minecraft/world/item/alchemy/PotionContents.java
 +++ b/net/minecraft/world/item/alchemy/PotionContents.java
-@@ -142,6 +_,14 @@
+@@ -137,11 +_,35 @@
+         return Lists.transform(this.customEffects, MobEffectInstance::new);
      }
  
++    /**
++     * Neo: use {@link net.minecraft.world.item.TooltipFlag} sensitive overloads.
++     */
++    @Deprecated
+     public void addPotionTooltip(Consumer<Component> p_331688_, float p_330466_, float p_332190_) {
+         addPotionTooltip(this.getAllEffects(), p_331688_, p_330466_, p_332190_);
+     }
+ 
++    public void addPotionTooltip(Consumer<Component> p_331688_, float p_330466_, float p_332190_, net.minecraft.world.item.TooltipFlag tooltipFlag) {
++        addPotionTooltip(this.getAllEffects(), p_331688_, p_330466_, p_332190_, tooltipFlag);
++    }
++
++    public void addPotionTooltip(Consumer<Component> p_331688_, float p_330466_, float p_332190_, net.minecraft.world.item.TooltipFlag tooltipFlag, Component consumeDesciption) {
++        addPotionTooltip(this.getAllEffects(), p_331688_, p_330466_, p_332190_, tooltipFlag, consumeDesciption);
++    }
++
++    /**
++     * Neo: use {@link net.minecraft.world.item.TooltipFlag} sensitive overloads.
++     */
++    @Deprecated
      public static void addPotionTooltip(Iterable<MobEffectInstance> p_331825_, Consumer<Component> p_331296_, float p_332038_, float p_332014_) {
-+        addPotionTooltip(p_331825_, p_331296_, p_332038_, p_332014_, Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
++        addPotionTooltip(p_331825_, p_331296_, p_332038_, p_332014_, net.minecraft.world.item.TooltipFlag.NORMAL);
 +    }
 +
-+    public void addPotionTooltip(Consumer<Component> p_331688_, float p_330466_, float p_332190_, Component consumeDesciption) {
-+        addPotionTooltip(this.getAllEffects(), p_331688_, p_330466_, p_332190_, consumeDesciption);
++    public static void addPotionTooltip(Iterable<MobEffectInstance> p_331825_, Consumer<Component> p_331296_, float p_332038_, float p_332014_, net.minecraft.world.item.TooltipFlag tooltipFlag) {
++        addPotionTooltip(p_331825_, p_331296_, p_332038_, p_332014_, tooltipFlag, Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
 +    }
 +
-+    public static void addPotionTooltip(Iterable<MobEffectInstance> p_331825_, Consumer<Component> p_331296_, float p_332038_, float p_332014_, Component consumeDescription) {
++    public static void addPotionTooltip(Iterable<MobEffectInstance> p_331825_, Consumer<Component> p_331296_, float p_332038_, float p_332014_, net.minecraft.world.item.TooltipFlag tooltipFlag, Component consumeDescription) {
          List<Pair<Holder<Attribute>, AttributeModifier>> list = Lists.newArrayList();
          boolean flag = true;
  
@@ -32,13 +53,13 @@
 -                } else {
 -                    d0 = attributemodifier.amount() * 100.0;
 +                Attribute attribute = pair.getFirst().value();
-+                Component description = attribute.getModifierDescription(net.neoforged.neoforge.common.CommonHooks.getPlayer(), attributemodifier);
++                Component description = attribute.getModifierDescription(net.neoforged.neoforge.common.CommonHooks.getPlayer(), attributemodifier, tooltipFlag);
 +                if (description != null) {
 +                    p_331296_.accept(description);
 +                    continue;
                  }
 +                double d1 = attributemodifier.amount();
-+                double d0 = attribute.getAmountForDisplay(attributemodifier);
++                double d0 = attribute.getAmountForDisplay(attributemodifier, tooltipFlag);
  
                  if (d1 > 0.0) {
                      p_331296_.accept(

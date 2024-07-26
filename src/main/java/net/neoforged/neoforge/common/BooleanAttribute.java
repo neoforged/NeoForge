@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -40,7 +41,7 @@ public class BooleanAttribute extends Attribute {
 
     @Override
     @Nullable
-    public Component getModifierDescription(@Nullable Player player, AttributeModifier modifier) {
+    public Component getModifierDescription(@Nullable Player player, AttributeModifier modifier, TooltipFlag flag) {
         double amount = modifier.amount();
         AttributeModifier.Operation op = modifier.operation();
         if (amount == 1 && op == AttributeModifier.Operation.ADD_VALUE) {
@@ -51,6 +52,6 @@ public class BooleanAttribute extends Attribute {
             return Component.translatable("neoforge.attribute.modifier.disable", Component.translatable(this.getDescriptionId()))
                     .withStyle(this.getStyle(false));
         }
-        return super.getModifierDescription(player, modifier);
+        return super.getModifierDescription(player, modifier, flag);
     }
 }

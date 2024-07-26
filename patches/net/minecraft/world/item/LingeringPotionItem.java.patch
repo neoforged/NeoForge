@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/LingeringPotionItem.java
++++ b/net/minecraft/world/item/LingeringPotionItem.java
+@@ -19,7 +_,7 @@
+     @Override
+     public void appendHoverText(ItemStack p_42838_, Item.TooltipContext p_339607_, List<Component> p_42840_, TooltipFlag p_42841_) {
+         PotionContents potioncontents = p_42838_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+-        potioncontents.addPotionTooltip(p_42840_::add, 0.25F, p_339607_.tickRate());
++        potioncontents.addPotionTooltip(p_42840_::add, 0.25F, p_339607_.tickRate(), p_42841_);
+     }
+ 
+     @Override

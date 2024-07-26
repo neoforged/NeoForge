@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/SuspiciousStewItem.java
++++ b/net/minecraft/world/item/SuspiciousStewItem.java
+@@ -28,7 +_,7 @@
+                 list.add(suspicioussteweffects$entry.createEffectInstance());
+             }
+ 
+-            PotionContents.addPotionTooltip(list, p_259700_::add, 1.0F, p_339691_.tickRate());
++            PotionContents.addPotionTooltip(list, p_259700_::add, 1.0F, p_339691_.tickRate(), p_260021_);
+         }
+     }
+ 

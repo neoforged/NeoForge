@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/item/OminousBottleItem.java
++++ b/net/minecraft/world/item/OminousBottleItem.java
+@@ -63,6 +_,6 @@
+         super.appendHoverText(p_338470_, p_339656_, p_338463_, p_338317_);
+         Integer integer = p_338470_.getOrDefault(DataComponents.OMINOUS_BOTTLE_AMPLIFIER, Integer.valueOf(0));
+         List<MobEffectInstance> list = List.of(new MobEffectInstance(MobEffects.BAD_OMEN, 120000, integer, false, false, true));
+-        PotionContents.addPotionTooltip(list, p_338463_::add, 1.0F, p_339656_.tickRate());
++        PotionContents.addPotionTooltip(list, p_338463_::add, 1.0F, p_339656_.tickRate(), p_338317_);
+     }
+ }

@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.common.BooleanAttribute;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,14 +31,14 @@ public interface IAttributeExtension {
      * case, returning {@code modifier.amount() * 10} for a more user-friendly value.
      * <p>
      * For a full control over the attribute modifier description,
-     * override the {@link #getModifierDescription(Player, AttributeModifier)} instead.
+     * override the {@link #getModifierDescription(Player, AttributeModifier, TooltipFlag)} instead.
      * 
      * @param modifier the attribute modifier
      * @return the amount for display
-     * @see net.minecraft.world.item.ItemStack#addModifierTooltip(Consumer, Player, Holder, AttributeModifier)
-     * @see net.minecraft.world.item.alchemy.PotionContents#addPotionTooltip(Iterable, Consumer, float, float, Component)
+     * @see net.minecraft.world.item.ItemStack#addModifierTooltip(Consumer, Player, Holder, AttributeModifier, TooltipFlag)
+     * @see net.minecraft.world.item.alchemy.PotionContents#addPotionTooltip(Iterable, Consumer, float, float, TooltipFlag, Component)
      */
-    default double getAmountForDisplay(AttributeModifier modifier) {
+    default double getAmountForDisplay(AttributeModifier modifier, TooltipFlag flag) {
         if (modifier.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_BASE || modifier.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
             return modifier.amount() * 100;
         } else if (this == Attributes.KNOCKBACK_RESISTANCE.value()) {
@@ -55,11 +56,11 @@ public interface IAttributeExtension {
      * @param player   the local player, might be null.
      * @param modifier the attribute modifier
      * @return the custom desription, or null to fall back to default description.
-     * @see net.minecraft.world.item.ItemStack#addModifierTooltip(Consumer, Player, Holder, AttributeModifier)
-     * @see net.minecraft.world.item.alchemy.PotionContents#addPotionTooltip(Iterable, Consumer, float, float, Component)
+     * @see net.minecraft.world.item.ItemStack#addModifierTooltip(Consumer, Player, Holder, AttributeModifier, TooltipFlag)
+     * @see net.minecraft.world.item.alchemy.PotionContents#addPotionTooltip(Iterable, Consumer, float, float, TooltipFlag, Component)
      */
     @Nullable
-    default Component getModifierDescription(@Nullable Player player, AttributeModifier modifier) {
+    default Component getModifierDescription(@Nullable Player player, AttributeModifier modifier, TooltipFlag flag) {
         return null;
     }
 }

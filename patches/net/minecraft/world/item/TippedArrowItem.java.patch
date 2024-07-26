@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/TippedArrowItem.java
++++ b/net/minecraft/world/item/TippedArrowItem.java
+@@ -23,7 +_,7 @@
+     public void appendHoverText(ItemStack p_43359_, Item.TooltipContext p_339681_, List<Component> p_43361_, TooltipFlag p_43362_) {
+         PotionContents potioncontents = p_43359_.get(DataComponents.POTION_CONTENTS);
+         if (potioncontents != null) {
+-            potioncontents.addPotionTooltip(p_43361_::add, 0.125F, p_339681_.tickRate());
++            potioncontents.addPotionTooltip(p_43361_::add, 0.125F, p_339681_.tickRate(), p_43362_);
+         }
+     }
+ 

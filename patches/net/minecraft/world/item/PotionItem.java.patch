@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/PotionItem.java
++++ b/net/minecraft/world/item/PotionItem.java
+@@ -142,7 +_,7 @@
+     public void appendHoverText(ItemStack p_42988_, Item.TooltipContext p_339608_, List<Component> p_42990_, TooltipFlag p_42991_) {
+         PotionContents potioncontents = p_42988_.get(DataComponents.POTION_CONTENTS);
+         if (potioncontents != null) {
+-            potioncontents.addPotionTooltip(p_42990_::add, 1.0F, p_339608_.tickRate());
++            potioncontents.addPotionTooltip(p_42990_::add, 1.0F, p_339608_.tickRate(), p_42991_);
+         }
+     }
+ }

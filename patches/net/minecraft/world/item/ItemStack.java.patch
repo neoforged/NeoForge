@@ -157,12 +157,29 @@
          }
      }
  
-     private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_) {
+-    private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_) {
++    private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_, TooltipFlag tooltipFlag) {
          ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
 +        // Neo: We don't need to call IItemStackExtension#getAttributeModifiers here, since it will be done in forEachModifier.
          if (itemattributemodifiers.showInTooltip()) {
              for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
                  MutableBoolean mutableboolean = new MutableBoolean(true);
+@@ -800,13 +_,13 @@
+                         mutableboolean.setFalse();
+                     }
+ 
+-                    this.addModifierTooltip(p_330796_, p_330530_, p_348379_, p_348380_);
++                    this.addModifierTooltip(p_330796_, p_330530_, p_348379_, p_348380_, tooltipFlag);
+                 });
+             }
+         }
+     }
+ 
+-    private void addModifierTooltip(Consumer<Component> p_331062_, @Nullable Player p_330317_, Holder<Attribute> p_330626_, AttributeModifier p_331252_) {
++    private void addModifierTooltip(Consumer<Component> p_331062_, @Nullable Player p_330317_, Holder<Attribute> p_330626_, AttributeModifier p_331252_, TooltipFlag tooltipFlag) {
+         double d0 = p_331252_.amount();
+         boolean flag = false;
+         if (p_330317_ != null) {
 @@ -819,15 +_,13 @@
              }
          }
@@ -176,12 +193,12 @@
 -        } else {
 -            d1 = d0;
 +        Attribute attribute = p_330626_.value();
-+        Component description = attribute.getModifierDescription(p_330317_, p_331252_);
++        Component description = attribute.getModifierDescription(p_330317_, p_331252_, tooltipFlag);
 +        if (description != null) {
 +            p_331062_.accept(description);
 +            return;
          }
-+        double d1 = flag ? d0 : attribute.getAmountForDisplay(p_331252_);
++        double d1 = flag ? d0 : attribute.getAmountForDisplay(p_331252_, tooltipFlag);
  
          if (flag) {
              p_331062_.accept(
