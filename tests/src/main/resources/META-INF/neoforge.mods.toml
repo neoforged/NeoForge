@@ -246,5 +246,7 @@ modId="player_spawn_phantoms_event_test"
 modId="conditional_codec_test"
 [[mods]]
 modId="may_fly_attribute_item"
+[[mods]]
+modId="client_information_updated_test"
 
 # ADD ABOVE THIS LINE
