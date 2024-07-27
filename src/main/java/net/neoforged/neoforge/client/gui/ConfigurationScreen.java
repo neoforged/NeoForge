@@ -111,8 +111,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     private static final class TooltipConfirmScreen extends ConfirmScreen {
         boolean seenYes = false;
 
-        private TooltipConfirmScreen(BooleanConsumer p_95658_, Component p_95659_, Component p_95660_, Component p_95661_, Component p_95662_) {
-            super(p_95658_, p_95659_, p_95660_, p_95661_, p_95662_);
+        private TooltipConfirmScreen(BooleanConsumer callback, Component title, Component message, Component yesButton, Component noButton) {
+            super(callback, title, message, yesButton, noButton);
         }
 
         @Override
