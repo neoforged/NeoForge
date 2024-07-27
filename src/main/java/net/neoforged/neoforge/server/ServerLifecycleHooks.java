@@ -24,8 +24,10 @@ import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
@@ -186,6 +188,26 @@ public class ServerLifecycleHooks {
                     entitiesWithoutPlacements.add(data.type);
                 });
             });
+
+            for (MobCategory mobCategory : mobSettings.getSpawnerTypes()) {
+                for (MobSpawnSettings.SpawnerData spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
+                    if (spawnerData.type.getCategory() != mobCategory) {
+                        if (spawnerData.type == EntityType.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE))) {
+                            LOGGER.warn("Detected {} added under {} mob category for {} biome! " +
+                                    "This is a vanilla bug. See https://bugs.mojang.com/browse/MC-1788 for more details.",
+                                    spawnerData.type.toString(),
+                                    mobCategory,
+                                    biomeHolder.getKey().location());
+                        } else {
+                            LOGGER.warn("Detected {} added under {} mob category for {} biome! " +
+                                    "Mobs should be added to biomes under the same mob category that the mob was registered as to prevent mob cap spawning issues.",
+                                    spawnerData.type.toString(),
+                                    mobCategory,
+                                    biomeHolder.getKey().location());
+                        }
+                    }
+                }
+            }
         });
         // Rebuild the indexed feature list
         registries.registryOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
