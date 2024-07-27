@@ -156,7 +156,7 @@
   ],
   "neoforge.configuration.uitext.longstring": [
     {
-      "text": "This value is too long to be edited in the UI. Please edit it in the config file.",
+      "text": "Це значення задовге для редагування в інтерфейсі. Будь ласка, відредагуйте його у файлі конфігурації.",
       "color": "червоний"
     }
   ],
