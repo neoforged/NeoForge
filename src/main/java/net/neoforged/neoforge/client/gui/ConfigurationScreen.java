@@ -884,7 +884,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         protected Element createSection(final String key, final UnmodifiableConfig subconfig, final UnmodifiableConfig subsection) {
             if (subconfig.isEmpty()) return null;
             return new Element(Component.translatable(SECTION, getTranslationComponent(key)), getTooltipComponent(key, null),
-                    Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(key + ".button", SECTION_TEXT))),
+                    Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(getTranslationKey(key) + ".button", SECTION_TEXT))),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
                                     k -> new ConfigurationSectionScreen(context, this, subconfig.valueMap(), key, subsection.entrySet(), Component.translatable(getTranslationKey(key))).rebuild())))
                             .tooltip(Tooltip.create(getTooltipComponent(key, null)))
@@ -896,7 +896,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         @Nullable
         protected <T> Element createList(final String key, final ListValueSpec spec, final ModConfigSpec.ConfigValue<List<T>> list) {
             return new Element(Component.translatable(SECTION, getTranslationComponent(key)), getTooltipComponent(key, null),
-                    Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(key + ".button", SECTION_TEXT))),
+                    Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(getTranslationKey(key) + ".button", SECTION_TEXT))),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
                                     k -> new ConfigurationListScreen<>(Context.list(context, this), key, Component.translatable(CRUMB, this.getTitle(), getTranslationComponent(key)), spec, list)).rebuild()))
                             .tooltip(Tooltip.create(getTooltipComponent(key, null))).build(),
