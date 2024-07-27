@@ -194,3 +194,30 @@
      }
  
      private static void renderQuadList(
+@@ -724,22 +_,22 @@
+             int l = modelblockrenderer$cache.getLightColor(blockstate3, p_111168_, blockpos$mutableblockpos);
+             float f3 = modelblockrenderer$cache.getShadeBrightness(blockstate3, p_111168_, blockpos$mutableblockpos);
+             BlockState blockstate4 = p_111168_.getBlockState(
+-                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[0]).move(p_111171_)
++                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[0]) // Neo: remove move() to avoid oversampling (MC-43968)
+             );
+             boolean flag = !blockstate4.isViewBlocking(p_111168_, blockpos$mutableblockpos)
+                 || blockstate4.getLightBlock(p_111168_, blockpos$mutableblockpos) == 0;
+             BlockState blockstate5 = p_111168_.getBlockState(
+-                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[1]).move(p_111171_)
++                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[1]) // Neo: remove move() to avoid oversampling (MC-43968)
+             );
+             boolean flag1 = !blockstate5.isViewBlocking(p_111168_, blockpos$mutableblockpos)
+                 || blockstate5.getLightBlock(p_111168_, blockpos$mutableblockpos) == 0;
+             BlockState blockstate6 = p_111168_.getBlockState(
+-                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[2]).move(p_111171_)
++                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[2]) // Neo: remove move() to avoid oversampling (MC-43968)
+             );
+             boolean flag2 = !blockstate6.isViewBlocking(p_111168_, blockpos$mutableblockpos)
+                 || blockstate6.getLightBlock(p_111168_, blockpos$mutableblockpos) == 0;
+             BlockState blockstate7 = p_111168_.getBlockState(
+-                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[3]).move(p_111171_)
++                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[3]) // Neo: remove move() to avoid oversampling (MC-43968)
+             );
+             boolean flag3 = !blockstate7.isViewBlocking(p_111168_, blockpos$mutableblockpos)
+                 || blockstate7.getLightBlock(p_111168_, blockpos$mutableblockpos) == 0;
