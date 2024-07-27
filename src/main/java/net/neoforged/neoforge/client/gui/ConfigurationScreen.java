@@ -607,11 +607,11 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                                 case null -> null;
 
                                 default -> switch (cv) {
-                                    case ModConfigSpec.BooleanValue value -> createBooleanValue(key, valueSpec, value, value::set);
-                                    case ModConfigSpec.IntValue value -> createIntegerValue(key, valueSpec, value, value::set);
-                                    case ModConfigSpec.LongValue value -> createLongValue(key, valueSpec, value, value::set);
-                                    case ModConfigSpec.DoubleValue value -> createDoubleValue(key, valueSpec, value, value::set);
-                                    case ModConfigSpec.EnumValue value -> createEnumValue(key, valueSpec, value, value::set);
+                                    case ModConfigSpec.BooleanValue value -> createBooleanValue(key, valueSpec, value::getRaw, value::set);
+                                    case ModConfigSpec.IntValue value -> createIntegerValue(key, valueSpec, value::getRaw, value::set);
+                                    case ModConfigSpec.LongValue value -> createLongValue(key, valueSpec, value::getRaw, value::set);
+                                    case ModConfigSpec.DoubleValue value -> createDoubleValue(key, valueSpec, value::getRaw, value::set);
+                                    case ModConfigSpec.EnumValue value -> createEnumValue(key, valueSpec, (Supplier) value::getRaw, (Consumer) value::set);
                                     default -> createOtherValue(key, cv);
                                 };
                             };
