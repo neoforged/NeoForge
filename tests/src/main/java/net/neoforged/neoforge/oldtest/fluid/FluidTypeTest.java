@@ -99,7 +99,7 @@ public class FluidTypeTest {
     public FluidTypeTest(IEventBus modEventBus) {
         if (ENABLE) {
             logger = LogManager.getLogger();
-            NeoForgeMod.enableMilkFluid();
+            NeoForgeMod.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA();
 
             FLUID_TYPES.register(modEventBus);
             FLUIDS.register(modEventBus);

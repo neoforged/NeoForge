@@ -21,7 +21,7 @@ public class MilkFluidTest {
 
     public MilkFluidTest() {
         if (ENABLE) {
-            NeoForgeMod.enableMilkFluid();
+            NeoForgeMod.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA();
             NeoForge.EVENT_BUS.addListener(MilkFluidTest::useMilk);
         }
     }

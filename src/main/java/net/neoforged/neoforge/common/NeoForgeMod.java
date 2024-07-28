@@ -489,7 +489,7 @@ public class NeoForgeMod {
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
      */
-    public static void enableMilkFluid() {
+    public static void AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA() {
         enableMilkFluid = true;
     }
 
@@ -497,11 +497,11 @@ public class NeoForgeMod {
      * Run this method during mod constructor to enable {@link net.minecraft.FileUtil#RESERVED_WINDOWS_FILENAMES_NEOFORGE} regex being used for filepath validation.
      * Fixes MC-268617 at cost of vanilla incompat edge cases with files generated with this activated and them migrated to vanilla instance - See PR #767
      */
-    public static void enableProperFilenameValidation() {
+    public static void AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA() {
         enableProperFilenameValidation = true;
     }
 
-    public static boolean getProperFilenameValidation() {
+    public static boolean AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA() {
         return enableProperFilenameValidation;
     }
 
