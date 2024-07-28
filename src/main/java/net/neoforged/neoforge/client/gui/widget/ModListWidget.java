@@ -86,9 +86,20 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-            parent.setSelected(this);
+            parent.setSelected(isFocused() ? null : this);
             ModListWidget.this.setSelected(this);
             return false;
+        }
+
+        @Override
+        public void setFocused(boolean p_265302_) {
+            parent.setSelected(p_265302_ ? this : null);
+            ModListWidget.this.setSelected(p_265302_ ? this : null);
+        }
+
+        @Override
+        public boolean isFocused() {
+            return ModListWidget.this.getSelected() == this;
         }
 
         public IModInfo getInfo() {
