@@ -16,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link Player#attack(Entity)},
  * {@code Player#hurtCurrentlyUsedShield(float)},
  * {@link Player#interactOn(Entity, InteractionHand)},
- * {@link CommonHooks#getCraftingRemainingItem(ItemStack)},
+ * {@link CommonHooks#getCraftingRemainingItem(ItemStack, Level)},
  * {@link ServerPlayerGameMode#useItem(ServerPlayer, Level, ItemStack, InteractionHand)} ,
  * {@link ServerPlayerGameMode#useItemOn(ServerPlayer, Level, ItemStack, InteractionHand, BlockHitResult)}
  * and {@link ServerPlayerGameMode#destroyBlock(BlockPos)}.<br>

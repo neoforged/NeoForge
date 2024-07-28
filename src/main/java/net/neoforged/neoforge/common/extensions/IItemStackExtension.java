@@ -46,7 +46,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
 /*
- * Extension added to ItemStack that bounces to ItemSack sensitive Item methods. Typically this is just for convince.
+ * Extension added to ItemStack that bounces to ItemStack sensitive Item methods. Typically, this is just for convince.
  */
 public interface IItemStackExtension {
     // Helpers for accessing Item data
@@ -59,9 +59,22 @@ public interface IItemStackExtension {
      * Returns a full ItemStack instance of the result.
      *
      * @return The resulting ItemStack
+     *
+     * @deprecated Use {@link IItemExtension#getCraftingRemainingItem(ItemStack, Level)} instead.
      */
+    @Deprecated(since = "1.20")
     default ItemStack getCraftingRemainingItem() {
-        return self().getItem().getCraftingRemainingItem(self());
+        return getCraftingRemainingItem(null);
+    }
+
+    /**
+     * ItemStack sensitive version of {@link Item#getCraftingRemainingItem()}.
+     * Returns a full ItemStack instance of the result.
+     *
+     * @return The resulting ItemStack
+     */
+    default ItemStack getCraftingRemainingItem(@Nullable Level level) {
+        return self().getItem().getCraftingRemainingItem(self(), level);
     }
 
     /**

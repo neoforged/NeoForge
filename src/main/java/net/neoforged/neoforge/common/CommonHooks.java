@@ -725,9 +725,17 @@ public class CommonHooks {
         return craftingPlayer.get();
     }
 
+    /**
+     * Use {@link CommonHooks#getCraftingRemainingItem(ItemStack, Level)} instead.
+     */
+    @Deprecated(since = "1.20")
     public static ItemStack getCraftingRemainingItem(ItemStack stack) {
+        return getCraftingRemainingItem(stack, null);
+    }
+
+    public static ItemStack getCraftingRemainingItem(ItemStack stack, @Nullable Level level) {
         if (stack.getItem().hasCraftingRemainingItem(stack)) {
-            stack = stack.getItem().getCraftingRemainingItem(stack);
+            stack = stack.getItem().getCraftingRemainingItem(stack, level);
             if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
                 EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
                 return ItemStack.EMPTY;

@@ -184,14 +184,29 @@ public interface IItemExtension {
      *
      * @param itemStack The current ItemStack
      * @return The resulting ItemStack
+     *
+     * @deprecated Use {@link IItemExtension#getCraftingRemainingItem(ItemStack, Level)} instead.
+     */
+    @Deprecated(since = "1.20")
+    default ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+        return getCraftingRemainingItem(itemStack, null);
+    }
+
+    /**
+     * ItemStack sensitive version of {@link Item#getCraftingRemainingItem()}.
+     * Returns a full ItemStack instance of the result.
+     *
+     * @param itemStack The current ItemStack
+     * @return The resulting ItemStack
      */
     @SuppressWarnings("deprecation")
-    default ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+    default ItemStack getCraftingRemainingItem(ItemStack itemStack, @Nullable Level level) {
         if (!hasCraftingRemainingItem(itemStack)) {
             return ItemStack.EMPTY;
         }
         return new ItemStack(self().getCraftingRemainingItem());
     }
+
 
     /**
      * ItemStack sensitive version of {@link Item#hasCraftingRemainingItem()}.
