@@ -12,7 +12,7 @@ apply plugin: 'net.neoforged.gradleutils'
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '20.6'
+    from '21.0'
     disableAutomaticPublicationRegistration()
 }
 
