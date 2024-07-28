@@ -30,8 +30,9 @@ import org.jetbrains.annotations.ApiStatus;
  * <li>{@link LivingIncomingDamageEvent} is fired.</li>
  * <li>{@link LivingShieldBlockEvent} fires and the result determines if shield effects apply.</li>
  * <li>{@link LivingEntity#actuallyHurt} is called.</li>
- * <li>armor, magic, mob_effect, and absorption reductions are captured in the DamageContainer.</li>
+ * <li>armor, magic, and mob_effect reductions are captured in the DamageContainer.</li>
  * <li>{@link LivingDamageEvent.Pre} is fired.</li>
+ * <li>absorption reductions are captured in the DamageContainer.</li>
  * <li>if the damage is not zero, entity health is modified and recorded and {@link LivingDamageEvent.Post} is fired.</li>
  * </ol>
  */
