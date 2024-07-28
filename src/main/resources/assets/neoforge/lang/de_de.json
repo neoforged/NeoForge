@@ -213,10 +213,17 @@
   "neoforge.configuration.uitext.server": "Servereinstellungen",
   "neoforge.configuration.uitext.startup": "Starteinstellungen",
   "neoforge.configuration.uitext.restart.game.title": "Minecraft muss neu gestartet werden",
-  "neoforge.configuration.uitext.restart.game.text": "Eine oder mehrere der geänderten Einstellungen beeinflussen wie das Spiel startet.",
+  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed will only take effect when the game is started.",
   "neoforge.configuration.uitext.restart.server.title": "Spielstand muss neu geladen werden",
-  "neoforge.configuration.uitext.restart.server.text": "Eine oder mehrere der geänderten Einstellungen beeinflussen wie ein Spielstand geladen wird.",
-  "neoforge.configuration.uitext.restart.return": "Noch nicht...",
+  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
+  "neoforge.configuration.uitext.restart.return": "Ignore",
+  "neoforge.configuration.uitext.restart.return.tooltip": [
+    {
+      "text": "Your changes will have no effect until you restart!",
+      "color": "red",
+      "bold": true
+    }
+  ],
   "neoforge.configuration.title": "NeoForge-Konfiguration",
   "neoforge.configuration.section.neoforge.client.toml": "Client-Einstellungen",
   "neoforge.configuration.section.neoforge.client.toml.title": "Client-Einstellungen",
