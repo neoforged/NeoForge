@@ -86,15 +86,19 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+            // clicking on a selected item a second time unselects it
             parent.setSelected(isFocused() ? null : this);
-            ModListWidget.this.setSelected(this);
+            ModListWidget.this.setSelected(isFocused() ? null : this);
             return false;
         }
 
         @Override
         public void setFocused(boolean p_265302_) {
-            parent.setSelected(p_265302_ ? this : null);
-            ModListWidget.this.setSelected(p_265302_ ? this : null);
+            // ignore focus loss so the item stays selected when tabbing to the config button
+            if (p_265302_) {
+                parent.setSelected(this);
+                ModListWidget.this.setSelected(this);
+            }
         }
 
         @Override
