@@ -93,9 +93,9 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         }
 
         @Override
-        public void setFocused(boolean p_265302_) {
+        public void setFocused(boolean focused) {
             // ignore focus loss so the item stays selected when tabbing to the config button
-            if (p_265302_) {
+            if (focused) {
                 parent.setSelected(this);
                 ModListWidget.this.setSelected(this);
             }
