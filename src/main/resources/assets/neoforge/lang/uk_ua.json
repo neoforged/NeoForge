@@ -213,13 +213,13 @@
   "neoforge.configuration.uitext.server": "Серверні параметри",
   "neoforge.configuration.uitext.startup": "Запускові параметри",
   "neoforge.configuration.uitext.restart.game.title": "Minecraft повинен бути перезавантаженим",
-  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed will only take effect when the game is started.",
+  "neoforge.configuration.uitext.restart.game.text": "Один чи кілька параметри конфігурації, які були змінені, набудуть чинності лише після запуску гри.",
   "neoforge.configuration.uitext.restart.server.title": "Світ має бути перезавантажений",
-  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
-  "neoforge.configuration.uitext.restart.return": "Ignore",
+  "neoforge.configuration.uitext.restart.server.text": "Один чи кілька параметрів конфігурації, які були змінені, набудуть чинності лише після перезавантаження світу.",
+  "neoforge.configuration.uitext.restart.return": "Ігнорувати",
   "neoforge.configuration.uitext.restart.return.tooltip": [
     {
-      "text": "Your changes will have no effect until you restart!",
+      "text": "Зміни не матимуть ніякого ефекту, поки ви не перезавантажитеся!",
       "color": "червоний",
       "bold": true
     }
