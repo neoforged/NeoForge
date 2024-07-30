@@ -49,23 +49,23 @@ dependencies {
 
 runs {
     client {
-        configure neoforgeProject.runTypes.client
+        configure neoforgeProject.runTypes['client']
     }
     junit {
-        configure neoforgeProject.runTypes.junit
+        configure neoforgeProject.runTypes['junit']
         unitTestSource sourceSets.junit
     }
     server {
-        configure neoforgeProject.runTypes.server
+        configure neoforgeProject.runTypes['server']
     }
     gameTestServer {
-        configure neoforgeProject.runTypes.gameTestServer
+        configure neoforgeProject.runTypes['gameTestServer']
     }
     gameTestClient {
-        configure neoforgeProject.runTypes.gameTestClient
+        configure neoforgeProject.runTypes['gameTestClient']
     }
     data {
-        configure neoforgeProject.runTypes.data
+        configure neoforgeProject.runTypes['data']
 
         programArguments.addAll '--flat', '--all', '--validate',
                 '--mod', 'data_gen_test',
@@ -95,7 +95,7 @@ runs {
 
 //We need the assets and natives tasks from the forge project.
 runs.configureEach {
-    dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
+    dependsOn.addAll(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
     modSource neoforgeProject.sourceSets.main
     modSource testframeworkProject.sourceSets.main
 }
