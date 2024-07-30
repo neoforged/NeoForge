@@ -9,17 +9,29 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistrationInfo;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
@@ -31,6 +43,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
+import net.neoforged.neoforge.mixins.MappedRegistryAccessor;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -129,6 +142,18 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
+    private static <T> void ensureProperSync(boolean modified, Holder.Reference<T> holder, Registry<T> registry) {
+        if (modified) {
+            // If the object's networked data has been modified, we force it to sync by removing its original KnownPack info.
+            Optional<RegistrationInfo> originalInfo = registry.registrationInfo(holder.key());
+            originalInfo.ifPresent(info -> {
+                RegistrationInfo newInfo = new RegistrationInfo(Optional.empty(), info.lifecycle());
+                //noinspection unchecked
+                ((MappedRegistryAccessor<T>) registry).neoforge$getRegistrationInfos().put(holder.key(), newInfo);
+            });
+        }
+    }
+
     private static void runModifiers(final MinecraftServer server) {
         final RegistryAccess registries = server.registryAccess();
 
@@ -142,9 +167,25 @@ public class ServerLifecycleHooks {
                 .map(Holder::value)
                 .toList();
 
+        final Set<EntityType<?>> entitiesWithoutPlacements = new HashSet<>();
+
         // Apply sorted biome modifiers to each biome.
-        registries.registryOrThrow(Registries.BIOME).holders().forEach(biomeHolder -> {
-            biomeHolder.value().modifiableBiomeInfo().applyBiomeModifiers(biomeHolder, biomeModifiers);
+        final var biomeRegistry = registries.registryOrThrow(Registries.BIOME);
+        biomeRegistry.holders().forEach(biomeHolder -> {
+            final Biome biome = biomeHolder.value();
+            ensureProperSync(
+                    biome.modifiableBiomeInfo()
+                            .applyBiomeModifiers(biomeHolder, biomeModifiers, registries),
+                    biomeHolder,
+                    biomeRegistry);
+
+            final MobSpawnSettings mobSettings = biome.getMobSettings();
+            mobSettings.getSpawnerTypes().forEach(category -> {
+                mobSettings.getMobs(category).unwrap().forEach(data -> {
+                    if (SpawnPlacements.hasPlacement(data.type)) return;
+                    entitiesWithoutPlacements.add(data.type);
+                });
+            });
         });
         // Rebuild the indexed feature list
         registries.registryOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
@@ -155,5 +196,10 @@ public class ServerLifecycleHooks {
         registries.registryOrThrow(Registries.STRUCTURE).holders().forEach(structureHolder -> {
             structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers);
         });
+
+        if (!entitiesWithoutPlacements.isEmpty() && !FMLLoader.isProduction()) {
+            LOGGER.error("The following entities have not registered to the RegisterSpawnPlacementsEvent, but a spawn entry was found. This will mean that the entity doesn't have restrictions on its spawn location, please register a spawn placement for the entity, you can register with NO_RESTRICTIONS if you don't want any restrictions."
+                    + entitiesWithoutPlacements.stream().map(EntityType::getKey).map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
+        }
     }
 }

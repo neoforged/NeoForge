@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.entity.living;
 
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -12,11 +13,14 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity.RemovalReason;
@@ -36,13 +40,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
@@ -50,6 +61,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTestPlayer;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = { LivingEntityTests.GROUP + ".event", "event" })
@@ -158,7 +170,7 @@ public class LivingEntityEventTests {
         final var specialAggro = reg.attachments().registerSimpleAttachment("special_aggro", () -> false);
         test.eventListeners().forge().addListener((final LivingChangeTargetEvent event) -> {
             if (event.getTargetType() == LivingChangeTargetEvent.LivingTargetType.MOB_TARGET &&
-                    event.getEntity().getData(specialAggro) && event.getNewTarget() instanceof Player player && player.isHolding(Items.STICK)) {
+                    event.getEntity().getData(specialAggro) && event.getNewAboutToBeSetTarget() instanceof Player player && player.isHolding(Items.STICK)) {
                 event.setCanceled(true);
             }
         });
@@ -278,5 +290,98 @@ public class LivingEntityEventTests {
 
             helper.succeed();
         });
+    }
+
+    @GameTest(timeoutTicks = 3000)
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests the damage sequence at all stages")
+    static void livingDamageSequenceEvents(final DynamicTest test, final RegistrationHelper reg) {
+        final Component NAME = Component.literal("damage_sequence_player");
+        AttachmentType<Float> VALUE_ARMOR = reg.attachments().registerSimpleAttachment("armor_reduction", () -> 0f);
+        AttachmentType<Float> VALUE_ENCHANTMENTS = reg.attachments().registerSimpleAttachment("enchant_reduction", () -> 0f);
+        AttachmentType<Float> VALUE_ABSORPTION = reg.attachments().registerSimpleAttachment("absorption_reduction", () -> 0f);
+        AttachmentType<Float> VALUE_MOB_EFFECTS = reg.attachments().registerSimpleAttachment("effect_reduction", () -> 0f);
+        AttachmentType<Float> VALUE_PRE_POST_DAMAGE = reg.attachments().registerSimpleAttachment("pre_post_damage", () -> 0f);
+        AttachmentType<Float> VALUE_NEW_DAMAGE = reg.attachments().registerSimpleAttachment("new_damage", () -> 0f);
+
+        /* This event listener watches for the first event in the damage sequence.  At this stage we expect to  add our
+         * reduction functions and replace the incoming damage amount with a new value. */
+        test.eventListeners().forge().addListener((final LivingIncomingDamageEvent event) -> {
+            if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
+                event.addReductionModifier(DamageContainer.Reduction.ARMOR, (container, reductionIn) -> reductionIn + 2);
+                event.addReductionModifier(DamageContainer.Reduction.ENCHANTMENTS, (container, reductionIn) -> reductionIn + 2);
+                event.addReductionModifier(DamageContainer.Reduction.ABSORPTION, (container, reductionIn) -> reductionIn + 2);
+                event.addReductionModifier(DamageContainer.Reduction.MOB_EFFECTS, (container, reductionIn) -> reductionIn + 2);
+
+                event.setAmount(20);
+            }
+        });
+
+        /* This event listener occurs in the damage sequence after reductions have been applied.  We check at the end of
+        *  the test, but our reduction functions should show values calculated from both our changed new damage amount
+        *  and the addition of 2 to each reduction.
+        *
+        *  This event also allows a post-reductions change to the damage amount which will be  subsequently applied to
+        *  the player's health.  The current damage amount is captured for later checks and a new value is set.*/
+        test.eventListeners().forge().addListener((final LivingDamageEvent.Pre event) -> {
+            if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
+                player.setData(VALUE_ARMOR, event.getContainer().getReduction(DamageContainer.Reduction.ARMOR));
+                player.setData(VALUE_ENCHANTMENTS, event.getContainer().getReduction(DamageContainer.Reduction.ENCHANTMENTS));
+                player.setData(VALUE_MOB_EFFECTS, event.getContainer().getReduction(DamageContainer.Reduction.MOB_EFFECTS));
+                player.setData(VALUE_PRE_POST_DAMAGE, event.getNewDamage());
+                event.setNewDamage(15);
+            }
+        });
+
+        /* This event captures the change in new damage from the previous event for use in checks.*/
+        test.eventListeners().forge().addListener((final LivingDamageEvent.Post event) -> {
+            if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
+                player.setData(VALUE_ABSORPTION, event.getReduction(DamageContainer.Reduction.ABSORPTION));
+                player.setData(VALUE_NEW_DAMAGE, event.getNewDamage());
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
+                /* The player is given equipment with enchantments and effects to set the stage for non-zero reductions*/
+                .thenExecute(player -> {
+                    player.setCustomName(NAME);
+                    player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 11000));
+                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 11000));
+                    player.setItemSlot(EquipmentSlot.CHEST, Items.IRON_CHESTPLATE.getDefaultInstance());
+                    ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+                    enchants.set(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.PROTECTION), 4);
+                    EnchantmentHelper.setEnchantments(player.getItemBySlot(EquipmentSlot.CHEST), enchants.toImmutable());
+                    player.getFoodData().setFoodLevel(1);
+                })
+                /* ServerPlayers have spawn invulnerability.  This waits out that period.*/
+                .thenIdle(2001)
+                /* The player is damaged with a single point of damage which will be modified in the event listeners*/
+                .thenExecute(player -> player.hurt(new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolder(DamageTypes.MOB_ATTACK).get()), 1))
+                /* The player's health and all the stored values from the events are checked to ensure they match the
+                 * expected values from our reduction functions and changes to the damage value.*/
+                .thenWaitUntil(player -> {
+                    DecimalFormat formatter = new DecimalFormat("#.###");
+                    String playerHealth = formatter.format(player.getHealth());
+                    helper.assertTrue(playerHealth.equals("11"), "player health expected 11, actually " + playerHealth);
+
+                    String valueNewDamage = formatter.format(player.getData(VALUE_NEW_DAMAGE));
+                    helper.assertTrue(valueNewDamage.equals("9"), "new damage expected 9, actually " + valueNewDamage);
+
+                    String valuePrePostDamage = formatter.format(player.getData(VALUE_PRE_POST_DAMAGE));
+                    helper.assertTrue(valuePrePostDamage.equals("9.451"), "damage from sequence before change expected 9.451, actually " + valuePrePostDamage);
+
+                    String valueArmor = formatter.format(player.getData(VALUE_ARMOR));
+                    helper.assertTrue(valueArmor.equals("2.96"), "armor expected 2.959999, actually " + valueArmor);
+
+                    String valueEnchantments = formatter.format(player.getData(VALUE_ENCHANTMENTS));
+                    helper.assertTrue(valueEnchantments.equals("2.181"), "enchantment expected 2.18112, actually " + valueEnchantments);
+
+                    String valueMobEffects = formatter.format(player.getData(VALUE_MOB_EFFECTS));
+                    helper.assertTrue(valueMobEffects.equals("5.408"), "mob effect expected 5.408, actually " + valueMobEffects);
+
+                    String valueAbsorption = formatter.format(player.getData(VALUE_ABSORPTION));
+                    helper.assertTrue(valueAbsorption.equals("6"), "absorption expected 6, actually " + valueAbsorption);
+                })
+                .thenSucceed());
     }
 }

@@ -103,13 +103,17 @@ public enum KeyModifier {
         return NONE;
     }
 
-    public static boolean isKeyCodeModifier(InputConstants.Key key) {
+    public static KeyModifier getKeyModifier(InputConstants.Key key) {
         for (KeyModifier keyModifier : MODIFIER_VALUES) {
             if (keyModifier.matches(key)) {
-                return true;
+                return keyModifier;
             }
         }
-        return false;
+        return NONE;
+    }
+
+    public static boolean isKeyCodeModifier(InputConstants.Key key) {
+        return getKeyModifier(key) != NONE;
     }
 
     public static KeyModifier valueFromString(String stringValue) {

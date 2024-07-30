@@ -9,8 +9,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DynamicOps;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -82,6 +82,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -112,7 +113,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
+import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
 import net.neoforged.neoforge.event.enchanting.EnchantmentLevelSetEvent;
@@ -170,6 +171,7 @@ import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.ModifyCustomSpawnersEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
@@ -276,7 +278,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * zombie.finalizeSpawn(level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
@@ -289,7 +291,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * EventHooks.finalizeMobSpawn(zombie, level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
@@ -516,10 +518,9 @@ public class EventHooks {
         return event;
     }
 
-    public static int onItemExpire(ItemEntity entity, ItemStack item) {
-        if (item.isEmpty()) return -1;
-        ItemExpireEvent event = new ItemExpireEvent(entity, (item.isEmpty() ? 6000 : item.getItem().getEntityLifespan(item, entity.level())));
-        if (!NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
+    public static int onItemExpire(ItemEntity entity) {
+        ItemExpireEvent event = new ItemExpireEvent(entity);
+        NeoForge.EVENT_BUS.post(event);
         return event.getExtraLife();
     }
 
@@ -1083,34 +1084,31 @@ public class EventHooks {
      */
     @ApiStatus.Internal
     public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var searchDupes = new ObjectLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
-        // The ItemStackLinkedSet.TYPE_AND_TAG strategy cannot be used for the MutableHashedLinkedMap due to vanilla
-        // adding multiple identical ItemStacks with different TabVisibility values. The values also cannot be merged
-        // because it does not abide by the intended order. For example, vanilla adds all max enchanted books to the
-        // "ingredient" tab with "parent only" visibility, then also adds all enchanted books again in increasing order
-        // to their max values but with the "search only" visibility. Because the parent-only is added first and then
-        // the search-only entries are added after, the max enchantments would show up first and then the enchantments
-        // in increasing order up to max-1.
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(MutableHashedLinkedMap.BASIC, (stack, tabVisibility) -> {
-            if (!searchDupes.add(stack) && tabVisibility != CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) {
-                throw new IllegalStateException(
-                        "Accidentally adding the same item stack twice "
-                                + stack.getDisplayName().getString()
-                                + " to a Creative Mode Tab: "
-                                + tab.getDisplayName().getString());
-            }
-            return true;
-        });
+        final var parentEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
+        final var searchEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
 
         originalGenerator.accept(params, (stack, vis) -> {
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
-            entries.put(stack, vis);
-        });
-        ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
 
-        for (var entry : entries)
-            output.accept(entry.getKey(), entry.getValue());
+            if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
+                parentEntries.add(stack);
+            }
+
+            if (BuildCreativeModeTabContentsEvent.isSearchTab(vis)) {
+                searchEntries.add(stack);
+            }
+        });
+
+        ModLoader.postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, parentEntries, searchEntries));
+
+        for (var entry : parentEntries) {
+            output.accept(entry, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
+        }
+
+        for (var entry : searchEntries) {
+            output.accept(entry, CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+        }
     }
 
     /**
@@ -1124,5 +1122,18 @@ public class EventHooks {
         var event = new MobSplitEvent(parent, children);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    /**
+     * Fires the {@link ModifyCustomSpawnersEvent}. Returns the custom spawners list.
+     * 
+     * @param serverLevel    The server level.
+     * @param customSpawners The original custom spawners.
+     * @return The new custom spawners list.
+     */
+    public static List<CustomSpawner> getCustomSpawners(ServerLevel serverLevel, List<CustomSpawner> customSpawners) {
+        ModifyCustomSpawnersEvent event = new ModifyCustomSpawnersEvent(serverLevel, new ArrayList<>(customSpawners));
+        NeoForge.EVENT_BUS.post(event);
+        return event.getCustomSpawners();
     }
 }

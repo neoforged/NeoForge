@@ -9,12 +9,23 @@
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-@@ -298,6 +_,8 @@
+@@ -232,7 +_,6 @@
+         );
+         this.tickTime = p_215009_;
+         this.server = p_214999_;
+-        this.customSpawners = p_215008_;
+         this.serverLevelData = p_215002_;
+         ChunkGenerator chunkgenerator = p_215004_.generator();
+         boolean flag = p_214999_.forceSynchronousWrites();
+@@ -298,6 +_,11 @@
          this.randomSequences = Objects.requireNonNullElseGet(
              p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.factory(i), "random_sequences")
          );
 +
 +        net.neoforged.neoforge.attachment.LevelAttachmentsSavedData.init(this);
++        // Neo: Move the initialization of customSpawners to the end of costructor
++        // Providing a fully initialized ServerLevel instance for the ServerLevelEvent.CustomSpawners
++        this.customSpawners = net.neoforged.neoforge.event.EventHooks.getCustomSpawners(this, p_215008_);
      }
  
      @Deprecated
@@ -47,6 +58,15 @@
                              profilerfiller.pop();
                          }
                      }
+@@ -438,7 +_,7 @@
+             this.serverLevelData.setGameTime(i);
+             this.serverLevelData.getScheduledEvents().tick(this.server, i);
+             if (this.levelData.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
+-                this.setDayTime(this.levelData.getDayTime() + 1L);
++                this.setDayTime(this.levelData.getDayTime() + advanceDaytime());
+             }
+         }
+     }
 @@ -542,6 +_,7 @@
          BlockPos blockpos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p_295060_);
          BlockPos blockpos1 = blockpos.below();
@@ -114,7 +134,7 @@
  
 -        this.entityManager.addNewEntity(p_8854_);
 +        this.entityManager.addNewEntityWithoutEvent(p_8854_);
-+        p_8854_.onAddedToWorld();
++        p_8854_.onAddedToLevel();
      }
  
      private boolean addEntity(Entity p_8873_) {
@@ -124,7 +144,7 @@
          } else {
 -            return this.entityManager.addNewEntity(p_8873_);
 +            if (this.entityManager.addNewEntity(p_8873_)) {
-+                p_8873_.onAddedToWorld();
++                p_8873_.onAddedToLevel();
 +                return true;
 +            } else {
 +                return false;
@@ -194,7 +214,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1733,24 +_,61 @@
+@@ -1733,24 +_,106 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
@@ -216,14 +236,14 @@
  
              p_143375_.updateDynamicGameEventListener(DynamicGameEventListener::remove);
 +
-+            p_143375_.onRemovedFromWorld();
++            p_143375_.onRemovedFromLevel();
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_143375_, ServerLevel.this));
          }
  
          public void onSectionChange(Entity p_215086_) {
              p_215086_.updateDynamicGameEventListener(DynamicGameEventListener::move);
          }
-+    }
+     }
 +
 +    @Override
 +    public java.util.Collection<net.neoforged.neoforge.entity.PartEntity<?>> getPartEntities() {
@@ -257,5 +277,50 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void cleanCapabilityListenerReferences() {
 +        capListenerHolder.clean();
-     }
++    }
++
++    // Neo: Variable day time code
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void setDayTimeFraction(float dayTimeFraction) {
++        serverLevelData.setDayTimeFraction(dayTimeFraction);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public float getDayTimeFraction() {
++        return serverLevelData.getDayTimeFraction();
++    }
++
++    /**
++     * Returns the current ratio between game ticks and clock ticks. If this value is negative, no
++     * speed has been set and those two are coupled 1:1 (i.e. vanilla mode).
++     */
++    public float getDayTimePerTick() {
++        return serverLevelData.getDayTimePerTick();
++    }
++
++    /**
++     * This allows mods to set the rate time flows in a level. By default, each game tick the clock time
++     * also advances by one tick, with {@link Level#TICKS_PER_DAY} clock ticks (or 20 real-life minutes)
++     * forming a Minecraft day.
++     * <p>
++     * This can be sped up for shorter days by giving a higher number, or slowed down for longer days
++     * with a smaller number. A negative value will reset it back to vanilla logic.
++     * <p>
++     * This value can also be changed with the command <code>/neoforge day</code>, where you can set
++     * either the speed or a day length in minutes.
++     * <p>
++     * This has no effect when time progression is stopped.
++     * <p>
++     * While this still technically works when vanilla clients are connected, those will desync and
++     * experience a time jump once per second.
++     */
++    @Override
++    public void setDayTimePerTick(float dayTimePerTick) {
++        if (dayTimePerTick != getDayTimePerTick() && dayTimePerTick != 0f) {
++            serverLevelData.setDayTimePerTick(dayTimePerTick);
++            server.forceTimeSynchronization();
++        }
++    }
++
  }

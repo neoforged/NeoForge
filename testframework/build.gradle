@@ -42,7 +42,9 @@ tasks.withType(ProcessResources).configureEach {
     inputs.properties version: version
 
     filesMatching(['META-INF/neoforge.mods.toml']) {
-        expand version: version
+        expand file: [
+                jarVersion: version
+        ]
     }
 }
 
