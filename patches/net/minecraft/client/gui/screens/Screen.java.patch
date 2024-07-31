@@ -22,7 +22,7 @@
              Item.TooltipContext.of(p_281881_.level),
              p_281881_.player,
 -            p_281881_.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL
-+            net.neoforged.neoforge.client.util.NeoTooltipFlag.of(p_281881_.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL)
++            net.neoforged.neoforge.client.ClientTooltipFlag.of(p_281881_.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL)
          );
      }
  

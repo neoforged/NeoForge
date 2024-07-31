@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.util;
+package net.neoforged.neoforge.client;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.TooltipFlag;
@@ -14,9 +14,9 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * When calling any tooltip method that needs a TooltipFlag yourself, use either this (by calling {@link #of(TooltipFlag)}) or {@link TooltipFlag.Default} depending on the <em>logical</em> side you're on.
  */
-public record NeoTooltipFlag(boolean advanced, boolean creative, boolean shiftDown, boolean controlDown, boolean altDown) implements TooltipFlag {
+public record ClientTooltipFlag(boolean advanced, boolean creative, boolean shiftDown, boolean controlDown, boolean altDown) implements TooltipFlag {
     @ApiStatus.Internal
-    public NeoTooltipFlag {}
+    public ClientTooltipFlag {}
 
     @Override
     public boolean isAdvanced() {
@@ -43,11 +43,11 @@ public record NeoTooltipFlag(boolean advanced, boolean creative, boolean shiftDo
         return altDown;
     }
 
-    public NeoTooltipFlag asCreative() {
-        return new NeoTooltipFlag(advanced, true, shiftDown, controlDown, altDown);
+    public ClientTooltipFlag asCreative() {
+        return new ClientTooltipFlag(advanced, true, shiftDown, controlDown, altDown);
     }
 
     public static TooltipFlag of(TooltipFlag other) {
-        return new NeoTooltipFlag(other.isAdvanced(), other.isCreative(), Screen.hasShiftDown(), Screen.hasControlDown(), Screen.hasAltDown());
+        return new ClientTooltipFlag(other.isAdvanced(), other.isCreative(), Screen.hasShiftDown(), Screen.hasControlDown(), Screen.hasAltDown());
     }
 }
