@@ -138,13 +138,13 @@
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Diese Einstellungen können nicht geändert werden während Du Dein Spiel für andere geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
+      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
       "color": "rot"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Diese Einstellungen sind nur verfügbar während ein Spiel läuft.",
+      "text": "Settings in here are only available while a world is loaded.",
       "color": "rot"
     }
   ],
