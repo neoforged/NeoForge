@@ -560,6 +560,13 @@ public class Tags {
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
          */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
+        public static final TagKey<Item> SLIME_BALLS = tag("slime_balls");
+        /**
+         * Please use properly named {@link Tags.Items#SLIME_BALLS} tag and field instead
+         * <p></p>
+         * TODO: Remove in 1.21.1
+         */
+        @Deprecated(since = "1.21")
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
