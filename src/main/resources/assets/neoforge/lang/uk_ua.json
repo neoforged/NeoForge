@@ -138,13 +138,13 @@
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Налаштування тут не можуть бути відредаговані, поки ваша гра відкрита для локальної мережі. Будь ласка, поверніться до головного меню і завантажте світ ще раз.",
+      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
       "color": "червоний"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Налаштування тут доступні після завантаження світу.",
+      "text": "Settings in here are only available while a world is loaded.",
       "color": "червоний"
     }
   ],
