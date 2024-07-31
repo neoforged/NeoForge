@@ -43,10 +43,6 @@ public record ClientTooltipFlag(boolean advanced, boolean creative, boolean shif
         return altDown;
     }
 
-    public ClientTooltipFlag asCreative() {
-        return new ClientTooltipFlag(advanced, true, shiftDown, controlDown, altDown);
-    }
-
     public static TooltipFlag of(TooltipFlag other) {
         return new ClientTooltipFlag(other.isAdvanced(), other.isCreative(), Screen.hasShiftDown(), Screen.hasControlDown(), Screen.hasAltDown());
     }
