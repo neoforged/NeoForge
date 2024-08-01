@@ -14,7 +14,7 @@
      }
  
      @Override
-@@ -92,6 +_,13 @@
+@@ -92,10 +_,18 @@
          Language language = Language.getInstance();
          if (language != this.decomposedWith) {
              this.decomposedWith = language;
@@ -28,6 +28,11 @@
              String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
  
              try {
+                 Builder<FormattedText> builder = ImmutableList.builder();
++                s = net.neoforged.neoforge.common.text.TemplateParser.decomposeTemplate(this, this.args, s, builder::add);
+                 this.decomposeTemplate(s, builder::add);
+                 this.decomposedParts = builder.build();
+             } catch (TranslatableFormatException translatableformatexception) {
 @@ -170,6 +_,12 @@
      public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_237521_, Style p_237522_) {
          this.decompose();
