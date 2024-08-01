@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/level/block/WeatheringCopper.java
++++ b/net/minecraft/world/level/block/WeatheringCopper.java
+@@ -8,6 +_,8 @@
+ import java.util.function.Supplier;
+ import net.minecraft.util.StringRepresentable;
+ import net.minecraft.world.level.block.state.BlockState;
++import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
++import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
+ 
+ public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
+     Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
+@@ -44,7 +_,9 @@
+     Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
+ 
+     static Optional<Block> getPrevious(Block p_154891_) {
+-        return Optional.ofNullable(PREVIOUS_BY_BLOCK.get().get(p_154891_));
++        Oxidizable oxidizable = p_154891_.builtInRegistryHolder().getData(NeoForgeDataMaps.OXIDIZING_BLOCKS);
++        Block block = oxidizable == null ? PREVIOUS_BY_BLOCK.get().get(p_154891_) : oxidizable.before().orElse(null);
++        return Optional.ofNullable(block);
+     }
+ 
+     static Block getFirst(Block p_154898_) {
+@@ -62,7 +_,9 @@
+     }
+ 
+     static Optional<Block> getNext(Block p_154905_) {
+-        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(p_154905_));
++        Oxidizable oxidizable = p_154905_.builtInRegistryHolder().getData(NeoForgeDataMaps.OXIDIZING_BLOCKS);
++        Block block = oxidizable == null ? NEXT_BY_BLOCK.get().get(p_154905_) : oxidizable.after();
++        return Optional.ofNullable(block);
+     }
+ 
+     static BlockState getFirst(BlockState p_154907_) {

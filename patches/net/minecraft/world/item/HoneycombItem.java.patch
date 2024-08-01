@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/item/HoneycombItem.java
++++ b/net/minecraft/world/item/HoneycombItem.java
+@@ -18,6 +_,9 @@
+ import net.minecraft.world.level.block.entity.SignText;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.gameevent.GameEvent;
++import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
++import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
++import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
+ 
+ public class HoneycombItem extends Item implements SignApplicator {
+     public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
+@@ -87,7 +_,9 @@
+     }
+ 
+     public static Optional<BlockState> getWaxed(BlockState p_150879_) {
+-        return Optional.ofNullable(WAXABLES.get().get(p_150879_.getBlock())).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
++        Waxable waxable = p_150879_.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLE_BLOCKS);
++        Block block = waxable == null ? WAXABLES.get().get(p_150879_.getBlock()) : waxable.after();
++        return Optional.ofNullable(block).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
+     }
+ 
+     @Override
