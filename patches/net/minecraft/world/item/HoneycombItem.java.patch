@@ -21,7 +21,7 @@
      public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
 -
 +    public static final java.util.HashMap<Block, Block> INVERSE_DATAMAP = new java.util.HashMap<>();
-+    
++
      public HoneycombItem(Item.Properties p_150867_) {
          super(p_150867_);
      }

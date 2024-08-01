@@ -139,7 +139,7 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<Block, Waxable> WAXABLE_BLOCKS = DataMapType.builder(
             id("waxable"), Registries.BLOCK, Waxable.CODEC).build();
-    
+
     private static ResourceLocation id(final String name) {
         return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name);
     }

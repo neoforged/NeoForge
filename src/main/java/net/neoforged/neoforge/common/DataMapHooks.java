@@ -19,7 +19,7 @@ public class DataMapHooks {
                 WeatheringCopper.INVERSE_DATAMAP.put(oxidizable.after(), BuiltInRegistries.BLOCK.get(resourceKey));
             });
         });
-        
+
         event.ifRegistry(Registries.BLOCK, registry -> {
             registry.getDataMap(NeoForgeDataMaps.WAXABLE_BLOCKS).forEach((resourceKey, waxable) -> {
                 HoneycombItem.INVERSE_DATAMAP.put(waxable.after(), BuiltInRegistries.BLOCK.get(resourceKey));
