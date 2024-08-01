@@ -16,22 +16,23 @@
                  .build()
      );
 +    /**
-+     * @deprecated Use the Inverse map generated from the DataMap {@link HoneycombItem#INVERSE_DATAMAP}
++     * @deprecated Use the Inverse map generated from the DataMap {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_WAXABLES_DATAMAP}
 +     */
++    @Deprecated
      public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
 -
-+    public static final java.util.HashMap<Block, Block> INVERSE_DATAMAP = new java.util.HashMap<>();
 +
      public HoneycombItem(Item.Properties p_150867_) {
          super(p_150867_);
      }
-@@ -87,7 +_,9 @@
+@@ -87,7 +_,10 @@
      }
  
      public static Optional<BlockState> getWaxed(BlockState p_150879_) {
 -        return Optional.ofNullable(WAXABLES.get().get(p_150879_.getBlock())).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
 +        net.neoforged.neoforge.registries.datamaps.builtin.Waxable waxable = p_150879_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.WAXABLE_BLOCKS);
-+        Block block = waxable != null ? waxable.after() : null;
++        // TODO: 1.21.1 remove fallback to vanilla map
++        Block block = waxable == null ? WAXABLES.get().get(p_150879_.getBlock()) : waxable.after();
 +        return Optional.ofNullable(block).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
      }
  

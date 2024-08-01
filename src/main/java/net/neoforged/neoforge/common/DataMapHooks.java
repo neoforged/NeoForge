@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.common;
 
+import java.util.HashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.HoneycombItem;
-import net.minecraft.world.level.block.WeatheringCopper;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -17,17 +17,20 @@ import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
 public class DataMapHooks {
+    public static final HashMap<Block, Block> INVERSE_OXIDIZABLES_DATAMAP = new HashMap<>();
+    public static final HashMap<Block, Block> INVERSE_WAXABLES_DATAMAP = new HashMap<>();
+
     @SubscribeEvent
     public static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
         event.ifRegistry(Registries.BLOCK, registry -> {
             registry.getDataMap(NeoForgeDataMaps.OXIDIZING_BLOCKS).forEach((resourceKey, oxidizable) -> {
-                WeatheringCopper.INVERSE_DATAMAP.put(oxidizable.after(), BuiltInRegistries.BLOCK.get(resourceKey));
+                INVERSE_OXIDIZABLES_DATAMAP.put(oxidizable.after(), BuiltInRegistries.BLOCK.get(resourceKey));
             });
         });
 
         event.ifRegistry(Registries.BLOCK, registry -> {
             registry.getDataMap(NeoForgeDataMaps.WAXABLE_BLOCKS).forEach((resourceKey, waxable) -> {
-                HoneycombItem.INVERSE_DATAMAP.put(waxable.after(), BuiltInRegistries.BLOCK.get(resourceKey));
+                INVERSE_WAXABLES_DATAMAP.put(waxable.after(), BuiltInRegistries.BLOCK.get(resourceKey));
             });
         });
     }
