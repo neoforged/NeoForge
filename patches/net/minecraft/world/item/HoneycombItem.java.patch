@@ -11,7 +11,7 @@
      public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
          () -> ImmutableBiMap.<Block, Block>builder()
                  .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
-@@ -60,8 +_,12 @@
+@@ -60,6 +_,10 @@
                  .put(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB)
                  .build()
      );
@@ -20,11 +20,8 @@
 +     */
 +    @Deprecated
      public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
--
-+
+ 
      public HoneycombItem(Item.Properties p_150867_) {
-         super(p_150867_);
-     }
 @@ -87,7 +_,10 @@
      }
  
