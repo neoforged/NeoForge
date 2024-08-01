@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "Server mod list is not compatible",
   "fml.menu.multiplayer.networkincompatible": "Server network message list is not compatible",
   "fml.menu.multiplayer.missingdatapackregistries": "Missing required datapack registries: %1$s",
-  "fml.menu.branding": "%s (%s mods)",
+  "fml.menu.branding": "%s (%s módů)",
   "fml.menu.notification.title": "Startup Notification",
   "fml.menu.accessdenied.title": "Server Access Denied",
   "fml.menu.accessdenied.message": "Fancy Mod Loader could not connect to this server\nThe server %1$s has forbidden modded access",
@@ -107,45 +107,45 @@
   "commands.neoforge.chunkgen.started": "Generating %1$s chunks, in an area of %2$sx%3$s chunks (%4$sx%5$s blocks).",
   "commands.neoforge.chunkgen.success": "Generation Done!",
   "commands.neoforge.chunkgen.error": "Generation experienced %1$s errors! Check the log for more information.",
-  "commands.neoforge.chunkgen.stopped": "Generation stopped! %1$s out of %2$s chunks generated. (%3$s%%)",
-  "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
+  "commands.neoforge.chunkgen.stopped": "Generování zastaveno! %1$s chunků z %2$s bylo vygenerováno. (%3$s%%)",
+  "commands.neoforge.chunkgen.status": "Stav generace! %1$s chunků z %2$s bylo vygenerováno. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "No pregeneration currently running. Run `/neoforge generate help` to see commands for starting generation.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Generates a square centered on the given position that is chunkRadius * 2 on each side.\n§2/neoforge generate stop §r§f- Stops the current generation and displays progress that it had completed.\n§2/neoforge generate status §r- Displays the progress completed for the currently running generation.\n§2/neoforge generate help §r- Displays this message.\nGeneral tips: If running from a server console, you can run generate in different dimensions by using /execute in <dimension> neoforge generate...",
-  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
-  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
-  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
-  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
+  "commands.neoforge.timespeed.query": "Čas v %s běží rychlostí %sx (%s minut za den).",
+  "commands.neoforge.timespeed.query.default": "Čas v %s běží normální rychlostí (20 minut za den).",
+  "commands.neoforge.timespeed.set": "Nastaven běh času v %s na %sx (%s minut za den).",
+  "commands.neoforge.timespeed.set.default": "Nastaven běh času v %s na základní nastavení (20 minut za den).",
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",
   "neoforge.update.beta.1": "%sWARNING: %sNeoForge Beta",
   "neoforge.update.beta.2": "Major issues may arise, verify before reporting.",
   "neoforge.update.newversion": "New NeoForge version available: %s",
   "neoforge.menu.updatescreen.title": "Mod Update",
-  "neoforge.configuration.uitext.title": "%s Configuration",
-  "neoforge.configuration.uitext.type.client": "Client Settings",
-  "neoforge.configuration.uitext.type.server": "Server Settings",
-  "neoforge.configuration.uitext.type.common": "Common settings",
-  "neoforge.configuration.uitext.type.startup": "Startup settings",
-  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
-  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
-  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
-  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.title": "Konfigurace %s",
+  "neoforge.configuration.uitext.type.client": "Nastavení Klienta",
+  "neoforge.configuration.uitext.type.server": "Nastavení Serveru",
+  "neoforge.configuration.uitext.type.common": "Běžná nastavení",
+  "neoforge.configuration.uitext.type.startup": "Nastavení při spuštění",
+  "neoforge.configuration.uitext.title.client": "Konfigurace Klienta %s",
+  "neoforge.configuration.uitext.title.server": "Konfigurace Serveru %s",
+  "neoforge.configuration.uitext.title.common": "Běžná konfigurace %s",
+  "neoforge.configuration.uitext.title.startup": "Konfigurace při spuštění %s",
   "neoforge.configuration.uitext.notonline": [
     {
-      "text": "Settings in here are determined by the server and cannot be changed while online.",
-      "color": "red"
+      "text": "Nastavení jsou zde rozhodnuté serverem a nemohou být změněny když jste online.",
+      "color": "červený"
     }
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
-      "color": "red"
+      "text": "Nastavení zde nemohou být změněny, když je Vaše hra otevřená k LAN. Prosím, vraťte se do hlavního menu a načtěte svět znovu.",
+      "color": "červený"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are only available while a world is loaded.",
-      "color": "red"
+      "text": "Nastavení zde jsou dostupné pouze až po načtení světa.",
+      "color": "červený"
     }
   ],
   "neoforge.configuration.uitext.unsupportedelement": [
