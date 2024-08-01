@@ -11,16 +11,19 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
@@ -111,9 +114,29 @@ public class NeoForgeDataMaps {
     public static final DataMapType<GameEvent, VibrationFrequency> VIBRATION_FREQUENCIES = DataMapType.builder(
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
+    /**
+     * The {@linkplain Block} data map that replaces {@link WeatheringCopper#NEXT_BY_BLOCK}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/item/oxidizing.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code after}, a block that object should convert into once it changes oxidizing states</li>
+     * </ul>
+     * 
+     * The inverted map of this can be found at {@link WeatheringCopper#INVERSE_DATAMAP}
+     */
     public static final DataMapType<Block, Oxidizable> OXIDIZING_BLOCKS = DataMapType.builder(
             id("oxidizing"), Registries.BLOCK, Oxidizable.CODEC).build();
 
+    /**
+     * The {@linkplain Block} data map that replaces {@link HoneycombItem#WAXABLES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/item/waxable.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code after}, a block that object should convert into once it is right clicked with a {@link ItemAbilities#AXE_WAX_OFF} ability</li>
+     * </ul>
+     *
+     * The inverted map of this can be found at {@link HoneycombItem#INVERSE_DATAMAP}
+     */
     public static final DataMapType<Block, Waxable> WAXABLE_BLOCKS = DataMapType.builder(
             id("waxable"), Registries.BLOCK, Waxable.CODEC).build();
     

@@ -83,8 +83,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
 
         final var oxidizables = builder(NeoForgeDataMaps.OXIDIZING_BLOCKS);
         WeatheringCopper.NEXT_BY_BLOCK.get().forEach((now, after) -> {
-            Block before = WeatheringCopper.PREVIOUS_BY_BLOCK.get().get(now);
-            oxidizables.add(now.builtInRegistryHolder(), new Oxidizable(Optional.ofNullable(before), after), false);
+            oxidizables.add(now.builtInRegistryHolder(), new Oxidizable(after), false);
         });
 
         final var waxables = builder(NeoForgeDataMaps.WAXABLE_BLOCKS);

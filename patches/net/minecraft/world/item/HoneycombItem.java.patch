@@ -1,22 +1,37 @@
 --- a/net/minecraft/world/item/HoneycombItem.java
 +++ b/net/minecraft/world/item/HoneycombItem.java
-@@ -18,6 +_,9 @@
- import net.minecraft.world.level.block.entity.SignText;
- import net.minecraft.world.level.block.state.BlockState;
+@@ -20,6 +_,10 @@
  import net.minecraft.world.level.gameevent.GameEvent;
-+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
-+import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
-+import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
  
  public class HoneycombItem extends Item implements SignApplicator {
++    /**
++     * @deprecated Use the DataMap {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#WAXABLE_BLOCKS}
++     */
++    @Deprecated
      public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
+         () -> ImmutableBiMap.<Block, Block>builder()
+                 .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
+@@ -60,8 +_,12 @@
+                 .put(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB)
+                 .build()
+     );
++    /**
++     * @deprecated Use the Inverse map generated from the DataMap {@link HoneycombItem#INVERSE_DATAMAP}
++     */
+     public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
+-
++    public static final java.util.HashMap<Block, Block> INVERSE_DATAMAP = new java.util.HashMap<>();
++    
+     public HoneycombItem(Item.Properties p_150867_) {
+         super(p_150867_);
+     }
 @@ -87,7 +_,9 @@
      }
  
      public static Optional<BlockState> getWaxed(BlockState p_150879_) {
 -        return Optional.ofNullable(WAXABLES.get().get(p_150879_.getBlock())).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
-+        Waxable waxable = p_150879_.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLE_BLOCKS);
-+        Block block = waxable == null ? WAXABLES.get().get(p_150879_.getBlock()) : waxable.after();
++        net.neoforged.neoforge.registries.datamaps.builtin.Waxable waxable = p_150879_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.WAXABLE_BLOCKS);
++        Block block = waxable != null ? waxable.after() : null;
 +        return Optional.ofNullable(block).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
      }
  

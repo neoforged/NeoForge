@@ -772,7 +772,7 @@ public interface IBlockExtension {
         } else if (ItemAbilities.AXE_SCRAPE == itemAbility) {
             return WeatheringCopper.getPrevious(state).orElse(null);
         } else if (ItemAbilities.AXE_WAX_OFF == itemAbility) {
-            return Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(state.getBlock())).map(block -> block.withPropertiesOf(state)).orElse(null);
+            return Optional.ofNullable(HoneycombItem.INVERSE_DATAMAP.get(state.getBlock())).map(block -> block.withPropertiesOf(state)).orElse(null);
         } else if (ItemAbilities.SHOVEL_FLATTEN == itemAbility) {
             return ShovelItem.getShovelPathingState(state);
         } else if (ItemAbilities.HOE_TILL == itemAbility) {
