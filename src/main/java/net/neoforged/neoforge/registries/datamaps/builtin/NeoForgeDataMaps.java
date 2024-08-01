@@ -14,6 +14,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -110,6 +111,12 @@ public class NeoForgeDataMaps {
     public static final DataMapType<GameEvent, VibrationFrequency> VIBRATION_FREQUENCIES = DataMapType.builder(
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
+    public static final DataMapType<Block, Oxidizable> OXIDIZING_BLOCKS = DataMapType.builder(
+            id("oxidizing"), Registries.BLOCK, Oxidizable.CODEC).build();
+
+    public static final DataMapType<Block, Waxable> WAXABLE_BLOCKS = DataMapType.builder(
+            id("waxable"), Registries.BLOCK, Waxable.CODEC).build();
+    
     private static ResourceLocation id(final String name) {
         return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name);
     }
@@ -122,5 +129,7 @@ public class NeoForgeDataMaps {
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
+        event.register(OXIDIZING_BLOCKS);
+        event.register(WAXABLE_BLOCKS);
     }
 }
