@@ -125,7 +125,7 @@ public class NeoForgeDataMaps {
      * The inverted map of this can be found at {@link WeatheringCopper#INVERSE_DATAMAP}
      */
     public static final DataMapType<Block, Oxidizable> OXIDIZING_BLOCKS = DataMapType.builder(
-            id("oxidizing"), Registries.BLOCK, Oxidizable.CODEC).build();
+            id("oxidizing"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.OXIDIZABLE_CODEC, false).build();
 
     /**
      * The {@linkplain Block} data map that replaces {@link HoneycombItem#WAXABLES}.
@@ -138,7 +138,7 @@ public class NeoForgeDataMaps {
      * The inverted map of this can be found at {@link HoneycombItem#INVERSE_DATAMAP}
      */
     public static final DataMapType<Block, Waxable> WAXABLE_BLOCKS = DataMapType.builder(
-            id("waxable"), Registries.BLOCK, Waxable.CODEC).build();
+            id("waxable"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
 
     private static ResourceLocation id(final String name) {
         return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name);
