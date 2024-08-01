@@ -138,13 +138,13 @@
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
+      "text": "Diese Einstellungen können nicht geändert werden, während du dein Spiel für andere im LAN geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
       "color": "rot"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are only available while a world is loaded.",
+      "text": "Diese Einstellungen sind nur verfügbar, wenn du dich in einer Welt befindest.",
       "color": "rot"
     }
   ],
@@ -213,13 +213,13 @@
   "neoforge.configuration.uitext.server": "Servereinstellungen",
   "neoforge.configuration.uitext.startup": "Starteinstellungen",
   "neoforge.configuration.uitext.restart.game.title": "Minecraft muss neu gestartet werden",
-  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed will only take effect when the game is started.",
+  "neoforge.configuration.uitext.restart.game.text": "Eine oder mehrere der geänderten Einstellungen sind nur wirksam, wenn das Spiel gestartet wird.",
   "neoforge.configuration.uitext.restart.server.title": "Spielstand muss neu geladen werden",
-  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
-  "neoforge.configuration.uitext.restart.return": "Ignore",
+  "neoforge.configuration.uitext.restart.server.text": "Eine oder mehrere der geänderten Einstellungen sind nur wirksam, wenn die Welt neu geladen wird.",
+  "neoforge.configuration.uitext.restart.return": "Ignorieren",
   "neoforge.configuration.uitext.restart.return.tooltip": [
     {
-      "text": "Your changes will have no effect until you restart!",
+      "text": "Deine Änderungen haben keine Wirkung, bis das Spiel neu gestartet wird!",
       "color": "red",
       "bold": true
     }
