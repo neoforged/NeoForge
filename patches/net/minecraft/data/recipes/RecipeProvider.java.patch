@@ -48,7 +48,7 @@
      protected static void waxRecipes(RecipeOutput p_301254_, FeatureFlagSet p_313879_) {
 -        HoneycombItem.WAXABLES
 -            .get()
-+        HoneycombItem.INVERSE_DATAMAP
++        net.neoforged.neoforge.common.DataMapHooks.INVERSE_WAXABLES_DATAMAP
              .forEach(
                  (p_337490_, p_337491_) -> {
                      if (p_337491_.requiredFeatures().isSubsetOf(p_313879_)) {
