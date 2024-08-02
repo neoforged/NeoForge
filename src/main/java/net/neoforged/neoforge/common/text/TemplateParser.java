@@ -57,6 +57,7 @@ public class TemplateParser {
         FORMAT_MAPPING.put("st", ChatFormatting.STRIKETHROUGH);
         FORMAT_MAPPING.put("grey", ChatFormatting.GRAY);
         FORMAT_MAPPING.put("dark_grey", ChatFormatting.DARK_GRAY);
+        FORMAT_MAPPING.remove("reset");
     }
 
     public static Supplier<com.ibm.icu.util.ULocale> lang = () -> ULocale.US;
