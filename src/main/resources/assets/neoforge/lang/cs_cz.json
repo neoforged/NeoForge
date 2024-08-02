@@ -234,7 +234,7 @@
   "neoforge.configgui.advertiseDedicatedServerToLan": "Oznámit dedikovaný server na LAN",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Zapněte toto nastavení aby dedikovaný server oznamoval lokálním LAN klientům, aby se zobrazoval v Multiplayer obrazovce.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
-  "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.",
+  "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Povolit NeoForge pipelinu renderování blocků - opraví osvětlení různých modelů.",
   "neoforge.configgui.fullBoundingBoxLadders": "Plně Ohraničující Box u Žebříků",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Zapněte tuto možnost pro kontrolu celého kolizního pole entity u žebříku, místo pouhého bloku ve kterém se nachází. Způsobí znatelné rozdíly v mechanice, takže výchozí chování je vanilla. Výchozí hodnota: false.",
   "neoforge.configgui.logLegacyTagWarnings": "Starší Štítky Logu",
@@ -263,8 +263,8 @@
       "bold": true
     }
   ],
-  "neoforge.configgui.showLoadWarnings": "Show Load Warnings",
-  "neoforge.configgui.showLoadWarnings.tooltip": "When enabled, NeoForge will show any warnings that occurred during loading.",
+  "neoforge.configgui.showLoadWarnings": "Zobrazit Upozornění při Načítání",
+  "neoforge.configgui.showLoadWarnings.tooltip": "Pokud je zapnuto, NeoForge zobrazí jakákoliv upozornění, která se vyskytla při načítání.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Používejte kombinovaný doplňek DEPTH_STENCIL",
   "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Zapněte toto nastavení pro použití kombinovaného doplňku DEPTH_STENCIL místo dvou samostatných.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
