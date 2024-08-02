@@ -124,7 +124,7 @@
   "neoforge.configuration.uitext.title": "%s Konfigurácia",
   "neoforge.configuration.uitext.type.client": "Nastavenia Klienta",
   "neoforge.configuration.uitext.type.server": "Nastavenia Serveru",
-  "neoforge.configuration.uitext.type.common": "Common settings",
+  "neoforge.configuration.uitext.type.common": "Bežné nastavenia",
   "neoforge.configuration.uitext.type.startup": "Startup settings",
   "neoforge.configuration.uitext.title.client": "%s Client Configuration",
   "neoforge.configuration.uitext.title.server": "%s Server Configuration",
