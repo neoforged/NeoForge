@@ -156,19 +156,19 @@
   ],
   "neoforge.configuration.uitext.longstring": [
     {
-      "text": "This value is too long to be edited in the UI. Please edit it in the config file.",
-      "color": "red"
+      "text": "Táto hodnota je pridlhá nato aby mohla byť upravená v UI. Prosím upravte ju v konfiguračnom súbore.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.section": "%s...",
-  "neoforge.configuration.uitext.sectiontext": "Edit",
+  "neoforge.configuration.uitext.sectiontext": "Upraviť",
   "neoforge.configuration.uitext.breadcrumb": [
     {
       "index": 0
     },
     {
       "text": " > ",
-      "color": "gold",
+      "color": "zlato",
       "bold": true
     },
     {
@@ -176,18 +176,18 @@
     }
   ],
   "neoforge.configuration.uitext.listelement": "%s:",
-  "neoforge.configuration.uitext.undo": "Undo",
-  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
+  "neoforge.configuration.uitext.undo": "Krok naspäť",
+  "neoforge.configuration.uitext.undo.tooltip": "Vráti zmeny len na tejto obrazovke.",
   "neoforge.configuration.uitext.reset": "Reset",
-  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.reset.tooltip": "Vráti všetko na tejto stránke na predvolenú hodnotu.",
   "neoforge.configuration.uitext.newlistelement": "+",
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
   "neoforge.configuration.uitext.rangetooltip": [
     {
-      "text": "\n\nRange: ",
-      "color": "gray"
+      "text": "\n\nRádius: ",
+      "color": "sivá"
     },
     {
       "index": 0,
