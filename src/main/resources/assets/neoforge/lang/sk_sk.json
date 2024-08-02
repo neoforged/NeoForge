@@ -125,33 +125,33 @@
   "neoforge.configuration.uitext.type.client": "Nastavenia Klienta",
   "neoforge.configuration.uitext.type.server": "Nastavenia Serveru",
   "neoforge.configuration.uitext.type.common": "Bežné nastavenia",
-  "neoforge.configuration.uitext.type.startup": "Startup settings",
-  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
-  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
-  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
-  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.type.startup": "Nastavenia spustenia",
+  "neoforge.configuration.uitext.title.client": "%s Konfigurácia Klienta",
+  "neoforge.configuration.uitext.title.server": "%s Konfigurácia Serveru",
+  "neoforge.configuration.uitext.title.common": "%s Bežná Konfigurácia",
+  "neoforge.configuration.uitext.title.startup": "%s Konfigurácia Spustenia",
   "neoforge.configuration.uitext.notonline": [
     {
-      "text": "Settings in here are determined by the server and cannot be changed while online.",
-      "color": "red"
+      "text": "Nastavenie tu sú určené serverom a nemôžu byť zmenené pokým je online.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
-      "color": "red"
+      "text": "Nastavenia tu nemôžu byť upravené pokým je vaša hra otvorená do LAN. Prosím vráťte sa do hlavného menu a načítajte svet znova.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are only available while a world is loaded.",
-      "color": "red"
+      "text": "Nastavenia tu sú k dispozícii len keď je svet načítaný.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.unsupportedelement": [
     {
-      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
-      "color": "red"
+      "text": "Táto hodnota nemôže byť upravená v UI. Prosím kontaktujte autora módu o poskytnutý vlastného UI preň.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.longstring": [
