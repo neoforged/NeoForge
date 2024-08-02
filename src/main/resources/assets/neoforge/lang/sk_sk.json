@@ -242,31 +242,31 @@
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Nepreložené Konfiguračné Log Kľúče",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási konfiguračné hodnoty ktoré nemajú preklady keď ide klient v developerskom prostredí.",
   "neoforge.configgui.logUntranslatedItemTagWarnings": "Nepreložené Logy Známok Vecí",
-  "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.",
-  "neoforge.configgui.permissionHandler": "Permission Handler",
-  "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
+  "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási módované známky vecí ktoré nemajú preklady keď bežia na integrovanom servery. Požadovaný formát je tag.item.<namespace>.<path> pre prekladový kľúč. predvolená hodnota je SILENCED.",
+  "neoforge.configgui.permissionHandler": "Manipulátor Povolení",
+  "neoforge.configgui.permissionHandler.tooltip": "Manipulátor povolení používaný serverom. Predvolená hodnota do neoforge:default_handler ak nie je žiadny manipulátor s takým menom registrovaný.",
   "neoforge.configgui.removeErroringBlockEntities": "Odstrániť blokové entity spôsobujúce error",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    "Nastavte toto na hodnotu TRUE na odstránenie akejkoľvek Entity, ktorá vyhodí chybu v ich aktualizačnej metóde namiesto uzavretia serveru a nahlásenia logu padnutia.\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
+      "text": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
+      "color": "červená",
       "bold": true
     }
   ],
   "neoforge.configgui.removeErroringEntities": "Odstrániť entity spôsobujúce error",
   "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    "Nastavte toto na hodnotu TRUE na odstránenie akejkoľvek Blokovej Entity, ktorá vyhodí chybu v ich aktualizačnej metóde namiesto uzavretia serveru a nahlásenia logu padnutia.\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
+      "text": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
+      "color": "červená",
       "bold": true
     }
   ],
   "neoforge.configgui.showLoadWarnings": "Zobraziť Varovania Načítavania",
   "neoforge.configgui.showLoadWarnings.tooltip": "Keď je toto povolené, NeoForge zobrazí všetky varovania, ktoré nastali počas načítavania.",
-  "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",
-  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.",
+  "neoforge.configgui.useCombinedDepthStencilAttachment": "Použiť kombinované DEPTH_STENCIL Prílohy",
+  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Nastavte toto na hodnotu TRUE pre použitie kombinovaného DEPTH_STENCIL prílohu namiesto dvoch oddelených.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
