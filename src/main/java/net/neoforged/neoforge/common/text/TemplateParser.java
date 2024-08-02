@@ -18,6 +18,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.KeybindContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.chat.contents.TranslatableFormatException;
 import org.jetbrains.annotations.ApiStatus;
@@ -32,6 +33,7 @@ public class TemplateParser {
     private static final Pattern PLURAL_PATTERN = Pattern.compile("^<([1-9]\\d*|0):plural:(.*)$");
     private static final Pattern REF_PATTERN = Pattern.compile("^<ref:([^>]+)>(.*)$");
     private static final Pattern COLOR_PATTERN = Pattern.compile("^<color\\s+(-?[1-9]\\d*|0|#[0-9a-fA-F]{6,8})>(.*)$");
+    private static final Pattern KEY_PATTERN = Pattern.compile("^<key:([^>]+)>(.*)$");
 
     public static Supplier<com.ibm.icu.util.ULocale> lang = () -> ULocale.US;
 
@@ -129,6 +131,14 @@ public class TemplateParser {
                     } else {
                         throw new TranslatableFormatException(translatableContents, "Expected " + end + " but found: \"" + partial + "\"");
                     }
+                }
+                // 6.) A keybind, e.g. <key:key.jump>
+                match = KEY_PATTERN.matcher(partial);
+                if (match.matches()) {
+                    final String key_string = match.group(1);
+                    stack.add(MutableComponent.create(new KeybindContents(key_string)));
+                    partial = match.group(2);
+                    continue OUTER;
                 }
                 throw new TranslatableFormatException(translatableContents, "Expected valid tag but found: \"" + partial + "\"");
             } else {
