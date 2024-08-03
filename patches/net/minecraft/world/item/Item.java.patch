@@ -25,7 +25,7 @@
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        this.requiredFlags = java.util.Set.copyOf(p_41383_.requiredFlags);
++        this.requiredFlags = java.util.Collections.unmodifiableSet(p_41383_.requiredFlags);
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Item")) {
@@ -177,7 +177,7 @@
          Item craftingRemainingItem;
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
 +        private boolean canRepair = true;
-+        java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags = new java.util.HashSet<>();
++        java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
  
          public Item.Properties food(FoodProperties p_41490_) {
              return this.component(DataComponents.FOOD, p_41490_);

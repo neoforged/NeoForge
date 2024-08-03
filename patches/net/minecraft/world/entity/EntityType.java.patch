@@ -47,7 +47,7 @@
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
-+        this.requiredFlags = java.util.Set.copyOf(requiredFlags);
++        this.requiredFlags = java.util.Collections.unmodifiableSet(requiredFlags);
      }
  
      @Nullable
@@ -112,7 +112,7 @@
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
-+        private final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags = new java.util.HashSet<>();
++        private final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
 +
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;

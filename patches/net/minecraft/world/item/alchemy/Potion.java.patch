@@ -4,7 +4,7 @@
      private final String name;
      private final List<MobEffectInstance> effects;
      private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
-+    private java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags = new java.util.HashSet<>();
++    private final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
  
      public Potion(MobEffectInstance... p_43487_) {
          this(null, p_43487_);

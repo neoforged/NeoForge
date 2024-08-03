@@ -29,7 +29,7 @@
 +    public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_, java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags) {
          this.constructor = p_267054_;
          this.requiredFeatures = p_266909_;
-+        this.requiredFlags = java.util.Set.copyOf(requiredFlags);
++        this.requiredFlags = java.util.Collections.unmodifiableSet(requiredFlags);
      }
  
      public T create(int p_39986_, Inventory p_39987_) {
