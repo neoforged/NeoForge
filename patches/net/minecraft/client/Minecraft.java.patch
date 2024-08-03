@@ -9,6 +9,14 @@
      static Minecraft instance;
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;
+@@ -399,6 +_,7 @@
+     private final long clientStartTimeMs;
+     private long clientTickCount;
+     private String debugPath = "root";
++    private final net.neoforged.neoforge.flag.FlagManager moddedFlagManager = new net.neoforged.neoforge.flag.FlagManager(this::syncFlag);
+ 
+     public Minecraft(GameConfig p_91084_) {
+         super("Client");
 @@ -435,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
@@ -376,14 +384,31 @@
                  if (itemstack == null) {
                      return;
                  }
-@@ -2794,6 +_,10 @@
- 
-     public void updateMaxMipLevel(int p_91313_) {
+@@ -2796,6 +_,10 @@
          this.modelManager.updateMaxMipLevel(p_91313_);
-+    }
-+
-+    public ItemColors getItemColors() {
-+        return this.itemColors;
      }
  
++    public ItemColors getItemColors() {
++        return this.itemColors;
++    }
++
      public EntityModelSet getEntityModels() {
+         return this.entityModels;
+     }
+@@ -2868,6 +_,16 @@
+     @Nullable
+     public static String getLauncherBrand() {
+         return System.getProperty("minecraft.launcher.brand");
++    }
++
++    @Override
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        return moddedFlagManager;
++    }
++
++    private void syncFlag(net.neoforged.neoforge.flag.Flag flag, boolean enabled) {
++        if(singleplayerServer != null)
++            moddedFlagManager.saveToLevel(singleplayerServer.overworld());
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

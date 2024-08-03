@@ -9,6 +9,7 @@ import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.flag.FlagManager;
 
 /**
  * Extension interface for {@link Minecraft}.
@@ -41,4 +42,6 @@ public interface IMinecraftExtension {
     default Locale getLocale() {
         return self().getLanguageManager().getJavaLocale();
     }
+
+    FlagManager getModdedFlagManager();
 }

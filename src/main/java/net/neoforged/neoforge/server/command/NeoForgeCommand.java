@@ -8,20 +8,23 @@ package net.neoforged.neoforge.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
+import net.neoforged.neoforge.flag.FlagCommand;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class NeoForgeCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(LiteralArgumentBuilder.<CommandSourceStack>literal("neoforge")
-                .then(TPSCommand.register())
-                .then(TrackCommand.register())
-                .then(EntityCommand.register())
-                .then(GenerateCommand.register())
-                .then(DimensionsCommand.register())
-                .then(ModListCommand.register())
-                .then(TagsCommand.register())
-                .then(DumpCommand.register())
-                .then(TimeSpeedCommand.register()));
+        dispatcher.register(
+                LiteralArgumentBuilder.<CommandSourceStack>literal("neoforge")
+                        .then(TPSCommand.register())
+                        .then(TrackCommand.register())
+                        .then(EntityCommand.register())
+                        .then(GenerateCommand.register())
+                        .then(DimensionsCommand.register())
+                        .then(ModListCommand.register())
+                        .then(TagsCommand.register())
+                        .then(DumpCommand.register())
+                        .then(TimeSpeedCommand.register())
+                        .then(FlagCommand.register()));
     }
 }

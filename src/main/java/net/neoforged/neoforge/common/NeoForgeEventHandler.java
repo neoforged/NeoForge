@@ -34,7 +34,9 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.flag.ClientboundSyncFlags;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
@@ -97,6 +99,9 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         UsernameCache.setUsername(event.getEntity().getUUID(), event.getEntity().getGameProfile().getName());
+
+        if (event.getEntity() instanceof ServerPlayer sPlayer)
+            PacketDistributor.sendToPlayer(sPlayer, new ClientboundSyncFlags(sPlayer.server.getModdedFlagManager()));
     }
 
     @SubscribeEvent
@@ -172,5 +177,10 @@ public class NeoForgeEventHandler {
         if (event.getEntity() instanceof Mob mob && mob.isSpawnCancelled()) {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public void onServerStarted(ServerStartedEvent event) {
+        event.getServer().getModdedFlagManager().loadFromLevel(event.getServer().overworld());
     }
 }

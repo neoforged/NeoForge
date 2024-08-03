@@ -39,7 +39,7 @@
      }
  
      public Optional<Mob> spawnOffspringFromSpawnEgg(
-@@ -179,5 +_,9 @@
+@@ -179,5 +_,14 @@
                  }
              }
          }
@@ -47,5 +47,10 @@
 +
 +    protected EntityType<?> getDefaultType() {
 +        return defaultType;
++    }
++
++    @Override
++    public boolean isEnabled() {
++        return getDefaultType().isEnabled() && super.isEnabled();
      }
  }

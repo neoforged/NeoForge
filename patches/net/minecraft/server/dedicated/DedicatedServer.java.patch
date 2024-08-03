@@ -1,11 +1,12 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -80,6 +_,8 @@
+@@ -80,6 +_,9 @@
      @Nullable
      private DebugSampleSubscriptionTracker debugSampleSubscriptionTracker;
      private final ServerLinks serverLinks;
 +    @Nullable
 +    private net.minecraft.client.server.LanServerPinger dediLanPinger;
++    private final net.neoforged.neoforge.flag.FlagManager moddedFlagManager = new net.neoforged.neoforge.flag.FlagManager(this::syncFlag);
  
      public DedicatedServer(
          Thread p_214789_,
@@ -68,3 +69,23 @@
          Util.shutdownExecutors();
          SkullBlockEntity.clear();
      }
+@@ -618,6 +_,19 @@
+     @Override
+     public ServerLinks serverLinks() {
+         return this.serverLinks;
++    }
++
++    @Override
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        return moddedFlagManager;
++    }
++
++    private void syncFlag(net.neoforged.neoforge.flag.Flag flag, boolean enabled) {
++        moddedFlagManager.saveToLevel(overworld());
++
++        net.neoforged.neoforge.network.PacketDistributor.sendToAllPlayers(
++                new net.neoforged.neoforge.flag.ClientboundSyncFlag(flag, enabled)
++        );
+     }
+ 
+     private static ServerLinks createServerLinks(DedicatedServerSettings p_352317_) {

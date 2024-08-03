@@ -8,3 +8,14 @@
          int i = SectionPos.blockToSectionCoord(p_9580_.getBlockX());
          int j = SectionPos.blockToSectionCoord(p_9580_.getBlockZ());
          this.getChunk(i, j).addEntity(p_9580_);
+@@ -469,5 +_,10 @@
+     @Override
+     public long nextSubTickCount() {
+         return this.subTickCount.getAndIncrement();
++    }
++
++    @Override
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        return level.getModdedFlagManager();
+     }
+ }
