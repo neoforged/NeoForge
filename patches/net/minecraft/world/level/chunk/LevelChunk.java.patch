@@ -17,7 +17,15 @@
          for (Entry<Heightmap.Types, Heightmap> entry : p_196851_.getHeightmaps()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
-@@ -278,7 +_,7 @@
+@@ -271,14 +_,14 @@
+                 boolean flag2 = blockstate.hasBlockEntity();
+                 if (!this.level.isClientSide) {
+                     blockstate.onRemove(this.level, p_62865_, p_62866_, p_62867_);
+-                } else if (!blockstate.is(block) && flag2) {
++                } else if ((!blockstate.is(block) || !p_62866_.hasBlockEntity()) && flag2) {
+                     this.removeBlockEntity(p_62865_);
+                 }
+ 
                  if (!levelchunksection.getBlockState(j, k, l).is(block)) {
                      return null;
                  } else {
