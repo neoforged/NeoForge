@@ -193,14 +193,9 @@ public class ServerLifecycleHooks {
             for (MobCategory mobCategory : mobSettings.getSpawnerTypes()) {
                 for (MobSpawnSettings.SpawnerData spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
                     if (spawnerData.type.getCategory() != mobCategory) {
-                        if (spawnerData.type == EntityType.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE))) {
-                            LOGGER.warn("Detected {} that was registered with {} mob category but was added under {} mob category for {} biome! " +
-                                    "This is a vanilla bug. See https://bugs.mojang.com/browse/MC-1788 for more details.",
-                                    BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.type),
-                                    spawnerData.type.getCategory(),
-                                    mobCategory,
-                                    biomeHolder.getKey().location());
-                        } else {
+                        // Ignore vanilla bugged entries to reduce unneeded logging. See https://bugs.mojang.com/browse/MC-1788 for the Ocelot/Jungle vanilla bug.
+                        boolean isVanillaBug = spawnerData.type == EntityType.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
+                        if (!isVanillaBug) {
                             LOGGER.warn("Detected {} that was registered with {} mob category but was added under {} mob category for {} biome! " +
                                     "Mobs should be added to biomes under the same mob category that the mob was registered as to prevent mob cap spawning issues.",
                                     BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.type),
