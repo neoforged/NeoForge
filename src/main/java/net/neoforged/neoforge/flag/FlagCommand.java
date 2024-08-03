@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.flag;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
 
 public interface FlagCommand {
@@ -20,31 +20,31 @@ public interface FlagCommand {
         return Commands.literal("flag")
                 .requires(src -> src.hasPermission(Commands.LEVEL_ADMINS))
                 .then(Commands.literal("enable")
-                        .then(Commands.argument("flag", StringArgumentType.word())
+                        .then(Commands.argument("flag", ResourceLocationArgument.id())
                                 .suggests((ctx, builder) -> {
-                                    var flags = Flag.flags().map(Flag::identifier);
+                                    var flags = Flag.flags().map(Flag::toStringShort);
                                     return SharedSuggestionProvider.suggest(flags, builder);
                                 })
                                 .executes(ctx -> setFlag(ctx, true))))
                 .then(Commands.literal("disable")
-                        .then(Commands.argument("flag", StringArgumentType.word())
+                        .then(Commands.argument("flag", ResourceLocationArgument.id())
                                 .suggests((ctx, builder) -> {
-                                    var flags = ctx.getSource().getServer().getModdedFlagManager().enabledFlags().map(Flag::identifier);
+                                    var flags = ctx.getSource().getServer().getModdedFlagManager().enabledFlags().map(Flag::toStringShort);
                                     return SharedSuggestionProvider.suggest(flags, builder);
                                 })
                                 .executes(ctx -> setFlag(ctx, false))));
     }
 
     private static int setFlag(CommandContext<CommandSourceStack> context, boolean enable) throws CommandSyntaxException {
-        var flag = Flag.of(StringArgumentType.getString(context, "flag"));
+        var flag = Flag.of(ResourceLocationArgument.getId(context, "flag"));
         var src = context.getSource();
         var flags = src.getServer().getModdedFlagManager();
         var state = state(enable);
 
         if (flags.set(flag, enable))
-            src.sendSuccess(() -> Component.literal(state).append(" Flag: ").append(flag.identifier()), true);
+            src.sendSuccess(() -> Component.literal(state).append(" Flag: ").append(flag.toStringShort()), true);
         else
-            src.sendSuccess(() -> Component.literal("Flag ").append(flag.identifier()).append(" is already ").append(state), false);
+            src.sendSuccess(() -> Component.literal("Flag ").append(flag.toStringShort()).append(" is already ").append(state), false);
 
         return Command.SINGLE_SUCCESS;
     }

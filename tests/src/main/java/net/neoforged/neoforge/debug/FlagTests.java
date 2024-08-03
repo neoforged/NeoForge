@@ -23,10 +23,11 @@ import net.neoforged.testframework.annotation.TestHolder;
 public interface FlagTests {
     @TestHolder(description = "Tests modded feature flags")
     static void test(DynamicTest test) {
+        var namespace = test.createModId();
         var registration = test.registrationHelper();
         var items = registration.items();
 
-        var testFlag = Flag.of("test_flag");
+        var testFlag = Flag.of(namespace, "test_flag");
 
         items.registerSimpleItem("flagged_item", new Item.Properties().requiredFlags(testFlag));
 

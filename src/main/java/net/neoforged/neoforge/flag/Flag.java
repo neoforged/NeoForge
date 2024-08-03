@@ -12,25 +12,32 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.resources.ResourceLocation;
 
 public final class Flag {
-    public static final Codec<Flag> CODEC = ExtraCodecs.NON_EMPTY_STRING.xmap(Flag::of, Flag::identifier);
-    public static final StreamCodec<ByteBuf, Flag> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(Flag::of, Flag::identifier);
+    public static final Codec<Flag> CODEC = ResourceLocation.CODEC.xmap(Flag::of, flag -> flag.identifier);
+    public static final StreamCodec<ByteBuf, Flag> STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(Flag::of, flag -> flag.identifier);
 
-    private static final Map<String, Flag> FLAGS = Maps.newConcurrentMap();
+    private static final Map<ResourceLocation, Flag> FLAGS = Maps.newConcurrentMap();
     private static final Collection<Flag> FLAGS_VIEW = Collections.unmodifiableCollection(FLAGS.values());
 
-    private final String identifier;
+    private final ResourceLocation identifier;
 
-    private Flag(String identifier) {
+    private Flag(ResourceLocation identifier) {
         this.identifier = identifier;
     }
 
+    public String namespace() {
+        return identifier.getNamespace();
+    }
+
     public String identifier() {
-        return identifier;
+        return identifier.getPath();
+    }
+
+    public String toStringShort() {
+        return identifier.toString();
     }
 
     @Override
@@ -52,7 +59,11 @@ public final class Flag {
         return "Flag{" + identifier + '}';
     }
 
-    public static Flag of(String identifier) {
+    public static Flag of(String namespace, String identifier) {
+        return of(ResourceLocation.fromNamespaceAndPath(namespace, identifier));
+    }
+
+    public static Flag of(ResourceLocation identifier) {
         return FLAGS.computeIfAbsent(identifier, Flag::new);
     }
 
