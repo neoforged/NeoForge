@@ -11,6 +11,6 @@ public interface FlagElement {
     Set<Flag> requiredFlags();
 
     default boolean isEnabled() {
-        return FlagManager.lookup().map(mgr -> mgr.isEnabled(this)).orElse(true);
+        return FlagManager.lookup().map(mgr -> mgr.isEnabled(this)).orElseGet(FlagManager::shouldBeEnabledDefault);
     }
 }

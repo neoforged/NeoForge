@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.flag;
 
+import io.netty.util.internal.UnstableApi;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.util.Collection;
@@ -16,7 +17,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.extensions.IMinecraftServerExtension;
+import net.neoforged.neoforge.common.extensions.ILevelReaderExtension;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -108,11 +110,27 @@ public final class FlagManager {
         return flagsView.stream().filter(this::isEnabled);
     }
 
+    /**
+     * Prefer to lookup instance via {@linkplain ILevelReaderExtension#getModdedFlagManager()}
+     */
+    @UnstableApi
     public static Optional<FlagManager> lookup() {
-        if (FMLEnvironment.dist.isClient())
-            return Optional.of(Minecraft.getInstance().getModdedFlagManager());
+        return lookupClient().or(() -> {
+            var server = ServerLifecycleHooks.getCurrentServer();
+            return server == null ? Optional.empty() : Optional.of(server.getModdedFlagManager());
+        });
+    }
 
-        return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer()).map(IMinecraftServerExtension::getModdedFlagManager);
+    private static Optional<FlagManager> lookupClient() {
+        if (DatagenModLoader.isRunningDataGen())
+            return Optional.empty();
+        if (FMLEnvironment.dist.isClient())
+            return Optional.ofNullable(Minecraft.getInstance()).map(Minecraft::getModdedFlagManager);
+        return Optional.empty();
+    }
+
+    public static boolean shouldBeEnabledDefault() {
+        return DatagenModLoader.isRunningDataGen();
     }
 
     @FunctionalInterface
