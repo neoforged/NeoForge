@@ -92,7 +92,7 @@ public abstract class TemplateParserBase<T> {
                         continue OUTER;
                     }
                 }
-                // 2.) A simple group, e.g. <0>
+                // 2.) A simple group, e.g. <1>
                 Matcher match = NUMBER_PATTERN.matcher(remaining);
                 if (match.matches()) {
                     final int index = decodeInteger(match.group(1));
@@ -100,7 +100,7 @@ public abstract class TemplateParserBase<T> {
                     stack.add(generateArgument(index));
                     continue OUTER;
                 }
-                // 3.) A plural sub-pattern, e.g. <0:plural:...>
+                // 3.) A plural sub-pattern, e.g. <1:plural:...>
                 match = PLURAL_PATTERN.matcher(remaining);
                 if (match.matches()) {
                     final int index = decodeInteger(match.group(1));
@@ -197,7 +197,7 @@ public abstract class TemplateParserBase<T> {
      */
     protected int decodeInteger(final String int_string) throws ParsingException {
         try {
-            return Integer.valueOf(int_string);
+            return Integer.valueOf(int_string) - 1;
         } catch (NumberFormatException e) {
             throw new ParsingException("Expected a number but found: \"" + int_string + "\"");
         }
