@@ -380,6 +380,11 @@ public class Tags {
         public static final TagKey<Item> FENCES = tag("fences");
         public static final TagKey<Item> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Item> FENCES_WOODEN = tag("fences/wooden");
+        /**
+         * For bonemeal-like items that can grow plants.
+         * (Note: Could include durability-based modded bonemeal-like items. Check for durability {@link net.minecraft.core.component.DataComponents#DAMAGE} DataComponent to handle them properly)
+         */
+        public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
@@ -674,6 +679,7 @@ public class Tags {
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
         /**
          * A tag containing melee-based weapons for recipes and loot tables.
+         * Tools are considered melee if they contain an {@link net.minecraft.world.entity.ai.attributes.Attributes#ATTACK_DAMAGE} attribute.
          * Do not use this tag for determining a tool's behavior in-code.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
@@ -683,6 +689,7 @@ public class Tags {
         public static final TagKey<Item> MELEE_WEAPON_TOOLS = tag("tools/melee_weapon");
         /**
          * A tag containing ranged-based weapons for recipes and loot tables.
+         * Tools are considered ranged if they can damage entities beyond the weapon's and player's melee attack range.
          * Do not use this tag for determining a tool's behavior in-code.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *

@@ -8,30 +8,44 @@
  
      private PrimaryLevelData(
          @Nullable CompoundTag p_277888_,
-@@ -200,7 +_,7 @@
+@@ -169,7 +_,7 @@
+         Dynamic<T> p_78531_, LevelSettings p_78535_, PrimaryLevelData.SpecialWorldProperty p_250651_, WorldOptions p_251864_, Lifecycle p_78538_
+     ) {
+         long i = p_78531_.get("Time").asLong(0L);
+-        return new PrimaryLevelData(
++        PrimaryLevelData result = new PrimaryLevelData(
+             p_78531_.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
+             p_78531_.get("WasModded").asBoolean(false),
+             new BlockPos(p_78531_.get("SpawnX").asInt(0), p_78531_.get("SpawnY").asInt(0), p_78531_.get("SpawnZ").asInt(0)),
+@@ -200,7 +_,11 @@
              p_251864_,
              p_250651_,
              p_78538_
 -        );
 +        ).withConfirmedWarning(p_78538_ != Lifecycle.stable() && p_78531_.get("confirmedExperimentalSettings").asBoolean(false));
++        // Neo:
++        result.setDayTimeFraction(p_78531_.get("neoDayTimeFraction").asFloat(0f));
++        result.setDayTimePerTick(p_78531_.get("neoDayTimePerTick").asFloat(-1f));
++        return result;
      }
  
      @Override
-@@ -273,6 +_,8 @@
+@@ -273,6 +_,11 @@
          if (this.wanderingTraderId != null) {
              p_78547_.putUUID("WanderingTraderId", this.wanderingTraderId);
          }
 +        p_78547_.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.getLifecycle()));
 +        p_78547_.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
++        // Neo:
++        p_78547_.putFloat("neoDayTimeFraction", dayTimeFraction);
++        p_78547_.putFloat("neoDayTimePerTick", dayTimePerTick);
      }
  
      private static ListTag stringCollectionToTag(Set<String> p_277880_) {
-@@ -570,6 +_,15 @@
-     @Override
-     public LevelSettings getLevelSettings() {
+@@ -572,10 +_,44 @@
          return this.settings.copy();
-+    }
-+
+     }
+ 
 +    public boolean hasConfirmedExperimentalWarning() {
 +        return this.confirmedExperimentalWarning;
 +    }
@@ -39,6 +53,37 @@
 +    public PrimaryLevelData withConfirmedWarning(boolean confirmedWarning) { // Builder-like to not patch ctor
 +        this.confirmedExperimentalWarning = confirmedWarning;
 +        return this;
-     }
- 
++    }
++
      @Deprecated
+     public static enum SpecialWorldProperty {
+         NONE,
+         FLAT,
+         DEBUG;
++    }
++
++    // Neo: Variable day time code
++
++    private float dayTimeFraction = 0.0f;
++    private float dayTimePerTick = -1.0f;
++
++    @Override
++    public float getDayTimeFraction() {
++        return dayTimeFraction;
++    }
++
++    @Override
++    public float getDayTimePerTick() {
++        return dayTimePerTick;
++    }
++
++    @Override
++    public void setDayTimeFraction(float dayTimeFraction) {
++        this.dayTimeFraction = dayTimeFraction;
++    }
++
++    @Override
++    public void setDayTimePerTick(float dayTimePerTick) {
++        this.dayTimePerTick = dayTimePerTick;
+     }
+ }

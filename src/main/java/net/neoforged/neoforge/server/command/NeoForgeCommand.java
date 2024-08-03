@@ -22,6 +22,7 @@ public class NeoForgeCommand {
                         .then(DimensionsCommand.register())
                         .then(ModListCommand.register())
                         .then(TagsCommand.register())
-                        .then(DumpCommand.register()));
+                        .then(DumpCommand.register())
+                        .then(TimeSpeedCommand.register()));
     }
 }
