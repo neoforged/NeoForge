@@ -31,6 +31,7 @@ public abstract class TemplateParserBase<T> {
     protected static final Pattern PLURAL_PATTERN = Pattern.compile("^<([1-9]\\d*|0):plural:(.*)$");
     protected static final Pattern REF_PATTERN = Pattern.compile("^<(?:ref|lang|tr|translate):([^>]+)>(.*)$");
     protected static final Pattern COLOR_PATTERN = Pattern.compile("^<color:(-?[1-9]\\d*|0|#[0-9a-fA-F]{6,8})>(.*)$");
+    protected static final Pattern COLORNAME_PATTERN = Pattern.compile("^<color:([a-z_]+)>(.*)$");
     protected static final Pattern KEY_PATTERN = Pattern.compile("^<key:([^>]+)>(.*)$");
     protected static final Pattern FONT_PATTERN = Pattern.compile("^<font:([^>]+)>(.*)$");
 
@@ -118,13 +119,25 @@ public abstract class TemplateParserBase<T> {
                     stack.add(generateReference(ref_string));
                     continue OUTER;
                 }
-                // 5.) An RGB text color, e.g. <color #ff0000> or <color 56372>
+                // 5.) An RGB text color, e.g. <color:#ff0000> or <color:56372>
                 match = COLOR_PATTERN.matcher(remaining);
                 if (match.matches()) {
                     final int color = decodeColor(match.group(1));
                     remaining = match.group(2);
                     parseToEndTag(END_TAG_START + "color" + TAG_END).forEach(v -> stack.add(applyColor(v, color)));
                     continue OUTER;
+                }
+                // 5a.) An text color name, e.g. <color:gray>
+                match = COLORNAME_PATTERN.matcher(remaining);
+                if (match.matches()) {
+                    final String color = match.group(1);
+                    remaining = match.group(2);
+                    ChatFormatting format = FORMAT_MAPPING.get(color);
+                    if (format != null && format.isColor()) {
+                        parseToEndTag(END_TAG_START + "color" + TAG_END).forEach(v -> stack.add(applyChatFormatting(v, format)));
+                        continue OUTER;
+                    }
+                    throw new ParsingException("Expected color name but found: \"" + color + "\"");
                 }
                 // 6.) A keybind, e.g. <key:key.jump>
                 match = KEY_PATTERN.matcher(remaining);
