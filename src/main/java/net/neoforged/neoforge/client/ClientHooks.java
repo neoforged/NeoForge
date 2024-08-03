@@ -179,6 +179,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
+import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
@@ -245,10 +246,13 @@ public class ClientHooks {
     }
 
     public static float getGuiFarPlane() {
-        // 11000 units for the overlay background,
-        // and 10000 units for each layered Screen,
+        // 11000 units for the overlay background and 10000 units for each layered Screen or 200 units for each HUD layer, whichever ends up higher
 
-        return 11000.0F + 10000.0F * (1 + guiLayers.size());
+        float depth = 10_000F * (1 + guiLayers.size());
+        if (Minecraft.getInstance().level != null) {
+            depth = Math.max(depth, GuiLayerManager.Z_SEPARATION * Minecraft.getInstance().gui.getLayerCount());
+        }
+        return 11_000F + depth;
     }
 
     public static ResourceLocation getArmorTexture(Entity entity, ItemStack armor, ArmorMaterial.Layer layer, boolean innerModel, EquipmentSlot slot) {
