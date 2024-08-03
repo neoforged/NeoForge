@@ -1,11 +1,12 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -73,10 +_,12 @@
+@@ -73,10 +_,13 @@
          this.setPvpAllowed(true);
          this.setFlightAllowed(true);
          this.initializeKeyPair();
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
          this.loadLevel();
++        minecraft.getModdedFlagManager().loadFromLevel(overworld()); // Neo: Load flag data
          GameProfile gameprofile = this.getSingleplayerProfile();
          String s = this.getWorldData().getLevelName();
          this.setMotd(gameprofile != null ? gameprofile.getName() + " - " + s : s);

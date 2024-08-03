@@ -34,7 +34,6 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.flag.ClientboundSyncFlags;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -177,10 +176,5 @@ public class NeoForgeEventHandler {
         if (event.getEntity() instanceof Mob mob && mob.isSpawnCancelled()) {
             event.setCanceled(true);
         }
-    }
-
-    @SubscribeEvent
-    public void onServerStarted(ServerStartedEvent event) {
-        event.getServer().getModdedFlagManager().loadFromLevel(event.getServer().overworld());
     }
 }
