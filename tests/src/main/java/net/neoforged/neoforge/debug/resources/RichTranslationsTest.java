@@ -27,27 +27,67 @@ public class RichTranslationsTest {
     @EmptyTemplate("1x1x1")
     static void richTranslations(final DynamicTest test) {
         test.onGameTest(helper -> {
-            String arg = "Example argument";
-            Component simple = Component.translatable("rich_translations_test.simple_translation", arg);
-            Component simpleRich = Component.translatable("rich_translations_test.simple_rich_translation", arg);
+            final String arg = "Example argument";
+            final Component simple = Component.translatable("rich_translations_test.simple_translation", arg);
+            final Component simpleRich = Component.translatable("rich_translations_test.simple_rich_translation", arg);
 
             helper.assertTrue(simpleRich.getString().equals(simple.getString()), "Rich translation isn't equivalent to simple translation");
 
-            String translation = Language.getInstance().getOrDefault("rich_translations_test.simple_rich_translation");
+            final String translation = Language.getInstance().getOrDefault("rich_translations_test.simple_rich_translation");
             helper.assertTrue(
                     String.format(translation, arg).equals(simpleRich.getString()),
                     "Translatable component isn't equivalent to I18n");
 
-            Component fancy = Component.translatable("rich_translations_test.fancy_rich_translation", arg);
-            MutableBoolean foundRed = new MutableBoolean();
-            MutableBoolean foundBlue = new MutableBoolean();
+            final Component fancy = Component.translatable("rich_translations_test.fancy_rich_translation", arg);
+            final MutableBoolean foundRed = new MutableBoolean();
+            final MutableBoolean foundBlue = new MutableBoolean();
 
             fancy.visit((style, content) -> {
-                if (TextColor.fromLegacyFormat(ChatFormatting.RED).equals(style.getColor()) && content.equals("Ooo, colors!"))
+                if (TextColor.fromLegacyFormat(ChatFormatting.RED).equals(style.getColor()) && content.equals("Ooo, colors!")) {
                     foundRed.setTrue();
+                }
 
-                if (TextColor.fromLegacyFormat(ChatFormatting.BLUE).equals(style.getColor()) && content.equals(arg))
+                if (TextColor.fromLegacyFormat(ChatFormatting.BLUE).equals(style.getColor()) && content.equals(arg)) {
                     foundBlue.setTrue();
+                }
+
+                return Optional.empty();
+            }, Style.EMPTY);
+
+            helper.assertTrue(foundBlue.isTrue() && foundRed.isTrue(), "Rich translation lost colors");
+
+            helper.succeed();
+        });
+    }
+
+    @TestHolder(description = "Tests that rich translations (text style) work properly", enabledByDefault = true)
+    @GameTest
+    @EmptyTemplate("1x1x1")
+    static void richTranslations2(final DynamicTest test) {
+        test.onGameTest(helper -> {
+            final String arg = "Example argument";
+            final Component simple = Component.translatable("rich_translations_test.simple_translation", arg);
+            final Component simpleRich = Component.translatable("rich_translations_test.simple_rich_translation2", arg);
+
+            helper.assertTrue(simpleRich.getString().equals(simple.getString()), "Rich translation isn't equivalent to simple translation");
+
+            final String translation = Language.getInstance().getOrDefault("rich_translations_test.simple_rich_translation2");
+            helper.assertTrue(
+                    String.format(translation, arg).equals(simpleRich.getString()),
+                    "Translatable component isn't equivalent to I18n");
+
+            final Component fancy = Component.translatable("rich_translations_test.fancy_rich_translation2", arg);
+            final MutableBoolean foundRed = new MutableBoolean();
+            final MutableBoolean foundBlue = new MutableBoolean();
+
+            fancy.visit((style, content) -> {
+                if (TextColor.fromLegacyFormat(ChatFormatting.RED).equals(style.getColor()) && content.equals("Ooo, colors!")) {
+                    foundRed.setTrue();
+                }
+
+                if (TextColor.fromLegacyFormat(ChatFormatting.BLUE).equals(style.getColor()) && content.equals(arg)) {
+                    foundBlue.setTrue();
+                }
 
                 return Optional.empty();
             }, Style.EMPTY);

@@ -18,6 +18,7 @@
          Language language = Language.getInstance();
          if (language != this.decomposedWith) {
              this.decomposedWith = language;
+-            String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
 +
 +            Component langComponent = language.getComponent(this.key);
 +            if (langComponent != null) {
@@ -25,7 +26,7 @@
 +                return;
 +            }
 +
-             String s = this.fallback != null ? language.getOrDefault(this.key, this.fallback) : language.getOrDefault(this.key);
++            String s = this.fallback != null ? language.getOrDefaultRaw(this.key, this.fallback) : language.getOrDefaultRaw(this.key, this.key);
  
              try {
                  Builder<FormattedText> builder = ImmutableList.builder();

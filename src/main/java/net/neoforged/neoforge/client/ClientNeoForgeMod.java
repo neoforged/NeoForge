@@ -37,7 +37,7 @@ import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.text.TemplateParser;
+import net.neoforged.neoforge.common.text.TemplateParserBase;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -45,7 +45,7 @@ import org.jetbrains.annotations.ApiStatus;
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
     static {
-        TemplateParser.lang = () -> ULocale.forLocale(Minecraft.getInstance().getLocale());
+        TemplateParserBase.lang = () -> ULocale.forLocale(Minecraft.getInstance().getLocale());
     }
 
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
