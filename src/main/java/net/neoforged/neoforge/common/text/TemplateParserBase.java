@@ -29,7 +29,7 @@ public abstract class TemplateParserBase<T> {
     protected static final String TEMPLATE_MARKER = "%n";
     protected static final Pattern NUMBER_PATTERN = Pattern.compile("^<([1-9]\\d*|0)>(.*)$");
     protected static final Pattern PLURAL_PATTERN = Pattern.compile("^<([1-9]\\d*|0):plural:(.*)$");
-    protected static final Pattern REF_PATTERN = Pattern.compile("^<ref:([^>]+)>(.*)$");
+    protected static final Pattern REF_PATTERN = Pattern.compile("^<(?:ref|lang|tr|translate):([^>]+)>(.*)$");
     protected static final Pattern COLOR_PATTERN = Pattern.compile("^<color:(-?[1-9]\\d*|0|#[0-9a-fA-F]{6,8})>(.*)$");
     protected static final Pattern KEY_PATTERN = Pattern.compile("^<key:([^>]+)>(.*)$");
     protected static final Pattern FONT_PATTERN = Pattern.compile("^<font:([^>]+)>(.*)$");
