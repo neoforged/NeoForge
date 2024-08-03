@@ -137,6 +137,15 @@
              return this.getBlock().useItemOn(p_316374_, this.asState(), p_316651_, p_316877_.getBlockPos(), p_316623_, p_316469_, p_316877_);
          }
  
+@@ -797,7 +_,7 @@
+         }
+ 
+         public boolean hasBlockEntity() {
+-            return this.getBlock() instanceof EntityBlock;
++            return this.getBlock().hasBlockEntity(this.asState());
+         }
+ 
+         @Nullable
 @@ -825,6 +_,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }
