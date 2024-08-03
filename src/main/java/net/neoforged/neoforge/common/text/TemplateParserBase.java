@@ -44,6 +44,7 @@ public abstract class TemplateParserBase<T> {
         FORMAT_MAPPING.put("i", ChatFormatting.ITALIC);
         FORMAT_MAPPING.put("em", ChatFormatting.ITALIC);
         FORMAT_MAPPING.put("u", ChatFormatting.UNDERLINE);
+        FORMAT_MAPPING.put("underlined", ChatFormatting.UNDERLINE); // MM compat
         FORMAT_MAPPING.put("o", ChatFormatting.OBFUSCATED);
         FORMAT_MAPPING.put("obf", ChatFormatting.OBFUSCATED);
         FORMAT_MAPPING.put("s", ChatFormatting.STRIKETHROUGH);
