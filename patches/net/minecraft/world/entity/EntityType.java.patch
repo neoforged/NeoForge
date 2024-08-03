@@ -1,22 +1,21 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -834,6 +_,11 @@
+@@ -834,6 +_,10 @@
      private final float spawnDimensionsScale;
      private final FeatureFlagSet requiredFeatures;
  
 +    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
-+    private final java.util.Set<ResourceLocation> requiredFlags;
 +
      private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
      }
-@@ -860,6 +_,27 @@
+@@ -860,6 +_,26 @@
          int p_273451_,
          FeatureFlagSet p_273518_
      ) {
-+        this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_338404_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, java.util.Collections.emptySet());
++        this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_338404_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
 +    }
 +
 +    public EntityType(
@@ -34,20 +33,18 @@
 +        FeatureFlagSet p_273518_,
 +        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
-+        final java.util.Set<ResourceLocation> requiredFlags
++        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier
 +    ) {
          this.factory = p_273268_;
          this.category = p_272918_;
          this.canSpawnFarFromPlayer = p_272654_;
-@@ -872,6 +_,10 @@
+@@ -872,6 +_,9 @@
          this.clientTrackingRange = p_272895_;
          this.updateInterval = p_273451_;
          this.requiredFeatures = p_273518_;
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
-+        this.requiredFlags = java.util.Set.copyOf(requiredFlags);
      }
  
      @Nullable
@@ -67,18 +64,6 @@
                  mob.playAmbientSound();
              }
  
-@@ -1056,6 +_,11 @@
-         return this.requiredFeatures;
-     }
- 
-+    @Override
-+    public java.util.Set<ResourceLocation> requiredFlags() {
-+        return requiredFlags;
-+    }
-+
-     @Nullable
-     public T create(Level p_20616_) {
-         return !this.isEnabled(p_20616_.enabledFeatures()) ? null : this.factory.create(this, p_20616_);
 @@ -1149,14 +_,23 @@
      }
  
@@ -112,36 +97,21 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -1206,6 +_,11 @@
-         private float spawnDimensionsScale = 1.0F;
+@@ -1207,6 +_,10 @@
          private EntityAttachments.Builder attachments = EntityAttachments.builder();
          private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
-+        private final java.util.Set<ResourceLocation> requiredFlags = new java.util.HashSet<>();
-+
+ 
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
- 
++
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
-@@ -1309,11 +_,35 @@
+             this.category = p_20697_;
+@@ -1314,6 +_,21 @@
              return this;
          }
  
-+        /**
-+         * @deprecated For modded feature flags, use {@linkplain #requiredFlags(ResourceLocation...)} instead.
-+         */
-+        @Deprecated
-         public EntityType.Builder<T> requiredFeatures(FeatureFlag... p_251646_) {
-             this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_251646_);
-             return this;
-         }
- 
-+        public EntityType.Builder<T> requiredFlags(ResourceLocation... requiredFlags) {
-+            java.util.Collections.addAll(this.requiredFlags, requiredFlags);
-+            return this;
-+        }
-+
 +        public EntityType.Builder<T> setUpdateInterval(int interval) {
 +             this.updateIntervalSupplier = t->interval;
 +             return this;
@@ -160,7 +130,7 @@
          public EntityType<T> build(String p_20713_) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
-@@ -1331,7 +_,11 @@
+@@ -1331,7 +_,10 @@
                  this.spawnDimensionsScale,
                  this.clientTrackingRange,
                  this.updateInterval,
@@ -168,8 +138,7 @@
 +                this.requiredFeatures,
 +                velocityUpdateSupplier,
 +                trackingRangeSupplier,
-+                updateIntervalSupplier,
-+                requiredFlags
++                updateIntervalSupplier
              );
          }
      }

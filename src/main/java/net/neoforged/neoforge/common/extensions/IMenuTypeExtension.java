@@ -5,9 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.Set;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -15,8 +13,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 public interface IMenuTypeExtension<T> {
-    static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory, ResourceLocation... requiredFlags) {
-        return new MenuType<>(factory, FeatureFlags.DEFAULT_FLAGS, Set.of(requiredFlags));
+    static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory) {
+        return new MenuType<>(factory, FeatureFlags.DEFAULT_FLAGS);
     }
 
     T create(int windowId, Inventory playerInv, RegistryFriendlyByteBuf extraData);

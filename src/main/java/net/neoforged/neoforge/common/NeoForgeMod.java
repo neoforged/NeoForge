@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +16,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
@@ -84,7 +82,6 @@ import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
-import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
@@ -139,8 +136,6 @@ import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.flag.FlagAttachment;
-import net.neoforged.neoforge.flag.Flags;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -491,13 +486,6 @@ public class NeoForgeMod {
      */
     public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "poison"));
 
-    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, NeoForgeVersion.MOD_ID);
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<FlagAttachment>> LEVEL_FLAG_DATA = ATTACHMENT_TYPES.register("modded_feature_flags", () -> AttachmentType
-            .builder(() -> new FlagAttachment(new Object2BooleanOpenHashMap<>()))
-            .serialize(FlagAttachment.CODEC)
-            .copyHandler((attachment, holder, provider) -> new FlagAttachment(new Object2BooleanOpenHashMap<>(attachment.flags())))
-            .build());
-
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
      */
@@ -530,11 +518,6 @@ public class NeoForgeMod {
         CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getFmlVersion);
         CrashReportCallables.registerCrashCallable("NeoForge", NeoForgeVersion::getVersion);
 
-        CrashReportCallables.registerCrashCallable("Enabled Feature Flags (Modded)", () -> Flags.getFlags().stream()
-                .filter(Flags::isEnabled)
-                .map(Object::toString)
-                .collect(Collectors.joining(", ")));
-
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
@@ -556,7 +539,6 @@ public class NeoForgeMod {
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
-        ATTACHMENT_TYPES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         container.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         container.registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);

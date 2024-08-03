@@ -1,18 +1,8 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -98,6 +_,7 @@
-     protected final BlockBehaviour.Properties properties;
-     @Nullable
-     protected ResourceKey<LootTable> drops;
-+    protected final java.util.Set<ResourceLocation> requiredFlags;
- 
-     public BlockBehaviour(BlockBehaviour.Properties p_60452_) {
-         this.hasCollision = p_60452_.hasCollision;
-@@ -110,7 +_,19 @@
-         this.jumpFactor = p_60452_.jumpFactor;
+@@ -111,6 +_,17 @@
          this.dynamicShape = p_60452_.dynamicShape;
          this.requiredFeatures = p_60452_.requiredFeatures;
-+        this.requiredFlags = java.util.Set.copyOf(p_60452_.requiredFlags);
          this.properties = p_60452_;
 +        final ResourceKey<LootTable> lootTableCache = p_60452_.drops;
 +        if (lootTableCache != null) {
@@ -47,18 +37,6 @@
          }
      }
  
-@@ -235,6 +_,11 @@
-         return this.requiredFeatures;
-     }
- 
-+    @Override
-+    public java.util.Set<ResourceLocation> requiredFlags() {
-+        return requiredFlags;
-+    }
-+
-     protected BlockState rotate(BlockState p_60530_, Rotation p_60531_) {
-         return p_60530_;
-     }
 @@ -335,8 +_,8 @@
          if (f == -1.0F) {
              return 0.0F;
@@ -172,22 +150,6 @@
          BlockBehaviour.StatePredicate isRedstoneConductor = (p_284888_, p_284889_, p_284890_) -> p_284888_.isCollisionShapeFullBlock(p_284889_, p_284890_);
          BlockBehaviour.StatePredicate isSuffocating = (p_284885_, p_284886_, p_284887_) -> p_284885_.blocksMotion()
                  && p_284885_.isCollisionShapeFullBlock(p_284886_, p_284887_);
-@@ -974,6 +_,7 @@
-         FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
-         @Nullable
-         BlockBehaviour.OffsetFunction offsetFunction;
-+        java.util.Set<ResourceLocation> requiredFlags = new java.util.HashSet<>();
- 
-         private Properties() {
-         }
-@@ -1020,6 +_,7 @@
-             blockbehaviour$properties.offsetFunction = blockbehaviour$properties1.offsetFunction;
-             blockbehaviour$properties.spawnTerrainParticles = blockbehaviour$properties1.spawnTerrainParticles;
-             blockbehaviour$properties.requiredFeatures = blockbehaviour$properties1.requiredFeatures;
-+            blockbehaviour$properties.requiredFlags.addAll(blockbehaviour$properties1.requiredFlags);
-             blockbehaviour$properties.emissiveRendering = blockbehaviour$properties1.emissiveRendering;
-             blockbehaviour$properties.instrument = blockbehaviour$properties1.instrument;
-             blockbehaviour$properties.replaceable = blockbehaviour$properties1.replaceable;
 @@ -1105,9 +_,15 @@
              return this;
          }
@@ -205,21 +167,3 @@
          }
  
          public BlockBehaviour.Properties ignitedByLava() {
-@@ -1215,8 +_,17 @@
-             return this;
-         }
- 
-+        /**
-+         * @deprecated For modded feature flags, use {@linkplain #requiredFlags(ResourceLocation...)} instead.
-+         */
-+        @Deprecated
-         public BlockBehaviour.Properties requiredFeatures(FeatureFlag... p_248792_) {
-             this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_248792_);
-+            return this;
-+        }
-+
-+        public BlockBehaviour.Properties requiredFlags(ResourceLocation... requiredFlags) {
-+            Collections.addAll(this.requiredFlags, requiredFlags);
-             return this;
-         }
- 
