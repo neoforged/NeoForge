@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest.entity.player;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.function.Consumer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
@@ -20,8 +19,10 @@ import net.minecraft.world.item.UseAnim;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.asm.enumextension.EnumProxy;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -43,6 +44,10 @@ public class ItemUseAnimationTest {
     public ItemUseAnimationTest(IEventBus modBus) {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
+
+        if (FMLEnvironment.dist.isClient()) {
+            modBus.addListener(ClientEvents::onRegisterClientExtensions);
+        }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -71,10 +76,11 @@ public class ItemUseAnimationTest {
         public UseAnim getUseAnimation(ItemStack stack) {
             return UseAnim.CUSTOM;
         }
+    }
 
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
+    private static final class ClientEvents {
+        private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerItem(new IClientItemExtensions() {
                 private static final HumanoidModel.ArmPose SWING_POSE = EnumParams.ARM_POSE_ENUM_PARAMS.getValue();
 
                 @Override
@@ -103,7 +109,7 @@ public class ItemUseAnimationTest {
                     int i = arm == HumanoidArm.RIGHT ? 1 : -1;
                     poseStack.translate(i * 0.56F, -0.52F, -0.72F);
                 }
-            });
+            }, THING.get());
         }
     }
 }

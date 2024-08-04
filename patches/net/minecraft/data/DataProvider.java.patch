@@ -4,7 +4,7 @@
  
  public interface DataProvider {
      ToIntFunction<String> FIXED_ORDER_FIELDS = Util.make(new Object2IntOpenHashMap<>(), p_236070_ -> {
-+        // NeoForge: conditions go first
++        // Neo: conditions go first
 +        p_236070_.put("neoforge:conditions", -1);
          p_236070_.put("type", 0);
          p_236070_.put("parent", 1);

@@ -42,10 +42,10 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.common.IPlantable;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -262,23 +262,17 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Determines if this block can support the passed in plant, allowing it to be planted and grow.
-     * Some examples:
-     * Reeds check if its a reed, or if its sand/dirt/grass and adjacent to water
-     * Cacti checks if its a cacti, or if its sand
-     * Nether types check for soul sand
-     * Crops check for tilled soil
-     * Caves check if it's a solid surface
-     * Plains check if its grass or dirt
-     * Water check if its still water
+     * Determines if this block either force allow or force disallow a plant from being placed on it. (Or pass and let the plant's decision win)
+     * This will be called in plant's canSurvive method and/or mayPlace method.
      *
-     * @param level     The current level
-     * @param facing    The direction relative to the given position the plant wants to be, typically its UP
-     * @param plantable The plant that wants to check
-     * @return True to allow the plant to be planted/stay.
+     * @param level        The current level
+     * @param soilPosition The current position of the block that will sustain the plant
+     * @param facing       The direction relative to the given position the plant wants to be, typically its UP
+     * @param plant        The plant that is checking survivability
+     * @return {@link TriState#TRUE} to allow the plant to be planted/stay. {@link TriState#FALSE} to disallow the plant from placing. {@link TriState#DEFAULT} to allow the plant to make the decision to stay or not.
      */
-    default boolean canSustainPlant(BlockGetter level, BlockPos pos, Direction facing, IPlantable plantable) {
-        return self().getBlock().canSustainPlant(self(), level, pos, facing, plantable);
+    default TriState canSustainPlant(BlockGetter level, BlockPos soilPosition, Direction facing, BlockState plant) {
+        return self().getBlock().canSustainPlant(self(), level, soilPosition, facing, plant);
     }
 
     /**
@@ -628,19 +622,19 @@ public interface IBlockStateExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ToolActions#AXE_STRIP an axe can strip},
-     * {@link ToolActions#SHOVEL_FLATTEN a shovel can path}, or {@link ToolActions#HOE_TILL a hoe can till}.
+     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
+     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
-     * @param context    The use on context that the action was performed in
-     * @param toolAction The action being performed by the tool
-     * @param simulate   If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
+     * @param context     The use on context that the action was performed in
+     * @param itemAbility The action being performed by the tool
+     * @param simulate    If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
      * @return The resulting state after the action has been performed
      */
     @Nullable
-    default BlockState getToolModifiedState(UseOnContext context, ToolAction toolAction, boolean simulate) {
-        BlockState eventState = EventHooks.onToolUse(self(), context, toolAction, simulate);
-        return eventState != self() ? eventState : self().getBlock().getToolModifiedState(self(), context, toolAction, simulate);
+    default BlockState getToolModifiedState(UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        BlockState eventState = EventHooks.onToolUse(self(), context, itemAbility, simulate);
+        return eventState != self() ? eventState : self().getBlock().getToolModifiedState(self(), context, itemAbility, simulate);
     }
 
     /**
@@ -752,7 +746,7 @@ public interface IBlockStateExtension {
 
     /**
      * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
-     * <p></p>
+     * <p>
      * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
      * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
      *

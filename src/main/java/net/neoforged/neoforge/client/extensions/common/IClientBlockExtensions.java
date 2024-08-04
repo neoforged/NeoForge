@@ -38,7 +38,7 @@ public interface IClientBlockExtensions {
     }
 
     static IClientBlockExtensions of(Block block) {
-        return block.getRenderPropertiesInternal() instanceof IClientBlockExtensions e ? e : DEFAULT;
+        return ClientExtensionsManager.BLOCK_EXTENSIONS.getOrDefault(block, DEFAULT);
     }
 
     /**

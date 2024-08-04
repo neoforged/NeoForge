@@ -30,12 +30,12 @@ import org.jetbrains.annotations.ApiStatus;
  * <li>{@link LivingIncomingDamageEvent} is fired.</li>
  * <li>{@link LivingShieldBlockEvent} fires and the result determines if shield effects apply.</li>
  * <li>{@link LivingEntity#actuallyHurt} is called.</li>
- * <li>armor, magic, mob_effect, and absorption reductions are captured in the DamageContainer.</li>
+ * <li>armor, magic, and mob_effect reductions are captured in the DamageContainer.</li>
  * <li>{@link LivingDamageEvent.Pre} is fired.</li>
+ * <li>absorption reductions are captured in the DamageContainer.</li>
  * <li>if the damage is not zero, entity health is modified and recorded and {@link LivingDamageEvent.Post} is fired.</li>
  * </ol>
  */
-@ApiStatus.Internal
 public class DamageContainer {
     public enum Reduction {
         /** Damage reduced from the effects of armor. */
@@ -92,8 +92,11 @@ public class DamageContainer {
     /**
      * Adds a callback modifier to the vanilla damage reductions. Each function will be performed in sequence
      * on the vanilla value at the time the {@link DamageContainer.Reduction} type is set by vanilla.
-     * <h4>Note: only the {@link LivingIncomingDamageEvent EntityPreDamageEvent}
-     * happens early enough in the sequence for this method to have any effect.</h4>
+     * <ul>
+     * <li>only the {@link LivingIncomingDamageEvent EntityPreDamageEvent}
+     * happens early enough in the sequence for this method to have any effect.</li>
+     * <li>if the vanilla reduction is not triggered, the reduction function will not execute.</li>
+     * </ul>
      *
      * @param type              The reduction type your function will apply to
      * @param reductionFunction takes the current reduction from vanilla and any preceding functions and returns a new
@@ -154,12 +157,13 @@ public class DamageContainer {
 
     @ApiStatus.Internal
     public void setReduction(Reduction reduction, float amount) {
-        this.reductions.put(reduction, modifyReduction(Reduction.ABSORPTION, amount));
-        this.newDamage -= Math.max(0, amount);
+        float modifiedReduction = modifyReduction(reduction, amount);
+        this.reductions.put(reduction, modifiedReduction);
+        this.newDamage -= modifiedReduction;
     }
 
     private float modifyReduction(Reduction type, float reduction) {
-        for (var func : reductionFunctions.getOrDefault(type, new ArrayList<>())) {
+        for (var func : reductionFunctions.getOrDefault(type, List.of())) {
             reduction = func.modify(this, reduction);
         }
         return reduction;

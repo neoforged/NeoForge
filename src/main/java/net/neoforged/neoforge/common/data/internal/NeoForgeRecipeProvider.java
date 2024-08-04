@@ -39,10 +39,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import org.jetbrains.annotations.Nullable;
 
 public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
+    private final Map<Item, Ingredient> specialReplacements = new HashMap<>();
     private final Set<ResourceLocation> excludes = new HashSet<>();
 
     public NeoForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> provider) {
@@ -73,7 +75,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.AMETHYST_SHARD, Tags.Items.GEMS_AMETHYST);
         replace(Items.DIAMOND, Tags.Items.GEMS_DIAMOND);
         replace(Items.EMERALD, Tags.Items.GEMS_EMERALD);
-        replace(Items.CHEST, Tags.Items.CHESTS_WOODEN);
+
         replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONES_NORMAL);
         replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
 
@@ -96,6 +98,8 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.COBBLED_DEEPSLATE_STAIRS);
         exclude(Blocks.COBBLED_DEEPSLATE_SLAB);
         exclude(Blocks.COBBLED_DEEPSLATE_WALL);
+
+        specialReplacements.put(Items.CHEST, DifferenceIngredient.of(Ingredient.of(Tags.Items.CHESTS_WOODEN), Ingredient.of(Tags.Items.CHESTS_TRAPPED)));
 
         super.buildRecipes(new RecipeOutput() {
             @Override
@@ -166,6 +170,14 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         boolean modified = false;
         List<Value> items = new ArrayList<>();
         Value[] vanillaItems = vanilla.getValues();
+        if (vanillaItems.length == 1 && vanillaItems[0] instanceof ItemValue itemValue) {
+            Item item = itemValue.item().getItem();
+            Ingredient replacement = specialReplacements.get(item);
+            if (replacement != null) {
+                return replacement;
+            }
+        }
+
         for (Value entry : vanillaItems) {
             if (entry instanceof ItemValue) {
                 ItemStack stack = entry.getItems().stream().findFirst().orElse(ItemStack.EMPTY);

@@ -5,14 +5,14 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.jarcompatibilitychecker' version '0.1.9'
+    id 'net.neoforged.gradleutils'
+    id 'neoforge.versioning'
 }
-
-apply plugin: 'net.neoforged.gradleutils'
 
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '20.6'
+    from '21.0'
     disableAutomaticPublicationRegistration()
 }
 
@@ -50,6 +50,17 @@ minecraft {
 
     accessTransformers {
         file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
+
+tasks.configureEach { tsk ->
+    if (tsk.name == 'neoFormApplyUserAccessTransformer' && project.hasProperty('validateAccessTransformers')) {
+        tsk.inputs.property('validation', 'error')
+        tsk.logLevel('ERROR')
+        tsk.doFirst {
+            tsk.getRuntimeProgramArguments().addAll(tsk.getRuntimeProgramArguments().get())
+            tsk.getRuntimeProgramArguments().add('--access-transformer-validation=error')
+        }
     }
 }
 
@@ -415,6 +426,17 @@ dependencies {
     }
     modDevTestFixtures("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}") {
         endorseStrictVersions()
+    }
+}
+
+processResources {
+    inputs.property("version", project.version)
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand([
+                "global": [
+                        "neoForgeVersion": project.version
+                ]
+        ])
     }
 }
 

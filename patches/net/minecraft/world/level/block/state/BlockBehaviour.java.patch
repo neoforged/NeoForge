@@ -18,15 +18,6 @@
      }
  
      public BlockBehaviour.Properties properties() {
-@@ -159,7 +_,7 @@
-     }
- 
-     protected void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
--        if (p_60515_.hasBlockEntity() && !p_60515_.is(p_60518_.getBlock())) {
-+        if (p_60515_.hasBlockEntity() && (!p_60515_.is(p_60518_.getBlock()) || !p_60518_.hasBlockEntity())) {
-             p_60516_.removeBlockEntity(p_60517_);
-         }
-     }
 @@ -168,7 +_,7 @@
          if (!p_311951_.isAir() && p_312925_.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = p_311951_.getBlock();
@@ -75,7 +66,7 @@
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
-@@ -393,6 +_,14 @@
+@@ -393,6 +_,13 @@
          return this.properties.destroyTime;
      }
  
@@ -83,9 +74,8 @@
 +        return ((BlockStateBase)state).isAir;
 +    }
 +
-+    /* ======================================== FORGE START ===================================== */
++    // Neo: Holds the loot table for this block's drops. Used for getLootTable method.
 +    private final java.util.function.Supplier<ResourceKey<LootTable>> lootTableSupplier;
-+    /* ========================================= FORGE END ====================================== */
 +
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
          private final int lightEmission;

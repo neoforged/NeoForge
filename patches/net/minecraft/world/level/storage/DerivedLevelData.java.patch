@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/storage/DerivedLevelData.java
++++ b/net/minecraft/world/level/storage/DerivedLevelData.java
+@@ -191,4 +_,26 @@
+         p_164852_.setDetail("Derived", true);
+         this.wrapped.fillCrashReportCategory(p_164852_, p_164853_);
+     }
++
++    // Neo: Variable day time code
++
++    @Override
++    public float getDayTimeFraction() {
++        return wrapped.getDayTimeFraction();
++    }
++
++    @Override
++    public float getDayTimePerTick() {
++        return wrapped.getDayTimePerTick();
++    }
++
++    @Override
++    public void setDayTimeFraction(float dayTimeFraction) {
++        wrapped.setDayTimeFraction(dayTimeFraction);
++    }
++
++    @Override
++    public void setDayTimePerTick(float dayTimePerTick) {
++        wrapped.setDayTimePerTick(dayTimePerTick);
++    }
+ }

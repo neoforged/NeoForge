@@ -115,6 +115,26 @@
                  int j;
                  if (this.animateOverlayMessageColor) {
                      j = Mth.hsvToArgb(f / 50.0F, 0.7F, 0.6F, i);
+@@ -323,9 +_,19 @@
+     private void renderChat(GuiGraphics p_316307_, DeltaTracker p_348631_) {
+         if (!this.chat.isChatFocused()) {
+             Window window = this.minecraft.getWindow();
++            // Neo: Allow customizing position of chat component
++            var chatBottomMargin = 40; // See ChatComponent#BOTTOM_MARGIN (used in translate calls in ChatComponent#render)
++            var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
++                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, p_316307_, p_348631_, 0, p_316307_.guiHeight() - chatBottomMargin)
++            );
++
++            // The event is given the absolute Y position; account for chat component's own offsetting here
++            p_316307_.pose().pushPose();
++            p_316307_.pose().translate(event.getPosX(), (event.getPosY() - p_316307_.guiHeight() + chatBottomMargin) / this.chat.getScale(), 0.0F);
+             int i = Mth.floor(this.minecraft.mouseHandler.xpos() * (double)window.getGuiScaledWidth() / (double)window.getScreenWidth());
+             int j = Mth.floor(this.minecraft.mouseHandler.ypos() * (double)window.getGuiScaledHeight() / (double)window.getScreenHeight());
+             this.chat.render(p_316307_, this.tickCount, i, j, false);
++            p_316307_.pose().popPose();
+         }
+     }
+ 
 @@ -441,6 +_,8 @@
              List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
  
@@ -242,7 +262,7 @@
  
      private void renderDemoOverlay(GuiGraphics p_281825_, DeltaTracker p_348679_) {
 -        if (this.minecraft.isDemo()) {
-+        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // NEO: Hide demo timer when F3 debug overlay is open; fixes MC-271166
++        if (this.minecraft.isDemo() && !this.getDebugOverlay().showDebugScreen()) { // Neo: Hide demo timer when F3 debug overlay is open; fixes MC-271166
              this.minecraft.getProfiler().push("demo");
              Component component;
              if (this.minecraft.level.getGameTime() >= 120500L) {
@@ -370,13 +390,17 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1292,8 +_,13 @@
+@@ -1292,8 +_,17 @@
          }
      }
  
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void initModdedOverlays() {
 +        this.layerManager.initModdedLayers();
++    }
++
++    public int getLayerCount() {
++        return this.layerManager.getLayerCount();
 +    }
 +
      @OnlyIn(Dist.CLIENT)
