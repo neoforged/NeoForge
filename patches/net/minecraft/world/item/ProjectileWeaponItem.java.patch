@@ -1,5 +1,48 @@
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
+@@ -24,12 +_,42 @@
+         super(p_43009_);
+     }
+ 
++    /**
++     * @deprecated Use ItemStack sensitive version {@link ProjectileWeaponItem#getSupportedHeldProjectiles(ItemStack)}
++     */
++    @Deprecated
+     public Predicate<ItemStack> getSupportedHeldProjectiles() {
+         return this.getAllSupportedProjectiles();
+     }
+ 
++    /**
++     * @deprecated Use ItemStack sensitive version {@link ProjectileWeaponItem#getAllSupportedProjectiles(ItemStack)}
++     */
++    @Deprecated
+     public abstract Predicate<ItemStack> getAllSupportedProjectiles();
+ 
++    /**
++     * Override this method if the weapon stack allows special projectile that would only be used if it's in hand.
++     * The default return value is a union-predicate of {@link ProjectileWeaponItem#getAllSupportedProjectiles(ItemStack)}
++     * and {@link ProjectileWeaponItem#getSupportedHeldProjectiles()}
++     *
++     * @param stack The ProjectileWeapon stack
++     * @return A predicate that returns true for supported projectile stack in hand
++     */
++    public Predicate<ItemStack> getSupportedHeldProjectiles(ItemStack stack) {
++        return getAllSupportedProjectiles(stack).or(getSupportedHeldProjectiles());
++    }
++
++    /**
++     * Override this method if the allowed projectile is weapon stack dependent.
++     *
++     * @param stack The ProjectileWeapon stack
++     * @return A predicate that returns true for all supported projectile stack
++     */
++    public Predicate<ItemStack> getAllSupportedProjectiles(ItemStack stack) {
++        return getAllSupportedProjectiles();
++    }
++
+     public static ItemStack getHeldProjectile(LivingEntity p_43011_, Predicate<ItemStack> p_43012_) {
+         if (p_43012_.test(p_43011_.getItemInHand(InteractionHand.OFF_HAND))) {
+             return p_43011_.getItemInHand(InteractionHand.OFF_HAND);
 @@ -92,7 +_,7 @@
              abstractarrow.setCritArrow(true);
          }

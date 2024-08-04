@@ -390,13 +390,17 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1292,8 +_,13 @@
+@@ -1292,8 +_,17 @@
          }
      }
  
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void initModdedOverlays() {
 +        this.layerManager.initModdedLayers();
++    }
++
++    public int getLayerCount() {
++        return this.layerManager.getLayerCount();
 +    }
 +
      @OnlyIn(Dist.CLIENT)

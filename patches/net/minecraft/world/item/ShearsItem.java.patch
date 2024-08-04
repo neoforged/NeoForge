@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -55,6 +_,27 @@
+@@ -55,19 +_,39 @@
      }
  
      @Override
@@ -28,3 +28,18 @@
      public InteractionResult useOn(UseOnContext p_186371_) {
          Level level = p_186371_.getLevel();
          BlockPos blockpos = p_186371_.getClickedPos();
+         BlockState blockstate = level.getBlockState(blockpos);
+-        if (blockstate.getBlock() instanceof GrowingPlantHeadBlock growingplantheadblock && !growingplantheadblock.isMaxAge(blockstate)) {
++        BlockState blockstate1 = blockstate.getToolModifiedState(p_186371_, net.neoforged.neoforge.common.ItemAbilities.SHEARS_TRIM, false);
++        if (blockstate1 != null) {
+             Player player = p_186371_.getPlayer();
+             ItemStack itemstack = p_186371_.getItemInHand();
+             if (player instanceof ServerPlayer) {
+                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer)player, blockpos, itemstack);
+             }
+ 
+-            level.playSound(player, blockpos, SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
+-            BlockState blockstate1 = growingplantheadblock.getMaxAgeState(blockstate);
+             level.setBlockAndUpdate(blockpos, blockstate1);
+             level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(p_186371_.getPlayer(), blockstate1));
+             if (player != null) {

@@ -22,6 +22,9 @@ import net.neoforged.neoforge.common.MutableDataComponentHolder;
  * <p>
  * To use this class, register a new {@link DataComponentType} which holds an {@link ItemContainerContents} for your item.
  * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
+ * <p>
+ * Since data components are immutable, this will not work nicely with vanilla's container methods which expect the stack to be mutable.
+ * Use {@link ItemHandlerCopySlot} to get around this issue.
  * 
  * @implNote All functions in this class should attempt to minimize component read/writes to avoid unnecessary churn, noting that the component can never be cached.
  */

@@ -1,5 +1,17 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
+@@ -23,6 +_,11 @@
+     public long lastKeySelection;
+     private KeyBindsList keyBindsList;
+     private Button resetButton;
++    // Neo: These are to hold the last key and modifier pressed so they can be checked in keyReleased
++    private InputConstants.Key lastPressedKey = InputConstants.UNKNOWN;
++    private InputConstants.Key lastPressedModifier = InputConstants.UNKNOWN;
++    private boolean isLastKeyHeldDown = false;
++    private boolean isLastModifierHeldDown = false;
+ 
+     public KeyBindsScreen(Screen p_344996_, Options p_344771_) {
+         super(p_344996_, p_344771_, TITLE);
 @@ -41,7 +_,7 @@
      protected void addFooter() {
          this.resetButton = Button.builder(Component.translatable("controls.resetAll"), p_346345_ -> {
@@ -9,18 +21,73 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -73,11 +_,14 @@
+@@ -72,18 +_,65 @@
+     @Override
      public boolean keyPressed(int p_345810_, int p_345447_, int p_344981_) {
          if (this.selectedKey != null) {
-             if (p_345810_ == 256) {
-+                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.UNKNOWN);
+-            if (p_345810_ == 256) {
++            var key = InputConstants.getKey(p_345810_, p_345447_);
++            if (net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
++                lastPressedModifier = key;
++                isLastModifierHeldDown = true;
++            } else {
++                lastPressedKey = key;
++                isLastKeyHeldDown = true;
++            }
++            return true;
++        } else {
++            return super.keyPressed(p_345810_, p_345447_, p_344981_);
++        }
++    }
++
++    // Neo: This method is override to more easily handle modifier keys
++    @Override
++    public boolean keyReleased(int p_94715_, int p_94716_, int p_94717_) {
++        if (this.selectedKey != null) {
++            if (p_94715_ == 256) {
++                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
                  this.options.setKey(this.selectedKey, InputConstants.UNKNOWN);
++                lastPressedKey = InputConstants.UNKNOWN;
++                lastPressedModifier = InputConstants.UNKNOWN;
++                isLastKeyHeldDown = false;
++                isLastModifierHeldDown = false;
              } else {
-+                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.getKey(p_345810_, p_345447_));
-                 this.options.setKey(this.selectedKey, InputConstants.getKey(p_345810_, p_345447_));
-             }
+-                this.options.setKey(this.selectedKey, InputConstants.getKey(p_345810_, p_345447_));
+-            }
++                var key = InputConstants.getKey(p_94715_, p_94716_);
++                if (lastPressedKey.equals(key)) {
++                    isLastKeyHeldDown = false;
++                } else if (lastPressedModifier.equals(key)) {
++                    isLastModifierHeldDown = false;
++                }
  
-+            if(!net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(this.selectedKey.getKey()))
++                if (!isLastKeyHeldDown && !isLastModifierHeldDown) {
++                    if (!lastPressedKey.equals(InputConstants.UNKNOWN)) {
++                        this.selectedKey.setKeyModifierAndCode(
++                                net.neoforged.neoforge.client.settings.KeyModifier.getKeyModifier(lastPressedModifier),
++                                lastPressedKey
++                        );
++                        this.options.setKey(this.selectedKey, lastPressedKey);
++                    } else {
++                        this.selectedKey.setKeyModifierAndCode(
++                                net.neoforged.neoforge.client.settings.KeyModifier.NONE,
++                                lastPressedModifier
++                        );
++                        this.options.setKey(this.selectedKey, lastPressedModifier);
++                    }
++                    lastPressedKey = InputConstants.UNKNOWN;
++                    lastPressedModifier = InputConstants.UNKNOWN;
++                } else {
++                    return true;
++                }
++            }
              this.selectedKey = null;
              this.lastKeySelection = Util.getMillis();
              this.keyBindsList.resetMappingAndUpdateButtons();
+             return true;
+         } else {
+-            return super.keyPressed(p_345810_, p_345447_, p_344981_);
++            return super.keyReleased(p_94715_, p_94716_, p_94717_);
+         }
+     }
+ 

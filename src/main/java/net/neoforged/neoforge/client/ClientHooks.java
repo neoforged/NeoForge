@@ -19,6 +19,7 @@ import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -57,6 +58,7 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.particle.ParticleEngine;
@@ -112,6 +114,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -133,6 +136,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -170,10 +174,13 @@ import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.event.ToastAddEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
+import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
+import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -239,10 +246,13 @@ public class ClientHooks {
     }
 
     public static float getGuiFarPlane() {
-        // 11000 units for the overlay background,
-        // and 10000 units for each layered Screen,
+        // 11000 units for the overlay background and 10000 units for each layered Screen or 200 units for each HUD layer, whichever ends up higher
 
-        return 11000.0F + 10000.0F * (1 + guiLayers.size());
+        float depth = 10_000F * (1 + guiLayers.size());
+        if (Minecraft.getInstance().level != null) {
+            depth = Math.max(depth, GuiLayerManager.Z_SEPARATION * Minecraft.getInstance().gui.getLayerCount());
+        }
+        return 11_000F + depth;
     }
 
     public static ResourceLocation getArmorTexture(Entity entity, ItemStack armor, ArmorMaterial.Layer layer, boolean innerModel, EquipmentSlot slot) {
@@ -801,11 +811,15 @@ public class ClientHooks {
     }
 
     public static List<ClientTooltipComponent> gatherTooltipComponents(ItemStack stack, List<? extends FormattedText> textElements, Optional<TooltipComponent> itemComponent, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
-        Font font = getTooltipFont(stack, fallbackFont);
         List<Either<FormattedText, TooltipComponent>> elements = textElements.stream()
                 .map((Function<FormattedText, Either<FormattedText, TooltipComponent>>) Either::left)
                 .collect(Collectors.toCollection(ArrayList::new));
         itemComponent.ifPresent(c -> elements.add(1, Either.right(c)));
+        return gatherTooltipComponentsFromElements(stack, elements, mouseX, screenWidth, screenHeight, fallbackFont);
+    }
+
+    public static List<ClientTooltipComponent> gatherTooltipComponentsFromElements(ItemStack stack, List<Either<FormattedText, TooltipComponent>> elements, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
+        Font font = getTooltipFont(stack, fallbackFont);
 
         var event = new RenderTooltipEvent.GatherComponents(stack, screenWidth, screenHeight, elements, -1);
         NeoForge.EVENT_BUS.post(event);
@@ -1003,6 +1017,7 @@ public class ClientHooks {
         }
         initializedClientHooks = true;
 
+        ClientExtensionsManager.init();
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
@@ -1019,6 +1034,7 @@ public class ClientHooks {
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
+        MapDecorationRendererManager.init();
     }
 
     /**
@@ -1081,5 +1097,24 @@ public class ClientHooks {
         var event = new GatherEffectScreenTooltipsEvent(screen, effectInst, tooltip);
         NeoForge.EVENT_BUS.post(event);
         return event.getTooltip();
+    }
+
+    private static final ExtensionInfo RECIPE_BOOK_TYPE_EXTENSION_INFO = RecipeBookType.getExtensionInfo();
+    private static final RecipeBookType[] RECIPE_BOOK_TYPES = RecipeBookType.values();
+    private static RecipeBookType @Nullable [] cachedFilteredTypes = null;
+
+    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
+        ClientPacketListener listener = Minecraft.getInstance().getConnection();
+        if (listener != null && !listener.getConnection().isMemoryConnection() && listener.getConnectionType().isOther()) {
+            if (cachedFilteredTypes == null) {
+                if (RECIPE_BOOK_TYPE_EXTENSION_INFO.extended()) {
+                    cachedFilteredTypes = Arrays.copyOfRange(RECIPE_BOOK_TYPES, 0, RECIPE_BOOK_TYPE_EXTENSION_INFO.vanillaCount());
+                } else {
+                    cachedFilteredTypes = RECIPE_BOOK_TYPES;
+                }
+            }
+            return cachedFilteredTypes;
+        }
+        return RECIPE_BOOK_TYPES;
     }
 }
