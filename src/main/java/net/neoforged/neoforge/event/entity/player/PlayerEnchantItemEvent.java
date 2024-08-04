@@ -9,9 +9,12 @@ import java.util.List;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 /**
- * This event captures when a player action enchants an item.
+ * This event fires when a player enchants an item, after {@link IItemExtension#applyEnchantments} has been called.
+ * <p>
+ * This event is only fired on the logical server.
  */
 public class PlayerEnchantItemEvent extends PlayerEvent {
     private final ItemStack enchantedItem;
@@ -23,12 +26,16 @@ public class PlayerEnchantItemEvent extends PlayerEvent {
         this.enchantments = enchantments;
     }
 
-    /** {@return the {@link ItemStack} after it was enchanted} */
+    /**
+     * @return the {@link ItemStack} after it was enchanted
+     */
     public ItemStack getEnchantedItem() {
         return enchantedItem;
     }
 
-    /** {@return the list of {@link EnchantmentInstance}s that were applied to the item for this event firing} */
+    /**
+     * @return the list of {@link EnchantmentInstance}s that were applied to the item for this event firing
+     */
     public List<EnchantmentInstance> getEnchantments() {
         return enchantments;
     }
