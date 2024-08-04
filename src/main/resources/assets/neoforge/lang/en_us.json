@@ -147,13 +147,13 @@
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
+      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
       "color": "red"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are are ony available while a world is loaded.",
+      "text": "Settings in here are only available while a world is loaded.",
       "color": "red"
     }
   ],
