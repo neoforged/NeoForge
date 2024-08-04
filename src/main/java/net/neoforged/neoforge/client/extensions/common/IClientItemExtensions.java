@@ -187,14 +187,17 @@ public interface IClientItemExtensions {
      *                      performance
      * @return a custom color for the layer, in ARGB format, or 0 to skip rendering
      */
-    default int getLayerTintColor(ItemStack stack, LivingEntity entity, ArmorMaterial.Layer layer, int layerIdx, int fallbackColor) {
+    default int getArmorLayerTintColor(ItemStack stack, LivingEntity entity, ArmorMaterial.Layer layer, int layerIdx, int fallbackColor) {
         return layer.dyeable() ? fallbackColor : 0xFFFFFFFF;
     }
 
     /**
-     * The default method for getting a dye color for the item. This is the vanilla behaviour; to use the
-     * {@link net.minecraft.core.component.DataComponents#DYED_COLOR} component with a fallback of the standard
-     * vanilla leather color.
+     * Called once per render pass of equipped armor items, regardless of the number of layers; the return value of this
+     * method is passed to {@link #getArmorLayerTintColor(ItemStack, LivingEntity, ArmorMaterial.Layer, int, int)} as
+     * the {@code fallbackColor} parameter.
+     * <p>
+     * You can override this method for your custom armor item to provide an alternative default color for the item when
+     * no explicit color is specified.
      *
      * @param stack the armor item stack
      * @return a default color for the layer, in ARGB format

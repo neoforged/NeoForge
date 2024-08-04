@@ -15,7 +15,7 @@
 +                int fallbackColor = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).getDefaultDyeColor(itemstack);
 +                for (int layerIdx = 0; layerIdx < armormaterial.layers().size(); layerIdx++) {
 +                    ArmorMaterial.Layer armormaterial$layer = armormaterial.layers().get(layerIdx);
-+                    int j = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).getLayerTintColor(itemstack, p_117121_, armormaterial$layer, layerIdx, fallbackColor);
++                    int j = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).getArmorLayerTintColor(itemstack, p_117121_, armormaterial$layer, layerIdx, fallbackColor);
 +                    if (j != 0) {
 +                        var texture = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_117121_, itemstack, armormaterial$layer, flag, p_117122_);
 +                        this.renderModel(p_117119_, p_117120_, p_117123_, model, j, texture);
