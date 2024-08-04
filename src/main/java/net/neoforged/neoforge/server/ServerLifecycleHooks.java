@@ -19,13 +19,16 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
@@ -186,6 +189,23 @@ public class ServerLifecycleHooks {
                     entitiesWithoutPlacements.add(data.type);
                 });
             });
+
+            for (MobCategory mobCategory : mobSettings.getSpawnerTypes()) {
+                for (MobSpawnSettings.SpawnerData spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
+                    if (spawnerData.type.getCategory() != mobCategory) {
+                        // Ignore vanilla bugged entries to reduce unneeded logging. See https://bugs.mojang.com/browse/MC-1788 for the Ocelot/Jungle vanilla bug.
+                        boolean isVanillaBug = spawnerData.type == EntityType.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
+                        if (!isVanillaBug) {
+                            LOGGER.warn("Detected {} that was registered with {} mob category but was added under {} mob category for {} biome! " +
+                                    "Mobs should be added to biomes under the same mob category that the mob was registered as to prevent mob cap spawning issues.",
+                                    BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.type),
+                                    spawnerData.type.getCategory(),
+                                    mobCategory,
+                                    biomeHolder.getKey().location());
+                        }
+                    }
+                }
+            }
         });
         // Rebuild the indexed feature list
         registries.registryOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
