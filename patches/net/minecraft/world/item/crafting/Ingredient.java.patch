@@ -182,7 +182,7 @@
                  : ingredient$itemvalue.item.getItem().equals(this.item.getItem()) && ingredient$itemvalue.item.getCount() == this.item.getCount();
          }
  
-+        // Neo: Add a hashCode() implementation that matches equals() to avoid violating contract
++        // Neo: Add a hashCode() implementation that matches equals()
 +        @Override
 +        public int hashCode() {
 +            return 31 * item.getItem().hashCode() + item.getCount();
