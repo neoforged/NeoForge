@@ -142,4 +142,4 @@ static void gameTestOnly(final ExtendedGameTestHelper helper) {
 
 ## Extra: method-based event tests
 These tests cannot be automated via gametests, and will only provide manual event testing. They should primarily be used by client tests.  
-More information can be found [here](https://gist.github.com/Matyrobbrt/cac2427748a51ff2bfc82fcd03606b55#method-based-event-tests).
+More information can be found [here](MCGAMETESTS.md).
