@@ -22,7 +22,7 @@
      };
      private final Object tagAdditionLock = new Object();
  
-@@ -114,9 +_,17 @@
+@@ -114,15 +_,23 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> p_256252_, T p_256591_, RegistrationInfo p_326235_) {
@@ -38,8 +38,16 @@
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", i, this.getMaxId()));
 +
          if (this.byLocation.containsKey(p_256252_.location())) {
-             Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry"));
+-            Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry"));
++            throw Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry")); // Neo: properly throw exception when registering duplicate keys
          }
+ 
+         if (this.byValue.containsKey(p_256591_)) {
+-            Util.pauseInIde(new IllegalStateException("Adding duplicate value '" + p_256591_ + "' to registry"));
++            throw Util.pauseInIde(new IllegalStateException("Adding duplicate value '" + p_256591_ + "' to registry")); // Neo: properly throw exception when registering duplicate values
+         }
+ 
+         Holder.Reference<T> reference;
 @@ -135,16 +_,18 @@
              reference.bindKey(p_256252_);
          } else {
