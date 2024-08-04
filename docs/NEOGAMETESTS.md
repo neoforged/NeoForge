@@ -37,7 +37,7 @@ import net.neoforged.testframework.DynamicTest;
 class SomeTestClass {
     @TestHolder(description = "Tests some interesting thing")
     static void someNiceTest(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
+        test.eventListeners().neoforge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
             if (event.getStack().is(Items.MELON_SEEDS)) {
                 // If the event is fired and detects pickup of melon seeds, the test will be considered pass
                 // and the player will get pumpkin seeds too
@@ -81,7 +81,7 @@ class SomeTestClass {
     @EmptyTemplate(value = "3x3x3", floor = true)
     @TestHolder(description = "Tests some interesting thing")
     static void someNiceTest(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
+        test.eventListeners().neoforge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
             if (event.getStack().is(Items.MELON_SEEDS)) {
                 // If the event is fired and detects pickup of melon seeds, the test will be considered pass
                 // and the player will get pumpkin seeds too

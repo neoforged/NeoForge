@@ -1,9 +1,10 @@
 # The Test Framework
 This guide will explain the MC Test Framework, how it works, and how to use it.
+If you are a contributor looking to add a GameTest for your PR, [please see this guide instead](NEOGAMETESTS.md).
 ## What is the Framework?
-The Framework is used in order to manage and process Minecraft in-game tests, and is designed to be used by Forge test mods.
+The Framework is used in order to manage and process Minecraft in-game tests, and is designed to be used by NeoForge.
 ## How does the Framework work?
-The Framwork manages tests, which can be enabled or disabled at runtime, using either an in-game command or an UI. Tests have a status which consist of a message and a `Result`, which can be either `PASSED`, `FAILED` or `NOT_PROCESSED`. The status of a test is changed by test itself when it meets certain conditions, or it encounteres exceptions.  
+The Framwork manages tests, which can be enabled or disabled at runtime, using either an in-game command or a UI. Tests have a status which consist of a message and a `Result`, which can be either `PASSED`, `FAILED` or `NOT_PROCESSED`. The status of a test is changed by test itself when it meets certain conditions, or it encounteres exceptions.  
 The status of tests is synchronized with clients, which means multiple players can simultaneously run tests on the same server.  
 Tests can also be run without manual player interaction (like on a CI for example), by utilising the [GameTest integration](#gametest-integration).
 ## Creating a `TestFramework`
@@ -56,7 +57,7 @@ public class EnteringSectionEventTest extends AbstractTest {
   @Override
   public void onEnabled(@NotNull EventListenerGroup listeners) {
     logger().info("Basic test 'entity_entering_section' has been enabled!");
-    listeners.getFor(Bus.FORGE).addListener((final EntityEvent.EnteringSection event) -> {
+    listeners.getFor(Bus.NEOFORGE).addListener((final EntityEvent.EnteringSection event) -> {
       if (event.getEntity() instanceof Player) {
         pass();
       }
@@ -81,7 +82,7 @@ static void entityEnteringSection(final DynamicTest test /*, final RegistrationH
   test.whenEnabled(listeners -> {
     test.framework().logger().info("Method-based 'entity_entering_section' test has been enabled!");
 
-    listeners.getFor(Bus.FORGE).addListener((final EntityEvent.EnteringSection event) -> {
+    listeners.getFor(Bus.NEOFORGE).addListener((final EntityEvent.EnteringSection event) -> {
       if (event.getEntity() instanceof Player) {
         test.pass();
       }
@@ -95,7 +96,7 @@ Method-based event tests are represented by any *static* method, annotated with 
 - the first parameter is of any type which is a subclass of `Event`, and represents the type of the event to listen for; If this parameter implements `IModBusEvent`, the listener will be registered to the `MOD` bus, otherwise it will be registered to the `FORGE` bus;
 - the second parameter is of the `DynamicTest` type.
 
-The collector will register the method as an event listener, and as such the method is invoked every time a the event is fired.
+The collector will register the method as an event listener, and as such the method is invoked every time an event is fired.
 **Because of this, the test may *only* be configured in the annotation!**  
 **Note**: the method can have any access modifier, as it will be invoked with a trusted lookup!
 
@@ -173,7 +174,7 @@ public static final StructureTemplate EMPTY_5x5 = StructureTemplateBuilder.empty
 ```
 
 ## GameTest Integration
-The test system has integration with Mojang's GameTest. A test can supply the information required by the gametest using `@Nullable Test#asGameTest`. The provided `GameTestData` will give the GameTest framework the data it requires. Note that the name of the gametest is the test's ID, and if the provided `batchName` is null, then the batch of the test will be the ID of its first group.
+The test system has integration with Mojang's GameTest. A test can supply the information required by the GameTest using `@Nullable Test#asGameTest`. The provided `GameTestData` will give the GameTest framework the data it requires. Note that the name of the GameTest is the test's ID, and if the provided `batchName` is null, then the batch of the test will be the ID of its first group.
 
 Default `GameTestData` providers:
 - for basic tests using `AbstractTest`, override `onGameTest` and annotate it with `GameTest` (the annotation will be used to configure the `GameTestData` as vanilla does). That method will be run when the GameTest version of the test is run;
@@ -192,7 +193,7 @@ public class LeverTest extends AbstractTest {
       .thenIdle(1)
       .thenWaitUntil(0, () -> helper.assertBlockProperty(new BlockPos(0, 2, 0), LeverBlock.POWERED, true))
       .thenExecute(this::pass) // Pass the test if the lever is powered. If the assertion fails, the framework will make sure to fail the test.
-      .thenSucceed()
+      .thenSucceed();
   }
 }
 ```
@@ -222,4 +223,4 @@ or, if you want to use an empty template, you may use the `@EmptyTemplate` annot
 - a `value: String` - the size of the structure, in `LxHxW` format, defaulting to `3x3x3`;
 - a `floor: boolean` - if `true`, the template will have an iron floor, as such increasing the height by one, defaulting to `false`.
 
-For a guide on gametests, see [this guide by robotgryphon](NEOGAMETESTS.md).
+For a guide on GameTests, see [this guide](NEOGAMETESTS.md).
