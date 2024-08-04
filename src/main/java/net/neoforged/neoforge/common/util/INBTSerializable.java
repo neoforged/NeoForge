@@ -32,7 +32,7 @@ public interface INBTSerializable<T extends Tag> {
         return new NBTSerializableCodec<>(defaultSupplier);
     }
 
-    static <T extends Tag, S extends INBTSerializable<T>> StreamCodec<RegistryFriendlyByteBuf, S> streamCodec(Supplier<S> defaultSupplier) {
+    static <NBT extends Tag, S extends INBTSerializable<NBT>> StreamCodec<RegistryFriendlyByteBuf, S> streamCodec(Supplier<S> defaultSupplier) {
         return StreamCodec.of(
                 (RegistryFriendlyByteBuf buffer, S serializable) -> {
                     var serialized = serializable.serializeNBT(buffer.registryAccess());
@@ -42,8 +42,7 @@ public interface INBTSerializable<T extends Tag> {
                 (RegistryFriendlyByteBuf buffer) -> {
                     S instance = defaultSupplier.get();
                     //noinspection unchecked
-                    final var nbt = (T) buffer.readNbt(NbtAccounter.unlimitedHeap());
-                    assert nbt != null;
+                    final var nbt = (NBT) buffer.readNbt(NbtAccounter.unlimitedHeap());
                     instance.deserializeNBT(buffer.registryAccess(), nbt);
                     return instance;
                 });
