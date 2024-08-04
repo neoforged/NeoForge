@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/PanoramaRenderer.java
++++ b/net/minecraft/client/renderer/PanoramaRenderer.java
+@@ -30,6 +_,8 @@
+         p_334063_.blit(PANORAMA_OVERLAY, 0, 0, p_333839_, p_333923_, 0.0F, 0.0F, 16, 128, 16, 128);
+         p_334063_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+         RenderSystem.disableBlend();
++        // Neo: disable depth test again to prevent issues with extended far plane values for screen layers and HUD layers
++        RenderSystem.disableDepthTest();
+     }
+ 
+     private static float wrap(float p_249058_, float p_249548_) {

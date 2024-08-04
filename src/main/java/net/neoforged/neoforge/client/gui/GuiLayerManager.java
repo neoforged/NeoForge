@@ -83,4 +83,8 @@ public class GuiLayerManager {
         initialized = true;
         ModLoader.postEvent(new RegisterGuiLayersEvent(this.layers));
     }
+
+    public int getLayerCount() {
+        return this.layers.size();
+    }
 }

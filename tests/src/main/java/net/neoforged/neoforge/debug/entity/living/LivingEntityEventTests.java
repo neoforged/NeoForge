@@ -328,7 +328,6 @@ public class LivingEntityEventTests {
                 player.setData(VALUE_ARMOR, event.getContainer().getReduction(DamageContainer.Reduction.ARMOR));
                 player.setData(VALUE_ENCHANTMENTS, event.getContainer().getReduction(DamageContainer.Reduction.ENCHANTMENTS));
                 player.setData(VALUE_MOB_EFFECTS, event.getContainer().getReduction(DamageContainer.Reduction.MOB_EFFECTS));
-                player.setData(VALUE_ABSORPTION, event.getContainer().getReduction(DamageContainer.Reduction.ABSORPTION));
                 player.setData(VALUE_PRE_POST_DAMAGE, event.getNewDamage());
                 event.setNewDamage(15);
             }
@@ -337,6 +336,7 @@ public class LivingEntityEventTests {
         /* This event captures the change in new damage from the previous event for use in checks.*/
         test.eventListeners().forge().addListener((final LivingDamageEvent.Post event) -> {
             if (event.getEntity() instanceof GameTestPlayer player && Objects.equals(player.getCustomName(), NAME)) {
+                player.setData(VALUE_ABSORPTION, event.getReduction(DamageContainer.Reduction.ABSORPTION));
                 player.setData(VALUE_NEW_DAMAGE, event.getNewDamage());
             }
         });
@@ -345,28 +345,42 @@ public class LivingEntityEventTests {
                 /* The player is given equipment with enchantments and effects to set the stage for non-zero reductions*/
                 .thenExecute(player -> {
                     player.setCustomName(NAME);
-                    player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 3000));
-                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 3000));
+                    player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 11000));
+                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 11000));
                     player.setItemSlot(EquipmentSlot.CHEST, Items.IRON_CHESTPLATE.getDefaultInstance());
                     ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
                     enchants.set(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.PROTECTION), 4);
                     EnchantmentHelper.setEnchantments(player.getItemBySlot(EquipmentSlot.CHEST), enchants.toImmutable());
+                    player.getFoodData().setFoodLevel(1);
                 })
                 /* ServerPlayers have spawn invulnerability.  This waits out that period.*/
-                .thenIdle(2000)
+                .thenIdle(2001)
                 /* The player is damaged with a single point of damage which will be modified in the event listeners*/
                 .thenExecute(player -> player.hurt(new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolder(DamageTypes.MOB_ATTACK).get()), 1))
                 /* The player's health and all the stored values from the events are checked to ensure they match the
                  * expected values from our reduction functions and changes to the damage value.*/
                 .thenWaitUntil(player -> {
                     DecimalFormat formatter = new DecimalFormat("#.###");
-                    helper.assertTrue(formatter.format(player.getHealth()).equals("10.333"), "player health expected 10.333334, actually " + player.getHealth());
-                    helper.assertTrue(formatter.format(player.getData(VALUE_NEW_DAMAGE)).equals("15"), "new damage expected 15, actually " + player.getData(VALUE_NEW_DAMAGE));
-                    helper.assertTrue(formatter.format(player.getData(VALUE_PRE_POST_DAMAGE)).equals("3.451"), "damage from sequence before change expected 3.450881, actually " + player.getData(VALUE_PRE_POST_DAMAGE));
-                    helper.assertTrue(formatter.format(player.getData(VALUE_ARMOR)).equals("2.96"), "armor expected 2.959999, actually " + player.getData(VALUE_ARMOR));
-                    helper.assertTrue(formatter.format(player.getData(VALUE_ENCHANTMENTS)).equals("2.181"), "enchantment expected 2.18112, actually " + player.getData(VALUE_ENCHANTMENTS));
-                    helper.assertTrue(formatter.format(player.getData(VALUE_MOB_EFFECTS)).equals("5.408"), "armor expected 5.408, actually " + player.getData(VALUE_ARMOR));
-                    helper.assertTrue(formatter.format(player.getData(VALUE_ABSORPTION)).equals("6"), "armor expected 6.0, actually " + player.getData(VALUE_ARMOR));
+                    String playerHealth = formatter.format(player.getHealth());
+                    helper.assertTrue(playerHealth.equals("11"), "player health expected 11, actually " + playerHealth);
+
+                    String valueNewDamage = formatter.format(player.getData(VALUE_NEW_DAMAGE));
+                    helper.assertTrue(valueNewDamage.equals("9"), "new damage expected 9, actually " + valueNewDamage);
+
+                    String valuePrePostDamage = formatter.format(player.getData(VALUE_PRE_POST_DAMAGE));
+                    helper.assertTrue(valuePrePostDamage.equals("9.451"), "damage from sequence before change expected 9.451, actually " + valuePrePostDamage);
+
+                    String valueArmor = formatter.format(player.getData(VALUE_ARMOR));
+                    helper.assertTrue(valueArmor.equals("2.96"), "armor expected 2.959999, actually " + valueArmor);
+
+                    String valueEnchantments = formatter.format(player.getData(VALUE_ENCHANTMENTS));
+                    helper.assertTrue(valueEnchantments.equals("2.181"), "enchantment expected 2.18112, actually " + valueEnchantments);
+
+                    String valueMobEffects = formatter.format(player.getData(VALUE_MOB_EFFECTS));
+                    helper.assertTrue(valueMobEffects.equals("5.408"), "mob effect expected 5.408, actually " + valueMobEffects);
+
+                    String valueAbsorption = formatter.format(player.getData(VALUE_ABSORPTION));
+                    helper.assertTrue(valueAbsorption.equals("6"), "absorption expected 6, actually " + valueAbsorption);
                 })
                 .thenSucceed());
     }

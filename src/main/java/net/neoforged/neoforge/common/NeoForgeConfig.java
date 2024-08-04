@@ -29,9 +29,6 @@ public class NeoForgeConfig {
         public final BooleanValue advertiseDedicatedServerToLan;
 
         Server(ModConfigSpec.Builder builder) {
-            builder.comment("Server configuration settings")
-                    .push("server");
-
             removeErroringBlockEntities = builder
                     .comment("Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.")
                     .translation("neoforge.configgui.removeErroringBlockEntities")
@@ -59,8 +56,6 @@ public class NeoForgeConfig {
                     .comment("Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.")
                     .translation("neoforge.configgui.advertiseDedicatedServerToLan")
                     .define("advertiseDedicatedServerToLan", true);
-
-            builder.pop();
         }
     }
 
@@ -72,20 +67,15 @@ public class NeoForgeConfig {
         public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logLegacyTagWarnings;
 
         Common(ModConfigSpec.Builder builder) {
-            builder.comment("General configuration settings")
-                    .push("general");
-
             logUntranslatedItemTagWarnings = builder
                     .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.")
-                    .translation("forge.configgui.logUntranslatedItemTagWarnings")
+                    .translation("neoforge.configgui.logUntranslatedItemTagWarnings")
                     .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LogWarningMode.SILENCED);
 
             logLegacyTagWarnings = builder
                     .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
-                    .translation("forge.configgui.logLegacyTagWarnings")
+                    .translation("neoforge.configgui.logLegacyTagWarnings")
                     .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LogWarningMode.DEV_SHORT);
-
-            builder.pop();
         }
     }
 
@@ -99,10 +89,9 @@ public class NeoForgeConfig {
 
         public final BooleanValue useCombinedDepthStencilAttachment;
 
-        Client(ModConfigSpec.Builder builder) {
-            builder.comment("Client only settings, mostly things related to rendering")
-                    .push("client");
+        public final BooleanValue logUntranslatedConfigurationWarnings;
 
+        Client(ModConfigSpec.Builder builder) {
             experimentalForgeLightPipelineEnabled = builder
                     .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
                     .translation("neoforge.configgui.forgeLightPipelineEnabled")
@@ -118,7 +107,10 @@ public class NeoForgeConfig {
                     .translation("neoforge.configgui.useCombinedDepthStencilAttachment")
                     .define("useCombinedDepthStencilAttachment", false);
 
-            builder.pop();
+            logUntranslatedConfigurationWarnings = builder
+                    .comment("A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.")
+                    .translation("neoforge.configgui.logUntranslatedConfigurationWarnings")
+                    .define("logUntranslatedConfigurationWarnings", true);
         }
     }
 

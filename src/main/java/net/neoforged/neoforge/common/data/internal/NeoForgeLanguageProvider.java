@@ -188,6 +188,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FENCES, "Fences");
         add(Tags.Items.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Items.FENCES_WOODEN, "Wooden Fences");
+        add(Tags.Items.FERTILIZERS, "Fertilizers");
         add(Tags.Items.FOODS, "Foods");
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");
@@ -283,6 +284,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SEEDS_PUMPKIN, "Pumpkin Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
         add(Tags.Items.SHULKER_BOXES, "Shulker Boxes");
+        add(Tags.Items.SLIME_BALLS, "Slimeballs");
         add(Tags.Items.SLIMEBALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");
         add(Tags.Items.STORAGE_BLOCKS, "Storage Blocks");
@@ -312,6 +314,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_BRUSH, "Brushes");
         add(Tags.Items.TOOLS_MACE, "Maces");
         add(Tags.Items.TOOLS_SPEAR, "Spears");
+        add(Tags.Items.TOOLS_IGNITER, "Igniters");
+        add(Tags.Items.MELEE_WEAPON_TOOLS, "Melee Weapons");
+        add(Tags.Items.RANGED_WEAPON_TOOLS, "Ranged Weapons");
+        add(Tags.Items.MINING_TOOL_TOOLS, "Mining Tools");
         add(Tags.Items.TOOLS, "Tools");
         add(Tags.Items.ARMORS, "Armors");
         add(Tags.Items.ENCHANTABLES, "Enchantables");

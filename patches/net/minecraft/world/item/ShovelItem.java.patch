@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ShovelItem.java
 +++ b/net/minecraft/world/item/ShovelItem.java
-@@ -44,7 +_,7 @@
+@@ -44,18 +_,16 @@
              return InteractionResult.PASS;
          } else {
              Player player = p_43119_.getPlayer();
@@ -9,6 +9,18 @@
              BlockState blockstate2 = null;
              if (blockstate1 != null && level.getBlockState(blockpos.above()).isAir()) {
                  level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+                 blockstate2 = blockstate1;
+-            } else if (blockstate.getBlock() instanceof CampfireBlock && blockstate.getValue(CampfireBlock.LIT)) {
++            } else if ((blockstate2 = blockstate.getToolModifiedState(p_43119_, net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DOUSE, false)) != null) {
+                 if (!level.isClientSide()) {
+                     level.levelEvent(null, 1009, blockpos, 0);
+                 }
+ 
+-                CampfireBlock.dowse(p_43119_.getPlayer(), level, blockpos, blockstate);
+-                blockstate2 = blockstate.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
+             }
+ 
+             if (blockstate2 != null) {
 @@ -72,5 +_,15 @@
                  return InteractionResult.PASS;
              }

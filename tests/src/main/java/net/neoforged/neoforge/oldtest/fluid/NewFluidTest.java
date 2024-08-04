@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.fluid;
 
-import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -35,7 +34,9 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.DispenseFluidContainer;
@@ -68,32 +69,7 @@ public class NewFluidTest {
                 .bucket(TEST_FLUID_BUCKET).block(test_fluid_block);
     }
 
-    public static DeferredHolder<FluidType, FluidType> test_fluid_type = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()) {
-        @Override
-        public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-            consumer.accept(new IClientFluidTypeExtensions() {
-                @Override
-                public ResourceLocation getStillTexture() {
-                    return FLUID_STILL;
-                }
-
-                @Override
-                public ResourceLocation getFlowingTexture() {
-                    return FLUID_FLOWING;
-                }
-
-                @Override
-                public ResourceLocation getOverlayTexture() {
-                    return FLUID_OVERLAY;
-                }
-
-                @Override
-                public int getTintColor() {
-                    return 0x3F1080FF;
-                }
-            });
-        }
-    });
+    public static DeferredHolder<FluidType, FluidType> test_fluid_type = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()));
 
     public static DeferredHolder<Fluid, FlowingFluid> test_fluid = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(makeProperties()));
     public static DeferredHolder<Fluid, FlowingFluid> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(makeProperties()));
@@ -114,6 +90,10 @@ public class NewFluidTest {
             FLUID_TYPES.register(modEventBus);
             FLUIDS.register(modEventBus);
             modEventBus.addListener(this::addCreative);
+
+            if (FMLEnvironment.dist.isClient()) {
+                modEventBus.addListener(ClientEvents::onRegisterClientExtensions);
+            }
         }
     }
 
@@ -180,6 +160,32 @@ public class NewFluidTest {
         @Override
         public FluidState getFluidState(BlockState state) {
             return state.getValue(FLUIDLOGGED) ? test_fluid.get().defaultFluidState() : Fluids.EMPTY.defaultFluidState();
+        }
+    }
+
+    private static final class ClientEvents {
+        private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerFluidType(new IClientFluidTypeExtensions() {
+                @Override
+                public ResourceLocation getStillTexture() {
+                    return FLUID_STILL;
+                }
+
+                @Override
+                public ResourceLocation getFlowingTexture() {
+                    return FLUID_FLOWING;
+                }
+
+                @Override
+                public ResourceLocation getOverlayTexture() {
+                    return FLUID_OVERLAY;
+                }
+
+                @Override
+                public int getTintColor() {
+                    return 0x3F1080FF;
+                }
+            }, test_fluid_type.value());
         }
     }
 }

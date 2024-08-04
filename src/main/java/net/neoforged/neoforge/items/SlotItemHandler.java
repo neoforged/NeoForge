@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 public class SlotItemHandler extends Slot {
     private static Container emptyInventory = new SimpleContainer(0);
     private final IItemHandler itemHandler;
-    private final int index;
+    protected final int index;
 
     public SlotItemHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(emptyInventory, index, xPosition, yPosition);

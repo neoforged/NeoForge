@@ -227,14 +227,17 @@ public abstract class ScreenEvent extends Event {
     }
 
     /**
-     * Fired directly after the background of the screen is drawn.
+     * Fired directly after the background of the screen is drawn. (Only when the screen calls {@link Screen#renderBackground})
      * Can be used for drawing above the background but below the tooltips.
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+     * 
+     * @deprecated Planned on being removed in 1.21.1 due to extreme maintenance burden to make this event fire consistently for most screens.
      */
+    @Deprecated(forRemoval = true, since = "21.0")
     public static class BackgroundRendered extends ScreenEvent {
         private final GuiGraphics guiGraphics;
 

@@ -44,7 +44,7 @@ public interface IClientFluidTypeExtensions {
     }
 
     static IClientFluidTypeExtensions of(FluidType type) {
-        return type.getRenderPropertiesInternal() instanceof IClientFluidTypeExtensions props ? props : DEFAULT;
+        return ClientExtensionsManager.FLUID_TYPE_EXTENSIONS.getOrDefault(type, DEFAULT);
     }
 
     /* Default Accessors */

@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/ItemInHandRenderer.java
 +++ b/net/minecraft/client/renderer/ItemInHandRenderer.java
+@@ -226,7 +_,7 @@
+         p_109367_.translate(-0.5F, -0.5F, 0.0F);
+         p_109367_.scale(0.0078125F, 0.0078125F, 0.0078125F);
+         MapId mapid = p_109370_.get(DataComponents.MAP_ID);
+-        MapItemSavedData mapitemsaveddata = MapItem.getSavedData(mapid, this.minecraft.level);
++        MapItemSavedData mapitemsaveddata = MapItem.getSavedData(p_109370_, this.minecraft.level);
+         VertexConsumer vertexconsumer = p_109368_.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
+         Matrix4f matrix4f = p_109367_.last().pose();
+         vertexconsumer.addVertex(matrix4f, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(p_109369_);
 @@ -334,12 +_,14 @@
          if (iteminhandrenderer$handrenderselection.renderMainHand) {
              float f4 = interactionhand == InteractionHand.MAIN_HAND ? f : 0.0F;
@@ -15,7 +24,14 @@
              this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.OFF_HAND, f6, this.offHandItem, f7, p_109316_, p_109317_, p_109319_);
          }
  
-@@ -405,7 +_,7 @@
+@@ -399,13 +_,13 @@
+                 if (flag && !p_109372_.isInvisible()) {
+                     this.renderPlayerArm(p_109379_, p_109380_, p_109381_, p_109378_, p_109376_, humanoidarm);
+                 }
+-            } else if (p_109377_.is(Items.FILLED_MAP)) {
++            } else if (p_109377_.getItem() instanceof MapItem) {
+                 if (flag && this.offHandItem.isEmpty()) {
+                     this.renderTwoHandedMap(p_109379_, p_109380_, p_109381_, p_109374_, p_109378_, p_109376_);
                  } else {
                      this.renderOneHandedMap(p_109379_, p_109380_, p_109381_, p_109378_, humanoidarm, p_109376_, p_109377_);
                  }
