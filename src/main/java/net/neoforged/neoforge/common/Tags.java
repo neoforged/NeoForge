@@ -560,6 +560,13 @@ public class Tags {
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
          */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
+        public static final TagKey<Item> SLIME_BALLS = tag("slime_balls");
+        /**
+         * Please use properly named {@link Tags.Items#SLIME_BALLS} tag and field instead
+         * <p></p>
+         * TODO: Remove in 1.21.1
+         */
+        @Deprecated(since = "1.21")
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
@@ -679,7 +686,8 @@ public class Tags {
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
         /**
          * A tag containing melee-based weapons for recipes and loot tables.
-         * Tools are considered melee if they contain an {@link net.minecraft.world.entity.ai.attributes.Attributes#ATTACK_DAMAGE} attribute.
+         * Tools are considered melee if they are intentionally intended to be used for melee attack as a primary purpose.
+         * (In other words, Pickaxes are not melee weapons as they are not intended to be a weapon as a primary purpose)
          * Do not use this tag for determining a tool's behavior in-code.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
