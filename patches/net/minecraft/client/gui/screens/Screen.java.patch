@@ -17,6 +17,15 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
+@@ -242,7 +_,7 @@
+         return p_282833_.getTooltipLines(
+             Item.TooltipContext.of(p_281881_.level),
+             p_281881_.player,
+-            p_281881_.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL
++            net.neoforged.neoforge.client.ClientTooltipFlag.of(p_281881_.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL)
+         );
+     }
+ 
 @@ -312,8 +_,11 @@
          this.width = p_96608_;
          this.height = p_96609_;
