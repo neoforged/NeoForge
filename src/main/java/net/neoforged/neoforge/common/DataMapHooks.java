@@ -27,7 +27,7 @@ public class DataMapHooks {
     /** Used in a gametest */
     @ApiStatus.Internal
     public static boolean didHaveToFallbackToVanillaMaps = false;
-    
+
     private static final Map<Block, Block> INVERSE_OXIDIZABLES_DATAMAP_INTERNAL = new HashMap<>();
     private static final Map<Block, Block> INVERSE_WAXABLES_DATAMAP_INTERNAL = new HashMap<>();
 
