@@ -1,0 +1,7 @@
+{
+  "values": {
+    "neotests_oxidizables_and_waxables_map_test:lightly_oxidized_iron": {
+      "nextOxidizedStage": "neotests_oxidizables_and_waxables_map_test:more_oxidized_iron"
+    }
+  }
+}

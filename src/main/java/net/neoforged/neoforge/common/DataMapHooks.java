@@ -23,6 +23,11 @@ import org.jetbrains.annotations.Nullable;
 
 // TODO: 1.21.1 remove fallback to vanilla map for waxing and oxidizing
 public class DataMapHooks {
+    // will be removed in 1.21.1
+    /** Used in a gametest */
+    @ApiStatus.Internal
+    public static boolean didHaveToFallbackToVanillaMaps = false;
+    
     /** Mods should not insert anything into this map at all. */
     @ApiStatus.Internal
     private static final Map<Block, Block> INVERSE_OXIDIZABLES_DATAMAP = new HashMap<>();
@@ -77,26 +82,31 @@ public class DataMapHooks {
     @SubscribeEvent
     static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
         event.ifRegistry(Registries.BLOCK, registry -> {
+            INVERSE_OXIDIZABLES_DATAMAP.clear();
+            INVERSE_WAXABLES_DATAMAP.clear();
+            
             registry.getDataMap(NeoForgeDataMaps.OXIDIZABLES).forEach((resourceKey, oxidizable) -> {
-                INVERSE_OXIDIZABLES_DATAMAP.clear();
                 INVERSE_OXIDIZABLES_DATAMAP.put(oxidizable.nextOxidizedStage(), BuiltInRegistries.BLOCK.get(resourceKey));
+            });
 
-                //noinspection deprecation
-                WeatheringCopper.PREVIOUS_BY_BLOCK.get().forEach((after, before) -> {
-                    if (!INVERSE_WAXABLES_DATAMAP.containsKey(after))
-                        INVERSE_OXIDIZABLES_DATAMAP.put(after, before);
-                });
+            //noinspection deprecation
+            WeatheringCopper.PREVIOUS_BY_BLOCK.get().forEach((after, before) -> {
+                if (!INVERSE_OXIDIZABLES_DATAMAP.containsKey(after)) {
+                    INVERSE_OXIDIZABLES_DATAMAP.put(after, before);
+                    didHaveToFallbackToVanillaMaps = true;
+                }
             });
 
             registry.getDataMap(NeoForgeDataMaps.WAXABLES).forEach((resourceKey, waxable) -> {
-                INVERSE_WAXABLES_DATAMAP.clear();
                 INVERSE_WAXABLES_DATAMAP.put(waxable.waxed(), BuiltInRegistries.BLOCK.get(resourceKey));
+            });
 
-                //noinspection deprecation
-                HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach((after, before) -> {
-                    if (!INVERSE_WAXABLES_DATAMAP.containsKey(after))
-                        INVERSE_OXIDIZABLES_DATAMAP.put(after, before);
-                });
+            //noinspection deprecation
+            HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach((after, before) -> {
+                if (!INVERSE_WAXABLES_DATAMAP.containsKey(after)) {
+                    INVERSE_OXIDIZABLES_DATAMAP.put(after, before);
+                    didHaveToFallbackToVanillaMaps = true;
+                }
             });
         });
     }
