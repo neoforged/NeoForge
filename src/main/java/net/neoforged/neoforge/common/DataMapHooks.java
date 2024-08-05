@@ -27,12 +27,8 @@ public class DataMapHooks {
     /** Used in a gametest */
     @ApiStatus.Internal
     public static boolean didHaveToFallbackToVanillaMaps = false;
-
-    /** Mods should not insert anything into this map at all. */
-    @ApiStatus.Internal
+    
     private static final Map<Block, Block> INVERSE_OXIDIZABLES_DATAMAP_INTERNAL = new HashMap<>();
-    /** Mods should not insert anything into this map at all. */
-    @ApiStatus.Internal
     private static final Map<Block, Block> INVERSE_WAXABLES_DATAMAP_INTERNAL = new HashMap<>();
 
     /** The inverse map of the oxidizables data map, used in vanilla when scraping oxidization off of a block */
