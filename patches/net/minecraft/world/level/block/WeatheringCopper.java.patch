@@ -5,48 +5,42 @@
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
 +    /**
-+     * @deprecated Neo: Use the DataMap {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZING_BLOCKS}
++     * @deprecated Neo: Use the DataMap {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZABLES}
 +     */
 +    @Deprecated
      Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
          () -> ImmutableBiMap.<Block, Block>builder()
                  .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
-@@ -41,16 +_,25 @@
+@@ -41,16 +_,20 @@
                  .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
                  .build()
      );
 +    /**
-+     * @deprecated Neo: Use the Inverse map generated from the DataMap {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP}
++     * @deprecated Neo: Use the Inverse map generated from the DataMap {@link net.neoforged.neoforge.common.DataMapHooks#getInverseOxidizablesMap()}
 +     */
 +    @Deprecated
      Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
  
      static Optional<Block> getPrevious(Block p_154891_) {
 -        return Optional.ofNullable(PREVIOUS_BY_BLOCK.get().get(p_154891_));
-+        java.util.HashMap<Block, Block> inverseMap = net.neoforged.neoforge.common.DataMapHooks.INVERSE_OXIDIZABLES_DATAMAP;
-+        // TODO: 1.21.1 remove fallback to vanilla map
-+        Block block = inverseMap.containsKey(p_154891_) ? inverseMap.get(p_154891_) : PREVIOUS_BY_BLOCK.get().get(p_154891_);
-+        return Optional.ofNullable(block);
++        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(p_154891_));
      }
  
      static Block getFirst(Block p_154898_) {
          Block block = p_154898_;
-+        java.util.HashMap<Block, Block> inverseMap = net.neoforged.neoforge.common.DataMapHooks.INVERSE_OXIDIZABLES_DATAMAP;
- 
+-
 -        for (Block block1 = PREVIOUS_BY_BLOCK.get().get(p_154898_); block1 != null; block1 = PREVIOUS_BY_BLOCK.get().get(block1)) {
-+        // TODO: 1.21.1 remove fallback to vanilla map
-+        for (Block block1 = inverseMap.containsKey(p_154898_) ? inverseMap.get(p_154898_) : PREVIOUS_BY_BLOCK.get().get(p_154898_); block1 != null; block1 = inverseMap.containsKey(block1) ? inverseMap.get(block1) : PREVIOUS_BY_BLOCK.get().get(block1)) {
++
++        for (Block block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(p_154898_); block1 != null; block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(block1)) {
              block = block1;
          }
  
-@@ -62,7 +_,9 @@
+@@ -62,7 +_,7 @@
      }
  
      static Optional<Block> getNext(Block p_154905_) {
 -        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(p_154905_));
-+        net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable oxidizable = p_154905_.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.OXIDIZING_BLOCKS);
-+        Block block = oxidizable == null ? NEXT_BY_BLOCK.get().get(p_154905_) : oxidizable.after();
-+        return Optional.ofNullable(block);
++        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getNextOxidizedStage(p_154905_));
      }
  
      static BlockState getFirst(BlockState p_154907_) {

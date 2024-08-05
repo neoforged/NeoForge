@@ -5,7 +5,7 @@
  
  public class HoneycombItem extends Item implements SignApplicator {
 +    /**
-+     * @deprecated Use the DataMap {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#WAXABLE_BLOCKS}
++     * @deprecated Use the DataMap {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#WAXABLES}
 +     */
 +    @Deprecated
      public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
@@ -22,15 +22,12 @@
      public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
  
      public HoneycombItem(Item.Properties p_150867_) {
-@@ -87,7 +_,10 @@
+@@ -87,7 +_,7 @@
      }
  
      public static Optional<BlockState> getWaxed(BlockState p_150879_) {
 -        return Optional.ofNullable(WAXABLES.get().get(p_150879_.getBlock())).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
-+        net.neoforged.neoforge.registries.datamaps.builtin.Waxable waxable = p_150879_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.WAXABLE_BLOCKS);
-+        // TODO: 1.21.1 remove fallback to vanilla map
-+        Block block = waxable == null ? WAXABLES.get().get(p_150879_.getBlock()) : waxable.after();
-+        return Optional.ofNullable(block).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
++        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getBlockWaxed(p_150879_.getBlock())).map(p_150877_ -> p_150877_.withPropertiesOf(p_150879_));
      }
  
      @Override

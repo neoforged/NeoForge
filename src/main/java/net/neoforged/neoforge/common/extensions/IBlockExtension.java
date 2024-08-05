@@ -27,7 +27,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
@@ -773,8 +772,7 @@ public interface IBlockExtension {
         } else if (ItemAbilities.AXE_SCRAPE == itemAbility) {
             return WeatheringCopper.getPrevious(state).orElse(null);
         } else if (ItemAbilities.AXE_WAX_OFF == itemAbility) {
-            // TODO: 1.21.1 remove fallback to vanilla map
-            Block waxOffBlock = DataMapHooks.INVERSE_WAXABLES_DATAMAP.containsKey(state.getBlock()) ? DataMapHooks.INVERSE_WAXABLES_DATAMAP.get(state.getBlock()) : HoneycombItem.WAX_OFF_BY_BLOCK.get().get(state.getBlock());
+            Block waxOffBlock = DataMapHooks.getBlockUnwaxed(state.getBlock());
             return Optional.ofNullable(waxOffBlock).map(block -> block.withPropertiesOf(state)).orElse(null);
         } else if (ItemAbilities.SHOVEL_FLATTEN == itemAbility) {
             return ShovelItem.getShovelPathingState(state);

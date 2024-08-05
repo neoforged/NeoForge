@@ -79,12 +79,12 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .forEach((type, weight) -> monsterRoomMobs.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(type), new MonsterRoomMob(Weight.of((int) (weight * 100))), false));
 
-        final var oxidizables = builder(NeoForgeDataMaps.OXIDIZING_BLOCKS);
+        final var oxidizables = builder(NeoForgeDataMaps.OXIDIZABLES);
         WeatheringCopper.NEXT_BY_BLOCK.get().forEach((now, after) -> {
             oxidizables.add(now.builtInRegistryHolder(), new Oxidizable(after), false);
         });
 
-        final var waxables = builder(NeoForgeDataMaps.WAXABLE_BLOCKS);
+        final var waxables = builder(NeoForgeDataMaps.WAXABLES);
         HoneycombItem.WAXABLES.get().forEach((now, after) -> {
             waxables.add(now.builtInRegistryHolder(), new Waxable(after), false);
         });

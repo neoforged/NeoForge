@@ -86,11 +86,11 @@ public class NeoForgeDataMaps {
      * <li>{@code after}, a block that object should convert into once it changes oxidizing states</li>
      * </ul>
      *
-     * The inverted map of this can be found at {@link DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP}
+     * The inverted map of this can be found at {@link DataMapHooks#getInverseOxidizablesMap()}
      */
-    public static final DataMapType<Block, Oxidizable> OXIDIZING_BLOCKS = DataMapType.builder(
-            id("oxidizing"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.OXIDIZABLE_CODEC, false).build();
-    
+    public static final DataMapType<Block, Oxidizable> OXIDIZABLES = DataMapType.builder(
+            id("oxidizables"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.OXIDIZABLE_CODEC, false).build();
+
     /**
      * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
      * <p>
@@ -136,10 +136,10 @@ public class NeoForgeDataMaps {
      * <li>{@code after}, a block that object should convert into once it is right clicked with a {@link ItemAbilities#AXE_WAX_OFF} ability</li>
      * </ul>
      *
-     * The inverted map of this can be found at {@link DataMapHooks#INVERSE_WAXABLES_DATAMAP}
+     * The inverted map of this can be found at {@link DataMapHooks#getInverseWaxablesMap()}
      */
-    public static final DataMapType<Block, Waxable> WAXABLE_BLOCKS = DataMapType.builder(
-            id("waxable"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
+    public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
+            id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
 
     private static ResourceLocation id(final String name) {
         return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name);
@@ -150,10 +150,10 @@ public class NeoForgeDataMaps {
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
-        event.register(OXIDIZING_BLOCKS);
+        event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
-        event.register(WAXABLE_BLOCKS);
+        event.register(WAXABLES);
     }
 }
