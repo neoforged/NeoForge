@@ -10,21 +10,21 @@ Tests can also be run without manual player interaction (like on a CI for exampl
 ## Creating a `TestFramework`
 A `TestFramework` can be created during mod construction using `FrameworkConfiguration$Builder`:
 ```java
-final TestFrameworkInternal framework = FrameworkConfiguration.builder(new ResourceLocation("examplemod:tests")) // The ID of the framework. Used by logging, primarily
-  .clientConfiguration(() -> ClientConfiguration.builder() // Client-side compatibility configuration. This is COMPLETLY optional, but it is recommended for ease of use.
-    .toggleOverlayKey(GLFW.GLFW_KEY_J) // The key used to toggle the tests overlay
-    .openManagerKey(GLFW.GLFW_KEY_N) // The key used to open the Test Manager screen
-    .build())
-   
-  .allowClientModifications() // Allow OP'd clients to modify the status of tests, and to enable them
-  .syncToClients() // Sync the status of tests to clients
-
-  .build().create(); // Build and store the InternalTestFramework. We use the "internal" version because we want to access methods not usually exposed, like the init method
+  final TestFrameworkInternal framework = FrameworkConfiguration.builder(new ResourceLocation("examplemod:tests")) // The ID of the framework. Used by logging, primarily
+    .clientConfiguration(() -> ClientConfiguration.builder() // Client-side compatibility configuration. This is COMPLETLY optional, but it is recommended for ease of use.
+      .toggleOverlayKey(GLFW.GLFW_KEY_J) // The key used to toggle the tests overlay
+      .openManagerKey(GLFW.GLFW_KEY_N) // The key used to open the Test Manager screen
+      .build())
+     
+    .allowClientModifications() // Allow OP'd clients to modify the status of tests, and to enable them
+    .syncToClients() // Sync the status of tests to clients
   
+    .build().create(); // Build and store the InternalTestFramework. We use the "internal" version because we want to access methods not usually exposed, like the init method
+      
   // Initialise this framework, using the mod event bus of the currently loading mod, and the container of the currently loading mod.
   // The container is used for collecting annotations.
   // This method will collect and register tests, structure templates, group data, and will fire init listeners.
-  framework.init(FMLJavaModLoadingContext.get().getModEventBus(), ModLoadingContext.get().getActiveContainer());
+  framework.init(modBus, modContainer);
 
   // Register the commands of the framework under the `tests` top-level command.
   NeoForge.EVENT_BUS.addListener((final RegisterCommandsEvent event) -> {

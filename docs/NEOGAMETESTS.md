@@ -142,4 +142,5 @@ static void gameTestOnly(final ExtendedGameTestHelper helper) {
 
 ## Extra: method-based event tests
 These tests cannot be automated via gametests, and will only provide manual event testing. They should primarily be used by client tests.  
-More information can be found [here](MCGAMETESTS.md).
+More information can be found [here](TESTFRAMEWORK.md).
+If you're unsure how to write a test for a feature, feel free to ask in our [Discord](https://discord.neoforged.net/) server, in the [`#neoforge-github` channel](https://discord.com/channels/313125603924639766/852298000042164244), or consult the existing tests.
