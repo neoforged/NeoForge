@@ -33,8 +33,8 @@ public abstract class LivingDamageEvent extends LivingEvent {
 
     /**
      * LivingDamageEvent.Pre is fired when an Entity is set to be hurt. <br>
-     * At this point armor, potion and absorption modifiers have already been applied to the damage value
-     * and the entity.<br>
+     * At this point armor, and potion modifiers have already been applied to the damage value
+     * and the entity. Absorption modifiers are handled after this event.<br>
      * This event is fired in {@code LivingEntity#actuallyHurt(DamageSource, float}
      * <br>
      * For custom posting of this event, the event expects to be fired after

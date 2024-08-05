@@ -147,13 +147,13 @@
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
+      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
       "color": "red"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are are ony available while a world is loaded.",
+      "text": "Settings in here are only available while a world is loaded.",
       "color": "red"
     }
   ],
@@ -222,10 +222,17 @@
   "neoforge.configuration.uitext.server": "Server Options",
   "neoforge.configuration.uitext.startup": "Startup Options",
   "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
-  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed only take effect when the game is started.",
+  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed will only take effect when the game is started.",
   "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
-  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
-  "neoforge.configuration.uitext.restart.return": "Not yet...",
+  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
+  "neoforge.configuration.uitext.restart.return": "Ignore",
+  "neoforge.configuration.uitext.restart.return.tooltip": [
+    {
+      "text": "Your changes will have no effect until you restart!",
+      "color": "red",
+      "bold": true
+    }
+  ],
 
   "neoforge.configuration.title": "NeoForge Configuration",
   "neoforge.configuration.section.neoforge.client.toml": "Client settings",
