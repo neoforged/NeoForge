@@ -54,6 +54,19 @@
              } catch (IOException ioexception) {
                  LOGGER.warn("Failed to load translations for {} from pack {}", p_235036_, resource.sourcePackId(), ioexception);
              }
+@@ -60,6 +_,12 @@
+ 
+     @Override
+     public String getOrDefault(String p_118920_, String p_265273_) {
++        return net.neoforged.neoforge.common.text.TemplateParser.stripTemplate(getOrDefaultRaw(p_118920_, p_265273_));
++    }
++
++    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public String getOrDefaultRaw(String p_118920_, String p_265273_) {
+         return this.storage.getOrDefault(p_118920_, p_265273_);
+     }
+ 
 @@ -76,5 +_,15 @@
      @Override
      public FormattedCharSequence getVisualOrder(FormattedText p_118925_) {
