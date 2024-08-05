@@ -5,7 +5,7 @@
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
 +    /**
-+     * @deprecated Neo: Use the DataMap {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZABLES}
++     * @deprecated Neo: Use {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZABLES the data map}, this field will be ignored in a future version
 +     */
 +    @Deprecated
      Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
@@ -16,7 +16,7 @@
                  .build()
      );
 +    /**
-+     * @deprecated Neo: Use the Inverse map generated from the DataMap {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP}
++     * @deprecated Neo: Use the {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP inverse map} generated from the data map, this field will be ignored in a future version
 +     */
 +    @Deprecated
      Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());

@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Block;
  * Data map value for {@linkplain NeoForgeDataMaps#OXIDIZABLES oxidizable blocks} allowing mods to easily register basic
  * oxidizing interactions for their blocks.
  *
- * @param nextOxidizedStage The block that will the key value will transform into when it's oxidization stage changes
+ * @param nextOxidizedStage the block that the key value will transform into when its oxidization stage changes
  */
 public record Oxidizable(Block nextOxidizedStage) {
     public static final Codec<Oxidizable> OXIDIZABLE_CODEC = BuiltInRegistries.BLOCK.byNameCodec()

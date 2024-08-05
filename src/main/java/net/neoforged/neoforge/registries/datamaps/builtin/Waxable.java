@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Block;
  * Data map value for {@linkplain NeoForgeDataMaps#WAXABLES waxable blocks} allowing mods to easily register basic
  * waxing interactions for their blocks.
  *
- * @param waxed The block that will the key value will transform into when waxed with a honeycomb
+ * @param waxed the block that the key value will transform into when waxed with a honeycomb
  */
 public record Waxable(Block waxed) {
     public static final Codec<Waxable> WAXABLE_CODEC = BuiltInRegistries.BLOCK.byNameCodec()
