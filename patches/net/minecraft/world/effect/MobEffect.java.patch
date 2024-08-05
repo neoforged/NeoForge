@@ -9,15 +9,19 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
-@@ -130,6 +_,14 @@
+@@ -130,6 +_,18 @@
          return this;
      }
  
 +    /**
-+     * Neo: attribute template with custom level curve
++     * Neo: attribute template with custom level curve, for mob effects providing non-linear attribute modifiers.
++     * @param attribute The attribute of the modifier
++     * @param id ID of the modifier
++     * @param operation Operation of the modifier
++     * @param curve A function mapping effect instance amplifier to modifier amount
 +     */
-+    public MobEffect addAttributeModifier(Holder<Attribute> p_316656_, ResourceLocation p_350368_, it.unimi.dsi.fastutil.ints.Int2DoubleFunction p_19475_, AttributeModifier.Operation p_19476_) {
-+        this.attributeModifiers.put(p_316656_, new MobEffect.AttributeTemplate(p_350368_, p_19475_.apply(0), p_19476_, p_19475_));
++    public MobEffect addAttributeModifier(Holder<Attribute> attribute, ResourceLocation id, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
++        this.attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, curve.apply(0), operation, curve));
 +        return this;
 +    }
 +
@@ -44,7 +48,7 @@
 +        }
 +
          public AttributeModifier create(int p_316614_) {
-+            if (curve != null) {
++            if (curve != null) { // Neo: Use the custom attribute value curve if one is present
 +                return new AttributeModifier(this.id, this.curve.apply(p_316614_), this.operation);
 +            }
              return new AttributeModifier(this.id, this.amount * (double)(p_316614_ + 1), this.operation);
