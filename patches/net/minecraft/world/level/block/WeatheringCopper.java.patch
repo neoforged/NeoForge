@@ -28,9 +28,8 @@
  
      static Block getFirst(Block p_154898_) {
          Block block = p_154898_;
--
+ 
 -        for (Block block1 = PREVIOUS_BY_BLOCK.get().get(p_154898_); block1 != null; block1 = PREVIOUS_BY_BLOCK.get().get(block1)) {
-+
 +        for (Block block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(p_154898_); block1 != null; block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(block1)) {
              block = block1;
          }
