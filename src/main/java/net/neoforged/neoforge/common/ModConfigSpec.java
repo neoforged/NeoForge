@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -28,7 +29,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
@@ -38,10 +41,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -104,6 +109,7 @@ public class ModConfigSpec implements IConfigSpec {
         return levelTranslationKeys.get(path);
     }
 
+    @Override
     public void acceptConfig(@Nullable ILoadedConfig config) {
         this.loadedConfig = config;
         if (config != null && !isCorrect(config.config())) {
@@ -119,6 +125,16 @@ public class ModConfigSpec implements IConfigSpec {
         this.afterReload();
     }
 
+    @Override
+    public void validateSpec(ModConfig config) {
+        forEachValue(getValues().valueMap().values(), configValue -> {
+            if (!configValue.getSpec().restartType().isValid(config.getType())) {
+                throw new IllegalArgumentException("Configuration value " + String.join(".", configValue.getPath())
+                        + " defined in config " + config.getFileName() + " has restart of type " + configValue.getSpec().restartType() + " which cannot be used for configs of type " + config.getType());
+            }
+        });
+    }
+
     public boolean isLoaded() {
         return loadedConfig != null;
     }
@@ -131,16 +147,26 @@ public class ModConfigSpec implements IConfigSpec {
         return this.values;
     }
 
-    public void afterReload() {
-        this.resetCaches(getValues().valueMap().values());
-    }
-
-    private void resetCaches(final Iterable<Object> configValues) {
+    private void forEachValue(Iterable<Object> configValues, Consumer<ConfigValue<?>> consumer) {
         configValues.forEach(value -> {
             if (value instanceof ConfigValue<?> configValue) {
-                configValue.clearCache();
+                consumer.accept(configValue);
             } else if (value instanceof Config innerConfig) {
-                this.resetCaches(innerConfig.valueMap().values());
+                forEachValue(innerConfig.valueMap().values(), consumer);
+            }
+        });
+    }
+
+    public void afterReload() {
+        // Only clear the caches of configs that don't need a restart
+        this.resetCaches(RestartType.NONE);
+    }
+
+    @ApiStatus.Internal
+    public void resetCaches(RestartType restartType) {
+        forEachValue(getValues().valueMap().values(), configValue -> {
+            if (configValue.getSpec().restartType == restartType) {
+                configValue.clearCache();
             }
         });
     }
@@ -797,8 +823,20 @@ public class ModConfigSpec implements IConfigSpec {
             return this;
         }
 
+        /**
+         * Config values marked as needing a world restart will not reset their {@linkplain ConfigValue#get() cached value} until they are unloaded
+         * (i.e. when a world is closed).
+         */
         public Builder worldRestart() {
             context.worldRestart();
+            return this;
+        }
+
+        /**
+         * Config values marked as needing a game restart will never reset their {@linkplain ConfigValue#get() cached value}.
+         */
+        public Builder gameRestart() {
+            context.gameRestart();
             return this;
         }
 
@@ -854,7 +892,7 @@ public class ModConfigSpec implements IConfigSpec {
         private String langKey;
         @Nullable
         private Range<?> range;
-        private boolean worldRestart = false;
+        private RestartType restartType = RestartType.NONE;
         @Nullable
         private Class<?> clazz;
 
@@ -912,11 +950,15 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         public void worldRestart() {
-            this.worldRestart = true;
+            this.restartType = RestartType.WORLD;
         }
 
-        public boolean needsWorldRestart() {
-            return this.worldRestart;
+        public void gameRestart() {
+            this.restartType = RestartType.GAME;
+        }
+
+        public RestartType restartType() {
+            return restartType;
         }
 
         public void setClazz(Class<?> clazz) {
@@ -932,7 +974,7 @@ public class ModConfigSpec implements IConfigSpec {
             validate(hasComment(), "Non-empty comment when empty expected");
             validate(langKey, "Non-null translation key when null expected");
             validate(range, "Non-null range when null expected");
-            validate(worldRestart, "Dangeling world restart value set to true");
+            validate(restartType != RestartType.NONE, "Dangling restart value set to " + restartType);
         }
 
         private void validate(@Nullable Object value, String message) {
@@ -1024,11 +1066,11 @@ public class ModConfigSpec implements IConfigSpec {
         private final String langKey;
         @Nullable
         private final Range<?> range;
-        private final boolean worldRestart;
         @Nullable
         private final Class<?> clazz;
         private final Supplier<?> supplier;
         private final Predicate<Object> validator;
+        private final RestartType restartType;
 
         private ValueSpec(Supplier<?> supplier, Predicate<Object> validator, BuilderContext context, List<String> path) {
             Objects.requireNonNull(supplier, "Default supplier can not be null");
@@ -1037,7 +1079,7 @@ public class ModConfigSpec implements IConfigSpec {
             this.comment = context.hasComment() ? context.buildComment(path) : null;
             this.langKey = context.getTranslationKey();
             this.range = context.getRange();
-            this.worldRestart = context.needsWorldRestart();
+            this.restartType = context.restartType();
             this.clazz = context.getClazz();
             this.supplier = supplier;
             this.validator = validator;
@@ -1059,8 +1101,8 @@ public class ModConfigSpec implements IConfigSpec {
             return (Range<V>) this.range;
         }
 
-        public boolean needsWorldRestart() {
-            return this.worldRestart;
+        public RestartType restartType() {
+            return restartType;
         }
 
         @Nullable
@@ -1157,26 +1199,37 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         /**
-         * Returns the actual value for the configuration setting, throwing if the config has not yet been loaded.
+         * Returns the configured value for the configuration setting, throwing if the config has not yet been loaded.
+         * <p>
+         * This getter is cached, and will respect the {@link Builder#worldRestart() world restart} and {@link Builder#gameRestart() game restart}
+         * options by not clearing its cache if one of those options are set.
          *
-         * @return the actual value for the setting
+         * @return the configured value for the setting
          * @throws NullPointerException  if the {@link ModConfigSpec config spec} object that will contain this has
          *                               not yet been built
          * @throws IllegalStateException if the associated config has not yet been loaded
          */
         @Override
         public T get() {
-            Preconditions.checkNotNull(spec, "Cannot get config value before spec is built");
-            var loadedConfig = spec.loadedConfig;
-            Preconditions.checkState(loadedConfig != null, "Cannot get config value before config is loaded.");
-
             if (cachedValue == null) {
-                cachedValue = getRaw(loadedConfig.config(), path, defaultSupplier);
+                cachedValue = getRaw();
             }
             return cachedValue;
         }
 
-        protected T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
+        /**
+         * Returns the uncached value for the configuration setting, throwing if the config has not yet been loaded.
+         * <p>
+         * <em>Do not call this for any other purpose than editing the value. Use {@link #get()} instead.</em>
+         */
+        public T getRaw() {
+            Preconditions.checkNotNull(spec, "Cannot get config value before spec is built");
+            var loadedConfig = spec.loadedConfig;
+            Preconditions.checkState(loadedConfig != null, "Cannot get config value before config is loaded.");
+            return getRaw(loadedConfig.config(), path, defaultSupplier);
+        }
+
+        public T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
             return config.getOrElse(path, defaultSupplier);
         }
 
@@ -1206,7 +1259,14 @@ public class ModConfigSpec implements IConfigSpec {
             var loadedConfig = spec.loadedConfig;
             Preconditions.checkNotNull(loadedConfig, "Cannot set config value without assigned Config object present");
             loadedConfig.config().set(path, value);
-            this.cachedValue = value;
+
+            if (getSpec().restartType == RestartType.NONE) {
+                this.cachedValue = value;
+            }
+        }
+
+        public ValueSpec getSpec() {
+            return parent.spec.get(path);
         }
 
         public void clearCache() {
@@ -1239,7 +1299,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected Integer getRaw(Config config, List<String> path, Supplier<Integer> defaultSupplier) {
+        public Integer getRaw(Config config, List<String> path, Supplier<Integer> defaultSupplier) {
             return config.getIntOrElse(path, () -> defaultSupplier.get());
         }
 
@@ -1255,7 +1315,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected Long getRaw(Config config, List<String> path, Supplier<Long> defaultSupplier) {
+        public Long getRaw(Config config, List<String> path, Supplier<Long> defaultSupplier) {
             return config.getLongOrElse(path, () -> defaultSupplier.get());
         }
 
@@ -1271,7 +1331,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected Double getRaw(Config config, List<String> path, Supplier<Double> defaultSupplier) {
+        public Double getRaw(Config config, List<String> path, Supplier<Double> defaultSupplier) {
             Number n = config.<Number>get(path);
             return n == null ? defaultSupplier.get() : n.doubleValue();
         }
@@ -1293,7 +1353,7 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         @Override
-        protected T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
+        public T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
             return config.getEnumOrElse(path, clazz, converter, defaultSupplier);
         }
     }
@@ -1304,5 +1364,40 @@ public class ModConfigSpec implements IConfigSpec {
 
     private static List<String> split(String path) {
         return Lists.newArrayList(DOT_SPLITTER.split(path));
+    }
+
+    /**
+     * Used to prevent cached config values from being updated unless the game or the world is restarted.
+     */
+    public enum RestartType {
+        /**
+         * Do not require a restart to update the cached config value.
+         */
+        NONE,
+        /**
+         * Require a world restart.
+         */
+        WORLD,
+        /**
+         * Require a game restart.
+         * <p>
+         * Cannot be used for {@linkplain ModConfig.Type#SERVER server configs}.
+         */
+        GAME(ModConfig.Type.SERVER);
+
+        private final Set<ModConfig.Type> invalidTypes;
+
+        RestartType(ModConfig.Type... invalidTypes) {
+            this.invalidTypes = EnumSet.noneOf(ModConfig.Type.class);
+            this.invalidTypes.addAll(Arrays.asList(invalidTypes));
+        }
+
+        private boolean isValid(ModConfig.Type type) {
+            return !invalidTypes.contains(type);
+        }
+
+        public RestartType with(RestartType other) {
+            return other == NONE ? this : (other == GAME || this == GAME) ? GAME : WORLD;
+        }
     }
 }

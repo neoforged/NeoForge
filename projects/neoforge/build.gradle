@@ -5,14 +5,14 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.jarcompatibilitychecker' version '0.1.9'
+    id 'net.neoforged.gradleutils'
+    id 'neoforge.versioning'
 }
-
-apply plugin: 'net.neoforged.gradleutils'
 
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '20.6'
+    from '21.0'
     disableAutomaticPublicationRegistration()
 }
 
