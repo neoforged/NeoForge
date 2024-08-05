@@ -35,7 +35,7 @@ public final class TemplateParser {
     }
 
     private static final String TEMPLATE_MARKER = "%j";
-    private static final Pattern MARKER_PATTERN = Pattern.compile("^" + TEMPLATE_MARKER + "\\(([a-z0-9_.-]:[a-z0-9_.-])\\) *(.*)$");
+    private static final Pattern MARKER_PATTERN = Pattern.compile("^" + TEMPLATE_MARKER + "\\(([a-z0-9_.-]+:[a-z0-9_.-]+)\\) *(.*)$");
     private static final ResourceLocation DEFAULT = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "default");
 
     private static final Map<ResourceLocation, Pair<TriConsumer<String, Object[], Consumer<FormattedText>>, BiConsumer<String, Consumer<String>>>> PARSERS = new HashMap<>();
@@ -55,7 +55,9 @@ public final class TemplateParser {
      * @return <code>true</code> if the parser was registered, <code>false</code> otherwise.
      */
     public static boolean register(ResourceLocation id, TriConsumer<String, Object[], Consumer<FormattedText>> decomposer, BiConsumer<String, Consumer<String>> stripper) {
-        return PARSERS.putIfAbsent(id, Pair.of(decomposer, stripper)) == null;
+        synchronized (PARSERS) {
+            return PARSERS.putIfAbsent(id, Pair.of(decomposer, stripper)) == null;
+        }
     }
 
     @Nullable

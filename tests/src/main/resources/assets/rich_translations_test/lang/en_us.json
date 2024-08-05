@@ -11,5 +11,7 @@
         " ",
         {"index": 0, "color": "blue"}
     ],
-    "rich_translations_test.fancy_rich_translation3": "%j[\"\",{\"text\": \"Ooo, colors!\", \"color\": \"red\"},\" \",{\"index\": 0, \"color\": \"blue\"}]"
+    "rich_translations_test.fancy_rich_translation3": "%j[\"\",{\"text\": \"Ooo, colors!\", \"color\": \"red\"},\" \",{\"index\": 0, \"color\": \"blue\"}]",
+    "rich_translations_test.simple_vanilla_translation": "Simple custom translation.",
+    "rich_translations_test.simple_custom_translation": "%j(neotest:test)Simple custom traXslatioX."
 }

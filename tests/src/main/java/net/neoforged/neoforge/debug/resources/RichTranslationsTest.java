@@ -12,6 +12,8 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.text.TemplateParser;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -55,6 +57,32 @@ public class RichTranslationsTest {
             }, Style.EMPTY);
 
             helper.assertTrue(foundBlue.isTrue() && foundRed.isTrue(), "Rich translation lost colors");
+
+            helper.succeed();
+        });
+    }
+
+    @TestHolder(description = "Tests that rich translations (custom format) work properly", enabledByDefault = true)
+    @GameTest
+    @EmptyTemplate("1x1x1")
+    static void richTranslations2(final DynamicTest test) {
+        test.onGameTest(helper -> {
+
+            TemplateParser.register(ResourceLocation.parse("neotest:test"), (template, arg, consumer) -> {
+                consumer.accept(Component.literal(template.replace('X', 'n')));
+            }, (template, consumer) -> {
+                consumer.accept(template.replace('X', 'n'));
+            });
+
+            final Component vanilla = Component.translatable("rich_translations_test.simple_vanilla_translation");
+            final Component custom = Component.translatable("rich_translations_test.simple_custom_translation");
+
+            helper.assertValueEqual(custom.getString(), vanilla.getString(), "Custom Component translation");
+
+            final String vanilla_string = Language.getInstance().getOrDefault("rich_translations_test.simple_vanilla_translation");
+            final String custom_string = Language.getInstance().getOrDefault("rich_translations_test.simple_custom_translation");
+
+            helper.assertValueEqual(custom_string, vanilla_string, "Custom raw translation");
 
             helper.succeed();
         });
