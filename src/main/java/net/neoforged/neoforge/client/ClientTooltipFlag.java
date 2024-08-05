@@ -17,6 +17,8 @@ import org.jetbrains.annotations.ApiStatus;
 public record ClientTooltipFlag(boolean advanced, boolean creative, boolean shiftDown, boolean controlDown, boolean altDown) implements TooltipFlag {
     @ApiStatus.Internal
     public ClientTooltipFlag {}
+    @ApiStatus.Internal
+    public ClientTooltipFlag {}
 
     @Override
     public boolean isAdvanced() {
