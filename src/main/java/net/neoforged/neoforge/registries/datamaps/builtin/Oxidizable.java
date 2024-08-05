@@ -21,6 +21,6 @@ public record Oxidizable(Block nextOxidizedStage) {
             .xmap(Oxidizable::new, Oxidizable::nextOxidizedStage);
     public static final Codec<Oxidizable> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(in -> in.group(
-                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("nextOxidizedStage").forGetter(Oxidizable::nextOxidizedStage)).apply(in, Oxidizable::new)),
+                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("next_oxidized_stage").forGetter(Oxidizable::nextOxidizedStage)).apply(in, Oxidizable::new)),
             OXIDIZABLE_CODEC);
 }

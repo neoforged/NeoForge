@@ -25,11 +25,9 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageType;
@@ -44,14 +42,12 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.WeatheringCopperFullBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.debug.EventTests;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
@@ -360,7 +356,7 @@ public class DataMapTests {
             helper.succeed();
         });
     }
-    
+
     /*
      * 1. Lightly Oxidized Iron should oxidize into More Oxidized Iron
      * 2. Lightly Oxidized Iron should wax into Lightly Oxidized Waxed Iron
@@ -372,10 +368,10 @@ public class DataMapTests {
     @TestHolder(description = "Tests if existing and custom oxidizables and waxables work")
     static void oxidizablesAndWaxablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
         BlockPos blockPos = new BlockPos(1, 1, 1);
-        
+
         Holder<Block> lightlyOxidizedIron = reg.blocks().register("lightly_oxidized_iron", () -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.EXPOSED, BlockBehaviour.Properties.of()));
         Holder<Block> moreOxidizedIron = reg.blocks().register("more_oxidized_iron", () -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.WEATHERED, BlockBehaviour.Properties.of()));
-        
+
         Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().register("lightly_oxidized_waxed_iron", () -> new Block(BlockBehaviour.Properties.of()));
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
@@ -391,9 +387,8 @@ public class DataMapTests {
         test.onGameTest(helper -> {
             helper.assertFalse(
                     DataMapHooks.didHaveToFallbackToVanillaMaps,
-                    "The Oxidizable and Waxable Data Map's should not have to fallback to vanilla maps in this gametest, something is very wrong!"
-            );
-            
+                    "The Oxidizable and Waxable Data Map's should not have to fallback to vanilla maps in this gametest, something is very wrong!");
+
             // -------------- Test added blocks -------------- \\
             // Test Lightly Oxidized Iron -> More Oxidized Iron
             helper.setBlock(blockPos, lightlyOxidizedIron.value());
@@ -408,11 +403,11 @@ public class DataMapTests {
                 helper.fail("Waxed state for lightly oxidized iron was null!");
             helper.setBlock(blockPos, DataMapHooks.getBlockWaxed(lightlyOxidizedIron.value()));
             helper.assertBlock(blockPos, block -> lightlyOxidizedWaxedIron.value().equals(block), "Wanted: Lightly Oxidized Waxed Iron but found something else!");
-        
+
             // Test Lightly Oxidized Waxed Iron -> Lightly Oxidized Iron
             helper.useOn(blockPos, Items.IRON_AXE.getDefaultInstance(), helper.makeMockPlayer(), Direction.NORTH);
             helper.assertBlock(blockPos, block -> lightlyOxidizedIron.value().equals(block), "Wanted: Lightly Oxidized Iron but found something else!");
-        
+
             // -------------- Test vanilla blocks -------------- \\
             // Test Block of Copper -> Exposed Copper
             helper.setBlock(blockPos, Blocks.COPPER_BLOCK);
@@ -431,7 +426,7 @@ public class DataMapTests {
             // Test Waxed Block of Copper -> Block of Copper
             helper.useOn(blockPos, Items.IRON_AXE.getDefaultInstance(), helper.makeMockPlayer(), Direction.NORTH);
             helper.assertBlock(blockPos, Blocks.COPPER_BLOCK::equals, "Wanted: Block of Copper but found something else!");
-            
+
             // Test vanilla stuff
             WeatheringCopper.NEXT_BY_BLOCK.get().forEach((before, after) -> {
                 helper.assertValueEqual(DataMapHooks.getNextOxidizedStage(before), after, "next oxidized stage of " + before.getName());
@@ -448,7 +443,7 @@ public class DataMapTests {
             HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach((after, before) -> {
                 helper.assertValueEqual(DataMapHooks.getBlockUnwaxed(after), before, "unwaxed version of " + before.getName());
             });
-            
+
             helper.succeed();
         });
     }

@@ -16,7 +16,7 @@
                  .build()
      );
 +    /**
-+     * @deprecated Neo: Use the Inverse map generated from the DataMap {@link net.neoforged.neoforge.common.DataMapHooks#getInverseOxidizablesMap()}
++     * @deprecated Neo: Use the Inverse map generated from the DataMap {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP}
 +     */
 +    @Deprecated
      Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());

@@ -136,7 +136,7 @@ public class NeoForgeDataMaps {
      * <li>{@code after}, a block that object should convert into once it is right clicked with a {@link ItemAbilities#AXE_WAX_OFF} ability</li>
      * </ul>
      *
-     * The inverted map of this can be found at {@link DataMapHooks#getInverseWaxablesMap()}
+     * The inverted map of this can be found at {@link DataMapHooks#INVERSE_WAXABLES_DATAMAP}
      */
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
             id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();

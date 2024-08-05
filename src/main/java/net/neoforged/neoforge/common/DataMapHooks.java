@@ -27,31 +27,18 @@ public class DataMapHooks {
     /** Used in a gametest */
     @ApiStatus.Internal
     public static boolean didHaveToFallbackToVanillaMaps = false;
-    
+
     /** Mods should not insert anything into this map at all. */
     @ApiStatus.Internal
-    private static final Map<Block, Block> INVERSE_OXIDIZABLES_DATAMAP = new HashMap<>();
+    private static final Map<Block, Block> INVERSE_OXIDIZABLES_DATAMAP_INTERNAL = new HashMap<>();
     /** Mods should not insert anything into this map at all. */
     @ApiStatus.Internal
-    private static final Map<Block, Block> INVERSE_WAXABLES_DATAMAP = new HashMap<>();
+    private static final Map<Block, Block> INVERSE_WAXABLES_DATAMAP_INTERNAL = new HashMap<>();
 
-    /**
-     * The inverse map of the oxiziables data map, used in vanilla when scraping oxidization off of a block
-     * 
-     * @return an inverse map of the {@link NeoForgeDataMaps#OXIDIZABLES oxidizables data map}
-     */
-    public static Map<Block, Block> getInverseOxidizablesMap() {
-        return Collections.unmodifiableMap(INVERSE_OXIDIZABLES_DATAMAP);
-    }
-
-    /**
-     * The inverse map of the waxables data map, used in vanilla when scraping wax off of a block
-     *
-     * @return an inverse map of the {@link NeoForgeDataMaps#WAXABLES waxables data map}
-     */
-    public static Map<Block, Block> getInverseWaxablesMap() {
-        return Collections.unmodifiableMap(INVERSE_WAXABLES_DATAMAP);
-    }
+    /** The inverse map of the oxidizables data map, used in vanilla when scraping oxidization off of a block */
+    public static final Map<Block, Block> INVERSE_OXIDIZABLES_DATAMAP = Collections.unmodifiableMap(INVERSE_OXIDIZABLES_DATAMAP_INTERNAL);
+    /** The inverse map of the waxables data map, used in vanilla when scraping wax off of a block */
+    public static final Map<Block, Block> INVERSE_WAXABLES_DATAMAP = Collections.unmodifiableMap(INVERSE_WAXABLES_DATAMAP_INTERNAL);
 
     @Nullable
     @SuppressWarnings("deprecation")
@@ -63,7 +50,7 @@ public class DataMapHooks {
     @Nullable
     @SuppressWarnings("deprecation")
     public static Block getPreviousOxidizedStage(Block block) {
-        return getInverseOxidizablesMap().containsKey(block) ? getInverseOxidizablesMap().get(block) : WeatheringCopper.PREVIOUS_BY_BLOCK.get().get(block);
+        return INVERSE_OXIDIZABLES_DATAMAP.containsKey(block) ? INVERSE_OXIDIZABLES_DATAMAP.get(block) : WeatheringCopper.PREVIOUS_BY_BLOCK.get().get(block);
     }
 
     @Nullable
@@ -76,35 +63,35 @@ public class DataMapHooks {
     @Nullable
     @SuppressWarnings("deprecation")
     public static Block getBlockUnwaxed(Block block) {
-        return getInverseWaxablesMap().containsKey(block) ? getInverseWaxablesMap().get(block) : HoneycombItem.WAX_OFF_BY_BLOCK.get().get(block);
+        return INVERSE_WAXABLES_DATAMAP.containsKey(block) ? INVERSE_WAXABLES_DATAMAP.get(block) : HoneycombItem.WAX_OFF_BY_BLOCK.get().get(block);
     }
 
     @SubscribeEvent
     static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
         event.ifRegistry(Registries.BLOCK, registry -> {
-            INVERSE_OXIDIZABLES_DATAMAP.clear();
-            INVERSE_WAXABLES_DATAMAP.clear();
-            
+            INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.clear();
+            INVERSE_WAXABLES_DATAMAP_INTERNAL.clear();
+
             registry.getDataMap(NeoForgeDataMaps.OXIDIZABLES).forEach((resourceKey, oxidizable) -> {
-                INVERSE_OXIDIZABLES_DATAMAP.put(oxidizable.nextOxidizedStage(), BuiltInRegistries.BLOCK.get(resourceKey));
+                INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(oxidizable.nextOxidizedStage(), BuiltInRegistries.BLOCK.get(resourceKey));
             });
 
             //noinspection deprecation
             WeatheringCopper.PREVIOUS_BY_BLOCK.get().forEach((after, before) -> {
-                if (!INVERSE_OXIDIZABLES_DATAMAP.containsKey(after)) {
-                    INVERSE_OXIDIZABLES_DATAMAP.put(after, before);
+                if (!INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.containsKey(after)) {
+                    INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(after, before);
                     didHaveToFallbackToVanillaMaps = true;
                 }
             });
 
             registry.getDataMap(NeoForgeDataMaps.WAXABLES).forEach((resourceKey, waxable) -> {
-                INVERSE_WAXABLES_DATAMAP.put(waxable.waxed(), BuiltInRegistries.BLOCK.get(resourceKey));
+                INVERSE_WAXABLES_DATAMAP_INTERNAL.put(waxable.waxed(), BuiltInRegistries.BLOCK.get(resourceKey));
             });
 
             //noinspection deprecation
             HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach((after, before) -> {
-                if (!INVERSE_WAXABLES_DATAMAP.containsKey(after)) {
-                    INVERSE_OXIDIZABLES_DATAMAP.put(after, before);
+                if (!INVERSE_WAXABLES_DATAMAP_INTERNAL.containsKey(after)) {
+                    INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(after, before);
                     didHaveToFallbackToVanillaMaps = true;
                 }
             });
