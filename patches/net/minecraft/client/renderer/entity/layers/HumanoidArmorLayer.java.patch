@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
-@@ -66,22 +_,28 @@
+@@ -66,22 +_,27 @@
              if (armoritem.getEquipmentSlot() == p_117122_) {
                  this.getParentModel().copyPropertiesTo(p_117124_);
                  this.setPartVisibility(p_117124_, p_117122_);
@@ -21,7 +21,6 @@
 +                        this.renderModel(p_117119_, p_117120_, p_117123_, model, j, texture);
 +                    }
                  }
-+
  
                  ArmorTrim armortrim = itemstack.get(DataComponents.TRIM);
                  if (armortrim != null) {
