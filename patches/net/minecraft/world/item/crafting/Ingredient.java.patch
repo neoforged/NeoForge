@@ -178,6 +178,19 @@
  
          @Override
          public boolean equals(Object p_301316_) {
+@@ -156,6 +_,12 @@
+                 : ingredient$itemvalue.item.getItem().equals(this.item.getItem()) && ingredient$itemvalue.item.getCount() == this.item.getCount();
+         }
+ 
++        // Neo: Add a hashCode() implementation that matches equals()
++        @Override
++        public int hashCode() {
++            return 31 * item.getItem().hashCode() + item.getCount();
++        }
++
+         @Override
+         public Collection<ItemStack> getItems() {
+             return Collections.singleton(this.item);
 @@ -163,10 +_,11 @@
      }
  
