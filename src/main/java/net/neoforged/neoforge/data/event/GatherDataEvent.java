@@ -5,6 +5,18 @@
 
 package net.neoforged.neoforge.data.event;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -18,14 +30,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
@@ -142,9 +146,8 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         }
     }
 
-
     public boolean shouldRun(Dist dist) {
-        return switch (dist)  {
+        return switch (dist) {
             case CLIENT -> includeClient();
             case DEDICATED_SERVER -> includeServer();
         };
@@ -170,7 +173,7 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         addProvider(run, builder.build(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper));
     }
 
-    public void addBlockAndItemTags(BlockTagsProvider blockTagsProvider, ItemTagsProvider itemTagsProvider){
+    public void addBlockAndItemTags(BlockTagsProvider blockTagsProvider, ItemTagsProvider itemTagsProvider) {
         var blockTags = blockTagsProvider.build(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper);
         addProvider(includeServer(), blockTags);
         addProvider(includeServer(), itemTagsProvider.build(dataGenerator.getPackOutput(), config.lookupProvider, blockTags.contentsGetter(), existingFileHelper));
@@ -180,14 +183,17 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     public interface DataProviderFromOutput {
         DataProvider build(PackOutput output);
     }
+
     @FunctionalInterface
     public interface DataProviderFromOutputLookup {
         DataProvider build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider);
     }
+
     @FunctionalInterface
     public interface DataProviderFromOutputFileHelper {
         DataProvider build(PackOutput output, ExistingFileHelper existingFileHelper);
     }
+
     @FunctionalInterface
     public interface DataProviderFromOutputLookupFileHelper {
         DataProvider build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper);
@@ -197,6 +203,7 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     public interface BlockTagsProvider {
         TagsProvider<Block> build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper);
     }
+
     @FunctionalInterface
     public interface ItemTagsProvider {
         TagsProvider<Item> build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter, ExistingFileHelper existingFileHelper);
