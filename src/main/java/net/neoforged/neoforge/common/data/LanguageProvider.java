@@ -126,7 +126,7 @@ public abstract class LanguageProvider implements DataProvider {
             throw new IllegalStateException("Duplicate translation key " + key);
     }
 
-    public void add(ResourceKey<Level> dimension, String value) {
+    public void addDimension(ResourceKey<Level> dimension, String value) {
         add(dimension.location().toLanguageKey(ILevelExtension.TRANSLATION_PREFIX), value);
     }
 }

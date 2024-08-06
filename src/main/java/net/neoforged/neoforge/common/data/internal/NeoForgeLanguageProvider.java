@@ -23,9 +23,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         // Vanilla Dimensions
-        add(Level.OVERWORLD, "Overworld");
-        add(Level.NETHER, "The Nether");
-        add(Level.END, "The End");
+        addDimension(Level.OVERWORLD, "Overworld");
+        addDimension(Level.NETHER, "The Nether");
+        addDimension(Level.END, "The End");
 
         // Blocks
         add(Tags.Blocks.BARRELS, "Barrels");
