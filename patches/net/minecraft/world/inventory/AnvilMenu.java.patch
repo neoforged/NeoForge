@@ -36,9 +36,9 @@
                          Enchantment enchantment = holder.value();
 -                        boolean flag1 = enchantment.canEnchant(itemstack);
 -                        if (this.player.getAbilities().instabuild || itemstack.is(Items.ENCHANTED_BOOK)) {
-+                        // Neo: Respect IItemExtension#isSupportedItemFor - we also delegate the logic for Enchanted Books to this method.
++                        // Neo: Respect IItemExtension#supportsEnchantment - we also delegate the logic for Enchanted Books to this method.
 +                        // Though we still allow creative players to combine any item with any enchantment in the anvil here.
-+                        boolean flag1 = itemstack.isSupportedItemFor(holder);
++                        boolean flag1 = itemstack.supportsEnchantment(holder);
 +                        if (this.player.getAbilities().instabuild) {
                              flag1 = true;
                          }

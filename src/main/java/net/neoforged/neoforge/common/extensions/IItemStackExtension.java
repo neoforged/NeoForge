@@ -141,10 +141,10 @@ public interface IItemStackExtension {
     }
 
     /**
-     * @see {@link IItemExtension#isSupportedItemFor(ItemStack, Holder)}
+     * @see {@link IItemExtension#supportsEnchantment(ItemStack, Holder)}
      */
-    default boolean isSupportedItemFor(Holder<Enchantment> enchantment) {
-        return self().getItem().isSupportedItemFor(self(), enchantment);
+    default boolean supportsEnchantment(Holder<Enchantment> enchantment) {
+        return self().getItem().supportsEnchantment(self(), enchantment);
     }
 
     /**

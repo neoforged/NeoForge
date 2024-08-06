@@ -5,7 +5,7 @@
              .map(HolderSet::stream)
              .orElseGet(() -> p_80430_.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).holders().map(Function.identity()))
 -            .filter(p_344686_ -> !flag1 || p_344686_.value().canEnchant(p_80429_));
-+            .filter(p_344686_ -> !flag1 || p_80429_.isSupportedItemFor(p_344686_)); // Neo: Respect IItemExtension#isSupportedItemFor
++            .filter(p_344686_ -> !flag1 || p_80429_.supportsEnchantment(p_344686_)); // Neo: Respect IItemExtension#supportsEnchantment
          List<Holder<Enchantment>> list = stream.toList();
          Optional<Holder<Enchantment>> optional = Util.getRandomSafe(list, randomsource);
          if (optional.isEmpty()) {
