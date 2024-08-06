@@ -17,6 +17,7 @@ import net.minecraft.network.chat.contents.TranslatableFormatException;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.commons.lang3.function.TriConsumer;
+import org.apache.commons.lang3.function.TriFunction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +39,7 @@ public final class TemplateParser {
     private static final Pattern MARKER_PATTERN = Pattern.compile("^" + TEMPLATE_MARKER + "\\(([a-z0-9_.-]+:[a-z0-9_.-]+)\\) *(.*)$");
     private static final ResourceLocation DEFAULT = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "default");
 
-    private static final Map<ResourceLocation, Pair<TriConsumer<String, Object[], Consumer<FormattedText>>, BiConsumer<String, Consumer<String>>>> PARSERS = new HashMap<>();
+    private static final Map<ResourceLocation, Pair<TriFunction<String, Object[], Consumer<FormattedText>, String>, BiConsumer<String, Consumer<String>>>> PARSERS = new HashMap<>();
 
     static {
         register(DEFAULT, JsonTemplateParser::handle, JsonTemplateParser::handle);
@@ -49,12 +50,13 @@ public final class TemplateParser {
      * 
      * @param id         The {@link ResourceLocation} as present in the <code>%j(...)</code> marker.
      * @param decomposer A function to handle converting the raw translation text into {@link FormattedText}s. Can throw {@link ParsingException} to report errors.
-     *                   Note that this is responsible for inserting any parameters that may be there.
+     *                   Note that this is responsible for inserting any parameters that may be there. The returned string will be handed over to vanilla parsing, so
+     *                   this function also can restrict itself to transform the translation string.
      * @param stripper   A function to handle converting the raw translation into format-free texts. Can throw {@link ParsingException} to report errors.
      *                   Note that this shall convert any parameters into their vanilla form ("%1$s"...).
      * @return <code>true</code> if the parser was registered, <code>false</code> otherwise.
      */
-    public static boolean register(ResourceLocation id, TriConsumer<String, Object[], Consumer<FormattedText>> decomposer, BiConsumer<String, Consumer<String>> stripper) {
+    public static boolean register(ResourceLocation id, TriFunction<String, Object[], Consumer<FormattedText>, String> decomposer, BiConsumer<String, Consumer<String>> stripper) {
         synchronized (PARSERS) {
             return PARSERS.putIfAbsent(id, Pair.of(decomposer, stripper)) == null;
         }
@@ -81,10 +83,9 @@ public final class TemplateParser {
         Pair<ResourceLocation, String> format = getFormat(template);
         if (format != null) {
             try {
-                PARSERS.computeIfAbsent(format.getKey(), rl -> {
+                return PARSERS.computeIfAbsent(format.getKey(), rl -> {
                     throw new TemplateParser.ParsingException("Unknown format specified: " + rl);
-                }).getLeft().accept(format.getValue(), args, consumer);
-                return "";
+                }).getLeft().apply(format.getValue(), args, consumer);
             } catch (TemplateParser.ParsingException e) {
                 e.printStackTrace();
                 throw new TranslatableFormatException(translatableContents, e.getMessage());

@@ -19,9 +19,10 @@ import org.jetbrains.annotations.ApiStatus;
 public class JsonTemplateParser {
     protected static final Gson GSON = new Gson();
 
-    public static void handle(String template, Object[] args, Consumer<FormattedText> consumer) {
+    public static String handle(String template, Object[] args, Consumer<FormattedText> consumer) {
         try {
             consumer.accept(parse(template));
+            return "";
         } catch (JsonSyntaxException e) {
             throw new TemplateParser.ParsingException("Error parsing translation for " + template + ": " + e.getMessage());
         }
