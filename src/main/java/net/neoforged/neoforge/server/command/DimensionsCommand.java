@@ -28,13 +28,13 @@ class DimensionsCommand {
                     ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.dimensions.list"), true);
                     final Registry<DimensionType> reg = ctx.getSource().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
 
-                    Map<ResourceLocation, List<ResourceLocation>> types = new HashMap<>();
+                    Map<ResourceLocation, List<Component>> types = new HashMap<>();
                     for (ServerLevel dim : ctx.getSource().getServer().getAllLevels()) {
-                        types.computeIfAbsent(reg.getKey(dim.dimensionType()), k -> new ArrayList<>()).add(dim.dimension().location());
+                        types.computeIfAbsent(reg.getKey(dim.dimensionType()), k -> new ArrayList<>()).add(dim.getDescription());
                     }
 
                     types.keySet().stream().sorted().forEach(key -> {
-                        ctx.getSource().sendSuccess(() -> Component.literal(key + ": " + types.get(key).stream().map(ResourceLocation::toString).sorted().collect(Collectors.joining(", "))), false);
+                        ctx.getSource().sendSuccess(() -> Component.literal(key + ": " + types.get(key).stream().map(Component::getString).sorted().collect(Collectors.joining(", "))), false);
                     });
                     return 0;
                 });

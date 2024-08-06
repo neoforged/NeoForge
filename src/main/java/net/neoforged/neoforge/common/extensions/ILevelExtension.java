@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.extensions;
 import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -19,6 +20,8 @@ import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
 public interface ILevelExtension {
+    String TRANSLATION_PREFIX = "dimension";
+
     private Level self() {
         return (Level) this;
     }
@@ -134,4 +137,12 @@ public interface ILevelExtension {
      * but it is safe to call on any {@link Level}, without the need for an {@code instanceof} check.
      */
     default void invalidateCapabilities(ChunkPos pos) {}
+
+    default String getDescriptionKey() {
+        return self().dimension().location().toLanguageKey(TRANSLATION_PREFIX);
+    }
+
+    default Component getDescription() {
+        return Component.translatableWithFallback(getDescriptionKey(), self().dimension().location().toString());
+    }
 }
