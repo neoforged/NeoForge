@@ -24,7 +24,7 @@ public interface ILevelExtension {
      * Prefix used for all dimension based translations
      * <p>
      * All dimension translations must start with this prefix,
-     * followed by the registry namespace and prefix.
+     * followed by the registry namespace and path.
      * <p>
      * {@code dimension.<namespace>.<path>}
      */
