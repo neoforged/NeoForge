@@ -20,6 +20,14 @@ import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
 public interface ILevelExtension {
+    /**
+     * Prefix used for all dimension based translations
+     * <p>
+     * All dimension translations must start with this prefix,
+     * followed by the registry namespace and prefix.
+     * <p>
+     * {@code dimension.<namespace>.<path>}
+     */
     String TRANSLATION_PREFIX = "dimension";
 
     private Level self() {
@@ -138,10 +146,25 @@ public interface ILevelExtension {
      */
     default void invalidateCapabilities(ChunkPos pos) {}
 
+    /**
+     * Returns the translation key for this dimension.
+     * <p>
+     * Used when looking up the matching translation.
+     *
+     * @return Translation key used to lookup translation for this dimension.
+     * @see #TRANSLATION_PREFIX
+     */
     default String getDescriptionKey() {
         return self().dimension().location().toLanguageKey(TRANSLATION_PREFIX);
     }
 
+    /**
+     * Returns Component which looks up the matching value for {@linkplain #getDescriptionKey()},
+     * falling back to the registry name if no translation exists.
+     *
+     * @return Translated name or registry name if none exists.
+     * @see #getDescriptionKey()
+     */
     default Component getDescription() {
         return Component.translatableWithFallback(getDescriptionKey(), self().dimension().location().toString());
     }
