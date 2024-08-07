@@ -12,6 +12,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.fluids.FluidUnit;
+import net.neoforged.neoforge.fluids.FluidUnits;
 import org.apache.commons.lang3.StringUtils;
 
 public final class NeoForgeLanguageProvider extends LanguageProvider {
@@ -439,6 +441,23 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         // Structures
         add(Tags.Structures.HIDDEN_FROM_DISPLAYERS, "Hidden From Displayers");
         add(Tags.Structures.HIDDEN_FROM_LOCATOR_SELECTION, "Hidden From Locator's Selection");
+
+        // Fluid Units
+        add("fluid_unit.number_and_unit_format", "%s %s");
+        add("fluid_unit.separator", ", ");
+        add("fluid_unit.empty", "Empty");
+        add(FluidUnits.BUCKET, "Bucket", "Buckets");
+        add(FluidUnits.MB, "mB", "mB");
+        add(FluidUnits.BOTTLE, "Bottle", "Bottles");
+        add(FluidUnits.BOWL, "Bowl", "Bowls");
+        add(FluidUnits.BLOCK, "Block", "Blocks");
+        add(FluidUnits.INGOT, "Ingot", "Ingots");
+        add(FluidUnits.NUGGET, "Nugget", "Nuggets");
+        add(FluidUnits.GEM, "Gem", "Gems");
+        add(FluidUnits.SLIMEBALL, "Slimeball", "Slimeballs");
+        add(FluidUnits.BRICK, "Brick", "Bricks");
+        add(FluidUnits.PANE, "Pane", "Panes");
+        add(FluidUnits.EXPERIENCE_POINT, "Experience Point", "Experience Points");
     }
 
     private <T> void addColored(TagKey<T> baseTagKey, String pattern) {
@@ -449,6 +468,11 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
 
             add(coloredTag, pattern.replace("{color}", StringUtils.capitalize(color.getName())));
         }
+    }
+
+    private void add(FluidUnit unit, String singular, String plural) {
+        add(unit.getDescriptionId(false), singular);
+        add(unit.getDescriptionId(true), plural);
     }
 
     @Override

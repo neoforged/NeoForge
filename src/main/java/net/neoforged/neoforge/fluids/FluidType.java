@@ -7,6 +7,7 @@ package net.neoforged.neoforge.fluids;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.Util;
@@ -26,8 +27,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -48,6 +51,7 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -1126,4 +1130,18 @@ public class FluidType {
      * @param filledCauldron the block the Pointed Dripstone should replace an empty cauldron with when it successfully tries to fill the cauldron
      */
     public record DripstoneDripInfo(float chance, @Nullable ParticleOptions dripParticle, Block filledCauldron) {}
+
+    /**
+     * A method for returning the Fluid Units associated with this Fluid
+     */
+    public final FluidUnitSpec getUnits() {
+        @Nullable
+        FluidUnitSpec data = NeoForgeRegistries.FLUID_TYPES.wrapAsHolder(this).getData(NeoForgeDataMaps.FLUID_UNITS);
+        return data == null ? FluidUnitSpec.DEFAULT : data;
+    }
+
+    /**
+     * A method that can be overridden to add additional information to a tooltip.
+     */
+    public void appendHoverText(FluidStack stack, TooltipContext context, List<Component> output, TooltipFlag flag) {}
 }

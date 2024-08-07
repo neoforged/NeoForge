@@ -20,7 +20,10 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidUnitSpec;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 
@@ -43,6 +46,19 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
             id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
+
+    /**
+     * A {@linkplain FluidType} data map for defining human-readable units of a fluid [e.g. bottles, ingot quantities of molten metals]
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/neoforge/fluid_type/units.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code name}, a ResourceLocation</li>
+     * <li>{@code value}, a positive integer - the number of millibuckets per unit</li>
+     * <li>{@code show_in_tooltip}, an optional boolean - whether the unit is for display or for internal API purposes</li>
+     * </ul>
+     */
+    public static final DataMapType<FluidType, FluidUnitSpec> FLUID_UNITS = DataMapType.builder(
+            id("units"), NeoForgeRegistries.Keys.FLUID_TYPES, FluidUnitSpec.CODEC).synced(FluidUnitSpec.CODEC, false).build();
 
     /**
      * The {@linkplain Item} data map that replaces {@link AbstractFurnaceBlockEntity#getFuel()}.
