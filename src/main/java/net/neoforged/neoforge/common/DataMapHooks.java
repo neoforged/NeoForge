@@ -40,7 +40,7 @@ public class DataMapHooks {
     @SuppressWarnings("deprecation")
     public static Block getNextOxidizedStage(Block block) {
         Oxidizable oxidizable = block.builtInRegistryHolder().getData(NeoForgeDataMaps.OXIDIZABLES);
-        return oxidizable != null ? oxidizable.nextOxidizedStage() : WeatheringCopper.NEXT_BY_BLOCK.get().get(block);
+        return oxidizable != null ? oxidizable.nextOxidizationStage() : WeatheringCopper.NEXT_BY_BLOCK.get().get(block);
     }
 
     @Nullable
@@ -69,7 +69,7 @@ public class DataMapHooks {
             INVERSE_WAXABLES_DATAMAP_INTERNAL.clear();
 
             registry.getDataMap(NeoForgeDataMaps.OXIDIZABLES).forEach((resourceKey, oxidizable) -> {
-                INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(oxidizable.nextOxidizedStage(), BuiltInRegistries.BLOCK.get(resourceKey));
+                INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(oxidizable.nextOxidizationStage(), BuiltInRegistries.BLOCK.get(resourceKey));
             });
 
             //noinspection deprecation

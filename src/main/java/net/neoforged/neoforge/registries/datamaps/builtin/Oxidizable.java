@@ -14,13 +14,13 @@ import net.minecraft.world.level.block.Block;
  * Data map value for {@linkplain NeoForgeDataMaps#OXIDIZABLES oxidizable blocks} allowing mods to easily register basic
  * oxidizing interactions for their blocks.
  *
- * @param nextOxidizedStage The block that will the key value will transform into when it's oxidization stage changes
+ * @param nextOxidizationStage The block that will the key value will transform into when it's oxidization stage changes
  */
-public record Oxidizable(Block nextOxidizedStage) {
+public record Oxidizable(Block nextOxidizationStage) {
     public static final Codec<Oxidizable> OXIDIZABLE_CODEC = BuiltInRegistries.BLOCK.byNameCodec()
-            .xmap(Oxidizable::new, Oxidizable::nextOxidizedStage);
+            .xmap(Oxidizable::new, Oxidizable::nextOxidizationStage);
     public static final Codec<Oxidizable> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(in -> in.group(
-                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("next_oxidized_stage").forGetter(Oxidizable::nextOxidizedStage)).apply(in, Oxidizable::new)),
+                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("next_oxidization_stage").forGetter(Oxidizable::nextOxidizationStage)).apply(in, Oxidizable::new)),
             OXIDIZABLE_CODEC);
 }
