@@ -5,7 +5,7 @@
      }
  
 +    /**
-+     * @deprecated Neo: Use {@link ItemStack#isSupportedItemFor(Holder)}
++     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
      public HolderSet<Item> getSupportedItems() {
@@ -18,7 +18,7 @@
 +    /**
 +     * @deprecated Neo: Use {@link ItemStack#isPrimaryItemFor(Holder)}
 +     *
-+     * This method does not respect {@link ItemStack#isSupportedItemFor(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
++     * This method does not respect {@link ItemStack#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
 +     */
 +    @Deprecated
      public boolean isPrimaryItem(ItemStack p_336088_) {
@@ -26,7 +26,7 @@
      }
  
 +    /**
-+     * @deprecated Neo: Use {@link ItemStack#isSupportedItemFor(Holder)}
++     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
      public boolean isSupportedItem(ItemStack p_344865_) {
@@ -37,7 +37,7 @@
      }
  
 +    /**
-+     * @deprecated Neo: Use {@link ItemStack#isSupportedItemFor(Holder)}
++     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
 +     */
 +    @Deprecated
      public boolean canEnchant(ItemStack p_44689_) {
