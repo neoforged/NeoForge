@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.common.util;
 
+import java.io.File;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
-
-import java.io.File;
 
 public class DummySavedData extends SavedData {
     public static final DummySavedData DUMMY = new DummySavedData();
