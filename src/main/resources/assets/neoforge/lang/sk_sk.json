@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "Zoznam módov pre server je nekompatibilný",
   "fml.menu.multiplayer.networkincompatible": "Serverový sieťový list správ nie je kompatibilný",
   "fml.menu.multiplayer.missingdatapackregistries": "Chýbajúce potrebné registre pre datapack: %1$s",
-  "fml.menu.branding": "%s (%s mods)",
+  "fml.menu.branding": "%s (%s módy)",
   "fml.menu.notification.title": "Spúšťacie upozornenie",
   "fml.menu.accessdenied.title": "Prístup k Serveru Zamietnutý",
   "fml.menu.accessdenied.message": "Fancy Mod Loader sa nemohol pripojiť na tento server\nServer %1$s má zakázaný prístup s módmi",
@@ -107,62 +107,68 @@
   "commands.neoforge.chunkgen.started": "Generovanie %1$s chunkov, v zóne %2$sx%3$s chunkov (%4$sx%5$s blokov).",
   "commands.neoforge.chunkgen.success": "Generovanie Dokončené!",
   "commands.neoforge.chunkgen.error": "Generovanie zaznamenalo %1$s chýb! Pozrite log pre viac informácií.",
-  "commands.neoforge.chunkgen.stopped": "Generation stopped! %1$s out of %2$s chunks generated. (%3$s%%)",
-  "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
+  "commands.neoforge.chunkgen.stopped": "Generovanie zastavilo! %1$s z %2$s chunkov vygenerovaných. (%3$s%%)",
+  "commands.neoforge.chunkgen.status": "Status generovania! %1$s z %2$s chunkov vygenerovaných. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Žiadne pregenerovnie chunkov nie je spustené. Spustite `/neoforge generate help` pre zobrazenie príkazov na začatie generovania.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Vygeneruje štvorcovo centrovane od danej pozície ktoreá je chunkRadius * 2 na každej strane\n§2/neoforge generate stop §r§f- Zastavý aktuálne generovanie a zobrazí sa docielený progres.\n§2/neoforge generate status §r- Zobrazí docielený progres aktuálne bežiacej generácie.\n§2/neoforge generate help §r- Zobrazí túto správu.\nVšeobecné rady: Pokiaľ je generovanie spúštané z konzoly serveru, môžete spustiť generovanie v iných dimenziách použitím /execute in <dimension> neoforge generate...",
-  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
-  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
-  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
-  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
+  "commands.neoforge.timespeed.query": "Čas v %s tokoch s rýchlosťou %sx (%s minút za deň).",
+  "commands.neoforge.timespeed.query.default": "Čas v %s plynie normálne (20 minút na deň).",
+  "commands.neoforge.timespeed.set": "Nastaviť plynutie času v %s na %sx (%s minúty za deň).",
+  "commands.neoforge.timespeed.set.default": "Nastaviť plynutie času v %s na predvolené (20 minút za deň).",
   "commands.config.getwithtype": "Konfigurácia pre %s typu %s nájdená v %s",
   "commands.config.noconfig": "Konfigurácia pre %s typu %s nenájdená",
   "neoforge.update.beta.1": "%sVAROVANIE: %sNeoForge Beta",
   "neoforge.update.beta.2": "Môžu sa vyskytnúť závažné problémy, overte ich pred nahlásením.",
   "neoforge.update.newversion": "K dispozícii je nová verzia NeoForge: %s",
   "neoforge.menu.updatescreen.title": "Aktualizácia módu",
-  "neoforge.configuration.uitext.title": "%s Configuration",
-  "neoforge.configuration.uitext.type.client": "Client Settings",
-  "neoforge.configuration.uitext.type.server": "Server Settings",
-  "neoforge.configuration.uitext.type.common": "Common settings",
-  "neoforge.configuration.uitext.type.startup": "Startup settings",
-  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
-  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
-  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
-  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.title": "%s Konfigurácia",
+  "neoforge.configuration.uitext.type.client": "Nastavenia Klienta",
+  "neoforge.configuration.uitext.type.server": "Nastavenia Serveru",
+  "neoforge.configuration.uitext.type.common": "Bežné nastavenia",
+  "neoforge.configuration.uitext.type.startup": "Nastavenia spustenia",
+  "neoforge.configuration.uitext.title.client": "%s Konfigurácia Klienta",
+  "neoforge.configuration.uitext.title.server": "%s Konfigurácia Serveru",
+  "neoforge.configuration.uitext.title.common": "%s Bežná Konfigurácia",
+  "neoforge.configuration.uitext.title.startup": "%s Konfigurácia Spustenia",
   "neoforge.configuration.uitext.notonline": [
     {
-      "text": "Settings in here are determined by the server and cannot be changed while online.",
-      "color": "red"
+      "text": "Nastavenie tu sú určené serverom a nemôžu byť zmenené pokým je online.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Settings in here cannot be editied while your game is open to LAN. Please return to the main menu and load the world again.",
-      "color": "red"
+      "text": "Nastavenia tu nemôžu byť upravené pokým je vaša hra otvorená do LAN. Prosím vráťte sa do hlavného menu a načítajte svet znova.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Settings in here are are ony available while a world is loaded.",
-      "color": "red"
+      "text": "Nastavenia tu sú k dispozícii len keď je svet načítaný.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.unsupportedelement": [
     {
-      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
-      "color": "red"
+      "text": "Táto hodnota nemôže byť upravená v UI. Prosím kontaktujte autora módu o poskytnutý vlastného UI preň.",
+      "color": "červená"
+    }
+  ],
+  "neoforge.configuration.uitext.longstring": [
+    {
+      "text": "Táto hodnota je pridlhá nato aby mohla byť upravená v UI. Prosím upravte ju v konfiguračnom súbore.",
+      "color": "červená"
     }
   ],
   "neoforge.configuration.uitext.section": "%s...",
-  "neoforge.configuration.uitext.sectiontext": "Edit",
+  "neoforge.configuration.uitext.sectiontext": "Upraviť",
   "neoforge.configuration.uitext.breadcrumb": [
     {
       "index": 0
     },
     {
       "text": " > ",
-      "color": "gold",
+      "color": "zlato",
       "bold": true
     },
     {
@@ -170,90 +176,97 @@
     }
   ],
   "neoforge.configuration.uitext.listelement": "%s:",
-  "neoforge.configuration.uitext.undo": "Undo",
-  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
+  "neoforge.configuration.uitext.undo": "Krok naspäť",
+  "neoforge.configuration.uitext.undo.tooltip": "Vráti zmeny len na tejto obrazovke.",
   "neoforge.configuration.uitext.reset": "Reset",
-  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.reset.tooltip": "Vráti všetko na tejto stránke na predvolenú hodnotu.",
   "neoforge.configuration.uitext.newlistelement": "+",
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
   "neoforge.configuration.uitext.rangetooltip": [
     {
-      "text": "\n\nRange: ",
-      "color": "gray"
+      "text": "\n\nRádius: ",
+      "color": "sivá"
     },
     {
       "index": 0,
-      "color": "gray"
+      "color": "sivá"
     }
   ],
   "neoforge.configuration.uitext.filenametooltip": [
     {
-      "text": "File: \"",
-      "color": "gray"
+      "text": "Súbor: \"",
+      "color": "sivá"
     },
     {
       "index": 0,
-      "color": "gray"
+      "color": "sivá"
     },
     {
       "text": "\"",
-      "color": "gray"
+      "color": "sivá"
     }
   ],
-  "neoforge.configuration.uitext.common": "Common Options",
-  "neoforge.configuration.uitext.client": "Client Options",
-  "neoforge.configuration.uitext.server": "Server Options",
-  "neoforge.configuration.uitext.startup": "Startup Options",
-  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
-  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed only take effect when the game is started.",
-  "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
-  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed only take effect when a world is started or loaded.",
-  "neoforge.configuration.uitext.restart.return": "Not yet...",
-  "neoforge.configuration.title": "NeoForge Configuration",
-  "neoforge.configuration.section.neoforge.client.toml": "Client settings",
-  "neoforge.configuration.section.neoforge.client.toml.title": "Client settings",
-  "neoforge.configuration.section.neoforge.common.toml": "Common settings",
-  "neoforge.configuration.section.neoforge.common.toml.title": "Common settings",
-  "neoforge.configuration.section.neoforge.server.toml": "Server settings",
-  "neoforge.configuration.section.neoforge.server.toml.title": "Server settings",
-  "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
-  "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
+  "neoforge.configuration.uitext.common": "Bežné Nastavenia",
+  "neoforge.configuration.uitext.client": "Nastavenia Klienta",
+  "neoforge.configuration.uitext.server": "Nastavenia Serveru",
+  "neoforge.configuration.uitext.startup": "Nastavenia Spustenia",
+  "neoforge.configuration.uitext.restart.game.title": "Vyžaduje sa reštart Minecraftu",
+  "neoforge.configuration.uitext.restart.game.text": "Jedno alebo viac z konfiguračných nastavení ktoré boli zmenené budú mať efekt až keď bude hra zapnutá.",
+  "neoforge.configuration.uitext.restart.server.title": "Svet treba znova načítať",
+  "neoforge.configuration.uitext.restart.server.text": "Jedno alebo viac z konfiguračných nastavení ktoré boli zmenené budú mať efekt až keď bude hra znova načítaná.",
+  "neoforge.configuration.uitext.restart.return": "Ignorovať",
+  "neoforge.configuration.uitext.restart.return.tooltip": [
+    {
+      "text": "Vaše zmeny nebudú mať žiadny efekt pokým nereštartujete!",
+      "color": "červená",
+      "bold": true
+    }
+  ],
+  "neoforge.configuration.title": "NeoForge Konfigurácia",
+  "neoforge.configuration.section.neoforge.client.toml": "Nastavenia klienta",
+  "neoforge.configuration.section.neoforge.client.toml.title": "Nastavenia klienta",
+  "neoforge.configuration.section.neoforge.common.toml": "Bežné nastavenia",
+  "neoforge.configuration.section.neoforge.common.toml.title": "Bežné nastavenia",
+  "neoforge.configuration.section.neoforge.server.toml": "Nastavenia serveru",
+  "neoforge.configuration.section.neoforge.server.toml.title": "Nastavenia serveru",
+  "neoforge.configgui.advertiseDedicatedServerToLan": "Inzerujte vyhradený server do siete LAN",
+  "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Nastavte toto na true, aby ste povolili reklamu dedikovaného servera lokálnym klientom LAN, aby sa automaticky zobrazoval na obrazovke pre viacerých hráčov.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Povoliť kanál vykresľovania blokov NeoForge – opravuje osvetlenie vlastných modelov.",
   "neoforge.configgui.fullBoundingBoxLadders": "Úplné vymedzovanie boxov rebríkov",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Nastavte toto na hodnotu true, aby ste skontrolovali ohraničujúci rámček kolízie celej entity pre rebríky namiesto len bloku, v ktorom sa nachádzajú. Spôsobuje viditeľné zmeny v mechanike hry, takže predvolené je základné správanie. Predvolená hodnota: false.",
-  "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
-  "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
-  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
-  "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.",
-  "neoforge.configgui.logUntranslatedItemTagWarnings": "Log Untranslated Item Tags",
-  "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.",
-  "neoforge.configgui.permissionHandler": "Permission Handler",
-  "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
+  "neoforge.configgui.logLegacyTagWarnings": "Staré Log Značky",
+  "neoforge.configgui.logLegacyTagWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási módované značky, ktoré používajú menný priestor 'forge' keď bežia na integrovanom servery. Predvolené do DEV_SHORT.",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Nepreložené Konfiguračné Log Kľúče",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási konfiguračné hodnoty ktoré nemajú preklady keď ide klient v developerskom prostredí.",
+  "neoforge.configgui.logUntranslatedItemTagWarnings": "Nepreložené Logy Známok Vecí",
+  "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási módované známky vecí ktoré nemajú preklady keď bežia na integrovanom servery. Požadovaný formát je tag.item.<namespace>.<path> pre prekladový kľúč. predvolená hodnota je SILENCED.",
+  "neoforge.configgui.permissionHandler": "Manipulátor Povolení",
+  "neoforge.configgui.permissionHandler.tooltip": "Manipulátor povolení používaný serverom. Predvolená hodnota do neoforge:default_handler ak nie je žiadny manipulátor s takým menom registrovaný.",
   "neoforge.configgui.removeErroringBlockEntities": "Odstrániť blokové entity spôsobujúce error",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    "Nastavte toto na hodnotu TRUE na odstránenie akejkoľvek Entity, ktorá vyhodí chybu v ich aktualizačnej metóde namiesto uzavretia serveru a nahlásenia logu padnutia.\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
+      "text": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
+      "color": "červená",
       "bold": true
     }
   ],
   "neoforge.configgui.removeErroringEntities": "Odstrániť entity spôsobujúce error",
   "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    "Nastavte toto na hodnotu TRUE na odstránenie akejkoľvek Blokovej Entity, ktorá vyhodí chybu v ich aktualizačnej metóde namiesto uzavretia serveru a nahlásenia logu padnutia.\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
+      "text": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
+      "color": "červená",
       "bold": true
     }
   ],
   "neoforge.configgui.showLoadWarnings": "Zobraziť Varovania Načítavania",
   "neoforge.configgui.showLoadWarnings.tooltip": "Keď je toto povolené, NeoForge zobrazí všetky varovania, ktoré nastali počas načítavania.",
-  "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",
-  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.",
+  "neoforge.configgui.useCombinedDepthStencilAttachment": "Použiť kombinované DEPTH_STENCIL Prílohy",
+  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Nastavte toto na hodnotu TRUE pre použitie kombinovaného DEPTH_STENCIL prílohu namiesto dvoch oddelených.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",

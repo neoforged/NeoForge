@@ -154,6 +154,12 @@
       "color": "червоний"
     }
   ],
+  "neoforge.configuration.uitext.longstring": [
+    {
+      "text": "Це значення задовге для редагування в інтерфейсі. Будь ласка, відредагуйте його у файлі конфігурації.",
+      "color": "червоний"
+    }
+  ],
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Змінити",
   "neoforge.configuration.uitext.breadcrumb": [
@@ -207,10 +213,17 @@
   "neoforge.configuration.uitext.server": "Серверні параметри",
   "neoforge.configuration.uitext.startup": "Запускові параметри",
   "neoforge.configuration.uitext.restart.game.title": "Minecraft повинен бути перезавантаженим",
-  "neoforge.configuration.uitext.restart.game.text": "Один чи кілька варіантів конфігурації, які були змінені, набудуть чинності лише після запуску гри.",
+  "neoforge.configuration.uitext.restart.game.text": "Один чи кілька параметри конфігурації, які були змінені, набудуть чинності лише після запуску гри.",
   "neoforge.configuration.uitext.restart.server.title": "Світ має бути перезавантажений",
-  "neoforge.configuration.uitext.restart.server.text": "Один чи кілька варіантів конфігурації, які були змінені, набудуть чинності лише після запуску чи завантаження світу.",
-  "neoforge.configuration.uitext.restart.return": "Поки ні...",
+  "neoforge.configuration.uitext.restart.server.text": "Один чи кілька параметрів конфігурації, які були змінені, набудуть чинності лише після перезавантаження світу.",
+  "neoforge.configuration.uitext.restart.return": "Ігнорувати",
+  "neoforge.configuration.uitext.restart.return.tooltip": [
+    {
+      "text": "Зміни не матимуть ніякого ефекту, поки ви не перезавантажитеся!",
+      "color": "червоний",
+      "bold": true
+    }
+  ],
   "neoforge.configuration.title": "Конфігурація NeoForge",
   "neoforge.configuration.section.neoforge.client.toml": "Клієнтські налаштування",
   "neoforge.configuration.section.neoforge.client.toml.title": "Клієнтські налаштування",

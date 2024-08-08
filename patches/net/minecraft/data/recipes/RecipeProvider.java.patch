@@ -23,22 +23,47 @@
                                      RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
                                  )
                              );
-@@ -113,12 +_,16 @@
+@@ -107,18 +_,26 @@
+                 public Advancement.Builder advancement() {
+                     return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
+                 }
+-            }
++            }, p_324248_
+         );
+         return CompletableFuture.allOf(list.toArray(CompletableFuture[]::new));
      }
  
      protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_) {
 -        return DataProvider.saveStable(p_253674_, p_323646_, Advancement.CODEC, p_301116_.value(), this.advancementPathProvider.json(p_301116_.id()));
+-    }
+-
+-    protected abstract void buildRecipes(RecipeOutput p_301172_);
+-
+-    protected static void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
 +        return buildAdvancement(p_253674_, p_323646_, p_301116_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
 +    }
 +
 +    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
 +        return DataProvider.saveStable(p_253674_, p_323646_, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_301116_.value(), conditions)), this.advancementPathProvider.json(p_301116_.id()));
-     }
- 
-     protected abstract void buildRecipes(RecipeOutput p_301172_);
- 
--    protected static void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
++    }
++
++    protected void buildRecipes(RecipeOutput recipeOutput, HolderLookup.Provider holderLookup) {
++        buildRecipes(recipeOutput);
++    }
++
++    protected void buildRecipes(RecipeOutput p_301172_) {}
++
 +    protected void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
          BlockFamilies.getAllFamilies().filter(BlockFamily::shouldGenerateRecipe).forEach(p_313461_ -> generateRecipes(p_301146_, p_313461_, p_251836_));
      }
  
+@@ -611,8 +_,7 @@
+     }
+ 
+     protected static void waxRecipes(RecipeOutput p_301254_, FeatureFlagSet p_313879_) {
+-        HoneycombItem.WAXABLES
+-            .get()
++        net.neoforged.neoforge.common.DataMapHooks.INVERSE_WAXABLES_DATAMAP
+             .forEach(
+                 (p_337490_, p_337491_) -> {
+                     if (p_337491_.requiredFeatures().isSubsetOf(p_313879_)) {
