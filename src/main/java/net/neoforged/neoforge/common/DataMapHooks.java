@@ -21,7 +21,7 @@ import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: 1.21.1 remove fallback to vanilla map for waxing and oxidizing
+// TODO: 1.21.2 remove fallback to vanilla map for waxing and oxidizing
 public class DataMapHooks {
     // will be removed in 1.21.1
     /** Used in a gametest */
