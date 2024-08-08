@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 // TODO: 1.21.2 remove fallback to vanilla map for waxing and oxidizing
 public class DataMapHooks {
-    // will be removed in 1.21.1
+    // will be removed in 1.21.2
     /** Used in a gametest */
     @ApiStatus.Internal
     public static boolean didHaveToFallbackToVanillaMaps = false;
