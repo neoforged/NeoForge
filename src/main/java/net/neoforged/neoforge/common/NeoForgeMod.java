@@ -558,6 +558,8 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkUnload);
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
 
+        NeoForge.EVENT_BUS.addListener(DataMapHooks::onDataMapsUpdated);
+
         modEventBus.register(NeoForgeDataMaps.class);
 
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
