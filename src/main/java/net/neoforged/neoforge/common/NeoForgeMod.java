@@ -140,6 +140,7 @@ import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.flag.Flag;
+import net.neoforged.neoforge.flag.RequiredFlagsCondition;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -386,6 +387,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<OrCondition>> OR_CONDITION = CONDITION_CODECS.register("or", () -> OrCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TagEmptyCondition>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
+    public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<RequiredFlagsCondition>> REQUIRED_FLAGS_CONDITION = CONDITION_CODECS.register("required_flags", () -> RequiredFlagsCondition.CODEC);
 
     private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<PiglinNeutralArmorEntityPredicate>> PIGLIN_NEUTRAL_ARMOR_PREDICATE = ENTITY_PREDICATE_CODECS.register("piglin_neutral_armor", () -> PiglinNeutralArmorEntityPredicate.CODEC);
