@@ -66,7 +66,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
                 .add(Items.CYAN_CONCRETE_POWDER).add(Items.PURPLE_CONCRETE_POWDER).add(Items.BLUE_CONCRETE_POWDER)
                 .add(Items.BROWN_CONCRETE_POWDER).add(Items.GREEN_CONCRETE_POWDER).add(Items.RED_CONCRETE_POWDER)
                 .add(Items.BLACK_CONCRETE_POWDER);
-        tag(Tags.Items.CROPS).addTags(Tags.Items.CROPS_BEETROOT, Tags.Items.CROPS_CARROT, Tags.Items.CROPS_NETHER_WART, Tags.Items.CROPS_POTATO, Tags.Items.CROPS_WHEAT);
+        tag(Tags.Items.CROPS).addTags(Tags.Items.CROPS_BEETROOT, Tags.Items.CROPS_CARROT, Tags.Items.CROPS_COCOA_BEAN, Tags.Items.CROPS_NETHER_WART, Tags.Items.CROPS_POTATO, Tags.Items.CROPS_WHEAT);
         tag(Tags.Items.CROPS_BEETROOT).add(Items.BEETROOT);
         tag(Tags.Items.CROPS_CARROT).add(Items.CARROT);
         tag(Tags.Items.CROPS_COCOA_BEAN).add(Items.COCOA_BEANS);
