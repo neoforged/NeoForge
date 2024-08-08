@@ -315,12 +315,20 @@ public class Tags {
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
         public static final TagKey<Item> CLUSTERS = tag("clusters");
+        /**
+         * For raw materials harvested from growable plants. Crop items can be edible like carrots or
+         * non-edible like wheat and cocoa beans.
+         */
         public static final TagKey<Item> CROPS = tag("crops");
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
         public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
+        public static final TagKey<Item> CROPS_CACTUS = tag("crops/cactus");
         public static final TagKey<Item> CROPS_COCOA_BEAN = tag("crops/cocoa_bean");
+        public static final TagKey<Item> CROPS_MELON = tag("crops/melon");
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
+        public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
+        public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
