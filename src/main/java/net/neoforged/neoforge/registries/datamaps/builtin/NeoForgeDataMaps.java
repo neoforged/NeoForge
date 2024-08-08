@@ -81,7 +81,7 @@ public class NeoForgeDataMaps {
     /**
      * The {@linkplain Block} data map that replaces {@link WeatheringCopper#NEXT_BY_BLOCK}.
      * <p>
-     * The location of this data map is {@code neoforge/data_maps/item/oxidizables.json}, and the values are objects with 1 field:
+     * The location of this data map is {@code neoforge/data_maps/block/oxidizables.json}, and the values are objects with 1 field:
      * <ul>
      * <li>{@code next_oxidized_stage}, a block that the object should convert into once it changes oxidizing states</li>
      * </ul>
@@ -131,7 +131,7 @@ public class NeoForgeDataMaps {
     /**
      * The {@linkplain Block} data map that replaces {@link HoneycombItem#WAXABLES}.
      * <p>
-     * The location of this data map is {@code neoforge/data_maps/item/waxables.json}, and the values are objects with 1 field:
+     * The location of this data map is {@code neoforge/data_maps/block/waxables.json}, and the values are objects with 1 field:
      * <ul>
      * <li>{@code waxed}, a block that the object should convert into once it is right clicked with a {@link ItemAbilities#AXE_WAX_OFF} ability</li>
      * </ul>
