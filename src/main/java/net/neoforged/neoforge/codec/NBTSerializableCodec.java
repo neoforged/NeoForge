@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.codec;
 
-import static net.neoforged.neoforge.codec.NeoforgeNbtCodecs.TAG_CODEC;
+import static net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.TAG_CODEC;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
