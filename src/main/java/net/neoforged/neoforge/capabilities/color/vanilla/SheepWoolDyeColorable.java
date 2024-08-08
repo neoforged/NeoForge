@@ -8,9 +8,9 @@ package net.neoforged.neoforge.capabilities.color.vanilla;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.capabilities.color.ColorApplicationResult;
-import net.neoforged.neoforge.capabilities.color.IColorable;
+import net.neoforged.neoforge.capabilities.color.IDyeColorable;
 
-public record SheepDyeConsumer(Sheep sheep) implements IColorable {
+public record SheepWoolDyeColorable(Sheep sheep) implements IDyeColorable {
     public ColorApplicationResult apply(DyeColor dye) {
         if (!sheep.isAlive() || sheep.isSheared()) {
             return ColorApplicationResult.CANNOT_APPLY;

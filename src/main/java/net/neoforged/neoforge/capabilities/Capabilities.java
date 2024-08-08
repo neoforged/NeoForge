@@ -9,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.capabilities.color.IColorable;
+import net.neoforged.neoforge.capabilities.color.IDyeColorable;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -53,11 +54,11 @@ public final class Capabilities {
     }
 
     public static final class Colorable {
-        public static final BlockCapability<IColorable, BlockHitResult> BLOCK = BlockCapability.createHitResult(create("colorable"), IColorable.class);
+        public static final BlockCapability<IColorable, BlockHitResult> BLOCK_ARGB = BlockCapability.createHitResult(create("colorable_argb"), IColorable.class);
+        public static final BlockCapability<IDyeColorable, BlockHitResult> BLOCK_DYE = BlockCapability.createHitResult(create("colorable_dye"), IDyeColorable.class);
 
-        public static final EntityCapability<IColorable, Void> ENTITY = EntityCapability.createVoid(create("colorable"), IColorable.class);
-
-        public static final ItemCapability<IColorable, Void> ITEM = ItemCapability.createVoid(create("colorable"), IColorable.class);
+        public static final EntityCapability<IColorable, Void> ENTITY_ARGB = EntityCapability.createVoid(create("colorable_argb"), IColorable.class);
+        public static final EntityCapability<IDyeColorable, Void> ENTITY_DYE = EntityCapability.createVoid(create("colorable_dye"), IDyeColorable.class);
     }
 
     private static ResourceLocation create(String path) {

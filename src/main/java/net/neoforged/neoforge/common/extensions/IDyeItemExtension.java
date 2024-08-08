@@ -35,7 +35,7 @@ public interface IDyeItemExtension {
      * @return DEFAULT = vanilla logic, TRUE = InteractionResult.SUCCESS, FALSE = InteractionResult.PASS
      */
     default TriState vanillaUseDyeOnEntity(Player player, LivingEntity target, ItemStack stack, DyeColor dyeColor) {
-        final var colorable = target.getCapability(Capabilities.Colorable.ENTITY);
+        final var colorable = target.getCapability(Capabilities.Colorable.ENTITY_DYE);
         if (colorable == null) {
             return TriState.DEFAULT;
         }
@@ -44,10 +44,7 @@ public interface IDyeItemExtension {
         return switch (result) {
             case ALREADY_APPLIED -> TriState.FALSE;
             case APPLIED -> {
-                if (colorable.consumesDye(player, stack.copy())) {
-                    stack.consume(1, player);
-                }
-
+                stack.consume(1, player);
                 target.level().playSound(player, target, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
                 yield TriState.TRUE;
             }
@@ -60,14 +57,10 @@ public interface IDyeItemExtension {
         final var blockHit = new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
         final var stack = context.getItemInHand();
 
-        var colorable = context.getLevel().getCapability(Capabilities.Colorable.BLOCK, context.getClickedPos(), blockHit);
+        var colorable = context.getLevel().getCapability(Capabilities.Colorable.BLOCK_DYE, context.getClickedPos(), blockHit);
         if (colorable != null) {
             var result = colorable.apply(self().getDyeColor());
             if (result == ColorApplicationResult.APPLIED) {
-                if (colorable.consumesDye(player, stack.copy())) {
-                    stack.consume(1, player);
-                }
-
                 return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
             }
         }
