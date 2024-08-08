@@ -41,6 +41,8 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.BAMBOO_JUNGLE)
                 .add(Biomes.SPARSE_JUNGLE)
                 .add(Biomes.DESERT)
+                .add(Biomes.BADLANDS)
+                .add(Biomes.WOODED_BADLANDS)
                 .add(Biomes.ERODED_BADLANDS)
                 .add(Biomes.SAVANNA)
                 .add(Biomes.SAVANNA_PLATEAU)
@@ -59,12 +61,17 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tag(Tags.Biomes.IS_COLD_OVERWORLD)
                 .add(Biomes.TAIGA)
                 .add(Biomes.OLD_GROWTH_PINE_TAIGA)
+                .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA)
+                .add(Biomes.WINDSWEPT_HILLS)
+                .add(Biomes.WINDSWEPT_GRAVELLY_HILLS)
+                .add(Biomes.WINDSWEPT_FOREST)
                 .add(Biomes.SNOWY_PLAINS)
                 .add(Biomes.ICE_SPIKES)
                 .add(Biomes.GROVE)
                 .add(Biomes.SNOWY_SLOPES)
                 .add(Biomes.JAGGED_PEAKS)
                 .add(Biomes.FROZEN_PEAKS)
+                .add(Biomes.STONY_SHORE)
                 .add(Biomes.SNOWY_BEACH)
                 .add(Biomes.SNOWY_TAIGA)
                 .add(Biomes.FROZEN_RIVER)
@@ -83,9 +90,9 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
         tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD)
                 .add(Biomes.WOODED_BADLANDS)
-                .add(Biomes.ERODED_BADLANDS)
                 .add(Biomes.SAVANNA)
                 .add(Biomes.SAVANNA_PLATEAU)
+                .add(Biomes.SPARSE_JUNGLE)
                 .add(Biomes.WINDSWEPT_SAVANNA)
                 .add(Biomes.WINDSWEPT_FOREST)
                 .add(Biomes.WINDSWEPT_HILLS)
@@ -101,7 +108,9 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.DARK_FOREST)
                 .add(Biomes.OLD_GROWTH_BIRCH_FOREST)
                 .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA)
-                .add(Biomes.JUNGLE);
+                .add(Biomes.JUNGLE)
+                .add(Biomes.BAMBOO_JUNGLE)
+                .add(Biomes.MANGROVE_SWAMP);
         tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER);
         tag(Tags.Biomes.IS_DENSE_VEGETATION_END);
         tag(Tags.Biomes.IS_DENSE_VEGETATION).addTag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER.location()).addOptionalTag(Tags.Biomes.IS_DENSE_VEGETATION_END.location());

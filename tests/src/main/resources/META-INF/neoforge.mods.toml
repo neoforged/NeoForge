@@ -8,6 +8,10 @@ license="LGPL v2.1"
 [[mods]]
     modId="neotests"
     description="NeoForge tests. Change the language to fr_fr and the description should change too."
+    enumExtensions="META-INF/enumextensions.json"
+[[mods]]
+    modId="configui"
+    displayName="A Config UI Test" # (Ab)use the ordering of the mod list screen so that this appears first
 [[mods]]
     modId="client_command_test"
 [[mods]]
@@ -242,5 +246,7 @@ modId="player_spawn_phantoms_event_test"
 modId="conditional_codec_test"
 [[mods]]
 modId="may_fly_attribute_item"
+[[mods]]
+modId="client_information_updated_test"
 
 # ADD ABOVE THIS LINE

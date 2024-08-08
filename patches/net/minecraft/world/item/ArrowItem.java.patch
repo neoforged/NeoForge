@@ -1,13 +1,21 @@
 --- a/net/minecraft/world/item/ArrowItem.java
 +++ b/net/minecraft/world/item/ArrowItem.java
-@@ -24,4 +_,10 @@
+@@ -24,4 +_,18 @@
          arrow.pickup = AbstractArrow.Pickup.ALLOWED;
          return arrow;
      }
 +
-+    public boolean isInfinite(ItemStack stack, ItemStack bow, net.minecraft.world.entity.LivingEntity livingEntity) {
-+        // TODO 1.21 - probably needs to decide based on tags/other datapack logic
-+        int enchant = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(livingEntity.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.INFINITY), bow);
-+        return enchant > 0 && this.getClass() == net.minecraft.world.item.ArrowItem.class;
++    /**
++     * Called to determine if this arrow will be infinite when fired. If an arrow is infinite, then the arrow will never be consumed (regardless of enchantments).
++     * <p>
++     * Only called on the logical server.
++     *
++     * @param ammo The ammo stack (containing this item)
++     * @param bow  The bow stack
++     * @param livingEntity The entity who is firing the bow
++     * @return True if the arrow is infinite
++     */
++    public boolean isInfinite(ItemStack ammo, ItemStack bow, net.minecraft.world.entity.LivingEntity livingEntity) {
++        return false;
 +    }
  }

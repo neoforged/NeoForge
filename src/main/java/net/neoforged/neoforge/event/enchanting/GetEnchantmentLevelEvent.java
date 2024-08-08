@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.event.enchanting;
 
+import java.util.Optional;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -25,11 +27,13 @@ public class GetEnchantmentLevelEvent extends Event {
     protected final ItemEnchantments.Mutable enchantments;
     @Nullable
     protected final Holder<Enchantment> targetEnchant;
+    protected final RegistryLookup<Enchantment> lookup;
 
-    public GetEnchantmentLevelEvent(ItemStack stack, ItemEnchantments.Mutable enchantments, @Nullable Holder<Enchantment> targetEnchant) {
+    public GetEnchantmentLevelEvent(ItemStack stack, ItemEnchantments.Mutable enchantments, @Nullable Holder<Enchantment> targetEnchant, RegistryLookup<Enchantment> lookup) {
         this.stack = stack;
         this.enchantments = enchantments;
         this.targetEnchant = targetEnchant;
+        this.lookup = lookup;
     }
 
     /**
@@ -80,5 +84,23 @@ public class GetEnchantmentLevelEvent extends Event {
      */
     public boolean isTargetting(ResourceKey<Enchantment> ench) {
         return this.targetEnchant == null || this.targetEnchant.is(ench);
+    }
+
+    /**
+     * Attempts to resolve a {@link Holder.Reference} for a target enchantment.
+     * Since enchantments are data, they are not guaranteed to exist.
+     * 
+     * @param key The target resource key
+     * @return If the holder was available, an Optional containing it; otherwise an empty Optional.
+     */
+    public Optional<Holder.Reference<Enchantment>> getHolder(ResourceKey<Enchantment> key) {
+        return this.lookup.get(key);
+    }
+
+    /**
+     * {@return the underlying registry lookup, which can be used to access enchantment Holders}
+     */
+    public RegistryLookup<Enchantment> getLookup() {
+        return lookup;
     }
 }

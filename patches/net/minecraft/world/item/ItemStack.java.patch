@@ -29,23 +29,19 @@
      }
  
      public boolean is(HolderSet<Item> p_298683_) {
-@@ -351,13 +_,30 @@
+@@ -351,13 +_,26 @@
      }
  
      public InteractionResult useOn(UseOnContext p_41662_) {
-+        if (p_41662_.getPlayer() != null) { // TODO 1.20.5: Make event accept nullable player, and remove this check.
-+            var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
-+            if (e.isCanceled()) return e.getCancellationResult().result();
-+        }
++        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
++        if (e.isCanceled()) return e.getCancellationResult().result();
 +        if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(p_41662_);
 +        return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
 +    }
 +
 +    public InteractionResult onItemUseFirst(UseOnContext p_41662_) {
-+        if (p_41662_.getPlayer() != null) { // TODO 1.20.5: Make event accept nullable player, and remove this check.
-+            var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
-+            if (e.isCanceled()) return e.getCancellationResult().result();
-+        }
++        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
++        if (e.isCanceled()) return e.getCancellationResult().result();
 +        return onItemUse(p_41662_, (c) -> getItem().onItemUseFirst(this, p_41662_));
 +    }
 +
@@ -61,6 +57,26 @@
              if (player != null && interactionresult.indicateItemUse()) {
                  player.awardStat(Stats.ITEM_USED.get(item));
              }
+@@ -382,7 +_,8 @@
+         if (this.isEmpty()) {
+             throw new IllegalStateException("Cannot encode empty ItemStack");
+         } else {
+-            return CODEC.encode(this, p_331900_.createSerializationContext(NbtOps.INSTANCE), p_330830_).getOrThrow();
++            // Neo: Logs extra information about this ItemStack on error
++            return net.neoforged.neoforge.common.util.DataComponentUtil.wrapEncodingExceptions(this, CODEC, p_331900_, p_330830_);
+         }
+     }
+ 
+@@ -390,7 +_,8 @@
+         if (this.isEmpty()) {
+             throw new IllegalStateException("Cannot encode empty ItemStack");
+         } else {
+-            return CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), this).getOrThrow();
++            // Neo: Logs extra information about this ItemStack on error
++            return net.neoforged.neoforge.common.util.DataComponentUtil.wrapEncodingExceptions(this, CODEC, p_332160_);
+         }
+     }
+ 
 @@ -399,7 +_,7 @@
      }
  
@@ -132,7 +148,7 @@
              if (this.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
              }
-@@ -784,6 +_,7 @@
+@@ -784,12 +_,14 @@
                  list.add(DISABLED_ITEM_TOOLTIP);
              }
  
@@ -140,15 +156,74 @@
              return list;
          }
      }
-@@ -933,6 +_,8 @@
+ 
+     private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_) {
+         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
++        // Neo: We don't need to call IItemStackExtension#getAttributeModifiers here, since it will be done in forEachModifier.
+         if (itemattributemodifiers.showInTooltip()) {
+             for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
+                 MutableBoolean mutableboolean = new MutableBoolean(true);
+@@ -897,6 +_,17 @@
+         return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
+     }
+ 
++    /**
++     * Gets all enchantments from NBT. Use {@link ItemStack#getAllEnchantments} for gameplay logic.
++     */
++    public ItemEnchantments getTagEnchantments() {
++        return getEnchantments();
++    }
++
++    /**
++     * @deprecated Neo: Use {@link #getTagEnchantments()} for NBT enchantments, or {@link #getAllEnchantments} for gameplay.
++     */
++    @Deprecated
+     public ItemEnchantments getEnchantments() {
+         return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+     }
+@@ -922,6 +_,12 @@
+     }
+ 
+     public void forEachModifier(EquipmentSlotGroup p_348610_, BiConsumer<Holder<Attribute>, AttributeModifier> p_348516_) {
++        // Neo: Reflect real attribute modifiers when doing iteration
++        this.getAttributeModifiers().forEach(p_348610_, p_348516_);
++
++        if (false) {
++        // Start disabled vanilla code
++
+         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+         if (!itemattributemodifiers.modifiers().isEmpty()) {
+             itemattributemodifiers.forEach(p_348610_, p_348516_);
+@@ -929,10 +_,19 @@
+             this.getItem().getDefaultAttributeModifiers().forEach(p_348610_, p_348516_);
+         }
+ 
++        // end disabled vanilla code
++        }
++
+         EnchantmentHelper.forEachModifier(this, p_348610_, p_348516_);
      }
  
      public void forEachModifier(EquipmentSlot p_332001_, BiConsumer<Holder<Attribute>, AttributeModifier> p_330882_) {
-+        this.getAttributeModifiers(p_332001_).forEach(p_330882_);
-+        if (true) return;
++        // Neo: Reflect real attribute modifiers when doing iteration
++        this.getAttributeModifiers().forEach(p_332001_, p_330882_);
++
++        if (false) {
++        // Start disabled vanilla code
++
          ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
          if (!itemattributemodifiers.modifiers().isEmpty()) {
              itemattributemodifiers.forEach(p_332001_, p_330882_);
+@@ -940,6 +_,9 @@
+             this.getItem().getDefaultAttributeModifiers().forEach(p_332001_, p_330882_);
+         }
+ 
++        // end disabled vanilla code
++        }
++
+         EnchantmentHelper.forEachModifier(this, p_332001_, p_330882_);
+     }
+ 
 @@ -951,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
@@ -167,3 +242,11 @@
      public void onDestroyed(ItemEntity p_150925_) {
          this.getItem().onDestroyed(p_150925_);
      }
+@@ -1031,6 +_,7 @@
+     }
+ 
+     public boolean canBeHurtBy(DamageSource p_335431_) {
++        if (!getItem().canBeHurtBy(this, p_335431_)) return false;
+         return !this.has(DataComponents.FIRE_RESISTANT) || !p_335431_.is(DamageTypeTags.IS_FIRE);
+     }
+ }

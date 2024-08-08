@@ -35,7 +35,7 @@ public class RecipeBookExtensionTest {
     public static final boolean ENABLED = false;
 
     public static final String MOD_ID = "recipe_book_extension_test";
-    public static final RecipeBookType TEST_TYPE = RecipeBookType.create("TESTING");
+    public static final RecipeBookType TEST_TYPE = RecipeBookType.valueOf("NEOTESTS_TESTING");
 
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MOD_ID);
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_SERIALIZER = RECIPE_SERIALIZER.register("test_recipe", RecipeBookTestRecipeSerializer::new);

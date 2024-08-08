@@ -25,10 +25,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -99,7 +102,11 @@ public class GameData {
         } else {
             CommonHooks.modifyAttributes();
             SpawnPlacements.fireSpawnPlacementEvent();
+            ModLoader.postEvent(new BlockEntityTypeAddBlocksEvent());
             CreativeModeTabRegistry.sortTabs();
+            if (FMLEnvironment.dist.isClient()) {
+                ClientExtensionsManager.earlyInit();
+            }
         }
     }
 

@@ -41,7 +41,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
@@ -61,7 +60,6 @@ import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -114,7 +112,7 @@ public class GlobalLootModifiersTest {
             return context.getLevel().getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), context.getLevel())
                     .map(smeltingRecipe -> smeltingRecipe.value().getResultItem(context.getLevel().registryAccess()))
                     .filter(itemStack -> !itemStack.isEmpty())
-                    .map(itemStack -> ItemHandlerHelper.copyStackWithSize(itemStack, stack.getCount() * itemStack.getCount()))
+                    .map(itemStack -> itemStack.copyWithCount(stack.getCount() * itemStack.getCount()))
                     .orElse(stack);
         }
 
@@ -138,8 +136,8 @@ public class GlobalLootModifiersTest {
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ItemStack ctxTool = context.getParamOrNull(LootContextParams.TOOL);
             var reg = context.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
-            //return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
-            if (ctxTool == null || EnchantmentHelper.getItemEnchantmentLevel(reg.getHolderOrThrow(Enchantments.SILK_TOUCH), ctxTool) > 0)
+            // return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
+            if (ctxTool == null || ctxTool.getEnchantmentLevel(reg.getHolderOrThrow(Enchantments.SILK_TOUCH)) > 0)
                 return generatedLoot;
             ItemStack fakeTool = ctxTool.copy();
             fakeTool.enchant(reg.getHolderOrThrow(Enchantments.SILK_TOUCH), 1);

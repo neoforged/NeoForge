@@ -30,13 +30,14 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
     private DimensionTransition dimensionTransition;
     private final DimensionTransition originalDimensionTransition;
     private final boolean fromEndFight;
-    private boolean changePlayerSpawnPosition = true;
+    private boolean copyOriginalSpawnPosition;
 
     public PlayerRespawnPositionEvent(ServerPlayer player, DimensionTransition dimensionTransition, boolean fromEndFight) {
         super(player);
         this.dimensionTransition = dimensionTransition;
         this.originalDimensionTransition = dimensionTransition;
         this.fromEndFight = fromEndFight;
+        this.copyOriginalSpawnPosition = !this.originalDimensionTransition.missingRespawnBlock();
     }
 
     /**
@@ -77,21 +78,27 @@ public class PlayerRespawnPositionEvent extends PlayerEvent {
     }
 
     /**
-     * @return Whether the respawn position will be used as the player's spawn position from then on. Defaults to {@code true}.
-     *         {@link PlayerSetSpawnEvent} will be fired if this is {@code true}.
+     * If the respawn position of the original player will be copied to the fresh player via {@link ServerPlayer#copyRespawnPosition(ServerPlayer)}.
+     * <p>
+     * This defaults to true if the {@linkplain #getOriginalDimensionTransition() original dimension transition}
+     * was not {@linkplain DimensionTransition#missingRespawnBlock() missing a respawn block}.
+     * <p>
+     * This has no impact on the selected position for the current respawn, but controls if the player will (for example) retain their bed as their set respawn position.
      */
-    public boolean changePlayerSpawnPosition() {
-        return changePlayerSpawnPosition;
+    public boolean copyOriginalSpawnPosition() {
+        return copyOriginalSpawnPosition;
     }
 
     /**
-     * Set whether the respawn position will be used as the player's spawn position from then on.
-     * Defaults to {@code true}. {@link PlayerSetSpawnEvent} will be fired if this is {@code true}.
+     * Changes if the original player's respawn position will be copied to the fresh player via {@link ServerPlayer#copyRespawnPosition(ServerPlayer)}.
+     * <p>
+     * If you wish to modify the set respawn position of the fresh player (for future respawns, not the current respawn), you can
+     * change the respawn position of the {@linkplain #getEntity() current player} and set this value to true.
      * 
-     * @param changePlayerSpawnPosition Whether to set the player's spawn position.
+     * @see #copyOriginalSpawnPosition()
      */
-    public void setChangePlayerSpawnPosition(boolean changePlayerSpawnPosition) {
-        this.changePlayerSpawnPosition = changePlayerSpawnPosition;
+    public void setCopyOriginalSpawnPosition(boolean copyOriginalSpawnPosition) {
+        this.copyOriginalSpawnPosition = copyOriginalSpawnPosition;
     }
 
     /**

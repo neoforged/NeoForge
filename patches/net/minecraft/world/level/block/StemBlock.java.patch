@@ -1,13 +1,20 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
-@@ -79,18 +_,18 @@
+@@ -74,23 +_,23 @@
+ 
+     @Override
+     protected boolean mayPlaceOn(BlockState p_57053_, BlockGetter p_57054_, BlockPos p_57055_) {
+-        return p_57053_.is(Blocks.FARMLAND);
++        return p_57053_.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+     }
  
      @Override
      protected void randomTick(BlockState p_222538_, ServerLevel p_222539_, BlockPos p_222540_, RandomSource p_222541_) {
 +        if (!p_222539_.isAreaLoaded(p_222540_, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
          if (p_222539_.getRawBrightness(p_222540_, 0) >= 9) {
-             float f = CropBlock.getGrowthSpeed(this, p_222539_, p_222540_);
+-            float f = CropBlock.getGrowthSpeed(this, p_222539_, p_222540_);
 -            if (p_222541_.nextInt((int)(25.0F / f) + 1) == 0) {
++            float f = CropBlock.getGrowthSpeed(p_222538_, p_222539_, p_222540_);
 +            if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_222539_, p_222540_, p_222538_, p_222541_.nextInt((int)(25.0F / f) + 1) == 0)) {
                  int i = p_222538_.getValue(AGE);
                  if (i < 7) {
@@ -19,7 +26,7 @@
                      BlockPos blockpos = p_222540_.relative(direction);
                      BlockState blockstate = p_222539_.getBlockState(blockpos.below());
 -                    if (p_222539_.getBlockState(blockpos).isAir() && (blockstate.is(Blocks.FARMLAND) || blockstate.is(BlockTags.DIRT))) {
-+                    if (p_222539_.isEmptyBlock(blockpos) && (blockstate.is(Blocks.FARMLAND) || blockstate.is(BlockTags.DIRT))) { // TODO 1.20.3 PORTING: reimplement canSustainPlant check
++                    if (p_222539_.isEmptyBlock(blockpos) && (blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || blockstate.is(BlockTags.DIRT))) {
                          Registry<Block> registry = p_222539_.registryAccess().registryOrThrow(Registries.BLOCK);
                          Optional<Block> optional = registry.getOptional(this.fruit);
                          Optional<Block> optional1 = registry.getOptional(this.attachedStem);
@@ -31,15 +38,3 @@
              }
          }
      }
-@@ -132,5 +_,11 @@
-     @Override
-     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_57040_) {
-         p_57040_.add(AGE);
-+    }
-+
-+    //FORGE START
-+    @Override
-+    public net.neoforged.neoforge.common.PlantType getPlantType(BlockGetter world, BlockPos pos) {
-+        return net.neoforged.neoforge.common.PlantType.CROP;
-     }
- }

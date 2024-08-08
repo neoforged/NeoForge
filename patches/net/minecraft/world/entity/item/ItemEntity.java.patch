@@ -55,19 +55,18 @@
                  }
  
                  this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -185,7 +_,16 @@
+@@ -185,7 +_,15 @@
                  }
              }
  
 -            if (!this.level().isClientSide && this.age >= 6000) {
 +            ItemStack item = this.getItem();
 +            if (!this.level().isClientSide && this.age >= lifespan) {
-+                 int hook = net.neoforged.neoforge.event.EventHooks.onItemExpire(this, item);
-+                 if (hook < 0) {
-+                     this.discard();
-+                 } else {
-+                     this.lifespan += hook;
-+                 }
++            	  // Clamping to MAX_VALUE -1 as age is a Short and going above that would produce an infinite lifespan implicitly (accidentally)
++                this.lifespan = Mth.clamp(lifespan + net.neoforged.neoforge.event.EventHooks.onItemExpire(this), 0, Short.MAX_VALUE - 1);
++                if (this.age >= lifespan) {
++                    this.discard();
++                }
 +            }
 +            if (item.isEmpty() && !this.isRemoved()) {
                  this.discard();

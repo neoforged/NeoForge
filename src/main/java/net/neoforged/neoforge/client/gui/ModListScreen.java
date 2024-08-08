@@ -40,6 +40,7 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.FMLTranslations;
@@ -65,7 +66,7 @@ public class ModListScreen extends Screen {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private enum SortType implements Comparator<IModInfo> {
+    private enum SortType implements Comparator<ModContainer> {
         NORMAL,
         A_TO_Z {
             @Override
@@ -87,9 +88,9 @@ public class ModListScreen extends Screen {
         }
 
         @Override
-        public int compare(IModInfo o1, IModInfo o2) {
-            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getDisplayName()));
-            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getDisplayName()));
+        public int compare(ModContainer o1, ModContainer o2) {
+            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getModInfo().getDisplayName()));
+            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getModInfo().getDisplayName()));
             return compare(name1, name2);
         }
 
@@ -106,8 +107,8 @@ public class ModListScreen extends Screen {
     private InfoPanel modInfo;
     private ModListWidget.ModEntry selected = null;
     private int listWidth;
-    private List<IModInfo> mods;
-    private final List<IModInfo> unsortedMods;
+    private List<ModContainer> mods;
+    private final List<ModContainer> unsortedMods;
     private Button configButton, openModsFolderButton, doneButton;
 
     private int buttonMargin = 1;
@@ -122,7 +123,7 @@ public class ModListScreen extends Screen {
     public ModListScreen(Screen parentScreen) {
         super(Component.translatable("fml.menu.mods.title"));
         this.parentScreen = parentScreen;
-        this.mods = Collections.unmodifiableList(ModList.get().getMods());
+        this.mods = Collections.unmodifiableList(ModList.get().getSortedMods());
         this.unsortedMods = Collections.unmodifiableList(this.mods);
     }
 
@@ -247,9 +248,9 @@ public class ModListScreen extends Screen {
 
     @Override
     public void init() {
-        for (IModInfo mod : mods) {
-            listWidth = Math.max(listWidth, getFontRenderer().width(mod.getDisplayName()) + 10);
-            listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionTranslator.artifactVersionToString(mod.getVersion())) + 5);
+        for (var mod : mods) {
+            listWidth = Math.max(listWidth, getFontRenderer().width(mod.getModInfo().getDisplayName()) + 10);
+            listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionTranslator.artifactVersionToString(mod.getModInfo().getVersion())) + 5);
         }
         listWidth = Math.max(Math.min(listWidth, width / 3), 100);
         listWidth += listWidth % numButtons != 0 ? (numButtons - listWidth % numButtons) : 0;
@@ -295,7 +296,7 @@ public class ModListScreen extends Screen {
     private void displayModConfig() {
         if (selected == null) return;
         try {
-            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(this.minecraft, this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
+            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(selected.getContainer(), this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
         } catch (final Exception e) {
             LOGGER.error("There was a critical issue trying to build the config GUI for {}", selected.getInfo().getModId(), e);
         }
@@ -322,12 +323,12 @@ public class ModListScreen extends Screen {
         }
     }
 
-    public <T extends ObjectSelectionList.Entry<T>> void buildModList(Consumer<T> modListViewConsumer, Function<IModInfo, T> newEntry) {
+    public <T extends ObjectSelectionList.Entry<T>> void buildModList(Consumer<T> modListViewConsumer, Function<ModContainer, T> newEntry) {
         mods.forEach(mod -> modListViewConsumer.accept(newEntry.apply(mod)));
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
+        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getModInfo().getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
         lastFilterText = search.getValue();
     }
 
@@ -358,7 +359,7 @@ public class ModListScreen extends Screen {
     }
 
     public void setSelected(ModListWidget.ModEntry entry) {
-        this.selected = entry == this.selected ? null : entry;
+        this.selected = entry;
         updateCache();
     }
 
@@ -395,7 +396,7 @@ public class ModListScreen extends Screen {
                         }
                     }), new Size2i(logo.getWidth(), logo.getHeight()));
                 }
-            } catch (IOException e) {}
+            } catch (IOException | IllegalArgumentException e) {}
             return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
         }).orElse(Pair.of(null, new Size2i(0, 0)));
 

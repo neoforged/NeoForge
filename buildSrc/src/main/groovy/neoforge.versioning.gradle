@@ -1,0 +1,13 @@
+project.plugins.apply('net.neoforged.gradleutils')
+
+project.gradleutils.version {
+    minecraftVersion project.rootProject.minecraft_version
+    versionPrefix = null // Reset version prefix, which is set by prev. line
+    tags {
+        label = 'beta'
+        cleanMarkerLabel = 'stable'
+    }
+    branches {
+        suffixBranch = true
+    }
+}

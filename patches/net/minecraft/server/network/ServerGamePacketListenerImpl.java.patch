@@ -100,12 +100,20 @@
                          }
  
                          @Override
-@@ -1753,7 +_,7 @@
+@@ -1753,13 +_,15 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
          PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
 -        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.getAbilities().mayfly;
 +        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.mayFly();
+     }
+ 
+     @Override
+     public void handleClientInformation(ServerboundClientInformationPacket p_301979_) {
+         PacketUtils.ensureRunningOnSameThread(p_301979_, this, this.player.serverLevel());
++        net.minecraft.server.level.ClientInformation oldInfo = this.player.clientInformation();
+         this.player.updateOptions(p_301979_.information());
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent(this.player, oldInfo, p_301979_.information()));
      }
  
      @Override
