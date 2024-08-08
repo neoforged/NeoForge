@@ -21,6 +21,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.Tags;
 
 public abstract class LanguageProvider implements DataProvider {
     private final Map<String, String> data = new TreeMap<>();
@@ -114,19 +115,7 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void add(TagKey<?> tagKey, String name) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("tag.");
-
-        ResourceLocation registryIdentifier = tagKey.registry().location();
-        ResourceLocation tagResourceLocation = tagKey.location();
-
-        stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))
-                .append(".")
-                .append(tagResourceLocation.getNamespace())
-                .append(".")
-                .append(tagResourceLocation.getPath().replace("/", ".").replace(":", "."));
-
-        add(stringBuilder.toString(), name);
+        add(Tags.getTagTranslationKey(tagKey), name);
     }
 
     public void add(String key, String value) {
