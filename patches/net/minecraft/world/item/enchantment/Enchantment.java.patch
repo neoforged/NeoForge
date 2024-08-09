@@ -1,15 +1,47 @@
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -132,6 +_,10 @@
+@@ -124,6 +_,10 @@
+         return map;
+     }
+ 
++    /**
++     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
++     */
++    @Deprecated
+     public HolderSet<Item> getSupportedItems() {
+         return this.definition.supportedItems();
+     }
+@@ -132,10 +_,20 @@
          return this.definition.slots().stream().anyMatch(p_345027_ -> p_345027_.test(p_345146_));
      }
  
 +    /**
 +     * @deprecated Neo: Use {@link ItemStack#isPrimaryItemFor(Holder)}
++     *
++     * This method does not respect {@link ItemStack#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
 +     */
 +    @Deprecated
      public boolean isPrimaryItem(ItemStack p_336088_) {
          return this.isSupportedItem(p_336088_) && (this.definition.primaryItems.isEmpty() || p_336088_.is(this.definition.primaryItems.get()));
+     }
+ 
++    /**
++     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
++     */
++    @Deprecated
+     public boolean isSupportedItem(ItemStack p_344865_) {
+         return p_344865_.is(this.definition.supportedItems);
+     }
+@@ -188,6 +_,10 @@
+         return mutablecomponent;
+     }
+ 
++    /**
++     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
++     */
++    @Deprecated
+     public boolean canEnchant(ItemStack p_44689_) {
+         return this.definition.supportedItems().contains(p_44689_.getItemHolder());
      }
 @@ -503,6 +_,15 @@
      public static Enchantment.Builder enchantment(Enchantment.EnchantmentDefinition p_345873_) {
