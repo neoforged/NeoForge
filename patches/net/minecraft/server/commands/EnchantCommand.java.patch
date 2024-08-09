@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/EnchantCommand.java
++++ b/net/minecraft/server/commands/EnchantCommand.java
+@@ -81,7 +_,7 @@
+                     LivingEntity livingentity = (LivingEntity)entity;
+                     ItemStack itemstack = livingentity.getMainHandItem();
+                     if (!itemstack.isEmpty()) {
+-                        if (enchantment.canEnchant(itemstack)
++                        if (itemstack.supportsEnchantment(p_251252_) // Neo: Respect IItemExtension#supportsEnchantment
+                             && EnchantmentHelper.isEnchantmentCompatible(EnchantmentHelper.getEnchantmentsForCrafting(itemstack).keySet(), p_251252_)) {
+                             itemstack.enchant(p_251252_, p_249941_);
+                             i++;
