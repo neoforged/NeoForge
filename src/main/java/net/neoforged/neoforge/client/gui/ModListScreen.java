@@ -359,7 +359,7 @@ public class ModListScreen extends Screen {
     }
 
     public void setSelected(ModListWidget.ModEntry entry) {
-        this.selected = entry == this.selected ? null : entry;
+        this.selected = entry;
         updateCache();
     }
 
