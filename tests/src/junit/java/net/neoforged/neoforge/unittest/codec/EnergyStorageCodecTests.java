@@ -27,9 +27,10 @@ public class EnergyStorageCodecTests {
 
     @Test
     public void canSerializeWithCodec(MinecraftServer server) {
-        var storage = makeStorage();
+        final var storage = makeStorage();
+        final var codec = storage.codec();
 
-        var wrappedResult = storage.CODEC.encodeStart(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), storage);
+        var wrappedResult = codec.encodeStart(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), storage);
 
         var naturalResult = storage.serializeNBT(server.registryAccess());
 
@@ -45,12 +46,12 @@ public class EnergyStorageCodecTests {
 
     @Test
     public void canDeserializeWithCodec(MinecraftServer server) {
-        var storage = makeStorage();
+        final var storage = makeStorage();
+        final var codec = storage.codec();
 
         var naturalResult = storage.serializeNBT(server.registryAccess());
 
-        var wrappedResult = storage.CODEC
-                .parse(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), naturalResult);
+        var wrappedResult = codec.parse(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), naturalResult);
 
         Assertions.assertTrue(wrappedResult.isSuccess());
 
@@ -60,12 +61,13 @@ public class EnergyStorageCodecTests {
     @Test
     public void canRoundTripWithStreamCodec(MinecraftServer server) {
         var original = makeStorage();
+        final var streamCodec = EnergyStorage.streamCodec(CAPACITY, 250, 250);
 
         final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), server.registryAccess(), ConnectionType.NEOFORGE);
 
-        original.STREAM_CODEC.encode(buf, original);
+        streamCodec.encode(buf, original);
 
-        final var result = original.STREAM_CODEC.decode(buf);
+        final var result = streamCodec.decode(buf);
 
         assertDeserializedHandlerEquals(original, result);
     }

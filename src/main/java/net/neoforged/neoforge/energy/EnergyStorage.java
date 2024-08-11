@@ -26,9 +26,6 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     protected int maxReceive;
     protected int maxExtract;
 
-    public final Codec<EnergyStorage> CODEC;
-    public final StreamCodec<RegistryFriendlyByteBuf, EnergyStorage> STREAM_CODEC;
-
     public EnergyStorage(int capacity) {
         this(capacity, capacity, capacity, 0);
     }
@@ -46,8 +43,18 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
         this.maxReceive = maxReceive;
         this.maxExtract = maxExtract;
         this.energy = Math.max(0, Math.min(capacity, energy));
-        this.CODEC = INBTSerializable.codec(() -> new EnergyStorage(capacity, maxReceive, maxExtract, energy));
-        this.STREAM_CODEC = INBTSerializable.streamCodec(() -> new EnergyStorage(capacity, maxReceive, maxExtract, energy));
+    }
+
+    public Codec<EnergyStorage> codec() {
+        return codec(capacity, maxReceive, maxExtract);
+    }
+
+    public static Codec<EnergyStorage> codec(int capacity, int maxReceive, int maxExtract) {
+        return INBTSerializable.codec(() -> new EnergyStorage(capacity, maxReceive, maxExtract, 0));
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, EnergyStorage> streamCodec(int capacity, int maxReceive, int maxExtract) {
+        return INBTSerializable.streamCodec(() -> new EnergyStorage(capacity, maxReceive, maxExtract, 0));
     }
 
     @Override
