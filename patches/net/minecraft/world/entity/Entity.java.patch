@@ -452,7 +452,7 @@
      }
  
      public void checkDespawn() {
-@@ -3449,6 +_,126 @@
+@@ -3449,6 +_,128 @@
  
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
@@ -466,11 +466,13 @@
 +    @Nullable
 +    private java.util.Collection<ItemEntity> captureDrops = null;
 +
++    @Nullable
 +    @Override
 +    public java.util.Collection<ItemEntity> captureDrops() {
 +        return captureDrops;
 +    }
 +
++    @Nullable
 +    @Override
 +    public java.util.Collection<ItemEntity> captureDrops(@Nullable java.util.Collection<ItemEntity> value) {
 +        java.util.Collection<ItemEntity> ret = captureDrops;
