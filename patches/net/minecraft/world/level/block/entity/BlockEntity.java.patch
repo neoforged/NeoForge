@@ -18,6 +18,15 @@
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
          this.type = p_155228_;
+@@ -51,7 +_,7 @@
+     }
+ 
+     public boolean isValidBlockState(BlockState p_353131_) {
+-        return this.type.isValid(p_353131_);
++        return this.getType().isValid(p_353131_); // Neo: use getter so correct type is checked for modded subclasses
+     }
+ 
+     public static BlockPos getPosFromTag(CompoundTag p_187473_) {
 @@ -72,6 +_,8 @@
      }
  
