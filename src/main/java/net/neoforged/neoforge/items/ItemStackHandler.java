@@ -20,31 +20,36 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
 
-    public Codec<ItemStackHandler> CODEC;
-    public StreamCodec<RegistryFriendlyByteBuf, ItemStackHandler> STREAM_CODEC;
-
     public ItemStackHandler() {
         this(1);
     }
 
     public ItemStackHandler(int size) {
         stacks = NonNullList.withSize(size, ItemStack.EMPTY);
-        setupCodecs(size);
     }
 
     public ItemStackHandler(NonNullList<ItemStack> stacks) {
         this.stacks = stacks;
-        setupCodecs(stacks.size());
     }
 
-    private void setupCodecs(int size) {
-        this.CODEC = INBTSerializable.codec(() -> new ItemStackHandler(size));
-        this.STREAM_CODEC = INBTSerializable.streamCodec(() -> new ItemStackHandler(size));
+    public Codec<ItemStackHandler> codec() {
+        return INBTSerializable.codec(() -> new ItemStackHandler(stacks.size()));
+    }
+
+    public static Codec<ItemStackHandler> codec(int size) {
+        return INBTSerializable.codec(() -> new ItemStackHandler(size));
+    }
+
+    public StreamCodec<RegistryFriendlyByteBuf, ItemStackHandler> streamCodec() {
+        return INBTSerializable.streamCodec(() -> new ItemStackHandler(stacks.size()));
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, ItemStackHandler> streamCodec(int size) {
+        return INBTSerializable.streamCodec(() -> new ItemStackHandler(size));
     }
 
     public void setSize(int size) {
         stacks = NonNullList.withSize(size, ItemStack.EMPTY);
-        setupCodecs(size);
     }
 
     @Override

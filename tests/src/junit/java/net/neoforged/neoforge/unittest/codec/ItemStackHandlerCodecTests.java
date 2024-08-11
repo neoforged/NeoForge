@@ -28,9 +28,10 @@ public class ItemStackHandlerCodecTests {
 
     @Test
     public void canSerializeWithCodec(MinecraftServer server) {
-        var itemHandler = makeItemHandler();
+        final var itemHandler = makeItemHandler();
+        final var codec = itemHandler.codec();
 
-        var wrappedResult = itemHandler.CODEC.encodeStart(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), itemHandler);
+        var wrappedResult = codec.encodeStart(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), itemHandler);
 
         var naturalResult = itemHandler.serializeNBT(server.registryAccess());
 
@@ -41,11 +42,11 @@ public class ItemStackHandlerCodecTests {
     @Test
     public void canDeserializeWithCodec(MinecraftServer server) {
         var itemHandler = makeItemHandler();
+        final var codec = itemHandler.codec();
 
         var naturalResult = itemHandler.serializeNBT(server.registryAccess());
 
-        var wrappedResult = itemHandler.CODEC
-                .parse(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), naturalResult);
+        var wrappedResult = codec.parse(server.registryAccess().createSerializationContext(NbtOps.INSTANCE), naturalResult);
 
         Assertions.assertTrue(wrappedResult.isSuccess());
 
@@ -60,12 +61,13 @@ public class ItemStackHandlerCodecTests {
     @Test
     public void canRoundTripWithStreamCodec(MinecraftServer server) {
         var itemHandler = makeItemHandler();
+        final var streamCodec = itemHandler.streamCodec();
 
         final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), server.registryAccess(), ConnectionType.NEOFORGE);
 
-        itemHandler.STREAM_CODEC.encode(buf, itemHandler);
+        streamCodec.encode(buf, itemHandler);
 
-        final var result = itemHandler.STREAM_CODEC.decode(buf);
+        final var result = streamCodec.decode(buf);
 
         Assertions.assertNotEquals(ItemStack.EMPTY, result.getStackInSlot(2));
 
