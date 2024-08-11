@@ -333,7 +333,7 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.ITEM, "seeds/pumpkin", Tags.Items.SEEDS_PUMPKIN),
             createForgeMapEntry(Registries.ITEM, "seeds/wheat", Tags.Items.SEEDS_WHEAT),
             createForgeMapEntry(Registries.ITEM, "shears", Tags.Items.TOOLS_SHEAR),
-            createForgeMapEntry(Registries.ITEM, "slimeballs", Tags.Items.SLIMEBALLS),
+            createForgeMapEntry(Registries.ITEM, "slimeballs", Tags.Items.SLIME_BALLS),
             createForgeMapEntry(Registries.ITEM, "stone", Tags.Items.STONES),
             createForgeMapEntry(Registries.ITEM, "storage_blocks", Tags.Items.STORAGE_BLOCKS),
             createForgeMapEntry(Registries.ITEM, "storage_blocks/amethyst", "storage_blocks/amethyst"),

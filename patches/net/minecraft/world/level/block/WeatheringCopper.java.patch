@@ -1,0 +1,45 @@
+--- a/net/minecraft/world/level/block/WeatheringCopper.java
++++ b/net/minecraft/world/level/block/WeatheringCopper.java
+@@ -10,6 +_,10 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ 
+ public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
++    /**
++     * @deprecated Neo: Use {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZABLES the data map}, this field will be ignored in a future version
++     */
++    @Deprecated
+     Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
+         () -> ImmutableBiMap.<Block, Block>builder()
+                 .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
+@@ -41,16 +_,20 @@
+                 .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
+                 .build()
+     );
++    /**
++     * @deprecated Neo: Use the {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP inverse map} generated from the data map, this field will be ignored in a future version
++     */
++    @Deprecated
+     Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
+ 
+     static Optional<Block> getPrevious(Block p_154891_) {
+-        return Optional.ofNullable(PREVIOUS_BY_BLOCK.get().get(p_154891_));
++        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(p_154891_));
+     }
+ 
+     static Block getFirst(Block p_154898_) {
+         Block block = p_154898_;
+ 
+-        for (Block block1 = PREVIOUS_BY_BLOCK.get().get(p_154898_); block1 != null; block1 = PREVIOUS_BY_BLOCK.get().get(block1)) {
++        for (Block block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(p_154898_); block1 != null; block1 = net.neoforged.neoforge.common.DataMapHooks.getPreviousOxidizedStage(block1)) {
+             block = block1;
+         }
+ 
+@@ -62,7 +_,7 @@
+     }
+ 
+     static Optional<Block> getNext(Block p_154905_) {
+-        return Optional.ofNullable(NEXT_BY_BLOCK.get().get(p_154905_));
++        return Optional.ofNullable(net.neoforged.neoforge.common.DataMapHooks.getNextOxidizedStage(p_154905_));
+     }
+ 
+     static BlockState getFirst(BlockState p_154907_) {

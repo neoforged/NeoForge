@@ -141,6 +141,13 @@ public interface IItemStackExtension {
     }
 
     /**
+     * @see {@link IItemExtension#supportsEnchantment(ItemStack, Holder)}
+     */
+    default boolean supportsEnchantment(Holder<Enchantment> enchantment) {
+        return self().getItem().supportsEnchantment(self(), enchantment);
+    }
+
+    /**
      * Gets the gameplay level of the target enchantment on this stack.
      * <p>
      * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel} for gameplay logic.

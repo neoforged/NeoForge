@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
+@@ -108,7 +_,7 @@
+ 
+             this.playSound(soundevent, 1.0F, 1.0F);
+             return InteractionResult.sidedSuccess(this.level().isClientSide);
+-        } else if (itemstack.is(Items.SHEARS) && this.readyForShearing()) {
++        } else if (false && itemstack.is(Items.SHEARS) && this.readyForShearing()) { // Neo: Shear logic is handled by IShearable
+             this.shear(SoundSource.PLAYERS);
+             this.gameEvent(GameEvent.SHEAR, p_28941_);
+             if (!this.level().isClientSide) {
 @@ -165,8 +_,10 @@
      public void shear(SoundSource p_28924_) {
          this.level().playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);
@@ -11,7 +20,7 @@
                  ((ServerLevel)this.level()).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
                  this.discard();
                  cow.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
-@@ -185,10 +_,9 @@
+@@ -185,10 +_,13 @@
                  this.level().addFreshEntity(cow);
  
                  for (int i = 0; i < 5; i++) {
@@ -19,9 +28,13 @@
 -                        .addFreshEntity(
 -                            new ItemEntity(this.level(), this.getX(), this.getY(1.0), this.getZ(), new ItemStack(this.getVariant().blockState.getBlock()))
 -                        );
-+                    //Neo: Change from addFreshEntity to spawnAtLocation to ensure captureDrops can capture this, we also need to unset the default pickup delay from the item
-+                    ItemEntity item = spawnAtLocation(new ItemStack(this.getVariant().blockState.getBlock()), getBbHeight());
-+                    if (item != null) item.setNoPickUpDelay();
++                    // Neo: Change from addFreshEntity to spawnAtLocation to ensure captureDrops can capture this, we also need to unset the default pickup delay from the item
++                    // Vanilla uses this.getY(1.0) for the y-level, which is this.getY() + this.getBbHeight() * 1.0, so we pass the BB height as the Y-offset.
++                    ItemEntity item = spawnAtLocation(new ItemStack(this.getVariant().blockState.getBlock()), this.getBbHeight());
++                    if (item != null) {
++                        // addFreshEntity does not incur a pickup delay, while spawnAtLocation sets the default pickup delay.
++                        item.setNoPickUpDelay();
++                    }
                  }
              }
          }

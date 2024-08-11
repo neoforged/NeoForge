@@ -185,7 +185,7 @@
          this.renderTooltip(p_283000_, p_281317_, p_282770_);
      }
  
-@@ -684,7 +_,7 @@
+@@ -684,10 +_,10 @@
      public List<Component> getTooltipFromContainerItem(ItemStack p_281769_) {
          boolean flag = this.hoveredSlot != null && this.hoveredSlot instanceof CreativeModeInventoryScreen.CustomCreativeSlot;
          boolean flag1 = selectedTab.getType() == CreativeModeTab.Type.CATEGORY;
@@ -193,7 +193,11 @@
 +        boolean flag2 = selectedTab.hasSearchBar();
          TooltipFlag.Default tooltipflag$default = this.minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
          TooltipFlag tooltipflag = flag ? tooltipflag$default.asCreative() : tooltipflag$default;
-         List<Component> list = p_281769_.getTooltipLines(Item.TooltipContext.of(this.minecraft.level), this.minecraft.player, tooltipflag);
+-        List<Component> list = p_281769_.getTooltipLines(Item.TooltipContext.of(this.minecraft.level), this.minecraft.player, tooltipflag);
++        List<Component> list = p_281769_.getTooltipLines(Item.TooltipContext.of(this.minecraft.level), this.minecraft.player, net.neoforged.neoforge.client.ClientTooltipFlag.of(tooltipflag));
+         if (flag1 && flag) {
+             return list;
+         } else {
 @@ -703,7 +_,7 @@
              int i = 1;
  
