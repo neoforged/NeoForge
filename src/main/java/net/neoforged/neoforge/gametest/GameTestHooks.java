@@ -33,8 +33,9 @@ public class GameTestHooks {
         return !FMLLoader.isProduction() && (SharedConstants.IS_RUNNING_IN_IDE || isGametestServer() || Boolean.getBoolean("neoforge.enableGameTest"));
     }
 
-    public static boolean isGametestServer() {
-        return !FMLLoader.isProduction() && Boolean.getBoolean("neoforge.gameTestServer");
+    public static boolean isGametestServer()
+	{
+        return !FMLLoader.isProduction() && Boolean.getBoolean("neoforge.gameTestServer"); // a comment
     }
 
     @SuppressWarnings("deprecation")
