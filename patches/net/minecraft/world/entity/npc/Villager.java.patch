@@ -37,12 +37,15 @@
                  p_35409_.addFreshEntityWithPassengers(witch);
                  this.releaseAllPois();
                  this.discard();
-@@ -831,7 +_,7 @@
+@@ -831,7 +_,10 @@
      @Override
      public boolean wantsToPickUp(ItemStack p_35543_) {
          Item item = p_35543_.getItem();
 -        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item))
-+        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item) || (p_35543_.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this)))
++        // Neo: Patched so that Farmer Villagers will pick up SpecialPlantable items. Also fixes MC-274244 by making "minecraft:villager_plantable_seeds" tagged items also be picked up by Farmer Villagers to be planted later.
++        boolean isFarmerDesiredSeed = (p_35543_.is(ItemTags.VILLAGER_PLANTABLE_SEEDS) || (p_35543_.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this)))
++                && this.getVillagerData().getProfession().secondaryPoi().stream().anyMatch(secondaryPoi -> secondaryPoi.defaultBlockState().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
++        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item) || isFarmerDesiredSeed)
              && this.getInventory().canAddItem(p_35543_);
      }
  
