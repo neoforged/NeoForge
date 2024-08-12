@@ -8,11 +8,13 @@ package net.neoforged.neoforge.common.extensions;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -45,6 +47,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
@@ -422,17 +425,43 @@ public interface IItemExtension {
      * either from the enchantment table or other random enchantment mechanisms.
      * As a special case, books are primary items for every enchantment.
      * <p>
-     * Other application mechanisms, such as the anvil, check {@link Enchantment#isSupportedItem(ItemStack)} instead.
-     * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag.
+     * Other application mechanisms, such as the anvil, check {@link #supportsEnchantment(ItemStack, Holder)} instead.
+     * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag or override that method.
      *
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
      * @return true if this item should be treated as a primary item for the enchantment
      * @apiNote Call via {@link IItemStackExtension#isPrimaryItemFor(Holder)}
+     * 
+     * @see #supportsEnchantment(ItemStack, Holder)
      */
     @ApiStatus.OverrideOnly
     default boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
-        return stack.getItem() == Items.BOOK || enchantment.value().isPrimaryItem(stack);
+        if (stack.getItem() == Items.BOOK) {
+            return true;
+        }
+        Optional<HolderSet<Item>> primaryItems = enchantment.value().definition().primaryItems();
+        return this.supportsEnchantment(stack, enchantment) && (primaryItems.isEmpty() || stack.is(primaryItems.get()));
+    }
+
+    /**
+     * Checks if the provided enchantment is applicable to the passed item stack.
+     * <p>
+     * By default, this checks if the {@link EnchantmentDefinition#supportedItems()} contains this item,
+     * special casing enchanted books as they may receive any enchantment.
+     * <p>
+     * Overriding this method allows for dynamic logic that would not be possible using the tag system.
+     *
+     * @param stack       the item stack to be enchanted
+     * @param enchantment the enchantment to be applied
+     * @return true if this item can accept the enchantment
+     * @apiNote Call via {@link IItemStackExtension#supportsEnchantment(Holder)}
+     * 
+     * @see #isPrimaryItemFor(ItemStack, Holder)
+     */
+    @ApiStatus.OverrideOnly
+    default boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+        return stack.is(Items.ENCHANTED_BOOK) || enchantment.value().isSupportedItem(stack);
     }
 
     /**
