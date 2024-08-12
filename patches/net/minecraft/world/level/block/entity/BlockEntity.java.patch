@@ -1,14 +1,16 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -27,7 +_,7 @@
+@@ -27,8 +_,9 @@
  import net.minecraft.world.level.block.state.BlockState;
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
++    @Deprecated // Neo: always use getType()
      private final BlockEntityType<?> type;
      @Nullable
+     protected Level level;
 @@ -36,6 +_,8 @@
      protected boolean remove;
      private BlockState blockState;
@@ -18,6 +20,15 @@
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
          this.type = p_155228_;
+@@ -51,7 +_,7 @@
+     }
+ 
+     public boolean isValidBlockState(BlockState p_353131_) {
+-        return this.type.isValid(p_353131_);
++        return this.getType().isValid(p_353131_); // Neo: use getter so correct type is checked for modded subclasses
+     }
+ 
+     public static BlockPos getPosFromTag(CompoundTag p_187473_) {
 @@ -72,6 +_,8 @@
      }
  
