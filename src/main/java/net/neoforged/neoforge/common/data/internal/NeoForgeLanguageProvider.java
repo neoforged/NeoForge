@@ -152,8 +152,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CONCRETE_POWDERS, "Concrete Powders");
         add(Tags.Items.CROPS, "Crops");
         add(Tags.Items.CROPS_BEETROOT, "Beetroot Crops");
-        add(Tags.Items.CROPS_CARROT, "Carrot Crops");
         add(Tags.Items.CROPS_CACTUS, "Cactus Crops");
+        add(Tags.Items.CROPS_CARROT, "Carrot Crops");
         add(Tags.Items.CROPS_COCOA_BEAN, "Cocoa Bean Crops");
         add(Tags.Items.CROPS_MELON, "Melon Crops");
         add(Tags.Items.CROPS_NETHER_WART, "Nether Wart Crops");

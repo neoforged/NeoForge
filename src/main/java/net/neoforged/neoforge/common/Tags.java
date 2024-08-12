@@ -321,8 +321,8 @@ public class Tags {
          */
         public static final TagKey<Item> CROPS = tag("crops");
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
-        public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
         public static final TagKey<Item> CROPS_CACTUS = tag("crops/cactus");
+        public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
         public static final TagKey<Item> CROPS_COCOA_BEAN = tag("crops/cocoa_bean");
         public static final TagKey<Item> CROPS_MELON = tag("crops/melon");
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
