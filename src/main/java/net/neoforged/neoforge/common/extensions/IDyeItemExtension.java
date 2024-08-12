@@ -42,13 +42,12 @@ public interface IDyeItemExtension {
 
         final var result = colorable.apply(dyeColor);
         return switch (result) {
-            case ALREADY_APPLIED -> TriState.FALSE;
+            case ALREADY_APPLIED, CANNOT_APPLY -> TriState.FALSE;
             case APPLIED -> {
                 stack.consume(1, player);
                 target.level().playSound(player, target, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
                 yield TriState.TRUE;
             }
-            case CANNOT_APPLY -> TriState.FALSE;
         };
     }
 
