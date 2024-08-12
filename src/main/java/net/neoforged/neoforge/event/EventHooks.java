@@ -469,7 +469,7 @@ public class EventHooks {
     }
 
     public static void onServerEntitySendDirtyEntityData(ServerEntity serverEntity, Entity entity) {
-        NeoForge.EVENT_BUS.post(new ServerEntitySendDirtyEntityDataEvent(entity,serverEntity));
+        NeoForge.EVENT_BUS.post(new ServerEntitySendDirtyEntityDataEvent(entity, serverEntity));
     }
 
     public static void onStartEntityTracking(Entity entity, Player player) {
