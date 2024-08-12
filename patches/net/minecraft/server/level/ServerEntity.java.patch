@@ -40,3 +40,12 @@
          if (this.trackedDataValues != null) {
              p_289563_.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));
          }
+@@ -333,6 +_,8 @@
+ 
+             set.clear();
+         }
++
++        net.neoforged.neoforge.event.EventHooks.onServerEntitySendDirtyEntityData(this, this.entity);
+     }
+ 
+     private void broadcastAndSend(Packet<?> p_8539_) {
