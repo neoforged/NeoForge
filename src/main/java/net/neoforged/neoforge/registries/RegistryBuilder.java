@@ -102,15 +102,19 @@ public class RegistryBuilder<T> {
      * @see NewRegistryEvent#register(Registry)
      */
     public Registry<T> create() {
+        return create(Lifecycle.stable(), false);
+    }
+
+    public Registry<T> create(Lifecycle lifecycle, boolean datapackRegistry) {
         BaseMappedRegistry<T> registry = this.defaultKey != null
-                ? new DefaultedMappedRegistry<>(this.defaultKey.toString(), this.registryKey, Lifecycle.stable(), false)
+                ? new DefaultedMappedRegistry<>(this.defaultKey.toString(), this.registryKey, lifecycle, false)
                 : new MappedRegistry<>(this.registryKey, Lifecycle.stable(), false);
         this.callbacks.forEach(registry::addCallback);
         if (this.maxId != -1)
             registry.setMaxId(this.maxId);
         registry.setSync(this.sync);
 
-        if (this.registrationCheck) {
+        if (this.registrationCheck && !datapackRegistry) {
             RegistryManager.trackModdedRegistry(registry.key().location());
         }
 
