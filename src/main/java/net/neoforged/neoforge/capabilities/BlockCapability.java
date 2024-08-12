@@ -120,9 +120,38 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
 
     /**
      * {@return a new immutable copy of all the currently known block capabilities}
+     *
+     * <p>Mods that want to forward "all" capability requests should likely use {@link #getAllProxyable()} instead.
      */
     public static synchronized List<BlockCapability<?, ?>> getAll() {
         return registry.getAll();
+    }
+
+    /**
+     * {@return a new immutable copy of all the currently known proxyable block capabilities}
+     *
+     * @see #isProxyable()
+     */
+    public static synchronized List<BlockCapability<?, ?>> getAllProxyable() {
+        return registry.getAll().stream().filter(c -> c.proxyable).toList();
+    }
+
+    /**
+     * Returns whether this capability is proxyable.
+     * This information is metadata: it does not change how the capability works internally,
+     * but it tells mods whether they should or should not register proxying capability providers.
+     *
+     * <p>If the capability is proxyable, requests for this capability are safe to forward unilaterally to other blocks.
+     *
+     * <p>If the capability is not proxyable, requests for this capability should not be forwarded to other blocks without further information.
+     * In that case, refer to documentation of the capability to understand under which circumstances it is safe to forward, if at all.
+     * For this reason, mods that forward "all" capabilities should not forward non-proxyable capabilities.
+     *
+     * <p>Block capabilities are proxyable by default.
+     * Any call to {@link RegisterCapabilitiesEvent#setNonProxyable(BlockCapability)} will mark the capability as non-proxyable.
+     */
+    public boolean isProxyable() {
+        return proxyable;
     }
 
     // INTERNAL
@@ -135,6 +164,7 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
     }
 
     final Map<Block, List<IBlockCapabilityProvider<T, C>>> providers = new IdentityHashMap<>();
+    boolean proxyable = true;
 
     @ApiStatus.Internal
     @Nullable
