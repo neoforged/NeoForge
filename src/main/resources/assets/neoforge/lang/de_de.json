@@ -138,13 +138,13 @@
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Diese Einstellungen können nicht geändert werden während Du Dein Spiel für andere geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
+      "text": "Diese Einstellungen können nicht geändert werden, während du dein Spiel für andere im LAN geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
       "color": "rot"
     }
   ],
   "neoforge.configuration.uitext.notloaded": [
     {
-      "text": "Diese Einstellungen sind nur verfügbar während ein Spiel läuft.",
+      "text": "Diese Einstellungen sind nur verfügbar, wenn du dich in einer Welt befindest.",
       "color": "rot"
     }
   ],
@@ -152,6 +152,12 @@
     {
       "text": "Diese Einstellungen können nicht in der Benutzeroberfläche bearbeitet werden. Kontaktiere die/den Autor:Innen des/der Mod(s) und bitte ihn/sie ein angepasstes Bedienelement zu implementieren.",
       "color": "rot"
+    }
+  ],
+  "neoforge.configuration.uitext.longstring": [
+    {
+      "text": "Dieser Wert ist zu lang, um hier bearbeitet werden zu können. Bitte bearbeite ihn in der Konfigurationsdatei.",
+      "color": "red"
     }
   ],
   "neoforge.configuration.uitext.section": "%s...",
@@ -207,10 +213,17 @@
   "neoforge.configuration.uitext.server": "Servereinstellungen",
   "neoforge.configuration.uitext.startup": "Starteinstellungen",
   "neoforge.configuration.uitext.restart.game.title": "Minecraft muss neu gestartet werden",
-  "neoforge.configuration.uitext.restart.game.text": "Eine oder mehrere der geänderten Einstellungen beeinflussen wie das Spiel startet.",
+  "neoforge.configuration.uitext.restart.game.text": "Eine oder mehrere der geänderten Einstellungen sind nur wirksam, wenn das Spiel gestartet wird.",
   "neoforge.configuration.uitext.restart.server.title": "Spielstand muss neu geladen werden",
-  "neoforge.configuration.uitext.restart.server.text": "Eine oder mehrere der geänderten Einstellungen beeinflussen wie ein Spielstand geladen wird.",
-  "neoforge.configuration.uitext.restart.return": "Noch nicht...",
+  "neoforge.configuration.uitext.restart.server.text": "Eine oder mehrere der geänderten Einstellungen sind nur wirksam, wenn die Welt neu geladen wird.",
+  "neoforge.configuration.uitext.restart.return": "Ignorieren",
+  "neoforge.configuration.uitext.restart.return.tooltip": [
+    {
+      "text": "Deine Änderungen haben keine Wirkung, bis das Spiel neu gestartet wird!",
+      "color": "red",
+      "bold": true
+    }
+  ],
   "neoforge.configuration.title": "NeoForge-Konfiguration",
   "neoforge.configuration.section.neoforge.client.toml": "Client-Einstellungen",
   "neoforge.configuration.section.neoforge.client.toml.title": "Client-Einstellungen",
@@ -296,7 +309,7 @@
   "neoforge.network.data_maps.failed": "Die Synchronisierung der Registrierungsdatenkarte für das Register konnte nicht verarbeitet werden %s: %s",
   "neoforge.network.data_maps.missing_our": "Kann keine Verbindung zum Server herstellen, da auf dem Server obligatorische Registrierungsdatenkarten fehlen, die auf dem Client vorhanden sind: %s",
   "neoforge.network.data_maps.missing_their": "Kann keine Verbindung zum Server herstellen, da obligatorische Registrierungsdatenkarten auf dem Server vorhanden sind, die auf dem Client fehlen: %s",
-  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
-  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
-  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
+  "neoforge.network.extensible_enums.no_vanilla_server": "Dieser Client unterstützt Vanilla-Server nicht, da er erweiterte Enums in dem an den Server gerichteten Netzwerk verwendet",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "Die Menge der erweiterten Enums auf dem Client und dem Server stimmen nicht überein. Stelle sicher, dass du die gleiche NeoForge-Version wie der Server verwendest",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "Die Werte, die zu erweiterten Enums auf dem Client und dem Server hinzugefügt wurden, stimmen nicht überein. Stelle sicher, dass du die gleichen Mod- und NeoForge-Versionen wie der Server verwendest. Weitere Details findest du im Log"
 }

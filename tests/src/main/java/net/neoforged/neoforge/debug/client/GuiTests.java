@@ -167,4 +167,27 @@ public class GuiTests {
             gui.leftHeight += height + 1;
         };
     }
+
+    @TestHolder(description = "Checks that the depth budget for GUI layers gets adjusted as necessary")
+    static void testGuiLayerDepthBudget(DynamicTest test) {
+        test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
+            // Register some placeholder layers
+            for (int i = 0; i < 50; i++) {
+                event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "fake_" + i), (guiGraphics, deltaTracker) -> {});
+            }
+            // Register the real layer
+            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "high_depth_test"), (guiGraphics, deltaTracker) -> {
+                if (test.framework().tests().isEnabled(test.id())) {
+                    guiGraphics.fill(guiGraphics.guiWidth() - 50, 0, guiGraphics.guiWidth(), 50, 0xFFFF0000);
+                }
+            });
+        });
+
+        test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
+            if (chatEvent.getMessage().equalsIgnoreCase("gui layer depth test")) {
+                test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
+                        "Do you see a red square in the top right corner of the screen?"));
+            }
+        });
+    }
 }
