@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/gui/screens/ReceivingLevelScreen.java
++++ b/net/minecraft/client/gui/screens/ReceivingLevelScreen.java
+@@ -20,12 +_,20 @@
+     private final ReceivingLevelScreen.Reason reason;
+     @Nullable
+     private TextureAtlasSprite cachedNetherPortalSprite;
++    @Nullable
++    private final net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> toDimension, fromDimension;
+ 
+     public ReceivingLevelScreen(BooleanSupplier p_304926_, ReceivingLevelScreen.Reason p_341661_) {
++        this(p_304926_, p_341661_, null, null);
++    }
++
++    public ReceivingLevelScreen(BooleanSupplier p_304926_, ReceivingLevelScreen.Reason p_341661_, @Nullable net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> toDimension, @Nullable net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> fromDimension) {
+         super(GameNarrator.NO_TITLE);
+         this.levelReceived = p_304926_;
+         this.reason = p_341661_;
+         this.createdAt = System.currentTimeMillis();
++        this.toDimension = toDimension;
++        this.fromDimension = fromDimension;
+     }
+ 
+     @Override
+@@ -41,11 +_,15 @@
+     @Override
+     public void render(GuiGraphics p_281489_, int p_282902_, int p_283018_, float p_281251_) {
+         super.render(p_281489_, p_282902_, p_283018_, p_281251_);
+-        p_281489_.drawCenteredString(this.font, DOWNLOADING_TERRAIN_TEXT, this.width / 2, this.height / 2 - 50, 16777215);
++        var screen = net.neoforged.neoforge.client.DimensionTransitionManager.get(this.toDimension, this.fromDimension);
++        if (screen != null) screen.renderTransitionText(this.font, p_281489_, this.width, this.height);
++        else p_281489_.drawCenteredString(this.font, DOWNLOADING_TERRAIN_TEXT, this.width / 2, this.height / 2 - 50, 16777215);
+     }
+ 
+     @Override
+     public void renderBackground(GuiGraphics p_341670_, int p_341687_, int p_341693_, float p_341684_) {
++        var screen = net.neoforged.neoforge.client.DimensionTransitionManager.get(this.toDimension, this.fromDimension);
++        if (screen != null && screen.renderScreenEffect(p_341670_, p_341684_, this.width, this.height)) return;
+         switch (this.reason) {
+             case NETHER_PORTAL:
+                 p_341670_.blit(0, 0, -90, p_341670_.guiWidth(), p_341670_.guiHeight(), this.getNetherPortalSprite());
