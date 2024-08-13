@@ -45,7 +45,7 @@
              set.clear();
          }
 +
-+        net.neoforged.neoforge.event.EventHooks.onServerEntitySendDirtyEntityData(this, this.entity);
++        net.neoforged.neoforge.event.EventHooks.onServerEntitySendDirtyEntityData(this.entity, this);
      }
  
      private void broadcastAndSend(Packet<?> p_8539_) {

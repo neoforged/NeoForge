@@ -468,7 +468,7 @@ public class EventHooks {
         return event.getResultStack();
     }
 
-    public static void onServerEntitySendDirtyEntityData(ServerEntity serverEntity, Entity entity) {
+    public static void onServerEntitySendDirtyEntityData(Entity entity, ServerEntity serverEntity) {
         NeoForge.EVENT_BUS.post(new ServerEntitySendDirtyEntityDataEvent(entity, serverEntity));
     }
 
