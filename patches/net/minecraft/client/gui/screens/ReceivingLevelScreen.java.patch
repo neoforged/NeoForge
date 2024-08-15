@@ -21,14 +21,14 @@
      }
  
      @Override
-@@ -41,11 +_,15 @@
+@@ -41,11 +_,16 @@
      @Override
      public void render(GuiGraphics p_281489_, int p_282902_, int p_283018_, float p_281251_) {
          super.render(p_281489_, p_282902_, p_283018_, p_281251_);
--        p_281489_.drawCenteredString(this.font, DOWNLOADING_TERRAIN_TEXT, this.width / 2, this.height / 2 - 50, 16777215);
 +        var screen = net.neoforged.neoforge.client.DimensionTransitionManager.get(this.toDimension, this.fromDimension);
 +        if (screen != null) screen.renderTransitionText(this.font, p_281489_, this.width, this.height);
-+        else p_281489_.drawCenteredString(this.font, DOWNLOADING_TERRAIN_TEXT, this.width / 2, this.height / 2 - 50, 16777215);
++        else
+         p_281489_.drawCenteredString(this.font, DOWNLOADING_TERRAIN_TEXT, this.width / 2, this.height / 2 - 50, 16777215);
      }
  
      @Override
