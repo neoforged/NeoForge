@@ -141,6 +141,13 @@ public interface IItemStackExtension {
     }
 
     /**
+     * @see {@link IItemExtension#supportsEnchantment(ItemStack, Holder)}
+     */
+    default boolean supportsEnchantment(Holder<Enchantment> enchantment) {
+        return self().getItem().supportsEnchantment(self(), enchantment);
+    }
+
+    /**
      * Gets the gameplay level of the target enchantment on this stack.
      * <p>
      * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel} for gameplay logic.
@@ -463,12 +470,12 @@ public interface IItemStackExtension {
     }
 
     @Nullable
-    default <T, C> T getCapability(ItemCapability<T, C> capability, C context) {
+    default <T, C extends @Nullable Object> T getCapability(ItemCapability<T, C> capability, C context) {
         return capability.getCapability(self(), context);
     }
 
     @Nullable
-    default <T> T getCapability(ItemCapability<T, Void> capability) {
+    default <T> T getCapability(ItemCapability<T, @Nullable Void> capability) {
         return capability.getCapability(self(), null);
     }
 

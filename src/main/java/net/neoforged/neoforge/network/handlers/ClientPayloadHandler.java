@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -23,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.GameRules;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -32,6 +34,7 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
@@ -84,7 +87,7 @@ public final class ClientPayloadHandler {
     }
 
     public static void handle(ConfigFilePayload payload, IPayloadContext context) {
-        ConfigSync.INSTANCE.receiveSyncedConfig(payload.contents(), payload.fileName());
+        ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
     }
 
     public static void handle(AdvancedAddEntityPayload advancedAddEntityPayload, IPayloadContext context) {
@@ -144,5 +147,15 @@ public final class ClientPayloadHandler {
 
     public static void handle(AdvancedContainerSetDataPayload msg, IPayloadContext context) {
         context.handle(msg.toVanillaPacket());
+    }
+
+    public static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
+        @SuppressWarnings("resource")
+        final ClientLevel level = Minecraft.getInstance().level;
+        level.setGameTime(payload.gameTime());
+        level.setDayTime(payload.dayTime());
+        level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(payload.gameRule(), null);
+        level.setDayTimeFraction(payload.dayTimeFraction());
+        level.setDayTimePerTick(payload.dayTimePerTick());
     }
 }

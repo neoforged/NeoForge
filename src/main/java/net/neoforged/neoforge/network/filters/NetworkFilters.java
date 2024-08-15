@@ -35,8 +35,9 @@ public class NetworkFilters {
         // this means that they will be processed before the encoder.
 
         ChannelPipeline pipeline = manager.channel().pipeline();
-        if (pipeline.get(HandlerNames.ENCODER) == null)
+        if (pipeline.get(HandlerNames.ENCODER) == null) {
             return; // Realistically this can only ever be null if the connection was prematurely closed due to an error. We return early here to reduce further log spam.
+        }
 
         var connectionType = NetworkRegistry.getConnectionType(manager);
         instances.forEach((key, filterFactory) -> {

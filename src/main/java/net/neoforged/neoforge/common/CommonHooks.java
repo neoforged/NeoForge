@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -36,8 +38,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -48,6 +50,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -94,9 +98,12 @@ import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.EnchantmentMenu;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.ArmorItem;
@@ -114,6 +121,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
@@ -124,8 +132,10 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -143,11 +153,13 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
@@ -190,6 +202,7 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
@@ -224,6 +237,20 @@ public class CommonHooks {
         return false;
     }
 
+    /**
+     * Fires the {@link ItemStackedOnOtherEvent}, allowing items to handle custom behavior relating to being stacked together (i.e. how the bundle operates).
+     * <p>
+     * Called from {@link AbstractContainerMenu#doClick} in the utility method {@link AbstractContainerMenu#tryItemClickBehaviourOverride} before either
+     * {@link ItemStack#overrideStackedOnOther} or {@link ItemStack#overrideOtherStackedOnMe} is called.
+     *
+     * @param carriedItem       The item currently held by the player, being clicked <i>into</i> the slot
+     * @param stackedOnItem     The item currently present in the clicked slot
+     * @param slot              The {@link Slot} being clicked
+     * @param action            The click action being performed
+     * @param player            The player who clicked the slot
+     * @param carriedSlotAccess A slot access permitting changing the carried item.
+     * @return True if the event was cancelled, indicating that a mod has handled the click; false otherwise
+     */
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
         return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
     }
@@ -639,6 +666,18 @@ public class CommonHooks {
         level.capturedBlockSnapshots.clear();
 
         return ret;
+    }
+
+    /**
+     * Fires {@link PlayerEnchantItemEvent} in {@link EnchantmentMenu#clickMenuButton(Player, int)} after the enchants are
+     * applied to the item.
+     *
+     * @param player    the player who clicked the menu button
+     * @param stack     the item enchanted
+     * @param instances the specific enchantments that were applied to the item.
+     */
+    public static void onPlayerEnchantItem(Player player, ItemStack stack, List<EnchantmentInstance> instances) {
+        NeoForge.EVENT_BUS.post(new PlayerEnchantItemEvent(player, stack, instances));
     }
 
     public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
@@ -1269,7 +1308,7 @@ public class CommonHooks {
     }
 
     public static boolean canUseEntitySelectors(SharedSuggestionProvider provider) {
-        if (provider.hasPermission(Commands.LEVEL_GAMEMASTERS)) {
+        if (EntitySelectorParser.allowSelectors(provider)) {
             return true;
         } else if (provider instanceof CommandSourceStack source && source.source instanceof ServerPlayer player) {
             return PermissionAPI.getPermission(player, NeoForgeMod.USE_SELECTORS_PERMISSION);
@@ -1480,5 +1519,65 @@ public class CommonHooks {
             return ClientHooks.resolveLookup(key);
         }
         return null;
+    }
+
+    /**
+     * Creates a {@link UseOnContext} for {@link net.minecraft.core.dispenser.DispenseItemBehavior dispense behavior}.
+     *
+     * @param source the {@link BlockSource block source} context of the dispense behavior
+     * @param stack  the dispensed item stack
+     * @return a {@link UseOnContext} representing the dispense behavior
+     */
+    public static UseOnContext dispenseUseOnContext(BlockSource source, ItemStack stack) {
+        Direction facing = source.state().getValue(DispenserBlock.FACING);
+        BlockPos pos = source.pos().relative(facing);
+        Direction blockFace = facing.getOpposite();
+        BlockHitResult hitResult = new BlockHitResult(new Vec3(
+                pos.getX() + 0.5 + blockFace.getStepX() * 0.5,
+                pos.getY() + 0.5 + blockFace.getStepY() * 0.5,
+                pos.getZ() + 0.5 + blockFace.getStepZ() * 0.5), blockFace, pos, false);
+        return new UseOnContext(source.level(), null, InteractionHand.MAIN_HAND, stack, hitResult);
+    }
+
+    /**
+     * Attempts to modify target block using {@link ItemAbilities#SHEARS_HARVEST} in {@link ShearsDispenseItemBehavior},
+     * consistent with vanilla beehive harvest behavior (also controlled by {@link ItemAbilities#SHEARS_HARVEST}).
+     * <p>
+     * The beehive harvest behavior is not implemented by {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)}
+     * and thus will still be controlled by {@link ShearsDispenseItemBehavior#tryShearBeehive(ServerLevel, BlockPos)} by default.
+     * <p>
+     * Mods may subscribe to {@link BlockEvent.BlockToolModificationEvent}
+     * to override vanilla beehive harvest behavior by setting a non-null {@link BlockState} result.
+     */
+    public static boolean tryDispenseShearsHarvestBlock(BlockSource source, ItemStack stack, ServerLevel level, BlockPos pos) {
+        BlockState blockstate = source.state().getToolModifiedState(dispenseUseOnContext(source, stack), ItemAbilities.SHEARS_HARVEST, false);
+        if (blockstate == null)
+            return false;
+        level.setBlock(pos, blockstate, 3);
+        level.gameEvent(null, GameEvent.SHEAR, pos);
+        return true;
+    }
+
+    public static Map<RecipeBookType, Pair<String, String>> buildRecipeBookTypeTagFields(Map<RecipeBookType, Pair<String, String>> vanillaMap) {
+        ExtensionInfo extInfo = RecipeBookType.getExtensionInfo();
+        if (extInfo.extended()) {
+            vanillaMap = new HashMap<>(vanillaMap);
+            for (RecipeBookType type : RecipeBookType.values()) {
+                if (type.ordinal() < extInfo.vanillaCount()) {
+                    continue;
+                }
+                String name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, type.name());
+                vanillaMap.put(type, Pair.of("is" + name + "GuiOpen", "is" + name + "FilteringCraftable"));
+            }
+            vanillaMap = Map.copyOf(vanillaMap);
+        }
+        return vanillaMap;
+    }
+
+    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
+        if (FMLEnvironment.dist.isClient()) {
+            return ClientHooks.getFilteredRecipeBookTypeValues();
+        }
+        return RecipeBookType.values();
     }
 }

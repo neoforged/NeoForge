@@ -1,20 +1,38 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -55,6 +_,27 @@
+@@ -54,20 +_,57 @@
+             || p_43080_.is(BlockTags.WOOL);
      }
  
-     @Override
++    /**
++     * Neo: Migrate shear behavior into {@link ShearsItem#interactLivingEntity} to call into IShearable instead of relying on {@link net.minecraft.world.entity.Mob#mobInteract}
++     * <p>
++     * To preserve vanilla behavior, this method retains the original flow shared by the various mobInteract overrides.
++     */
++    @Override
 +    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
 +        if (entity instanceof net.neoforged.neoforge.common.IShearable target) {
-+            if (entity.level().isClientSide) return InteractionResult.CONSUME;
 +            BlockPos pos = entity.blockPosition();
++            boolean isClient = entity.level().isClientSide();
++            // Check isShearable on both sides (mirrors vanilla readyForShearing())
 +            if (target.isShearable(player, stack, entity.level(), pos)) {
-+                target.onSheared(player, stack, entity.level(), pos)
-+                      .forEach(drop -> target.spawnShearedDrop(entity.level(), pos, drop));
++                // Call onSheared on both sides (mirrors vanilla shear())
++                List<ItemStack> drops = target.onSheared(player, stack, entity.level(), pos);
++                // Spawn drops on the server side using spawnShearedDrop to retain vanilla mob-specific behavior
++                if (!isClient) {
++                    for(ItemStack drop : drops) {
++                        target.spawnShearedDrop(entity.level(), pos, drop);
++                    }
++                }
++                // Call GameEvent.SHEAR on both sides
 +                entity.gameEvent(GameEvent.SHEAR, player);
-+                stack.hurtAndBreak(1, player, hand == net.minecraft.world.InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
++                // Damage the shear item stack by 1 on the server side
++                if (!isClient) {
++                    stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
++                }
++                // Return sided success if the entity was shearable
++                return InteractionResult.sidedSuccess(isClient);
 +            }
-+            return InteractionResult.SUCCESS;
 +        }
 +        return InteractionResult.PASS;
 +    }
@@ -24,7 +42,22 @@
 +        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SHEARS_ACTIONS.contains(itemAbility);
 +    }
 +
-+    @Override
+     @Override
      public InteractionResult useOn(UseOnContext p_186371_) {
          Level level = p_186371_.getLevel();
          BlockPos blockpos = p_186371_.getClickedPos();
+         BlockState blockstate = level.getBlockState(blockpos);
+-        if (blockstate.getBlock() instanceof GrowingPlantHeadBlock growingplantheadblock && !growingplantheadblock.isMaxAge(blockstate)) {
++        BlockState blockstate1 = blockstate.getToolModifiedState(p_186371_, net.neoforged.neoforge.common.ItemAbilities.SHEARS_TRIM, false);
++        if (blockstate1 != null) {
+             Player player = p_186371_.getPlayer();
+             ItemStack itemstack = p_186371_.getItemInHand();
+             if (player instanceof ServerPlayer) {
+                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer)player, blockpos, itemstack);
+             }
+ 
+-            level.playSound(player, blockpos, SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
+-            BlockState blockstate1 = growingplantheadblock.getMaxAgeState(blockstate);
+             level.setBlockAndUpdate(blockpos, blockstate1);
+             level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(p_186371_.getPlayer(), blockstate1));
+             if (player != null) {

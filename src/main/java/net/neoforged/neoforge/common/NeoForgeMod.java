@@ -15,13 +15,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.DetectedVersion;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
@@ -53,7 +50,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -73,6 +69,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
@@ -81,11 +78,11 @@ import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
@@ -122,6 +119,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportPr
 import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
+import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -200,23 +198,15 @@ public class NeoForgeMod {
     public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
 
     /**
-     * Grants the player the ability to use creative flight when not in creative mode.
-     * Anything above zero allows flight.
+     * This attribute controls if the player may use creative flight when not in creative mode.
      * <p>
-     * For this attribute, you should only use the following modifier values:
-     * <ul>
-     * <li>A value of 1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#ADDITION} to enable the effect.</li>
-     * <li>A value of -1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#MULTIPLY_TOTAL} to forcibly disable the effect.</li>
-     * </ul>
-     * This behavior allows for multiple enables to coexist, not removing the effect unless all enabling modifiers are removed.
+     * This is a {@link BooleanAttribute}, and should only be modified using the standards established by that class.
      * <p>
-     * Additionally, it permits forcibly disabling the attribute through multiply total.
-     * <p>
-     * To determine if a player has flight access via game mode or attribute, use {@link net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly}
+     * To determine if a player may fly (either via game mode or attribute), use {@link IPlayerExtension#mayFly}
      * <p>
      * Game mode flight cannot be disabled via this attribute.
      */
-    public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new RangedAttribute("neoforge.creative_flight", 0D, 0D, Double.MAX_VALUE).setSyncable(true));
+    public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new BooleanAttribute("neoforge.creative_flight", false).setSyncable(true));
 
     /**
      * Stock loot modifier type that adds loot from a subtable to the final loot.
@@ -348,23 +338,23 @@ public class NeoForgeMod {
     /**
      * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "neoforge:any" }}
      */
-    public static final Holder<HolderSetType> ANY_HOLDER_SET = HOLDER_SET_TYPES.register("any", () -> AnyHolderSet::codec);
+    public static final Holder<HolderSetType> ANY_HOLDER_SET = HOLDER_SET_TYPES.register("any", AnyHolderSet.Type::new);
 
     /**
      * Stock holder set type that represents an intersection of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:and", "values": [list of holdersets] }}
      */
-    public static final Holder<HolderSetType> AND_HOLDER_SET = HOLDER_SET_TYPES.register("and", () -> AndHolderSet::codec);
+    public static final Holder<HolderSetType> AND_HOLDER_SET = HOLDER_SET_TYPES.register("and", AndHolderSet.Type::new);
 
     /**
      * Stock holder set type that represents a union of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:or", "values": [list of holdersets] }}
      */
-    public static final Holder<HolderSetType> OR_HOLDER_SET = HOLDER_SET_TYPES.register("or", () -> OrHolderSet::codec);
+    public static final Holder<HolderSetType> OR_HOLDER_SET = HOLDER_SET_TYPES.register("or", OrHolderSet.Type::new);
 
     /**
      * <p>Stock holder set type that represents all values in a registry except those in another given set.
      * Can be used in a holderset object with {@code { "type": "neoforge:not", "value": holderset }}</p>
      */
-    public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
+    public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", NotHolderSet.Type::new);
 
     private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
 
@@ -444,46 +434,6 @@ public class NeoForgeMod {
         public @Nullable PathType getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, boolean canFluidLog) {
             return canFluidLog ? super.getBlockPathType(state, level, pos, mob, true) : null;
         }
-
-        @Override
-        public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-            consumer.accept(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation UNDERWATER_LOCATION = ResourceLocation.withDefaultNamespace("textures/misc/underwater.png"),
-                        WATER_STILL = ResourceLocation.withDefaultNamespace("block/water_still"),
-                        WATER_FLOW = ResourceLocation.withDefaultNamespace("block/water_flow"),
-                        WATER_OVERLAY = ResourceLocation.withDefaultNamespace("block/water_overlay");
-
-                @Override
-                public ResourceLocation getStillTexture() {
-                    return WATER_STILL;
-                }
-
-                @Override
-                public ResourceLocation getFlowingTexture() {
-                    return WATER_FLOW;
-                }
-
-                @Override
-                public ResourceLocation getOverlayTexture() {
-                    return WATER_OVERLAY;
-                }
-
-                @Override
-                public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
-                    return UNDERWATER_LOCATION;
-                }
-
-                @Override
-                public int getTintColor() {
-                    return 0xFF3F76E4;
-                }
-
-                @Override
-                public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-                    return BiomeColors.getAverageWaterColor(getter, pos) | 0xFF000000;
-                }
-            });
-        }
     });
     public static final Holder<FluidType> LAVA_TYPE = VANILLA_FLUID_TYPES.register("lava", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.lava")
@@ -516,24 +466,6 @@ public class NeoForgeMod {
         public void setItemMovement(ItemEntity entity) {
             Vec3 vec3 = entity.getDeltaMovement();
             entity.setDeltaMovement(vec3.x * (double) 0.95F, vec3.y + (double) (vec3.y < (double) 0.06F ? 5.0E-4F : 0.0F), vec3.z * (double) 0.95F);
-        }
-
-        @Override
-        public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-            consumer.accept(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation LAVA_STILL = ResourceLocation.withDefaultNamespace("block/lava_still"),
-                        LAVA_FLOW = ResourceLocation.withDefaultNamespace("block/lava_flow");
-
-                @Override
-                public ResourceLocation getStillTexture() {
-                    return LAVA_STILL;
-                }
-
-                @Override
-                public ResourceLocation getFlowingTexture() {
-                    return LAVA_FLOW;
-                }
-            });
         }
     });
 
@@ -624,11 +556,14 @@ public class NeoForgeMod {
         TagConventionLogWarning.init();
 
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
+        modEventBus.addListener(EventPriority.LOW, CapabilityHooks::registerFallbackVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);
         // These 3 listeners use the default priority for now, can be re-evaluated later.
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkLoad);
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkUnload);
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
+
+        NeoForge.EVENT_BUS.addListener(DataMapHooks::onDataMapsUpdated);
 
         modEventBus.register(NeoForgeDataMaps.class);
 
@@ -646,6 +581,13 @@ public class NeoForgeMod {
 
     public void serverStopping(ServerStoppingEvent evt) {
         WorldWorkerManager.clear();
+
+        // Reset WORLD type config caches
+        ModConfigs.getFileMap().values().forEach(config -> {
+            if (config.getSpec() instanceof ModConfigSpec spec) {
+                spec.resetCaches(ModConfigSpec.RestartType.WORLD);
+            }
+        });
     }
 
     public void gatherData(GatherDataEvent event) {
@@ -692,25 +634,7 @@ public class NeoForgeMod {
             event.register(NeoForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(MILK_TYPE.unwrapKey().orElseThrow(), new FluidType(
                     FluidType.Properties.create().density(1024).viscosity(1024)
                             .sound(SoundActions.BUCKET_FILL, BUCKET_FILL_MILK.value())
-                            .sound(SoundActions.BUCKET_EMPTY, BUCKET_EMPTY_MILK.value())) {
-                @Override
-                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-                    consumer.accept(new IClientFluidTypeExtensions() {
-                        private static final ResourceLocation MILK_STILL = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_still"),
-                                MILK_FLOW = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_flowing");
-
-                        @Override
-                        public ResourceLocation getStillTexture() {
-                            return MILK_STILL;
-                        }
-
-                        @Override
-                        public ResourceLocation getFlowingTexture() {
-                            return MILK_FLOW;
-                        }
-                    });
-                }
-            }));
+                            .sound(SoundActions.BUCKET_EMPTY, BUCKET_EMPTY_MILK.value()))));
 
             // register fluids
             event.register(Registries.FLUID, helper -> {

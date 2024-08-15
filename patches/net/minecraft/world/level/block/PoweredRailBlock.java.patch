@@ -10,7 +10,7 @@
 +        this(p_55218_, false);
 +    }
 +
-+    protected PoweredRailBlock(BlockBehaviour.Properties p_55218_, boolean isPoweredRail) {
++    public PoweredRailBlock(BlockBehaviour.Properties p_55218_, boolean isPoweredRail) {
          super(true, p_55218_);
 +        this.isActivator = !isPoweredRail;
 +        this.registerDefaultState();

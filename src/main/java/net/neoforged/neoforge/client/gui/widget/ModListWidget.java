@@ -13,6 +13,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.neoforge.client.gui.ModListScreen;
@@ -53,24 +54,24 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
     }
 
     public class ModEntry extends ObjectSelectionList.Entry<ModEntry> {
-        private final IModInfo modInfo;
+        private final ModContainer container;
         private final ModListScreen parent;
 
-        ModEntry(IModInfo info, ModListScreen parent) {
-            this.modInfo = info;
+        ModEntry(ModContainer info, ModListScreen parent) {
+            this.container = info;
             this.parent = parent;
         }
 
         @Override
         public Component getNarration() {
-            return Component.translatable("narrator.select", modInfo.getDisplayName());
+            return Component.translatable("narrator.select", container.getModInfo().getDisplayName());
         }
 
         @Override
         public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            Component name = Component.literal(stripControlCodes(modInfo.getDisplayName()));
-            Component version = Component.literal(stripControlCodes(MavenVersionTranslator.artifactVersionToString(modInfo.getVersion())));
-            VersionChecker.CheckResult vercheck = VersionChecker.getResult(modInfo);
+            Component name = Component.literal(stripControlCodes(container.getModInfo().getDisplayName()));
+            Component version = Component.literal(stripControlCodes(MavenVersionTranslator.artifactVersionToString(container.getModInfo().getVersion())));
+            VersionChecker.CheckResult vercheck = VersionChecker.getResult(container.getModInfo());
             Font font = this.parent.getFontRenderer();
             guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(name, listWidth))), left + 3, top + 2, 0xFFFFFF, false);
             guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(version, listWidth))), left + 3, top + 2 + font.lineHeight, 0xCCCCCC, false);
@@ -85,13 +86,32 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-            parent.setSelected(this);
-            ModListWidget.this.setSelected(this);
+            // clicking on a selected item a second time unselects it
+            parent.setSelected(isFocused() ? null : this);
+            ModListWidget.this.setSelected(isFocused() ? null : this);
             return false;
         }
 
+        @Override
+        public void setFocused(boolean focused) {
+            // ignore focus loss so the item stays selected when tabbing to the config button
+            if (focused) {
+                parent.setSelected(this);
+                ModListWidget.this.setSelected(this);
+            }
+        }
+
+        @Override
+        public boolean isFocused() {
+            return ModListWidget.this.getSelected() == this;
+        }
+
         public IModInfo getInfo() {
-            return modInfo;
+            return container.getModInfo();
+        }
+
+        public ModContainer getContainer() {
+            return container;
         }
     }
 }

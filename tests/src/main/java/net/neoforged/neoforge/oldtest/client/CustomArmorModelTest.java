@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -29,7 +28,9 @@ import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -41,7 +42,7 @@ public class CustomArmorModelTest {
     static final String MOD_ID = "custom_armor_model_test";
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     // demonstrates custom non-humanoid model
-    private static final DeferredItem<Item> RED_LEGGINGS = ITEMS.register("red_leggings", () -> new TintedArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Properties().stacksTo(1)));
+    private static final DeferredItem<Item> RED_LEGGINGS = ITEMS.register("red_leggings", () -> new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Properties().stacksTo(1)));
     // demonstrates the properties are copied from the vanilla model
     private static final DeferredItem<Item> ENDERMAN_CHESTPLATE = ITEMS.register("enderman_chestplate", () -> new EndermanArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Properties().stacksTo(1)));
     private static final DeferredItem<Item> ENDERMAN_BOOTS = ITEMS.register("enderman_boots", () -> new EndermanArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Properties().stacksTo(1)));
@@ -49,6 +50,10 @@ public class CustomArmorModelTest {
     public CustomArmorModelTest(IEventBus modBus) {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
+
+        if (FMLEnvironment.dist.isClient()) {
+            modBus.addListener(ClientEvents::onRegisterClientExtensions);
+        }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -56,23 +61,6 @@ public class CustomArmorModelTest {
             event.accept(RED_LEGGINGS);
             event.accept(ENDERMAN_CHESTPLATE);
             event.accept(ENDERMAN_BOOTS);
-        }
-    }
-
-    private static class TintedArmorItem extends ArmorItem {
-        public TintedArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type slot, Properties props) {
-            super(material, slot, props);
-        }
-
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                @Override
-                public Model getGenericArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                    TintedArmorModel.INSTANCE.base = _default;
-                    return TintedArmorModel.INSTANCE;
-                }
-            });
         }
     }
 
@@ -87,16 +75,6 @@ public class CustomArmorModelTest {
         @Override
         public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
             return ARMOR_TEXTURE;
-        }
-
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                @Override
-                public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                    return TintedArmorModel.ENDERMAN.get();
-                }
-            });
         }
     }
 
@@ -116,6 +94,24 @@ public class CustomArmorModelTest {
                 color = FastColor.ARGB32.color(FastColor.ARGB32.alpha(color), FastColor.ARGB32.red(color), 0, 0);
                 base.renderToBuffer(poseStack, consumer, light, overlay, color);
             }
+        }
+    }
+
+    private static final class ClientEvents {
+        private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerItem(new IClientItemExtensions() {
+                @Override
+                public Model getGenericArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
+                    TintedArmorModel.INSTANCE.base = _default;
+                    return TintedArmorModel.INSTANCE;
+                }
+            }, RED_LEGGINGS.get());
+            event.registerItem(new IClientItemExtensions() {
+                @Override
+                public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
+                    return TintedArmorModel.ENDERMAN.get();
+                }
+            }, ENDERMAN_BOOTS.get(), ENDERMAN_CHESTPLATE.get());
         }
     }
 }

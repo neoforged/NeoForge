@@ -10,6 +10,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DynamicOps;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +82,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -169,6 +171,7 @@ import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.ModifyCustomSpawnersEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
@@ -275,7 +278,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * zombie.finalizeSpawn(level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
@@ -288,7 +291,7 @@ public class EventHooks {
      * var zombie = new Zombie(level);
      * EventHooks.finalizeMobSpawn(zombie, level, difficulty, spawnType, spawnData);
      * level.tryAddFreshEntityWithPassengers(zombie);
-     * if (zombie.isAddedToWorld()) {
+     * if (zombie.isAddedToLevel()) {
      *     // Do stuff with your new zombie
      * }
      * </pre>
@@ -515,10 +518,9 @@ public class EventHooks {
         return event;
     }
 
-    public static int onItemExpire(ItemEntity entity, ItemStack item) {
-        if (item.isEmpty()) return -1;
-        ItemExpireEvent event = new ItemExpireEvent(entity, (item.isEmpty() ? 6000 : item.getItem().getEntityLifespan(item, entity.level())));
-        if (!NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
+    public static int onItemExpire(ItemEntity entity) {
+        ItemExpireEvent event = new ItemExpireEvent(entity);
+        NeoForge.EVENT_BUS.post(event);
         return event.getExtraLife();
     }
 
@@ -1120,5 +1122,18 @@ public class EventHooks {
         var event = new MobSplitEvent(parent, children);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    /**
+     * Fires the {@link ModifyCustomSpawnersEvent}. Returns the custom spawners list.
+     * 
+     * @param serverLevel    The server level.
+     * @param customSpawners The original custom spawners.
+     * @return The new custom spawners list.
+     */
+    public static List<CustomSpawner> getCustomSpawners(ServerLevel serverLevel, List<CustomSpawner> customSpawners) {
+        ModifyCustomSpawnersEvent event = new ModifyCustomSpawnersEvent(serverLevel, new ArrayList<>(customSpawners));
+        NeoForge.EVENT_BUS.post(event);
+        return event.getCustomSpawners();
     }
 }

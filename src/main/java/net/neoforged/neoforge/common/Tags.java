@@ -315,11 +315,20 @@ public class Tags {
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
         public static final TagKey<Item> CLUSTERS = tag("clusters");
+        /**
+         * For raw materials harvested from growable plants. Crop items can be edible like carrots or
+         * non-edible like wheat and cocoa beans.
+         */
         public static final TagKey<Item> CROPS = tag("crops");
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
+        public static final TagKey<Item> CROPS_CACTUS = tag("crops/cactus");
         public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
+        public static final TagKey<Item> CROPS_COCOA_BEAN = tag("crops/cocoa_bean");
+        public static final TagKey<Item> CROPS_MELON = tag("crops/melon");
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
+        public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
+        public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
@@ -380,6 +389,11 @@ public class Tags {
         public static final TagKey<Item> FENCES = tag("fences");
         public static final TagKey<Item> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Item> FENCES_WOODEN = tag("fences/wooden");
+        /**
+         * For bonemeal-like items that can grow plants.
+         * (Note: Could include durability-based modded bonemeal-like items. Check for durability {@link net.minecraft.core.component.DataComponents#DAMAGE} DataComponent to handle them properly)
+         */
+        public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
@@ -555,6 +569,13 @@ public class Tags {
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
          */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
+        public static final TagKey<Item> SLIME_BALLS = tag("slime_balls");
+        /**
+         * Please use properly named {@link Tags.Items#SLIME_BALLS} tag and field instead
+         * <p></p>
+         * TODO: Remove in 1.21.1
+         */
+        @Deprecated(since = "1.21")
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
@@ -672,6 +693,36 @@ public class Tags {
          * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
+        /**
+         * A tag containing melee-based weapons for recipes and loot tables.
+         * Tools are considered melee if they are intentionally intended to be used for melee attack as a primary purpose.
+         * (In other words, Pickaxes are not melee weapons as they are not intended to be a weapon as a primary purpose)
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> MELEE_WEAPON_TOOLS = tag("tools/melee_weapon");
+        /**
+         * A tag containing ranged-based weapons for recipes and loot tables.
+         * Tools are considered ranged if they can damage entities beyond the weapon's and player's melee attack range.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> RANGED_WEAPON_TOOLS = tag("tools/ranged_weapon");
+        /**
+         * A tag containing mining-based tools for recipes and loot tables.
+         * Do not use this tag for determining a tool's behavior in-code.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> MINING_TOOL_TOOLS = tag("tools/mining_tool");
         /**
          * Collects the 4 vanilla armor tags into one parent collection for ease.
          */
@@ -1086,16 +1137,11 @@ public class Tags {
         ResourceLocation registryIdentifier = tagKey.registry().location();
         ResourceLocation tagIdentifier = tagKey.location();
 
-        if (!registryIdentifier.getNamespace().equals("minecraft")) {
-            stringBuilder.append(registryIdentifier.getNamespace())
-                    .append(".");
-        }
-
-        stringBuilder.append(registryIdentifier.getPath().replace("/", "."))
+        stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))
                 .append(".")
                 .append(tagIdentifier.getNamespace())
                 .append(".")
-                .append(tagIdentifier.getPath().replace("/", ".").replace(":", "."));
+                .append(tagIdentifier.getPath().replace("/", "."));
 
         return stringBuilder.toString();
     }

@@ -25,7 +25,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.NeoForge;
@@ -102,6 +104,9 @@ public class GameData {
             SpawnPlacements.fireSpawnPlacementEvent();
             ModLoader.postEvent(new BlockEntityTypeAddBlocksEvent());
             CreativeModeTabRegistry.sortTabs();
+            if (FMLEnvironment.dist.isClient()) {
+                ClientExtensionsManager.earlyInit();
+            }
         }
     }
 
