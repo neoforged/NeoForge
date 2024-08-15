@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
@@ -34,7 +33,19 @@ class DimensionsCommand {
                     }
 
                     types.keySet().stream().sorted().forEach(key -> {
-                        ctx.getSource().sendSuccess(() -> Component.literal(key + ": " + types.get(key).stream().map(Component::getString).sorted().collect(Collectors.joining(", "))), false);
+                        ctx.getSource().sendSuccess(() -> {
+                            var component = Component.literal(key + ": ");
+                            var components = types.get(key);
+
+                            for (int i = 0; i < components.size(); i++) {
+                                component.append(components.get(i));
+
+                                if (i + 1 < components.size())
+                                    component.append(", ");
+                            }
+
+                            return component;
+                        }, false);
                     });
                     return 0;
                 });
