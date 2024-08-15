@@ -486,7 +486,7 @@ public class ModConfigSpec implements IConfigSpec {
          *         was updated or the config UI was used.
          */
         public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
-            return defineList(path, defaultSupplier, newElementSupplier, elementValidator, new Range<Integer>(Integer.class, 1, Integer.MAX_VALUE));
+            return defineList(path, defaultSupplier, newElementSupplier, elementValidator, Range.of(1, Integer.MAX_VALUE));
         }
 
         /**
@@ -606,11 +606,11 @@ public class ModConfigSpec implements IConfigSpec {
          * @param elementValidator   A {@link Predicate} to verify if a list element is valid. Elements that are read from the config file are removed from the list if the
          *                           validator rejects them.
          * @param sizeRange          A {@link Range} defining the valid length of the list. Lists read from the config file that don't validate with this Range will be replaced
-         *                           with the default.
+         *                           with the default. When <code>null</code>, the list size is unbounded.
          * @return A {@link ConfigValue} object that can be used to access the config value and that will live-update if the value changed, i.e. because the config file
          *         was updated or the config UI was used.
          */
-        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, @Nullable Supplier<T> newElementSupplier, Predicate<Object> elementValidator, Range<Integer> sizeRange) {
+        public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, @Nullable Supplier<T> newElementSupplier, Predicate<Object> elementValidator, @Nullable Range<Integer> sizeRange) {
             context.setClazz(List.class);
             return define(path, new ListValueSpec(defaultSupplier, newElementSupplier, x -> x instanceof List && ((List<?>) x).stream().allMatch(elementValidator), elementValidator, context, path, sizeRange) {
                 @Override
@@ -998,6 +998,10 @@ public class ModConfigSpec implements IConfigSpec {
             this.clazz = clazz;
             this.min = min;
             this.max = max;
+        }
+
+        public static Range<Integer> of(int min, int max) {
+            return new Range<>(Integer.class, min, max);
         }
 
         public Class<? extends V> getClazz() {
