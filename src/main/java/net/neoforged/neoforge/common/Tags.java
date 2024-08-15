@@ -1137,16 +1137,11 @@ public class Tags {
         ResourceLocation registryIdentifier = tagKey.registry().location();
         ResourceLocation tagIdentifier = tagKey.location();
 
-        if (!registryIdentifier.getNamespace().equals("minecraft")) {
-            stringBuilder.append(registryIdentifier.getNamespace())
-                    .append(".");
-        }
-
-        stringBuilder.append(registryIdentifier.getPath().replace("/", "."))
+        stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))
                 .append(".")
                 .append(tagIdentifier.getNamespace())
                 .append(".")
-                .append(tagIdentifier.getPath().replace("/", ".").replace(":", "."));
+                .append(tagIdentifier.getPath().replace("/", "."));
 
         return stringBuilder.toString();
     }
