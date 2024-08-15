@@ -1141,7 +1141,7 @@ public class Tags {
                 .append(".")
                 .append(tagIdentifier.getNamespace())
                 .append(".")
-                .append(tagIdentifier.getPath().replace("/", ".").replace(":", "."));
+                .append(tagIdentifier.getPath().replace("/", "."));
 
         return stringBuilder.toString();
     }
