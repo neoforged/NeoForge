@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
@@ -204,19 +205,19 @@ public class ItemAttributeModifierEvent extends Event {
 
             return false;
         }
-        
+
         /**
          * Adds a modifier to the list, replacing any existing modifiers with the same id.
          * 
          * @return the previous modifier, or null if there was no previous modifier with the same id
          */
-        ItemAttributeModifiers.Entry replaceModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
+        @Nullable ItemAttributeModifiers.Entry replaceModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
             Key key = new Key(attribute, modifier.id());
             ItemAttributeModifiers.Entry entry = new ItemAttributeModifiers.Entry(attribute, modifier, slot);
             if (entriesByKey.containsKey(key)) {
                 ItemAttributeModifiers.Entry previousEntry = entriesByKey.get(key);
                 int index = entries.indexOf(previousEntry);
-                if(index != -1)
+                if (index != -1)
                     entries.set(index, entry);
                 else // This should never happen, but it can't hurt to have anyways
                     entries.add(entry);
