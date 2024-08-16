@@ -218,10 +218,11 @@ public class ItemAttributeModifierEvent extends Event {
             if (entriesByKey.containsKey(key)) {
                 ItemAttributeModifiers.Entry previousEntry = entriesByKey.get(key);
                 int index = entries.indexOf(previousEntry);
-                if (index != -1)
+                if (index != -1) {
                     entries.set(index, entry);
-                else // This should never happen, but it can't hurt to have anyways
+                } else { // This should never happen, but it can't hurt to have anyways
                     entries.add(entry);
+                }
                 entriesByKey.put(key, entry);
                 return previousEntry;
             } else {
