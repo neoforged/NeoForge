@@ -8,6 +8,7 @@ package net.neoforged.neoforge.server.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -32,12 +33,8 @@ class DataComponentCommand {
     }
 
     @SuppressWarnings("OptionalAssignedToNull")
-    private static int listComponents(CommandContext<CommandSourceStack> ctx) {
-        if (!(ctx.getSource().source instanceof ServerPlayer player)) {
-            ctx.getSource().sendFailure(Component.translatable("commands.neoforge.data_components.list.error.not_a_player"));
-            return 0;
-        }
-
+    private static int listComponents(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         ItemStack stack = player.getMainHandItem();
         if (stack.isEmpty()) {
             ctx.getSource().sendFailure(Component.translatable("commands.neoforge.data_components.list.error.held_stack_empty"));
