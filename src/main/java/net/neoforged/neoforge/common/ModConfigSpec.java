@@ -364,8 +364,6 @@ public class ModConfigSpec implements IConfigSpec {
             Range<V> range = new Range<>(clazz, min, max);
             context.setRange(range);
             comment("Range: " + range.toString());
-            if (min.compareTo(max) > 0)
-                throw new IllegalArgumentException("Range min most be less then max.");
             return define(path, defaultSupplier, range);
         }
 
@@ -486,7 +484,7 @@ public class ModConfigSpec implements IConfigSpec {
          *         was updated or the config UI was used.
          */
         public <T> ConfigValue<List<? extends T>> defineList(List<String> path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
-            return defineList(path, defaultSupplier, newElementSupplier, elementValidator, Range.of(1, Integer.MAX_VALUE));
+            return defineList(path, defaultSupplier, newElementSupplier, elementValidator, ListValueSpec.NON_EMPTY);
         }
 
         /**
@@ -998,6 +996,9 @@ public class ModConfigSpec implements IConfigSpec {
             this.clazz = clazz;
             this.min = min;
             this.max = max;
+            if (min.compareTo(max) > 0) {
+                throw new IllegalArgumentException("Range min must be less then max.");
+            }
         }
 
         public static Range<Integer> of(int min, int max) {
@@ -1128,7 +1129,8 @@ public class ModConfigSpec implements IConfigSpec {
     }
 
     public static class ListValueSpec extends ValueSpec {
-        private static final Range<Integer> MAX_ELEMENTS = new Range<>(Integer.class, 0, Integer.MAX_VALUE);
+        private static final Range<Integer> MAX_ELEMENTS = Range.of(0, Integer.MAX_VALUE);
+        private static final Range<Integer> NON_EMPTY = Range.of(1, Integer.MAX_VALUE);
 
         @Nullable
         private final Supplier<?> newElementSupplier;
