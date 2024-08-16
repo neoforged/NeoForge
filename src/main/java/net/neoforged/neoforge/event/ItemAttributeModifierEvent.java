@@ -211,7 +211,8 @@ public class ItemAttributeModifierEvent extends Event {
          * 
          * @return the previous modifier, or null if there was no previous modifier with the same id
          */
-        @Nullable ItemAttributeModifiers.Entry replaceModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
+        @Nullable
+        ItemAttributeModifiers.Entry replaceModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
             Key key = new Key(attribute, modifier.id());
             ItemAttributeModifiers.Entry entry = new ItemAttributeModifiers.Entry(attribute, modifier, slot);
             if (entriesByKey.containsKey(key)) {
