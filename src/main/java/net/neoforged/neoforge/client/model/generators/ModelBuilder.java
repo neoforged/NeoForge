@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -477,6 +478,20 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         public ElementBuilder allFaces(BiConsumer<Direction, FaceBuilder> action) {
             Arrays.stream(Direction.values())
                     .forEach(d -> action.accept(d, face(d)));
+            return this;
+        }
+
+        /**
+         * Creates <em>possible</em> faces for the model as needed, excluding those
+         * specified in the second argument, and then applies a function to modify added faces.
+         *
+         * @param action the function to apply to each direction
+         * @param exc    directions which will be excluded from adding to model file
+         * @return this builder
+         * @throws NullPointerException if {@code action} is {@code null}
+         */
+        public ElementBuilder allFacesExcept(BiConsumer<Direction, FaceBuilder> action, Set<Direction> exc) {
+            Arrays.stream(Direction.values()).filter(d -> !exc.contains(d)).forEach(d -> action.accept(d, face(d)));
             return this;
         }
 
