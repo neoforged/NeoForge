@@ -130,7 +130,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
                         Tags.Items.FOODS_RAW_MEAT, Tags.Items.FOODS_RAW_FISH, Tags.Items.FOODS_COOKED_MEAT, Tags.Items.FOODS_COOKED_FISH,
                         Tags.Items.FOODS_SOUP, Tags.Items.FOODS_CANDY, Tags.Items.FOODS_GOLDEN,
                         Tags.Items.FOODS_EDIBLE_WHEN_PLACED, Tags.Items.FOODS_FOOD_POISONING);
-        tag(Tags.Items.FOODS_ANIMAL)
+        tag(Tags.Items.ANIMAL_FOODS)
                 .addTags(ItemTags.SNIFFER_FOOD, ItemTags.PIGLIN_FOOD, ItemTags.FOX_FOOD, ItemTags.COW_FOOD,
                         ItemTags.GOAT_FOOD, ItemTags.SHEEP_FOOD, ItemTags.WOLF_FOOD, ItemTags.CAT_FOOD,
                         ItemTags.HORSE_FOOD, ItemTags.CAMEL_FOOD, ItemTags.ARMADILLO_FOOD,

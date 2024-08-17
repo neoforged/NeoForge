@@ -396,10 +396,6 @@ public class Tags {
         public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
-         * All foods edible by animals excluding poisonous foods.
-         */
-        public static final TagKey<Item> FOODS_ANIMAL = tag("foods/animal");
-        /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
          * Cherries would go here as they are considered a "stone fruit" within culinary fields.
          */
@@ -440,6 +436,10 @@ public class Tags {
          * Examples are Rotten Flesh's Hunger or Pufferfish's Nausea, or Poisonous Potato's Poison.
          */
         public static final TagKey<Item> FOODS_FOOD_POISONING = tag("foods/food_poisoning");
+        /**
+         * All foods edible by animals excluding poisonous foods.
+         */
+        public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
