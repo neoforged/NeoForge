@@ -396,6 +396,10 @@ public class Tags {
         public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
+         * All foods edible by animals excluding poisonous foods.
+         */
+        public static final TagKey<Item> FOODS_ANIMAL = tag("foods/animal");
+        /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
          * Cherries would go here as they are considered a "stone fruit" within culinary fields.
          */

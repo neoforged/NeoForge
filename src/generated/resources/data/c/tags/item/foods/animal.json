@@ -1,0 +1,28 @@
+{
+  "values": [
+    "#minecraft:sniffer_food",
+    "#minecraft:piglin_food",
+    "#minecraft:fox_food",
+    "#minecraft:cow_food",
+    "#minecraft:goat_food",
+    "#minecraft:sheep_food",
+    "#minecraft:wolf_food",
+    "#minecraft:cat_food",
+    "#minecraft:horse_food",
+    "#minecraft:camel_food",
+    "#minecraft:armadillo_food",
+    "#minecraft:bee_food",
+    "#minecraft:chicken_food",
+    "#minecraft:frog_food",
+    "#minecraft:hoglin_food",
+    "#minecraft:llama_food",
+    "#minecraft:ocelot_food",
+    "#minecraft:panda_food",
+    "#minecraft:pig_food",
+    "#minecraft:rabbit_food",
+    "#minecraft:strider_food",
+    "#minecraft:turtle_food",
+    "#minecraft:parrot_food",
+    "#minecraft:axolotl_food"
+  ]
+}
