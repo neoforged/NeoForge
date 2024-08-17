@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
-@@ -66,22 +_,27 @@
+@@ -66,22 +_,28 @@
              if (armoritem.getEquipmentSlot() == p_117122_) {
                  this.getParentModel().copyPropertiesTo(p_117124_);
                  this.setPartVisibility(p_117124_, p_117122_);
@@ -12,10 +12,11 @@
 -                for (ArmorMaterial.Layer armormaterial$layer : armormaterial.layers()) {
 -                    int j = armormaterial$layer.dyeable() ? i : -1;
 -                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, armormaterial$layer.texture(flag));
-+                int fallbackColor = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).getDefaultDyeColor(itemstack);
++                net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack);
++                int fallbackColor = extensions.getDefaultDyeColor(itemstack);
 +                for (int layerIdx = 0; layerIdx < armormaterial.layers().size(); layerIdx++) {
 +                    ArmorMaterial.Layer armormaterial$layer = armormaterial.layers().get(layerIdx);
-+                    int j = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).getArmorLayerTintColor(itemstack, p_117121_, armormaterial$layer, layerIdx, fallbackColor);
++                    int j = extensions.getArmorLayerTintColor(itemstack, p_117121_, armormaterial$layer, layerIdx, fallbackColor);
 +                    if (j != 0) {
 +                        var texture = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_117121_, itemstack, armormaterial$layer, flag, p_117122_);
 +                        this.renderModel(p_117119_, p_117120_, p_117123_, model, j, texture);
