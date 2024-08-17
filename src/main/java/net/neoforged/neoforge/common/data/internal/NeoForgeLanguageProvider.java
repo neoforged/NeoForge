@@ -152,9 +152,14 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CONCRETE_POWDERS, "Concrete Powders");
         add(Tags.Items.CROPS, "Crops");
         add(Tags.Items.CROPS_BEETROOT, "Beetroot Crops");
+        add(Tags.Items.CROPS_CACTUS, "Cactus Crops");
         add(Tags.Items.CROPS_CARROT, "Carrot Crops");
+        add(Tags.Items.CROPS_COCOA_BEAN, "Cocoa Bean Crops");
+        add(Tags.Items.CROPS_MELON, "Melon Crops");
         add(Tags.Items.CROPS_NETHER_WART, "Nether Wart Crops");
         add(Tags.Items.CROPS_POTATO, "Potato Crops");
+        add(Tags.Items.CROPS_PUMPKIN, "Pumpkin Crops");
+        add(Tags.Items.CROPS_SUGAR_CANE, "Sugar Cane Crops");
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
         add(Tags.Items.DUSTS, "Dusts");
         add(Tags.Items.DUSTS_GLOWSTONE, "Glowstone Dusts");
@@ -284,6 +289,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SEEDS_PUMPKIN, "Pumpkin Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
         add(Tags.Items.SHULKER_BOXES, "Shulker Boxes");
+        add(Tags.Items.SLIME_BALLS, "Slimeballs");
         add(Tags.Items.SLIMEBALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");
         add(Tags.Items.STORAGE_BLOCKS, "Storage Blocks");

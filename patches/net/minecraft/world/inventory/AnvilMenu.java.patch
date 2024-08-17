@@ -30,6 +30,19 @@
                  if (itemstack1.isDamageableItem() && itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
                      int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
                      if (l2 <= 0) {
+@@ -176,8 +_,10 @@
+                         int j2 = entry.getIntValue();
+                         j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+                         Enchantment enchantment = holder.value();
+-                        boolean flag1 = enchantment.canEnchant(itemstack);
+-                        if (this.player.getAbilities().instabuild || itemstack.is(Items.ENCHANTED_BOOK)) {
++                        // Neo: Respect IItemExtension#supportsEnchantment - we also delegate the logic for Enchanted Books to this method.
++                        // Though we still allow creative players to combine any item with any enchantment in the anvil here.
++                        boolean flag1 = itemstack.supportsEnchantment(holder);
++                        if (this.player.getAbilities().instabuild) {
+                             flag1 = true;
+                         }
+ 
 @@ -228,6 +_,7 @@
                  i += k;
                  itemstack1.remove(DataComponents.CUSTOM_NAME);

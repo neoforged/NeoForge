@@ -196,3 +196,30 @@
              if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
                  throw new IllegalStateException("Item cannot have both durability and be stackable");
              } else {
+@@ -441,6 +_,14 @@
+         @Nullable
+         MapItemSavedData mapData(MapId p_339670_);
+ 
++        /**
++         * Neo: Returns the level if it's available.
++         */
++        @Nullable
++        default Level level() {
++            return null;
++        }
++
+         static Item.TooltipContext of(@Nullable final Level p_339599_) {
+             return p_339599_ == null ? EMPTY : new Item.TooltipContext() {
+                 @Override
+@@ -456,6 +_,11 @@
+                 @Override
+                 public MapItemSavedData mapData(MapId p_339628_) {
+                     return p_339599_.getMapData(p_339628_);
++                }
++
++                @Override
++                public Level level() {
++                    return p_339599_;
+                 }
+             };
+         }
