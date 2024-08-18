@@ -1,4 +1,7 @@
 {
+  "dimension.minecraft.overworld": "Overworld",
+  "dimension.minecraft.the_end": "The End",
+  "dimension.minecraft.the_nether": "The Nether",
   "tag.block.c.barrels": "Barrels",
   "tag.block.c.barrels.wooden": "Wooden Barrels",
   "tag.block.c.bookshelves": "Bookshelves",
