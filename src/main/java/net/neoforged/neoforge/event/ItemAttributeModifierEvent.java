@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is fired when the attributes for an item stack are queried (for any reason) through {@link ItemStack#getAttributeModifiers()}.
@@ -99,8 +100,7 @@ public class ItemAttributeModifierEvent extends Event {
      * @apiNote Modifiers must have a unique and consistent {@link ResourceLocation} id, or the modifier will not be removed when the item is unequipped.
      */
     public void replaceModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
-        removeModifier(attribute, modifier.id());
-        addModifier(attribute, modifier, slot);
+        getBuilder().replaceModifier(attribute, modifier, slot);
     }
 
     /**
@@ -204,6 +204,32 @@ public class ItemAttributeModifierEvent extends Event {
             }
 
             return false;
+        }
+
+        /**
+         * Adds a modifier to the list, replacing any existing modifiers with the same id.
+         * 
+         * @return the previous modifier, or null if there was no previous modifier with the same id
+         */
+        @Nullable
+        ItemAttributeModifiers.Entry replaceModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) {
+            Key key = new Key(attribute, modifier.id());
+            ItemAttributeModifiers.Entry entry = new ItemAttributeModifiers.Entry(attribute, modifier, slot);
+            if (entriesByKey.containsKey(key)) {
+                ItemAttributeModifiers.Entry previousEntry = entriesByKey.get(key);
+                int index = entries.indexOf(previousEntry);
+                if (index != -1) {
+                    entries.set(index, entry);
+                } else { // This should never happen, but it can't hurt to have anyways
+                    entries.add(entry);
+                }
+                entriesByKey.put(key, entry);
+                return previousEntry;
+            } else {
+                entries.add(entry);
+                entriesByKey.put(key, entry);
+                return null;
+            }
         }
 
         /**

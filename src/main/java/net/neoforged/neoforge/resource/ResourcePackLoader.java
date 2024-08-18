@@ -166,9 +166,17 @@ public class ResourcePackLoader {
                     .map(FeatureFlagsMetadataSection::flags)
                     .orElse(FeatureFlagSet.of());
 
-            final List<String> overlays = Optional.ofNullable(primaryResources.getMetadataSection(OverlayMetadataSection.TYPE))
+            final List<String> vanillaOverlays = Optional.ofNullable(primaryResources.getMetadataSection(OverlayMetadataSection.TYPE))
                     .map(section -> section.overlaysForVersion(currentVersion))
                     .orElse(List.of());
+
+            final List<String> neoOverlays = Optional.ofNullable(primaryResources.getMetadataSection(OverlayMetadataSection.NEOFORGE_TYPE))
+                    .map(section -> section.overlaysForVersion(currentVersion))
+                    .orElse(List.of());
+
+            List<String> overlays = new ArrayList<>(vanillaOverlays);
+            overlays.addAll(neoOverlays);
+            overlays = List.copyOf(overlays);
 
             if (metadata == null) {
                 return new Pack.Metadata(location.title(), PackCompatibility.COMPATIBLE, flags, overlays, primaryResources.isHidden());
