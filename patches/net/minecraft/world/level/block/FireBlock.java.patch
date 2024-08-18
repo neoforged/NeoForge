@@ -21,7 +21,7 @@
  
              BlockState blockstate = p_221161_.getBlockState(p_221162_.below());
 -            boolean flag = blockstate.is(p_221161_.dimensionType().infiniburn());
-+            boolean flag = blockstate.isFireSource(p_221161_, p_221162_, Direction.UP);
++            boolean flag = blockstate.isFireSource(p_221161_, p_221162_.below(), Direction.UP);
              int i = p_221160_.getValue(AGE);
              if (!flag && p_221161_.isRaining() && this.isNearRain(p_221161_, p_221162_) && p_221163_.nextFloat() < 0.2F + (float)i * 0.03F) {
                  p_221161_.removeBlock(p_221162_, false);
