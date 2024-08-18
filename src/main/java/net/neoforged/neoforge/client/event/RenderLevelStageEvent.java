@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
@@ -20,6 +21,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.client.IRenderableSection;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +46,7 @@ public class RenderLevelStageEvent extends Event {
     private final DeltaTracker partialTick;
     private final Camera camera;
     private final Frustum frustum;
+    private final Iterable<? extends IRenderableSection> renderableSections;
 
     public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum) {
         this.stage = stage;
@@ -55,6 +58,7 @@ public class RenderLevelStageEvent extends Event {
         this.partialTick = partialTick;
         this.camera = camera;
         this.frustum = frustum;
+        this.renderableSections = levelRenderer.getVisibleSections();
     }
 
     /**
@@ -119,6 +123,15 @@ public class RenderLevelStageEvent extends Event {
      */
     public Frustum getFrustum() {
         return frustum;
+    }
+
+    /**
+     * Run the given consumer once for each chunk section that is deemed visible by the renderer.
+     * 
+     * @param sectionConsumer the consumer to run
+     */
+    public void forEachVisibleSection(Consumer<IRenderableSection> sectionConsumer) {
+        renderableSections.forEach(sectionConsumer);
     }
 
     /**
