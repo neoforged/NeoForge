@@ -49,6 +49,10 @@ public class RenderLevelStageEvent extends Event {
     private final Iterable<? extends IRenderableSection> renderableSections;
 
     public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum) {
+        this(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, partialTick, camera, frustum, levelRenderer.getVisibleSections());
+    }
+
+    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
         this.stage = stage;
         this.levelRenderer = levelRenderer;
         this.poseStack = poseStack != null ? poseStack : new PoseStack();
@@ -58,7 +62,7 @@ public class RenderLevelStageEvent extends Event {
         this.partialTick = partialTick;
         this.camera = camera;
         this.frustum = frustum;
-        this.renderableSections = levelRenderer.getVisibleSections();
+        this.renderableSections = renderableSections;
     }
 
     /**
