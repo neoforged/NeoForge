@@ -153,7 +153,7 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         };
     }
 
-    public <T extends DataProvider> T addProvider(boolean run, T provider){
+    public <T extends DataProvider> T addProvider(boolean run, T provider) {
         return dataGenerator.addProvider(run, provider);
     }
 
@@ -176,7 +176,6 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     public void createBlockAndItemTags(BlockTagsProvider blockTagsProvider, ItemTagsProvider itemTagsProvider) {
         var blockTags = createProvider(includeServer(), blockTagsProvider::build);
         addProvider(includeServer(), itemTagsProvider.build(dataGenerator.getPackOutput(), config.lookupProvider, blockTags.contentsGetter(), existingFileHelper));
-
     }
 
     @FunctionalInterface
