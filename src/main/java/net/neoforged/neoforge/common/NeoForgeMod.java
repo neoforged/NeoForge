@@ -589,28 +589,28 @@ public class NeoForgeMod {
         var includeServer = event.includeServer();
         var includeClient = event.includeClient();
 
-        event.addProvider(true, output -> new PackMetadataGenerator(output)
+        event.createProvider(true, output -> new PackMetadataGenerator(output)
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.translatable("pack.neoforge.description"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
 
-        event.addProvider(includeServer, NeoForgeAdvancementProvider::new);
-        event.addBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
-        event.addProvider(includeServer, NeoForgeEntityTypeTagsProvider::new);
-        event.addProvider(includeServer, NeoForgeFluidTagsProvider::new);
-        event.addProvider(includeServer, NeoForgeEnchantmentTagsProvider::new);
-        event.addProvider(includeServer, NeoForgeRecipeProvider::new);
-        event.addProvider(includeServer, NeoForgeLootTableProvider::new);
-        event.addProvider(includeServer, NeoForgeBiomeTagsProvider::new);
-        event.addProvider(includeServer, NeoForgeStructureTagsProvider::new);
-        event.addProvider(includeServer, NeoForgeDamageTypeTagsProvider::new);
-        event.addProvider(includeServer, NeoForgeRegistryOrderReportProvider::new);
-        event.addProvider(includeServer, NeoForgeDataMapsProvider::new);
+        event.createProvider(includeServer, NeoForgeAdvancementProvider::new);
+        event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
+        event.createProvider(includeServer, NeoForgeEntityTypeTagsProvider::new);
+        event.createProvider(includeServer, NeoForgeFluidTagsProvider::new);
+        event.createProvider(includeServer, NeoForgeEnchantmentTagsProvider::new);
+        event.createProvider(includeServer, NeoForgeRecipeProvider::new);
+        event.createProvider(includeServer, NeoForgeLootTableProvider::new);
+        event.createProvider(includeServer, NeoForgeBiomeTagsProvider::new);
+        event.createProvider(includeServer, NeoForgeStructureTagsProvider::new);
+        event.createProvider(includeServer, NeoForgeDamageTypeTagsProvider::new);
+        event.createProvider(includeServer, NeoForgeRegistryOrderReportProvider::new);
+        event.createProvider(includeServer, NeoForgeDataMapsProvider::new);
 
-        event.addProvider(includeClient, NeoForgeSpriteSourceProvider::new);
-        event.addProvider(includeClient, VanillaSoundDefinitionsProvider::new);
-        event.addProvider(includeClient, NeoForgeLanguageProvider::new);
+        event.createProvider(includeClient, NeoForgeSpriteSourceProvider::new);
+        event.createProvider(includeClient, VanillaSoundDefinitionsProvider::new);
+        event.createProvider(includeClient, NeoForgeLanguageProvider::new);
     }
 
     // done in an event instead of deferred to only enable if a mod requests it
