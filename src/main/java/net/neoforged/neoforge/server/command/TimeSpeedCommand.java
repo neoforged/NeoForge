@@ -43,8 +43,8 @@ class TimeSpeedCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static String levelName(CommandSourceStack source) {
-        return source.getLevel().dimension().location().toLanguageKey();
+    private static Component levelName(CommandSourceStack source) {
+        return source.getLevel().getDescription();
     }
 
     private static float minutes(final float speed) {
