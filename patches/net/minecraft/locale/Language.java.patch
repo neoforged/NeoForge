@@ -13,7 +13,7 @@
          return new Language() {
              @Override
              public String getOrDefault(String p_128127_, String p_265421_) {
-+                return net.neoforged.neoforge.common.text.TemplateParser.stripTemplate(getOrDefaultRaw(p_128127_, p_265421_));
++                return net.neoforged.neoforge.common.text.TemplateParser.stripTemplate(p_128127_, getOrDefaultRaw(p_128127_, p_265421_));
 +            }
 +
 +            @Override

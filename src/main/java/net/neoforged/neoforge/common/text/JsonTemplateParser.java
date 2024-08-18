@@ -28,9 +28,9 @@ public class JsonTemplateParser {
         }
     }
 
-    public static void handle(String template, Consumer<String> consumer) {
+    public static String handle(String template) {
         try {
-            consumer.accept(parse(template).getString());
+            return parse(template).getString();
         } catch (JsonSyntaxException e) {
             throw new TemplateParser.ParsingException("Error parsing translation for " + template + ": " + e.getMessage());
         }

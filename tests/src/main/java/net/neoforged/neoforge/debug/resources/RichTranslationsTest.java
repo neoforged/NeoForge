@@ -6,9 +6,6 @@
 package net.neoforged.neoforge.debug.resources;
 
 import java.util.Optional;
-
-import org.apache.commons.lang3.mutable.MutableBoolean;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.locale.Language;
@@ -21,6 +18,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 @ForEachTest(groups = RichTranslationsTest.GROUP)
 public class RichTranslationsTest {
@@ -73,9 +71,7 @@ public class RichTranslationsTest {
             TemplateParser.register(ResourceLocation.parse("neotest:test"), (template, arg, consumer) -> {
                 consumer.accept(Component.literal(template.replace('X', 'n')));
                 return "";
-            }, (template, consumer) -> {
-                consumer.accept(template.replace('X', 'n'));
-            });
+            }, template -> template.replace('X', 'n'));
 
             final Component vanilla = Component.translatable("rich_translations_test.simple_vanilla_translation");
             final Component custom = Component.translatable("rich_translations_test.simple_custom_translation");
