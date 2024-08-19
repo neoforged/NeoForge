@@ -102,7 +102,7 @@ class TPSCommand {
 
     private static Component createTickTimeComponent(double tickTime) {
         return Component.translatable("commands.neoforge.tps.mean_tick_time", Component.literal(TIME_FORMATTER.format(tickTime))
-                        .withColor(CommonColors.GRAY))
+                .withColor(CommonColors.GRAY))
                 .withStyle(style -> style.withHoverEvent(new HoverEvent(
                         HoverEvent.Action.SHOW_TEXT,
                         Component.translatable("commands.neoforge.tps.mean_tick_time.tooltip"))));
