@@ -5,18 +5,29 @@
 
 package net.neoforged.neoforge.server.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.text.DecimalFormat;
+import java.util.Objects;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.DimensionArgument;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
 import net.minecraft.util.TimeUtil;
-import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.TickRateManager;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Math;
 
 class TPSCommand {
     private static final DecimalFormat TIME_FORMATTER = new DecimalFormat("########0.000");
@@ -24,34 +35,23 @@ class TPSCommand {
 
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("tps")
-                .requires(cs -> cs.hasPermission(0)) //permission
+                .requires(cs -> cs.hasPermission(Commands.LEVEL_ALL)) //permission
                 .then(Commands.argument("dim", DimensionArgument.dimension())
-                        .executes(ctx -> sendTime(ctx.getSource(), DimensionArgument.getDimension(ctx, "dim"))))
+                        .executes(ctx -> sendTime(ctx, DimensionArgument.getDimension(ctx, "dim"))))
                 .executes(ctx -> {
-                    for (ServerLevel dim : ctx.getSource().getServer().getAllLevels())
-                        sendTime(ctx.getSource(), dim);
+                    for (ServerLevel dim : ctx.getSource().getServer().getAllLevels()) {
+                        sendTime(ctx, dim);
+                    }
 
-                    long[] times = ctx.getSource().getServer().getTickTimesNanos();
-                    double meanTickTime = mean(times) * 1.0E-6D;
-                    double meanTPS = TimeUtil.MILLISECONDS_PER_SECOND / Math.max(meanTickTime, ctx.getSource().getServer().tickRateManager().millisecondsPerTick());
-                    ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.tps.summary.all", TIME_FORMATTER.format(meanTickTime), TIME_FORMATTER.format(meanTPS)), false);
-
-                    return 0;
+                    sendTime(ctx, null);
+                    return Command.SINGLE_SUCCESS;
                 });
     }
 
-    private static int sendTime(CommandSourceStack cs, ServerLevel dim) throws CommandSyntaxException {
-        long[] times = cs.getServer().getTickTime(dim.dimension());
-
-        if (times == null) // Null means the world is unloaded. Not invalid. That's taken care of by DimensionArgument itself.
-            times = UNLOADED;
-
-        final Registry<DimensionType> reg = cs.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
-        double worldTickTime = mean(times) * 1.0E-6D;
-        double worldTPS = TimeUtil.MILLISECONDS_PER_SECOND / Math.max(worldTickTime, dim.tickRateManager().millisecondsPerTick());
-        cs.sendSuccess(() -> Component.translatable("commands.neoforge.tps.summary.named", dim.getDescription(), reg.getKey(dim.dimensionType()).toString(), TIME_FORMATTER.format(worldTickTime), TIME_FORMATTER.format(worldTPS)), false);
-
-        return 1;
+    private static int sendTime(CommandContext<CommandSourceStack> context, ServerLevel dim) throws CommandSyntaxException {
+        var src = context.getSource();
+        src.sendSuccess(() -> createComponent(src.getServer(), dim), false);
+        return Command.SINGLE_SUCCESS;
     }
 
     private static long mean(long[] values) {
@@ -59,5 +59,67 @@ class TPSCommand {
         for (long v : values)
             sum += v;
         return sum / values.length;
+    }
+
+    private static Component createComponent(MinecraftServer server, @Nullable ServerLevel dimension) {
+        MutableComponent prefix;
+        long[] times;
+        TickRateManager tickRateManager;
+
+        if (dimension == null) {
+            prefix = Component.translatable("commands.neoforge.tps.summary.overall");
+            times = server.getTickTimesNanos();
+            tickRateManager = server.tickRateManager();
+        } else {
+            var dimKey = dimension.dimension();
+            var dimensionTimes = server.getTickTime(dimKey);
+
+            prefix = Component.translatable("commands.neoforge.tps.summary.dimension", createDimensionComponent(dimension));
+            times = dimensionTimes == null ? UNLOADED : dimensionTimes;
+            tickRateManager = dimension.tickRateManager();
+        }
+
+        var tickTime = mean(times) * 1.0E-6D;
+        var tps = TimeUtil.MILLISECONDS_PER_SECOND / Math.max(tickTime, tickRateManager.millisecondsPerTick());
+        var timeComponent = Component.empty().append(createTickTimeComponent(tickTime)).append(". ").append(createTpsComponent(tickRateManager, tps));
+        return prefix.append(CommonComponents.SPACE).append(timeComponent);
+    }
+
+    private static Component createDimensionComponent(ServerLevel dimension) {
+        var regName = dimension.dimension().location();
+        var langKey = regName.toLanguageKey("dimension");
+        var dimensionTypes = dimension.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
+        var dimensionType = Objects.requireNonNull(dimensionTypes.getKey(dimension.dimensionType()));
+
+        return Component.translatableWithFallback(langKey, regName.toString()).withStyle(style -> style
+                .withColor(ChatFormatting.GREEN)
+                .withHoverEvent(new HoverEvent(
+                        HoverEvent.Action.SHOW_TEXT,
+                        Component.literal(regName.toString())
+                                .append(" (")
+                                .append(dimensionType.toString())
+                                .append(")"))));
+    }
+
+    private static Component createTickTimeComponent(double tickTime) {
+        return Component.translatable("commands.neoforge.tps.mean_tick_time", Component.literal(TIME_FORMATTER.format(tickTime))
+                        .withColor(CommonColors.GRAY))
+                .withStyle(style -> style.withHoverEvent(new HoverEvent(
+                        HoverEvent.Action.SHOW_TEXT,
+                        Component.translatable("commands.neoforge.tps.mean_tick_time.tooltip"))));
+    }
+
+    private static Component createTpsComponent(TickRateManager tickRateManager, double tps) {
+        return Component.translatable("commands.neoforge.tps.mean_tps", Component.literal(TIME_FORMATTER.format(tps)).withColor(calculateTPSColor(tickRateManager, tps)))
+                .withStyle(style -> style.withHoverEvent(new HoverEvent(
+                        HoverEvent.Action.SHOW_TEXT,
+                        Component.translatable("commands.neoforge.tps.mean_tps.tooltip"))));
+    }
+
+    private static int calculateTPSColor(TickRateManager tickRateManager, double tps) {
+        // Improved color blending code thanks to sciwhiz12
+        float maxTPS = TimeUtil.MILLISECONDS_PER_SECOND / tickRateManager.millisecondsPerTick();
+        // 0 degrees (0F) is red, 120 degrees (0.33F) is green
+        return Mth.hsvToRgb((float) (Mth.inverseLerp(tps, 0, maxTPS) * 0.33F), 1F, 1F);
     }
 }

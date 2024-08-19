@@ -81,10 +81,13 @@
   "commands.neoforge.setdim.invalid.nochange": "The entity selected (%1$s) is already in the dimension specified (%2$s).",
   "commands.neoforge.setdim.deprecated": "This command is deprecated for removal in 1.17, use %s instead.",
   "commands.neoforge.tps.invalid": "Invalid dimension %1$s Possible values: %2$s",
-  "commands.neoforge.tps.summary.all": "Overall: Mean tick time: %1$s ms. Mean TPS: %2$s",
+  "commands.neoforge.tps.summary.overall": "Overall:",
+  "commands.neoforge.tps.summary.dimension": "'%s':",
+  "commands.neoforge.tps.mean_tps": "Mean TPS: %s",
+  "commands.neoforge.tps.mean_tps.tooltip": "Closer to 20 is better",
+  "commands.neoforge.tps.mean_tick_time": "Mean tick time: %s ms",
+  "commands.neoforge.tps.mean_tick_time.tooltip": "Lower is better, Higher is worse",
   "commands.neoforge.mods.list": "Mod List: %1$s",
-  "commands.neoforge.tps.summary.basic": "Dim %1$s: Mean tick time: %2$s ms. Mean TPS: %3$s",
-  "commands.neoforge.tps.summary.named": "Dim %1$s (%2$s): Mean tick time: %3$s ms. Mean TPS: %4$s",
   "commands.neoforge.tracking.entity.enabled": "Entity tracking enabled for %d seconds.",
   "commands.neoforge.tracking.entity.reset": "Entity timings data has been cleared!",
   "commands.neoforge.tracking.invalid": "Invalid tracking data.",
@@ -130,6 +133,10 @@
 
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",
+
+  "dimension.minecraft.overworld": "Overworld",
+  "dimension.minecraft.the_nether": "The Nether",
+  "dimension.minecraft.the_end": "The End",
 
   "neoforge.update.beta.1": "%sWARNING: %sNeoForge Beta",
   "neoforge.update.beta.2": "Major issues may arise, verify before reporting.",
