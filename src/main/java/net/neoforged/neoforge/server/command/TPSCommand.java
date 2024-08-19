@@ -87,11 +87,10 @@ class TPSCommand {
 
     private static Component createDimensionComponent(ServerLevel dimension) {
         var regName = dimension.dimension().location();
-        var langKey = regName.toLanguageKey("dimension");
         var dimensionTypes = dimension.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
         var dimensionType = Objects.requireNonNull(dimensionTypes.getKey(dimension.dimensionType()));
 
-        return Component.translatableWithFallback(langKey, regName.toString()).withStyle(style -> style
+        return Component.empty().append(dimension.getDescription()).withStyle(style -> style
                 .withColor(ChatFormatting.GREEN)
                 .withHoverEvent(new HoverEvent(
                         HoverEvent.Action.SHOW_TEXT,
