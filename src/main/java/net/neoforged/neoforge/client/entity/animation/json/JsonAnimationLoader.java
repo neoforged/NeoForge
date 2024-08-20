@@ -1,21 +1,23 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.entity.animation.json;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A loader for entity animations written in JSON. You can also get parsed animations from this class, but the
@@ -36,6 +38,7 @@ public final class JsonAnimationLoader extends SimpleJsonResourceReloadListener 
 
     /**
      * Get the animation with the specified ID.
+     * 
      * @param animationId The ID of the animation.
      * @return The animation, or null if not found.
      */
@@ -46,12 +49,11 @@ public final class JsonAnimationLoader extends SimpleJsonResourceReloadListener 
 
     /**
      * Get the animation with the specified ID.
+     * 
      * @param animationId The ID of the animation.
      * @return The animation
      * @throws IllegalStateException If the specified animation is not found
      */
-    @NotNull
-    @Contract("null -> fail")
     public AnimationDefinition getAnimationOrThrow(ResourceLocation animationId) throws IllegalStateException {
         final AnimationDefinition animation = getAnimation(animationId);
         if (animation == null) {
@@ -61,17 +63,12 @@ public final class JsonAnimationLoader extends SimpleJsonResourceReloadListener 
     }
 
     @Override
-    protected void apply(
-        @NotNull Map<ResourceLocation, JsonElement> animationJsons,
-        @NotNull ResourceManager resourceManager,
-        @NotNull ProfilerFiller profiler
-    ) {
+    protected void apply(Map<ResourceLocation, JsonElement> animationJsons, ResourceManager resourceManager, ProfilerFiller profiler) {
         animations.clear();
         for (final var entry : animationJsons.entrySet()) {
             try {
                 animations.put(entry.getKey(), JsonAnimationParser.parseDefinition(
-                    GsonHelper.convertToJsonObject(entry.getValue(), "animation")
-                ));
+                        GsonHelper.convertToJsonObject(entry.getValue(), "animation")));
             } catch (Exception e) {
                 LOGGER.error("Failed to load animation {}", entry.getKey(), e);
             }

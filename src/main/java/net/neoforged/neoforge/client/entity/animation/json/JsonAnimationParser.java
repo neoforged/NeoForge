@@ -1,18 +1,21 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.entity.animation.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.Pair;
+import java.util.Map;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
 import net.minecraft.client.animation.KeyframeAnimations;
 import net.minecraft.util.GsonHelper;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-
-import java.util.Map;
 
 /**
  * A parser for parsing JSON entity animation files.
@@ -24,31 +27,26 @@ public final class JsonAnimationParser {
     }
 
     private static final Map<String, Pair<AnimationChannel.Target, KeyframeVecFactory>> TARGETS = Map.of(
-        "position", Pair.of(AnimationChannel.Targets.POSITION, KeyframeAnimations::posVec),
-        "rotation", Pair.of(AnimationChannel.Targets.ROTATION, KeyframeAnimations::degreeVec),
-        "scale", Pair.of(AnimationChannel.Targets.SCALE, KeyframeAnimations::scaleVec)
-    );
+            "position", Pair.of(AnimationChannel.Targets.POSITION, KeyframeAnimations::posVec),
+            "rotation", Pair.of(AnimationChannel.Targets.ROTATION, KeyframeAnimations::degreeVec),
+            "scale", Pair.of(AnimationChannel.Targets.SCALE, KeyframeAnimations::scaleVec));
 
     private static final Map<String, AnimationChannel.Interpolation> INTERPOLATIONS = Map.of(
-        "linear", AnimationChannel.Interpolations.LINEAR,
-        "catmullrom", AnimationChannel.Interpolations.CATMULLROM, // Mojmap
-        "spline", AnimationChannel.Interpolations.CATMULLROM // QM
-    );
+            "linear", AnimationChannel.Interpolations.LINEAR,
+            "catmullrom", AnimationChannel.Interpolations.CATMULLROM);
 
-    private JsonAnimationParser() {
-    }
+    private JsonAnimationParser() {}
 
     /**
      * Parses the specified {@link JsonObject} into an animation
+     *
      * @param json The {@link JsonObject} to parse
      * @return The parsed animation
      * @throws IllegalArgumentException If the specified {@link JsonObject} does not represent a valid JsonEA animation
      */
-    @NotNull
     public static AnimationDefinition parseDefinition(JsonObject json) {
         final AnimationDefinition.Builder builder = AnimationDefinition.Builder.withLength(
-            GsonHelper.getAsFloat(json, "length")
-        );
+                GsonHelper.getAsFloat(json, "length"));
         if (GsonHelper.getAsBoolean(json, "loop", false)) {
             builder.looping();
         }
@@ -69,9 +67,8 @@ public final class JsonAnimationParser {
         final Keyframe[] keyframes = new Keyframe[keyframesJson.size()];
         for (int i = 0; i < keyframes.length; i++) {
             keyframes[i] = parseKeyframe(
-                GsonHelper.convertToJsonObject(keyframesJson.get(i), "keyframe"),
-                target.second()
-            );
+                    GsonHelper.convertToJsonObject(keyframesJson.get(i), "keyframe"),
+                    target.second());
         }
         return new AnimationChannel(target.left(), keyframes);
     }
@@ -83,17 +80,15 @@ public final class JsonAnimationParser {
             throw new IllegalArgumentException("Unknown keyframe interpolation " + interpolationName);
         }
         return new Keyframe(
-            GsonHelper.getAsFloat(json, "timestamp"),
-            parseVector(GsonHelper.getAsJsonArray(json, "target"), vecFactory),
-            interpolation
-        );
+                GsonHelper.getAsFloat(json, "timestamp"),
+                parseVector(GsonHelper.getAsJsonArray(json, "target"), vecFactory),
+                interpolation);
     }
 
     private static Vector3f parseVector(JsonArray array, KeyframeVecFactory vecFactory) {
         return vecFactory.apply(
-            GsonHelper.convertToFloat(array.get(0), "x"),
-            GsonHelper.convertToFloat(array.get(1), "y"),
-            GsonHelper.convertToFloat(array.get(2), "z")
-        );
+                GsonHelper.convertToFloat(array.get(0), "x"),
+                GsonHelper.convertToFloat(array.get(1), "y"),
+                GsonHelper.convertToFloat(array.get(2), "z"));
     }
 }
