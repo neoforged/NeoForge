@@ -165,25 +165,6 @@
      }
  
      public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {
-@@ -369,12 +_,12 @@
-                                 double d1 = Mth.clamp((double)i1, (double)j + (double)f, (double)j + 16.0 - (double)f);
-                                 if (!p_220451_.noCollision(mobspawnsettings$spawnerdata.type.getSpawnAABB(d0, (double)blockpos.getY(), d1))
-                                     || !SpawnPlacements.checkSpawnRules(
--                                        mobspawnsettings$spawnerdata.type,
--                                        p_220451_,
--                                        MobSpawnType.CHUNK_GENERATION,
--                                        BlockPos.containing(d0, (double)blockpos.getY(), d1),
--                                        p_220451_.getRandom()
--                                    )) {
-+                                    mobspawnsettings$spawnerdata.type,
-+                                    p_220451_,
-+                                    MobSpawnType.CHUNK_GENERATION,
-+                                    BlockPos.containing(d0, (double)blockpos.getY(), d1),
-+                                    p_220451_.getRandom()
-+                                )) {
-                                     continue;
-                                 }
- 
 @@ -392,8 +_,7 @@
  
                                  entity.moveTo(d0, (double)blockpos.getY(), d1, p_220454_.nextFloat() * 360.0F, 0.0F);
