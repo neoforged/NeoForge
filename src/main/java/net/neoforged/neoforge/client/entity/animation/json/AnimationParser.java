@@ -19,7 +19,7 @@ import net.neoforged.neoforge.client.entity.animation.AnimationKeyframeTarget;
 import org.joml.Vector3f;
 
 /**
- * A parser for parsing JSON entity animation files.
+ * A parser for parsing JSON-based entity animation files.
  */
 public final class AnimationParser {
     private AnimationParser() {}
@@ -29,7 +29,7 @@ public final class AnimationParser {
      *
      * @param json The {@link JsonObject} to parse
      * @return The parsed animation
-     * @throws IllegalArgumentException If the specified {@link JsonObject} does not represent a valid JsonEA animation
+     * @throws IllegalArgumentException If the specified {@link JsonObject} does not represent a valid entity animation
      */
     public static AnimationDefinition parseDefinition(JsonObject json) {
         final AnimationDefinition.Builder builder = AnimationDefinition.Builder.withLength(
