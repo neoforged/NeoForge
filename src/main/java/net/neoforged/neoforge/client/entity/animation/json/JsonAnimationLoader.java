@@ -38,7 +38,7 @@ public final class JsonAnimationLoader extends SimpleJsonResourceReloadListener 
 
     /**
      * Get the animation with the specified ID.
-     * 
+     *
      * @param animationId The ID of the animation.
      * @return The animation, or null if not found.
      */
@@ -49,7 +49,7 @@ public final class JsonAnimationLoader extends SimpleJsonResourceReloadListener 
 
     /**
      * Get the animation with the specified ID.
-     * 
+     *
      * @param animationId The ID of the animation.
      * @return The animation
      * @throws IllegalStateException If the specified animation is not found
@@ -64,6 +64,7 @@ public final class JsonAnimationLoader extends SimpleJsonResourceReloadListener 
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> animationJsons, ResourceManager resourceManager, ProfilerFiller profiler) {
+        JsonAnimationTypeManager.init();
         animations.clear();
         for (final var entry : animationJsons.entrySet()) {
             try {

@@ -8,33 +8,20 @@ package net.neoforged.neoforge.client.entity.animation.json;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import it.unimi.dsi.fastutil.Pair;
-import java.util.Map;
+import com.google.gson.JsonParseException;
+import java.util.Locale;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
-import net.minecraft.client.animation.KeyframeAnimations;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.neoforged.neoforge.client.entity.animation.AnimationKeyframeTarget;
 import org.joml.Vector3f;
 
 /**
  * A parser for parsing JSON entity animation files.
  */
 public final class JsonAnimationParser {
-    @FunctionalInterface
-    private interface KeyframeVecFactory {
-        Vector3f apply(float x, float y, float z);
-    }
-
-    private static final Map<String, Pair<AnimationChannel.Target, KeyframeVecFactory>> TARGETS = Map.of(
-            "position", Pair.of(AnimationChannel.Targets.POSITION, KeyframeAnimations::posVec),
-            "rotation", Pair.of(AnimationChannel.Targets.ROTATION, KeyframeAnimations::degreeVec),
-            "scale", Pair.of(AnimationChannel.Targets.SCALE, KeyframeAnimations::scaleVec));
-
-    private static final Map<String, AnimationChannel.Interpolation> INTERPOLATIONS = Map.of(
-            "linear", AnimationChannel.Interpolations.LINEAR,
-            "catmullrom", AnimationChannel.Interpolations.CATMULLROM);
-
     private JsonAnimationParser() {}
 
     /**
@@ -58,35 +45,39 @@ public final class JsonAnimationParser {
     }
 
     private static AnimationChannel parseChannel(JsonObject json) {
-        final String targetName = GsonHelper.getAsString(json, "target");
-        final var target = TARGETS.get(targetName);
+        final var targetName = ResourceLocation.parse(GsonHelper.getAsString(json, "target"));
+        final var target = JsonAnimationTypeManager.getTarget(targetName);
         if (target == null) {
-            throw new IllegalArgumentException("Unknown animation target " + targetName);
+            throw new JsonParseException(String.format(
+                    Locale.ENGLISH, "Animation target '%s' not found. Registered targets: %s",
+                    targetName, JsonAnimationTypeManager.getTargetList()));
         }
         final JsonArray keyframesJson = GsonHelper.getAsJsonArray(json, "keyframes");
         final Keyframe[] keyframes = new Keyframe[keyframesJson.size()];
         for (int i = 0; i < keyframes.length; i++) {
             keyframes[i] = parseKeyframe(
                     GsonHelper.convertToJsonObject(keyframesJson.get(i), "keyframe"),
-                    target.second());
+                    target.keyframeTarget());
         }
-        return new AnimationChannel(target.left(), keyframes);
+        return new AnimationChannel(target.channelTarget(), keyframes);
     }
 
-    private static Keyframe parseKeyframe(JsonObject json, KeyframeVecFactory vecFactory) {
-        final String interpolationName = GsonHelper.getAsString(json, "interpolation");
-        final AnimationChannel.Interpolation interpolation = INTERPOLATIONS.get(interpolationName);
+    private static Keyframe parseKeyframe(JsonObject json, AnimationKeyframeTarget target) {
+        final var interpolationName = ResourceLocation.parse(GsonHelper.getAsString(json, "interpolation"));
+        final var interpolation = JsonAnimationTypeManager.getInterpolation(interpolationName);
         if (interpolation == null) {
-            throw new IllegalArgumentException("Unknown keyframe interpolation " + interpolationName);
+            throw new JsonParseException(String.format(
+                    Locale.ENGLISH, "Animation interpolation '%s' not found. Registered interpolations: %s",
+                    interpolationName, JsonAnimationTypeManager.getInterpolationList()));
         }
         return new Keyframe(
                 GsonHelper.getAsFloat(json, "timestamp"),
-                parseVector(GsonHelper.getAsJsonArray(json, "target"), vecFactory),
+                parseVector(GsonHelper.getAsJsonArray(json, "target"), target),
                 interpolation);
     }
 
-    private static Vector3f parseVector(JsonArray array, KeyframeVecFactory vecFactory) {
-        return vecFactory.apply(
+    private static Vector3f parseVector(JsonArray array, AnimationKeyframeTarget target) {
+        return target.apply(
                 GsonHelper.convertToFloat(array.get(0), "x"),
                 GsonHelper.convertToFloat(array.get(1), "y"),
                 GsonHelper.convertToFloat(array.get(2), "z"));
