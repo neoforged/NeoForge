@@ -18,7 +18,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfigs;
-import net.neoforged.neoforge.client.entity.animation.json.JsonAnimationLoader;
+import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
@@ -75,7 +75,7 @@ public class ClientNeoForgeMod {
     @SubscribeEvent
     static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(ObjLoader.INSTANCE);
-        event.registerReloadListener(JsonAnimationLoader.INSTANCE);
+        event.registerReloadListener(AnimationLoader.INSTANCE);
     }
 
     @SubscribeEvent

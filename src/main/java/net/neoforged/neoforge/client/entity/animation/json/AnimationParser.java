@@ -21,8 +21,8 @@ import org.joml.Vector3f;
 /**
  * A parser for parsing JSON entity animation files.
  */
-public final class JsonAnimationParser {
-    private JsonAnimationParser() {}
+public final class AnimationParser {
+    private AnimationParser() {}
 
     /**
      * Parses the specified {@link JsonObject} into an animation
@@ -46,11 +46,11 @@ public final class JsonAnimationParser {
 
     private static AnimationChannel parseChannel(JsonObject json) {
         final var targetName = ResourceLocation.parse(GsonHelper.getAsString(json, "target"));
-        final var target = JsonAnimationTypeManager.getTarget(targetName);
+        final var target = AnimationTypeManager.getTarget(targetName);
         if (target == null) {
             throw new JsonParseException(String.format(
                     Locale.ENGLISH, "Animation target '%s' not found. Registered targets: %s",
-                    targetName, JsonAnimationTypeManager.getTargetList()));
+                    targetName, AnimationTypeManager.getTargetList()));
         }
         final JsonArray keyframesJson = GsonHelper.getAsJsonArray(json, "keyframes");
         final Keyframe[] keyframes = new Keyframe[keyframesJson.size()];
@@ -64,11 +64,11 @@ public final class JsonAnimationParser {
 
     private static Keyframe parseKeyframe(JsonObject json, AnimationKeyframeTarget target) {
         final var interpolationName = ResourceLocation.parse(GsonHelper.getAsString(json, "interpolation"));
-        final var interpolation = JsonAnimationTypeManager.getInterpolation(interpolationName);
+        final var interpolation = AnimationTypeManager.getInterpolation(interpolationName);
         if (interpolation == null) {
             throw new JsonParseException(String.format(
                     Locale.ENGLISH, "Animation interpolation '%s' not found. Registered interpolations: %s",
-                    interpolationName, JsonAnimationTypeManager.getInterpolationList()));
+                    interpolationName, AnimationTypeManager.getInterpolationList()));
         }
         return new Keyframe(
                 GsonHelper.getAsFloat(json, "timestamp"),

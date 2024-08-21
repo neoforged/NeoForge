@@ -15,13 +15,13 @@ import net.neoforged.neoforge.client.event.RegisterJsonAnimationTypesEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-public final class JsonAnimationTypeManager {
-    private static ImmutableMap<ResourceLocation, AnimationTarget> TARGETS;
-    private static ImmutableMap<ResourceLocation, AnimationChannel.Interpolation> INTERPOLATIONS;
-    private static String TARGET_LIST;
-    private static String INTERPOLATION_LIST;
+public final class AnimationTypeManager {
+    private static ImmutableMap<ResourceLocation, AnimationTarget> TARGETS = ImmutableMap.of();
+    private static ImmutableMap<ResourceLocation, AnimationChannel.Interpolation> INTERPOLATIONS = ImmutableMap.of();
+    private static String TARGET_LIST = "";
+    private static String INTERPOLATION_LIST = "";
 
-    private JsonAnimationTypeManager() {}
+    private AnimationTypeManager() {}
 
     @Nullable
     public static AnimationTarget getTarget(ResourceLocation name) {
