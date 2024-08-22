@@ -176,17 +176,17 @@
     }
   ],
   "neoforge.configuration.uitext.listelement": "%s:",
-  "neoforge.configuration.uitext.undo": "Undo",
-  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
-  "neoforge.configuration.uitext.reset": "Reset",
-  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.undo": "取消",
+  "neoforge.configuration.uitext.undo.tooltip": "仅恢复当前的更改。",
+  "neoforge.configuration.uitext.reset": "重置",
+  "neoforge.configuration.uitext.reset.tooltip": "将此屏幕上的所有内容恢复为默认值。",
   "neoforge.configuration.uitext.newlistelement": "+",
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
   "neoforge.configuration.uitext.rangetooltip": [
     {
-      "text": "\n\nRange: ",
+      "text": "\n\n范围: ",
       "color": "gray"
     },
     {
@@ -210,12 +210,12 @@
   ],
   "neoforge.configuration.uitext.common": "Common Options",
   "neoforge.configuration.uitext.client": "Client Options",
-  "neoforge.configuration.uitext.server": "Server Options",
+  "neoforge.configuration.uitext.server": "服务器选项",
   "neoforge.configuration.uitext.startup": "Startup Options",
-  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
-  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed will only take effect when the game is started.",
-  "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
-  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
+  "neoforge.configuration.uitext.restart.game.title": "Minecraft需要重新启动",
+  "neoforge.configuration.uitext.restart.game.text": "已更改的一个或多个配置选项将仅在游戏开始时生效。",
+  "neoforge.configuration.uitext.restart.server.title": "需要重新加载世界",
+  "neoforge.configuration.uitext.restart.server.text": "一个或多个已更改的配置选项只有在重新加载世界时才会生效。",
   "neoforge.configuration.uitext.restart.return": "Ignore",
   "neoforge.configuration.uitext.restart.return.tooltip": [
     {
