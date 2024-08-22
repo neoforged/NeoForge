@@ -55,7 +55,7 @@ public class CrashReportExtender {
     }
 
     public static File dumpModLoadingCrashReport(final Logger logger, final List<ModLoadingIssue> issues, final File topLevelDir) {
-        final CrashReport crashReport = CrashReport.forThrowable(new Exception("Mod Loading has failed"), "Mod loading error has occurred");
+        final CrashReport crashReport = CrashReport.forThrowable(new ModLoadingCrashException("Mod loading has failed"), "Mod loading failures have occurred; consult the issue messages for more details");
         for (var issue : issues) {
             final Optional<IModInfo> modInfo = Optional.ofNullable(issue.affectedMod());
             final CrashReportCategory category = crashReport.addCategory(modInfo.map(iModInfo -> "MOD " + iModInfo.getModId()).orElse("NO MOD INFO AVAILABLE"));
@@ -86,5 +86,25 @@ public class CrashReportExtender {
         }
         Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport(ReportType.CRASH));
         return file2;
+    }
+
+    /**
+     * Dummy exception used as the 'root' exception in {@linkplain #dumpModLoadingCrashReport(Logger, List, File) mod
+     * loading crash reports}, which has no stack trace.
+     *
+     * <p>The stacktrace is very likely to be constant (since its only invoked by the sided mod loader classes), so their
+     * stacktrace is irrelevant for debugging and only serve to distract the reader from the actual exceptions further
+     * down in the crash report.</p>
+     */
+    private static class ModLoadingCrashException extends Exception {
+        public ModLoadingCrashException(String message) {
+            super(message);
+        }
+
+        @Override
+        public synchronized Throwable fillInStackTrace() {
+            // Do not fill in the stack trace
+            return this;
+        }
     }
 }
