@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.client.entity.animation.json;
 
+import com.google.common.collect.MapMaker;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +29,9 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
 
     public static final AnimationLoader INSTANCE = new AnimationLoader();
 
-    private final Map<ResourceLocation, AnimationHolder> animations = new HashMap<>();
+    private final Map<ResourceLocation, AnimationHolder> animations = new MapMaker().weakValues().concurrencyLevel(1).makeMap();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final List<AnimationHolder> strongHolderList = new ArrayList<>();
 
     private AnimationLoader() {
         super(new Gson(), "animations/entity");
@@ -47,12 +51,15 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
     protected void apply(Map<ResourceLocation, JsonElement> animationJsons, ResourceManager resourceManager, ProfilerFiller profiler) {
         AnimationTypeManager.init();
         animations.values().forEach(AnimationHolder::unbind);
+        strongHolderList.clear();
         int loaded = 0;
         for (final var entry : animationJsons.entrySet()) {
             try {
                 final var animation = AnimationParser.parseDefinition(
                         GsonHelper.convertToJsonObject(entry.getValue(), "animation"));
-                getAnimationHolder(entry.getKey()).bind(animation);
+                final var holder = getAnimationHolder(entry.getKey());
+                holder.bind(animation);
+                strongHolderList.add(holder);
                 loaded++;
             } catch (Exception e) {
                 LOGGER.error("Failed to load animation {}", entry.getKey(), e);
