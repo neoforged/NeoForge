@@ -5,81 +5,115 @@
 
 package net.neoforged.neoforge.client.entity.animation.json;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.Pair;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.client.entity.animation.AnimationKeyframeTarget;
+import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
 import org.joml.Vector3f;
 
 /**
  * A parser for parsing JSON-based entity animation files.
  */
 public final class AnimationParser {
+    private static final Codec<AnimationTarget> TARGET_CODEC = ResourceLocation.CODEC
+            .flatXmap(
+                    name -> Optional.ofNullable(AnimationTypeManager.getTarget(name))
+                            .map(DataResult::success)
+                            .orElseGet(() -> DataResult.error(() -> String.format(
+                                    Locale.ENGLISH, "Animation target '%s' not found. Registered targets: %s",
+                                    name, AnimationTypeManager.getTargetList()))),
+                    target -> Optional.ofNullable(AnimationTypeManager.getTargetName(target))
+                            .map(DataResult::success)
+                            .orElseGet(() -> DataResult.error(() -> String.format(
+                                    Locale.ENGLISH, "Unregistered animation target '%s'. Registered targets: %s",
+                                    target, AnimationTypeManager.getTargetList()))));
+
+    private static final Codec<AnimationChannel.Interpolation> INTERPOLATION_CODEC = ResourceLocation.CODEC
+            .flatXmap(
+                    name -> Optional.ofNullable(AnimationTypeManager.getInterpolation(name))
+                            .map(DataResult::success)
+                            .orElseGet(() -> DataResult.error(() -> String.format(
+                                    Locale.ENGLISH, "Animation interpolation '%s' not found. Registered interpolations: %s",
+                                    name, AnimationTypeManager.getInterpolationList()))),
+                    target -> Optional.ofNullable(AnimationTypeManager.getInterpolationName(target))
+                            .map(DataResult::success)
+                            .orElseGet(() -> DataResult.error(() -> String.format(
+                                    Locale.ENGLISH, "Unregistered animation interpolation '%s'. Registered interpolations: %s",
+                                    target, AnimationTypeManager.getInterpolationList()))));
+
+    public static final MapCodec<AnimationChannel> CHANNEL_CODEC = TARGET_CODEC.dispatchMap(
+            "target",
+            channel -> AnimationTypeManager.getTargetFromChannelTarget(channel.target()),
+            target -> keyframeCodec(target)
+                    .listOf()
+                    .xmap(
+                            keyframes -> new AnimationChannel(target.channelTarget(), keyframes.toArray(Keyframe[]::new)),
+                            channel -> Arrays.asList(channel.keyframes()))
+                    .fieldOf("keyframes"));
+
+    private static final Codec<Pair<String, AnimationChannel>> NAMED_CHANNEL_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    Codec.STRING.fieldOf("bone").forGetter(Pair::key),
+                    CHANNEL_CODEC.forGetter(Pair::value)).apply(instance, Pair::of));
+
+    public static final Codec<AnimationDefinition> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    Codec.FLOAT.fieldOf("length").forGetter(AnimationDefinition::lengthInSeconds),
+                    Codec.BOOL.optionalFieldOf("loop", false).forGetter(AnimationDefinition::looping),
+                    NAMED_CHANNEL_CODEC.listOf()
+                            .<Map<String, List<AnimationChannel>>>xmap(
+                                    list -> {
+                                        final var result = new HashMap<String, List<AnimationChannel>>();
+                                        for (final var animation : list) {
+                                            result.computeIfAbsent(animation.key(), k -> new ArrayList<>()).add(animation.value());
+                                        }
+                                        return result;
+                                    },
+                                    map -> {
+                                        final var result = new ArrayList<Pair<String, AnimationChannel>>();
+                                        for (final var entry : map.entrySet()) {
+                                            for (final var channel : entry.getValue()) {
+                                                result.add(Pair.of(entry.getKey(), channel));
+                                            }
+                                        }
+                                        return result;
+                                    })
+                            .fieldOf("animations")
+                            .forGetter(AnimationDefinition::boneAnimations))
+                    .apply(instance, AnimationDefinition::new));
+
     private AnimationParser() {}
 
-    /**
-     * Parses the specified {@link JsonObject} into an animation
-     *
-     * @param json The {@link JsonObject} to parse
-     * @return The parsed animation
-     * @throws IllegalArgumentException If the specified {@link JsonObject} does not represent a valid entity animation
-     */
-    public static AnimationDefinition parseDefinition(JsonObject json) {
-        final AnimationDefinition.Builder builder = AnimationDefinition.Builder.withLength(
-                GsonHelper.getAsFloat(json, "length"));
-        if (GsonHelper.getAsBoolean(json, "loop", false)) {
-            builder.looping();
-        }
-        for (final JsonElement element : GsonHelper.getAsJsonArray(json, "animations")) {
-            final JsonObject object = GsonHelper.convertToJsonObject(element, "animation");
-            builder.addAnimation(GsonHelper.getAsString(object, "bone"), parseChannel(object));
-        }
-        return builder.build();
+    private static Codec<Keyframe> keyframeCodec(AnimationTarget target) {
+        return RecordCodecBuilder.create(
+                instance -> instance.group(
+                        Codec.FLOAT.fieldOf("timestamp").forGetter(Keyframe::timestamp),
+                        ExtraCodecs.VECTOR3F
+                                .xmap(
+                                        keyframeTargetToUnaryOp(target.keyframeTarget()),
+                                        keyframeTargetToUnaryOp(target.inverseKeyframeTarget()))
+                                .fieldOf("target")
+                                .forGetter(Keyframe::target),
+                        INTERPOLATION_CODEC.fieldOf("interpolation").forGetter(Keyframe::interpolation)).apply(instance, Keyframe::new));
     }
 
-    private static AnimationChannel parseChannel(JsonObject json) {
-        final var targetName = ResourceLocation.parse(GsonHelper.getAsString(json, "target"));
-        final var target = AnimationTypeManager.getTarget(targetName);
-        if (target == null) {
-            throw new JsonParseException(String.format(
-                    Locale.ENGLISH, "Animation target '%s' not found. Registered targets: %s",
-                    targetName, AnimationTypeManager.getTargetList()));
-        }
-        final JsonArray keyframesJson = GsonHelper.getAsJsonArray(json, "keyframes");
-        final Keyframe[] keyframes = new Keyframe[keyframesJson.size()];
-        for (int i = 0; i < keyframes.length; i++) {
-            keyframes[i] = parseKeyframe(
-                    GsonHelper.convertToJsonObject(keyframesJson.get(i), "keyframe"),
-                    target.keyframeTarget());
-        }
-        return new AnimationChannel(target.channelTarget(), keyframes);
-    }
-
-    private static Keyframe parseKeyframe(JsonObject json, AnimationKeyframeTarget target) {
-        final var interpolationName = ResourceLocation.parse(GsonHelper.getAsString(json, "interpolation"));
-        final var interpolation = AnimationTypeManager.getInterpolation(interpolationName);
-        if (interpolation == null) {
-            throw new JsonParseException(String.format(
-                    Locale.ENGLISH, "Animation interpolation '%s' not found. Registered interpolations: %s",
-                    interpolationName, AnimationTypeManager.getInterpolationList()));
-        }
-        return new Keyframe(
-                GsonHelper.getAsFloat(json, "timestamp"),
-                parseVector(GsonHelper.getAsJsonArray(json, "target"), target),
-                interpolation);
-    }
-
-    private static Vector3f parseVector(JsonArray array, AnimationKeyframeTarget target) {
-        return target.apply(
-                GsonHelper.convertToFloat(array.get(0), "x"),
-                GsonHelper.convertToFloat(array.get(1), "y"),
-                GsonHelper.convertToFloat(array.get(2), "z"));
+    private static UnaryOperator<Vector3f> keyframeTargetToUnaryOp(AnimationKeyframeTarget target) {
+        return vec -> target.apply(vec.x, vec.y, vec.z);
     }
 }

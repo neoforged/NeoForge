@@ -8,7 +8,9 @@ package net.neoforged.neoforge.client.entity.animation.json;
 import com.google.common.collect.MapMaker;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,6 @@ import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -55,8 +56,8 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
         int loaded = 0;
         for (final var entry : animationJsons.entrySet()) {
             try {
-                final var animation = AnimationParser.parseDefinition(
-                        GsonHelper.convertToJsonObject(entry.getValue(), "animation"));
+                final var animation = AnimationParser.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
+                        .getOrThrow(JsonParseException::new);
                 final var holder = getAnimationHolder(entry.getKey());
                 holder.bind(animation);
                 strongHolderList.add(holder);
