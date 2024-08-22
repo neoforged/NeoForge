@@ -17,6 +17,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportType;
 import net.minecraft.SystemReport;
+import net.minecraft.server.Bootstrap;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ISystemReportExtender;
 import net.neoforged.fml.ModLoadingIssue;
@@ -83,7 +84,7 @@ public class CrashReportExtender {
         } else {
             logger.fatal("Failed to save crash report");
         }
-        System.out.print(crashReport.getFriendlyReport(ReportType.CRASH));
+        Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport(ReportType.CRASH));
         return file2;
     }
 }
