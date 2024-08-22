@@ -1,0 +1,8 @@
+{
+    "rich_translations_test.vanilla": "Valid for vanilla",
+    "rich_translations_test.json": [
+        "json translation."
+    ],
+    "rich_translations_test.sjson": "%n[\"sjson translation.\"]",
+    "rich_translations_test.custom": "%n(neotest:test) custom traXslatioX."
+}

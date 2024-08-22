@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.common.text;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,12 @@ public final class TemplateParser {
         }
     }
 
+    private static Pair<TriFunction<String, Object[], Consumer<FormattedText>, String>, Function<String, String>> getParser(ResourceLocation key) throws ParsingException {
+        return PARSERS.computeIfAbsent(key, rl -> {
+            throw new ParsingException("Unknown format specified: " + rl);
+        });
+    }
+
     @ApiStatus.Internal
     protected static Pair<ResourceLocation, String> getFormat(String template) {
         if (template.startsWith(TEMPLATE_MARKER)) {
@@ -86,10 +94,8 @@ public final class TemplateParser {
     public static String decomposeTemplate(TranslatableContents translatableContents, Object[] args, String template, Consumer<FormattedText> consumer) {
         try {
             Pair<ResourceLocation, String> format = getFormat(template);
-            return PARSERS.computeIfAbsent(format.getKey(), rl -> {
-                throw new TemplateParser.ParsingException("Unknown format specified: " + rl);
-            }).getLeft().apply(format.getValue(), args, consumer);
-        } catch (TemplateParser.ParsingException e) {
+            return getParser(format.getKey()).getLeft().apply(format.getValue(), args, consumer);
+        } catch (ParsingException e) {
             LOGGER.error("Error parsing language string for key {} with value '{}': {}", translatableContents.getKey(), template, e.getMessage());
             throw new TranslatableFormatException(translatableContents, e.getMessage());
         }
@@ -99,10 +105,8 @@ public final class TemplateParser {
     public static String stripTemplate(String key, String template) {
         try {
             Pair<ResourceLocation, String> format = getFormat(template);
-            return PARSERS.computeIfAbsent(format.getKey(), rl -> {
-                throw new TemplateParser.ParsingException("Unknown format specified: " + rl);
-            }).getRight().apply(format.getValue());
-        } catch (TemplateParser.ParsingException e) {
+            return getParser(format.getKey()).getRight().apply(format.getValue());
+        } catch (ParsingException e) {
             LOGGER.error("Error parsing language string for key {} with value '{}': {}", key, template, e.getMessage());
             return template;
         }
@@ -119,13 +123,42 @@ public final class TemplateParser {
                 entry -> {
                     try {
                         Pair<ResourceLocation, String> format = getFormat(entry.getValue());
-                        PARSERS.computeIfAbsent(format.getKey(), rl -> {
-                            throw new TemplateParser.ParsingException("Unknown format specified: " + rl);
-                        }).getRight().apply(format.getValue());
+                        getParser(format.getKey()).getRight().apply(format.getValue());
                         return null;
-                    } catch (TemplateParser.ParsingException e) {
+                    } catch (ParsingException e) {
                         return Pair.of(entry.getKey(), e.getMessage());
                     }
                 }).filter(p -> p != null).toList();
+    }
+
+    /**
+     * Tries to parse all translation values in the specified language file and returns all found errors.
+     * 
+     * @param modid    The namespace (mod id) of the language file.
+     * @param language The language (e.g. "en_us") of the language file.
+     * @return A list of pairs, with the translation key in the left and the error message in the right value.
+     */
+    public static List<Pair<String, String>> test(String modid, String language) {
+        if (!ResourceLocation.isValidNamespace(modid)) {
+            return List.of(Pair.of(modid, "Not a valid mod id (directory traversal attack?)"));
+        }
+        if (!ResourceLocation.isValidNamespace(language)) {
+            return List.of(Pair.of(language, "Not a valid language name (directory traversal attack?)"));
+        }
+        try (InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/" + modid + "/lang/" + language + ".json")) {
+            assert input != null;
+            List<Pair<String, String>> result = new ArrayList<>();
+            Language.loadFromJson(input, (key, value) -> {
+                try {
+                    Pair<ResourceLocation, String> format = getFormat(value);
+                    getParser(format.getKey()).getRight().apply(format.getValue());
+                } catch (ParsingException e) {
+                    result.add(Pair.of(key, e.getMessage()));
+                }
+            }, (key, value) -> {});
+            return result;
+        } catch (Exception exception) {
+            return List.of(Pair.of(modid + "/" + language, "Failed to read language file: " + exception.getMessage()));
+        }
     }
 }

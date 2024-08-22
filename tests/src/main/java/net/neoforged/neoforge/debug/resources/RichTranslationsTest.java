@@ -133,6 +133,8 @@ public class RichTranslationsTest {
     static void richTranslations4(final DynamicTest test) {
         test.onGameTest(helper -> {
             helper.assertValueEqual(TemplateParser.test(key -> true), Collections.emptyList(), "Rich translations valid");
+            helper.assertValueEqual(TemplateParser.test("rich_translations_test", "en_us"), Collections.emptyList(), "Rich translations valid (file test)");
+            helper.assertValueEqual(TemplateParser.test("rich_translations_test", "de_de"), Collections.emptyList(), "Rich translations valid (file test 2)");
             helper.succeed();
         });
     }
