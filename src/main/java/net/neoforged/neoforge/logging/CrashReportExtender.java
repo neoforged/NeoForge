@@ -21,6 +21,7 @@ import net.minecraft.server.Bootstrap;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ISystemReportExtender;
 import net.neoforged.fml.ModLoadingIssue;
+import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -74,11 +75,19 @@ public class CrashReportExtender {
             else
                 category.setStackTrace(BLANK_STACK_TRACE);
             category.setDetail("Mod file", () -> modInfo.map(IModInfo::getOwningFile).map(t -> t.getFile().getFilePath().toUri().getPath()).orElse("<No mod information provided>"));
-            category.setDetail("Failure message", () -> issue.translationKey().replace("\n", "\n\t\t"));
-            for (int i = 0; i < issue.translationArgs().size(); i++) {
-                var arg = issue.translationArgs().get(i);
-                category.setDetail("Failure message arg " + (i + 1), () -> arg.toString().replace("\n", "\n\t\t"));
+
+            try {
+                //noinspection UnstableApiUsage
+                category.setDetail("Failure message", () -> FMLTranslations.stripControlCodes(FMLTranslations.translateIssueEnglish(issue)).replace("\n", "\n\t\t"));
+            } catch (Exception e) {
+                // If translating the issue failed, fallback to just adding the raw translation key and arguments 
+                category.setDetail("Failure message", () -> issue.translationKey().replace("\n", "\n\t\t"));
+                for (int i = 0; i < issue.translationArgs().size(); i++) {
+                    var arg = issue.translationArgs().get(i);
+                    category.setDetail("Failure message arg " + (i + 1), () -> arg.toString().replace("\n", "\n\t\t"));
+                }
             }
+
             category.setDetail("Mod version", () -> modInfo.map(IModInfo::getVersion).map(Object::toString).orElse("<No mod information provided>"));
             category.setDetail("Mod issues URL", () -> modInfo.map(IModInfo::getOwningFile).map(IModFileInfo.class::cast).flatMap(mfi -> mfi.getConfig().<String>getConfigElement("issueTrackerURL")).orElse("<No issues URL found>"));
             category.setDetail("Exception message", Objects.toString(cause, "<No associated exception found>"));
