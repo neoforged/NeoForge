@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.resources;
 
+import java.util.Collections;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.gametest.framework.GameTest;
@@ -62,17 +63,18 @@ public class RichTranslationsTest {
         });
     }
 
+    static {
+        TemplateParser.register(ResourceLocation.parse("neotest:test"), (template, arg, consumer) -> {
+            consumer.accept(Component.literal(template.replace('X', 'n')));
+            return "";
+        }, template -> template.replace('X', 'n'));
+    }
+
     @TestHolder(description = "Tests that rich translations (custom format) work properly", enabledByDefault = true)
     @GameTest
     @EmptyTemplate("1x1x1")
     static void richTranslations2(final DynamicTest test) {
         test.onGameTest(helper -> {
-
-            TemplateParser.register(ResourceLocation.parse("neotest:test"), (template, arg, consumer) -> {
-                consumer.accept(Component.literal(template.replace('X', 'n')));
-                return "";
-            }, template -> template.replace('X', 'n'));
-
             final Component vanilla = Component.translatable("rich_translations_test.simple_vanilla_translation");
             final Component custom = Component.translatable("rich_translations_test.simple_custom_translation");
 
@@ -121,6 +123,16 @@ public class RichTranslationsTest {
 
             helper.assertTrue(foundBlue.isTrue() && foundRed.isTrue(), "Rich translation lost colors");
 
+            helper.succeed();
+        });
+    }
+
+    @TestHolder(description = "Tests that all rich translations in the lang file are correct", enabledByDefault = true)
+    @GameTest
+    @EmptyTemplate("1x1x1")
+    static void richTranslations4(final DynamicTest test) {
+        test.onGameTest(helper -> {
+            helper.assertValueEqual(TemplateParser.test(key -> true), Collections.emptyList(), "Rich translations valid");
             helper.succeed();
         });
     }

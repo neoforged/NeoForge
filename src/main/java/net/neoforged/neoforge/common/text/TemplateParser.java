@@ -6,11 +6,14 @@
 package net.neoforged.neoforge.common.text;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.chat.contents.TranslatableFormatException;
@@ -103,5 +106,26 @@ public final class TemplateParser {
             LOGGER.error("Error parsing language string for key {} with value '{}': {}", key, template, e.getMessage());
             return template;
         }
+    }
+
+    /**
+     * Tries to parse all translation values in the currently loaded language that match the given predicate and returns all found errors.
+     * 
+     * @param filter Predicate on the key.
+     * @return A list of pairs, with the translation key in the left and the error message in the right value.
+     */
+    public static List<Pair<String, String>> test(Predicate<String> filter) {
+        return Language.getInstance().getLanguageData().entrySet().stream().filter(entry -> filter.test(entry.getKey())).map(
+                entry -> {
+                    try {
+                        Pair<ResourceLocation, String> format = getFormat(entry.getValue());
+                        PARSERS.computeIfAbsent(format.getKey(), rl -> {
+                            throw new TemplateParser.ParsingException("Unknown format specified: " + rl);
+                        }).getRight().apply(format.getValue());
+                        return null;
+                    } catch (TemplateParser.ParsingException e) {
+                        return Pair.of(entry.getKey(), e.getMessage());
+                    }
+                }).filter(p -> p != null).toList();
     }
 }
