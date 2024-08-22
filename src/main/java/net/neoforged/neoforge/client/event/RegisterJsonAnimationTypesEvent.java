@@ -10,7 +10,6 @@ import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.entity.animation.AnimationKeyframeTarget;
 import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -28,14 +27,6 @@ public class RegisterJsonAnimationTypesEvent extends Event implements IModBusEve
 
     public void registerTarget(ResourceLocation key, AnimationTarget target) {
         targets.put(key, target);
-    }
-
-    public void registerTarget(
-            ResourceLocation key,
-            AnimationChannel.Target channelTarget,
-            AnimationKeyframeTarget keyframeTarget,
-            AnimationKeyframeTarget inverseKeyframeTarget) {
-        registerTarget(key, new AnimationTarget(channelTarget, keyframeTarget, inverseKeyframeTarget));
     }
 
     public void registerInterpolation(ResourceLocation key, AnimationChannel.Interpolation interpolation) {

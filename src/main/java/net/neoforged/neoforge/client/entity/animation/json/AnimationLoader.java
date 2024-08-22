@@ -38,12 +38,19 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
         super(new Gson(), "animations/entity");
     }
 
+    /**
+     * Gets a loaded {@link AnimationDefinition} with the specified {@code key}.
+     */
     @Nullable
     public AnimationDefinition getAnimation(ResourceLocation key) {
         final var holder = animations.get(key);
         return holder != null ? holder.getOrNull() : null;
     }
 
+    /**
+     * Returns an {@link AnimationHolder} for an animation. If the specified animation has not been loaded, the holder
+     * will be unbound, but may be bound in the future.
+     */
     public AnimationHolder getAnimationHolder(ResourceLocation key) {
         return animations.computeIfAbsent(key, AnimationHolder::new);
     }
@@ -67,5 +74,10 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
             }
         }
         LOGGER.info("Loaded {} entity animations", loaded);
+        for (final var holder : animations.values()) {
+            if (!holder.isBound()) {
+                LOGGER.warn("Entity animation {} is missing", holder.key());
+            }
+        }
     }
 }

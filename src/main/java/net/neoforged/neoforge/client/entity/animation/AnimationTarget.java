@@ -9,6 +9,15 @@ import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.KeyframeAnimations;
 import org.joml.Vector3f;
 
+/**
+ * Wrapper for a {@link AnimationChannel.Target} and a way to transform a simple keyframe vector into a vector that
+ * makes sense for the given target.
+ * 
+ * @param channelTarget         The associated {@link AnimationChannel.Target}.
+ * @param keyframeTarget        An {@link AnimationKeyframeTarget} that transforms simple vectors into ones that make sense
+ *                              for the {@link #channelTarget}.
+ * @param inverseKeyframeTarget The inverse function of {@link #keyframeTarget}, used for serialization.
+ */
 public record AnimationTarget(
         AnimationChannel.Target channelTarget,
         AnimationKeyframeTarget keyframeTarget,

@@ -5,11 +5,18 @@
 
 package net.neoforged.neoforge.client.entity.animation.json;
 
+import java.util.Map;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Holds a single {@link AnimationDefinition} loaded from resource packs. Objects of this class will be automatically updated with new
+ * {@link AnimationDefinition}s on reload.
+ */
 public final class AnimationHolder {
+    public static final AnimationDefinition EMPTY_ANIMATION = new AnimationDefinition(0f, false, Map.of());
+
     private final ResourceLocation key;
     @Nullable
     private AnimationDefinition value;
@@ -26,20 +33,33 @@ public final class AnimationHolder {
         this.value = value;
     }
 
+    /**
+     * Gets the key associated with this animation.
+     */
     public ResourceLocation key() {
         return key;
     }
 
+    /**
+     * Gets the currently loaded animation. If the animation has not been loaded, returns {@link #EMPTY_ANIMATION}.
+     */
     public AnimationDefinition get() {
         final var result = value;
-        if (result == null) {
-            throw new IllegalStateException("Unknown entity animation " + key);
-        }
-        return result;
+        return result == null ? EMPTY_ANIMATION : result;
     }
 
+    /**
+     * Gets the currently loaded animation or null if it has not been loaded.
+     */
     @Nullable
     public AnimationDefinition getOrNull() {
         return value;
+    }
+
+    /**
+     * Returns whether the animation has been loaded.
+     */
+    public boolean isBound() {
+        return value != null;
     }
 }

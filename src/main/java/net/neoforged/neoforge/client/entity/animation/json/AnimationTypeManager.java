@@ -17,6 +17,14 @@ import net.neoforged.neoforge.client.event.RegisterJsonAnimationTypesEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Manager for custom {@link AnimationTarget}s and {@link AnimationChannel.Interpolation}s.
+ * <p>
+ * The built-in {@link AnimationTarget}s are: {@code minecraft:position}, {@code minecraft:rotation}, and
+ * {@code minecraft:scale}.
+ * <p>
+ * The built-in {@link AnimationChannel.Interpolation}s are {@code minecraft:linear} and {@code minecraft:catmullrom}.
+ */
 public final class AnimationTypeManager {
     private static final ImmutableBiMap<ResourceLocation, AnimationTarget> DEFAULT_TARGETS = ImmutableBiMap.of(
             ResourceLocation.withDefaultNamespace("position"), AnimationTarget.POSITION,
@@ -38,35 +46,56 @@ public final class AnimationTypeManager {
 
     private AnimationTypeManager() {}
 
+    /**
+     * Gets the {@link AnimationTarget} associated with the given {@code name}.
+     */
     @Nullable
     public static AnimationTarget getTarget(ResourceLocation name) {
         return TARGETS.get(name);
     }
 
+    /**
+     * Gets the {@link ResourceLocation} associated with the given {@code target}.
+     */
     @Nullable
     public static ResourceLocation getTargetName(AnimationTarget target) {
         return TARGETS.inverse().get(target);
     }
 
+    /**
+     * Gets the full {@link AnimationTarget} from its {@link AnimationTarget#channelTarget() channelTarget}.
+     */
     @Nullable
     public static AnimationTarget getTargetFromChannelTarget(AnimationChannel.Target target) {
         return TARGETS_BY_CHANNEL_TARGET.get(target);
     }
 
+    /**
+     * Gets the {@link AnimationChannel.Interpolation} associated with the given {@code name}.
+     */
     @Nullable
     public static AnimationChannel.Interpolation getInterpolation(ResourceLocation name) {
         return INTERPOLATIONS.get(name);
     }
 
+    /**
+     * Gets the {@link ResourceLocation} associated with the given {@code interpolation}.
+     */
     @Nullable
     public static ResourceLocation getInterpolationName(AnimationChannel.Interpolation interpolation) {
         return INTERPOLATIONS.inverse().get(interpolation);
     }
 
+    /**
+     * Retrieves a comma-separated list of all available {@link AnimationTarget}s, for use in error messages.
+     */
     public static String getTargetList() {
         return TARGET_LIST;
     }
 
+    /**
+     * Retrieves a comma-separated list of all available {@link AnimationChannel.Interpolation}s, for use in error messages.
+     */
     public static String getInterpolationList() {
         return INTERPOLATION_LIST;
     }
