@@ -33,8 +33,9 @@ public class RegisterJsonAnimationTypesEvent extends Event implements IModBusEve
     public void registerTarget(
             ResourceLocation key,
             AnimationChannel.Target channelTarget,
-            AnimationKeyframeTarget keyframeTarget) {
-        registerTarget(key, new AnimationTarget(channelTarget, keyframeTarget));
+            AnimationKeyframeTarget keyframeTarget,
+            AnimationKeyframeTarget inverseKeyframeTarget) {
+        registerTarget(key, new AnimationTarget(channelTarget, keyframeTarget, inverseKeyframeTarget));
     }
 
     public void registerInterpolation(ResourceLocation key, AnimationChannel.Interpolation interpolation) {
