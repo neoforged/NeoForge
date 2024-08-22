@@ -1,4 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.unittest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.animation.definitions.BreezeAnimation;
@@ -6,8 +13,6 @@ import net.neoforged.neoforge.client.entity.animation.json.AnimationParser;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class EntityModelSerializationTest {
