@@ -61,7 +61,7 @@ public class CrashReportExtender {
         final CrashReport crashReport = CrashReport.forThrowable(new ModLoadingCrashException("Mod loading has failed"), "Mod loading failures have occurred; consult the issue messages for more details");
         for (var issue : issues) {
             final Optional<IModInfo> modInfo = Optional.ofNullable(issue.affectedMod());
-            final CrashReportCategory category = crashReport.addCategory(modInfo.map(iModInfo -> "Mod: " + iModInfo.getModId()).orElse("Mod loading issue"));
+            final CrashReportCategory category = crashReport.addCategory(modInfo.map(iModInfo -> "Mod loading issue for: " + iModInfo.getModId()).orElse("Mod loading issue"));
             Throwable cause = issue.cause();
             int depth = 0;
             while (cause != null && cause.getCause() != null && cause.getCause() != cause) {
