@@ -125,7 +125,7 @@
   "neoforge.configuration.uitext.type.client": "Client Settings",
   "neoforge.configuration.uitext.type.server": "Server Settings",
   "neoforge.configuration.uitext.type.common": "Common settings",
-  "neoforge.configuration.uitext.type.startup": "Startup settings",
+  "neoforge.configuration.uitext.type.startup": "",
   "neoforge.configuration.uitext.title.client": "%s Client Configuration",
   "neoforge.configuration.uitext.title.server": "%s Server Configuration",
   "neoforge.configuration.uitext.title.common": "%s Common Configuration",
