@@ -54,6 +54,8 @@ public class CrashReportExtender {
         return header ? s : s.substring(s.indexOf(Strings.LINE_SEPARATOR));
     }
 
+    private static final StackTraceElement[] BLANK_STACK_TRACE = new StackTraceElement[0];
+
     public static File dumpModLoadingCrashReport(final Logger logger, final List<ModLoadingIssue> issues, final File topLevelDir) {
         final CrashReport crashReport = CrashReport.forThrowable(new ModLoadingCrashException("Mod loading has failed"), "Mod loading failures have occurred; consult the issue messages for more details");
         for (var issue : issues) {
@@ -65,8 +67,12 @@ public class CrashReportExtender {
                 category.setDetail("Caused by " + (depth++), cause + generateEnhancedStackTrace(cause.getStackTrace()).replaceAll(Strings.LINE_SEPARATOR + "\t", "\n\t\t"));
                 cause = cause.getCause();
             }
+            // Set the stack trace to the issue cause if possible; if there is no issue cause, then remove the 
+            // stacktrace (since otherwise it is set to the report's 'root' exception, which is a dummy exception)
             if (cause != null)
-                category.applyStackTrace(cause);
+                category.setStackTrace(cause.getStackTrace());
+            else
+                category.setStackTrace(BLANK_STACK_TRACE);
             category.setDetail("Mod File", () -> modInfo.map(IModInfo::getOwningFile).map(t -> t.getFile().getFilePath().toUri().getPath()).orElse("NO FILE INFO"));
             category.setDetail("Failure message", () -> issue.translationKey().replace("\n", "\n\t\t"));
             for (int i = 0; i < issue.translationArgs().size(); i++) {
