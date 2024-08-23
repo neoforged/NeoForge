@@ -36,11 +36,11 @@ class TPSCommand {
 
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("tps")
-                .then(Commands.argument("dim", DimensionArgument.dimension())
-                        .executes(ctx -> sendTime(ctx, DimensionArgument.getDimension(ctx, "dim"))))
+                .then(Commands.argument("dimension", DimensionArgument.dimension())
+                        .executes(ctx -> sendTime(ctx, DimensionArgument.getDimension(ctx, "dimension"))))
                 .executes(ctx -> {
-                    for (ServerLevel dim : ctx.getSource().getServer().getAllLevels()) {
-                        sendTime(ctx, dim);
+                    for (ServerLevel dimension : ctx.getSource().getServer().getAllLevels()) {
+                        sendTime(ctx, dimension);
                     }
 
                     sendTime(ctx, null);
@@ -48,9 +48,9 @@ class TPSCommand {
                 });
     }
 
-    private static int sendTime(CommandContext<CommandSourceStack> context, ServerLevel dim) throws CommandSyntaxException {
+    private static int sendTime(CommandContext<CommandSourceStack> context, @Nullable ServerLevel dimension) throws CommandSyntaxException {
         var src = context.getSource();
-        src.sendSuccess(() -> createComponent(src.getServer(), dim), false);
+        src.sendSuccess(() -> createComponent(src.getServer(), dimension), false);
         return Command.SINGLE_SUCCESS;
     }
 
