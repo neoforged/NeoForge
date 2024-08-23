@@ -14,6 +14,9 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+/**
+ * Tests that animations can be serialized into json and deserialized to be identical to the original.
+ */
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class EntityModelSerializationTest {
     @Test

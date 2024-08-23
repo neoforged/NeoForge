@@ -18,12 +18,13 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Manager for custom {@link AnimationTarget}s and {@link AnimationChannel.Interpolation}s.
+ * Manager for custom {@link AnimationTarget}s and {@link AnimationChannel.Interpolation interpolation function}s.
  * <p>
  * The built-in {@link AnimationTarget}s are: {@code minecraft:position}, {@code minecraft:rotation}, and
  * {@code minecraft:scale}.
  * <p>
- * The built-in {@link AnimationChannel.Interpolation}s are {@code minecraft:linear} and {@code minecraft:catmullrom}.
+ * The built-in {@link AnimationChannel.Interpolation interpolation function}s are {@code minecraft:linear} and
+ * {@code minecraft:catmullrom}.
  */
 public final class AnimationTypeManager {
     private static final ImmutableBiMap<ResourceLocation, AnimationTarget> DEFAULT_TARGETS = ImmutableBiMap.of(
@@ -71,7 +72,7 @@ public final class AnimationTypeManager {
     }
 
     /**
-     * Gets the {@link AnimationChannel.Interpolation} associated with the given {@code name}.
+     * Gets the {@link AnimationChannel.Interpolation interpolation function} associated with the given {@code name}.
      */
     @Nullable
     public static AnimationChannel.Interpolation getInterpolation(ResourceLocation name) {
@@ -94,7 +95,8 @@ public final class AnimationTypeManager {
     }
 
     /**
-     * Retrieves a comma-separated list of all available {@link AnimationChannel.Interpolation}s, for use in error messages.
+     * Retrieves a comma-separated list of all available
+     * {@link AnimationChannel.Interpolation interpolation function}s, for use in error messages.
      */
     public static String getInterpolationList() {
         return INTERPOLATION_LIST;
