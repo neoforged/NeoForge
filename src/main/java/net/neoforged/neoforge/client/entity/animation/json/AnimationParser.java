@@ -57,15 +57,19 @@ public final class AnimationParser {
                                     Locale.ENGLISH, "Unregistered animation interpolation '%s'. Registered interpolations: %s",
                                     target, AnimationTypeManager.getInterpolationList()))));
 
-    public static final MapCodec<AnimationChannel> CHANNEL_CODEC = TARGET_CODEC.dispatchMap(
+    public static final MapCodec<AnimationChannel> CHANNEL_CODEC = ((MapCodec.MapCodecCodec<AnimationChannel>) TARGET_CODEC.partialDispatch(
             "target",
-            channel -> AnimationTypeManager.getTargetFromChannelTarget(channel.target()),
-            target -> keyframeCodec(target)
+            channel -> Optional.ofNullable(AnimationTypeManager.getTargetFromChannelTarget(channel.target()))
+                    .map(DataResult::success)
+                    .orElseGet(() -> DataResult.error(() -> String.format(
+                            Locale.ENGLISH, "Unregistered animation channel target '%s'. Registered targets: %s",
+                            channel.target(), AnimationTypeManager.getTargetList()))),
+            target -> DataResult.success(keyframeCodec(target)
                     .listOf()
                     .xmap(
                             keyframes -> new AnimationChannel(target.channelTarget(), keyframes.toArray(Keyframe[]::new)),
                             channel -> Arrays.asList(channel.keyframes()))
-                    .fieldOf("keyframes"));
+                    .fieldOf("keyframes")))).codec();
 
     private static final Codec<Pair<String, AnimationChannel>> NAMED_CHANNEL_CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
