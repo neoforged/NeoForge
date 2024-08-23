@@ -35,7 +35,6 @@ class TPSCommand {
 
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("tps")
-                .requires(cs -> cs.hasPermission(Commands.LEVEL_ALL)) //permission
                 .then(Commands.argument("dim", DimensionArgument.dimension())
                         .executes(ctx -> sendTime(ctx, DimensionArgument.getDimension(ctx, "dim"))))
                 .executes(ctx -> {
