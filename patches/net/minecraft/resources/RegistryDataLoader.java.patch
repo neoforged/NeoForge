@@ -51,9 +51,9 @@
      }
  
 -    public static record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
-+    public static record RegistryData<T>(ResourceKey<? extends Registry<T>> key, java.util.function.Consumer<net.neoforged.neoforge.registries.RegistryBuilder<T>> consumer, Codec<T> elementCodec, boolean requiredNonEmpty) {
++    public static record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty, java.util.function.Consumer<net.neoforged.neoforge.registries.RegistryBuilder<T>> consumer) {
 +        public RegistryData(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
-+            this(key, registryBuilder -> {}, elementCodec, requiredNonEmpty);
++            this(key, elementCodec, requiredNonEmpty, registryBuilder -> {});
 +        }
 +
          RegistryData(ResourceKey<? extends Registry<T>> p_251360_, Codec<T> p_248976_) {
