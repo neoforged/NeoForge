@@ -47,7 +47,6 @@ import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.StringUtils;
-import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
