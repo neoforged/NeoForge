@@ -87,10 +87,7 @@ class TPSCommand {
                 .withColor(ChatFormatting.GREEN)
                 .withHoverEvent(new HoverEvent(
                         HoverEvent.Action.SHOW_TEXT,
-                        Component.literal(regName.toString())
-                                .append(" (")
-                                .append(dimensionType.toString())
-                                .append(")"))));
+                        Component.translatable("commands.neoforge.tps.summary.dimension.tooltip", regName.toString(), dimensionType.toString()))));
     }
 
     private static Component createTickTimeComponent(double tickTime) {

@@ -83,6 +83,7 @@
   "commands.neoforge.tps.invalid": "Invalid dimension %1$s Possible values: %2$s",
   "commands.neoforge.tps.summary.overall": "Overall:",
   "commands.neoforge.tps.summary.dimension": "'%s':",
+  "commands.neoforge.tps.summary.dimension.tooltip": "%s (%s)",
   "commands.neoforge.tps.mean_tps": "Mean TPS: %s",
   "commands.neoforge.tps.mean_tps.tooltip": "Closer to 20 is better",
   "commands.neoforge.tps.mean_tick_time": "Mean tick time: %s ms",
