@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.server.command;
 
+import com.google.common.math.Stats;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -53,13 +54,6 @@ class TPSCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static long mean(long[] values) {
-        long sum = 0L;
-        for (long v : values)
-            sum += v;
-        return sum / values.length;
-    }
-
     private static Component createComponent(MinecraftServer server, @Nullable ServerLevel dimension) {
         MutableComponent prefix;
         long[] times;
@@ -78,7 +72,7 @@ class TPSCommand {
             tickRateManager = dimension.tickRateManager();
         }
 
-        var tickTime = mean(times) * 1.0E-6D;
+        var tickTime = Stats.meanOf(times) / TimeUtil.NANOSECONDS_PER_MILLISECOND;
         var tps = TimeUtil.MILLISECONDS_PER_SECOND / Math.max(tickTime, tickRateManager.millisecondsPerTick());
         var timeComponent = Component.empty().append(createTickTimeComponent(tickTime)).append(". ").append(createTpsComponent(tickRateManager, tps));
         return prefix.append(CommonComponents.SPACE).append(timeComponent);
