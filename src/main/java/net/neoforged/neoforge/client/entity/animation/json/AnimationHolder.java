@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.client.entity.animation.json;
 
+import com.mojang.logging.LogUtils;
 import java.util.Map;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Holds a single {@link AnimationDefinition} loaded from resource packs. Objects of this class will be automatically updated with new
@@ -17,16 +19,20 @@ import org.jetbrains.annotations.Nullable;
 public final class AnimationHolder {
     public static final AnimationDefinition EMPTY_ANIMATION = new AnimationDefinition(0f, false, Map.of());
 
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     private final ResourceLocation key;
     @Nullable
     private AnimationDefinition value;
+    private boolean absentWarned;
 
     AnimationHolder(ResourceLocation key) {
         this.key = key;
     }
 
     void unbind() {
-        this.value = null;
+        value = null;
+        absentWarned = false;
     }
 
     void bind(AnimationDefinition value) {
@@ -45,7 +51,14 @@ public final class AnimationHolder {
      */
     public AnimationDefinition get() {
         final var result = value;
-        return result == null ? EMPTY_ANIMATION : result;
+        if (result == null) {
+            if (!absentWarned) {
+                absentWarned = true;
+                LOGGER.warn("Missing entity animation {}", key);
+            }
+            return EMPTY_ANIMATION;
+        }
+        return result;
     }
 
     /**

@@ -74,10 +74,5 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
             }
         }
         LOGGER.info("Loaded {} entity animations", loaded);
-        for (final var holder : animations.values()) {
-            if (!holder.isBound()) {
-                LOGGER.warn("Entity animation {} is missing", holder.key());
-            }
-        }
     }
 }
