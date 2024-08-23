@@ -404,19 +404,19 @@ public class ModListScreen extends Screen {
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.version", MavenVersionTranslator.artifactVersionToString(selectedMod.getVersion())));
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
-        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits)));
-        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors)));
-        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
+        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits.toString()).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL).replace("\r\n", "\n")));
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.nochildmods"));
         else
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
-            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
-        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()).replace("\r\n", "\n"));
+        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", selectedMod.getOwningFile().getLicense()).replace("\r\n", "\n"));
         lines.add(null);
-        lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
+        lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription).replace("\r\n", "\n"));
 
         /* Removed because people bitched that this information was misleading.
         lines.add(null);
