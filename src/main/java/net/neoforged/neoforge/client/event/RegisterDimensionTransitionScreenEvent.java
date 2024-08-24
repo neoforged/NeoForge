@@ -16,18 +16,20 @@ import net.neoforged.neoforge.client.DimensionTransitionScreen;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * <p>Event for registering screen effects when transitioning across dimensions.</p>
+ * <p>Event for registering screen effects when transitioning across dimensions.
+ * Note that there is a priority order when it comes to what screens are displayed.
+ * If a dimension has a screen that displays when entering it, that will have priority over a dimension that has one when you leave it. </p>
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterDimensionTransitionEvent extends Event implements IModBusEvent {
+public class RegisterDimensionTransitionScreenEvent extends Event implements IModBusEvent {
     private final Map<ResourceKey<Level>, DimensionTransitionScreen> toEffects;
     private final Map<ResourceKey<Level>, DimensionTransitionScreen> fromEffects;
 
     @ApiStatus.Internal
-    public RegisterDimensionTransitionEvent(Map<ResourceKey<Level>, DimensionTransitionScreen> toEffects, Map<ResourceKey<Level>, DimensionTransitionScreen> fromEffects) {
+    public RegisterDimensionTransitionScreenEvent(Map<ResourceKey<Level>, DimensionTransitionScreen> toEffects, Map<ResourceKey<Level>, DimensionTransitionScreen> fromEffects) {
         this.toEffects = toEffects;
         this.fromEffects = fromEffects;
     }
@@ -35,21 +37,21 @@ public class RegisterDimensionTransitionEvent extends Event implements IModBusEv
     /**
      * Registers a dimension transition when traveling to a dimension.
      */
-    public void registerTo(ResourceKey<Level> dimension, DimensionTransitionScreen screen) {
+    public void registerIncomingEffect(ResourceKey<Level> dimension, DimensionTransitionScreen screen) {
         this.toEffects.put(dimension, screen);
     }
 
     /**
      * Registers a dimension transition when traveling from a dimension.
      */
-    public void registerFrom(ResourceKey<Level> dimension, DimensionTransitionScreen screen) {
+    public void registerOutgoingEffect(ResourceKey<Level> dimension, DimensionTransitionScreen screen) {
         this.fromEffects.put(dimension, screen);
     }
 
     /**
      * Registers a dimension transition when traveling to or from a dimension.
      */
-    public void registerBiDirectional(ResourceKey<Level> dimension, DimensionTransitionScreen screen) {
+    public void registerBiDirectionalEffect(ResourceKey<Level> dimension, DimensionTransitionScreen screen) {
         this.toEffects.put(dimension, screen);
         this.fromEffects.put(dimension, screen);
     }

@@ -21,10 +21,10 @@ public interface DimensionTransitionScreen {
      * @param screenHeight the height of the screen
      * @return true to cancel vanilla rendering
      */
-    boolean renderScreenEffect(GuiGraphics graphics, float partialTicks, int screenWidth, int screenHeight);
+    boolean renderScreenEffect(GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight);
 
     /**
-     * Called when vanilla renders the "Downloading Terrain" text on the {@link ReceivingLevelScreen}. <br>
+     * Called when vanilla renders the "Downloading Terrain" text on the {@link ReceivingLevelScreen}.
      * Use this to render custom text on the screen if you don't want to use vanilla's.
      *
      * @param font         the game font
@@ -33,6 +33,6 @@ public interface DimensionTransitionScreen {
      * @param screenHeight the height of the screen
      */
     default void renderTransitionText(Font font, GuiGraphics graphics, int screenWidth, int screenHeight) {
-        graphics.drawCenteredString(font, Component.translatable("multiplayer.downloadingTerrain"), screenWidth / 2, screenHeight / 2 - 50, 16777215);
+        graphics.drawCenteredString(font, Component.translatable("multiplayer.downloadingTerrain"), screenWidth / 2, screenHeight / 2 - 50, 0xFFFFFF);
     }
 }
