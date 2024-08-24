@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import net.minecraft.client.gui.Font;
+import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.DimensionTransitionScreen;
 import net.neoforged.neoforge.client.event.RegisterDimensionTransitionScreenEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -29,20 +29,7 @@ public class DimensionTransitionScreenTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when exiting the Nether", enabledByDefault = true)
     static void netherOutgoingTransition(DynamicTest test) {
-        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> {
-            event.registerOutgoingEffect(Level.NETHER, new DimensionTransitionScreen() {
-                @Override
-                public boolean renderScreenEffect(GuiGraphics graphics, float partialTicks, int screenWidth, int screenHeight) {
-                    graphics.blit(NETHER_BG, 0, 0, 0, 0.0F, 0.0F, screenWidth, screenHeight, 32, 32);
-                    return true;
-                }
-
-                @Override
-                public void renderTransitionText(Font font, GuiGraphics graphics, int screenWidth, int screenHeight) {
-                    graphics.drawCenteredString(font, "This displays when returning from the nether!", screenWidth / 2, screenHeight / 2 - 50, 0xFFFFFF);
-                }
-            });
-        });
+        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerOutgoingEffect(Level.NETHER, (supplier, reason) -> new CustomLevelScreen(supplier, reason, NETHER_BG, Component.literal("This displays when returning from the nether!"))));
 
         test.eventListeners().forge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             Player player = event.getEntity();
@@ -55,20 +42,7 @@ public class DimensionTransitionScreenTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when entering the End", enabledByDefault = true)
     static void endIncomingTransition(DynamicTest test) {
-        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> {
-            event.registerIncomingEffect(Level.END, new DimensionTransitionScreen() {
-                @Override
-                public boolean renderScreenEffect(GuiGraphics graphics, float partialTicks, int screenWidth, int screenHeight) {
-                    graphics.blit(END_BG, 0, 0, 0, 0.0F, 0.0F, screenWidth, screenHeight, 32, 32);
-                    return true;
-                }
-
-                @Override
-                public void renderTransitionText(Font font, GuiGraphics graphics, int screenWidth, int screenHeight) {
-                    graphics.drawCenteredString(font, "This displays when going to the end!", screenWidth / 2, screenHeight / 2 - 50, 0xFFFFFF);
-                }
-            });
-        });
+        test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerIncomingEffect(Level.END, (supplier, reason) -> new CustomLevelScreen(supplier, reason, END_BG, Component.literal("This displays when going to the end!"))));
 
         test.eventListeners().forge().addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             Player player = event.getEntity();
@@ -76,5 +50,26 @@ public class DimensionTransitionScreenTests {
                 test.requestConfirmation(player, Component.literal("Did the screen display an end stone background when traveling through the portal?"));
             }
         });
+    }
+
+    public static class CustomLevelScreen extends ReceivingLevelScreen {
+        private final ResourceLocation bgTexture;
+        private final Component message;
+
+        public CustomLevelScreen(BooleanSupplier supplier, Reason reason, ResourceLocation bgTexture, Component message) {
+            super(supplier, reason);
+            this.bgTexture = bgTexture;
+            this.message = message;
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            graphics.drawCenteredString(this.font, this.message, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        }
+
+        @Override
+        public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            graphics.blit(this.bgTexture, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
+        }
     }
 }
