@@ -64,6 +64,7 @@ public class DimensionTransitionScreenTests {
 
         @Override
         public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            this.renderBackground(graphics, mouseX, mouseY, partialTick);
             graphics.drawCenteredString(this.font, this.message, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         }
 
