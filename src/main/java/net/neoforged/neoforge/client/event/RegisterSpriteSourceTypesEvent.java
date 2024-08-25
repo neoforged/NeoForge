@@ -59,6 +59,9 @@ public class RegisterSpriteSourceTypesEvent extends Event implements IModBusEven
      * @param sourceType The {@link SpriteSourceType} to register
      */
     public void register(ResourceLocation id, SpriteSourceType sourceType) {
+        if (this.types.containsKey(id)) {
+            throw new IllegalStateException("Duplicate sprite source type registration " + id);
+        }
         this.types.put(id, sourceType);
     }
 }
