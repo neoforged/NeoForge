@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.client;
 
+import com.mojang.datafixers.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.resources.ResourceKey;
@@ -18,15 +18,32 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class DimensionTransitionScreenManager {
-    private static final Map<ResourceKey<Level>, BiFunction<BooleanSupplier, ReceivingLevelScreen.Reason, ReceivingLevelScreen>> toDimensionTransitions = new HashMap<>();
-    private static final Map<ResourceKey<Level>, BiFunction<BooleanSupplier, ReceivingLevelScreen.Reason, ReceivingLevelScreen>> fromDimensionTransitions = new HashMap<>();
+    private static final Map<Pair<ResourceKey<Level>, ResourceKey<Level>>, ReceivingLevelScreenFactory> conditionalDimensionEffects = new HashMap<>();
+    private static final Map<ResourceKey<Level>, ReceivingLevelScreenFactory> toDimensionTransitions = new HashMap<>();
+    private static final Map<ResourceKey<Level>, ReceivingLevelScreenFactory> fromDimensionTransitions = new HashMap<>();
 
     @ApiStatus.Internal
     static void init() {
-        ModLoader.postEventWrapContainerInModOrder(new RegisterDimensionTransitionScreenEvent(toDimensionTransitions, fromDimensionTransitions));
+        ModLoader.postEventWrapContainerInModOrder(new RegisterDimensionTransitionScreenEvent(conditionalDimensionEffects, toDimensionTransitions, fromDimensionTransitions));
     }
 
-    public static BiFunction<BooleanSupplier, ReceivingLevelScreen.Reason, ReceivingLevelScreen> getScreen(@Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
-        return toDimensionTransitions.getOrDefault(toDimension, fromDimensionTransitions.getOrDefault(fromDimension, ReceivingLevelScreen::new));
+    public static ReceivingLevelScreenFactory getScreen(@Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
+        var conditionalScreen = conditionalDimensionEffects.get(Pair.of(toDimension, fromDimension));
+        if (conditionalScreen != null) {
+            return conditionalScreen;
+        }
+        var toDim = toDimensionTransitions.get(toDimension);
+        if (toDim != null) {
+            return toDim;
+        }
+        var fromDim = fromDimensionTransitions.get(fromDimension);
+        if (fromDim != null) {
+            return fromDim;
+        }
+        return ReceivingLevelScreen::new;
+    }
+
+    public interface ReceivingLevelScreenFactory {
+        ReceivingLevelScreen create(BooleanSupplier supplier, ReceivingLevelScreen.Reason reason);
     }
 }
