@@ -20,7 +20,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-@ForEachTest(side = Dist.CLIENT, groups = {DimensionTransitionScreenTests.GROUP, "manual"})
+@ForEachTest(side = Dist.CLIENT, groups = { DimensionTransitionScreenTests.GROUP, "manual" })
 public class DimensionTransitionScreenTests {
     public static final String GROUP = "dimension_transition";
     public static final ResourceLocation NETHER_BG = ResourceLocation.withDefaultNamespace("textures/block/netherrack.png");
