@@ -115,7 +115,7 @@
   "commands.neoforge.timespeed.query.default": "Час в %s тече нормально (20 хвилин на день).",
   "commands.neoforge.timespeed.set": "Встановіть час в %s до %sx (%s хвилин на день).",
   "commands.neoforge.timespeed.set.default": "Встановіть потік часу в %s за замовчуванням (20 хвилин на день).",
-  "commands.neoforge.data_components.list.error.held_stack_empty": "You are not holding any item",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "Ви не тримаєте будь-який предмет",
   "commands.neoforge.data_components.list.title": "Компоненти даних на %s:",
   "commands.neoforge.data_components.list.entry": "\n  - %s",
   "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
