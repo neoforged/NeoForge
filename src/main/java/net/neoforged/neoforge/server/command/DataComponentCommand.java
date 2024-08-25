@@ -46,6 +46,8 @@ class DataComponentCommand {
         }
 
         ctx.getSource().sendSuccess(() -> {
+            // Use Item#getName() instead if ItemStack#getDisplayName() to display the actual item name without influence
+            // of a written book's title or the ITEM_NAME or CUSTOM_NAME data components
             MutableComponent text = Component.translatable("commands.neoforge.data_components.list.title", stack.getItem().getName(stack));
             DataComponentMap prototype = stack.getPrototype();
             DataComponentPatch patch = stack.getComponentsPatch();
