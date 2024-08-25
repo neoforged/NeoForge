@@ -119,7 +119,7 @@
   "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
   "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
   "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
-  "commands.neoforge.data_components.list.error.held_stack_empty": "Held stack must not be empty",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "You are not holding any item",
   "commands.neoforge.data_components.list.title": "Data components on %s:",
   "commands.neoforge.data_components.list.entry": "\n  - %s",
   "commands.neoforge.data_components.list.entry.key_value": "%s: %s",

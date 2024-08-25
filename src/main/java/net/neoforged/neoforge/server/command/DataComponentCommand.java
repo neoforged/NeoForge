@@ -9,6 +9,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -25,10 +26,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 class DataComponentCommand {
+    private static final SimpleCommandExceptionType ERROR_NO_ITEM = new SimpleCommandExceptionType(
+            Component.translatableEscape("commands.neoforge.data_components.list.error.held_stack_empty")
+    );
+
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("data_components")
+                .requires(cs -> cs.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("list")
-                        .requires(cs -> cs.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(DataComponentCommand::listComponents));
     }
 
@@ -37,8 +42,7 @@ class DataComponentCommand {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
         ItemStack stack = player.getMainHandItem();
         if (stack.isEmpty()) {
-            ctx.getSource().sendFailure(Component.translatable("commands.neoforge.data_components.list.error.held_stack_empty"));
-            return 0;
+            throw ERROR_NO_ITEM.create();
         }
 
         ctx.getSource().sendSuccess(() -> {
