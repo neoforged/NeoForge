@@ -27,8 +27,7 @@ import net.minecraft.world.item.ItemStack;
 
 class DataComponentCommand {
     private static final SimpleCommandExceptionType ERROR_NO_ITEM = new SimpleCommandExceptionType(
-            Component.translatableEscape("commands.neoforge.data_components.list.error.held_stack_empty")
-    );
+            Component.translatableEscape("commands.neoforge.data_components.list.error.held_stack_empty"));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("data_components")
