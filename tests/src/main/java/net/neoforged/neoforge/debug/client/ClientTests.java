@@ -84,7 +84,7 @@ public class ClientTests {
         });
     }
 
-    @TestHolder(description = "Tests that the NamespacedDirectoryLister only collects resources from the specified namespace")
+    @TestHolder(description = "Tests that the NamespacedDirectoryLister only collects resources from the specified namespace", enabledByDefault = true)
     static void namespacedDirectoryListerTest(final DynamicTest test) {
         final ResourceLocation MUST_BE_PRESENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_present", "test/dir_list_test_present");
         final ResourceLocation MUST_BE_ABSENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_absent", "test/dir_list_test_absent");
@@ -97,9 +97,11 @@ public class ClientTests {
             ResourceLocation missing = MissingTextureAtlasSprite.getLocation();
             if (event.getAtlas().getSprite(MUST_BE_PRESENT).contents().name().equals(missing)) {
                 test.fail("dir_list_test_present.png must be present but returned the missing texture");
+                return;
             }
             if (!event.getAtlas().getSprite(MUST_BE_ABSENT).contents().name().equals(missing)) {
                 test.fail("dir_list_test_absent.png must be absent but returned something other than the missing texture");
+                return;
             }
             test.pass();
         });
