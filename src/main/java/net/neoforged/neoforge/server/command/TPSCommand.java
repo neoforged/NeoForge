@@ -71,9 +71,9 @@ class TPSCommand {
 
         MutableComponent component;
 
-        if (dimension == null)
+        if (dimension == null) {
             component = Component.translatable("commands.neoforge.tps.overall", tpsComponent, tickTimeComponent);
-        else {
+        } else {
             var dimensionType = dimension.dimensionTypeRegistration();
 
             var dimensionName = Component.empty().append(dimension.getDescription()).withStyle(style -> style
