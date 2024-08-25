@@ -15,6 +15,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.DimensionTransitionScreenManager.ReceivingLevelScreenFactory;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * <p>Event for registering screen effects when transitioning across dimensions.
@@ -43,30 +44,25 @@ public class RegisterDimensionTransitionScreenEvent extends Event implements IMo
     /**
      * Registers a dimension transition when traveling to a dimension.
      */
-    public void registerIncomingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
-        this.toEffects.put(dimension, screen);
+    @Nullable
+    public ReceivingLevelScreenFactory registerIncomingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
+        return this.toEffects.putIfAbsent(dimension, screen);
     }
 
     /**
      * Registers a dimension transition when traveling from a dimension.
      */
-    public void registerOutgoingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
-        this.fromEffects.put(dimension, screen);
-    }
-
-    /**
-     * Registers a dimension transition when traveling to or from a dimension.
-     */
-    public void registerBiDirectionalEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
-        this.toEffects.put(dimension, screen);
-        this.fromEffects.put(dimension, screen);
+    @Nullable
+    public ReceivingLevelScreenFactory registerOutgoingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
+        return this.fromEffects.putIfAbsent(dimension, screen);
     }
 
     /**
      * Registers a dimension transition when traveling to a dimension from a certain dimension.
      * This registration method takes priority over the normal to and from dimension checks.
      */
-    public void registerConditionalEffect(ResourceKey<Level> toDimension, ResourceKey<Level> fromDimension, ReceivingLevelScreenFactory screen) {
-        this.conditionalDimensionEffects.put(Pair.of(toDimension, fromDimension), screen);
+    @Nullable
+    public ReceivingLevelScreenFactory registerConditionalEffect(ResourceKey<Level> toDimension, ResourceKey<Level> fromDimension, ReceivingLevelScreenFactory screen) {
+        return this.conditionalDimensionEffects.putIfAbsent(Pair.of(toDimension, fromDimension), screen);
     }
 }

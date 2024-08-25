@@ -20,14 +20,14 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-@ForEachTest(side = Dist.CLIENT, groups = DimensionTransitionScreenTests.GROUP)
+@ForEachTest(side = Dist.CLIENT, groups = {DimensionTransitionScreenTests.GROUP, "manual"})
 public class DimensionTransitionScreenTests {
     public static final String GROUP = "dimension_transition";
     public static final ResourceLocation NETHER_BG = ResourceLocation.withDefaultNamespace("textures/block/netherrack.png");
     public static final ResourceLocation END_BG = ResourceLocation.withDefaultNamespace("textures/block/end_stone.png");
 
     @EmptyTemplate
-    @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when exiting the Nether", enabledByDefault = true)
+    @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when exiting the Nether")
     static void netherOutgoingTransition(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerOutgoingEffect(Level.NETHER, (supplier, reason) -> new CustomLevelScreen(supplier, reason, NETHER_BG, Component.literal("This displays when returning from the nether!"))));
 
@@ -40,7 +40,7 @@ public class DimensionTransitionScreenTests {
     }
 
     @EmptyTemplate
-    @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when entering the End", enabledByDefault = true)
+    @TestHolder(description = "Tests if a custom dimension transition screen is properly displayed when entering the End")
     static void endIncomingTransition(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterDimensionTransitionScreenEvent event) -> event.registerIncomingEffect(Level.END, (supplier, reason) -> new CustomLevelScreen(supplier, reason, END_BG, Component.literal("This displays when going to the end!"))));
 
