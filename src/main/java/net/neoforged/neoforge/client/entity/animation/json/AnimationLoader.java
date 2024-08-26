@@ -32,7 +32,7 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
 
     private final Map<ResourceLocation, AnimationHolder> animations = new MapMaker().weakValues().concurrencyLevel(1).makeMap();
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private final List<AnimationHolder> strongHolderList = new ArrayList<>();
+    private final List<AnimationHolder> strongHolderReferences = new ArrayList<>();
 
     private AnimationLoader() {
         super(new Gson(), "animations/entity");
@@ -59,7 +59,7 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
     protected void apply(Map<ResourceLocation, JsonElement> animationJsons, ResourceManager resourceManager, ProfilerFiller profiler) {
         AnimationTypeManager.init();
         animations.values().forEach(AnimationHolder::unbind);
-        strongHolderList.clear();
+        strongHolderReferences.clear();
         int loaded = 0;
         for (final var entry : animationJsons.entrySet()) {
             try {
@@ -67,7 +67,7 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
                         .getOrThrow(JsonParseException::new);
                 final var holder = getAnimationHolder(entry.getKey());
                 holder.bind(animation);
-                strongHolderList.add(holder);
+                strongHolderReferences.add(holder);
                 loaded++;
             } catch (Exception e) {
                 LOGGER.error("Failed to load animation {}", entry.getKey(), e);
