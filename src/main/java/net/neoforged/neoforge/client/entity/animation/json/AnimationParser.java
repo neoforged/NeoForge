@@ -31,6 +31,9 @@ import org.joml.Vector3f;
  * A parser for parsing JSON-based entity animation files.
  */
 public final class AnimationParser {
+    /**
+     * {@snippet lang=JSON : "minecraft:rotation"}
+     */
     private static final Codec<AnimationTarget> TARGET_CODEC = ResourceLocation.CODEC
             .flatXmap(
                     name -> Optional.ofNullable(AnimationTypeManager.getTarget(name))
@@ -44,6 +47,9 @@ public final class AnimationParser {
                                     Locale.ENGLISH, "Unregistered animation target '%s'. Registered targets: %s",
                                     target, AnimationTypeManager.getTargetList()))));
 
+    /**
+     * {@snippet lang=JSON : "minecraft:linear"}
+     */
     private static final Codec<AnimationChannel.Interpolation> INTERPOLATION_CODEC = ResourceLocation.CODEC
             .flatXmap(
                     name -> Optional.ofNullable(AnimationTypeManager.getInterpolation(name))
@@ -57,6 +63,20 @@ public final class AnimationParser {
                                     Locale.ENGLISH, "Unregistered animation interpolation '%s'. Registered interpolations: %s",
                                     target, AnimationTypeManager.getInterpolationList()))));
 
+    /**
+     * {@snippet lang=JSON :
+     * {
+     *   "keyframes": [
+     *     {
+     *       "timestamp": 0.5,
+     *       "target": [22.5, 0.0, 0.0],
+     *       "interpolation": "minecraft:linear"
+     *     }
+     *   ],
+     *   "target": "minecraft:rotation"
+     * }
+     * }
+     */
     public static final MapCodec<AnimationChannel> CHANNEL_CODEC = ((MapCodec.MapCodecCodec<AnimationChannel>) TARGET_CODEC.partialDispatch(
             "target",
             channel -> Optional.ofNullable(AnimationTypeManager.getTargetFromChannelTarget(channel.target()))
@@ -71,11 +91,45 @@ public final class AnimationParser {
                             channel -> Arrays.asList(channel.keyframes()))
                     .fieldOf("keyframes")))).codec();
 
+    /**
+     * {@snippet lang=JSON :
+     * {
+     *   "bone": "head",
+     *   "keyframes": [
+     *     {
+     *       "timestamp": 0.5,
+     *       "target": [22.5, 0.0, 0.0],
+     *       "interpolation": "minecraft:linear"
+     *     }
+     *   ],
+     *   "target": "minecraft:rotation"
+     * }
+     * }
+     */
     private static final Codec<Pair<String, AnimationChannel>> NAMED_CHANNEL_CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Codec.STRING.fieldOf("bone").forGetter(Pair::key),
                     CHANNEL_CODEC.forGetter(Pair::value)).apply(instance, Pair::of));
 
+    /**
+     * {@snippet lang=JSON :
+     * {
+     *   "length": 1.125,
+     *   "animations": [
+     *     {
+     *       "bone": "head",
+     *       "keyframes": [
+     *         {
+     *           "timestamp": 0.5,
+     *           "target": [22.5, 0.0, 0.0],
+     *           "interpolation": "minecraft:linear"
+     *         }
+     *       ]
+     *     }
+     *   ]
+     * }
+     * }
+     */
     public static final Codec<AnimationDefinition> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Codec.FLOAT.fieldOf("length").forGetter(AnimationDefinition::lengthInSeconds),
@@ -104,6 +158,15 @@ public final class AnimationParser {
 
     private AnimationParser() {}
 
+    /**
+     * {@snippet lang=JSON :
+     * {
+     *   "timestamp": 0.5,
+     *   "target": [22.5, 0.0, 0.0],
+     *   "interpolation": "minecraft:linear"
+     * }
+     * }
+     */
     private static Codec<Keyframe> keyframeCodec(AnimationTarget target) {
         return RecordCodecBuilder.create(
                 instance -> instance.group(
