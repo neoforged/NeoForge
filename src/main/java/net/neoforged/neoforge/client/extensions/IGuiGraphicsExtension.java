@@ -40,12 +40,21 @@ public interface IGuiGraphicsExtension {
      * @return the rendered width of the string, never more than {@code maxX - minX}
      */
     default int drawScrollingString(Font font, Component text, int minX, int maxX, int y, int color) {
+        return drawScrollingString(font, text, minX, maxX, y, color, true);
+    }
+
+    /**
+     * Draws a left-aligned string, with a scrolling effect if the string is too long.
+     *
+     * @return the rendered width of the string, never more than {@code maxX - minX}
+     */
+    default int drawScrollingString(Font font, Component text, int minX, int maxX, int y, int color, boolean dropShadow) {
         int maxWidth = maxX - minX;
         int textWidth = font.width(text.getVisualOrderText());
         if (textWidth <= maxWidth) {
             return self().drawString(font, text, minX, y, color);
         } else {
-            AbstractWidget.renderScrollingString(self(), font, text, minX, y, maxX, y + font.lineHeight, color);
+            AbstractWidget.renderScrollingString(self(), font, text, minX, y, maxX, y + font.lineHeight, color, dropShadow);
             return maxWidth;
         }
     }
