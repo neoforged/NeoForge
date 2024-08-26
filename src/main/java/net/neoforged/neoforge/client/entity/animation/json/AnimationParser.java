@@ -32,7 +32,8 @@ import org.joml.Vector3f;
  */
 public final class AnimationParser {
     /**
-     * {@snippet lang=JSON : "minecraft:rotation"}
+     * {@snippet lang = JSON : "minecraft:rotation"
+     * }
      */
     private static final Codec<AnimationTarget> TARGET_CODEC = ResourceLocation.CODEC
             .flatXmap(
@@ -48,7 +49,8 @@ public final class AnimationParser {
                                     target, AnimationTypeManager.getTargetList()))));
 
     /**
-     * {@snippet lang=JSON : "minecraft:linear"}
+     * {@snippet lang = JSON : "minecraft:linear"
+     * }
      */
     private static final Codec<AnimationChannel.Interpolation> INTERPOLATION_CODEC = ResourceLocation.CODEC
             .flatXmap(
@@ -64,7 +66,7 @@ public final class AnimationParser {
                                     target, AnimationTypeManager.getInterpolationList()))));
 
     /**
-     * {@snippet lang=JSON :
+     * {@snippet lang = JSON :
      * {
      *   "keyframes": [
      *     {
@@ -92,7 +94,7 @@ public final class AnimationParser {
                     .fieldOf("keyframes")))).codec();
 
     /**
-     * {@snippet lang=JSON :
+     * {@snippet lang = JSON :
      * {
      *   "bone": "head",
      *   "keyframes": [
@@ -112,7 +114,7 @@ public final class AnimationParser {
                     CHANNEL_CODEC.forGetter(Pair::value)).apply(instance, Pair::of));
 
     /**
-     * {@snippet lang=JSON :
+     * {@snippet lang = JSON :
      * {
      *   "length": 1.125,
      *   "loop": true,
@@ -160,7 +162,7 @@ public final class AnimationParser {
     private AnimationParser() {}
 
     /**
-     * {@snippet lang=JSON :
+     * {@snippet lang = JSON :
      * {
      *   "timestamp": 0.5,
      *   "target": [22.5, 0.0, 0.0],
