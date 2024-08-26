@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.entity.animation.json;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.KeyDispatchCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.Pair;
 import java.util.ArrayList;
@@ -79,8 +80,9 @@ public final class AnimationParser {
      * }
      * }
      */
-    public static final MapCodec<AnimationChannel> CHANNEL_CODEC = ((MapCodec.MapCodecCodec<AnimationChannel>) TARGET_CODEC.partialDispatch(
+    public static final MapCodec<AnimationChannel> CHANNEL_CODEC = new KeyDispatchCodec<>(
             "target",
+            TARGET_CODEC,
             channel -> Optional.ofNullable(AnimationTypeManager.getTargetFromChannelTarget(channel.target()))
                     .map(DataResult::success)
                     .orElseGet(() -> DataResult.error(() -> String.format(
@@ -91,7 +93,7 @@ public final class AnimationParser {
                     .xmap(
                             keyframes -> new AnimationChannel(target.channelTarget(), keyframes.toArray(Keyframe[]::new)),
                             channel -> Arrays.asList(channel.keyframes()))
-                    .fieldOf("keyframes")))).codec();
+                    .fieldOf("keyframes")));
 
     /**
      * {@snippet lang = JSON :
