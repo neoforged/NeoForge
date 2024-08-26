@@ -93,6 +93,8 @@ public class CapabilityListenerHolder {
                 continue;
 
             var set = chunkHolder.get(ref.pos.asLong());
+            if (set == null)
+                continue;
             // We might remove a different garbage-collected reference,
             // or we might remove nothing if the reference was already removed.
             // Because the hash codes will match, that is fine.
