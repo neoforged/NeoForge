@@ -45,6 +45,7 @@ public final class TemplateParser {
     private static final Pattern MARKER_PATTERN = Pattern.compile("^" + TEMPLATE_MARKER + "\\(([a-z0-9_.-]+:[a-z0-9_.-]+)\\) *(.*)$");
     private static final ResourceLocation SJSON = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "sjson");
     private static final ResourceLocation VANILLA = ResourceLocation.withDefaultNamespace("default");
+    public static final String JSON_MARKER = TEMPLATE_MARKER + "(" + SJSON + ")";
 
     private static final Map<ResourceLocation, Pair<TriFunction<String, Object[], Consumer<FormattedText>, String>, Function<String, String>>> PARSERS = new HashMap<>();
 
@@ -155,7 +156,7 @@ public final class TemplateParser {
                 } catch (ParsingException e) {
                     result.add(Pair.of(key, e.getMessage()));
                 }
-            }, (key, value) -> {});
+            });
             return result;
         } catch (Exception exception) {
             return List.of(Pair.of(modid + "/" + language, "Failed to read language file: " + exception.getMessage()));
