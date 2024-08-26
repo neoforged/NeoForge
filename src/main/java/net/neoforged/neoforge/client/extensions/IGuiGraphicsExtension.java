@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 
 /**
  * Extension interface for {@link GuiGraphics}.
@@ -142,6 +143,19 @@ public interface IGuiGraphicsExtension {
         }
 
         self().blit(texture, x, y, boundsWidth, boundsHeight, 0.0f, 0.0f, rectWidth, rectHeight, rectWidth, rectHeight);
+    }
+
+    default void drawCenteredString(Font font, String string, int x, int y, int color, boolean dropShadow) {
+        self().drawString(font, string, x - font.width(string) / 2, y, color, dropShadow);
+    }
+
+    default void drawCenteredString(Font font, Component p_282456_, int x, int y, int color, boolean dropShadow) {
+        FormattedCharSequence formattedcharsequence = p_282456_.getVisualOrderText();
+        self().drawString(font, formattedcharsequence, x - font.width(formattedcharsequence) / 2, y, color, dropShadow);
+    }
+
+    default void drawCenteredString(Font font, FormattedCharSequence p_281854_, int x, int y, int color, boolean dropShadow) {
+        self().drawString(font, p_281854_, x - font.width(p_281854_) / 2, y, color, dropShadow);
     }
 
     // TODO: 1.20.2: do we need to fix these or can we just remove them?
