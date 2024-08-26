@@ -115,6 +115,7 @@ public final class AnimationParser {
      * {@snippet lang=JSON :
      * {
      *   "length": 1.125,
+     *   "loop": true,
      *   "animations": [
      *     {
      *       "bone": "head",
