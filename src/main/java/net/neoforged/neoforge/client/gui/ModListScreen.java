@@ -403,6 +403,7 @@ public class ModListScreen extends Screen {
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.version", MavenVersionTranslator.artifactVersionToString(selectedMod.getVersion())));
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
+        // Normalizing line endings to LF because it is currently not automatically handled for us.
         selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits).replace("\r\n", "\n")));
         selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors).replace("\r\n", "\n")));
         selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL).replace("\r\n", "\n")));
@@ -415,7 +416,7 @@ public class ModListScreen extends Screen {
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()).replace("\r\n", "\n"));
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", selectedMod.getOwningFile().getLicense()).replace("\r\n", "\n"));
         lines.add(null);
-        lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription).replace("\r\n", "\n"));
+        lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
 
         /* Removed because people bitched that this information was misleading.
         lines.add(null);
