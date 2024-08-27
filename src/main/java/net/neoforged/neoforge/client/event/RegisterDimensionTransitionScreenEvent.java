@@ -43,26 +43,29 @@ public class RegisterDimensionTransitionScreenEvent extends Event implements IMo
 
     /**
      * Registers a dimension transition when traveling to a dimension.
+     *
+     * @return {@code true} if the screen was registered, {@code false} otherwise.
      */
-    @Nullable
-    public ReceivingLevelScreenFactory registerIncomingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
-        return this.toEffects.putIfAbsent(dimension, screen);
+    public boolean registerIncomingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
+        return this.toEffects.putIfAbsent(dimension, screen) == null;
     }
 
     /**
      * Registers a dimension transition when traveling from a dimension.
+     *
+     * @return {@code true} if the screen was registered, {@code false} otherwise.
      */
-    @Nullable
-    public ReceivingLevelScreenFactory registerOutgoingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
-        return this.fromEffects.putIfAbsent(dimension, screen);
+    public boolean registerOutgoingEffect(ResourceKey<Level> dimension, ReceivingLevelScreenFactory screen) {
+        return this.fromEffects.putIfAbsent(dimension, screen) == null;
     }
 
     /**
      * Registers a dimension transition when traveling to a dimension from a certain dimension.
      * This registration method takes priority over the normal to and from dimension checks.
+     *
+     * @return {@code true} if the screen was registered, {@code false} otherwise.
      */
-    @Nullable
-    public ReceivingLevelScreenFactory registerConditionalEffect(ResourceKey<Level> toDimension, ResourceKey<Level> fromDimension, ReceivingLevelScreenFactory screen) {
-        return this.conditionalDimensionEffects.putIfAbsent(Pair.of(toDimension, fromDimension), screen);
+    public boolean registerConditionalEffect(ResourceKey<Level> toDimension, ResourceKey<Level> fromDimension, ReceivingLevelScreenFactory screen) {
+        return this.conditionalDimensionEffects.putIfAbsent(Pair.of(toDimension, fromDimension), screen) == null;
     }
 }
