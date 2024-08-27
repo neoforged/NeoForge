@@ -43,7 +43,7 @@
              String s = UNSUPPORTED_FORMAT_PATTERN.matcher(GsonHelper.convertToString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
              p_128110_.accept(entry.getKey(), s);
          }
-@@ -92,11 +_,20 @@
+@@ -92,12 +_,21 @@
          instance = p_128115_;
      }
  
@@ -55,12 +55,31 @@
      }
  
      public abstract String getOrDefault(String p_265702_, String p_265599_);
-+
+ 
 +    // Neo: Bypass for the formatter
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public String getOrDefaultRaw(String p_265702_, String p_265599_) {
 +        return getOrDefault(p_265702_, p_265599_);
 +    }
- 
++
      public abstract boolean has(String p_128117_);
  
+     public abstract boolean isDefaultRightToLeft();
+@@ -106,5 +_,17 @@
+ 
+     public List<FormattedCharSequence> getVisualOrder(List<FormattedText> p_128113_) {
+         return p_128113_.stream().map(this::getVisualOrder).collect(ImmutableList.toImmutableList());
++    }
++
++    // Neo: For API stability in 1.21(.1) only, does nothing
++    @Deprecated(forRemoval = true)
++    public @org.jetbrains.annotations.Nullable net.minecraft.network.chat.Component getComponent(String key) {
++        return null;
++    }
++
++    // Neo: For API stability in 1.21(.1) only, extra parameter does nothing
++    @Deprecated(forRemoval = true)
++    public static void loadFromJson(InputStream p_128109_, BiConsumer<String, String> p_128110_, BiConsumer<String, net.minecraft.network.chat.Component> componentConsumer) {
++        loadFromJson(p_128109_, p_128110_);
+     }
+ }
