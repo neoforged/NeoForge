@@ -15,7 +15,6 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.DimensionTransitionScreenManager.ReceivingLevelScreenFactory;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * <p>Event for registering screen effects when transitioning across dimensions.
