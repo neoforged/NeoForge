@@ -5,9 +5,12 @@
       "conditions": {
         "items": [
           {
-            "type": "neotests_custom_predicate_test:custom_name",
-            "data1": 1,
-            "data2": 2
+            "predicates": {
+              "neotests_custom_predicate_test:custom_name": {
+                "data1": 1,
+                "data2": 2
+              }
+            }
           }
         ]
       },
