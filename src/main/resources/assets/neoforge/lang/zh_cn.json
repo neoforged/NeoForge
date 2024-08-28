@@ -132,7 +132,7 @@
   "neoforge.configuration.uitext.title": "%s 配置",
   "neoforge.configuration.uitext.type.client": "客户端设置",
   "neoforge.configuration.uitext.type.server": "服务端设置",
-  "neoforge.configuration.uitext.type.common": "Common settings",
+  "neoforge.configuration.uitext.type.common": "通用设置",
   "neoforge.configuration.uitext.type.startup": "",
   "neoforge.configuration.uitext.title.client": "%s Client Configuration",
   "neoforge.configuration.uitext.title.server": "%s Server Configuration",
