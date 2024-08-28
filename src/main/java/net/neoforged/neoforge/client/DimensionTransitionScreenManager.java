@@ -27,6 +27,15 @@ public class DimensionTransitionScreenManager {
         ModLoader.postEventWrapContainerInModOrder(new RegisterDimensionTransitionScreenEvent(conditionalDimensionEffects, toDimensionTransitions, fromDimensionTransitions));
     }
 
+    public static ReceivingLevelScreenFactory getScreenFromLevel(@Nullable Level target, @Nullable Level source) {
+        if (source == null) { //source level is null on login: transition screen should not appear in this case
+            return getScreen(null, null);
+        } else if (target == null) { //the target level shouldn't ever be null, but anyone could call Minecraft.setLevel and pass null in
+            return getScreen(null, source.dimension());
+        }
+        return getScreen(target.dimension(), source.dimension());
+    }
+
     public static ReceivingLevelScreenFactory getScreen(@Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
         var conditionalScreen = conditionalDimensionEffects.get(Pair.of(toDimension, fromDimension));
         if (conditionalScreen != null) {
