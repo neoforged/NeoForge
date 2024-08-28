@@ -255,7 +255,7 @@
   "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
   "neoforge.configgui.removeErroringBlockEntities": "删除错误方块实体",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    "开启此项后，游戏会移除任何在更新方法中出现错误的实体，而不是关闭服务端并报告崩溃日志。\n\n",
     {
       "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
       "color": "red",
