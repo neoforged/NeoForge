@@ -23,40 +23,43 @@ public class SweepAttackEvent extends PlayerEvent {
     }
 
     /**
-     * {@return} Attack target
+     * @return Attack target
      */
     public Entity getTarget() {
         return target;
     }
 
     /**
-     * {@return} true if the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}, other than the condition of not critical hit.
+     * @return true if the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}, other than the condition of not critical hit.
      */
     public boolean vanillaAllowSweepPreconditions() {
         return vanillaAllowSweepPreconditions;
     }
 
     /**
-     * {@return} true if the sweep attack would be disabled by critical hit
+     * @return true if the sweep attack would be disabled by critical hit
      */
     public boolean sweepDisabledByCrit() {
         return disabledByCrit;
     }
 
     /**
-     * {@return} true if the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}.
+     * @return true if the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}.
      */
     public boolean vanillaAllowSweep() {
         return vanillaAllowSweepPreconditions && !disabledByCrit;
     }
 
     /**
-     * {@return} true if the sweep attack would happen
+     * @return true if the sweep attack would happen
      */
     public boolean allowSweep() {
         return allowSweep;
     }
 
+    /**
+     * @param sweep Whether to enable sweep attack for this attack
+     */
     public void setAllowSweep(boolean sweep) {
         allowSweep = sweep;
     }
