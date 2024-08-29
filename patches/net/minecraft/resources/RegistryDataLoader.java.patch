@@ -65,7 +65,7 @@
 +            net.neoforged.neoforge.registries.RegistryBuilder<T> registryBuilder = new net.neoforged.neoforge.registries.RegistryBuilder<>(key);
 +            consumer.accept(registryBuilder);
 +
-+            WritableRegistry<T> writableregistry = (WritableRegistry<T>) registryBuilder.create(p_251662_, true);
++            WritableRegistry<T> writableregistry = (WritableRegistry<T>) registryBuilder.disableRegistrationCheck().create();
              return new RegistryDataLoader.Loader<>(this, writableregistry, p_251565_);
          }
  

@@ -76,7 +76,7 @@ public abstract class DataPackRegistryEvent extends Event implements IModBusEven
         }
 
         /**
-         * Registers the registry key as a datapack registry with a given {@link RegistryBuilder} to configure, which will cause data to be loaded from
+         * Registers the registry key as a datapack registry with a {@link RegistryBuilder} configurator, which will cause data to be loaded from
          * a datapack folder based on the registry's name.
          * <p>
          * Data JSONs will be loaded from {@code data/<datapack_namespace>/modid/registryname/}, where {@code modid} is the namespace of the registry key.
