@@ -22,6 +22,7 @@ public class CriticalHitEvent extends PlayerEvent {
 
     private float dmgMultiplier;
     private boolean isCriticalHit;
+    private boolean disableSweepAttack;
 
     /**
      * Fire via {@link CommonHooks#fireCriticalHit(Player, Entity, boolean, float)}
@@ -30,7 +31,7 @@ public class CriticalHitEvent extends PlayerEvent {
         super(player);
         this.target = target;
         this.dmgMultiplier = this.vanillaDmgMultiplier = dmgMultiplier;
-        this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
+        this.disableSweepAttack = this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
     }
 
     /**
@@ -44,8 +45,6 @@ public class CriticalHitEvent extends PlayerEvent {
      * The damage multiplier is applied to the base attack's damage if the attack {@linkplain #isCriticalHit() critically hits}.
      * <p>
      * A damage multiplier of 1.0 will not change the damage, a value of 1.5 will increase the damage by 50%, and so on.
-     * 
-     * @param modifier The new damage modifier.
      */
     public float getDamageMultiplier() {
         return this.dmgMultiplier;
@@ -56,7 +55,7 @@ public class CriticalHitEvent extends PlayerEvent {
      * <p>
      * Changing the damage modifier to zero does not guarantee that the attack does zero damage.
      * 
-     * @param modifier The new damage modifier. Must not be negative.
+     * @param dmgMultiplier The new damage modifier. Must not be negative.
      * @see #getDamageMultiplier()
      */
     public void setDamageMultiplier(float dmgMultiplier) {
@@ -80,6 +79,24 @@ public class CriticalHitEvent extends PlayerEvent {
      */
     public void setCriticalHit(boolean isCriticalHit) {
         this.isCriticalHit = isCriticalHit;
+    }
+
+    /**
+     * {@return if the attack disables sweep attack like vanilla critical hit}
+     * Not used if {@link #isCriticalHit()} is false.
+     */
+    public boolean disableSweepAttack() {
+        return this.disableSweepAttack;
+    }
+
+    /**
+     * Set if the attack should disable sweep attack like vanilla critical hit.
+     * Not used if {@link #isCriticalHit()} is false.
+     * 
+     * @param disableSweepAttack true if the attack disables sweep attack.
+     */
+    public void setDisableSweepAttack(boolean disableSweepAttack) {
+        this.disableSweepAttack = disableSweepAttack;
     }
 
     /**
