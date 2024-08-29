@@ -115,14 +115,14 @@
   "commands.neoforge.timespeed.query.default": "Die Zeit in %s vergeht normal (20 Minuten pro Tag).",
   "commands.neoforge.timespeed.set": "Die Zeit in %s vergeht jetzt %sx so schnell wie üblich (%s Minuten pro Tag).",
   "commands.neoforge.timespeed.set.default": "Die Zeit in %s vergeht jetzt normal (20 Minuten pro Tag).",
-  "commands.neoforge.data_components.list.error.held_stack_empty": "You are not holding any item",
-  "commands.neoforge.data_components.list.title": "Data components on %s:",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "Du hältst kein Item",
+  "commands.neoforge.data_components.list.title": "Datenkomponenten auf %s:",
   "commands.neoforge.data_components.list.entry": "\n  - %s",
   "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
-  "commands.neoforge.data_components.list.tooltip.default": "Component %s holds its default value",
-  "commands.neoforge.data_components.list.tooltip.deleted": "Component %s with value %s was deleted",
-  "commands.neoforge.data_components.list.tooltip.modified": "Component %s was modified from %s to %s",
-  "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
+  "commands.neoforge.data_components.list.tooltip.default": "Komponente %s enthält den Standardwert",
+  "commands.neoforge.data_components.list.tooltip.deleted": "Komponente %s mit Wert %s wurde gelöscht",
+  "commands.neoforge.data_components.list.tooltip.modified": "Komponente %s wurde von %s auf %s geändert",
+  "commands.neoforge.data_components.list.tooltip.added": "Komponente %s wurde mit dem Wert %s hinzugefügt",
   "commands.config.getwithtype": "Konfiguration für %s vom Typ %s gefunden bei %s",
   "commands.config.noconfig": "Konfiguration für %s vom Typ %s nicht gefunden",
   "neoforge.update.beta.1": "%sWARNUNG: %sNeoForge Beta",
@@ -130,13 +130,13 @@
   "neoforge.update.newversion": "Neue NeoForge-Version verfügbar: %s",
   "neoforge.menu.updatescreen.title": "Mod Update",
   "neoforge.configuration.uitext.title": "%s Einstellungen",
-  "neoforge.configuration.uitext.type.client": "Clienteinstellungen",
-  "neoforge.configuration.uitext.type.server": "Servereinstellungen",
+  "neoforge.configuration.uitext.type.client": "Client Einstellungen",
+  "neoforge.configuration.uitext.type.server": "Server Einstellungen",
   "neoforge.configuration.uitext.type.common": "Gemeinsame Einstellungen",
-  "neoforge.configuration.uitext.type.startup": "Starteinstellungen",
-  "neoforge.configuration.uitext.title.client": "%s Clienteinstellungen",
-  "neoforge.configuration.uitext.title.server": "%s Servereinstellungen",
-  "neoforge.configuration.uitext.title.common": "%s Gemeinsame Einstellungen",
+  "neoforge.configuration.uitext.type.startup": "Start Einstellungen",
+  "neoforge.configuration.uitext.title.client": "%s Client Konfiguration",
+  "neoforge.configuration.uitext.title.server": "%s Server Konfiguration",
+  "neoforge.configuration.uitext.title.common": "%s allgemeine Konfiguration",
   "neoforge.configuration.uitext.title.startup": "%s Starteinstellungen",
   "neoforge.configuration.uitext.notonline": [
     {
@@ -146,7 +146,7 @@
   ],
   "neoforge.configuration.uitext.notlan": [
     {
-      "text": "Diese Einstellungen können nicht geändert werden, während du dein Spiel für andere im LAN geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
+      "text": "Diese Einstellungen können nicht geändert werden während Du Dein Spiel für andere geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
       "color": "rot"
     }
   ],
@@ -247,9 +247,9 @@
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Ändere dies zu 'true', um den gesamten Kollisionsbereich einer Entität, anstatt nur den Block, in dem sie sich befindet, auf Leitern zu überprüfen. Verursacht merkliche Unterschiede in der Spielmechanik, daher ist die Standardeinstellung die Vanilla-Funktionsweise. Standardwert: 'false'.",
   "neoforge.configgui.logLegacyTagWarnings": "Veraltete Tags protokollieren",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "Eine Konfigurationsoption hauptsächlich für Entwickler. Protokolliert Tags von Modifikationen, die den 'forge'-Namensraum verwenden, wenn sie auf einem integrierten Server ausgeführt werden. Standard ist DEV_SHORT.",
-  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Unübersetzte Konfigurationstexte melden",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Nicht übersetzte Konfigurationsschlüssel protokollieren",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "Eine Konfiguration, die hauptsächlich für Entwickler gedacht ist. Meldet Konfigurationswerte im Log, die keine Übersetzung haben, wenn man den Client in einer Entwicklungsumgebung verwendet.",
-  "neoforge.configgui.logUntranslatedItemTagWarnings": "Unübersetzte Item-Tags melden",
+  "neoforge.configgui.logUntranslatedItemTagWarnings": "Nicht übersetzte Item-Tags protokollieren",
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Eine Konfiguration, die hauptsächlich für Entwickler gedacht ist. Meldet Item-Tags von Mods im Log, die keine Übersetzungen haben, wenn man den integrierten Server verwendet. Das gewünschte Format ist tag.item.<namespace>.<path> für den Übersetzungsschlüssel. Standard ist SILENCED.",
   "neoforge.configgui.permissionHandler": "Berechtigungsverwalter",
   "neoforge.configgui.permissionHandler.tooltip": "Der vom Server verwendete Berechtigungsverwalter. Standard ist neoforge:default_handler, wenn kein Handler mit diesem Namen registriert wurde.",
@@ -258,7 +258,7 @@
     "Aktiviere diese Option, um alle Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen.\n\n",
     {
       "text": "SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN. SPARSAM VERWENDEN. WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",
-      "color": "red",
+      "color": "rot",
       "bold": true
     }
   ],
@@ -267,7 +267,7 @@
     "Aktiviere diese Option, um alle Block-Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen.\n\n",
     {
       "text": "SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN. SPARSAM VERWENDEN. WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",
-      "color": "red",
+      "color": "rot",
       "bold": true
     }
   ],
