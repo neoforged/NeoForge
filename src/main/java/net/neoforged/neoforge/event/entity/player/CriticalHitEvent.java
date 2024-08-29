@@ -22,7 +22,7 @@ public class CriticalHitEvent extends PlayerEvent {
 
     private float dmgMultiplier;
     private boolean isCriticalHit;
-    private boolean disableSweepAttack;
+    private boolean disableSweep;
 
     /**
      * Fire via {@link CommonHooks#fireCriticalHit(Player, Entity, boolean, float)}
@@ -31,7 +31,7 @@ public class CriticalHitEvent extends PlayerEvent {
         super(player);
         this.target = target;
         this.dmgMultiplier = this.vanillaDmgMultiplier = dmgMultiplier;
-        this.disableSweepAttack = this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
+        this.disableSweep = this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
     }
 
     /**
@@ -54,7 +54,7 @@ public class CriticalHitEvent extends PlayerEvent {
      * Sets the damage multiplier for the critical hit. Not used if {@link #isCriticalHit()} is false.
      * <p>
      * Changing the damage modifier to zero does not guarantee that the attack does zero damage.
-     * 
+     *
      * @param dmgMultiplier The new damage modifier. Must not be negative.
      * @see #getDamageMultiplier()
      */
@@ -73,37 +73,36 @@ public class CriticalHitEvent extends PlayerEvent {
     }
 
     /**
-     * Changes the critical hit state.
-     * 
+     * Changes the critical hit state. If set critical hit to true, disables sweep attack
+     *
      * @param isCriticalHit true if the attack should critically hit
      */
     public void setCriticalHit(boolean isCriticalHit) {
         this.isCriticalHit = isCriticalHit;
+        if (isCriticalHit) {
+            this.disableSweep = true;
+        }
     }
 
     /**
-     * {@return if the attack disables sweep attack like vanilla critical hit}
-     * Not used if {@link #isCriticalHit()} is false.
+     * Changes the attack to critical hit without disabling sweep
      */
-    public boolean disableSweepAttack() {
-        return this.disableSweepAttack;
+    public void setCriticalHitRetainSweep() {
+        this.isCriticalHit = true;
     }
 
     /**
-     * Set if the attack should disable sweep attack like vanilla critical hit.
-     * Not used if {@link #isCriticalHit()} is false.
-     * 
-     * @param disableSweepAttack true if the attack disables sweep attack.
+     * Set if this attack should disable sweep attack
      */
-    public void setDisableSweepAttack(boolean disableSweepAttack) {
-        this.disableSweepAttack = disableSweepAttack;
+    public void setDisableSweep(boolean disableSweep) {
+        this.disableSweep = disableSweep;
     }
 
     /**
      * Gets the original damage multiplier set by vanilla.
      * <p>
      * If the event {@link #isVanillaCritical()}, the damage multiplier will be 1.5, otherwise it will be 1.0
-     * 
+     *
      * @see #getDamageMultiplier()
      */
     public float getVanillaMultiplier() {
@@ -115,5 +114,13 @@ public class CriticalHitEvent extends PlayerEvent {
      */
     public boolean isVanillaCritical() {
         return this.isVanillaCritical;
+    }
+
+    /**
+     * @return true if the attack would disable sweep attack.
+     *         Note that this is only part of the sweep attack conditions.
+     */
+    public boolean disableSweep() {
+        return disableSweep;
     }
 }

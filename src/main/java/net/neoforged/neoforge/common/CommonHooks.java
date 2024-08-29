@@ -205,6 +205,7 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
@@ -921,6 +922,18 @@ public class CommonHooks {
      */
     public static CriticalHitEvent fireCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier) {
         return NeoForge.EVENT_BUS.post(new CriticalHitEvent(player, target, damageModifier, vanillaCritical));
+    }
+
+    /**
+     * Fires the {@link SweepAttackEvent} and returns the resulting event.
+     *
+     * @param player            The attacking player
+     * @param target            The attack target
+     * @param vanillaAllowSweep If the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}, other than the condition of not critical hit.
+     * @param disabledByCrit    If the vanilla sweep attack would have been disabled by critical hit
+     */
+    public static SweepAttackEvent fireSweepAttack(Player player, Entity target, boolean vanillaAllowSweep, boolean disabledByCrit) {
+        return NeoForge.EVENT_BUS.post(new SweepAttackEvent(player, vanillaAllowSweep, disabledByCrit));
     }
 
     /**
