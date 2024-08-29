@@ -21,6 +21,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -337,9 +338,21 @@ public interface IItemExtension {
      *
      * @param entity The entity swinging the item.
      * @return True to cancel any further processing by EntityLiving
+     * @deprecated To be replaced with hand sensitive version in 21.2
+     * @see #onEntitySwing(ItemStack, LivingEntity, InteractionHand)
      */
     default boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         return false;
+    }
+
+    /**
+     * Called when a entity tries to play the 'swing' animation.
+     *
+     * @param entity The entity swinging the item.
+     * @return True to cancel any further processing by EntityLiving
+     */
+    default boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+        return onEntitySwing(stack, entity);
     }
 
     /**
