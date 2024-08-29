@@ -9,22 +9,31 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 public class SweepAttackEvent extends PlayerEvent {
-    private final boolean vanillaAllowSweep, disabledByCrit;
+    private final Entity target;
+    private final boolean vanillaAllowSweepPreconditions, disabledByCrit;
 
     private boolean allowSweep;
 
-    public SweepAttackEvent(Player player, boolean vanillaAllowSweep, boolean disabledByCrit) {
+    public SweepAttackEvent(Player player, Entity target, boolean vanillaAllowSweepPreconditions, boolean disabledByCrit) {
         super(player);
-        this.vanillaAllowSweep = vanillaAllowSweep;
+        this.target = target;
+        this.vanillaAllowSweepPreconditions = vanillaAllowSweepPreconditions;
         this.disabledByCrit = disabledByCrit;
-        this.allowSweep = vanillaAllowSweep & !disabledByCrit;
+        this.allowSweep = vanillaAllowSweepPreconditions && !disabledByCrit;
+    }
+
+    /**
+     * {@return} Attack target
+     */
+    public Entity getTarget() {
+        return target;
     }
 
     /**
      * {@return} true if the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}, other than the condition of not critical hit.
      */
-    public boolean vanillaAllowSweep() {
-        return vanillaAllowSweep;
+    public boolean vanillaAllowSweepPreconditions() {
+        return vanillaAllowSweepPreconditions;
     }
 
     /**
@@ -32,6 +41,13 @@ public class SweepAttackEvent extends PlayerEvent {
      */
     public boolean sweepDisabledByCrit() {
         return disabledByCrit;
+    }
+
+    /**
+     * {@return} true if the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}.
+     */
+    public boolean vanillaAllowSweep() {
+        return vanillaAllowSweepPreconditions && !disabledByCrit;
     }
 
     /**
