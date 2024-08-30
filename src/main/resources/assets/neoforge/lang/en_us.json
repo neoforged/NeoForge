@@ -83,7 +83,7 @@
   "commands.neoforge.tps.overall": "Overall: %s TPS (%s ms/tick)",
   "commands.neoforge.tps.tooltip": "Mean TPS; higher is better. Target TPS: %s",
   "commands.neoforge.tps.dimension": "%s: %s TPS (%s ms/tick)",
-  "commands.neoforge.tps.dimension.tooltip": "%s (%s)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (Dimension Type: %s)",
   "commands.neoforge.mods.list": "Mod List: %1$s",
   "commands.neoforge.tracking.entity.enabled": "Entity tracking enabled for %d seconds.",
   "commands.neoforge.tracking.entity.reset": "Entity timings data has been cleared!",
