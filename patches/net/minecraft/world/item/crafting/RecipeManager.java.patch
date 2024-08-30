@@ -1,8 +1,11 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -50,16 +_,22 @@
+@@ -49,23 +_,38 @@
+     protected void apply(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_) {
          this.hasErrors = false;
          Builder<RecipeType<?>, RecipeHolder<?>> builder = ImmutableMultimap.builder();
++        Builder<RecipeType<?>, RecipeHolder<?>> overrides = ImmutableMultimap.builder(); // Neo: Stores recipes mapped to the IDs of the recipe they override.
++        com.google.common.collect.LinkedListMultimap<RecipeType<?>, RecipeHolder<?>> finalBuilder = com.google.common.collect.LinkedListMultimap.create(); // Neo: Final version of "builder" that becomes "byType".
          com.google.common.collect.ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> builder1 = ImmutableMap.builder();
 -        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
 +        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
@@ -17,7 +20,12 @@
 +                decoded.ifPresentOrElse(r -> {
 +                Recipe<?> recipe = r.carrier();
                  RecipeHolder<?> recipeholder = new RecipeHolder<>(resourcelocation, recipe);
-                 builder.put(recipe.getType(), recipeholder);
+-                builder.put(recipe.getType(), recipeholder);
++                if (recipeholder.value().getIngredients().stream().anyMatch((ingredient) -> ingredient.getCustomIngredient() != null)) {
++                    overrides.put(recipe.getType(), recipeholder);
++                } else {
++                    builder.put(recipe.getType(), recipeholder);
++                }
                  builder1.put(resourcelocation, recipeholder);
 +                }, () -> {
 +                    LOGGER.debug("Skipping loading recipe {} as its conditions were not met", resourcelocation);
@@ -25,3 +33,13 @@
              } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
                  LOGGER.error("Parsing error loading recipe {}", resourcelocation, jsonparseexception);
              }
+         }
+ 
+-        this.byType = builder.build();
++        finalBuilder.putAll(overrides.build());
++        finalBuilder.putAll(builder.build());
++
++        this.byType = ImmutableMultimap.copyOf(finalBuilder);
+         this.byName = builder1.build();
+         LOGGER.info("Loaded {} recipes", this.byType.size());
+     }

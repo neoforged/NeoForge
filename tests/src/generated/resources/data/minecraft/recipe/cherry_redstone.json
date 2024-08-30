@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "bed",
+  "key": {
+    "#": {
+      "tag": "minecraft:wool"
+    },
+    "X": {
+      "type": "neoforge:intersection",
+      "children": [
+        {
+          "item": "minecraft:cherry_planks"
+        },
+        {
+          "tag": "minecraft:planks"
+        }
+      ]
+    }
+  },
+  "pattern": [
+    "###",
+    "XXX"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:redstone_block"
+  }
+}
