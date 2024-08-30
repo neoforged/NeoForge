@@ -60,6 +60,13 @@ public interface ICustomIngredient {
     boolean isSimple();
 
     /**
+     * @return Whether this ingredient has nesting of other basic ingredients that it should take priority over.
+     */
+    default boolean isNestedAndPriority() {
+        return false;
+    }
+
+    /**
      * {@return the type of this ingredient}
      *
      * <p>The type must be registered to {@link NeoForgeRegistries#INGREDIENT_TYPES}.

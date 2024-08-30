@@ -21,7 +21,7 @@
 +                Recipe<?> recipe = r.carrier();
                  RecipeHolder<?> recipeholder = new RecipeHolder<>(resourcelocation, recipe);
 -                builder.put(recipe.getType(), recipeholder);
-+                if (recipeholder.value().getIngredients().stream().anyMatch((ingredient) -> ingredient.getCustomIngredient() != null)) {
++                if (recipeholder.value().getIngredients().stream().anyMatch((ingredient) -> ingredient.getCustomIngredient() != null && ingredient.getCustomIngredient().isNestedAndPriority())) {
 +                    overrides.put(recipe.getType(), recipeholder);
 +                } else {
 +                    builder.put(recipe.getType(), recipeholder);

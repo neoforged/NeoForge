@@ -37,6 +37,11 @@ public record DifferenceIngredient(Ingredient base, Ingredient subtracted) imple
     }
 
     @Override
+    public boolean isNestedAndPriority() {
+        return true;
+    }
+
+    @Override
     public IngredientType<?> getType() {
         return NeoForgeMod.DIFFERENCE_INGREDIENT_TYPE.get();
     }

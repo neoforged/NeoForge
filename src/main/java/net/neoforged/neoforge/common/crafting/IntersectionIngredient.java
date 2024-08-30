@@ -71,6 +71,11 @@ public record IntersectionIngredient(List<Ingredient> children) implements ICust
     }
 
     @Override
+    public boolean isNestedAndPriority() {
+        return true;
+    }
+
+    @Override
     public IngredientType<?> getType() {
         return NeoForgeMod.INTERSECTION_INGREDIENT_TYPE.get();
     }
