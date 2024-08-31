@@ -32,54 +32,54 @@ public class GuiLayerManager {
     private final List<NamedLayer> layers = new ArrayList<>();
     private boolean initialized = false;
 
-    public record NamedLayer(ResourceLocation name, LayeredDraw.Layer layer) {}
+    public record NamedLayer(ResourceLocation name, LayeredDraw.Layer layer, BooleanSupplier shouldRender) {}
 
     public GuiLayerManager add(ResourceLocation name, LayeredDraw.Layer layer) {
-        this.layers.add(new NamedLayer(name, layer));
+        return this.add(name, layer, () -> true);
+    }
+
+    public GuiLayerManager add(ResourceLocation name, LayeredDraw.Layer layer, BooleanSupplier shouldRender) {
+        this.layers.add(new NamedLayer(name, layer, shouldRender));
         return this;
     }
 
     public GuiLayerManager add(GuiLayerManager child, BooleanSupplier shouldRender) {
         // Flatten the layers to allow mods to insert layers between vanilla layers.
         for (var entry : child.layers) {
-            add(entry.name(), (guiGraphics, partialTick) -> {
-                if (shouldRender.getAsBoolean()) {
-                    entry.layer().render(guiGraphics, partialTick);
-                }
-            });
+            var shouldRenderLayer = entry.shouldRender();
+            add(entry.name(), entry.layer(), () -> shouldRender.getAsBoolean() && shouldRenderLayer.getAsBoolean());
         }
+
         return this;
     }
 
     public void render(GuiGraphics guiGraphics, DeltaTracker partialTick) {
-        if (NeoForge.EVENT_BUS.post(new RenderGuiEvent.Pre(guiGraphics, partialTick)).isCanceled()) {
-            return;
-        }
+        if (!NeoForge.EVENT_BUS.post(new RenderGuiEvent.Pre(guiGraphics, partialTick)).isCanceled()) {
+            guiGraphics.pose().pushPose();
 
-        renderInner(guiGraphics, partialTick);
+            for (var layer : this.layers) {
+                var shouldRender = layer.shouldRender().getAsBoolean();
 
-        NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics, partialTick));
-    }
+                // TODO: Reconsider this behavior in future version during breaking change window
+                if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer(), shouldRender)).isCanceled()) {
+                    if (shouldRender) layer.layer().render(guiGraphics, partialTick);
+                    NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer(), shouldRender));
+                }
 
-    private void renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick) {
-        guiGraphics.pose().pushPose();
-
-        for (var layer : this.layers) {
-            if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
-                layer.layer().render(guiGraphics, partialTick);
-                NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
+                guiGraphics.pose().translate(0.0F, 0.0F, Z_SEPARATION);
             }
 
-            guiGraphics.pose().translate(0.0F, 0.0F, Z_SEPARATION);
-        }
+            guiGraphics.pose().popPose();
 
-        guiGraphics.pose().popPose();
+            NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics, partialTick));
+        }
     }
 
     public void initModdedLayers() {
         if (initialized) {
             throw new IllegalStateException("Duplicate initialization of NamedLayeredDraw");
         }
+
         initialized = true;
         ModLoader.postEvent(new RegisterGuiLayersEvent(this.layers));
     }
