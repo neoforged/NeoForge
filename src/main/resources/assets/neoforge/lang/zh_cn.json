@@ -115,14 +115,14 @@
   "commands.neoforge.timespeed.query.default": "%s的时间以正常速度流逝（20分钟每天）。",
   "commands.neoforge.timespeed.set": "已将%s的时间流速设为%sx（%s分钟每天）。",
   "commands.neoforge.timespeed.set.default": "已将%s的时间流速设为默认值（20分钟每天）。",
-  "commands.neoforge.data_components.list.error.held_stack_empty": "You are not holding any item",
-  "commands.neoforge.data_components.list.title": "Data components on %s:",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "你没有拿任何东西",
+  "commands.neoforge.data_components.list.title": "%s 上的数据组件:",
   "commands.neoforge.data_components.list.entry": "\n  - %s",
   "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
   "commands.neoforge.data_components.list.tooltip.default": "组件 %s 具有默认值",
   "commands.neoforge.data_components.list.tooltip.deleted": "组件 %s 的值 %s 已被删除",
   "commands.neoforge.data_components.list.tooltip.modified": "组件 %s 已从 %s 修改为 %s",
-  "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
+  "commands.neoforge.data_components.list.tooltip.added": "组件 %s 添加了值 %s",
   "commands.config.getwithtype": "%s 类型 %s 的配置在 %s 发现",
   "commands.config.noconfig": "未发现 %s（类型为 %s）的配置",
   "neoforge.update.beta.1": "%s警告：%s NeoForge 为测试版",
@@ -158,13 +158,13 @@
   ],
   "neoforge.configuration.uitext.unsupportedelement": [
     {
-      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+      "text": "此值不能在UI中编辑。请联系模组作者提供自定义UI。",
       "color": "red"
     }
   ],
   "neoforge.configuration.uitext.longstring": [
     {
-      "text": "This value is too long to be edited in the UI. Please edit it in the config file.",
+      "text": "该值太长，无法在UI中编辑。请在配置文件中编辑它。",
       "color": "red"
     }
   ],
@@ -239,8 +239,8 @@
   "neoforge.configuration.section.neoforge.common.toml.title": "通用设置",
   "neoforge.configuration.section.neoforge.server.toml": "服务端设置",
   "neoforge.configuration.section.neoforge.server.toml.title": "服务端设置",
-  "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
-  "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
+  "neoforge.configgui.advertiseDedicatedServerToLan": "向局域网开放服务器",
+  "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "将此设置为true以启用向本地局域网客户端开放服务器，以便它自动显示在多人游戏屏幕中。",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge 光照管线",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "启用 NeoForge 方块渲染管线 - 修复自定义模型的光照问题。",
   "neoforge.configgui.fullBoundingBoxLadders": "梯子使用完整实体碰撞箱",
@@ -251,30 +251,30 @@
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "一个主要面向开发者的配置选项。在开发环境中运行客户端时，在日志中记录没有翻译的配置值。",
   "neoforge.configgui.logUntranslatedItemTagWarnings": "记录未翻译的物品标签",
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "一个主要面向开发者的配置选项。在内置服务端上运行时，在日志中记录没有翻译的模组环境物品标签。翻译键要求的格式是tag.item.<命名空间>.<路径>。默认值为SILENCED。",
-  "neoforge.configgui.permissionHandler": "Permission Handler",
-  "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
+  "neoforge.configgui.permissionHandler": "权限处理",
+  "neoforge.configgui.permissionHandler.tooltip": "服务器使用的权限处理程序。如果没有注册这样的处理程序，默认为neoforge:default_handler。",
   "neoforge.configgui.removeErroringBlockEntities": "删除错误方块实体",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": [
     "开启此项后，游戏会移除任何在更新方法中出现错误的实体，而不是关闭服务端并报告崩溃日志。\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "text": "请注意，这可能会把一切搞砸。\n尽量少使用。\n我们不对损坏负责。",
       "color": "red",
       "bold": true
     }
   ],
   "neoforge.configgui.removeErroringEntities": "删除错误实体",
   "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    "将此设置为true可以删除任何在更新方法中抛出错误的方块或实体，而不是关闭服务器并报告崩溃日志。\n\n",
     {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "text": "请注意，这可能会把一切都搞砸。\n尽量少用。\n我们不对损坏负责。",
       "color": "red",
       "bold": true
     }
   ],
   "neoforge.configgui.showLoadWarnings": "显示加载警告",
   "neoforge.configgui.showLoadWarnings.tooltip": "如果启用，NeoForge 将显示加载过程中出现的任何警告。",
-  "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",
-  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.",
+  "neoforge.configgui.useCombinedDepthStencilAttachment": "使用组合DEPTH_STENCIL附件",
+  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "设置为true将使用组合的DEPTH_STENCIL附件而不是两个单独的附件。",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
@@ -317,7 +317,7 @@
   "neoforge.network.data_maps.failed": "处理注册表数据映射同步失败 %s: %s",
   "neoforge.network.data_maps.missing_our": "无法连接至服务器，因为客户端缺少必要的注册表数据映射：%s",
   "neoforge.network.data_maps.missing_their": "无法连接至服务器，因为客户端上不存在必要的注册表数据映射：%s",
-  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
-  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
-  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
+  "neoforge.network.extensible_enums.no_vanilla_server": "该客户端不支持原版服务器，因为它在服务器端网络中使用了扩展的枚举。",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "客户端和服务器上的可扩展枚举集合不匹配。请确保您使用的 NeoForge 版本与服务器上的版本相同。",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "客户端和服务器上添加到可扩展枚举中的值集合不匹配。请确保您使用的模组和 NeoForge 版本与服务器上的版本相同。请查看日志以获取更多详细信息。"
 }
