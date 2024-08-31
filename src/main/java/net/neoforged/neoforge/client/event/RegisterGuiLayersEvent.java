@@ -133,8 +133,8 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
     /**
      * Registers a layer that renders above all others.
      *
-     * @param id    A unique resource id for this layer
-     * @param layer The layer
+     * @param id            A unique resource id for this layer
+     * @param layer         The layer
      * @param shouldBeDrawn Predicate, determining whenever layer should be drawn. Value returned by this function will be
      *                      visible to other mods in {@linkplain RenderGuiLayerEvent.Pre#isGoingToRender()} and {@linkplain RenderGuiLayerEvent.Post#actuallyRendered()}}
      */
