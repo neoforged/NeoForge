@@ -80,7 +80,7 @@
   "commands.neoforge.tps.summary.all": "Ogólnie: Średni czas ticku: %1$s ms. Średnie TPS: %2$s",
   "commands.neoforge.mods.list": "Lista modyfikacji: %1$s",
   "commands.neoforge.tps.summary.basic": "Dim %1$s: Sredni czas ticków: %2$s ms. Srednie TPS: %3$s",
-  "commands.neoforge.tps.summary.named": "Dim %1$s (%2$s): Mean tick time: %3$s ms. Mean TPS: %4$s",
+  "commands.neoforge.tps.summary.named": "Dim %1$s (%2$s): Średni czas ticku: %3$s ms. Średni TPS: %4$s",
   "commands.neoforge.tracking.entity.enabled": "Śledzenie bytu zostało uruchomione na %d sekund.",
   "commands.neoforge.tracking.entity.reset": "Entity timings data has been cleared!",
   "commands.neoforge.tracking.invalid": "Nieprawidłowe dane śledzenia.",
