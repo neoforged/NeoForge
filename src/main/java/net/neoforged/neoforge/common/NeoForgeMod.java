@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -142,6 +143,7 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -179,6 +181,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 @SuppressWarnings("unused")
 @Mod(NeoForgeVersion.MOD_ID)
@@ -640,6 +643,20 @@ public class NeoForgeMod {
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;
             ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.prbuild").withAffectedMod(container.getModInfo()));
+        }
+
+        // If the `neoforge.autoTestServer` VM arg is set, stop the server after 50 ticks.
+        if (Boolean.getBoolean("neoforge.autoTestServer")) {
+            AtomicInteger serverTicks = new AtomicInteger();
+            NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+                if (event.phase == TickEvent.Phase.END) {
+                    if (serverTicks.incrementAndGet() == 50) {
+                        MixinEnvironment.getCurrentEnvironment().audit();
+                        event.getServer().halt(false);
+                        LOGGER.info("Server auto-test successful");
+                    }
+                }
+            });
         }
     }
 
