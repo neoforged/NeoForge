@@ -76,10 +76,10 @@
   "commands.neoforge.setdim.invalid.dim": "指定的维度 ID（%1$s）无效。",
   "commands.neoforge.setdim.invalid.nochange": "选定的实体（%1$s）已经在指定的维度（%2$s）中。",
   "commands.neoforge.setdim.deprecated": "此命令将在 1.17 中被废弃去除，请使用 %s 代替。",
-  "commands.neoforge.tps.overall": "Overall: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.overall": "总体: %s TPS (%s 毫秒/刻)",
   "commands.neoforge.tps.tooltip": "平均 TPS; 越高越好。 目标 TPS: %s",
   "commands.neoforge.tps.dimension": "%s: %s TPS (%s 毫秒/刻)",
-  "commands.neoforge.tps.dimension.tooltip": "%s (Dimension Type: %s)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (维度类型： %s)",
   "commands.neoforge.mods.list": "模组列表：%1$s",
   "commands.neoforge.tracking.entity.enabled": "实体跟踪已启用，时长 %d 秒。",
   "commands.neoforge.tracking.entity.reset": "实体计时数据已被清理！",
@@ -317,7 +317,7 @@
   "neoforge.network.data_maps.failed": "处理注册表数据映射同步失败 %s: %s",
   "neoforge.network.data_maps.missing_our": "无法连接至服务器，因为客户端缺少必要的注册表数据映射：%s",
   "neoforge.network.data_maps.missing_their": "无法连接至服务器，因为客户端上不存在必要的注册表数据映射：%s",
-  "neoforge.network.extensible_enums.no_vanilla_server": "该客户端不支持原版服务器，因为它在服务器端网络中使用了扩展的枚举。",
-  "neoforge.network.extensible_enums.enum_set_mismatch": "客户端和服务器上的可扩展枚举集合不匹配。请确保您使用的 NeoForge 版本与服务器上的版本相同。",
-  "neoforge.network.extensible_enums.enum_entry_mismatch": "客户端和服务器上添加到可扩展枚举中的值集合不匹配。请确保您使用的模组和 NeoForge 版本与服务器上的版本相同。请查看日志以获取更多详细信息。"
+  "neoforge.network.extensible_enums.no_vanilla_server": "该客户端不支持原版服务器，因为它在服务器端网络中使用了不同连接方式。",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "客户端和服务器上的模组不匹配。请确保您使用的 NeoForge 版本与服务器上的版本相同。",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "客户端和服务器上所需要的模组不匹配。请确保您使用的模组和 NeoForge 版本与服务器上的版本相同。请查看日志以获取更多详细信息。"
 }
