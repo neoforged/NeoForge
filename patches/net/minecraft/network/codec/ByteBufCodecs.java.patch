@@ -13,3 +13,16 @@
              }
  
              public R decode(RegistryFriendlyByteBuf p_331253_) {
+@@ -493,7 +_,11 @@
+             private static final int DIRECT_HOLDER_ID = 0;
+ 
+             private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf p_341377_) {
+-                return p_341377_.registryAccess().registryOrThrow(p_320391_).asHolderIdMap();
++                var registry = p_341377_.registryAccess().registryOrThrow(p_320391_);
++                if (net.neoforged.neoforge.registries.RegistryManager.isNonSyncedBuiltInRegistry(registry)) {
++                    throw new IllegalStateException("Cannot use ID syncing for non-synced built-in registry: " + registry.key());
++                }
++                return registry.asHolderIdMap();
+             }
+ 
+             public Holder<T> decode(RegistryFriendlyByteBuf p_330998_) {
