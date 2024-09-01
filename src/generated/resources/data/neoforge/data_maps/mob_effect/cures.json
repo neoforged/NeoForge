@@ -1,0 +1,13 @@
+{
+  "values": {
+    "minecraft:poison": {
+      "cure": "honey"
+    },
+    "neoforge:default": {
+      "cures": [
+        "milk",
+        "protected_by_totem"
+      ]
+    }
+  }
+}

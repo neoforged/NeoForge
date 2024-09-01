@@ -30,11 +30,14 @@ import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.debug.EventTests;
@@ -54,6 +57,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "data.data_map")
 public class DataMapTests {
@@ -133,7 +137,7 @@ public class DataMapTests {
     static void dataMapRemover(final DynamicTest test, final RegistrationHelper reg) {
         record CustomRemover(List<String> keys) implements DataMapValueRemover<Item, Map<String, SomeObject>> {
             @Override
-            public Optional<Map<String, SomeObject>> remove(Map<String, SomeObject> value, Registry<Item> registry, Either<TagKey<Item>, ResourceKey<Item>> source, Item object) {
+            public Optional<Map<String, SomeObject>> remove(Map<String, SomeObject> value, Registry<Item> registry, Either<TagKey<Item>, ResourceKey<Item>> source, @Nullable Item object) {
                 final var newMap = new HashMap<>(value);
                 keys.forEach(newMap::remove);
                 return Optional.of(newMap);
@@ -307,6 +311,26 @@ public class DataMapTests {
                 .thenExecute(player -> helper.useBlock(
                         new BlockPos(1, 1, 1), player, Items.COMPASS.getDefaultInstance()))
                 .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 1))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if custom cures work")
+    static void curesMapTest(final DynamicTest test, final RegistrationHelper reg) {
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(NeoForgeDataMaps.CURES)
+                        .remove(MobEffects.BAD_OMEN, DataMapValueRemover.CollectionBacked.datagen(Set.of(EffectCures.MILK)));
+            }
+        });
+        test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
+                .thenExecute(player -> player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, -1)))
+                .thenExecute(player -> player.removeEffectsCuredBy(EffectCures.MILK))
+                .thenExecute(player -> helper.assertTrue(
+                        player.hasEffect(MobEffects.BAD_OMEN),
+                        "EffectCures.MILK was not removed from " + MobEffects.BAD_OMEN.getRegisteredName() + " effect's default cures"))
                 .thenSucceed());
     }
 

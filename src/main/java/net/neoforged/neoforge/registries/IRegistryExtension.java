@@ -13,6 +13,7 @@ import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
+import net.neoforged.neoforge.registries.datamaps.DataMap;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.Nullable;
 
@@ -135,4 +136,9 @@ public interface IRegistryExtension<T> {
      * @param <A> the data type
      */
     <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<T, A> type);
+
+    /**
+     * {@return an unmodifiable view of the data maps}
+     */
+    Map<DataMapType<T, ?>, DataMap<T, ?>> getDataMapsView();
 }

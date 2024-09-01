@@ -106,7 +106,7 @@ public abstract class DataMapProvider implements DataProvider {
 
     public static class Builder<T, R> {
         private final Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>> values = new LinkedHashMap<>();
-        protected final List<DataMapEntry.Removal<T, R>> removals = new ArrayList<>();
+        protected final Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapValueRemover<R, T>>>> removals = new LinkedHashMap<>();
         protected final ResourceKey<Registry<R>> registryKey;
         private final DataMapType<R, T> type;
         private final List<ICondition> conditions = new ArrayList<>();
@@ -137,17 +137,32 @@ public abstract class DataMapProvider implements DataProvider {
         }
 
         public Builder<T, R> remove(ResourceLocation id) {
-            this.removals.add(new DataMapEntry.Removal<>(Either.right(ResourceKey.create(registryKey, id)), Optional.empty()));
+            this.removals.put(Either.right(ResourceKey.create(registryKey, id)), Optional.empty());
             return this;
         }
 
         public Builder<T, R> remove(TagKey<R> tag) {
-            this.removals.add(new DataMapEntry.Removal<>(Either.left(tag), Optional.empty()));
+            this.removals.put(Either.left(tag), Optional.empty());
             return this;
         }
 
         public Builder<T, R> remove(Holder<R> value) {
-            this.removals.add(new DataMapEntry.Removal<>(Either.right(value.unwrap().orThrow()), Optional.empty()));
+            this.removals.put(Either.right(value.unwrap().orThrow()), Optional.empty());
+            return this;
+        }
+
+        public Builder<T, R> remove(ResourceLocation id, ICondition... conditions) {
+            this.removals.put(Either.right(ResourceKey.create(registryKey, id)), Optional.of(new WithConditions<>(DataMapValueRemover.Default.defaultRemover(), conditions)));
+            return this;
+        }
+
+        public Builder<T, R> remove(TagKey<R> tag, ICondition... conditions) {
+            this.removals.put(Either.left(tag), Optional.of(new WithConditions<>(DataMapValueRemover.Default.defaultRemover(), conditions)));
+            return this;
+        }
+
+        public Builder<T, R> remove(Holder<R> value, ICondition... conditions) {
+            this.removals.put(Either.right(value.unwrap().orThrow()), Optional.of(new WithConditions<>(DataMapValueRemover.Default.defaultRemover(), conditions)));
             return this;
         }
 
@@ -171,18 +186,18 @@ public abstract class DataMapProvider implements DataProvider {
             super(type);
         }
 
-        public AdvancedBuilder<T, R, VR> remove(TagKey<R> tag, VR remover) {
-            this.removals.add(new DataMapEntry.Removal<>(Either.left(tag), Optional.of(remover)));
+        public AdvancedBuilder<T, R, VR> remove(TagKey<R> tag, VR remover, ICondition... conditions) {
+            this.removals.put(Either.left(tag), Optional.of(new WithConditions<>(remover, conditions)));
             return this;
         }
 
-        public AdvancedBuilder<T, R, VR> remove(Holder<R> value, VR remover) {
-            this.removals.add(new DataMapEntry.Removal<>(Either.right(value.unwrap().orThrow()), Optional.of(remover)));
+        public AdvancedBuilder<T, R, VR> remove(Holder<R> value, VR remover, ICondition... conditions) {
+            this.removals.put(Either.right(value.unwrap().orThrow()), Optional.of(new WithConditions<>(remover, conditions)));
             return this;
         }
 
-        public AdvancedBuilder<T, R, VR> remove(ResourceLocation id, VR remover) {
-            this.removals.add(new DataMapEntry.Removal<>(Either.right(ResourceKey.create(registryKey, id)), Optional.of(remover)));
+        public AdvancedBuilder<T, R, VR> remove(ResourceLocation id, VR remover, ICondition... conditions) {
+            this.removals.put(Either.right(ResourceKey.create(registryKey, id)), Optional.of(new WithConditions<>(remover, conditions)));
             return this;
         }
     }
