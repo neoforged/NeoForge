@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client;
 
+import com.ibm.icu.util.ULocale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
@@ -38,12 +39,17 @@ import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.text.TemplateParserBase;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
+    static {
+        TemplateParserBase.lang = () -> ULocale.forLocale(Minecraft.getInstance().getLocale());
+    }
+
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();

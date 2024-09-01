@@ -4,10 +4,12 @@
         "Simple non-rich translation. ",
         {"index": 0}
     ],
+    "rich_translations_test.simple_rich_translation2": "%n Simple non-rich translation. <1>",
     "rich_translations_test.fancy_rich_translation": [
         "",
         {"text": "Ooo, colors!", "color": "red"},
         " ",
         {"index": 0, "color": "blue"}
-    ]
+    ],
+    "rich_translations_test.fancy_rich_translation2": "%n <red>Ooo, colors!</red> <blue><1></blue>"
 }
