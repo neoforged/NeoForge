@@ -155,7 +155,7 @@
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Edit",
   "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
-  "neoforge.configuration.uitext.breadcrumb.seperator": ">",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Undo",
   "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",

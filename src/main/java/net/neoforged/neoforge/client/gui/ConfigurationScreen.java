@@ -211,7 +211,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     /**
      * The breadcrumb separator. Default: "%s > %s"
      */
-    public static final Component CRUMB_SEPARATOR = Component.translatable(LANG_PREFIX + "breadcrumb.seperator").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
+    public static final Component CRUMB_SEPARATOR = Component.translatable(LANG_PREFIX + "breadcrumb.separator").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
     private static final String CRUMB = LANG_PREFIX + "breadcrumb.order";
     /**
      * The label of list elements. Will be supplied the index into the list. Default: "%s:"
