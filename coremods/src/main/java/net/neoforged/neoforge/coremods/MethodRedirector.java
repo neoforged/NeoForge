@@ -69,15 +69,15 @@ public class MethodRedirector implements ITransformer<ClassNode> {
         var redirections = redirectionsByClass.getOrDefault(classNode.name, Collections.emptyList());
 
         var methods = classNode.methods;
-        for (var i = 0; i < methods.size(); i++) {
-            var instr = methods.get(i).instructions;
-            for (var ix = 0; ix < instr.size(); ix++) {
-                var node = instr.get(ix);
+        for (var method : methods) {
+            var instr = method.instructions;
+            for (var i = 0; i < instr.size(); i++) {
+                var node = instr.get(i);
                 if (node instanceof MethodInsnNode methodInsnNode) {
                     for (var redirection : redirections) {
                         if (redirection.invokeOpCode == methodInsnNode.getOpcode()
-                                && redirection.methodName.equals(methodInsnNode.name)
-                                && redirection.methodDescriptor.equals(methodInsnNode.desc)) {
+                            && redirection.methodName.equals(methodInsnNode.name)
+                            && redirection.methodDescriptor.equals(methodInsnNode.desc)) {
                             // Found a match for the target method
                             instr.set(
                                     methodInsnNode,
