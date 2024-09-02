@@ -20,8 +20,6 @@ import java.util.function.Function;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Redirect calls to one method to another.
@@ -76,8 +74,8 @@ public class MethodRedirector implements ITransformer<ClassNode> {
                 if (node instanceof MethodInsnNode methodInsnNode) {
                     for (var redirection : redirections) {
                         if (redirection.invokeOpCode == methodInsnNode.getOpcode()
-                            && redirection.methodName.equals(methodInsnNode.name)
-                            && redirection.methodDescriptor.equals(methodInsnNode.desc)) {
+                                && redirection.methodName.equals(methodInsnNode.name)
+                                && redirection.methodDescriptor.equals(methodInsnNode.desc)) {
                             // Found a match for the target method
                             instr.set(
                                     methodInsnNode,
