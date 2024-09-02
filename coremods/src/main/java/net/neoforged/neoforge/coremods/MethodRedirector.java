@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * Redirect calls to one method to another.
  */
 public class MethodRedirector implements ITransformer<ClassNode> {
-    private static final Logger LOG = LoggerFactory.getLogger(MethodRedirector.class);
     private final Map<String, List<MethodRedirection>> redirectionsByClass = new HashMap<>();
     private final Set<Target<ClassNode>> targets = new HashSet<>();
 
