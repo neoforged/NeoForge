@@ -3,6 +3,12 @@
     {
       "type": "custom_sprite_source_test:custom_sprite_source",
       "id": "custom_sprite_source_test:test_item"
+    },
+    {
+      "type": "neoforge:namespaced_directory",
+      "namespace": "neotests_dir_list_present",
+      "source": "test",
+      "prefix": "test/"
     }
   ]
 }

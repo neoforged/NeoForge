@@ -36,12 +36,12 @@
 +        }
 +
 +        if (p_295727_.payload() instanceof net.neoforged.neoforge.network.payload.CommonVersionPayload commonVersionPayload) {
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.checkCommonVersion(this.getConnection(), commonVersionPayload);
++            net.neoforged.neoforge.network.registration.NetworkRegistry.checkCommonVersion(this, commonVersionPayload);
 +            return;
 +        }
 +
 +        if (p_295727_.payload() instanceof net.neoforged.neoforge.network.payload.CommonRegisterPayload commonRegisterPayload) {
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.onCommonRegister(this.getConnection(), commonRegisterPayload);
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onCommonRegister(this, commonRegisterPayload);
 +            return;
 +        }
 +
