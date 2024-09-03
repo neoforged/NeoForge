@@ -1,10 +1,15 @@
+import net.neoforged.neodev.NeoDevPlugin
+
 plugins {
     id 'java'
-    id 'net.neoforged.gradle.platform'
     id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
     id 'neoforge.formatting-conventions'
 }
+
+plugins.getPlugin(NeoDevPlugin).configureExtra(project, true)
+
+evaluationDependsOn(":neoforge")
 
 def neoforgeProject = project(':neoforge')
 def testframeworkProject = project(':testframework')
@@ -27,11 +32,17 @@ sourceSets {
             srcDir file('src/generated/resources')
         }
     }
-    junit {}
+    junit {
+    }
 }
 
 configurations {
-    junitImplementation.extendsFrom(implementation)
+    // Used by the plugin to add DevLaunch
+    localRuntime {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    runtimeClasspath.extendsFrom localRuntime
 }
 
 dependencies {
@@ -44,72 +55,79 @@ dependencies {
 
     junitImplementation("org.assertj:assertj-core:${project.assertj_core}")
     junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
+    junitImplementation project(path: ':neoforge', configuration: 'runtimeElements')
+    junitImplementation(testframeworkProject)
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 }
+// Required to fix compile classpath using an older junit version. Alternatively we could also just bump junit.
+configurations.junitCompileClasspath.shouldResolveConsistentlyWith configurations.junitRuntimeClasspath
 
-runs {
-    client {
-        configure neoforgeProject.runTypes.client
-    }
-    junit {
-        configure neoforgeProject.runTypes.junit
-        unitTestSource sourceSets.junit
-    }
-    server {
-        configure neoforgeProject.runTypes.server
-    }
-    gameTestServer {
-        configure neoforgeProject.runTypes.gameTestServer
-    }
-    gameTestClient {
-        configure neoforgeProject.runTypes.gameTestClient
-    }
-    data {
-        configure neoforgeProject.runTypes.data
-
-        programArguments.addAll '--flat', '--all', '--validate',
-                '--mod', 'data_gen_test',
-                '--mod', 'global_loot_test',
-                '--mod', 'scaffolding_test',
-                '--mod', 'custom_tag_types_test',
-                '--mod', 'new_model_loader_test',
-                '--mod', 'remove_tag_datagen_test',
-                '--mod', 'tag_based_tool_types',
-                '--mod', 'custom_transformtype_test',
-                '--mod', 'data_pack_registries_test',
-                '--mod', 'biome_modifiers_test',
-                '--mod', 'structure_modifiers_test',
-                '--mod', 'custom_preset_editor_test',
-                '--mod', 'custom_predicate_test',
-                '--mod', 'neotests',
-                '--existing-mod', 'testframework',
-                '--existing', sourceSets.main.resources.srcDirs[0].absolutePath
-
-        final File gameDir = project.file("runs/${name}") as File
-        gameDir.mkdirs();
-
-        workingDirectory.set gameDir
-        programArguments.addAll '--gameDir', gameDir.absolutePath
-    }
+junitTest {
+    useJUnitPlatform()
+    classpath = sourceSets.junit.output + sourceSets.junit.runtimeClasspath
+    testClassesDirs = sourceSets.junit.output.classesDirs
+    outputs.upToDateWhen { false }
 }
 
-//We need the assets and natives tasks from the forge project.
-runs.configureEach {
-    dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
-    modSource neoforgeProject.sourceSets.main
-    modSource testframeworkProject.sourceSets.main
-}
-
-afterEvaluate {
-    runs.data {
-        // Override --output that forge already has
-        def args = new ArrayList<String>(programArguments.get());
-        def outputIndex = args.indexOf('--output');
-        args.set(outputIndex+1, file('src/generated/resources/').absolutePath);
-        programArguments.set(args);
+neoForge {
+    mods {
+        neotests {
+            sourceSet sourceSets.main
+        }
+        testframework {
+            sourceSet project(":testframework").sourceSets.main
+        }
+        junit {
+            sourceSet sourceSets.junit
+        }
     }
-    runs.junit.modSources.all().get().values().remove(sourceSets.main)
+
+    unitTest {
+        // No need for enable(), the NeoDevPlugin already does it.
+        loadedMods = [ project(":neoforge").neoForge.mods.minecraft, mods.testframework, mods.junit ]
+    }
+
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        gameTestServer {
+            type = "gameTestServer"
+        }
+        data {
+            data()
+
+            programArguments.addAll '--flat', '--all', '--validate',
+                    '--mod', 'data_gen_test',
+                    '--mod', 'global_loot_test',
+                    '--mod', 'scaffolding_test',
+                    '--mod', 'custom_tag_types_test',
+                    '--mod', 'new_model_loader_test',
+                    '--mod', 'remove_tag_datagen_test',
+                    '--mod', 'tag_based_tool_types',
+                    '--mod', 'custom_transformtype_test',
+                    '--mod', 'data_pack_registries_test',
+                    '--mod', 'biome_modifiers_test',
+                    '--mod', 'structure_modifiers_test',
+                    '--mod', 'custom_preset_editor_test',
+                    '--mod', 'custom_predicate_test',
+                    '--mod', 'neotests',
+                    '--existing-mod', 'testframework',
+                    '--existing', project.file("src/main/resources").absolutePath,
+                    '--output', project.file("src/generated/resources").absolutePath
+        }
+    }
+
+    runs.configureEach {
+        // Add NeoForge and Minecraft (both under the "minecraft" mod), and exclude junit.
+        mods = [ neoforgeProject.neoForge.mods.minecraft, neoForge.mods.neotests, neoForge.mods.testframework ]
+
+        gameDirectory.set project.file("runs/${it.name}") as File
+    }
 }
 
 license {

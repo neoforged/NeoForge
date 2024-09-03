@@ -6,19 +6,12 @@ pluginManagement {
     }
 }
 
-plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.150'
-}
-
 rootProject.name = rootDir.name
 
-dynamicProjects {
-    include ':base'
-    include ':neoforge'
-
-    project(":base").projectDir = file("projects/base")
-    project(":neoforge").projectDir = file("projects/neoforge")
-}
+include ':base'
+project(':base').projectDir = file('projects/base')
+include ':neoforge'
+project(':neoforge').projectDir = file('projects/neoforge')
 
 include ':tests'
 project(":tests").projectDir = file("tests")

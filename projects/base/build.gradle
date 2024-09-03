@@ -1,3 +1,21 @@
-dynamicProject {
-    neoform("${project.minecraft_version}-${project.neoform_version}")
+import net.neoforged.neodev.NeoDevPlugin
+
+plugins {
+    id 'java-library'
+    id 'net.neoforged.neodev'
+}
+
+plugins.getPlugin(NeoDevPlugin).configureBase(project)
+
+//dynamicProject {
+//    neoform("${project.minecraft_version}-${project.neoform_version}")
+//}
+
+dependencies {
+    implementation("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform-dependencies'
+        }
+        endorseStrictVersions()
+    }
 }
