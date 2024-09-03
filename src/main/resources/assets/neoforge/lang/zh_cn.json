@@ -138,51 +138,15 @@
   "neoforge.configuration.uitext.title.server": "%s 服务端配置",
   "neoforge.configuration.uitext.title.common": "%s 通用配置",
   "neoforge.configuration.uitext.title.startup": "%s 启动时配置",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "这里的设置由服务端决定，且无法在线更改。",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "在你的游戏已对局域网开放时，无法编辑这里的设置。请返回主菜单并再次加载世界。",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "这里的设置只有在进入世界后才可用。",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "此值不能在UI中编辑。请联系模组作者提供自定义UI。",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "该值太长，无法在UI中编辑。请在配置文件中编辑它。",
-      "color": "red"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "这里的设置由服务端决定，且无法在线更改。",
+  "neoforge.configuration.uitext.notlan": "在你的游戏已对局域网开放时，无法编辑这里的设置。请返回主菜单并再次加载世界。",
+  "neoforge.configuration.uitext.notloaded": "这里的设置只有在进入世界后才可用。",
+  "neoforge.configuration.uitext.unsupportedelement": "此值不能在UI中编辑。请联系模组作者提供自定义UI。",
+  "neoforge.configuration.uitext.longstring": "该值太长，无法在UI中编辑。请在配置文件中编辑它。",
   "neoforge.configuration.uitext.section": "%s…",
   "neoforge.configuration.uitext.sectiontext": "编辑",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "gold",
-      "bold": true
-    },
-    {
-      "index": 1
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "取消",
   "neoforge.configuration.uitext.undo.tooltip": "仅恢复当前的更改。",
@@ -192,30 +156,8 @@
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\n范围: ",
-      "color": "gray"
-    },
-    {
-      "index": 0,
-      "color": "gray"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "文件：“",
-      "color": "gray"
-    },
-    {
-      "index": 0,
-      "color": "gray"
-    },
-    {
-      "text": "”",
-      "color": "gray"
-    }
-  ],
+  "neoforge.configuration.uitext.rangetooltip": "Range: %s",
+  "neoforge.configuration.uitext.filenametooltip": "File: \"%s\"",
   "neoforge.configuration.uitext.common": "通用选项",
   "neoforge.configuration.uitext.client": "客户端选项",
   "neoforge.configuration.uitext.server": "服务端选项",
@@ -225,13 +167,7 @@
   "neoforge.configuration.uitext.restart.server.title": "需要重新加载世界",
   "neoforge.configuration.uitext.restart.server.text": "一个或多个已更改的配置选项只有在重新加载世界时才会生效。",
   "neoforge.configuration.uitext.restart.return": "无视",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "在重启游戏之前，你的更改不会生效！",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configuration.uitext.restart.return.tooltip": "在重启游戏之前，你的更改不会生效！",
   "neoforge.configuration.title": "NeoForge 配置",
   "neoforge.configuration.section.neoforge.client.toml": "客户端设置",
   "neoforge.configuration.section.neoforge.client.toml.title": "客户端设置",
@@ -254,23 +190,11 @@
   "neoforge.configgui.permissionHandler": "权限处理",
   "neoforge.configgui.permissionHandler.tooltip": "服务器使用的权限处理程序。如果没有注册这样的处理程序，默认为neoforge:default_handler。",
   "neoforge.configgui.removeErroringBlockEntities": "删除错误方块实体",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "开启此项后，游戏会移除任何在更新方法中出现错误的实体，而不是关闭服务端并报告崩溃日志。\n\n",
-    {
-      "text": "请注意，这可能会把一切搞砸。\n尽量少使用。\n我们不对损坏负责。",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "请注意，这可能会把一切搞砸。\n尽量少使用。\n我们不对损坏负责。",
   "neoforge.configgui.removeErroringEntities": "删除错误实体",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "将此设置为true可以删除任何在更新方法中抛出错误的方块或实体，而不是关闭服务器并报告崩溃日志。\n\n",
-    {
-      "text": "请注意，这可能会把一切都搞砸。\n尽量少用。\n我们不对损坏负责。",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "请注意，这可能会把一切搞砸。\n尽量少使用。\n我们不对损坏负责。",
   "neoforge.configgui.showLoadWarnings": "显示加载警告",
   "neoforge.configgui.showLoadWarnings.tooltip": "如果启用，NeoForge 将显示加载过程中出现的任何警告。",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "使用组合DEPTH_STENCIL附件",
