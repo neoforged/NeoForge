@@ -76,11 +76,11 @@
   "commands.neoforge.setdim.invalid.dim": "Dimenzia s vybraným ID (%1$s) nie je validná.",
   "commands.neoforge.setdim.invalid.nochange": "Vybraná entita (%1$s) už existuje v špecifikovanej dimenzii (%2$s).",
   "commands.neoforge.setdim.deprecated": "Tento príkaz je zastaralý a bude vymazaný v 1.17, použite %s namiesto neho.",
-  "commands.neoforge.tps.invalid": "Invalidná dimenzia %1$s Možné hodnoty: %2$s",
-  "commands.neoforge.tps.summary.all": "Celkovo: Priemerný čas ticku: %1$s ms. Priemerné TPS: %2$s",
+  "commands.neoforge.tps.overall": "Overall: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.tooltip": "Mean TPS; higher is better. Target TPS: %s",
+  "commands.neoforge.tps.dimension": "%s: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (Dimension Type: %s)",
   "commands.neoforge.mods.list": "List módov: %1$s",
-  "commands.neoforge.tps.summary.basic": "Dim %1$s: Priemerný čas ticku: %2$s ms. Priemerné TPS: %3$s",
-  "commands.neoforge.tps.summary.named": "Dim %1$s (%2$s): Priemerný čas ticku: %3$s ms. Priemerné TPS: %4$s",
   "commands.neoforge.tracking.entity.enabled": "Sledovanie entít povolené na %d sekúnd.",
   "commands.neoforge.tracking.entity.reset": "Údaje o časovaní entít boli vymazané!",
   "commands.neoforge.tracking.invalid": "Neplatné dáta sledovania.",
@@ -115,6 +115,14 @@
   "commands.neoforge.timespeed.query.default": "Čas v %s plynie normálne (20 minút na deň).",
   "commands.neoforge.timespeed.set": "Nastaviť plynutie času v %s na %sx (%s minúty za deň).",
   "commands.neoforge.timespeed.set.default": "Nastaviť plynutie času v %s na predvolené (20 minút za deň).",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "You are not holding any item",
+  "commands.neoforge.data_components.list.title": "Data components on %s:",
+  "commands.neoforge.data_components.list.entry": "\n  - %s",
+  "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
+  "commands.neoforge.data_components.list.tooltip.default": "Component %s holds its default value",
+  "commands.neoforge.data_components.list.tooltip.deleted": "Component %s with value %s was deleted",
+  "commands.neoforge.data_components.list.tooltip.modified": "Component %s was modified from %s to %s",
+  "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
   "commands.config.getwithtype": "Konfigurácia pre %s typu %s nájdená v %s",
   "commands.config.noconfig": "Konfigurácia pre %s typu %s nenájdená",
   "neoforge.update.beta.1": "%sVAROVANIE: %sNeoForge Beta",
@@ -130,51 +138,15 @@
   "neoforge.configuration.uitext.title.server": "%s Konfigurácia Serveru",
   "neoforge.configuration.uitext.title.common": "%s Bežná Konfigurácia",
   "neoforge.configuration.uitext.title.startup": "%s Konfigurácia Spustenia",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "Nastavenie tu sú určené serverom a nemôžu byť zmenené pokým je online.",
-      "color": "červená"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "Nastavenia tu nemôžu byť upravené pokým je vaša hra otvorená do LAN. Prosím vráťte sa do hlavného menu a načítajte svet znova.",
-      "color": "červená"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "Nastavenia tu sú k dispozícii len keď je svet načítaný.",
-      "color": "červená"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "Táto hodnota nemôže byť upravená v UI. Prosím kontaktujte autora módu o poskytnutý vlastného UI preň.",
-      "color": "červená"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "Táto hodnota je pridlhá nato aby mohla byť upravená v UI. Prosím upravte ju v konfiguračnom súbore.",
-      "color": "červená"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "Nastavenie tu sú určené serverom a nemôžu byť zmenené pokým je online.",
+  "neoforge.configuration.uitext.notlan": "Nastavenia tu nemôžu byť upravené pokým je vaša hra otvorená do LAN. Prosím vráťte sa do hlavného menu a načítajte svet znova.",
+  "neoforge.configuration.uitext.notloaded": "Nastavenia tu sú k dispozícii len keď je svet načítaný.",
+  "neoforge.configuration.uitext.unsupportedelement": "Táto hodnota nemôže byť upravená v UI. Prosím kontaktujte autora módu o poskytnutý vlastného UI preň.",
+  "neoforge.configuration.uitext.longstring": "Táto hodnota je pridlhá nato aby mohla byť upravená v UI. Prosím upravte ju v konfiguračnom súbore.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Upraviť",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "zlato",
-      "bold": true
-    },
-    {
-      "index": 1
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Krok naspäť",
   "neoforge.configuration.uitext.undo.tooltip": "Vráti zmeny len na tejto obrazovke.",
@@ -184,30 +156,8 @@
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\nRádius: ",
-      "color": "sivá"
-    },
-    {
-      "index": 0,
-      "color": "sivá"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "Súbor: \"",
-      "color": "sivá"
-    },
-    {
-      "index": 0,
-      "color": "sivá"
-    },
-    {
-      "text": "\"",
-      "color": "sivá"
-    }
-  ],
+  "neoforge.configuration.uitext.rangetooltip": "Range: %s",
+  "neoforge.configuration.uitext.filenametooltip": "File: \"%s\"",
   "neoforge.configuration.uitext.common": "Bežné Nastavenia",
   "neoforge.configuration.uitext.client": "Nastavenia Klienta",
   "neoforge.configuration.uitext.server": "Nastavenia Serveru",
@@ -217,13 +167,7 @@
   "neoforge.configuration.uitext.restart.server.title": "Svet treba znova načítať",
   "neoforge.configuration.uitext.restart.server.text": "Jedno alebo viac z konfiguračných nastavení ktoré boli zmenené budú mať efekt až keď bude hra znova načítaná.",
   "neoforge.configuration.uitext.restart.return": "Ignorovať",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "Vaše zmeny nebudú mať žiadny efekt pokým nereštartujete!",
-      "color": "červená",
-      "bold": true
-    }
-  ],
+  "neoforge.configuration.uitext.restart.return.tooltip": "Vaše zmeny nebudú mať žiadny efekt pokým nereštartujete!",
   "neoforge.configuration.title": "NeoForge Konfigurácia",
   "neoforge.configuration.section.neoforge.client.toml": "Nastavenia klienta",
   "neoforge.configuration.section.neoforge.client.toml.title": "Nastavenia klienta",
@@ -246,23 +190,11 @@
   "neoforge.configgui.permissionHandler": "Manipulátor Povolení",
   "neoforge.configgui.permissionHandler.tooltip": "Manipulátor povolení používaný serverom. Predvolená hodnota do neoforge:default_handler ak nie je žiadny manipulátor s takým menom registrovaný.",
   "neoforge.configgui.removeErroringBlockEntities": "Odstrániť blokové entity spôsobujúce error",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Nastavte toto na hodnotu TRUE na odstránenie akejkoľvek Entity, ktorá vyhodí chybu v ich aktualizačnej metóde namiesto uzavretia serveru a nahlásenia logu padnutia.\n\n",
-    {
-      "text": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
-      "color": "červená",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
   "neoforge.configgui.removeErroringEntities": "Odstrániť entity spôsobujúce error",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Nastavte toto na hodnotu TRUE na odstránenie akejkoľvek Blokovej Entity, ktorá vyhodí chybu v ich aktualizačnej metóde namiesto uzavretia serveru a nahlásenia logu padnutia.\n\n",
-    {
-      "text": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
-      "color": "červená",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",
   "neoforge.configgui.showLoadWarnings": "Zobraziť Varovania Načítavania",
   "neoforge.configgui.showLoadWarnings.tooltip": "Keď je toto povolené, NeoForge zobrazí všetky varovania, ktoré nastali počas načítavania.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Použiť kombinované DEPTH_STENCIL Prílohy",
