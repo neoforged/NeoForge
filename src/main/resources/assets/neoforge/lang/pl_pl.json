@@ -138,51 +138,15 @@
   "neoforge.configuration.uitext.title.server": "%s Konfiguracja serwera",
   "neoforge.configuration.uitext.title.common": "%s Ogólna konfiguracja",
   "neoforge.configuration.uitext.title.startup": "%s Konfiguracja uruchamiania",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "Ustawienia w tym świecie są określone przez serwer i nie mogą być zmieniane podczas online.",
-      "color": "czerwony"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "Ustawienia w tym świecie nie mogą być edytowane, gdy gra jest otwarta na LAN. Proszę wrócić do menu głównego i ponownie załadować świat.",
-      "color": "czerwony"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "Ustawienia tutaj są dostępne tylko wtedy, gdy świat jest ładowany.",
-      "color": "czerwony"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "Ta wartość nie może być edytowana w interfejsie użytkownika. Skontaktuj się z autorem modyfikacji w celu dostarczenia niestandardowego interfejsu użytkownika.",
-      "color": "czerwony"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "Ta wartość jest zbyt długa, aby być edytowana w interfejsie użytkownika. Proszę edytować ją w pliku konfiguracyjnym.",
-      "color": "czerwony"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "Ustawienia w tym świecie są określone przez serwer i nie mogą być zmieniane podczas online.",
+  "neoforge.configuration.uitext.notlan": "Ustawienia w tym świecie nie mogą być edytowane, gdy gra jest otwarta na LAN. Proszę wrócić do menu głównego i ponownie załadować świat.",
+  "neoforge.configuration.uitext.notloaded": "Ustawienia tutaj są dostępne tylko wtedy, gdy świat jest ładowany.",
+  "neoforge.configuration.uitext.unsupportedelement": "Ta wartość nie może być edytowana w interfejsie użytkownika. Skontaktuj się z autorem modyfikacji w celu dostarczenia niestandardowego interfejsu użytkownika.",
+  "neoforge.configuration.uitext.longstring": "Ta wartość jest zbyt długa, aby być edytowana w interfejsie użytkownika. Proszę edytować ją w pliku konfiguracyjnym.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Edytuj",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "złoto",
-      "bold": true
-    },
-    {
-      "index": 1
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Cofnij",
   "neoforge.configuration.uitext.undo.tooltip": "Odwraca zmiany tylko na tym ekranie.",
@@ -192,30 +156,8 @@
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\nZasięg: ",
-      "color": "szary"
-    },
-    {
-      "index": 0,
-      "color": "szary"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "Plik: \"",
-      "color": "szary"
-    },
-    {
-      "index": 0,
-      "color": "szary"
-    },
-    {
-      "text": "\"",
-      "color": "szary"
-    }
-  ],
+  "neoforge.configuration.uitext.rangetooltip": "Range: %s",
+  "neoforge.configuration.uitext.filenametooltip": "File: \"%s\"",
   "neoforge.configuration.uitext.common": "Opcje standardowe",
   "neoforge.configuration.uitext.client": "Opcje Klienta",
   "neoforge.configuration.uitext.server": "Opcje Serwera",
@@ -225,13 +167,7 @@
   "neoforge.configuration.uitext.restart.server.title": "Świat musi zostać ponownie załadowany",
   "neoforge.configuration.uitext.restart.server.text": "Jedna lub więcej opcji konfiguracji, które zostały zmienione, zacznie obowiązywać dopiero po przeładowaniu świata.",
   "neoforge.configuration.uitext.restart.return": "Ignoruj",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "Twoje zmiany nie będą miały wpływu do czasu ponownego uruchomienia!",
-      "color": "czerwony",
-      "bold": true
-    }
-  ],
+  "neoforge.configuration.uitext.restart.return.tooltip": "Twoje zmiany nie będą miały wpływu do czasu ponownego uruchomienia!",
   "neoforge.configuration.title": "Konfiguracja NeoForge",
   "neoforge.configuration.section.neoforge.client.toml": "Ustawienia klienta",
   "neoforge.configuration.section.neoforge.client.toml.title": "Ustawienia klienta",
@@ -254,23 +190,11 @@
   "neoforge.configgui.permissionHandler": "Obsługa uprawnień",
   "neoforge.configgui.permissionHandler.tooltip": "Obsługa uprawnień używana przez serwer. Domyślnie przekierowuje neoforge:default_handler jeśli nie jest zarejestrowany taki program obsługi o tej nazwie.",
   "neoforge.configgui.removeErroringBlockEntities": "Remove Erroring Block Entities",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Ustaw na true aby usunąć dowolną jednostkę, która rzuca błąd w metodzie aktualizacji zamiast zamykać serwer i zgłaszać awarię.\n\n",
-    {
-      "text": "ZOSTAŁEŚ OSTRZEŻONY TO MOŻE ZEPSUĆ WSZYSTKO\nUŻYJ SPARINGLY\nNIE JESTEŚMY ODPOWIEDZIALNI ZA SZKODY.",
-      "color": "czerwony",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "ZOSTAŁEŚ OSTRZEŻONY TO MOŻE ZEPSUĆ WSZYSTKO\nUŻYJ SPARINGLY\nNIE JESTEŚMY ODPOWIEDZIALNI ZA SZKODY.",
   "neoforge.configgui.removeErroringEntities": "Remove Erroring Entities",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Ustaw na true aby usunąć dowolną jednostkę, która rzuca błąd w metodzie aktualizacji zamiast zamykać serwer i zgłaszać awarię.\n\n",
-    {
-      "text": "ZOSTAŁEŚ OSTRZEŻONY TO MOŻE ZEPSUĆ WSZYSTKO\nUŻYJ SPARINGLY\nNIE JESTEŚMY ODPOWIEDZIALNI ZA SZKODY.",
-      "color": "czerwony",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "ZOSTAŁEŚ OSTRZEŻONY TO MOŻE ZEPSUĆ WSZYSTKO\nUŻYJ SPARINGLY\nNIE JESTEŚMY ODPOWIEDZIALNI ZA SZKODY.",
   "neoforge.configgui.showLoadWarnings": "Pokaż Ostrzeżenia Ładowania",
   "neoforge.configgui.showLoadWarnings.tooltip": "Kiedy włączone, NeoForge wyświetli wszelkie ostrzeżenia, które wystąpiły podczas ładowania.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Użyj połączonego załącznika DEPTH_STENCIL",
