@@ -138,51 +138,15 @@
   "neoforge.configuration.uitext.title.server": "Konfigurace Serveru %s",
   "neoforge.configuration.uitext.title.common": "Běžná konfigurace %s",
   "neoforge.configuration.uitext.title.startup": "Konfigurace při spuštění %s",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "Nastavení jsou zde rozhodnuté serverem a nemohou být změněny když jste online.",
-      "color": "červený"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "Nastavení zde nemohou být změněny, když je Vaše hra otevřená k LAN. Prosím, vraťte se do hlavního menu a načtěte svět znovu.",
-      "color": "červený"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "Nastavení zde jsou dostupné pouze až po načtení světa.",
-      "color": "červený"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "Tato hodnota nemůže být změněna v UI. Prosím, kontaktujte autora módu, aby pro něj poskytl UI.",
-      "color": "červený"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "Tato hodnota je moc veliká pro změnu v UI. Prosím, změňte ji v konfiguračním souboru.",
-      "color": "červený"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "Nastavení jsou zde rozhodnuté serverem a nemohou být změněny když jste online.",
+  "neoforge.configuration.uitext.notlan": "Nastavení zde nemohou být změněny, když je Vaše hra otevřená k LAN. Prosím, vraťte se do hlavního menu a načtěte svět znovu.",
+  "neoforge.configuration.uitext.notloaded": "Nastavení zde jsou dostupné pouze až po načtení světa.",
+  "neoforge.configuration.uitext.unsupportedelement": "Tato hodnota nemůže být změněna v UI. Prosím, kontaktujte autora módu, aby pro něj poskytl UI.",
+  "neoforge.configuration.uitext.longstring": "Tato hodnota je moc veliká pro změnu v UI. Prosím, změňte ji v konfiguračním souboru.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Změnit",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "zlato",
-      "bold": true
-    },
-    {
-      "index": 1
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Vrátit zpět",
   "neoforge.configuration.uitext.undo.tooltip": "Vrátí zpět změny pouze na této obrazovce.",
@@ -192,30 +156,8 @@
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\nRozmezí: ",
-      "color": "šedivá"
-    },
-    {
-      "index": 0,
-      "color": "šedivá"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "Soubor: \"",
-      "color": "šedivá"
-    },
-    {
-      "index": 0,
-      "color": "šedivá"
-    },
-    {
-      "text": "\"",
-      "color": "šedivá"
-    }
-  ],
+  "neoforge.configuration.uitext.rangetooltip": "Range: %s",
+  "neoforge.configuration.uitext.filenametooltip": "File: \"%s\"",
   "neoforge.configuration.uitext.common": "Obecné volby",
   "neoforge.configuration.uitext.client": "Volby klienta",
   "neoforge.configuration.uitext.server": "Volby serveru",
@@ -225,13 +167,7 @@
   "neoforge.configuration.uitext.restart.server.title": "Svět se musí znovu načíst",
   "neoforge.configuration.uitext.restart.server.text": "Jeden či více konfiguračních možností, které byly změněny, se projeví až se znovu načte svět.",
   "neoforge.configuration.uitext.restart.return": "Ignorovat",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "Vaše změny nebudou mít žádný účinek do restartu!",
-      "color": "červená",
-      "bold": true
-    }
-  ],
+  "neoforge.configuration.uitext.restart.return.tooltip": "Vaše změny nebudou mít žádný účinek do restartu!",
   "neoforge.configuration.title": "NeoForge konfigurace",
   "neoforge.configuration.section.neoforge.client.toml": "Nastavení Klienta",
   "neoforge.configuration.section.neoforge.client.toml.title": "Nastavení Klienta",
@@ -254,23 +190,11 @@
   "neoforge.configgui.permissionHandler": "Manažer oprávnění",
   "neoforge.configgui.permissionHandler.tooltip": "Manažer oprávnění použitý na serveru. Výchozí je neoforge:default_handler pokud žádný handler s tímto názvem není registrován.",
   "neoforge.configgui.removeErroringBlockEntities": "Odstranit Block Entity volající chyby",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Zapněte toto nastavení pro smazání všech entit které vyhazují error ve své \"update\" metodě, místo vypnutí serveru a vytvoření crash logu.\n\n",
-    {
-      "text": "POZOR, TOTO MŮŽE VŠECHNO POKAZIT.\nBUĎTE OPATRNÍ.\nNEJSME ZODPOVĚDNI ZA JAKÉKOLIV NAPÁCHANÉ ŠKODY.",
-      "color": "červená",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "POZOR, TOTO MŮŽE VŠECHNO POKAZIT.\nBUĎTE OPATRNÍ.\nNEJSME ZODPOVĚDNI ZA JAKÉKOLIV NAPÁCHANÉ ŠKODY.",
   "neoforge.configgui.removeErroringEntities": "Odstranit Entity volající chyby",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Zapněte toto nastavení pro smazání všech block entit které vyhazují error ve své \"update\" metodě, místo vypnutí serveru a vytvoření crash logu.\n\n",
-    {
-      "text": "POZOR, TOTO MŮŽE VŠECHNO POKAZIT.\nBUĎTE OPATRNÍ.\nNEJSME ZODPOVĚDNI ZA JAKÉKOLIV NAPÁCHANÉ ŠKODY.",
-      "color": "červená",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "POZOR, TOTO MŮŽE VŠECHNO POKAZIT.\nBUĎTE OPATRNÍ.\nNEJSME ZODPOVĚDNI ZA JAKÉKOLIV NAPÁCHANÉ ŠKODY.",
   "neoforge.configgui.showLoadWarnings": "Zobrazit Upozornění při Načítání",
   "neoforge.configgui.showLoadWarnings.tooltip": "Pokud je zapnuto, NeoForge zobrazí jakákoliv upozornění, která se vyskytla při načítání.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Používejte kombinovaný doplňek DEPTH_STENCIL",
