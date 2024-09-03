@@ -73,7 +73,7 @@ public class CriticalHitEvent extends PlayerEvent {
     }
 
     /**
-     * Changes the critical hit state. If set critical hit to true, disables sweep attack
+     * Changes the critical hit state. If set to true, {@code disableSweep} will also be set to true.
      *
      * @param isCriticalHit true if the attack should critically hit
      */
