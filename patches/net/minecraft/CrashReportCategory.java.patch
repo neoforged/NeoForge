@@ -13,7 +13,7 @@
              return this.stackTrace.length;
          }
      }
-@@ -165,16 +_,16 @@
+@@ -165,16 +_,22 @@
  
          if (this.stackTrace != null && this.stackTrace.length > 0) {
              p_128169_.append("\nStacktrace:");
@@ -30,8 +30,14 @@
          return this.stackTrace;
 +    }
 +
++    /** @deprecated Neo: Use {@link #setStackTrace(StackTraceElement[])} instead. */
++    @Deprecated(forRemoval = true, since = "1.21.1")
 +    public void applyStackTrace(Throwable t) {
-+        this.stackTrace = t.getStackTrace();
++        setStackTrace(t.getStackTrace());
++    }
++
++    public void setStackTrace(StackTraceElement[] stackTrace) {
++        this.stackTrace = stackTrace;
      }
  
      public static void populateBlockDetails(CrashReportCategory p_178951_, LevelHeightAccessor p_178952_, BlockPos p_178953_, @Nullable BlockState p_178954_) {

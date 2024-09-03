@@ -35,6 +35,7 @@ public class PayloadRegistrar {
     private PayloadRegistrar(PayloadRegistrar source) {
         this.version = source.version;
         this.optional = source.optional;
+        this.thread = source.thread;
     }
 
     /**

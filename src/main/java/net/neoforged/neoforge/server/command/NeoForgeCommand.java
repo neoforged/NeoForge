@@ -23,6 +23,7 @@ public class NeoForgeCommand {
                         .then(ModListCommand.register())
                         .then(TagsCommand.register())
                         .then(DumpCommand.register())
-                        .then(TimeSpeedCommand.register()));
+                        .then(TimeSpeedCommand.register())
+                        .then(DataComponentCommand.register()));
     }
 }
