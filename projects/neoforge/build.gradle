@@ -4,7 +4,7 @@ import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.jarcompatibilitychecker' version '0.1.9'
+    id 'net.neoforged.jarcompatibilitychecker' version '0.1.11'
     id 'net.neoforged.gradleutils'
     id 'neoforge.versioning'
 }
@@ -23,7 +23,8 @@ dynamicProject {
 }
 
 final checkVersion = JCCPlugin.providePreviousVersion(
-        project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'})
+        project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'}),
+        project.provider { project.version }.map { ver -> CompatibilityTask.VersionComponentTest.MINOR.predicate(ver) }
 )
 final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
     // Use the same jar that the patches were generated against
