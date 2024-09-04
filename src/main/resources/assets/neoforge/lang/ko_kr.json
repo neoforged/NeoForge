@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "호환되지 않는 서버 모드 목록",
   "fml.menu.multiplayer.networkincompatible": "서버의 네트워크 메시지들이 호환되지 않음",
   "fml.menu.multiplayer.missingdatapackregistries": "필요한 데이터팩 레지스트리가 누락됨: %1$s",
-  "fml.menu.branding": "%s (%s mods)",
+  "fml.menu.branding": "%s (%s 모드)",
   "fml.menu.notification.title": "시작 알림",
   "fml.menu.accessdenied.title": "서버 접속이 거부되었습니다",
   "fml.menu.accessdenied.message": "Fancy Mod Loader가 서버에 접속할 수 없습니다.\n이 서버(%1$s)는 모드가 설치된 클라이언트의 접속을 거부합니다.",
@@ -76,11 +76,11 @@
   "commands.neoforge.setdim.invalid.dim": "'%1$s'은(는) 잘못된 차원입니다.",
   "commands.neoforge.setdim.invalid.nochange": "해당 엔티티('%1$s')은(는) 이미 지정된 차원('%2$s')에 있습니다.",
   "commands.neoforge.setdim.deprecated": "이 명령어는 1.17에서 제거될 예정입니다. %s을(를) 대신 사용하세요.",
-  "commands.neoforge.tps.invalid": "'%1$s'은(는) 잘못된 차원입니다. 올바른 차원들: %2$s",
-  "commands.neoforge.tps.summary.all": "총합: 평균 틱 처리 시간: %1$s ms. 평균 TPS: %2$s",
+  "commands.neoforge.tps.overall": "Overall: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.tooltip": "Mean TPS; higher is better. Target TPS: %s",
+  "commands.neoforge.tps.dimension": "%s: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (Dimension Type: %s)",
   "commands.neoforge.mods.list": "모드 목록: %1$s",
-  "commands.neoforge.tps.summary.basic": "차원 %1$s: 평균 틱 처리 시간: %2$s ms. 평균 TPS: %3$s",
-  "commands.neoforge.tps.summary.named": "차원 %1$s (%2$s): 평균 틱 처리 시간: %3$s ms. 평균 TPS: %4$s",
   "commands.neoforge.tracking.entity.enabled": "엔티티 처리 시간을 %d초간 수집합니다...",
   "commands.neoforge.tracking.entity.reset": "엔티티 처리 시간 정보를 삭제합니다!",
   "commands.neoforge.tracking.invalid": "처리 시간 정보가 손상되었습니다.",
@@ -107,14 +107,22 @@
   "commands.neoforge.chunkgen.started": "%2$s×%3$s 청크 (%4$s×%5$s 블록) 범위 안에 청크 %1$s개 생성 중.",
   "commands.neoforge.chunkgen.success": "생성 완료!",
   "commands.neoforge.chunkgen.error": "청크 생성 중 %1$s개의 오류가 발생했습니다! 출력 로그에서 자세한 내용을 확인하세요.",
-  "commands.neoforge.chunkgen.stopped": "Generation stopped! %1$s out of %2$s chunks generated. (%3$s%%)",
-  "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
+  "commands.neoforge.chunkgen.stopped": "청크 생성 중단됨! %1$s/%2$s개의 청크를 생성했습니다. (%3$s%%)",
+  "commands.neoforge.chunkgen.status": "청크 생성 진행률! %1$s/%2$s개의 청크를 생성했습니다. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "현재 청크를 생성하고 있지 않습니다. `/neoforge generate help`를 참고하여 청크 사전 생성 명령어 사용 방법을 확인하세요.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <범위> [진행률 표시] §r§f- 주어진 위치를 중심으로 범위 * 2 길이의 정사각형 구역 내 청크를 생성합니다.\n§2/neoforge generate stop §r§f- 진행 중인 청크 사전 생성을 중단하고 진행률을 표시합니다.\n§2/neoforge generate status §r- 이미 진행 중인 청크 생성 작업의 진행률을 표시합니다.\n§2/neoforge generate help §r- 이 도움말을 표시합니다.\n팁: 다른 차원의 청크를 사전 생성할 땐 '/execute in <차원> neoforge generate...' 식으로 다른 차원에서 명령을 실행하세요.",
   "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
   "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
   "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
   "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "You are not holding any item",
+  "commands.neoforge.data_components.list.title": "Data components on %s:",
+  "commands.neoforge.data_components.list.entry": "\n  - %s",
+  "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
+  "commands.neoforge.data_components.list.tooltip.default": "Component %s holds its default value",
+  "commands.neoforge.data_components.list.tooltip.deleted": "Component %s with value %s was deleted",
+  "commands.neoforge.data_components.list.tooltip.modified": "Component %s was modified from %s to %s",
+  "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
   "commands.config.getwithtype": "모드 %s의 설정 %s이(가) %s에서 발견됨",
   "commands.config.noconfig": "모드 %s의 설정 %s을(를) 찾을 수 없음",
   "neoforge.update.beta.1": "%s경고: %s 네오 포지 베타 버전입니다",
@@ -122,108 +130,44 @@
   "neoforge.update.newversion": "새로운 네오 포지 버전으로 업데이트할 수 있습니다: %s",
   "neoforge.menu.updatescreen.title": "모드 업데이트",
   "neoforge.configuration.uitext.title": "%s Configuration",
-  "neoforge.configuration.uitext.type.client": "Client Settings",
-  "neoforge.configuration.uitext.type.server": "Server Settings",
-  "neoforge.configuration.uitext.type.common": "Common settings",
-  "neoforge.configuration.uitext.type.startup": "Startup settings",
+  "neoforge.configuration.uitext.type.client": "클라이언트 설정",
+  "neoforge.configuration.uitext.type.server": "서버 설정",
+  "neoforge.configuration.uitext.type.common": "공통 설정",
+  "neoforge.configuration.uitext.type.startup": "시작 설정",
   "neoforge.configuration.uitext.title.client": "%s Client Configuration",
   "neoforge.configuration.uitext.title.server": "%s Server Configuration",
   "neoforge.configuration.uitext.title.common": "%s Common Configuration",
   "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "Settings in here are determined by the server and cannot be changed while online.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "Settings in here are only available while a world is loaded.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "This value is too long to be edited in the UI. Please edit it in the config file.",
-      "color": "red"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "Settings in here are determined by the server and cannot be changed while online.",
+  "neoforge.configuration.uitext.notlan": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
+  "neoforge.configuration.uitext.notloaded": "Settings in here are only available while a world is loaded.",
+  "neoforge.configuration.uitext.unsupportedelement": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+  "neoforge.configuration.uitext.longstring": "This value is too long to be edited in the UI. Please edit it in the config file.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Edit",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "gold",
-      "bold": true
-    },
-    {
-      "index": 1
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
-  "neoforge.configuration.uitext.undo": "Undo",
-  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
-  "neoforge.configuration.uitext.reset": "Reset",
-  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.undo": "되돌리기",
+  "neoforge.configuration.uitext.undo.tooltip": "이 화면에서만 변경사항을 되돌립니다.",
+  "neoforge.configuration.uitext.reset": "초기화",
+  "neoforge.configuration.uitext.reset.tooltip": "이 화면에 있는 모든 것을 기본 값으로 되돌립니다.",
   "neoforge.configuration.uitext.newlistelement": "+",
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\nRange: ",
-      "color": "gray"
-    },
-    {
-      "index": 0,
-      "color": "gray"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "File: \"",
-      "color": "gray"
-    },
-    {
-      "index": 0,
-      "color": "gray"
-    },
-    {
-      "text": "\"",
-      "color": "gray"
-    }
-  ],
-  "neoforge.configuration.uitext.common": "Common Options",
-  "neoforge.configuration.uitext.client": "Client Options",
-  "neoforge.configuration.uitext.server": "Server Options",
-  "neoforge.configuration.uitext.startup": "Startup Options",
-  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
+  "neoforge.configuration.uitext.rangetooltip": "Range: %s",
+  "neoforge.configuration.uitext.filenametooltip": "File: \"%s\"",
+  "neoforge.configuration.uitext.common": "공통 옵션",
+  "neoforge.configuration.uitext.client": "클라이언트 옵션",
+  "neoforge.configuration.uitext.server": "서버 옵션",
+  "neoforge.configuration.uitext.startup": "시작 옵션",
+  "neoforge.configuration.uitext.restart.game.title": "마인크래프트를 다시 시작해야 합니다",
   "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed will only take effect when the game is started.",
   "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
   "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
   "neoforge.configuration.uitext.restart.return": "Ignore",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "Your changes will have no effect until you restart!",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configuration.uitext.restart.return.tooltip": "Your changes will have no effect until you restart!",
   "neoforge.configuration.title": "NeoForge Configuration",
   "neoforge.configuration.section.neoforge.client.toml": "Client settings",
   "neoforge.configuration.section.neoforge.client.toml.title": "Client settings",
@@ -246,23 +190,11 @@
   "neoforge.configgui.permissionHandler": "Permission Handler",
   "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
   "neoforge.configgui.removeErroringBlockEntities": "오류가 발생한 블록 엔티티 제거",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
-    {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
   "neoforge.configgui.removeErroringEntities": "오류가 나는 엔티티 제거",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
-    {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
   "neoforge.configgui.showLoadWarnings": "게임을 불러오는 중 발생한 경고 표시",
   "neoforge.configgui.showLoadWarnings.tooltip": "네오 포지가 게임을 불러오며 발생한 모든 경고 메세지들을 표시합니다.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",

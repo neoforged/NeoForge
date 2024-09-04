@@ -76,11 +76,11 @@
   "commands.neoforge.setdim.invalid.dim": "The dimension ID specified (%1$s) is not valid.",
   "commands.neoforge.setdim.invalid.nochange": "The entity selected (%1$s) is already in the dimension specified (%2$s).",
   "commands.neoforge.setdim.deprecated": "Este comando está obsoleto para su eliminación en 1.17, utilice %s en su lugar",
-  "commands.neoforge.tps.invalid": "Invalid dimension %1$s Possible values: %2$s",
-  "commands.neoforge.tps.summary.all": "Overall: Mean tick time: %1$s ms. Mean TPS: %2$s",
+  "commands.neoforge.tps.overall": "Overall: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.tooltip": "Mean TPS; higher is better. Target TPS: %s",
+  "commands.neoforge.tps.dimension": "%s: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (Dimension Type: %s)",
   "commands.neoforge.mods.list": "Mod List: %1$s",
-  "commands.neoforge.tps.summary.basic": "Dim %1$s: Mean tick time: %2$s ms. Mean TPS: %3$s",
-  "commands.neoforge.tps.summary.named": "Dim %1$s (%2$s): Mean tick time: %3$s ms. Mean TPS: %4$s",
   "commands.neoforge.tracking.entity.enabled": "Seguimiento de entidad habilitado durante %d segundos.",
   "commands.neoforge.tracking.entity.reset": "Se ha borrado la información de tiempos de entidad.",
   "commands.neoforge.tracking.invalid": "Datos de seguimiento no válidos.",
@@ -115,6 +115,14 @@
   "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
   "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
   "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "You are not holding any item",
+  "commands.neoforge.data_components.list.title": "Data components on %s:",
+  "commands.neoforge.data_components.list.entry": "\n  - %s",
+  "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
+  "commands.neoforge.data_components.list.tooltip.default": "Component %s holds its default value",
+  "commands.neoforge.data_components.list.tooltip.deleted": "Component %s with value %s was deleted",
+  "commands.neoforge.data_components.list.tooltip.modified": "Component %s was modified from %s to %s",
+  "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
   "commands.config.getwithtype": "Configuración para %s de tipo %s encontrada en %s",
   "commands.config.noconfig": "Configuración para %s de tipo %s no encontrada",
   "neoforge.update.beta.1": "%sADVERTENCIA: %sVersión Beta de NeoForge",
@@ -130,51 +138,15 @@
   "neoforge.configuration.uitext.title.server": "%s Server Configuration",
   "neoforge.configuration.uitext.title.common": "%s Common Configuration",
   "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "Settings in here are determined by the server and cannot be changed while online.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "Settings in here are only available while a world is loaded.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
-      "color": "red"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "This value is too long to be edited in the UI. Please edit it in the config file.",
-      "color": "red"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "Settings in here are determined by the server and cannot be changed while online.",
+  "neoforge.configuration.uitext.notlan": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
+  "neoforge.configuration.uitext.notloaded": "Settings in here are only available while a world is loaded.",
+  "neoforge.configuration.uitext.unsupportedelement": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+  "neoforge.configuration.uitext.longstring": "This value is too long to be edited in the UI. Please edit it in the config file.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Edit",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "gold",
-      "bold": true
-    },
-    {
-      "index": 1
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Undo",
   "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
@@ -184,30 +156,8 @@
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\nRange: ",
-      "color": "gray"
-    },
-    {
-      "index": 0,
-      "color": "gray"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "File: \"",
-      "color": "gray"
-    },
-    {
-      "index": 0,
-      "color": "gray"
-    },
-    {
-      "text": "\"",
-      "color": "gray"
-    }
-  ],
+  "neoforge.configuration.uitext.rangetooltip": "Range: %s",
+  "neoforge.configuration.uitext.filenametooltip": "File: \"%s\"",
   "neoforge.configuration.uitext.common": "Common Options",
   "neoforge.configuration.uitext.client": "Client Options",
   "neoforge.configuration.uitext.server": "Server Options",
@@ -217,13 +167,7 @@
   "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
   "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
   "neoforge.configuration.uitext.restart.return": "Ignore",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "Your changes will have no effect until you restart!",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configuration.uitext.restart.return.tooltip": "Your changes will have no effect until you restart!",
   "neoforge.configuration.title": "NeoForge Configuration",
   "neoforge.configuration.section.neoforge.client.toml": "Client settings",
   "neoforge.configuration.section.neoforge.client.toml.title": "Client settings",
@@ -246,23 +190,11 @@
   "neoforge.configgui.permissionHandler": "Permission Handler",
   "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
   "neoforge.configgui.removeErroringBlockEntities": "Eliminar entidades de bloque con errores",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
-    {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
   "neoforge.configgui.removeErroringEntities": "Eliminar entidades con errores",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
-    {
-      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
   "neoforge.configgui.showLoadWarnings": "Mostrar advertencias de carga",
   "neoforge.configgui.showLoadWarnings.tooltip": "Cuando está habilitado, NeoForge mostrará cualquier advertencia que haya ocurrido durante la carga.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",

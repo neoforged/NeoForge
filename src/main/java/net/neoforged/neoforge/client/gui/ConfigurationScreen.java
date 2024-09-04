@@ -160,6 +160,17 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return true;
         }
 
+        /**
+         * If the given translation key exists, returns it formatted with the given style(s) and as prefixed with the given component.
+         * Otherwise returns an empty Component.
+         */
+        public Component optional(final Component prefix, final String translationKey, final ChatFormatting... style) {
+            if (I18n.exists(translationKey)) {
+                return Component.empty().append(prefix).append(Component.translatable(translationKey).withStyle(style));
+            }
+            return Component.empty();
+        }
+
         public void finish() {
             if (CLIENT.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -200,7 +211,8 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     /**
      * The breadcrumb separator. Default: "%s > %s"
      */
-    private static final String CRUMB = LANG_PREFIX + "breadcrumb";
+    public static final Component CRUMB_SEPARATOR = Component.translatable(LANG_PREFIX + "breadcrumb.separator").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
+    private static final String CRUMB = LANG_PREFIX + "breadcrumb.order";
     /**
      * The label of list elements. Will be supplied the index into the list. Default: "%s:"
      */
@@ -209,20 +221,26 @@ public final class ConfigurationScreen extends OptionsSubScreen {
      * How the range will be added to the tooltip when using translated tooltips. Mimics what the comment does in ModConfigSpec.
      */
     private static final String RANGE_TOOLTIP = LANG_PREFIX + "rangetooltip";
+    private static final ChatFormatting RANGE_TOOLTIP_STYLE = ChatFormatting.GRAY;
     /**
      * How the filename will be added to the tooltip.
      */
     private static final String FILENAME_TOOLTIP = LANG_PREFIX + "filenametooltip";
+    private static final ChatFormatting FILENAME_TOOLTIP_STYLE = ChatFormatting.GRAY;
+    /**
+     * A literal to create an empty line in a tooltip.
+     */
+    private static final MutableComponent EMPTY_LINE = Component.literal("\n\n");
 
-    public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline");
-    public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan");
-    public static final Component TOOLTIP_CANNOT_EDIT_NOT_LOADED = Component.translatable(LANG_PREFIX + "notloaded");
+    public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE = Component.translatable(LANG_PREFIX + "notonline").withStyle(ChatFormatting.RED);
+    public static final Component TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN = Component.translatable(LANG_PREFIX + "notlan").withStyle(ChatFormatting.RED);
+    public static final Component TOOLTIP_CANNOT_EDIT_NOT_LOADED = Component.translatable(LANG_PREFIX + "notloaded").withStyle(ChatFormatting.RED);
     public static final Component NEW_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "newlistelement");
     public static final Component MOVE_LIST_ELEMENT_UP = Component.translatable(LANG_PREFIX + "listelementup");
     public static final Component MOVE_LIST_ELEMENT_DOWN = Component.translatable(LANG_PREFIX + "listelementdown");
     public static final Component REMOVE_LIST_ELEMENT = Component.translatable(LANG_PREFIX + "listelementremove");
-    public static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement");
-    public static final Component LONG_STRING = Component.translatable(LANG_PREFIX + "longstring");
+    public static final Component UNSUPPORTED_ELEMENT = Component.translatable(LANG_PREFIX + "unsupportedelement").withStyle(ChatFormatting.RED);
+    public static final Component LONG_STRING = Component.translatable(LANG_PREFIX + "longstring").withStyle(ChatFormatting.RED);
     public static final Component GAME_RESTART_TITLE = Component.translatable(LANG_PREFIX + "restart.game.title");
     public static final Component GAME_RESTART_MESSAGE = Component.translatable(LANG_PREFIX + "restart.game.text");
     public static final Component GAME_RESTART_YES = Component.translatable("menu.quit"); // TitleScreen.init() et.al.
@@ -231,7 +249,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public static final Component RETURN_TO_MENU = Component.translatable("menu.returnToMenu"); // PauseScreen.RETURN_TO_MENU
     public static final Component SAVING_LEVEL = Component.translatable("menu.savingLevel"); // PauseScreen.SAVING_LEVEL
     public static final Component RESTART_NO = Component.translatable(LANG_PREFIX + "restart.return");
-    public static final Component RESTART_NO_TOOLTIP = Component.translatable(LANG_PREFIX + "restart.return.tooltip");
+    public static final Component RESTART_NO_TOOLTIP = Component.translatable(LANG_PREFIX + "restart.return.tooltip").withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
     public static final Component UNDO = Component.translatable(LANG_PREFIX + "undo");
     public static final Component UNDO_TOOLTIP = Component.translatable(LANG_PREFIX + "undo.tooltip");
     public static final Component RESET = Component.translatable(LANG_PREFIX + "reset");
@@ -281,19 +299,19 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                             button -> minecraft.setScreen(sectionScreen.apply(this, type, modConfig, translatableConfig(modConfig, ".title", LANG_PREFIX + "title." + type.name().toLowerCase(Locale.ROOT))))).width(BIG_BUTTON_WIDTH).build();
                     MutableComponent tooltip = Component.empty();
                     if (!((ModConfigSpec) modConfig.getSpec()).isLoaded()) {
-                        tooltip.append(TOOLTIP_CANNOT_EDIT_NOT_LOADED).append(Component.literal("\n\n"));
+                        tooltip.append(TOOLTIP_CANNOT_EDIT_NOT_LOADED).append(EMPTY_LINE);
                         btn.active = false;
                         count = 99; // prevent autoClose
                     } else if (type == Type.SERVER && minecraft.getCurrentServer() != null && !minecraft.isSingleplayer()) {
-                        tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE).append(Component.literal("\n\n"));
+                        tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_ONLINE).append(EMPTY_LINE);
                         btn.active = false;
                         count = 99; // prevent autoClose
                     } else if (type == Type.SERVER && minecraft.hasSingleplayerServer() && minecraft.getSingleplayerServer().isPublished()) {
-                        tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN).append(Component.literal("\n\n"));
+                        tooltip.append(TOOLTIP_CANNOT_EDIT_THIS_WHILE_OPEN_TO_LAN).append(EMPTY_LINE);
                         btn.active = false;
                         count = 99; // prevent autoClose
                     }
-                    tooltip.append(Component.translatable(FILENAME_TOOLTIP, modConfig.getFileName()));
+                    tooltip.append(Component.translatable(FILENAME_TOOLTIP, modConfig.getFileName()).withStyle(FILENAME_TOOLTIP_STYLE));
                     btn.setTooltip(Tooltip.create(tooltip));
                     list.addSmall(btn, null);
                     count++;
@@ -514,7 +532,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          */
         public ConfigurationSectionScreen(final Context parentContext, final Screen parent, final Map<String, Object> valueSpecs, final String key,
                 final Set<? extends Entry> entrySet, Component title) {
-            this(Context.section(parentContext, parent, entrySet, valueSpecs, key), Component.translatable(CRUMB, parent.getTitle(), title));
+            this(Context.section(parentContext, parent, entrySet, valueSpecs, key), Component.translatable(CRUMB, parent.getTitle(), CRUMB_SEPARATOR, title));
         }
 
         @SuppressWarnings("resource")
@@ -558,10 +576,13 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             final boolean hasTranslatedTooltip = translationChecker.existsWithFallback(tooltipKey);
             MutableComponent component = Component.empty().append(getTranslationComponent(key).withStyle(ChatFormatting.BOLD));
             if (hasTranslatedTooltip || !Strings.isBlank(comment)) {
-                component = component.append(Component.literal("\n\n")).append(Component.translatableWithFallback(tooltipKey, comment));
+                component = component.append(EMPTY_LINE).append(Component.translatableWithFallback(tooltipKey, comment));
             }
+            // The "tooltip.warning" key is to be considered an internal API. It will be removed once Neo has a
+            // generic styling mechanism for translation texts. Use at your own risk.
+            component = component.append(translationChecker.optional(EMPTY_LINE, tooltipKey + ".warning", ChatFormatting.RED, ChatFormatting.BOLD));
             if (hasTranslatedTooltip && range != null) {
-                component = component.append(Component.translatable(RANGE_TOOLTIP, range.toString()));
+                component = component.append(EMPTY_LINE).append(Component.translatable(RANGE_TOOLTIP, range.toString()).withStyle(RANGE_TOOLTIP_STYLE));
             }
             return component;
         }
@@ -917,7 +938,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             return new Element(Component.translatable(SECTION, getTranslationComponent(key)), getTooltipComponent(key, null),
                     Button.builder(Component.translatable(SECTION, Component.translatable(translationChecker.check(getTranslationKey(key) + ".button", SECTION_TEXT))),
                             button -> minecraft.setScreen(sectionCache.computeIfAbsent(key,
-                                    k -> new ConfigurationListScreen<>(Context.list(context, this), key, Component.translatable(CRUMB, this.getTitle(), getTranslationComponent(key)), spec, list)).rebuild()))
+                                    k -> new ConfigurationListScreen<>(Context.list(context, this), key, Component.translatable(CRUMB, this.getTitle(), CRUMB_SEPARATOR, getTranslationComponent(key)), spec, list)).rebuild()))
                             .tooltip(Tooltip.create(getTooltipComponent(key, null))).build(),
                     false);
         }
