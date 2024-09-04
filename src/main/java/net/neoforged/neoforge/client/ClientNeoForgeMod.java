@@ -23,6 +23,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
+import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -34,6 +35,7 @@ import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -81,6 +83,11 @@ public class ClientNeoForgeMod {
     @SubscribeEvent
     static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_unlit"), RenderType.translucent(), NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
+    }
+
+    @SubscribeEvent
+    static void onRegisterSpriteSourceTypes(RegisterSpriteSourceTypesEvent event) {
+        event.register(NamespacedDirectoryLister.ID, NamespacedDirectoryLister.TYPE);
     }
 
     @SubscribeEvent

@@ -1036,6 +1036,7 @@ public class ClientHooks {
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
         MapDecorationRendererManager.init();
+        DimensionTransitionScreenManager.init();
         AnimationTypeManager.init();
     }
 
