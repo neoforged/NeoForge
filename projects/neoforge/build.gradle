@@ -1,4 +1,5 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
 
 plugins {
