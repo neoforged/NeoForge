@@ -7,9 +7,11 @@ package net.neoforged.neoforge.client.entity.animation.json;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.Codec;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.client.animation.AnimationChannel;
+import net.minecraft.client.animation.Keyframe;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
@@ -37,6 +39,7 @@ public final class AnimationTypeManager {
 
     private static ImmutableBiMap<ResourceLocation, AnimationTarget> TARGETS = DEFAULT_TARGETS;
     private static ImmutableMap<AnimationChannel.Target, AnimationTarget> TARGETS_BY_CHANNEL_TARGET = ImmutableMap.of();
+    private static ImmutableMap<AnimationTarget, Codec<Keyframe>> KEYFRAME_CODECS = ImmutableMap.of();
     private static ImmutableBiMap<ResourceLocation, AnimationChannel.Interpolation> INTERPOLATIONS = DEFAULT_INTERPOLATIONS;
     private static String TARGET_LIST = "";
     private static String INTERPOLATION_LIST = "";
@@ -69,6 +72,14 @@ public final class AnimationTypeManager {
     @Nullable
     public static AnimationTarget getTargetFromChannelTarget(AnimationChannel.Target target) {
         return TARGETS_BY_CHANNEL_TARGET.get(target);
+    }
+
+    /**
+     * Gets the {@link Codec} used to decode a {@link Keyframe} with the specified {@link AnimationTarget}.
+     */
+    @Nullable
+    public static Codec<Keyframe> getKeyframeCodec(AnimationTarget target) {
+        return KEYFRAME_CODECS.get(target);
     }
 
     /**
@@ -117,6 +128,9 @@ public final class AnimationTypeManager {
         TARGETS_BY_CHANNEL_TARGET = TARGETS.values()
                 .stream()
                 .collect(ImmutableMap.toImmutableMap(AnimationTarget::channelTarget, Function.identity()));
+        KEYFRAME_CODECS = TARGETS.values()
+                .stream()
+                .collect(ImmutableMap.toImmutableMap(Function.identity(), AnimationParser::keyframeCodec));
         TARGET_LIST = TARGETS.keySet()
                 .stream()
                 .map(ResourceLocation::toString)

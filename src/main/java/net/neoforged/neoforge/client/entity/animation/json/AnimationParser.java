@@ -88,12 +88,14 @@ public final class AnimationParser {
                     .orElseGet(() -> DataResult.error(() -> String.format(
                             Locale.ENGLISH, "Unregistered animation channel target '%s'. Registered targets: %s",
                             channel.target(), AnimationTypeManager.getTargetList()))),
-            target -> DataResult.success(keyframeCodec(target)
-                    .listOf()
-                    .xmap(
-                            keyframes -> new AnimationChannel(target.channelTarget(), keyframes.toArray(Keyframe[]::new)),
-                            channel -> Arrays.asList(channel.keyframes()))
-                    .fieldOf("keyframes")));
+            target -> DataResult.success(
+                    Optional.ofNullable(AnimationTypeManager.getKeyframeCodec(target))
+                            .orElseGet(() -> keyframeCodec(target))
+                            .listOf()
+                            .xmap(
+                                    keyframes -> new AnimationChannel(target.channelTarget(), keyframes.toArray(Keyframe[]::new)),
+                                    channel -> Arrays.asList(channel.keyframes()))
+                            .fieldOf("keyframes")));
 
     /**
      * {@snippet lang = JSON :
@@ -172,7 +174,7 @@ public final class AnimationParser {
      * }
      * }
      */
-    private static Codec<Keyframe> keyframeCodec(AnimationTarget target) {
+    static Codec<Keyframe> keyframeCodec(AnimationTarget target) {
         return RecordCodecBuilder.create(
                 instance -> instance.group(
                         Codec.FLOAT.fieldOf("timestamp").forGetter(Keyframe::timestamp),
