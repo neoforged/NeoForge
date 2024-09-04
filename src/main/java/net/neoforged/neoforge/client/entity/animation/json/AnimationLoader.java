@@ -57,7 +57,6 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> animationJsons, ResourceManager resourceManager, ProfilerFiller profiler) {
-        AnimationTypeManager.init();
         animations.values().forEach(AnimationHolder::unbind);
         strongHolderReferences.clear();
         int loaded = 0;
