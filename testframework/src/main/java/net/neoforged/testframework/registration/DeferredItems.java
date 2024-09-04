@@ -14,9 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class DeferredItems extends DeferredRegister.Items {
+public class DeferredItems extends net.neoforged.neoforge.registries.deferred.DeferredItems {
     private final RegistrationHelper registrationHelper;
 
     public DeferredItems(String namespace, RegistrationHelper registrationHelper) {

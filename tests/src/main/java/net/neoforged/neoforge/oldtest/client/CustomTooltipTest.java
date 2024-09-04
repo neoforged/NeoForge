@@ -36,15 +36,15 @@ import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactori
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 @Mod(CustomTooltipTest.ID)
 public class CustomTooltipTest {
     static final boolean ENABLED = true;
     static final String ID = "custom_tooltip_test";
 
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(ID);
     static final DeferredItem<Item> CUSTOM_ITEM = ITEMS.register("test_item", () -> new CustomItemWithTooltip(new Item.Properties()));
 
     public CustomTooltipTest(IEventBus modEventBus) {

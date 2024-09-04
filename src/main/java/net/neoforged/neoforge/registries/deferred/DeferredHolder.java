@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.registries;
+package net.neoforged.neoforge.registries.deferred;
 
 import com.mojang.datafixers.util.Either;
 import java.util.Locale;

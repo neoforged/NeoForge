@@ -24,8 +24,8 @@ import net.neoforged.neoforge.client.IArmPoseTransformer;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * Tests if item usage animation system works as intended. `item_use_animation_test:thing` is edible item with custom usage animation made with this system.
@@ -37,7 +37,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ItemUseAnimationTest {
     public static final String MOD_ID = "item_use_animation_test";
 
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
 
     private static final DeferredItem<Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEdible().build())));
 

@@ -19,10 +19,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.function.TriFunction;
 
-public class DeferredBlocks extends DeferredRegister.Blocks {
+public class DeferredBlocks extends net.neoforged.neoforge.registries.deferred.DeferredBlocks {
     private final RegistrationHelper registrationHelper;
 
     public DeferredBlocks(String namespace, RegistrationHelper registrationHelper) {

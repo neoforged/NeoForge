@@ -24,8 +24,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.util.TriState;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
 
 @Mod(CustomPlantTypeTest.MODID)
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)

@@ -23,8 +23,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 import net.neoforged.neoforge.common.util.TriState;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * A test case used to ensure that {@link IBlockStateExtension#onTreeGrow(LevelReader, BiConsumer, RandomSource, BlockPos, TreeConfiguration)}
@@ -37,8 +38,8 @@ public class OnTreeGrowBlockTest {
 
     static final String ID = "on_tree_grow_block_test";
 
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
+    public static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(ID);
+    public static final DeferredItems ITEMS = DeferredItems.createItems(ID);
 
     public static final Holder<Block> TEST_GRASS_BLOCK = BLOCKS.register("test_grass_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f)) {
         @Override

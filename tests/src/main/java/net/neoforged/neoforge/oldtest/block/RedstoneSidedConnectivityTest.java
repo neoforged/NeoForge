@@ -17,9 +17,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(RedstoneSidedConnectivityTest.MODID)
@@ -28,8 +29,8 @@ public class RedstoneSidedConnectivityTest {
     static final String MODID = "redstone_sided_connectivity_test";
     static final String BLOCK_ID = "test_east_redstone_connect";
 
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
 
     private static final DeferredBlock<Block> TEST_REDSTONE_BLOCK = BLOCKS.register(BLOCK_ID, EastRedstoneBlock::new);
     private static final DeferredItem<BlockItem> TEST_REDSTONE_BLOCKITEM = ITEMS.registerSimpleBlockItem(TEST_REDSTONE_BLOCK);

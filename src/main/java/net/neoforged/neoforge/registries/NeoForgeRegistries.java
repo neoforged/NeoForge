@@ -21,6 +21,7 @@ import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 
 /**

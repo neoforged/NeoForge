@@ -26,7 +26,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 import org.slf4j.Logger;
 
 /**
@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 public class CustomSpriteSourceTest {
     private static final boolean ENABLED = true;
     static final String MOD_ID = "custom_sprite_source_test";
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
     private static final Holder<Item> TEST_ITEM = ITEMS.registerSimpleItem("test_item");
 
     public CustomSpriteSourceTest(IEventBus modEventBus) {

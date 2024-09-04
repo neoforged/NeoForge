@@ -8,8 +8,8 @@ package net.neoforged.testframework.registration;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
 public class DeferredAttachmentTypes extends DeferredRegister<AttachmentType<?>> {
     public DeferredAttachmentTypes(String namespace) {

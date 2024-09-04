@@ -43,9 +43,9 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeMod
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo.Builder;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
 /**
  * <p>This tests the following features and requirements of biome modifier jsons::</p>

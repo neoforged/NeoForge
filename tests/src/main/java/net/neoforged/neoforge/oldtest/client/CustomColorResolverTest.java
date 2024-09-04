@@ -17,8 +17,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * This mod tests custom {@link ColorResolver ColorResolvers} using {@link RegisterColorHandlersEvent.ColorResolvers}.
@@ -28,8 +29,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(CustomColorResolverTest.MOD_ID)
 public class CustomColorResolverTest {
     static final String MOD_ID = "custom_color_resolver_test";
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MOD_ID);
 
     private static final DeferredBlock<Block> BLOCK = BLOCKS.register("test_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
 

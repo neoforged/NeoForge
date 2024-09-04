@@ -13,7 +13,7 @@ import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
 
 public class DeferredItemBuilder<I extends Item> extends DeferredItem<I> {
     private final RegistrationHelper registrationHelper;

@@ -18,8 +18,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 @Mod(RangedMobsUseModdedWeaponsTest.MOD_ID)
 public class RangedMobsUseModdedWeaponsTest {
@@ -31,7 +31,7 @@ public class RangedMobsUseModdedWeaponsTest {
     public static final boolean ENABLE = true;
 
     public static final String MOD_ID = "ranged_mobs_use_modded_weapons_test";
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
 
     private static final DeferredItem<Item> MODDED_BOW = ITEMS.register("modded_bow", () -> new BowItem(new Item.Properties().durability(384)));
     private static final DeferredItem<Item> MODDED_CROSSBOW = ITEMS.register("modded_crossbow", () -> new CrossbowItem(new Item.Properties().durability(326)));

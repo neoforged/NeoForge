@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
 
 @Mod(SlipperinessTest.MOD_ID)
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)

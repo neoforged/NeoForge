@@ -17,7 +17,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
 
 public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>> extends DeferredHolder<EntityType<?>, T> {
     private final RegistrationHelper helper;

@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class BlockEntityTypeValidBlocksEventTests {
 
     @Mod(value = MOD_ID)
     public static class BlockEntityTypeValidBlocksEventTestMod {
-        private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+        private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MOD_ID);
         private static final DeferredBlock<Block> TEST_SIGN_BLOCK = BLOCKS.registerBlock("test_sign_block", (properties) -> new StandingSignBlock(WoodType.BAMBOO, properties), BlockBehaviour.Properties.of());
         private static final DeferredBlock<Block> TEST_BED_BLOCK = BLOCKS.registerBlock("test_bed_block", (properties) -> new BedBlock(DyeColor.BLUE, properties), BlockBehaviour.Properties.of());
 

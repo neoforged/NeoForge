@@ -24,17 +24,18 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 @Mod(ValidRailShapeTest.MOD_ID)
 public class ValidRailShapeTest {
     public static final String MOD_ID = "valid_railshape_test";
     public static final boolean ENABLED = true;
 
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
 
     private static final DeferredBlock<Block> RAIL_SLOPE_BLOCK = BLOCKS.registerBlock("rail_slope", RailSlopeBlock::new, Properties.of());
     private static final DeferredItem<BlockItem> RAIL_SLOPE_ITEM = ITEMS.registerSimpleBlockItem(RAIL_SLOPE_BLOCK);

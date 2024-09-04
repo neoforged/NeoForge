@@ -14,8 +14,9 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * Test mod that demos disabling ambient occlusion on specific faces of "elements" models.
@@ -25,8 +26,8 @@ public class AmbientOcclusionElementsTest {
     private static final boolean ENABLED = false;
 
     public static final String MOD_ID = "ambient_occlusion_elements_test";
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
 
     public static final Holder<Block> AO_BLOCK_SHADE = BLOCKS.registerSimpleBlock("ambient_occlusion_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     public static final Holder<Block> AO_BLOCK_NO_SHADE = BLOCKS.registerSimpleBlock("ambient_occlusion_no_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
