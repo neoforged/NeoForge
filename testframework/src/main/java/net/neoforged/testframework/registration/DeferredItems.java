@@ -24,18 +24,18 @@ public class DeferredItems extends net.neoforged.neoforge.registries.deferred.De
     }
 
     @Override
-    protected <I extends Item> DeferredItemBuilder<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, ResourceLocation key) {
-        return new DeferredItemBuilder<>(ResourceKey.create(registryKey, key), registrationHelper);
+    protected <I extends Item> DeferredItemBuilder<I> createHolder(ResourceKey<? extends Registry<Item>> registryType, ResourceLocation registryName) {
+        return new DeferredItemBuilder<>(ResourceKey.create(registryType, registryName), registrationHelper);
     }
 
     @Override
-    public <I extends Item> DeferredItemBuilder<I> register(String name, Function<ResourceLocation, ? extends I> func) {
-        return (DeferredItemBuilder<I>) super.register(name, func);
+    public <I extends Item> DeferredItemBuilder<I> register(String identifier, Function<ResourceLocation, ? extends I> factory) {
+        return (DeferredItemBuilder<I>) super.register(identifier, factory);
     }
 
     @Override
-    public <I extends Item> DeferredItemBuilder<I> register(String name, Supplier<? extends I> sup) {
-        return (DeferredItemBuilder<I>) super.register(name, sup);
+    public <I extends Item> DeferredItemBuilder<I> register(String identifier, Supplier<? extends I> factory) {
+        return (DeferredItemBuilder<I>) super.register(identifier, factory);
     }
 
     @Override

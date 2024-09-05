@@ -7,24 +7,22 @@ package net.neoforged.testframework.registration;
 
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
-public class DeferredEntityTypes extends DeferredRegister<EntityType<?>> {
+public class DeferredEntityTypes extends net.neoforged.neoforge.registries.deferred.DeferredEntityTypes {
     private final RegistrationHelper helper;
 
     public DeferredEntityTypes(String namespace, RegistrationHelper helper) {
-        super(Registries.ENTITY_TYPE, namespace);
+        super(namespace);
         this.helper = helper;
     }
 
     @Override
-    protected <I extends EntityType<?>> DeferredEntityTypeBuilder createHolder(ResourceKey<? extends Registry<EntityType<?>>> registryKey, ResourceLocation key) {
-        return new DeferredEntityTypeBuilder(ResourceKey.create(registryKey, key), helper);
+    protected <I extends EntityType<?>> DeferredEntityTypeBuilder createHolder(ResourceKey<? extends Registry<EntityType<?>>> registryType, ResourceLocation registryName) {
+        return new DeferredEntityTypeBuilder(ResourceKey.create(registryType, registryName), helper);
     }
 
     public <E extends Entity> DeferredEntityTypeBuilder<E, EntityType<E>> registerType(String name, Supplier<EntityType.Builder<E>> sup) {

@@ -98,13 +98,13 @@ public class DeferredRegister<T> {
      * <p>
      * If the registry is never created, any {@link DeferredHolder}s made from this DeferredRegister will throw an exception.
      *
-     * @param key       the key of the registry to reference. May come from another DeferredRegister through {@link #getRegistryKey()}.
-     * @param namespace the namespace for all objects registered to this DeferredRegister
+     * @param registryType the key of the registry to reference. May come from another DeferredRegister through {@link #getRegistryKey()}.
+     * @param namespace    the namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceLocation, String)
      */
-    public static <T> DeferredRegister<T> create(ResourceKey<? extends Registry<T>> key, String namespace) {
-        return new DeferredRegister<>(key, namespace);
+    public static <T> DeferredRegister<T> create(ResourceKey<? extends Registry<T>> registryType, String namespace) {
+        return new DeferredRegister<>(registryType, namespace);
     }
 
     /**
@@ -113,12 +113,12 @@ public class DeferredRegister<T> {
      * If the registry is never created, any {@link DeferredHolder}s made from this DeferredRegister will throw an exception.
      *
      * @param registryName The name of the registry, should include namespace. May come from another DeferredRegister through {@link #getRegistryName()}.
-     * @param modid        The namespace for all objects registered to this DeferredRegister
+     * @param namespace    The namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
      */
-    public static <B> DeferredRegister<B> create(ResourceLocation registryName, String modid) {
-        return new DeferredRegister<>(ResourceKey.createRegistryKey(registryName), modid);
+    public static <B> DeferredRegister<B> create(ResourceLocation registryName, String namespace) {
+        return new DeferredRegister<>(ResourceKey.createRegistryKey(registryName), namespace);
     }
 
     private final ResourceKey<? extends Registry<T>> registryKey;
@@ -143,47 +143,47 @@ public class DeferredRegister<T> {
     /**
      * Adds a new entry to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created entry automatically.
      *
-     * @param name The new entry's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-     * @param sup  A factory for the new entry. The factory should not cache the created entry.
+     * @param identifier The new entry's identifier. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+     * @param factory    A factory for the new entry. The factory should not cache the created entry.
      * @return A {@link DeferredHolder} that will track updates from the registry for this entry.
      */
-    public <I extends T> DeferredHolder<T, I> register(final String name, final Supplier<? extends I> sup) {
-        return this.register(name, key -> sup.get());
+    public <I extends T> DeferredHolder<T, I> register(final String identifier, final Supplier<? extends I> factory) {
+        return this.register(identifier, key -> factory.get());
     }
 
     /**
      * Adds a new entry to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created entry automatically.
      *
-     * @param name The new entry's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-     * @param func A factory for the new entry. The factory should not cache the created entry.
+     * @param identifier The new entry's identifier. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+     * @param factory    A factory for the new entry. The factory should not cache the created entry.
      * @return A {@link DeferredHolder} that will track updates from the registry for this entry.
      */
-    public <I extends T> DeferredHolder<T, I> register(final String name, final Function<ResourceLocation, ? extends I> func) {
+    public <I extends T> DeferredHolder<T, I> register(final String identifier, final Function<ResourceLocation, ? extends I> factory) {
         if (seenRegisterEvent)
             throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegisterEvent has been fired.");
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(func);
-        final ResourceLocation key = ResourceLocation.fromNamespaceAndPath(namespace, name);
+        Objects.requireNonNull(identifier);
+        Objects.requireNonNull(factory);
+        final ResourceLocation registryName = ResourceLocation.fromNamespaceAndPath(namespace, identifier);
 
-        DeferredHolder<T, I> ret = createHolder(this.registryKey, key);
+        DeferredHolder<T, I> holder = createHolder(this.registryKey, registryName);
 
-        if (entries.putIfAbsent(ret, () -> func.apply(key)) != null) {
-            throw new IllegalArgumentException("Duplicate registration " + name);
+        if (entries.putIfAbsent(holder, () -> factory.apply(registryName)) != null) {
+            throw new IllegalArgumentException("Duplicate registration " + identifier);
         }
 
-        return ret;
+        return holder;
     }
 
     /**
      * Create a {@link DeferredHolder} or an inheriting type to be stored.
      *
-     * @param registryKey The key of the registry.
-     * @param key         The resource location of the entry.
+     * @param registryType The registryName of the registry.
+     * @param registryName The resource location of the entry.
      * @return The new instance of {@link DeferredHolder} or an inheriting type.
      * @param <I> The specific type of the entry.
      */
-    protected <I extends T> DeferredHolder<T, I> createHolder(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation key) {
-        return DeferredHolder.create(registryKey, key);
+    protected <I extends T> DeferredHolder<T, I> createHolder(ResourceKey<? extends Registry<T>> registryType, ResourceLocation registryName) {
+        return DeferredHolder.create(registryType, registryName);
     }
 
     /**
@@ -246,14 +246,14 @@ public class DeferredRegister<T> {
     /**
      * Adds our event handler to the specified event bus, this MUST be called in order for this class to function. See {@link DeferredRegister the example usage}.
      *
-     * @param bus The Mod Specific event bus.
+     * @param modBus The Mod Specific event bus.
      */
-    public void register(IEventBus bus) {
+    public void register(IEventBus modBus) {
         if (this.registeredEventBus)
             throw new IllegalStateException("Cannot register DeferredRegister to more than one event bus.");
         this.registeredEventBus = true;
-        bus.addListener(this::addEntries);
-        bus.addListener(this::addRegistry);
+        modBus.addListener(this::addEntries);
+        modBus.addListener(this::addRegistry);
     }
 
     /**

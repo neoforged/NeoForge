@@ -30,18 +30,18 @@ public class DeferredBlocks extends net.neoforged.neoforge.registries.deferred.D
     }
 
     @Override
-    protected <I extends Block> DeferredBlockBuilder<I> createHolder(ResourceKey<? extends Registry<Block>> registryKey, ResourceLocation key) {
-        return new DeferredBlockBuilder<>(ResourceKey.create(registryKey, key), registrationHelper);
+    protected <I extends Block> DeferredBlockBuilder<I> createHolder(ResourceKey<? extends Registry<Block>> registryType, ResourceLocation registryName) {
+        return new DeferredBlockBuilder<>(ResourceKey.create(registryType, registryName), registrationHelper);
     }
 
     @Override
-    public <B extends Block> DeferredBlockBuilder<B> register(String name, Supplier<? extends B> sup) {
-        return (DeferredBlockBuilder<B>) super.register(name, sup);
+    public <B extends Block> DeferredBlockBuilder<B> register(String identifier, Supplier<? extends B> factory) {
+        return (DeferredBlockBuilder<B>) super.register(identifier, factory);
     }
 
     @Override
-    public <B extends Block> DeferredBlockBuilder<B> register(String name, Function<ResourceLocation, ? extends B> func) {
-        return (DeferredBlockBuilder<B>) super.register(name, func);
+    public <B extends Block> DeferredBlockBuilder<B> register(String identifier, Function<ResourceLocation, ? extends B> factory) {
+        return (DeferredBlockBuilder<B>) super.register(identifier, factory);
     }
 
     @Override
