@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.misc;
 
 import java.util.List;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -21,7 +20,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -36,11 +34,11 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityType;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityTypes;
 import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
-import net.neoforged.neoforge.registries.deferred.DeferredHolder;
 import net.neoforged.neoforge.registries.deferred.DeferredItem;
 import net.neoforged.neoforge.registries.deferred.DeferredItems;
-import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(GameTestTest.MODID)
@@ -49,13 +47,12 @@ public class GameTestTest {
     public static final boolean ENABLED = true;
     private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
     private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
+    private static final DeferredBlockEntityTypes BLOCK_ENTITIES = DeferredBlockEntityTypes.createBlockEntityTypes(MODID);
     private static final DeferredBlock<Block> ENERGY_BLOCK = BLOCKS.register("energy_block",
             () -> new EnergyBlock(Properties.of().mapColor(MapColor.STONE)));
     @SuppressWarnings("unused")
     private static final DeferredItem<BlockItem> ENERGY_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(ENERGY_BLOCK);
-    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBlockEntity>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
-            () -> BlockEntityType.Builder.of(EnergyBlockEntity::new, ENERGY_BLOCK.get()).build(null));
+    private static final DeferredBlockEntityType<EnergyBlockEntity> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.registerBlockEntity(ENERGY_BLOCK, EnergyBlockEntity::new);
 
     public GameTestTest(IEventBus modBus) {
         if (ENABLED) {

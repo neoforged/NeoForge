@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.HangingSignItem;
@@ -35,11 +34,11 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityType;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityTypes;
 import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
-import net.neoforged.neoforge.registries.deferred.DeferredHolder;
 import net.neoforged.neoforge.registries.deferred.DeferredItem;
 import net.neoforged.neoforge.registries.deferred.DeferredItems;
-import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
 @Mod(CustomSignsTest.MODID)
 public class CustomSignsTest {
@@ -58,9 +57,9 @@ public class CustomSignsTest {
     public static final DeferredItem<SignItem> TEST_SIGN = ITEMS.register("test_sign", () -> new SignItem((new Item.Properties()).stacksTo(16), TEST_STANDING_SIGN.get(), TEST_WALL_SIGN.get()));
     public static final DeferredItem<HangingSignItem> TEST_HANGING_SIGN = ITEMS.register("test_hanging_sign", () -> new HangingSignItem(TEST_CEILING_HANGING_SIGN.get(), TEST_WALL_HANGING_SIGN.get(), (new Item.Properties()).stacksTo(16)));
 
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CustomSignBlockEntity>> CUSTOM_SIGN = BLOCK_ENTITIES.register("custom_sign", () -> BlockEntityType.Builder.of(CustomSignBlockEntity::new, TEST_WALL_SIGN.get(), TEST_STANDING_SIGN.get()).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CustomHangingSignBlockEntity>> CUSTOM_HANGING_SIGN = BLOCK_ENTITIES.register("custom_hanging_sign", () -> BlockEntityType.Builder.of(CustomHangingSignBlockEntity::new, TEST_WALL_HANGING_SIGN.get(), TEST_CEILING_HANGING_SIGN.get()).build(null));
+    private static final DeferredBlockEntityTypes BLOCK_ENTITIES = DeferredBlockEntityTypes.createBlockEntityTypes(MODID);
+    public static final DeferredBlockEntityType<CustomSignBlockEntity> CUSTOM_SIGN = BLOCK_ENTITIES.registerBlockEntity("custom_sign", CustomSignBlockEntity::new, TEST_WALL_SIGN, TEST_STANDING_SIGN);
+    public static final DeferredBlockEntityType<CustomHangingSignBlockEntity> CUSTOM_HANGING_SIGN = BLOCK_ENTITIES.registerBlockEntity("custom_hanging_sign", CustomHangingSignBlockEntity::new, TEST_WALL_HANGING_SIGN, TEST_CEILING_HANGING_SIGN);
 
     public CustomSignsTest(IEventBus eventBus) {
         if (ENABLE) {
