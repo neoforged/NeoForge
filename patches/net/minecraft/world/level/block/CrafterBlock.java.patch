@@ -5,7 +5,7 @@
                  }
              }
 +        } else {
-+            itemstack = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertCrafterOutput(p_335887_, p_307620_.relative(direction), p_307387_, itemstack);
++            itemstack = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertCrafterOutput(p_335887_, p_307620_, p_307387_, itemstack);
          }
  
          if (!itemstack.isEmpty()) {
