@@ -15,6 +15,9 @@ import java.util.stream.Stream;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Class describing a specific flag.
+ */
 public final class Flag {
     public static final Codec<Flag> CODEC = ResourceLocation.CODEC.xmap(Flag::of, flag -> flag.identifier);
     public static final StreamCodec<ByteBuf, Flag> STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(Flag::of, flag -> flag.identifier);
@@ -28,10 +31,17 @@ public final class Flag {
         this.identifier = identifier;
     }
 
+    /**
+     * @return The owning mod id/namespace for this {@link Flag flag}.
+     */
     public String namespace() {
         return identifier.getNamespace();
     }
 
+    /**
+     * @return The unique identifier for this {@link Flag flag}.
+     * @apiNote This identifier does not need to be globally unique, only unique to the owning mod.
+     */
     public String identifier() {
         return identifier.getPath();
     }
@@ -59,18 +69,41 @@ public final class Flag {
         return "Flag{" + identifier + '}';
     }
 
+    /**
+     * Constructs a new {@link Flag} from the given {@code namespace} and {@code identifier}.
+     *
+     * @param namespace  The owning mods id/namespace.
+     * @param identifier A mod specific unique identifier.
+     * @return The newly constructed flag.
+     */
     public static Flag of(String namespace, String identifier) {
         return of(ResourceLocation.fromNamespaceAndPath(namespace, identifier));
     }
 
+    /**
+     * Constructs a new {@link Flag} from the given {@code identifier}.
+     *
+     * @param identifier A mod specific unique identifier.
+     * @return The newly constructed flag.
+     */
     public static Flag of(ResourceLocation identifier) {
         return FLAGS.computeIfAbsent(identifier, Flag::new);
     }
 
+    /**
+     * Returns immutable collection of all known {@link Flag flags}.
+     *
+     * @return immutable collection of all known {@link Flag flags}.
+     */
     public static Collection<Flag> getFlags() {
         return FLAGS_VIEW;
     }
 
+    /**
+     * Returns {@link Stream} representing all known {@link Flag flags}.
+     *
+     * @return {@link Stream} representing all known {@link Flag flags}.
+     */
     public static Stream<Flag> flags() {
         return FLAGS_VIEW.stream();
     }

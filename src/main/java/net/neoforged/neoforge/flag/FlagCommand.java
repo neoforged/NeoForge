@@ -14,7 +14,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public interface FlagCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("flag")

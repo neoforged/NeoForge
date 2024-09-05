@@ -14,6 +14,13 @@ import java.util.stream.Collectors;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
+/**
+ * {@link ICondition Condition} used to conditionally load data files based on state of given set of {@link Flag Flags}.
+ * <p>
+ * All provided {@link #requiredFlags flags} must be enabled in order for data to pass this {@link ICondition condition}.
+ *
+ * @apiNote A {@code /reload} is be required to correctly reload data after toggling the state of a given {@link Flag}.
+ */
 public final class RequiredFlagsCondition implements ICondition {
     public static final MapCodec<RequiredFlagsCondition> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
             NeoForgeExtraCodecs.setOf(Flag.CODEC).fieldOf("flags").forGetter(condition -> condition.requiredFlags)).apply(builder, RequiredFlagsCondition::new));

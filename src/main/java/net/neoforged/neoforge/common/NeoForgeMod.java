@@ -387,6 +387,9 @@ public class NeoForgeMod {
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<OrCondition>> OR_CONDITION = CONDITION_CODECS.register("or", () -> OrCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TagEmptyCondition>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
+    /**
+     * {@link ICondition Condition} used when testing data files against {@link Flag flags}.
+     */
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<RequiredFlagsCondition>> REQUIRED_FLAGS_CONDITION = CONDITION_CODECS.register("required_flags", () -> RequiredFlagsCondition.CODEC);
 
     private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
@@ -484,6 +487,9 @@ public class NeoForgeMod {
     public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_milk"));
 
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, NeoForgeVersion.MOD_ID);
+    /**
+     * {@link AttachmentType} used when save/saving {@link Flag flags} to/from level data.
+     */
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<Set<Flag>>> LEVEL_FLAGS = ATTACHMENT_TYPES.register("modded_feature_flags", () -> AttachmentType.<Set<Flag>>builder(() -> Sets.newHashSet())
             .serialize(NeoForgeExtraCodecs.setOf(Flag.CODEC))
             .build());
