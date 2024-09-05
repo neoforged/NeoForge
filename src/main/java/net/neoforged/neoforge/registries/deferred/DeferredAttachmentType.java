@@ -7,7 +7,6 @@ package net.neoforged.neoforge.registries.deferred;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -27,7 +26,7 @@ public class DeferredAttachmentType<TData> extends DeferredHolder<AttachmentType
      * @param <TData>     The type of the target {@link AttachmentType}.
      * @param registryKey The resource key of the target {@link AttachmentType}.
      */
-    public static <TData extends BlockEntity> DeferredAttachmentType<TData> createAttachmentType(ResourceKey<AttachmentType<?>> registryKey) {
+    public static <TData> DeferredAttachmentType<TData> createAttachmentType(ResourceKey<AttachmentType<?>> registryKey) {
         return new DeferredAttachmentType<>(registryKey);
     }
 
@@ -37,7 +36,7 @@ public class DeferredAttachmentType<TData> extends DeferredHolder<AttachmentType
      * @param <TData>      The type of the target {@link AttachmentType}.
      * @param registryName The name of the target {@link AttachmentType}.
      */
-    public static <TData extends BlockEntity> DeferredAttachmentType<TData> createAttachmentType(ResourceLocation registryName) {
+    public static <TData> DeferredAttachmentType<TData> createAttachmentType(ResourceLocation registryName) {
         return createAttachmentType(ResourceKey.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, registryName));
     }
 }
