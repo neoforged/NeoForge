@@ -5,11 +5,8 @@
 
 package net.neoforged.neoforge.registries.deferred;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -31,12 +28,10 @@ public class DeferredRecipeTypes extends DeferredRegister<RecipeType<?>> {
     /**
      * Adds a new recipe type to the list of entries to be registered and returns a {@link DeferredRecipeType} that will be populated with the created entry automatically.
      *
-     * @param identifier  The new entry's identifier. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-     * @param codec       {@link MapCodec Codec} to be used during file serialization.
-     * @param streamCodec {@link StreamCodec} to be used during network serialization.
+     * @param identifier The new entry's identifier. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
      * @return A {@link DeferredRecipeType} that will track updates from the registry for this entry.
      */
-    public <TRecipe extends Recipe<?>> DeferredRecipeType<TRecipe> registerRecipeType(String identifier, MapCodec<TRecipe> codec, StreamCodec<RegistryFriendlyByteBuf, TRecipe> streamCodec) {
+    public <TRecipe extends Recipe<?>> DeferredRecipeType<TRecipe> registerRecipeType(String identifier) {
         return (DeferredRecipeType<TRecipe>) this.<RecipeType<TRecipe>>register(identifier, RecipeType::simple);
     }
 
