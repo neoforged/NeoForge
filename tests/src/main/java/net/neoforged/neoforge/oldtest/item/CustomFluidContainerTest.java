@@ -29,7 +29,7 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStackSimple;
 import net.neoforged.neoforge.registries.deferred.DeferredDataComponentType;
-import net.neoforged.neoforge.registries.deferred.DeferredDataComponents;
+import net.neoforged.neoforge.registries.deferred.DeferredDataComponentTypes;
 import net.neoforged.neoforge.registries.deferred.DeferredItem;
 import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
@@ -37,7 +37,7 @@ import net.neoforged.neoforge.registries.deferred.DeferredItems;
 public class CustomFluidContainerTest {
     public static final String MODID = "custom_fluid_container_test";
     public static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
-    public static final DeferredDataComponents COMPONENT_TYPES = DeferredDataComponents.createDataComponents(MODID);
+    public static final DeferredDataComponentTypes COMPONENT_TYPES = DeferredDataComponentTypes.createDataComponentTypes(MODID);
 
     public static final boolean ENABLED = true;
 

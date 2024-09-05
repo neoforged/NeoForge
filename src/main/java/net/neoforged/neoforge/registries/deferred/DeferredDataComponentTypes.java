@@ -15,8 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Specialized DeferredRegister for {@link DataComponentType DataComponentTypes} that uses the specialized {@link DeferredDataComponentType} as the return type for {@link #register}.
  */
-public class DeferredDataComponents extends DeferredRegister<DataComponentType<?>> {
-    protected DeferredDataComponents(String namespace) {
+public class DeferredDataComponentTypes extends DeferredRegister<DataComponentType<?>> {
+    protected DeferredDataComponentTypes(String namespace) {
         super(Registries.DATA_COMPONENT_TYPE, namespace);
     }
 
@@ -41,7 +41,7 @@ public class DeferredDataComponents extends DeferredRegister<DataComponentType<?
      *
      * @param namespace The namespace for all objects registered to this DeferredRegister
      */
-    public static DeferredDataComponents createDataComponents(String namespace) {
-        return new DeferredDataComponents(namespace);
+    public static DeferredDataComponentTypes createDataComponentTypes(String namespace) {
+        return new DeferredDataComponentTypes(namespace);
     }
 }

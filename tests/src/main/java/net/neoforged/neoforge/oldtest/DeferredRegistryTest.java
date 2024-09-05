@@ -28,7 +28,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.deferred.DeferredBlock;
 import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
-import net.neoforged.neoforge.registries.deferred.DeferredDataComponents;
+import net.neoforged.neoforge.registries.deferred.DeferredDataComponentTypes;
 import net.neoforged.neoforge.registries.deferred.DeferredHolder;
 import net.neoforged.neoforge.registries.deferred.DeferredItem;
 import net.neoforged.neoforge.registries.deferred.DeferredItems;
@@ -45,7 +45,7 @@ public class DeferredRegistryTest {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
-    private static final DeferredDataComponents COMPONENTS = DeferredDataComponents.createDataComponents(MODID);
+    private static final DeferredDataComponentTypes COMPONENTS = DeferredDataComponentTypes.createDataComponentTypes(MODID);
     private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
     private static final ResourceKey<Registry<Custom>> CUSTOM_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "test_registry"));
     private static final DeferredRegister<Custom> CUSTOMS = DeferredRegister.create(CUSTOM_REGISTRY_KEY, MODID);
