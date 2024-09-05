@@ -13,11 +13,16 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
+ * Specialized DeferredRegister for {@link DataComponentType DataComponentTypes} that uses the specialized {@link DeferredDataComponentType} as the return type for {@link #register}.
  */
 public class DeferredDataComponents extends DeferredRegister<DataComponentType<?>> {
     protected DeferredDataComponents(String namespace) {
         super(Registries.DATA_COMPONENT_TYPE, namespace);
+    }
+
+    @Override
+    protected <TDataComponentType extends DataComponentType<?>> DeferredHolder<DataComponentType<?>, TDataComponentType> createHolder(ResourceKey<? extends Registry<DataComponentType<?>>> registryType, ResourceLocation registryName) {
+        return (DeferredHolder<DataComponentType<?>, TDataComponentType>) DeferredDataComponentType.createDataComponentType(ResourceKey.create(registryType, registryName));
     }
 
     /**
@@ -25,19 +30,16 @@ public class DeferredDataComponents extends DeferredRegister<DataComponentType<?
      *
      * @param identifier    The identifier for this data component type. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
      * @param builderAction The unary operator, which is passed a new builder for user operations, then builds it upon registration.
-     * @return A {@link DeferredHolder} which reflects the data that will be registered.
+     * @return A {@link DeferredDataComponentType} which reflects the data that will be registered.
      */
-    public <TComponent> DeferredHolder<DataComponentType<?>, DataComponentType<TComponent>> registerComponentType(String identifier, UnaryOperator<DataComponentType.Builder<TComponent>> builderAction) {
-        return this.register(identifier, () -> builderAction.apply(DataComponentType.builder()).build());
+    public <TComponent> DeferredDataComponentType<TComponent> registerComponentType(String identifier, UnaryOperator<DataComponentType.Builder<TComponent>> builderAction) {
+        return (DeferredDataComponentType<TComponent>) register(identifier, () -> builderAction.apply(DataComponentType.builder()).build());
     }
 
     /**
      * Factory for a specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
      *
      * @param namespace The namespace for all objects registered to this DeferredRegister
-     * @see #create(Registry, String)
-     * @see #create(ResourceKey, String)
-     * @see #create(ResourceLocation, String)
      */
     public static DeferredDataComponents createDataComponents(String namespace) {
         return new DeferredDataComponents(namespace);

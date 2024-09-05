@@ -8,8 +8,6 @@ package net.neoforged.neoforge.oldtest.item;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -30,23 +28,21 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStackSimple;
-import net.neoforged.neoforge.registries.deferred.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredDataComponentType;
+import net.neoforged.neoforge.registries.deferred.DeferredDataComponents;
 import net.neoforged.neoforge.registries.deferred.DeferredItem;
 import net.neoforged.neoforge.registries.deferred.DeferredItems;
-import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
 @Mod(CustomFluidContainerTest.MODID)
 public class CustomFluidContainerTest {
     public static final String MODID = "custom_fluid_container_test";
     public static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
-    public static final DeferredRegister<DataComponentType<?>> COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
+    public static final DeferredDataComponents COMPONENT_TYPES = DeferredDataComponents.createDataComponents(MODID);
 
     public static final boolean ENABLED = true;
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SimpleFluidContent>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<SimpleFluidContent>builder()
-            .persistent(SimpleFluidContent.CODEC)
-            .networkSynchronized(SimpleFluidContent.STREAM_CODEC).build());
+    public static final DeferredDataComponentType<SimpleFluidContent> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.registerComponentType("simple_fluid_content", builder -> builder.persistent(SimpleFluidContent.CODEC).networkSynchronized(SimpleFluidContent.STREAM_CODEC));
 
     public CustomFluidContainerTest(IEventBus modEventBus) {
         if (ENABLED) {
