@@ -8,12 +8,10 @@ package net.neoforged.testframework.registration;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
-public class DeferredAttachmentTypes extends DeferredRegister<AttachmentType<?>> {
+public class DeferredAttachmentTypes extends net.neoforged.neoforge.registries.deferred.DeferredAttachmentTypes {
     public DeferredAttachmentTypes(String namespace) {
-        super(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, namespace);
+        super(namespace);
     }
 
     public <T> AttachmentType<T> registerSimpleAttachment(String name, Supplier<T> defaultValue) {
