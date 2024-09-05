@@ -1,5 +1,13 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
+@@ -70,6 +_,7 @@
+     private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
+     @Nullable
+     private MultipleTestTracker testTracker;
++    private final net.neoforged.neoforge.flag.FlagManager moddedFlagManager = new net.neoforged.neoforge.flag.FlagManager((flag, enabled) -> { /* NOOP: No syncing during game tests */ });
+ 
+     public static GameTestServer create(
+         Thread p_206607_, LevelStorageSource.LevelStorageAccess p_206608_, PackRepository p_206609_, Collection<TestFunction> p_206610_, BlockPos p_206611_
 @@ -151,6 +_,7 @@
      public boolean initServer() {
          this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {
@@ -16,3 +24,14 @@
          return true;
      }
  
+@@ -301,5 +_,10 @@
+     @Override
+     public boolean isSingleplayerOwner(GameProfile p_177617_) {
+         return false;
++    }
++
++    @Override
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        return moddedFlagManager;
+     }
+ }

@@ -1,5 +1,14 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
+@@ -167,7 +_,7 @@
+ import net.minecraft.world.phys.Vec3;
+ import org.slf4j.Logger;
+ 
+-public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements ServerInfo, ChunkIOErrorReporter, CommandSource, AutoCloseable {
++public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements ServerInfo, ChunkIOErrorReporter, CommandSource, AutoCloseable, net.neoforged.neoforge.common.extensions.IMinecraftServerExtension {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final String VANILLA_BRAND = "vanilla";
+     private static final float AVERAGE_TICK_TIME_SMOOTHING = 0.8F;
 @@ -264,7 +_,7 @@
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> p_129873_) {
@@ -205,6 +214,18 @@
      }
  
      public SystemReport fillSystemReport(SystemReport p_177936_) {
+@@ -1135,6 +_,11 @@
+             "Enabled Feature Flags",
+             () -> FeatureFlags.REGISTRY.toNames(this.worldData.enabledFeatures()).stream().map(ResourceLocation::toString).collect(Collectors.joining(", "))
+         );
++        // Neo: Append modded feature flags to crash reports
++        p_177936_.setDetail(
++                "Enabled Feature Flages (Modded)",
++                () -> getModdedFlagManager().enabledFlags().map(net.neoforged.neoforge.flag.Flag::toStringShort).collect(Collectors.joining(", "))
++        );
+         p_177936_.setDetail("World Generation", () -> this.worldData.worldGenSettingsLifecycle().toString());
+         p_177936_.setDetail("World Seed", () -> String.valueOf(this.worldData.worldGenOptions().seed()));
+         if (this.serverId != null) {
 @@ -1441,7 +_,7 @@
  
      public CompletableFuture<Void> reloadResources(Collection<String> p_129862_) {

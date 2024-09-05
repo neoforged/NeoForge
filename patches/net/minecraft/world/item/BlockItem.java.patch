@@ -31,16 +31,25 @@
      @Nullable
      public BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
          return p_40609_;
-@@ -193,6 +_,12 @@
- 
-     public void registerBlocks(Map<Block, Item> p_40607_, Item p_40608_) {
+@@ -195,6 +_,10 @@
          p_40607_.put(this.getBlock(), p_40608_);
-+    }
-+
-+    /** @deprecated Neo: To be removed without replacement since registry replacement is not a feature anymore. */
-+    @Deprecated(forRemoval = true, since = "1.21.1")
-+    public void removeFromBlockToItemMap(Map<Block, Item> blockToItemMap, Item itemIn) {
-+        blockToItemMap.remove(this.getBlock());
      }
  
++    public void removeFromBlockToItemMap(Map<Block, Item> blockToItemMap, Item itemIn) {
++        blockToItemMap.remove(this.getBlock());
++    }
++
      @Override
+     public boolean canFitInsideContainerItems() {
+         return !(this.getBlock() instanceof ShulkerBoxBlock);
+@@ -221,5 +_,10 @@
+     @Override
+     public FeatureFlagSet requiredFeatures() {
+         return this.getBlock().requiredFeatures();
++    }
++
++    @Override
++    public boolean isEnabled() {
++        return getBlock().isEnabled() && super.isEnabled();
+     }
+ }

@@ -50,6 +50,7 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
+import net.neoforged.neoforge.flag.FlagManager;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -143,6 +144,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
             rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
         });
         private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
+        private final FlagManager moddedFlagManager = new FlagManager((flag, enabled) -> { /* NOOP: No syncing during testing */ });
 
         public static JUnitServer create(
                 Thread thread, Path tempDir, LevelStorageSource.LevelStorageAccess access, PackRepository resources) {
@@ -313,6 +315,11 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         @Override
         public boolean isTickTimeLoggingEnabled() {
             return false;
+        }
+
+        @Override
+        public final FlagManager getModdedFlagManager() {
+            return moddedFlagManager;
         }
     }
 }

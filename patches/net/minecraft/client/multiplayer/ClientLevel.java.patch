@@ -109,7 +109,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1069,14 +_,75 @@
+@@ -1069,14 +_,80 @@
              if (p_171712_ instanceof AbstractClientPlayer) {
                  ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
              }
@@ -183,5 +183,10 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void setDayTimePerTick(float dayTimePerTick) {
 +        this.dayTimePerTick = dayTimePerTick;
++    }
++
++    @Override
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        return minecraft.getModdedFlagManager();
      }
  }
