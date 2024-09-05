@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
@@ -13,9 +15,6 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Allows registering custom {@link AnimationTarget}s and
@@ -56,9 +55,8 @@ public class RegisterJsonAnimationTypesEvent extends Event implements IModBusEve
         final var prevModId = by.putIfAbsent(key, currentModId);
         if (prevModId != null) {
             throw new IllegalStateException(
-                "Duplicate " + what + " registration for " + key + ". " +
-                currentModId + " tried to overwrite " + prevModId + "."
-            );
+                    "Duplicate " + what + " registration for " + key + ". " +
+                            currentModId + " tried to overwrite " + prevModId + ".");
         }
     }
 }
