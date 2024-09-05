@@ -39,7 +39,7 @@
   "fml.menu.loadingmods": "{0,choice,0#沒有模組|1#1 個模組|1<%s 個模組}載入",
   "fml.menu.notification.title": "啟動提醒",
   "fml.menu.accessdenied.title": "伺服器存取被拒",
-  "fml.menu.accessdenied.message": "Fancy Mod Loader 無法連線到此伺服器\n伺服器 %1$s 禁止模組存取",
+  "fml.menu.accessdenied.message": "Fancy Mod Loader 無法連線到這個伺服器\n伺服器 %1$s 禁止模組存取",
   "fml.menu.backupfailed.title": "備份失敗",
   "fml.menu.backupfailed.message": "儲存存檔 %1$s 時發生錯誤\n請修正這個問題，然後再試一次",
   "fml.button.open.file": "開啟 %1$s",
