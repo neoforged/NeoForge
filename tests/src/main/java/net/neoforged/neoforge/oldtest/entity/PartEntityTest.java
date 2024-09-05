@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest.entity;
 
 import net.minecraft.client.renderer.entity.PigRenderer;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -29,16 +28,16 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.registries.deferred.DeferredHolder;
-import net.neoforged.neoforge.registries.deferred.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredEntityType;
+import net.neoforged.neoforge.registries.deferred.DeferredEntityTypes;
 
 @Mod(value = PartEntityTest.MOD_ID)
 public class PartEntityTest {
     static final String MOD_ID = "part_entity_test";
     static final boolean ENABLED = true;
 
-    private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MOD_ID);
-    private static final DeferredHolder<EntityType<?>, EntityType<TestEntity>> TEST_ENTITY = ENTITIES.register("test_entity", () -> EntityType.Builder.of(TestEntity::new, MobCategory.CREATURE).sized(16.0F, 8.0F).clientTrackingRange(10).build("test_entity"));
+    private static final DeferredEntityTypes ENTITIES = DeferredEntityTypes.createEntityTypes(MOD_ID);
+    private static final DeferredEntityType<TestEntity> TEST_ENTITY = ENTITIES.registerEntity("test_entity", TestEntity::new, MobCategory.CREATURE, builder -> builder.sized(16.0F, 8.0F).clientTrackingRange(10));
 
     public PartEntityTest(IEventBus modEventBus) {
         if (ENABLED) {
