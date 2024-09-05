@@ -12,7 +12,7 @@
          this.jumpFactor = p_60452_.jumpFactor;
          this.dynamicShape = p_60452_.dynamicShape;
          this.requiredFeatures = p_60452_.requiredFeatures;
-+        this.requiredFlags = java.util.Collections.unmodifiableSet(p_60452_.requiredFlags);
++        this.requiredFlags = java.util.Set.copyOf(p_60452_.requiredFlags);
          this.properties = p_60452_;
 +        final ResourceKey<LootTable> lootTableCache = p_60452_.drops;
 +        if (lootTableCache != null) {
