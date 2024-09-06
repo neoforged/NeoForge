@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
@@ -16,7 +15,7 @@ import net.neoforged.neoforge.network.IContainerFactory;
 
 public interface IMenuTypeExtension<T> {
     static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory, Flag... requiredFlags) {
-        return new MenuType<>(factory, FeatureFlags.DEFAULT_FLAGS, ReferenceOpenHashSet.of(requiredFlags));
+        return new MenuType<>(factory, FeatureFlags.DEFAULT_FLAGS, requiredFlags);
     }
 
     T create(int windowId, Inventory playerInv, RegistryFriendlyByteBuf extraData);

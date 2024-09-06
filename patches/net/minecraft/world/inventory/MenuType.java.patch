@@ -9,27 +9,25 @@
      public static final MenuType<ChestMenu> GENERIC_9x1 = register("generic_9x1", ChestMenu::oneRow);
      public static final MenuType<ChestMenu> GENERIC_9x2 = register("generic_9x2", ChestMenu::twoRows);
      public static final MenuType<ChestMenu> GENERIC_9x3 = register("generic_9x3", ChestMenu::threeRows);
-@@ -36,18 +_,20 @@
+@@ -36,6 +_,7 @@
      public static final MenuType<StonecutterMenu> STONECUTTER = register("stonecutter", StonecutterMenu::new);
      private final FeatureFlagSet requiredFeatures;
      private final MenuType.MenuSupplier<T> constructor;
 +    private final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags;
  
      private static <T extends AbstractContainerMenu> MenuType<T> register(String p_39989_, MenuType.MenuSupplier<T> p_39990_) {
--        return Registry.register(BuiltInRegistries.MENU, p_39989_, new MenuType<>(p_39990_, FeatureFlags.VANILLA_SET));
-+        return Registry.register(BuiltInRegistries.MENU, p_39989_, new MenuType<>(p_39990_, FeatureFlags.VANILLA_SET, java.util.Collections.emptySet()));
+         return Registry.register(BuiltInRegistries.MENU, p_39989_, new MenuType<>(p_39990_, FeatureFlags.VANILLA_SET));
+@@ -46,8 +_,13 @@
      }
  
-     private static <T extends AbstractContainerMenu> MenuType<T> register(String p_267295_, MenuType.MenuSupplier<T> p_266945_, FeatureFlag... p_267055_) {
--        return Registry.register(BuiltInRegistries.MENU, p_267295_, new MenuType<>(p_266945_, FeatureFlags.REGISTRY.subset(p_267055_)));
-+        return Registry.register(BuiltInRegistries.MENU, p_267295_, new MenuType<>(p_266945_, FeatureFlags.REGISTRY.subset(p_267055_), java.util.Collections.emptySet()));
-     }
- 
--    public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_) {
-+    public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_, java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags) {
+     public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_) {
++        this(p_267054_, p_266909_, new net.neoforged.neoforge.flag.Flag[0]);
++    }
++
++    public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_, net.neoforged.neoforge.flag.Flag[] requiredFlags) {
          this.constructor = p_267054_;
          this.requiredFeatures = p_266909_;
-+        this.requiredFlags = java.util.Collections.unmodifiableSet(requiredFlags);
++        this.requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSet.of(requiredFlags);
      }
  
      public T create(int p_39986_, Inventory p_39987_) {

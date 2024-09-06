@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/alchemy/Potion.java
 +++ b/net/minecraft/world/item/alchemy/Potion.java
-@@ -24,6 +_,7 @@
+@@ -24,6 +_,8 @@
      private final String name;
      private final List<MobEffectInstance> effects;
      private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
-+    private final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++    private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++    private java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlagsView = it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
  
      public Potion(MobEffectInstance... p_43487_) {
          this(null, p_43487_);
@@ -32,7 +33,7 @@
 +
 +    @Override
 +    public java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags() {
-+        return requiredFlags;
++        return requiredFlagsView;
      }
  
      public static String getName(Optional<Holder<Potion>> p_330503_, String p_43493_) {
