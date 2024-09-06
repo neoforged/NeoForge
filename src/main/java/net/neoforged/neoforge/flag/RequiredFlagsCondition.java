@@ -14,9 +14,6 @@ import java.util.stream.Collectors;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
-// TODO: Get this working during initial server spin up
-// Does not work due to there being no server instance and potentially level data loaded
-// need to hook into the WorldDataConfiguration system and load similarly to how vanilla FeatureFlags are loaded
 /**
  * {@link ICondition Condition} used to conditionally load data files based on state of given set of {@link Flag Flags}.
  * <p>
@@ -40,7 +37,7 @@ public final class RequiredFlagsCondition implements ICondition {
 
     @Override
     public boolean test(IContext context) {
-        return FlagManager.lookup().map(manager -> manager.isEnabled(requiredFlags)).orElseGet(FlagManager::shouldBeEnabledDefault);
+        return context.getModdedFlagManager().isEnabled(requiredFlags);
     }
 
     @Override

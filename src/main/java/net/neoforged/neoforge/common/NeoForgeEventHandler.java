@@ -99,8 +99,10 @@ public class NeoForgeEventHandler {
     public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         UsernameCache.setUsername(event.getEntity().getUUID(), event.getEntity().getGameProfile().getName());
 
-        if (event.getEntity() instanceof ServerPlayer sPlayer)
-            PacketDistributor.sendToPlayer(sPlayer, new ClientboundSyncFlags(sPlayer.server.getModdedFlagManager()));
+        if (event.getEntity() instanceof ServerPlayer sPlayer) {
+            var flagManager = sPlayer.server.getModdedFlagManager();
+            PacketDistributor.sendToPlayer(sPlayer, new ClientboundSyncFlags(flagManager.getEnabledFlags()));
+        }
     }
 
     @SubscribeEvent

@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.flag;
 
 import com.google.common.collect.Sets;
-import java.util.Collection;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -26,20 +25,21 @@ public final class ClientboundSyncFlags implements CustomPacketPayload {
             ByteBufCodecs.collection(Sets::newHashSetWithExpectedSize, Flag.STREAM_CODEC), payload -> payload.enabledFlags,
             ClientboundSyncFlags::new);
 
-    final Set<Flag> enabledFlags;
+    private final Set<Flag> enabledFlags;
 
-    private ClientboundSyncFlags(Collection<Flag> enabledFlags) {
-        this.enabledFlags = Set.copyOf(enabledFlags);
-    }
-
-    public ClientboundSyncFlags(FlagManager flagManager) {
-        this(flagManager.getEnabledFlags());
+    public ClientboundSyncFlags(Set<Flag> enabledFlags) {
+        this.enabledFlags = enabledFlags;
     }
 
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (FMLEnvironment.dist.isClient())
-                Minecraft.getInstance().getModdedFlagManager().syncFromRemote(this);
+            if (!FMLEnvironment.dist.isClient())
+                return;
+
+            var client = Minecraft.getInstance();
+
+            if (client.getSingleplayerServer() == null)
+                client.clientModdedFlagManager = FlagManager.createDummy(enabledFlags);
         });
     }
 

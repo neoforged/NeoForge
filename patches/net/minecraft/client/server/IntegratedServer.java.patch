@@ -1,12 +1,11 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -73,10 +_,13 @@
+@@ -73,10 +_,12 @@
          this.setPvpAllowed(true);
          this.setFlightAllowed(true);
          this.initializeKeyPair();
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
          this.loadLevel();
-+        minecraft.getModdedFlagManager().loadFromLevel(overworld()); // Neo: Load flag data
          GameProfile gameprofile = this.getSingleplayerProfile();
          String s = this.getWorldData().getLevelName();
          this.setMotd(gameprofile != null ? gameprofile.getName() + " - " + s : s);
@@ -22,14 +21,3 @@
          this.executeBlocking(() -> {
              for (ServerPlayer serverplayer : Lists.newArrayList(this.getPlayerList().getPlayers())) {
                  if (!serverplayer.getUUID().equals(this.uuid)) {
-@@ -320,5 +_,10 @@
-         super.reportChunkSaveFailure(p_352264_, p_352355_, p_331440_);
-         this.warnOnLowDiskSpace();
-         this.minecraft.execute(() -> SystemToast.onChunkSaveFailure(this.minecraft, p_331440_));
-+    }
-+
-+    @Override
-+    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
-+        return minecraft.getModdedFlagManager();
-     }
- }

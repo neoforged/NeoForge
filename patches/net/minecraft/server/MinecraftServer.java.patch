@@ -1,15 +1,10 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -167,7 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import org.slf4j.Logger;
- 
--public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements ServerInfo, ChunkIOErrorReporter, CommandSource, AutoCloseable {
-+public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements ServerInfo, ChunkIOErrorReporter, CommandSource, AutoCloseable, net.neoforged.neoforge.common.extensions.IMinecraftServerExtension {
-     private static final Logger LOGGER = LogUtils.getLogger();
-     public static final String VANILLA_BRAND = "vanilla";
-     private static final float AVERAGE_TICK_TIME_SMOOTHING = 0.8F;
-@@ -264,7 +_,7 @@
+@@ -261,10 +_,11 @@
+     private final PotionBrewing potionBrewing;
+     private volatile boolean isSaving;
+     private static final AtomicReference<RuntimeException> fatalException = new AtomicReference<>();
++    private final net.neoforged.neoforge.flag.FlagManager moddedFlagManager;
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> p_129873_) {
          AtomicReference<S> atomicreference = new AtomicReference<>();
@@ -18,6 +13,14 @@
          thread.setUncaughtExceptionHandler((p_177909_, p_177910_) -> LOGGER.error("Uncaught exception in server thread", p_177910_));
          if (Runtime.getRuntime().availableProcessors() > 4) {
              thread.setPriority(8);
+@@ -316,6 +_,7 @@
+             this.serverThread = p_236723_;
+             this.executor = Util.backgroundExecutor();
+             this.potionBrewing = PotionBrewing.bootstrap(this.worldData.enabledFeatures());
++            this.moddedFlagManager = new net.neoforged.neoforge.flag.ServerFlagManager(this, this.worldData.getDataConfiguration().enabledModdedFeatures());
+         }
+     }
+ 
 @@ -372,6 +_,7 @@
          this.readScoreboard(dimensiondatastorage);
          this.commandStorage = new CommandStorage(dimensiondatastorage);
@@ -235,6 +238,25 @@
                  this
              )
              .thenCompose(
+@@ -1454,7 +_,8 @@
+                             this.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED,
+                             this.getFunctionCompilationLevel(),
+                             this.executor,
+-                            this
++                            this,
++                            this.worldData.getDataConfiguration().enabledModdedFeatures()
+                         )
+                         .whenComplete((p_212907_, p_212908_) -> {
+                             if (p_212908_ != null) {
+@@ -1470,7 +_,7 @@
+                     this.resources = p_335203_;
+                     this.packRepository.setSelected(p_129862_);
+                     WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(
+-                        getSelectedPacks(this.packRepository, true), this.worldData.enabledFeatures()
++                        getSelectedPacks(this.packRepository, true), this.worldData.enabledFeatures(), this.worldData.getDataConfiguration().enabledModdedFeatures()
+                     );
+                     this.worldData.setDataConfiguration(worlddataconfiguration);
+                     this.resources.managers.updateRegistryTags();
 @@ -1478,6 +_,7 @@
                      this.getPlayerList().reloadResources();
                      this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());
@@ -251,19 +273,34 @@
 +        datapackconfig.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());
          if (p_341620_) {
 -            return configureRepositoryWithSelection(p_248681_, List.of("vanilla"), featureflagset, false);
-+            return configureRepositoryWithSelection(p_248681_, net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), featureflagset, false);
++            return configureRepositoryWithSelection(p_248681_, net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), featureflagset, false, p_341632_.enabledModdedFeatures());
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
-@@ -1542,6 +_,8 @@
+@@ -1542,18 +_,20 @@
                  set.add("vanilla");
              }
  
+-            return configureRepositoryWithSelection(p_248681_, set, featureflagset, true);
 +            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, datapackconfig.getEnabled(), p_248681_);
 +
-             return configureRepositoryWithSelection(p_248681_, set, featureflagset, true);
++            return configureRepositoryWithSelection(p_248681_, set, featureflagset, true, p_341632_.enabledModdedFeatures());
          }
      }
+ 
+     private static WorldDataConfiguration configureRepositoryWithSelection(
+-        PackRepository p_341680_, Collection<String> p_341677_, FeatureFlagSet p_341602_, boolean p_341662_
++        PackRepository p_341680_, Collection<String> p_341677_, FeatureFlagSet p_341602_, boolean p_341662_, Set<net.neoforged.neoforge.flag.Flag> enabledModdedFeatures
+     ) {
+         p_341680_.setSelected(p_341677_);
+         enableForcedFeaturePacks(p_341680_, p_341602_);
+         DataPackConfig datapackconfig = getSelectedPacks(p_341680_, p_341662_);
+         FeatureFlagSet featureflagset = p_341680_.getRequestedFeatureFlags().join(p_341602_);
+-        return new WorldDataConfiguration(datapackconfig, featureflagset);
++        return new WorldDataConfiguration(datapackconfig, featureflagset, enabledModdedFeatures);
+     }
+ 
+     private static void enableForcedFeaturePacks(PackRepository p_341674_, FeatureFlagSet p_341598_) {
 @@ -1712,6 +_,31 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile p_129840_);
@@ -296,14 +333,25 @@
      public void dumpServerProperties(Path p_177911_) throws IOException {
      }
  
-@@ -1873,6 +_,10 @@
- 
-     public WorldData getWorldData() {
+@@ -1875,6 +_,10 @@
          return this.worldData;
-+    }
-+
-+    public MinecraftServer.ReloadableResources getServerResources() {
-+         return resources;
      }
  
++    public MinecraftServer.ReloadableResources getServerResources() {
++         return resources;
++    }
++
      public RegistryAccess.Frozen registryAccess() {
+         return this.registries.compositeAccess();
+     }
+@@ -1999,6 +_,10 @@
+ 
+     public ServerLinks serverLinks() {
+         return ServerLinks.EMPTY;
++    }
++
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        return moddedFlagManager;
+     }
+ 
+     public static record ReloadableResources(CloseableResourceManager resourceManager, ReloadableServerResources managers) implements AutoCloseable {

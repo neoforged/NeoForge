@@ -9,11 +9,13 @@
      static Minecraft instance;
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;
-@@ -399,6 +_,7 @@
+@@ -399,6 +_,9 @@
      private final long clientStartTimeMs;
      private long clientTickCount;
      private String debugPath = "root";
-+    private final net.neoforged.neoforge.flag.FlagManager moddedFlagManager = new net.neoforged.neoforge.flag.FlagManager(this::syncFlag);
++    @org.jetbrains.annotations.Nullable
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public net.neoforged.neoforge.flag.FlagManager clientModdedFlagManager;
  
      public Minecraft(GameConfig p_91084_) {
          super("Client");
@@ -344,10 +346,11 @@
          this.level = p_91157_;
          this.updateLevelInEngines(p_91157_);
          if (!this.isLocalServer) {
-@@ -2093,6 +_,7 @@
+@@ -2093,6 +_,8 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
++        this.clientModdedFlagManager = null;
 +        net.neoforged.neoforge.client.ClientHooks.firePlayerLogout(this.gameMode, this.player);
          this.gameMode = null;
          this.narrator.clear();
@@ -397,19 +400,18 @@
      public EntityModelSet getEntityModels() {
          return this.entityModels;
      }
-@@ -2868,6 +_,15 @@
+@@ -2868,6 +_,14 @@
      @Nullable
      public static String getLauncherBrand() {
          return System.getProperty("minecraft.launcher.brand");
 +    }
 +
 +    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
-+        return moddedFlagManager;
-+    }
-+
-+    private void syncFlag(net.neoforged.neoforge.flag.Flag flag, boolean enabled) {
++        if(clientModdedFlagManager != null)
++            return clientModdedFlagManager;
 +        if(singleplayerServer != null)
-+            moddedFlagManager.saveToLevel(singleplayerServer.overworld());
++            return singleplayerServer.getModdedFlagManager();
++        return net.neoforged.neoforge.flag.FlagManager.NULL;
      }
  
      @OnlyIn(Dist.CLIENT)

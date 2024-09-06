@@ -142,3 +142,12 @@
                  }
              };
              thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
+@@ -302,7 +_,7 @@
+             worlddataconfiguration = worlddataconfiguration1;
+         } else {
+             flag = true;
+-            worlddataconfiguration = new WorldDataConfiguration(p_248563_.initialDataPackConfiguration, FeatureFlags.DEFAULT_FLAGS);
++            worlddataconfiguration = new WorldDataConfiguration(p_248563_.initialDataPackConfiguration, FeatureFlags.DEFAULT_FLAGS, java.util.Collections.emptySet());
+         }
+ 
+         WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(p_251069_, worlddataconfiguration, p_249093_, flag);

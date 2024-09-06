@@ -1,0 +1,38 @@
+--- a/net/minecraft/world/level/WorldDataConfiguration.java
++++ b/net/minecraft/world/level/WorldDataConfiguration.java
+@@ -6,20 +_,31 @@
+ import net.minecraft.world.flag.FeatureFlagSet;
+ import net.minecraft.world.flag.FeatureFlags;
+ 
+-public record WorldDataConfiguration(DataPackConfig dataPacks, FeatureFlagSet enabledFeatures) {
++public record WorldDataConfiguration(DataPackConfig dataPacks, FeatureFlagSet enabledFeatures, java.util.Set<net.neoforged.neoforge.flag.Flag> enabledModdedFeatures) {
+     public static final String ENABLED_FEATURES_ID = "enabled_features";
+     public static final Codec<WorldDataConfiguration> CODEC = RecordCodecBuilder.create(
+         p_337972_ -> p_337972_.group(
+                     DataPackConfig.CODEC.lenientOptionalFieldOf("DataPacks", DataPackConfig.DEFAULT).forGetter(WorldDataConfiguration::dataPacks),
+                     FeatureFlags.CODEC
+                         .lenientOptionalFieldOf("enabled_features", FeatureFlags.DEFAULT_FLAGS)
+-                        .forGetter(WorldDataConfiguration::enabledFeatures)
++                        .forGetter(WorldDataConfiguration::enabledFeatures),
++                    net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.flag.Flag.CODEC)
++                            .lenientOptionalFieldOf("enabled_modded_features", java.util.Collections.emptySet())
++                            .forGetter(WorldDataConfiguration::enabledModdedFeatures)
+                 )
+                 .apply(p_337972_, WorldDataConfiguration::new)
+     );
+-    public static final WorldDataConfiguration DEFAULT = new WorldDataConfiguration(DataPackConfig.DEFAULT, FeatureFlags.DEFAULT_FLAGS);
++    public static final WorldDataConfiguration DEFAULT = new WorldDataConfiguration(DataPackConfig.DEFAULT, FeatureFlags.DEFAULT_FLAGS, java.util.Collections.emptySet());
+ 
+     public WorldDataConfiguration expandFeatures(FeatureFlagSet p_249090_) {
+-        return new WorldDataConfiguration(this.dataPacks, this.enabledFeatures.join(p_249090_));
++        return new WorldDataConfiguration(this.dataPacks, this.enabledFeatures.join(p_249090_), this.enabledModdedFeatures);
++    }
++
++    /**
++     * @deprecated Prefer to use {@link #WorldDataConfiguration(DataPackConfig, FeatureFlagSet, java.util.Set)} instead.
++     */
++    @Deprecated
++    public WorldDataConfiguration(DataPackConfig dataPacks, FeatureFlagSet enabledFeatures) {
++        this(dataPacks, enabledFeatures, java.util.Collections.emptySet());
+     }
+ }

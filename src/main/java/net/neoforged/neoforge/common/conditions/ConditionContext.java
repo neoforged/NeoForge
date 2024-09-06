@@ -9,11 +9,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagManager;
+import net.neoforged.neoforge.flag.Flag;
+import net.neoforged.neoforge.flag.FlagManager;
 import org.jetbrains.annotations.Nullable;
 
 public class ConditionContext implements ICondition.IContext {
@@ -21,9 +24,11 @@ public class ConditionContext implements ICondition.IContext {
     @Nullable
     // TODO 1.20.5: Clear loaded tags after reloads complete. The context object may leak, but we still want to invalidate it.
     private Map<ResourceKey<?>, Map<ResourceLocation, Collection<Holder<?>>>> loadedTags = null;
+    private final FlagManager flagManager;
 
-    public ConditionContext(TagManager tagManager) {
+    public ConditionContext(TagManager tagManager, Set<Flag> enabledModdedFlags) {
         this.tagManager = tagManager;
+        flagManager = FlagManager.createDummy(enabledModdedFlags);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -40,5 +45,10 @@ public class ConditionContext implements ICondition.IContext {
             }
         }
         return (Map) loadedTags.getOrDefault(registry, Collections.emptyMap());
+    }
+
+    @Override
+    public FlagManager getModdedFlagManager() {
+        return flagManager;
     }
 }

@@ -59,9 +59,6 @@ public class ClientNeoForgeMod {
                     spec.resetCaches(ModConfigSpec.RestartType.WORLD);
                 }
             });
-
-            // reset flags when disconnecting from server
-            Minecraft.getInstance().getModdedFlagManager().reset();
         });
     }
 

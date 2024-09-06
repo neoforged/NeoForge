@@ -1,11 +1,20 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
+@@ -40,7 +_,7 @@
+     private final ServerAdvancementManager advancements;
+     private final ServerFunctionLibrary functionLibrary;
+ 
+-    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
++    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_, java.util.Set<net.neoforged.neoforge.flag.Flag> enabledModdedFlags) {
+         this.fullRegistryHolder = new ReloadableServerRegistries.Holder(p_206857_);
+         this.registryLookup = new ReloadableServerResources.ConfigurableRegistryLookup(p_206857_);
+         this.registryLookup.missingTagAccessPolicy(ReloadableServerResources.MissingTagAccessPolicy.CREATE_NEW);
 @@ -49,6 +_,8 @@
          this.commands = new Commands(p_206858_, CommandBuildContext.simple(this.registryLookup, p_250695_));
          this.advancements = new ServerAdvancementManager(this.registryLookup);
          this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
 +        // Neo: Create context object
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager);
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager, enabledModdedFlags);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
@@ -34,9 +43,20 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -90,14 +_,27 @@
+@@ -82,31 +_,62 @@
+         Commands.CommandSelection p_249301_,
+         int p_251126_,
+         Executor p_249136_,
+-        Executor p_249601_
++        Executor p_249601_,
++        java.util.Set<net.neoforged.neoforge.flag.Flag> enabledModdedFlags
+     ) {
+         return ReloadableServerRegistries.reload(p_335667_, p_248588_, p_249136_)
+             .thenCompose(
+                 p_335211_ -> {
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
-                         p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
+-                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
++                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_, enabledModdedFlags
                      );
 +                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
 +                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
@@ -63,7 +83,25 @@
                          .thenApply(p_214306_ -> reloadableserverresources);
                  }
              );
-@@ -107,6 +_,7 @@
+     }
+ 
++    /**
++     * @deprecated Prefer to use {@link #loadResources(ResourceManager, LayeredRegistryAccess, FeatureFlagSet, Commands.CommandSelection, int, Executor, Executor, java.util.Set)}.
++     */
++    @Deprecated
++    public static CompletableFuture<ReloadableServerResources> loadResources(
++            ResourceManager p_248588_,
++            LayeredRegistryAccess<RegistryLayer> p_335667_,
++            FeatureFlagSet p_250212_,
++            Commands.CommandSelection p_249301_,
++            int p_251126_,
++            Executor p_249136_,
++            Executor p_249601_
++    ) {
++        return loadResources(p_248588_, p_335667_, p_250212_, p_249301_, p_251126_, p_249136_, p_249601_, java.util.Collections.emptySet());
++    }
++
+     public void updateRegistryTags() {
          this.tagManager.getResult().forEach(p_335204_ -> updateRegistryTags(this.fullRegistryHolder.get(), (TagManager.LoadResult<?>)p_335204_));
          AbstractFurnaceBlockEntity.invalidateCache();
          Blocks.rebuildCache();

@@ -19,12 +19,21 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, worlddata);
+@@ -358,7 +_,7 @@
+         List<String> list = ImmutableList.copyOf(p_270299_.getSelectedIds());
+         List<String> list1 = p_270299_.getAvailableIds().stream().filter(p_232927_ -> !list.contains(p_232927_)).collect(ImmutableList.toImmutableList());
+         WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(
+-            new DataPackConfig(list, list1), this.uiState.getSettings().dataConfiguration().enabledFeatures()
++            new DataPackConfig(list, list1), this.uiState.getSettings().dataConfiguration().enabledFeatures(), this.uiState.getSettings().dataConfiguration().enabledModdedFeatures()
+         );
+         if (this.uiState.tryUpdateDataConfiguration(worlddataconfiguration)) {
+             this.minecraft.setScreen(this);
 @@ -428,7 +_,7 @@
                                          if (p_269627_) {
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
 -                                            p_270552_.accept(WorldDataConfiguration.DEFAULT);
-+                                            p_270552_.accept(new WorldDataConfiguration(new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()), FeatureFlags.VANILLA_SET)); // FORGE: Revert to *actual* vanilla data
++                                            p_270552_.accept(new WorldDataConfiguration(new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()), FeatureFlags.VANILLA_SET, java.util.Collections.emptySet())); // FORGE: Revert to *actual* vanilla data
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common;
 
-import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -83,7 +82,6 @@ import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
-import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
@@ -126,7 +124,6 @@ import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
@@ -486,14 +483,6 @@ public class NeoForgeMod {
     public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("milk"));
     public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_milk"));
 
-    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, NeoForgeVersion.MOD_ID);
-    /**
-     * {@link AttachmentType} used when save/saving {@link Flag flags} to/from level data.
-     */
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Set<Flag>>> LEVEL_FLAGS = ATTACHMENT_TYPES.register("modded_feature_flags", () -> AttachmentType.<Set<Flag>>builder(() -> Sets.newHashSet())
-            .serialize(NeoForgeExtraCodecs.setOf(Flag.CODEC))
-            .build());
-
     /**
      * Used in place of {@link DamageSources#magic()} for damage dealt by {@link MobEffects#POISON}.
      * <p>
@@ -556,7 +545,6 @@ public class NeoForgeMod {
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
-        ATTACHMENT_TYPES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         container.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         container.registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);

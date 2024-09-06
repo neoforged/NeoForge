@@ -9,3 +9,13 @@
              );
              RegistryAccess.Frozen registryaccess$frozen = layeredregistryaccess1.getAccessForLoading(RegistryLayer.DIMENSIONS);
              RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(
+@@ -53,7 +_,8 @@
+                     p_214363_.commandSelection(),
+                     p_214363_.functionCompilationLevel(),
+                     p_214366_,
+-                    p_214367_
++                    p_214367_,
++                    worlddataconfiguration.enabledModdedFeatures()
+                 )
+                 .whenComplete((p_214370_, p_214371_) -> {
+                     if (p_214371_ != null) {

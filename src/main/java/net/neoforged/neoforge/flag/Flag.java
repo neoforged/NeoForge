@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -95,8 +96,8 @@ public final class Flag {
      *
      * @return immutable collection of all known {@link Flag flags}.
      */
-    public static Collection<Flag> getFlags() {
-        return FLAGS_VIEW;
+    public static Set<Flag> getFlags() {
+        return Set.copyOf(FLAGS_VIEW);
     }
 
     /**
