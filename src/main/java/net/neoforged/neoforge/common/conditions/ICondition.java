@@ -27,6 +27,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
+import net.neoforged.neoforge.flag.Flag;
 import net.neoforged.neoforge.flag.FlagManager;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -109,6 +110,9 @@ public interface ICondition {
          */
         <T> Map<ResourceLocation, Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> registry);
 
+        /**
+         * @return {@link FlagManager} instance used to lookup {@link Flag} states.
+         */
         default FlagManager getModdedFlagManager() {
             return FlagManager.NULL;
         }
