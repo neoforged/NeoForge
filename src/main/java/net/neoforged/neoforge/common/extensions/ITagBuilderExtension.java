@@ -67,7 +67,7 @@ public interface ITagBuilderExtension {
     /**
      * Adds a tag to the remove list.
      *
-     * @param tagID  The ID of the tag to add to the remove list
+     * @param tagID The ID of the tag to add to the remove list
      * @return The builder for chaining purposes
      */
     default TagBuilder removeTag(final ResourceLocation tagID) {
