@@ -55,10 +55,6 @@ minecraft {
     }
 }
 
-runs.configureEach { run ->
-    run.modSource project(":neoforge-coremods").sourceSets.main
-}
-
 tasks.configureEach { tsk ->
     if (tsk.name == 'neoFormApplyUserAccessTransformer' && project.hasProperty('validateAccessTransformers')) {
         tsk.inputs.property('validation', 'error')
