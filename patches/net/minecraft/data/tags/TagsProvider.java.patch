@@ -108,7 +108,7 @@
          return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
      }
  
-@@ -127,11 +_,18 @@
+@@ -127,11 +_,19 @@
          });
      }
  
@@ -121,7 +121,8 @@
 +        }
 +
 +        private final String modId;
-+        // Neo: Add constructor overload with mod ID parameter, for logging
++        /** @deprecated Neo: The additional mod ID parameter is unused; use the one-parameter constructor instead. */
++        @Deprecated(forRemoval = true, since = "1.21.1")
 +        protected TagAppender(TagBuilder p_256426_, String modId) {
              this.builder = p_256426_;
 +            this.modId = modId;
