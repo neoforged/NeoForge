@@ -54,7 +54,7 @@ public interface ITagAppenderExtension<T> {
      */
     default TagsProvider.TagAppender<T> remove(final ResourceLocation location) {
         TagsProvider.TagAppender<T> builder = self();
-        builder.getInternalBuilder().removeElement(location, builder.getModID());
+        builder.getInternalBuilder().removeElement(location);
         return builder;
     }
 
@@ -106,7 +106,7 @@ public interface ITagAppenderExtension<T> {
      */
     default TagsProvider.TagAppender<T> remove(TagKey<T> tag) {
         TagsProvider.TagAppender<T> builder = self();
-        builder.getInternalBuilder().removeTag(tag.location(), builder.getModID());
+        builder.getInternalBuilder().removeTag(tag.location());
         return builder;
     }
 
