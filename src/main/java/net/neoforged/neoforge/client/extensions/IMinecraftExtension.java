@@ -9,9 +9,6 @@ import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.common.extensions.ILevelReaderExtension;
-import net.neoforged.neoforge.flag.FlagManager;
-import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * Extension interface for {@link Minecraft}.
@@ -43,17 +40,5 @@ public interface IMinecraftExtension {
      */
     default Locale getLocale() {
         return self().getLanguageManager().getJavaLocale();
-    }
-
-    /**
-     * Returns the clients {@link FlagManager}.
-     * <p>
-     * This instance should receive updates from the server as needed.
-     * Prefer using {@link ILevelReaderExtension#getModdedFlagManager()} where possible.
-     *
-     * @return client sided {@link FlagManager}.
-     */
-    default FlagManager getModdedFlagManager() {
-        throw new NotImplementedException("IMinecraftExtension#getModdedFlagManager must be implemented to lookup the clients FlagManager");
     }
 }

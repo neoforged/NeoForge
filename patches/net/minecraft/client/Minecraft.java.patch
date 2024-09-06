@@ -397,13 +397,12 @@
      public EntityModelSet getEntityModels() {
          return this.entityModels;
      }
-@@ -2868,6 +_,16 @@
+@@ -2868,6 +_,15 @@
      @Nullable
      public static String getLauncherBrand() {
          return System.getProperty("minecraft.launcher.brand");
 +    }
 +
-+    @Override
 +    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
 +        return moddedFlagManager;
 +    }
