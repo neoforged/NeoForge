@@ -41,11 +41,10 @@ public interface FlagCommand {
         var knownFlags = Flag.getFlags();
         var enabledFlags = flagManager.getEnabledFlags();
         var disabledFlags = Sets.difference(knownFlags, enabledFlags);
-        // TODO: localize these
         var enabledFlagsStr = enabledFlags.stream().map(Flag::toStringShort).collect(Collectors.joining(", ", "[", "]"));
         var disabledFlagsStr = disabledFlags.stream().map(Flag::toStringShort).collect(Collectors.joining(", ", "[", "]"));
-        src.sendSuccess(() -> Component.literal("Enabled Flags: ").append(enabledFlagsStr), false);
-        src.sendSuccess(() -> Component.literal("Disabled Flags: ").append(disabledFlagsStr), false);
+        src.sendSuccess(() -> Component.translatable("commands.neoforge.flag.list_enabled", enabledFlagsStr), false);
+        src.sendSuccess(() -> Component.translatable("commands.neoforge.flag.list_disabled", disabledFlagsStr), false);
         return SINGLE_SUCCESS;
     }
 
@@ -65,21 +64,20 @@ public interface FlagCommand {
         var flag = Flag.of(ResourceLocationArgument.getId(context, "flag"));
         var src = context.getSource();
         var flagManager = src.getServer().getModdedFlagManager();
-        // TODO: localize these
-        var stateName = Component.literal(state ? "Enabled" : "Disabled");
+        var stateKey = state ? "enabled" : "disabled";
         var changed = flagManager.set(flag, state);
 
         src.sendSuccess(() -> {
             if (changed) {
-                return stateName.append(" Flag: ").append(flag.toStringShort()).withStyle(style -> {
-                    var notice = Component.literal("Note: A '/reload' may also be required for any flagged datapack entries to be reloaded correctly\nClick to run command");
+                return Component.translatable("commands.neoforge.flag." + stateKey, flag.toStringShort()).withStyle(style -> {
+                    var notice = Component.translatable("commands.neoforge.flag.notice");
                     var hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, notice);
                     var clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/reload");
                     return style.withHoverEvent(hoverEvent).withClickEvent(clickEvent);
                 });
             }
 
-            return Component.literal("Flag ").append(flag.toStringShort()).append(" is already ").append(stateName);
+            return Component.translatable("commands.neoforge.flag.already_" + stateKey, flag.toStringShort());
         }, false);
 
         return SINGLE_SUCCESS;
