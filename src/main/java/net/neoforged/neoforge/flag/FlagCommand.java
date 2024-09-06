@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -68,10 +70,16 @@ public interface FlagCommand {
         var changed = flagManager.set(flag, state);
 
         src.sendSuccess(() -> {
-            if (changed)
-                return stateName.append(" Flag: ").append(flag.toStringShort());
-            else
-                return Component.literal("Flag ").append(flag.toStringShort()).append(" is already ").append(stateName);
+            if (changed) {
+                return stateName.append(" Flag: ").append(flag.toStringShort()).withStyle(style -> {
+                    var notice = Component.literal("Note: A '/reload' may also be required for any flagged datapack entries to be reloaded correctly\nClick to run command");
+                    var hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, notice);
+                    var clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/reload");
+                    return style.withHoverEvent(hoverEvent).withClickEvent(clickEvent);
+                });
+            }
+
+            return Component.literal("Flag ").append(flag.toStringShort()).append(" is already ").append(stateName);
         }, false);
 
         return SINGLE_SUCCESS;
