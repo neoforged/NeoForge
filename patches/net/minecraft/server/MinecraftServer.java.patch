@@ -220,7 +220,7 @@
          );
 +        // Neo: Append modded feature flags to crash reports
 +        p_177936_.setDetail(
-+                "Enabled Feature Flages (Modded)",
++                "Enabled Feature Flags (Modded)",
 +                () -> getModdedFlagManager().enabledFlags().map(net.neoforged.neoforge.flag.Flag::toStringShort).collect(Collectors.joining(", "))
 +        );
          p_177936_.setDetail("World Generation", () -> this.worldData.worldGenSettingsLifecycle().toString());
