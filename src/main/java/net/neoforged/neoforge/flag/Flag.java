@@ -54,8 +54,8 @@ public final class Flag {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj instanceof Flag other)
-            return identifier.equals(other.identifier);
+        if (obj.getClass() == Flag.class)
+            return identifier.equals(((Flag) obj).identifier);
         return false;
     }
 

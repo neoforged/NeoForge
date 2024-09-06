@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.flag;
 
 import io.netty.util.internal.UnstableApi;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.ApiStatus;
  * This class is mostly used for internal usages but modders are welcome to make use of {@link #isEnabled(Flag)} and its variants where needed.
  */
 public final class FlagManager {
-    private final Object2BooleanMap<Flag> flags = new Object2BooleanOpenHashMap<>();
+    private final Reference2BooleanMap<Flag> flags = new Reference2BooleanOpenHashMap<>();
     private final Collection<Flag> flagsView = Collections.unmodifiableCollection(flags.keySet());
 
     private final ChangeListener listener;
