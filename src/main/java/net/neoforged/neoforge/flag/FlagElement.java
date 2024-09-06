@@ -10,6 +10,7 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.flag.FeatureElement;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -30,6 +31,10 @@ public interface FlagElement {
      */
     @ApiStatus.NonExtendable
     default boolean isEnabled() {
+        // all flags are enabled during data gen
+        if (DatagenModLoader.isRunningDataGen())
+            return true;
+
         return activeFlagManager().isEnabled(requiredFlags());
     }
 
