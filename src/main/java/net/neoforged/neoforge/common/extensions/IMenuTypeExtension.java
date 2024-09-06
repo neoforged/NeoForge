@@ -18,5 +18,9 @@ public interface IMenuTypeExtension<T> {
         return new MenuType<>(factory, FeatureFlags.DEFAULT_FLAGS, requiredFlags);
     }
 
+    static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory) {
+        return create(factory, new Flag[0]);
+    }
+
     T create(int windowId, Inventory playerInv, RegistryFriendlyByteBuf extraData);
 }

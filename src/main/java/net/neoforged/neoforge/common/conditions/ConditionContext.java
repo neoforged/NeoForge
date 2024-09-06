@@ -31,6 +31,13 @@ public class ConditionContext implements ICondition.IContext {
         flagManager = FlagManager.createDummy(enabledModdedFlags);
     }
 
+    // TODO: Remove in 21.2
+    @Deprecated(forRemoval = true, since = "21.1")
+    public ConditionContext(TagManager tagManager) {
+        this.tagManager = tagManager;
+        flagManager = FlagManager.NULL;
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <T> Map<ResourceLocation, Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> registry) {
