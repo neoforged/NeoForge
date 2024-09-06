@@ -115,19 +115,16 @@
 -    public static class TagAppender<T> {
 +    public static class TagAppender<T> implements net.neoforged.neoforge.common.extensions.ITagAppenderExtension<T> {
          private final TagBuilder builder;
--
--        protected TagAppender(TagBuilder p_256426_) {
--            this.builder = p_256426_;
-+        private final String modId;
-+
-+        // Neo: Add constructor overload with mod ID parameter, for logging
-+        protected TagAppender(TagBuilder p_236454_, String modId) {
-+            this.builder = p_236454_;
-+            this.modId = modId;
+ 
+         protected TagAppender(TagBuilder p_256426_) {
++            this(p_256426_, "<unknown>");
 +        }
 +
-+        protected TagAppender(TagBuilder p_236454_) {
-+            this(p_236454_, "<unknown>");
++        private final String modId;
++        // Neo: Add constructor overload with mod ID parameter, for logging
++        protected TagAppender(TagBuilder p_256426_, String modId) {
+             this.builder = p_256426_;
++            this.modId = modId;
          }
  
          public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
