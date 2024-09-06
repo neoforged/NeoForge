@@ -10,6 +10,7 @@ import net.minecraft.tags.TagBuilder;
 import net.minecraft.tags.TagEntry;
 
 public interface ITagBuilderExtension {
+    // TODO: In 1.21.1, rename this to self() and mark as private
     default TagBuilder getRawBuilder() {
         return (TagBuilder) this;
     }
