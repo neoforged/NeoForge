@@ -108,20 +108,26 @@
          return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
      }
  
-@@ -127,11 +_,13 @@
+@@ -127,11 +_,18 @@
          });
      }
  
 -    public static class TagAppender<T> {
 +    public static class TagAppender<T> implements net.neoforged.neoforge.common.extensions.ITagAppenderExtension<T> {
          private final TagBuilder builder;
-+        private final String modId;
- 
+-
 -        protected TagAppender(TagBuilder p_256426_) {
 -            this.builder = p_256426_;
++        private final String modId;
++
++        // Neo: Add constructor overload with mod ID parameter, for logging
 +        protected TagAppender(TagBuilder p_236454_, String modId) {
 +            this.builder = p_236454_;
 +            this.modId = modId;
++        }
++
++        protected TagAppender(TagBuilder p_236454_) {
++            this(p_236454_, "<unknown>");
          }
  
          public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
