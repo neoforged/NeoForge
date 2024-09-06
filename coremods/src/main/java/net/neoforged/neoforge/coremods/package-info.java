@@ -7,6 +7,5 @@
 @ApiStatus.Internal
 package net.neoforged.neoforge.coremods;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.ApiStatus;
