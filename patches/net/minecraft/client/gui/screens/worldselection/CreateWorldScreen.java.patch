@@ -8,6 +8,15 @@
          WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
          CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
              worldloader$initconfig,
+@@ -219,7 +_,7 @@
+         WorldDimensions.Complete worlddimensions$complete = worldcreationcontext.selectedDimensions().bake(worldcreationcontext.datapackDimensions());
+         LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = worldcreationcontext.worldgenRegistries()
+             .replaceFrom(RegistryLayer.DIMENSIONS, worlddimensions$complete.dimensionsRegistryAccess());
+-        Lifecycle lifecycle = FeatureFlags.isExperimental(worldcreationcontext.dataConfiguration().enabledFeatures())
++        Lifecycle lifecycle = FeatureFlags.isExperimental(worldcreationcontext.dataConfiguration().enabledFeatures()) || !worldcreationcontext.dataConfiguration().enabledModdedFeatures().isEmpty()
+             ? Lifecycle.experimental()
+             : Lifecycle.stable();
+         Lifecycle lifecycle1 = layeredregistryaccess.compositeAccess().allRegistriesLifecycle();
 @@ -243,6 +_,10 @@
              WorldCreationContext worldcreationcontext = this.uiState.getSettings();
              LevelSettings levelsettings = this.createLevelSettings(flag);
@@ -19,7 +28,7 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, worlddata);
-@@ -358,7 +_,7 @@
+@@ -358,13 +_,13 @@
          List<String> list = ImmutableList.copyOf(p_270299_.getSelectedIds());
          List<String> list1 = p_270299_.getAvailableIds().stream().filter(p_232927_ -> !list.contains(p_232927_)).collect(ImmutableList.toImmutableList());
          WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(
@@ -28,6 +37,13 @@
          );
          if (this.uiState.tryUpdateDataConfiguration(worlddataconfiguration)) {
              this.minecraft.setScreen(this);
+         } else {
+             FeatureFlagSet featureflagset = p_270299_.getRequestedFeatureFlags();
+-            if (FeatureFlags.isExperimental(featureflagset) && p_270896_) {
++            if ((FeatureFlags.isExperimental(featureflagset) || !worlddataconfiguration.enabledModdedFeatures().isEmpty()) && p_270896_) {
+                 this.minecraft.setScreen(new ConfirmExperimentalFeaturesScreen(p_270299_.getSelectedPacks(), p_269635_ -> {
+                     if (p_269635_) {
+                         this.applyNewPackConfig(p_270299_, worlddataconfiguration, p_270760_);
 @@ -428,7 +_,7 @@
                                          if (p_269627_) {
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());

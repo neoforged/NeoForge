@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
+@@ -287,7 +_,7 @@
+             WorldDataConfiguration worlddataconfiguration = readDataConfig(p_307300_);
+             LevelSettings levelsettings = LevelSettings.parse(p_307300_, worlddataconfiguration);
+             FeatureFlagSet featureflagset = parseFeatureFlagsFromSummary(p_307300_);
+-            boolean flag1 = FeatureFlags.isExperimental(featureflagset);
++            boolean flag1 = FeatureFlags.isExperimental(featureflagset) || !worlddataconfiguration.enabledModdedFeatures().isEmpty();
+             return new LevelSummary(levelsettings, levelversion, p_307426_.directoryName(), flag, p_307364_, flag1, path);
+         }
+     }
 @@ -463,6 +_,18 @@
              }
          }
