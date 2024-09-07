@@ -19,7 +19,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public sealed interface FlagManager permits ImmutableFlagManager, EmptyFlagManager, ServerFlagManager {
     /**
-     * Null instance to be used when no other can be found.
+     * Empty instance to be used when no other can be found.
      */
     FlagManager EMPTY = new EmptyFlagManager();
 
