@@ -129,7 +129,7 @@
          }
  
          public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
-@@ -169,6 +_,19 @@
+@@ -169,6 +_,22 @@
          public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation p_176842_) {
              this.builder.addOptionalTag(p_176842_);
              return this;
@@ -140,10 +140,13 @@
 +             return this;
 +        }
 +
++        // TODO: In 1.21.2, mark this as @ApiStatus.Internal
 +        public TagBuilder getInternalBuilder() {
 +             return builder;
 +        }
 +
++        /** @deprecated Neo: Avoid using this method to get the mod ID, as this method will be removed in 1.21.2. */
++        @Deprecated(forRemoval = true, since = "1.21.1")
 +        public String getModID() {
 +             return modId;
          }
