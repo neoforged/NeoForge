@@ -16,6 +16,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.ClickEvent;
@@ -23,10 +24,25 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Command used for easy {@link Flag} manipulation.
+ * <p>
+ * This command requires permission level: {@link Commands#LEVEL_ADMINS}.
+ *
+ * <ul>
+ * <li>{@code /neoforge flags list} - Lists out all Enabled and Disabled {@link Flag Flags}</li>
+ * <li>{@code /neoforge flags enabled} - Lists out all Enabled {@link Flag Flags}</li>
+ * <li>{@code /neoforge flags disabled} - Lists out all Disabled {@link Flag Flags}</li>
+ * <li>{@code /neoforge flags set <flag> enabled} - Attempts to Enable the given {@link Flag}</li>
+ * <li>{@code /neoforge flags set <flag> disabled} - Attempts to Disable the given {@link Flag}</li>
+ * </ul>
+ * <em>Note:</em> Replace {@code <flag>} with any valid {@link Flag} identifier
+ */
 @ApiStatus.Internal
 public interface FlagsCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return literal("flags")
+                .requires(src -> src.hasPermission(Commands.LEVEL_ADMINS))
                 .then(literal("list").executes(context -> {
                     listFlagsFor(context, true);
                     listFlagsFor(context, false);
