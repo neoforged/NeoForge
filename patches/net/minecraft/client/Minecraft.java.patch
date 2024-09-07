@@ -411,7 +411,7 @@
 +            return clientModdedFlagManager;
 +        if(singleplayerServer != null)
 +            return singleplayerServer.getModdedFlagManager();
-+        return net.neoforged.neoforge.flag.FlagManager.NULL;
++        return net.neoforged.neoforge.flag.FlagManager.EMPTY;
      }
  
      @OnlyIn(Dist.CLIENT)

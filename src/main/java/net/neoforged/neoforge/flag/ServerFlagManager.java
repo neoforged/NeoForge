@@ -15,7 +15,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class ServerFlagManager implements FlagManager {
     private final ReferenceSet<Flag> enabledFlags = new ReferenceOpenHashSet<>();
-    private final Set<Flag> enabledFlagsView = ReferenceSets.unmodifiable(enabledFlags);
 
     private final MinecraftServer server;
 
@@ -33,7 +32,7 @@ public final class ServerFlagManager implements FlagManager {
 
         // update backing config file
         // will be saved to disk later during autosave/server shutdown
-        data.setDataConfiguration(new WorldDataConfiguration(config.dataPacks(), config.enabledFeatures(), enabledFlagsView));
+        data.setDataConfiguration(new WorldDataConfiguration(config.dataPacks(), config.enabledFeatures(), enabledFlags));
     }
 
     @Override
@@ -48,6 +47,6 @@ public final class ServerFlagManager implements FlagManager {
 
     @Override
     public Set<Flag> getEnabledFlags() {
-        return enabledFlagsView;
+        return ReferenceSets.unmodifiable(enabledFlags);
     }
 }

@@ -5,15 +5,10 @@
 
 package net.neoforged.neoforge.flag;
 
+import java.util.Collections;
 import java.util.Set;
 
-final class DummyFlagManager implements FlagManager {
-    private final Set<Flag> enabledFlags;
-
-    public DummyFlagManager(Set<Flag> enabledFlags) {
-        this.enabledFlags = Set.copyOf(enabledFlags);
-    }
-
+final class EmptyFlagManager implements FlagManager {
     @Override
     public boolean set(Flag flag, boolean state) {
         return false;
@@ -21,6 +16,6 @@ final class DummyFlagManager implements FlagManager {
 
     @Override
     public Set<Flag> getEnabledFlags() {
-        return enabledFlags;
+        return Collections.emptySet();
     }
 }

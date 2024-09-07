@@ -223,8 +223,8 @@
          );
 +        // Neo: Append modded feature flags to crash reports
 +        p_177936_.setDetail(
-+                "Enabled Feature Flags (Modded)",
-+                () -> getModdedFlagManager().enabledFlags().map(net.neoforged.neoforge.flag.Flag::toStringShort).collect(Collectors.joining(", "))
++                "Enabled Mod Features",
++                () -> moddedFlagManager.enabledFlags().map(net.neoforged.neoforge.flag.Flag::toStringShort).collect(Collectors.joining(", "))
 +        );
          p_177936_.setDetail("World Generation", () -> this.worldData.worldGenSettingsLifecycle().toString());
          p_177936_.setDetail("World Seed", () -> String.valueOf(this.worldData.worldGenOptions().seed()));
@@ -238,16 +238,14 @@
                  this
              )
              .thenCompose(
-@@ -1454,7 +_,8 @@
+@@ -1451,6 +_,7 @@
+                             closeableresourcemanager,
+                             this.registries,
+                             this.worldData.enabledFeatures(),
++                            this.moddedFlagManager,
                              this.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED,
                              this.getFunctionCompilationLevel(),
                              this.executor,
--                            this
-+                            this,
-+                            this.worldData.getDataConfiguration().enabledModdedFeatures()
-                         )
-                         .whenComplete((p_212907_, p_212908_) -> {
-                             if (p_212908_ != null) {
 @@ -1470,7 +_,7 @@
                      this.resources = p_335203_;
                      this.packRepository.setSelected(p_129862_);

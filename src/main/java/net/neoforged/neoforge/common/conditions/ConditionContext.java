@@ -26,16 +26,15 @@ public class ConditionContext implements ICondition.IContext {
     private Map<ResourceKey<?>, Map<ResourceLocation, Collection<Holder<?>>>> loadedTags = null;
     private final FlagManager flagManager;
 
-    public ConditionContext(TagManager tagManager, Set<Flag> enabledModdedFlags) {
+    public ConditionContext(TagManager tagManager, FlagManager flagManager) {
         this.tagManager = tagManager;
-        flagManager = FlagManager.createDummy(enabledModdedFlags);
+        this.flagManager = flagManager;
     }
 
     // TODO: Remove in 21.2
     @Deprecated(forRemoval = true, since = "21.1")
     public ConditionContext(TagManager tagManager) {
-        this.tagManager = tagManager;
-        flagManager = FlagManager.NULL;
+        this(tagManager, FlagManager.EMPTY);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

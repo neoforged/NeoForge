@@ -26,16 +26,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import org.jetbrains.annotations.ApiStatus;
 
+// TODO: Completely overhaul to match monicas request
 @ApiStatus.Internal
-public interface FlagCommand {
+public interface FlagsCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
-        return literal("flag")
-                .executes(FlagCommand::listCommands)
+        return literal("flags")
+                .executes(FlagsCommand::listFlags)
                 .then(stateSubCommand(true))
                 .then(stateSubCommand(false));
     }
 
-    private static int listCommands(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int listFlags(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         var src = context.getSource();
         var flagManager = src.getServer().getModdedFlagManager();
         var knownFlags = Flag.getFlags();
@@ -43,15 +44,15 @@ public interface FlagCommand {
         var disabledFlags = Sets.difference(knownFlags, enabledFlags);
         var enabledFlagsStr = enabledFlags.stream().map(Flag::toStringShort).collect(Collectors.joining(", ", "[", "]"));
         var disabledFlagsStr = disabledFlags.stream().map(Flag::toStringShort).collect(Collectors.joining(", ", "[", "]"));
-        src.sendSuccess(() -> Component.translatable("commands.neoforge.flag.list_enabled", enabledFlagsStr), false);
-        src.sendSuccess(() -> Component.translatable("commands.neoforge.flag.list_disabled", disabledFlagsStr), false);
+        src.sendSuccess(() -> Component.translatable("commands.neoforge.flags.list_enabled", enabledFlagsStr), false);
+        src.sendSuccess(() -> Component.translatable("commands.neoforge.flags.list_disabled", disabledFlagsStr), false);
         return SINGLE_SUCCESS;
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> stateSubCommand(boolean state) {
         return literal(state ? "enable" : "disable")
                 .then(argument("flag", ResourceLocationArgument.id())
-                        .suggests(FlagCommand::suggestFlag)
+                        .suggests(FlagsCommand::suggestFlag)
                         .executes(ctx -> toggleFlag(ctx, state)));
     }
 
@@ -69,15 +70,15 @@ public interface FlagCommand {
 
         src.sendSuccess(() -> {
             if (changed) {
-                return Component.translatable("commands.neoforge.flag." + stateKey, flag.toStringShort()).withStyle(style -> {
-                    var notice = Component.translatable("commands.neoforge.flag.notice");
+                return Component.translatable("commands.neoforge.flags." + stateKey, flag.toStringShort()).withStyle(style -> {
+                    var notice = Component.translatable("commands.neoforge.flags.notice");
                     var hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, notice);
                     var clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/reload");
                     return style.withHoverEvent(hoverEvent).withClickEvent(clickEvent);
                 });
             }
 
-            return Component.translatable("commands.neoforge.flag.already_" + stateKey, flag.toStringShort());
+            return Component.translatable("commands.neoforge.flags.already_" + stateKey, flag.toStringShort());
         }, false);
 
         return SINGLE_SUCCESS;

@@ -51,6 +51,6 @@ public interface FlagElement {
         if (FMLEnvironment.dist.isClient())
             return Minecraft.getInstance().getModdedFlagManager();
 
-        return FlagManager.NULL;
+        return FlagManager.EMPTY;
     }
 }

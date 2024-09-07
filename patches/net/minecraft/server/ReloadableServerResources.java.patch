@@ -5,7 +5,7 @@
      private final ServerFunctionLibrary functionLibrary;
  
 -    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
-+    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_, java.util.Set<net.neoforged.neoforge.flag.Flag> enabledModdedFlags) {
++    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_, net.neoforged.neoforge.flag.FlagManager moddedFlagManager) {
          this.fullRegistryHolder = new ReloadableServerRegistries.Holder(p_206857_);
          this.registryLookup = new ReloadableServerResources.ConfigurableRegistryLookup(p_206857_);
          this.registryLookup.missingTagAccessPolicy(ReloadableServerResources.MissingTagAccessPolicy.CREATE_NEW);
@@ -14,11 +14,11 @@
          this.advancements = new ServerAdvancementManager(this.registryLookup);
          this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
 +        // Neo: Create context object
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager, enabledModdedFlags);
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager, moddedFlagManager);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -75,6 +_,24 @@
+@@ -75,10 +_,29 @@
          return List.of(this.tagManager, this.recipes, this.functionLibrary, this.advancements);
      }
  
@@ -43,20 +43,17 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -82,31 +_,62 @@
+         FeatureFlagSet p_250212_,
++        net.neoforged.neoforge.flag.FlagManager moddedFlagManager,
          Commands.CommandSelection p_249301_,
          int p_251126_,
          Executor p_249136_,
--        Executor p_249601_
-+        Executor p_249601_,
-+        java.util.Set<net.neoforged.neoforge.flag.Flag> enabledModdedFlags
-     ) {
-         return ReloadableServerRegistries.reload(p_335667_, p_248588_, p_249136_)
+@@ -88,25 +_,55 @@
              .thenCompose(
                  p_335211_ -> {
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
 -                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
-+                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_, enabledModdedFlags
++                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_, moddedFlagManager
                      );
 +                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
 +                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
@@ -86,7 +83,7 @@
      }
  
 +    /**
-+     * @deprecated Prefer to use {@link #loadResources(ResourceManager, LayeredRegistryAccess, FeatureFlagSet, Commands.CommandSelection, int, Executor, Executor, java.util.Set)}.
++     * @deprecated Prefer to use {@link #loadResources(ResourceManager, LayeredRegistryAccess, FeatureFlagSet, net.neoforged.neoforge.flag.FlagManager, Commands.CommandSelection, int, Executor, Executor)}.
 +     */
 +    @Deprecated
 +    public static CompletableFuture<ReloadableServerResources> loadResources(
@@ -98,7 +95,7 @@
 +            Executor p_249136_,
 +            Executor p_249601_
 +    ) {
-+        return loadResources(p_248588_, p_335667_, p_250212_, p_249301_, p_251126_, p_249136_, p_249601_, java.util.Collections.emptySet());
++        return loadResources(p_248588_, p_335667_, p_250212_, net.neoforged.neoforge.flag.FlagManager.EMPTY, p_249301_, p_251126_, p_249136_, p_249601_);
 +    }
 +
      public void updateRegistryTags() {

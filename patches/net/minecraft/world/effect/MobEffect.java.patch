@@ -9,12 +9,11 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
-@@ -48,6 +_,8 @@
+@@ -48,6 +_,7 @@
      private int blendDurationTicks;
      private Optional<SoundEvent> soundOnAdded = Optional.empty();
      private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
 +    private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
-+    private java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlagsView = it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
  
      protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
          this.category = p_19451_;
@@ -60,7 +59,7 @@
 +
 +    @Override
 +    public java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags() {
-+        return requiredFlagsView;
++        return it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
 +    }
 +
 +    /**

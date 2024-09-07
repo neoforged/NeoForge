@@ -114,7 +114,7 @@ public interface ICondition {
          * @return {@link FlagManager} instance used to lookup {@link Flag} states.
          */
         default FlagManager getModdedFlagManager() {
-            return FlagManager.NULL;
+            return FlagManager.EMPTY;
         }
     }
 }

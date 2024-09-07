@@ -16,11 +16,11 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * An instance of this can be looked up via {@link ILevelReaderExtension#getModdedFlagManager()}.
  */
-public sealed interface FlagManager permits DummyFlagManager, NullFlagManager, ServerFlagManager {
+public sealed interface FlagManager permits ImmutableFlagManager, EmptyFlagManager, ServerFlagManager {
     /**
      * Null instance to be used when no other can be found.
      */
-    FlagManager NULL = new NullFlagManager();
+    FlagManager EMPTY = new EmptyFlagManager();
 
     /**
      * Returns {@code true} if the given {@link Flag} is enabled, {@code false} otherwise.
@@ -107,7 +107,7 @@ public sealed interface FlagManager permits DummyFlagManager, NullFlagManager, S
      * @return Dummy {@link FlagManager} wrapping the provided {@link Set}.
      */
     @ApiStatus.Internal
-    static FlagManager createDummy(Set<Flag> enabledFlags) {
-        return new DummyFlagManager(enabledFlags);
+    static FlagManager createImmutable(Set<Flag> enabledFlags) {
+        return new ImmutableFlagManager(enabledFlags);
     }
 }

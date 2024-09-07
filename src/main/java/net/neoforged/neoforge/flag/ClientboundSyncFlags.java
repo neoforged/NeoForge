@@ -39,7 +39,7 @@ public final class ClientboundSyncFlags implements CustomPacketPayload {
             var client = Minecraft.getInstance();
 
             if (client.getSingleplayerServer() == null)
-                client.clientModdedFlagManager = FlagManager.createDummy(enabledFlags);
+                client.clientModdedFlagManager = FlagManager.createImmutable(enabledFlags);
         });
     }
 
