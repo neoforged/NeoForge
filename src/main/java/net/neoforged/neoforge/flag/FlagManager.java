@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.flag;
 
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -89,7 +90,7 @@ public sealed interface FlagManager permits ImmutableFlagManager, EmptyFlagManag
      *
      * @return Immutable collection containing all currently enabled {@link Flag Flags}.
      */
-    Set<Flag> getEnabledFlags();
+    ReferenceSet<Flag> getEnabledFlags();
 
     /**
      * Returns {@link Stream} representing all currently enabled {@link Flag Flags}.
@@ -107,7 +108,7 @@ public sealed interface FlagManager permits ImmutableFlagManager, EmptyFlagManag
      * @return Dummy {@link FlagManager} wrapping the provided {@link Set}.
      */
     @ApiStatus.Internal
-    static FlagManager createImmutable(Set<Flag> enabledFlags) {
+    static FlagManager createImmutable(ReferenceSet<Flag> enabledFlags) {
         return new ImmutableFlagManager(enabledFlags);
     }
 }

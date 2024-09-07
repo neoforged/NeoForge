@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.flag;
 
-import com.google.common.collect.Sets;
-import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -22,12 +22,12 @@ import org.jetbrains.annotations.ApiStatus;
 public final class ClientboundSyncFlags implements CustomPacketPayload {
     public static final Type<ClientboundSyncFlags> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "sync_flags"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundSyncFlags> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.collection(Sets::newHashSetWithExpectedSize, Flag.STREAM_CODEC), payload -> payload.enabledFlags,
+            ByteBufCodecs.collection(ReferenceOpenHashSet::new, Flag.STREAM_CODEC), payload -> payload.enabledFlags,
             ClientboundSyncFlags::new);
 
-    private final Set<Flag> enabledFlags;
+    private final ReferenceSet<Flag> enabledFlags;
 
-    public ClientboundSyncFlags(Set<Flag> enabledFlags) {
+    public ClientboundSyncFlags(ReferenceSet<Flag> enabledFlags) {
         this.enabledFlags = enabledFlags;
     }
 

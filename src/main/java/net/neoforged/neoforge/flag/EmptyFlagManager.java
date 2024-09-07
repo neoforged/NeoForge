@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.flag;
 
-import java.util.Collections;
-import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSets;
 
 final class EmptyFlagManager implements FlagManager {
     @Override
@@ -15,7 +15,7 @@ final class EmptyFlagManager implements FlagManager {
     }
 
     @Override
-    public Set<Flag> getEnabledFlags() {
-        return Collections.emptySet();
+    public ReferenceSet<Flag> getEnabledFlags() {
+        return ReferenceSets.emptySet();
     }
 }

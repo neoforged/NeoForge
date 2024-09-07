@@ -46,7 +46,7 @@ public final class ServerFlagManager implements FlagManager {
     }
 
     @Override
-    public Set<Flag> getEnabledFlags() {
+    public ReferenceSet<Flag> getEnabledFlags() {
         return ReferenceSets.unmodifiable(enabledFlags);
     }
 }

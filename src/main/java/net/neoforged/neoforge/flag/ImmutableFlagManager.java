@@ -5,13 +5,14 @@
 
 package net.neoforged.neoforge.flag;
 
-import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSets;
 
 final class ImmutableFlagManager implements FlagManager {
-    private final Set<Flag> enabledFlags;
+    private final ReferenceSet<Flag> enabledFlags;
 
-    public ImmutableFlagManager(Set<Flag> enabledFlags) {
-        this.enabledFlags = Set.copyOf(enabledFlags);
+    public ImmutableFlagManager(ReferenceSet<Flag> enabledFlags) {
+        this.enabledFlags = ReferenceSets.unmodifiable(enabledFlags);
     }
 
     @Override
@@ -20,7 +21,7 @@ final class ImmutableFlagManager implements FlagManager {
     }
 
     @Override
-    public Set<Flag> getEnabledFlags() {
+    public ReferenceSet<Flag> getEnabledFlags() {
         return enabledFlags;
     }
 }
