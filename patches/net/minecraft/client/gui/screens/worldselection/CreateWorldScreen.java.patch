@@ -8,12 +8,14 @@
          WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
          CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
              worldloader$initconfig,
-@@ -219,7 +_,7 @@
+@@ -219,7 +_,9 @@
          WorldDimensions.Complete worlddimensions$complete = worldcreationcontext.selectedDimensions().bake(worldcreationcontext.datapackDimensions());
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = worldcreationcontext.worldgenRegistries()
              .replaceFrom(RegistryLayer.DIMENSIONS, worlddimensions$complete.dimensionsRegistryAccess());
 -        Lifecycle lifecycle = FeatureFlags.isExperimental(worldcreationcontext.dataConfiguration().enabledFeatures())
-+        Lifecycle lifecycle = FeatureFlags.isExperimental(worldcreationcontext.dataConfiguration().enabledFeatures()) || !worldcreationcontext.dataConfiguration().enabledModdedFeatures().isEmpty()
++        // Neo: vanilla experimental flag present or modded flag present
++        var isExperimental = FeatureFlags.isExperimental(worldcreationcontext.dataConfiguration().enabledFeatures()) || !worldcreationcontext.dataConfiguration().enabledModdedFeatures().isEmpty();
++        Lifecycle lifecycle = isExperimental
              ? Lifecycle.experimental()
              : Lifecycle.stable();
          Lifecycle lifecycle1 = layeredregistryaccess.compositeAccess().allRegistriesLifecycle();
@@ -28,7 +30,7 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, worlddata);
-@@ -358,13 +_,13 @@
+@@ -358,13 +_,15 @@
          List<String> list = ImmutableList.copyOf(p_270299_.getSelectedIds());
          List<String> list1 = p_270299_.getAvailableIds().stream().filter(p_232927_ -> !list.contains(p_232927_)).collect(ImmutableList.toImmutableList());
          WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(
@@ -40,7 +42,9 @@
          } else {
              FeatureFlagSet featureflagset = p_270299_.getRequestedFeatureFlags();
 -            if (FeatureFlags.isExperimental(featureflagset) && p_270896_) {
-+            if ((FeatureFlags.isExperimental(featureflagset) || !worlddataconfiguration.enabledModdedFeatures().isEmpty()) && p_270896_) {
++            // Neo: vanilla experimental flag present or modded flag present
++            var isExperimental = FeatureFlags.isExperimental(featureflagset) || !worlddataconfiguration.enabledModdedFeatures().isEmpty();
++            if (isExperimental && p_270896_) {
                  this.minecraft.setScreen(new ConfirmExperimentalFeaturesScreen(p_270299_.getSelectedPacks(), p_269635_ -> {
                      if (p_269635_) {
                          this.applyNewPackConfig(p_270299_, worlddataconfiguration, p_270760_);
