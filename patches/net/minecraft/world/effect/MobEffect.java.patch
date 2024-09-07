@@ -13,7 +13,7 @@
      private int blendDurationTicks;
      private Optional<SoundEvent> soundOnAdded = Optional.empty();
      private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
-+    private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++    private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet();
  
      protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
          this.category = p_19451_;
@@ -47,19 +47,22 @@
      public MobEffect requiredFeatures(FeatureFlag... p_338702_) {
          this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_338702_);
          return this;
-@@ -181,8 +_,34 @@
+@@ -181,8 +_,37 @@
          return this.requiredFeatures;
      }
  
 -    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
 +    public MobEffect requiredFlags(net.neoforged.neoforge.flag.Flag... requiredFlags) {
++        if(this.requiredFlags.isEmpty())
++            this.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++
 +        java.util.Collections.addAll(this.requiredFlags, requiredFlags);
 +        return this;
 +    }
 +
 +    @Override
 +    public it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags() {
-+        return it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
++        return requiredFlags.isEmpty() ? it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet() : it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
 +    }
 +
 +    /**

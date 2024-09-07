@@ -17,16 +17,16 @@
  
      private static <T extends AbstractContainerMenu> MenuType<T> register(String p_39989_, MenuType.MenuSupplier<T> p_39990_) {
          return Registry.register(BuiltInRegistries.MENU, p_39989_, new MenuType<>(p_39990_, FeatureFlags.VANILLA_SET));
-@@ -46,8 +_,13 @@
-     }
- 
+@@ -48,6 +_,13 @@
      public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_) {
-+        this(p_267054_, p_266909_, new net.neoforged.neoforge.flag.Flag[0]);
+         this.constructor = p_267054_;
+         this.requiredFeatures = p_266909_;
++        this.requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet();
 +    }
 +
 +    public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_, net.neoforged.neoforge.flag.Flag[] requiredFlags) {
-         this.constructor = p_267054_;
-         this.requiredFeatures = p_266909_;
++        this.constructor = p_267054_;
++        this.requiredFeatures = p_266909_;
 +        this.requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSet.of(requiredFlags);
      }
  

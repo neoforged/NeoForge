@@ -25,7 +25,7 @@
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        this.requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(p_41383_.requiredFlags);
++        this.requiredFlags = p_41383_.requiredFlags.isEmpty() ? it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet() : it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(p_41383_.requiredFlags);
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Item")) {
@@ -177,11 +177,11 @@
          Item craftingRemainingItem;
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
 +        private boolean canRepair = true;
-+        private final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet();
  
          public Item.Properties food(FoodProperties p_41490_) {
              return this.component(DataComponents.FOOD, p_41490_);
-@@ -381,12 +_,27 @@
+@@ -381,12 +_,30 @@
              return this.component(DataComponents.JUKEBOX_PLAYABLE, new JukeboxPlayable(new EitherHolder<>(p_350862_), true));
          }
  
@@ -200,6 +200,9 @@
          }
  
 +        public Item.Properties requiredFlags(net.neoforged.neoforge.flag.Flag... requiredFlags) {
++            if(this.requiredFlags.isEmpty())
++                this.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++
 +            java.util.Collections.addAll(this.requiredFlags, requiredFlags);
 +            return this;
 +        }

@@ -4,7 +4,7 @@
      private final String name;
      private final List<MobEffectInstance> effects;
      private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
-+    private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++    private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet();
  
      public Potion(MobEffectInstance... p_43487_) {
          this(null, p_43487_);
@@ -19,20 +19,23 @@
      public Potion requiredFeatures(FeatureFlag... p_338520_) {
          this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_338520_);
          return this;
-@@ -42,6 +_,16 @@
+@@ -42,6 +_,19 @@
      @Override
      public FeatureFlagSet requiredFeatures() {
          return this.requiredFeatures;
 +    }
 +
 +    public Potion requiredFlags(net.neoforged.neoforge.flag.Flag... requiredFlags) {
++        if(this.requiredFlags.isEmpty())
++            this.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++
 +        java.util.Collections.addAll(this.requiredFlags, requiredFlags);
 +        return this;
 +    }
 +
 +    @Override
 +    public it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags() {
-+        return it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
++        return requiredFlags.isEmpty() ? it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet() : it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
      }
  
      public static String getName(Optional<Holder<Potion>> p_330503_, String p_43493_) {

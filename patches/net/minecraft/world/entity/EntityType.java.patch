@@ -69,7 +69,7 @@
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
-+        this.requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
++        this.requiredFlags = requiredFlags.isEmpty() ? it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet() : it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
      }
  
      @Nullable
@@ -134,12 +134,12 @@
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
-+        private final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet();
 +
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
              this.category = p_20697_;
-@@ -1309,11 +_,35 @@
+@@ -1309,11 +_,38 @@
              return this;
          }
  
@@ -153,6 +153,9 @@
          }
  
 +        public EntityType.Builder<T> requiredFlags(net.neoforged.neoforge.flag.Flag... requiredFlags) {
++            if(this.requiredFlags.isEmpty())
++                this.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++
 +            java.util.Collections.addAll(this.requiredFlags, requiredFlags);
 +            return this;
 +        }

@@ -1,18 +1,10 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -98,6 +_,7 @@
-     protected final BlockBehaviour.Properties properties;
-     @Nullable
-     protected ResourceKey<LootTable> drops;
-+    protected final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags;
- 
-     public BlockBehaviour(BlockBehaviour.Properties p_60452_) {
-         this.hasCollision = p_60452_.hasCollision;
 @@ -110,7 +_,19 @@
          this.jumpFactor = p_60452_.jumpFactor;
          this.dynamicShape = p_60452_.dynamicShape;
          this.requiredFeatures = p_60452_.requiredFeatures;
-+        this.requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(p_60452_.requiredFlags);
++        p_60452_.requiredFlags = p_60452_.requiredFlags.isEmpty() ? it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet() : it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(p_60452_.requiredFlags);
          this.properties = p_60452_;
 +        final ResourceKey<LootTable> lootTableCache = p_60452_.drops;
 +        if (lootTableCache != null) {
@@ -86,7 +78,7 @@
 +
 +    @Override
 +    public final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags() {
-+        return requiredFlags;
++        return properties.requiredFlags;
 +    }
 +
 +    // Neo: Holds the loot table for this block's drops. Used for getLootTable method.
@@ -169,14 +161,15 @@
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
          @Nullable
          BlockBehaviour.OffsetFunction offsetFunction;
-+        private final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        private it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags = it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet();
  
          private Properties() {
          }
-@@ -1020,6 +_,7 @@
+@@ -1020,6 +_,8 @@
              blockbehaviour$properties.offsetFunction = blockbehaviour$properties1.offsetFunction;
              blockbehaviour$properties.spawnTerrainParticles = blockbehaviour$properties1.spawnTerrainParticles;
              blockbehaviour$properties.requiredFeatures = blockbehaviour$properties1.requiredFeatures;
++            blockbehaviour$properties.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
 +            blockbehaviour$properties.requiredFlags.addAll(blockbehaviour$properties1.requiredFlags);
              blockbehaviour$properties.emissiveRendering = blockbehaviour$properties1.emissiveRendering;
              blockbehaviour$properties.instrument = blockbehaviour$properties1.instrument;
@@ -198,7 +191,7 @@
          }
  
          public BlockBehaviour.Properties ignitedByLava() {
-@@ -1215,8 +_,17 @@
+@@ -1215,8 +_,20 @@
              return this;
          }
  
@@ -212,6 +205,9 @@
 +        }
 +
 +        public BlockBehaviour.Properties requiredFlags(net.neoforged.neoforge.flag.Flag... requiredFlags) {
++            if(this.requiredFlags.isEmpty())
++                this.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++
 +            java.util.Collections.addAll(this.requiredFlags, requiredFlags);
              return this;
          }
