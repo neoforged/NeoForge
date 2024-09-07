@@ -159,7 +159,7 @@ public class DeferredRegister<T> {
     /**
      * Factory for a specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
      *
-     * @param registryKey The key for the data component type registry
+     * @param registryKey The key for the data component type registry, like {@link Registries#DATA_COMPONENT_TYPE} for item data components
      * @param modid       The namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
