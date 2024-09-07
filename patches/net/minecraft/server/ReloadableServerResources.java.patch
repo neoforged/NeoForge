@@ -5,16 +5,24 @@
      private final ServerFunctionLibrary functionLibrary;
  
 -    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
-+    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_, net.neoforged.neoforge.flag.FlagManager moddedFlagManager) {
++    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, net.neoforged.neoforge.flag.FlagManager moddedFlagManager, Commands.CommandSelection p_206858_, int p_206859_) {
          this.fullRegistryHolder = new ReloadableServerRegistries.Holder(p_206857_);
          this.registryLookup = new ReloadableServerResources.ConfigurableRegistryLookup(p_206857_);
          this.registryLookup.missingTagAccessPolicy(ReloadableServerResources.MissingTagAccessPolicy.CREATE_NEW);
-@@ -49,6 +_,8 @@
+@@ -49,6 +_,16 @@
          this.commands = new Commands(p_206858_, CommandBuildContext.simple(this.registryLookup, p_250695_));
          this.advancements = new ServerAdvancementManager(this.registryLookup);
          this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
 +        // Neo: Create context object
 +        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager, moddedFlagManager);
++    }
++
++    /**
++     * Prefer {@link #ReloadableServerResources(RegistryAccess.Frozen, FeatureFlagSet, net.neoforged.neoforge.flag.FlagManager, Commands.CommandSelection, int)}
++     */
++    @Deprecated
++    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
++        this(p_206857_, p_250695_, net.neoforged.neoforge.flag.FlagManager.EMPTY, p_206858_, p_206859_);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
@@ -53,7 +61,7 @@
                  p_335211_ -> {
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
 -                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
-+                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_, moddedFlagManager
++                        p_335211_.compositeAccess(), p_250212_, moddedFlagManager, p_249301_, p_251126_
                      );
 +                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
 +                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
