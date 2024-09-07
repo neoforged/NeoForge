@@ -165,12 +165,16 @@
  
          private Properties() {
          }
-@@ -1020,6 +_,8 @@
+@@ -1020,6 +_,12 @@
              blockbehaviour$properties.offsetFunction = blockbehaviour$properties1.offsetFunction;
              blockbehaviour$properties.spawnTerrainParticles = blockbehaviour$properties1.spawnTerrainParticles;
              blockbehaviour$properties.requiredFeatures = blockbehaviour$properties1.requiredFeatures;
-+            blockbehaviour$properties.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
-+            blockbehaviour$properties.requiredFlags.addAll(blockbehaviour$properties1.requiredFlags);
++
++            if(!blockbehaviour$properties1.requiredFlags.isEmpty()) {
++                blockbehaviour$properties.requiredFlags = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++                blockbehaviour$properties.requiredFlags.addAll(blockbehaviour$properties1.requiredFlags);
++            }
++
              blockbehaviour$properties.emissiveRendering = blockbehaviour$properties1.emissiveRendering;
              blockbehaviour$properties.instrument = blockbehaviour$properties1.instrument;
              blockbehaviour$properties.replaceable = blockbehaviour$properties1.replaceable;
