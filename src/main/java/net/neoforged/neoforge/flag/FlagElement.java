@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.flag;
 
 import com.google.errorprone.annotations.ForOverride;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.flag.FeatureElement;
@@ -24,7 +25,7 @@ public interface FlagElement {
      * @return Immutable {@link Set} containing all required {@link Flag Flags} for this element to be enabled.
      */
     @ForOverride
-    Set<Flag> requiredFlags();
+    ReferenceSet<Flag> requiredFlags();
 
     /**
      * @return {@code true} if this {@link FlagElement element} should be enabled, {@code false} otherwise.

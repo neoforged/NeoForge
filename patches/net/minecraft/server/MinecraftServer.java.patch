@@ -271,24 +271,24 @@
 +        datapackconfig.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());
          if (p_341620_) {
 -            return configureRepositoryWithSelection(p_248681_, List.of("vanilla"), featureflagset, false);
-+            return configureRepositoryWithSelection(p_248681_, net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), featureflagset, false, p_341632_.enabledModdedFeatures());
++            return configureRepositoryWithSelection(p_248681_, net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), featureflagset, p_341632_.enabledModdedFeatures(), false);
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
-@@ -1542,18 +_,20 @@
+@@ -1542,18 +_,30 @@
                  set.add("vanilla");
              }
  
 -            return configureRepositoryWithSelection(p_248681_, set, featureflagset, true);
 +            net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(set, datapackconfig.getEnabled(), p_248681_);
 +
-+            return configureRepositoryWithSelection(p_248681_, set, featureflagset, true, p_341632_.enabledModdedFeatures());
++            return configureRepositoryWithSelection(p_248681_, set, featureflagset, p_341632_.enabledModdedFeatures(), true);
          }
      }
  
      private static WorldDataConfiguration configureRepositoryWithSelection(
 -        PackRepository p_341680_, Collection<String> p_341677_, FeatureFlagSet p_341602_, boolean p_341662_
-+        PackRepository p_341680_, Collection<String> p_341677_, FeatureFlagSet p_341602_, boolean p_341662_, Set<net.neoforged.neoforge.flag.Flag> enabledModdedFeatures
++        PackRepository p_341680_, Collection<String> p_341677_, FeatureFlagSet p_341602_, it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> enabledModdedFeatures, boolean p_341662_
      ) {
          p_341680_.setSelected(p_341677_);
          enableForcedFeaturePacks(p_341680_, p_341602_);
@@ -296,6 +296,16 @@
          FeatureFlagSet featureflagset = p_341680_.getRequestedFeatureFlags().join(p_341602_);
 -        return new WorldDataConfiguration(datapackconfig, featureflagset);
 +        return new WorldDataConfiguration(datapackconfig, featureflagset, enabledModdedFeatures);
++    }
++
++    /**
++     * @deprecated Prefer {@link #configureRepositoryWithSelection(PackRepository, Collection, FeatureFlagSet, it.unimi.dsi.fastutil.objects.ReferenceSet, boolean)}
++     */
++    @Deprecated
++    private static WorldDataConfiguration configureRepositoryWithSelection(
++            PackRepository p_341680_, Collection<String> p_341677_, FeatureFlagSet p_341602_, boolean p_341662_
++    ) {
++        return configureRepositoryWithSelection(p_341680_, p_341677_, p_341602_, it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet(), p_341662_);
      }
  
      private static void enableForcedFeaturePacks(PackRepository p_341674_, FeatureFlagSet p_341598_) {

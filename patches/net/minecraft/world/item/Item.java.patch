@@ -16,7 +16,7 @@
      @Nullable
      private String descriptionId;
      private final FeatureFlagSet requiredFeatures;
-+    private final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags;
++    private final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags;
  
      public static int getId(Item p_41394_) {
          return p_41394_ == null ? 0 : BuiltInRegistries.ITEM.getId(p_41394_);
@@ -157,7 +157,7 @@
  
 -    public static class Properties {
 +    @Override
-+    public final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags() {
++    public final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags() {
 +        return requiredFlags;
 +    }
 +

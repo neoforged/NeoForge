@@ -58,7 +58,7 @@
 +    }
 +
 +    @Override
-+    public java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags() {
++    public it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags() {
 +        return it.unimi.dsi.fastutil.objects.ReferenceSets.unmodifiable(requiredFlags);
 +    }
 +

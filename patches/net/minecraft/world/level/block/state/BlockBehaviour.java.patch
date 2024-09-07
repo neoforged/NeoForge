@@ -4,7 +4,7 @@
      protected final BlockBehaviour.Properties properties;
      @Nullable
      protected ResourceKey<LootTable> drops;
-+    protected final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags;
++    protected final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags;
  
      public BlockBehaviour(BlockBehaviour.Properties p_60452_) {
          this.hasCollision = p_60452_.hasCollision;
@@ -85,7 +85,7 @@
 +    }
 +
 +    @Override
-+    public final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags() {
++    public final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags() {
 +        return requiredFlags;
 +    }
 +

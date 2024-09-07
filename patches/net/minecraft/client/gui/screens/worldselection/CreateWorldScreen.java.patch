@@ -49,7 +49,7 @@
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
 -                                            p_270552_.accept(WorldDataConfiguration.DEFAULT);
-+                                            p_270552_.accept(new WorldDataConfiguration(new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()), FeatureFlags.VANILLA_SET, java.util.Collections.emptySet())); // FORGE: Revert to *actual* vanilla data
++                                            p_270552_.accept(new WorldDataConfiguration(new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()), FeatureFlags.VANILLA_SET, it.unimi.dsi.fastutil.objects.ReferenceSets.emptySet())); // FORGE: Revert to *actual* vanilla data
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),

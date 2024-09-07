@@ -8,10 +8,13 @@ package net.neoforged.neoforge.flag;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSets;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +24,9 @@ import net.minecraft.resources.ResourceLocation;
  */
 public final class Flag {
     public static final Codec<Flag> CODEC = ResourceLocation.CODEC.xmap(Flag::of, flag -> flag.identifier);
+    public static final Codec<ReferenceSet<Flag>> SET_CODEC = CODEC.listOf().xmap(
+            flags -> ReferenceSets.unmodifiable(new ReferenceOpenHashSet<>(flags)), // there is no refset.copyOf must goto mutable then to immutable
+            List::copyOf);
     public static final StreamCodec<ByteBuf, Flag> STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(Flag::of, flag -> flag.identifier);
 
     private static final Map<ResourceLocation, Flag> FLAGS = Maps.newConcurrentMap();
@@ -96,8 +102,8 @@ public final class Flag {
      *
      * @return immutable collection of all known {@link Flag flags}.
      */
-    public static Set<Flag> getFlags() {
-        return Set.copyOf(FLAGS_VIEW);
+    public static ReferenceSet<Flag> getFlags() {
+        return new ReferenceOpenHashSet<>(FLAGS_VIEW);
     }
 
     /**

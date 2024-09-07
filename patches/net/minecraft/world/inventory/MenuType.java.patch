@@ -13,7 +13,7 @@
      public static final MenuType<StonecutterMenu> STONECUTTER = register("stonecutter", StonecutterMenu::new);
      private final FeatureFlagSet requiredFeatures;
      private final MenuType.MenuSupplier<T> constructor;
-+    private final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags;
++    private final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags;
  
      private static <T extends AbstractContainerMenu> MenuType<T> register(String p_39989_, MenuType.MenuSupplier<T> p_39990_) {
          return Registry.register(BuiltInRegistries.MENU, p_39989_, new MenuType<>(p_39990_, FeatureFlags.VANILLA_SET));
@@ -48,7 +48,7 @@
 +    }
 +
 +    @Override
-+    public final java.util.Set<net.neoforged.neoforge.flag.Flag> requiredFlags() {
++    public final it.unimi.dsi.fastutil.objects.ReferenceSet<net.neoforged.neoforge.flag.Flag> requiredFlags() {
 +        return requiredFlags;
      }
  
