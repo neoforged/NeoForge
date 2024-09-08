@@ -193,7 +193,7 @@
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "將此設置爲true將刪除任何在其更新方法中拋出錯誤的方塊實體，而不是關閉服務器並報告崩潰日誌。",
   "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "請注意，這可能會把一切都搞砸。\n最好不使用。\n我們不對損壞負責。",
   "neoforge.configgui.removeErroringEntities": "移除錯誤實體",
-  "neoforge.configgui.removeErroringEntities.tooltip": "將此設置爲true將刪除任何在其更新方法中拋出錯誤的實體，而不是關閉服務器並報告崩潰日誌。",
+  "neoforge.configgui.removeErroringEntities.tooltip": "將此設置爲true將刪除在其更新方法中錯誤的實體，而不關閉服務器並輸出崩潰日誌。",
   "neoforge.configgui.removeErroringEntities.tooltip.warning": "請注意，這可能會把一切都搞砸。\n最好不使用。\n我們不對損壞負責。",
   "neoforge.configgui.showLoadWarnings": "顯示載入警告",
   "neoforge.configgui.showLoadWarnings.tooltip": "若啟用，NeoForge 將顯示在載入過程中發生的任何警告。",
