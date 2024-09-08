@@ -178,9 +178,9 @@ public class DeferredRegister<T> {
      * @see #create(ResourceKey, String)
      * @see #create(ResourceLocation, String)
      * @see #createItems(String)
-     * @deprecated Use the overload with the {@link ResourceKey} parameter
+     * @deprecated Use {@link DeferredRegister#createDataComponents(ResourceKey, String)}
      */
-    @Deprecated(since = "21.1", forRemoval = true)
+    @Deprecated(since = "1.21.1", forRemoval = true)
     public static DataComponents createDataComponents(String modid) {
         return new DataComponents(modid);
     }
@@ -619,8 +619,8 @@ public class DeferredRegister<T> {
             super(registryKey, namespace);
         }
 
-        /** @deprecated Use the overload with the {@link ResourceKey} parameter */
-        @Deprecated(since = "21.1", forRemoval = true)
+        /** @deprecated Use {@link DataComponents#DataComponents(ResourceKey, String)} */
+        @Deprecated(since = "1.21.1", forRemoval = true)
         protected DataComponents(String namespace) {
             super(Registries.DATA_COMPONENT_TYPE, namespace);
         }
