@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/item/alchemy/PotionBrewing.java
 +++ b/net/minecraft/world/item/alchemy/PotionBrewing.java
-@@ -4,6 +_,7 @@
- import java.util.List;
- import java.util.Optional;
- import net.minecraft.core.Holder;
-+import net.minecraft.core.RegistryAccess;
- import net.minecraft.core.component.DataComponents;
- import net.minecraft.core.registries.BuiltInRegistries;
- import net.minecraft.world.flag.FeatureFlagSet;
 @@ -19,15 +_,37 @@
      private final List<Ingredient> containers;
      private final List<PotionBrewing.Mix<Potion>> potionMixes;
@@ -69,7 +61,7 @@
      }
  
 -    public static PotionBrewing bootstrap(FeatureFlagSet p_341301_) {
-+    public static PotionBrewing bootstrap(FeatureFlagSet p_341301_, RegistryAccess registryAccess) {
++    public static PotionBrewing bootstrap(FeatureFlagSet p_341301_, net.minecraft.core.RegistryAccess registryAccess) {
          PotionBrewing.Builder potionbrewing$builder = new PotionBrewing.Builder(p_341301_);
          addVanillaMixes(potionbrewing$builder);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent(potionbrewing$builder, registryAccess));
