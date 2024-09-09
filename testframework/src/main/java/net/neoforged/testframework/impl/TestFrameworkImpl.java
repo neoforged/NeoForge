@@ -84,6 +84,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     private @Nullable MinecraftServer server;
     private final DynamicStructureTemplates structures;
+    private boolean inClientWorld = false;
 
     private @UnknownNullability String commandName;
 
@@ -237,6 +238,11 @@ public class TestFrameworkImpl implements MutableTestFramework {
         modBus.addListener(new TestFrameworkPayloadInitialization(this)::onNetworkSetup);
         modBus.addListener((final RegisterGameTestsEvent event) -> event.register(GameTestRegistration.REGISTER_METHOD));
 
+        synchronized (tests().enabled) {
+            List.copyOf(tests().enabled).forEach(tests()::disable);
+        }
+        tests().initialiseDefaultEnabledTests();
+
         if (FMLLoader.getDist().isClient()) {
             setupClient(this, modBus, container);
         }
@@ -248,12 +254,14 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     private static void setupClient(TestFrameworkImpl impl, IEventBus modBus, ModContainer container) {
         if (impl.client != null) impl.client.init(modBus, container);
-        NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingIn logOut) -> {
+        NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingIn logIn) -> {
             synchronized (impl.tests().enabled) {
                 List.copyOf(impl.tests().enabled).forEach(impl.tests()::disable);
             }
             impl.tests().initialiseDefaultEnabledTests();
+            impl.inClientWorld = true;
         });
+        NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingOut logOut) -> impl.inClientWorld = false);
     }
 
     @Override
@@ -303,6 +311,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
         test.listeners().forEach(listener -> listener.onStatusChange(this, test, oldStatus, newStatus, changer));
 
         logger.info("Status of test '{}' has had status changed to {}{}.", test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "");
+
+        if (server == null && !inClientWorld) return;
 
         final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(
