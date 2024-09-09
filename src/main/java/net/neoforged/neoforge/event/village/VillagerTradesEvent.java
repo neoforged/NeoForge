@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event.village;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
@@ -28,10 +29,12 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 public class VillagerTradesEvent extends Event {
     protected Int2ObjectMap<List<ItemListing>> trades;
     protected VillagerProfession type;
+    protected RegistryAccess registryAccess;
 
-    public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type) {
+    public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type, RegistryAccess registryAccess) {
         this.trades = trades;
         this.type = type;
+        this.registryAccess = registryAccess;
     }
 
     public Int2ObjectMap<List<ItemListing>> getTrades() {
@@ -40,5 +43,9 @@ public class VillagerTradesEvent extends Event {
 
     public VillagerProfession getType() {
         return type;
+    }
+
+    public RegistryAccess getRegistryAccess() {
+        return registryAccess;
     }
 }

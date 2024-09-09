@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.event.village;
 
 import java.util.List;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.BasicItemListing;
@@ -21,10 +22,12 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 public class WandererTradesEvent extends Event {
     protected List<ItemListing> generic;
     protected List<ItemListing> rare;
+    protected RegistryAccess registryAccess;
 
-    public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare) {
+    public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare, RegistryAccess registryAccess) {
         this.generic = generic;
         this.rare = rare;
+        this.registryAccess = registryAccess;
     }
 
     public List<ItemListing> getGenericTrades() {
@@ -33,5 +36,9 @@ public class WandererTradesEvent extends Event {
 
     public List<ItemListing> getRareTrades() {
         return rare;
+    }
+
+    public RegistryAccess getRegistryAccess() {
+        return registryAccess;
     }
 }
