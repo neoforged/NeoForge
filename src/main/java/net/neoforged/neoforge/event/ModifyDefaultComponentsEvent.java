@@ -28,17 +28,17 @@ import org.jetbrains.annotations.ApiStatus;
  * import net.minecraft.world.item.Items;
  *
  * public void modifyComponents(ModifyDefaultComponentsEvent event) {
- *     event.modify(Items.MELON_SEEDS, builder -> builder
- *             .set(DataComponents.MAX_STACK_SIZE, 16)); // Stack melon seeds to at most 16 items
+ *    event.modify(Items.MELON_SEEDS, builder -> builder
+ *         .set(DataComponents.MAX_STACK_SIZE, 16)); // Stack melon seeds to at most 16 items
  *
- *     event.modify(Items.APPLE, builder -> builder
- *             .remove(DataComponents.FOOD)); // Remove the ability of eating apples
+ *    event.modify(Items.APPLE, builder -> builder
+ *         .remove(DataComponents.FOOD)); // Remove the ability of eating apples
  * }
  *
  * // Lowest priority listener
  * public void modifyComponentsLow(ModifyDefaultComponentsEvent event) {
- *     event.modifyMatching(item -> item.components().has(DataComponents.FIRE_RESISTANT), builder -> builder
- *             .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire resistant items have a glint
+ *    event.modifyMatching(item -> item.components().has(DataComponents.FIRE_RESISTANT), builder -> builder
+ *         .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire resistant items have a glint
  * }
  * }
  */
