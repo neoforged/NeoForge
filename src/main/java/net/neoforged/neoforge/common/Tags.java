@@ -438,6 +438,7 @@ public class Tags {
         public static final TagKey<Item> FOODS_FOOD_POISONING = tag("foods/food_poisoning");
         /**
          * All foods edible by animals excluding poisonous foods.
+         * (Does not include {@link ItemTags#PARROT_POISONOUS_FOOD})
          */
         public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
         public static final TagKey<Item> GEMS = tag("gems");
