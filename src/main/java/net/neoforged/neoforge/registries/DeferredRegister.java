@@ -178,7 +178,7 @@ public class DeferredRegister<T> {
      * @see #create(ResourceKey, String)
      * @see #create(ResourceLocation, String)
      * @see #createItems(String)
-     * @deprecated Scheduled for removal in 1.21.2; use {@link DeferredRegister#createDataComponents(ResourceKey, String)}
+     * @deprecated Scheduled for removal in 1.21.2; use {@link DeferredRegister#createDataComponents(ResourceKey, String)} with {@link Registries#DATA_COMPONENT_TYPE} instead
      */
     @Deprecated(since = "1.21.1", forRemoval = true)
     public static DataComponents createDataComponents(String modid) {
