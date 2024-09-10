@@ -199,7 +199,7 @@
          float f = this.level.effects().getCloudHeight();
          if (!Float.isNaN(f)) {
              float f1 = 12.0F;
-@@ -2488,6 +_,23 @@
+@@ -2488,6 +_,28 @@
          this.viewArea.setDirty(p_109502_, p_109503_, p_109504_, p_109505_);
      }
  
@@ -218,6 +218,11 @@
 +        synchronized (this.globalBlockEntities) {
 +            this.globalBlockEntities.forEach(blockEntityConsumer);
 +        }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public Iterable<? extends net.neoforged.neoforge.client.IRenderableSection> getVisibleSections() {
++        return this.visibleSections;
 +    }
 +
      public void playJukeboxSong(Holder<JukeboxSong> p_350918_, BlockPos p_350830_) {

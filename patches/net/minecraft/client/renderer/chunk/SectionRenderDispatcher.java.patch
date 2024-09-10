@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
+@@ -290,7 +_,7 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    public class RenderSection {
++    public class RenderSection implements net.neoforged.neoforge.client.IRenderableSection {
+         public static final int SIZE = 16;
+         public final int index;
+         public final AtomicReference<SectionRenderDispatcher.CompiledSection> compiled = new AtomicReference<>(
 @@ -441,14 +_,15 @@
  
          public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
@@ -18,6 +27,27 @@
              );
              return this.lastRebuildTask;
          }
+@@ -497,6 +_,20 @@
+             );
+         }
+ 
++        // Neo: start
++
++        @Override
++        public Set<RenderType> getCompiledRenderLayers() {
++            return java.util.Collections.unmodifiableSet(getCompiled().hasBlocks);
++        }
++
++        @Override
++        public boolean isEmpty() {
++            return getCompiled().hasNoRenderableLayers();
++        }
++
++        // Neo: end
++
+         @OnlyIn(Dist.CLIENT)
+         abstract class CompileTask implements Comparable<SectionRenderDispatcher.RenderSection.CompileTask> {
+             protected final double distAtCreation;
 @@ -523,10 +_,17 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
