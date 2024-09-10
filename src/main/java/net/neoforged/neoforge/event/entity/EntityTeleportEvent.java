@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public class EntityTeleportEvent extends EntityEvent implements ICancellableEvent {
-    protected GlobalVec3 target;
+    private GlobalVec3 target;
 
     @Deprecated(since = "1.21.1", forRemoval = true)
     public EntityTeleportEvent(Entity entity, double targetX, double targetY, double targetZ) {
