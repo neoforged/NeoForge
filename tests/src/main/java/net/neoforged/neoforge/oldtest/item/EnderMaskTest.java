@@ -15,13 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 @Mod(EnderMaskTest.MODID)
 public class EnderMaskTest {
     public static final String MODID = "ender_mask_test";
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    public static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
 
     public static DeferredItem<Item> ENDER_MASK = ITEMS.register("ender_mask", () -> new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, (new Item.Properties())) {
         @Override

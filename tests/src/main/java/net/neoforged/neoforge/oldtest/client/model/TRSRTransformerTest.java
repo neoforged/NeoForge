@@ -30,9 +30,10 @@ import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.util.TransformationHelper;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -40,8 +41,8 @@ import org.joml.Vector3f;
 @Mod(TRSRTransformerTest.MODID)
 public class TRSRTransformerTest {
     public static final String MODID = "trsr_transformer_test";
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
 
     private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register("test", () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
     @SuppressWarnings("unused")

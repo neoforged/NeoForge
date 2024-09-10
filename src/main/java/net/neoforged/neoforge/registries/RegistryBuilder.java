@@ -18,6 +18,7 @@ import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
 public class RegistryBuilder<T> {

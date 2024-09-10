@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
 /**
  * A subclass of {@link SoundType} that uses {@link Supplier<SoundEvent>}s.

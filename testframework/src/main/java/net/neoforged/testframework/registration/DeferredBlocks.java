@@ -19,10 +19,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.function.TriFunction;
 
-public class DeferredBlocks extends DeferredRegister.Blocks {
+public class DeferredBlocks extends net.neoforged.neoforge.registries.deferred.DeferredBlocks {
     private final RegistrationHelper registrationHelper;
 
     public DeferredBlocks(String namespace, RegistrationHelper registrationHelper) {
@@ -31,18 +30,18 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
     }
 
     @Override
-    protected <I extends Block> DeferredBlockBuilder<I> createHolder(ResourceKey<? extends Registry<Block>> registryKey, ResourceLocation key) {
-        return new DeferredBlockBuilder<>(ResourceKey.create(registryKey, key), registrationHelper);
+    protected <I extends Block> DeferredBlockBuilder<I> createHolder(ResourceKey<? extends Registry<Block>> registryType, ResourceLocation registryName) {
+        return new DeferredBlockBuilder<>(ResourceKey.create(registryType, registryName), registrationHelper);
     }
 
     @Override
-    public <B extends Block> DeferredBlockBuilder<B> register(String name, Supplier<? extends B> sup) {
-        return (DeferredBlockBuilder<B>) super.register(name, sup);
+    public <B extends Block> DeferredBlockBuilder<B> register(String identifier, Supplier<? extends B> factory) {
+        return (DeferredBlockBuilder<B>) super.register(identifier, factory);
     }
 
     @Override
-    public <B extends Block> DeferredBlockBuilder<B> register(String name, Function<ResourceLocation, ? extends B> func) {
-        return (DeferredBlockBuilder<B>) super.register(name, func);
+    public <B extends Block> DeferredBlockBuilder<B> register(String identifier, Function<ResourceLocation, ? extends B> factory) {
+        return (DeferredBlockBuilder<B>) super.register(identifier, factory);
     }
 
     @Override

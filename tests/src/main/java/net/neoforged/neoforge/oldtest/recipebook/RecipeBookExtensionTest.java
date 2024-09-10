@@ -5,17 +5,15 @@
 
 package net.neoforged.neoforge.oldtest.recipebook;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -25,10 +23,13 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredMenuType;
+import net.neoforged.neoforge.registries.deferred.DeferredMenuTypes;
+import net.neoforged.neoforge.registries.deferred.DeferredRecipeSerializer;
+import net.neoforged.neoforge.registries.deferred.DeferredRecipeSerializers;
+import net.neoforged.neoforge.registries.deferred.DeferredRecipeType;
+import net.neoforged.neoforge.registries.deferred.DeferredRecipeTypes;
 
 @Mod(RecipeBookExtensionTest.MOD_ID)
 public class RecipeBookExtensionTest {
@@ -37,14 +38,15 @@ public class RecipeBookExtensionTest {
     public static final String MOD_ID = "recipe_book_extension_test";
     public static final RecipeBookType TEST_TYPE = RecipeBookType.valueOf("NEOTESTS_TESTING");
 
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MOD_ID);
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_SERIALIZER = RECIPE_SERIALIZER.register("test_recipe", RecipeBookTestRecipeSerializer::new);
+    public static final MapCodec<RecipeBookTestRecipe> RECIPE_BOOK_CODEC = RecipeBookTestRecipe.Ingredients.CODEC.xmap(RecipeBookTestRecipe::new, recipeBookTestRecipe -> recipeBookTestRecipe.ingredients);
+    public static final DeferredRecipeSerializers RECIPE_SERIALIZER = DeferredRecipeSerializers.createRecipeSerializers(MOD_ID);
+    public static final DeferredRecipeSerializer<RecipeBookTestRecipe> RECIPE_BOOK_TEST_RECIPE_SERIALIZER = RECIPE_SERIALIZER.registerRecipeSerializer("test_recipe", RECIPE_BOOK_CODEC, ByteBufCodecs.fromCodecWithRegistries(RECIPE_BOOK_CODEC.codec()));
 
-    public static final DeferredRegister<MenuType<?>> MENU_TYPE = DeferredRegister.create(BuiltInRegistries.MENU, MOD_ID);
-    public static final DeferredHolder<MenuType<?>, MenuType<RecipeBookTestMenu>> RECIPE_BOOK_TEST_MENU_TYPE = MENU_TYPE.register("test_recipe_menu", () -> IMenuTypeExtension.create(RecipeBookTestMenu::new));
+    public static final DeferredMenuTypes MENU_TYPE = DeferredMenuTypes.createMenuTypes(MOD_ID);
+    public static final DeferredMenuType<RecipeBookTestMenu> RECIPE_BOOK_TEST_MENU_TYPE = MENU_TYPE.registerMenu("test_recipe_menu", RecipeBookTestMenu::new);
 
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, MOD_ID);
-    public static final DeferredHolder<RecipeType<?>, RecipeType<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_TYPE = RECIPE_TYPE.register("test_recipe", () -> RecipeType.simple(getId("test_recipe")));
+    public static final DeferredRecipeTypes RECIPE_TYPE = DeferredRecipeTypes.createRecipeTypes(MOD_ID);
+    public static final DeferredRecipeType<RecipeBookTestRecipe> RECIPE_BOOK_TEST_RECIPE_TYPE = RECIPE_TYPE.registerRecipeType("test_recipe");
 
     public RecipeBookExtensionTest(IEventBus modBus) {
         if (!ENABLED)

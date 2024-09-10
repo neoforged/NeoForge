@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.models.model.ModelLocationUtils;
@@ -53,10 +52,12 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityType;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityTypes;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -108,12 +109,12 @@ public class CustomItemDisplayContextTest {
         }
     }
 
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
+    public static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
+    public static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
+    public static final DeferredBlockEntityTypes BLOCK_ENTITY_TYPES = DeferredBlockEntityTypes.createBlockEntityTypes(MODID);
 
     public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.registerBlock("item_hanger", ItemHangerBlock::new, BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable());
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
+    public static final DeferredBlockEntityType<ItemHangerBlockEntity> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.registerBlockEntity(ITEM_HANGER_BLOCK, ItemHangerBlockEntity::new);
     public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
 
     public CustomItemDisplayContextTest(IEventBus modBus) {

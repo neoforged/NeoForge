@@ -19,12 +19,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 @Mod("custom_shield_test")
 public class CustomShieldTest {
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("custom_shield_test");
+    private static final DeferredItems ITEMS = DeferredItems.createItems("custom_shield_test");
 
     private static final DeferredItem<CustomShieldItem> CUSTOM_SHIELD_ITEM = ITEMS.register("custom_shield",
             () -> new CustomShieldItem((new Item.Properties()).durability(336)));

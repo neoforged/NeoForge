@@ -14,8 +14,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 
 /**

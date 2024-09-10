@@ -16,7 +16,7 @@ import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;

@@ -8,7 +8,6 @@ package net.neoforged.neoforge.oldtest;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
@@ -16,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
 import net.minecraft.world.level.material.MapColor;
@@ -27,10 +26,15 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredDataComponentTypes;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
+import net.neoforged.neoforge.registries.deferred.DeferredRecipeType;
+import net.neoforged.neoforge.registries.deferred.DeferredRecipeTypes;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,13 +44,13 @@ public class DeferredRegistryTest {
     static final String MODID = "deferred_registry_test";
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(MODID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
+    private static final DeferredDataComponentTypes COMPONENTS = DeferredDataComponentTypes.createDataComponentTypes(MODID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
     private static final ResourceKey<Registry<Custom>> CUSTOM_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "test_registry"));
     private static final DeferredRegister<Custom> CUSTOMS = DeferredRegister.create(CUSTOM_REGISTRY_KEY, MODID);
     private static final DeferredRegister<Object> DOESNT_EXIST_REG = DeferredRegister.create(ResourceLocation.fromNamespaceAndPath(MODID, "doesnt_exist"), MODID);
-    private static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, MODID);
+    private static final DeferredRecipeTypes RECIPE_TYPES = DeferredRecipeTypes.createRecipeTypes(MODID);
     // Vanilla Registry - filled directly after all RegistryEvent.Register events are fired
     private static final DeferredRegister<PosRuleTestType<?>> POS_RULE_TEST_TYPES = DeferredRegister.create(Registries.POS_RULE_TEST, MODID);
 
@@ -57,7 +61,7 @@ public class DeferredRegistryTest {
     private static final DeferredHolder<Custom, Custom> CUSTOM = CUSTOMS.register("test", () -> new Custom() {});
     // Should never be created as the registry doesn't exist - this should silently fail and remain empty
     private static final DeferredHolder<Object, Object> DOESNT_EXIST = DOESNT_EXIST_REG.register("test", Object::new);
-    private static final DeferredHolder<RecipeType<?>, RecipeType<?>> RECIPE_TYPE = RECIPE_TYPES.register("test", () -> new RecipeType<>() {});
+    private static final DeferredRecipeType<Recipe<?>> RECIPE_TYPE = RECIPE_TYPES.registerRecipeType("test");
     private static final DeferredHolder<PosRuleTestType<?>, PosRuleTestType<?>> POS_RULE_TEST_TYPE = POS_RULE_TEST_TYPES.register("test", () -> () -> null);
 
 //    private static final TagKey<Custom> CUSTOM_TAG_KEY = CUSTOMS.createOptionalTagKey("test_tag", Set.of(CUSTOM));

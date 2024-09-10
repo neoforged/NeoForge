@@ -22,16 +22,17 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 @Mod(HideNeighborFaceTest.MOD_ID)
 public class HideNeighborFaceTest {
     public static final String MOD_ID = "hide_neighbor_face_test";
 
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
 
     private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
     private static final DeferredItem<BlockItem> GLASS_SLAB_ITEM = ITEMS.registerSimpleBlockItem(GLASS_SLAB);

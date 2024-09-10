@@ -54,7 +54,7 @@ import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;

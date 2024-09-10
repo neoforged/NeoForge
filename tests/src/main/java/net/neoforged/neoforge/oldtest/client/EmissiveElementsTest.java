@@ -13,9 +13,10 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * Test mod that demos emissivity on "elements" models.
@@ -23,8 +24,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(EmissiveElementsTest.MOD_ID)
 public class EmissiveElementsTest {
     public static final String MOD_ID = "emissive_elements_test";
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
 
     public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register("emissive", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
     public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);

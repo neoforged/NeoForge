@@ -21,10 +21,10 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo.Builder;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

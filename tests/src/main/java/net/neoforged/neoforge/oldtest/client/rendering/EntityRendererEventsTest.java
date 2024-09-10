@@ -40,8 +40,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
 
 @Mod("entity_renderer_events_test")
 @EventBusSubscriber(modid = "entity_renderer_events_test", bus = EventBusSubscriber.Bus.MOD)

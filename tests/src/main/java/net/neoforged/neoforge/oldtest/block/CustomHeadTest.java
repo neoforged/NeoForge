@@ -10,7 +10,6 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -34,10 +33,12 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityType;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityTypes;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * Adds a blaze head block and item to test the event for registering a custom skull model and to demonstrate the proper way to register a custom mob skull.
@@ -48,13 +49,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(CustomHeadTest.MODID)
 public class CustomHeadTest {
     static final String MODID = "custom_head_test";
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
+    private static final DeferredBlockEntityTypes BLOCK_ENTITIES = DeferredBlockEntityTypes.createBlockEntityTypes(MODID);
     private static final DeferredBlock<Block> BLAZE_HEAD = BLOCKS.register("blaze_head", () -> new CustomSkullBlock(SkullType.BLAZE, BlockBehaviour.Properties.of().strength(1.0F)));
     private static final DeferredBlock<Block> BLAZE_HEAD_WALL = BLOCKS.register("blaze_wall_head", () -> new CustomWallSkullBlock(SkullType.BLAZE, BlockBehaviour.Properties.of().strength(1.0F).lootFrom(BLAZE_HEAD)));
     private static final DeferredItem<Item> BLAZE_HEAD_ITEM = ITEMS.register("blaze_head", () -> new StandingAndWallBlockItem(BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
-    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CustomSkullBlockEntity>> CUSTOM_SKULL = BLOCK_ENTITIES.register("custom_skull", () -> BlockEntityType.Builder.of(CustomSkullBlockEntity::new, BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get()).build(null));
+    private static final DeferredBlockEntityType<CustomSkullBlockEntity> CUSTOM_SKULL = BLOCK_ENTITIES.registerBlockEntity("custom_skull", CustomSkullBlockEntity::new, BLAZE_HEAD, BLAZE_HEAD_WALL);
 
     public CustomHeadTest(IEventBus modBus) {
         BLOCKS.register(modBus);

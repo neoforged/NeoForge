@@ -16,7 +16,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
-import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
 
 public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     private final RegistrationHelper helper;

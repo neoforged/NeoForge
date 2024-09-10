@@ -7,14 +7,12 @@ package net.neoforged.neoforge.oldtest.client.model;
 
 import com.mojang.math.Transformation;
 import java.util.List;
-import java.util.Set;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -28,7 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -43,10 +40,12 @@ import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityType;
+import net.neoforged.neoforge.registries.deferred.DeferredBlockEntityTypes;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -70,15 +69,14 @@ import org.joml.Vector3f;
 @Mod(MegaModelTest.MOD_ID)
 public class MegaModelTest {
     public static final String MOD_ID = "mega_model_test";
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
+    private static final DeferredBlockEntityTypes BLOCK_ENTITIES = DeferredBlockEntityTypes.createBlockEntityTypes(MOD_ID);
 
     private static final String REG_NAME = "test_block";
     public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register(REG_NAME, TestBlock::new);
     public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> TEST_BLOCK_ENTITY = BLOCK_ENTITIES.register(REG_NAME, () -> new BlockEntityType<>(
-            TestBlock.Entity::new, Set.of(TEST_BLOCK.get()), null));
+    public static final DeferredBlockEntityType<BlockEntity> TEST_BLOCK_ENTITY = BLOCK_ENTITIES.registerBlockEntity(TEST_BLOCK, TestBlock.Entity::new);
 
     public MegaModelTest(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);

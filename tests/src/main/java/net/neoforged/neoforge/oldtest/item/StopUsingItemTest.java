@@ -25,8 +25,8 @@ import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * This test mod provides two items for testing the Forge onStopUsing hook. Both items attempt to create an item that increases FOV and allows creative flight when used
@@ -42,7 +42,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(StopUsingItemTest.MODID)
 public class StopUsingItemTest {
     protected static final String MODID = "stop_using_item";
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
 
     /**
      * Current FOV change, consumed by the event.

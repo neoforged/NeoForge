@@ -28,14 +28,14 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(CustomElytraTest.MOD_ID)
 public class CustomElytraTest {
     public static final String MOD_ID = "custom_elytra_test";
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
     private static final DeferredItem<Item> TEST_ELYTRA = ITEMS.register("test_elytra", () -> new CustomElytra(new Properties().durability(100)));
 
     public CustomElytraTest(IEventBus modBus) {

@@ -15,15 +15,16 @@ import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredHolder;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
+import net.neoforged.neoforge.registries.deferred.DeferredRegister;
 
 @Mod(MusicDiscTest.MOD_ID)
 public class MusicDiscTest {
     static final String MOD_ID = "music_disc_test";
 
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MOD_ID);
     private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
 
     private static final DeferredHolder<SoundEvent, SoundEvent> TEST_SOUND_EVENT = SOUND_EVENTS.register("test_sound_event",

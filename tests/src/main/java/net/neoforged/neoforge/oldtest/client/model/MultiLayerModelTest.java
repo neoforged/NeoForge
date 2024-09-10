@@ -15,9 +15,10 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredBlock;
+import net.neoforged.neoforge.registries.deferred.DeferredBlocks;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 @Mod(MultiLayerModelTest.MODID)
 public class MultiLayerModelTest {
@@ -27,8 +28,8 @@ public class MultiLayerModelTest {
 
     private static final String blockName = "test_layer_block";
 
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredBlocks BLOCKS = DeferredBlocks.createBlocks(MODID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
     private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).noOcclusion()));
     private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 

@@ -16,8 +16,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.deferred.DeferredItem;
+import net.neoforged.neoforge.registries.deferred.DeferredItems;
 
 /**
  * This test mod provides two items for testing the Forge onStopUsing hook. Both items attempt to create an item that increases FOV and allows creative flight when used
@@ -33,7 +33,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(MayFlyAttributeTest.MODID)
 public class MayFlyAttributeTest {
     protected static final String MODID = "may_fly_attribute_item";
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredItems ITEMS = DeferredItems.createItems(MODID);
 
     private static final ResourceLocation MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(MODID, "add_flight");
     private static final AttributeModifier MODIFIER = new AttributeModifier(MODIFIER_ID, 1D, AttributeModifier.Operation.ADD_VALUE);
