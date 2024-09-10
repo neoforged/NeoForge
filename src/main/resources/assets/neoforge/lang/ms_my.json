@@ -127,7 +127,7 @@
   "neoforge.configgui.logCascadingWorldGeneration": "Log Cascading World Gen",
   "neoforge.configgui.fixVanillaCascading.tooltip": "Fix vanilla issues that cause worldgen cascading. This DOES change vanilla worldgen so DO NOT report bugs related to world differences if this flag is on.",
   "neoforge.configgui.fixVanillaCascading": "Fix Vanilla Cascading",
-  "neoforge.configgui.dimensionUnloadQueueDelay.tooltip": "The time in ticks the server will wait when a dimension was queued to unload. This can be useful when rapidly loading and unloading dimensions, like e.g. throwing items through a nether portal a few time per second.",
+  "neoforge.configgui.dimensionUnloadQueueDelay.tooltip": "Masa dalam detik pelayan akan menunggu apabila dimensi dibariskan untuk dinyahmuat. Ini boleh menjadi berguna apabila memuatkan dan menyahmuatkan dimensi dengan pantas, seperti membaling item melalui gerbang nether beberapa kali sesaat.",
   "neoforge.configgui.dimensionUnloadQueueDelay": "Delay when unloading dimension",
   "neoforge.configgui.clumpingThreshold.tooltip": "Controls the number threshold at which Packet51 is preferred over Packet52, default and minimum 64, maximum 1024.",
   "neoforge.configgui.clumpingThreshold": "Packet Clumping Threshold",
