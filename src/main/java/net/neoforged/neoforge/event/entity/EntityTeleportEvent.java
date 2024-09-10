@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -32,6 +33,12 @@ import org.jetbrains.annotations.Nullable;
  **/
 public class EntityTeleportEvent extends EntityEvent implements ICancellableEvent {
     private GlobalVec3 target;
+    @Deprecated(since = "1.21.1", forRemoval = true)
+    protected double targetX;
+    @Deprecated(since = "1.21.1", forRemoval = true)
+    protected double targetY;
+    @Deprecated(since = "1.21.1", forRemoval = true)
+    protected double targetZ;
 
     @Deprecated(since = "1.21.1", forRemoval = true)
     public EntityTeleportEvent(Entity entity, double targetX, double targetY, double targetZ) {
@@ -98,7 +105,12 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         target = target.withLevel(targetLevel);
     }
 
-    public GlobalVec3 getTarget() {
+    // TODO: Merge with getGlobalTarget() into "GlobalVec3 getTarget()" after 1.21.1
+    public Vec3 getTarget() {
+        return target;
+    }
+
+    public GlobalVec3 getGlobalTarget() {
         return target;
     }
 
@@ -114,7 +126,12 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         return getEntity().getZ();
     }
 
-    public GlobalVec3 getPrev() {
+    // TODO: Merge with getGlobalPrev() into "GlobalVec3 getPrev()" after 1.21.1
+    public Vec3 getPrev() {
+        return new GlobalVec3(getEntity());
+    }
+
+    public GlobalVec3 getGlobalPrev() {
         return new GlobalVec3(getEntity());
     }
 
