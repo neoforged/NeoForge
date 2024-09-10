@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.FrontAndTop;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.item.ItemStack;
@@ -17,10 +18,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DropperBlock;
 import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -119,6 +122,21 @@ public class VanillaInventoryCodeHooks {
                     }
                 })
                 .orElse(false);
+    }
+
+    /**
+     * Added capability support for the Crafter dispensing the result
+     */
+    public static ItemStack insertCrafterOutput(Level level, BlockPos pos, CrafterBlockEntity crafterBlockEntity, ItemStack stack) {
+        FrontAndTop frontAndTop = level.getBlockState(pos).getValue(BlockStateProperties.ORIENTATION);
+        return getAttachedItemHandler(level, pos, frontAndTop.front())
+                .map(destinationResult -> {
+                    IItemHandler itemHandler = destinationResult.getKey();
+                    Object destination = destinationResult.getValue();
+                    ItemStack remainder = putStackInInventoryAllSlots(crafterBlockEntity, destination, itemHandler, stack);
+                    return remainder;
+                })
+                .orElse(stack);
     }
 
     private static ItemStack putStackInInventoryAllSlots(BlockEntity source, Object destination, IItemHandler destInventory, ItemStack stack) {

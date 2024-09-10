@@ -137,6 +137,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
+import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -950,7 +951,7 @@ public class ClientHooks {
     /**
      * Modify the position and UVs of the edge quads of generated item models to account for sprite expansion of the
      * front and back quad. Fixes <a href="https://bugs.mojang.com/browse/MC-73186">MC-73186</a> on generated item models.
-     * 
+     *
      * @param elements The generated elements, may include the front and back face
      * @param sprite   The texture from which the elements were generated
      * @return the original elements list
@@ -1035,13 +1036,15 @@ public class ClientHooks {
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
         MapDecorationRendererManager.init();
+        DimensionTransitionScreenManager.init();
+        AnimationTypeManager.init();
     }
 
     /**
      * Fires {@link RenderFrameEvent.Pre}. Called just before {@link GameRenderer#render(float, long, boolean)} in {@link Minecraft#runTick(boolean)}.
      * <p>
      * Fired before the profiler section for "gameRenderer" is started.
-     * 
+     *
      * @param partialTick The current partial tick
      */
     public static void fireRenderFramePre(DeltaTracker partialTick) {
@@ -1052,7 +1055,7 @@ public class ClientHooks {
      * Fires {@link RenderFrameEvent.Post}. Called just after {@link GameRenderer#render(float, long, boolean)} in {@link Minecraft#runTick(boolean)}.
      * <p>
      * Fired after the profiler section for "gameRenderer" is ended.
-     * 
+     *
      * @param partialTick The current partial tick
      */
     public static void fireRenderFramePost(DeltaTracker partialRick) {
@@ -1087,7 +1090,7 @@ public class ClientHooks {
      * Fires the {@link GatherEffectScreenTooltipsEvent} and returns the resulting tooltip lines.
      * <p>
      * Called from {@link EffectRenderingInventoryScreen#renderEffects} just before {@link GuiGraphics#renderTooltip(Font, List, Optional, int, int)} is called.
-     * 
+     *
      * @param screen     The screen rendering the tooltip.
      * @param effectInst The effect instance whose tooltip is being rendered.
      * @param tooltip    An immutable list containing the existing tooltip lines, which consist of the name and the duration.
