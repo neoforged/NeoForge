@@ -29,7 +29,7 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 public class VillagerTradesEvent extends Event {
     protected Int2ObjectMap<List<ItemListing>> trades;
     protected VillagerProfession type;
-    protected RegistryAccess registryAccess;
+    private final RegistryAccess registryAccess;
 
     public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type, RegistryAccess registryAccess) {
         this.trades = trades;

@@ -22,7 +22,7 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 public class WandererTradesEvent extends Event {
     protected List<ItemListing> generic;
     protected List<ItemListing> rare;
-    protected RegistryAccess registryAccess;
+    private final RegistryAccess registryAccess;
 
     public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare, RegistryAccess registryAccess) {
         this.generic = generic;
