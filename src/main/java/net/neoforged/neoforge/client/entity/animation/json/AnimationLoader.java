@@ -35,7 +35,7 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
     private final List<AnimationHolder> strongHolderReferences = new ArrayList<>();
 
     private AnimationLoader() {
-        super(new Gson(), "animations/entity");
+        super(new Gson(), "neoforge/animations/entity");
     }
 
     /**
