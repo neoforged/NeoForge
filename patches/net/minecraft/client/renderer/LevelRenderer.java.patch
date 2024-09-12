@@ -1,9 +1,12 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -233,6 +_,7 @@
+@@ -233,6 +_,10 @@
      private int rainSoundTime;
      private final float[] rainSizeX = new float[1024];
      private final float[] rainSizeZ = new float[1024];
++    /**
++     * Neo: Indicates whether outline effect post-processing was requested for the current frame outside of vanilla codepaths
++     */
 +    private boolean outlineEffectRequested = false;
  
      public LevelRenderer(Minecraft p_234245_, EntityRenderDispatcher p_234246_, BlockEntityRenderDispatcher p_234247_, RenderBuffers p_234248_) {
@@ -239,8 +242,8 @@
 +    }
 +
 +    /**
-+     * Request outline effect post-processing to be enabled for the current frame. Must be called before block entities
-+     * are done rendering, ideally early during the frame
++     * Neo: Request outline effect post-processing to be enabled for the current frame. Must be called before block
++     * entities are done rendering, ideally early during the frame
 +     */
 +    public void requestOutlineEffect() {
 +        this.outlineEffectRequested = true;
