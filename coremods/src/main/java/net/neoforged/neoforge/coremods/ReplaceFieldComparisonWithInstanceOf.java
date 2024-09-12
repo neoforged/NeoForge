@@ -5,15 +5,12 @@
 
 package net.neoforged.neoforge.coremods;
 
-import com.google.gson.reflect.TypeToken;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TargetType;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -36,32 +33,21 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer<Method
     private final String replacementClassName;
 
     /**
-     * @param methods              The methods to scan
      * @param fieldOwner           The class that owns {@code fieldName}
      * @param fieldName            The name of a field in {@code fieldOwner}
      * @param replacementClassName Reference comparisons against {@code fieldName} in {@code fieldOwner} are replaced
      *                             by instanceof checks against this class.
+     * @param methodsToScan        The methods to scan
      */
-    public ReplaceFieldComparisonWithInstanceOf(Set<Target<MethodNode>> methods, String fieldOwner, String fieldName, String replacementClassName) {
-        this.targets = Set.copyOf(methods);
+    public ReplaceFieldComparisonWithInstanceOf(String fieldOwner,
+            String fieldName,
+            String replacementClassName,
+            List<Target<MethodNode>> methodsToScan) {
+        this.targets = Set.copyOf(methodsToScan);
 
         this.fieldOwner = fieldOwner;
         this.fieldName = fieldName;
         this.replacementClassName = replacementClassName;
-    }
-
-    public static List<ITransformer<?>> loadAll() {
-        @SuppressWarnings("unchecked")
-        var dataMap = (Map<String, FieldToInstanceofData>) CoremodUtils.loadResource("field_to_instanceof.json", TypeToken.getParameterized(Map.class, String.class, FieldToInstanceofData.class));
-
-        return dataMap.values().stream()
-                .<ITransformer<?>>map(data -> new ReplaceFieldComparisonWithInstanceOf(
-                        data.targets.stream().map(
-                                targetData -> Target.targetMethod(targetData.owner, targetData.name, targetData.desc)).collect(Collectors.toSet()),
-                        data.cls,
-                        data.name,
-                        data.replacement))
-                .toList();
     }
 
     @Override
@@ -99,8 +85,4 @@ public class ReplaceFieldComparisonWithInstanceOf implements ITransformer<Method
     public TransformerVoteResult castVote(ITransformerVotingContext context) {
         return TransformerVoteResult.YES;
     }
-
-    record FieldToInstanceofData(String cls, String name, String replacement, List<TargetData> targets) {}
-
-    record TargetData(String owner, String name, String desc) {}
 }

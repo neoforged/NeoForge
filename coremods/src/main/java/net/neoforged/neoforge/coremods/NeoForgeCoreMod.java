@@ -24,7 +24,6 @@ public class NeoForgeCoreMod implements ICoreMod {
                 "potted", "getPotted")));
 
         transformers.add(new MethodRedirector());
-        transformers.addAll(ReplaceFieldComparisonWithInstanceOf.loadAll());
 
         return transformers;
     }
