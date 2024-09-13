@@ -31,6 +31,14 @@ public class VillagerTradesEvent extends Event {
     protected VillagerProfession type;
     private final RegistryAccess registryAccess;
 
+    /**
+     * @deprecated Removed in favour of a new constructor that allows RegistryAccess
+     */
+    @Deprecated(forRemoval = true, since = "1.21")
+    public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type) {
+        this(trades, type, RegistryAccess.EMPTY);
+    }
+
     public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type, RegistryAccess registryAccess) {
         this.trades = trades;
         this.type = type;

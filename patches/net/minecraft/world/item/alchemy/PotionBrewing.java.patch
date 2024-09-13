@@ -56,11 +56,18 @@
              Optional<Holder<Potion>> optional = p_43531_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
              if (optional.isEmpty()) {
                  return p_43531_;
-@@ -124,9 +_,10 @@
+@@ -124,9 +_,18 @@
          }
      }
  
--    public static PotionBrewing bootstrap(FeatureFlagSet p_341301_) {
++    /**
++     * @deprecated Removed in favour of another method to allow for RegistryAccess
++     */
++    @Deprecated(forRemoval = true, since = "1.21")
+     public static PotionBrewing bootstrap(FeatureFlagSet p_341301_) {
++        return bootstrap(p_341301_, net.minecraft.core.RegistryAccess.EMPTY);
++    }
++
 +    public static PotionBrewing bootstrap(FeatureFlagSet p_341301_, net.minecraft.core.RegistryAccess registryAccess) {
          PotionBrewing.Builder potionbrewing$builder = new PotionBrewing.Builder(p_341301_);
          addVanillaMixes(potionbrewing$builder);

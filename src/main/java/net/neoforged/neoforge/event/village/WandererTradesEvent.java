@@ -24,6 +24,14 @@ public class WandererTradesEvent extends Event {
     protected List<ItemListing> rare;
     private final RegistryAccess registryAccess;
 
+    /**
+     * @deprecated Removed in favour of a new constructor that allows RegistryAccess
+     */
+    @Deprecated(forRemoval = true, since = "1.21")
+    public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare) {
+        this(generic, rare, RegistryAccess.EMPTY);
+    }
+
     public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare, RegistryAccess registryAccess) {
         this.generic = generic;
         this.rare = rare;
