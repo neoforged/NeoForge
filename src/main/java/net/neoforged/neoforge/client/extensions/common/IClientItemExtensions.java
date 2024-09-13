@@ -130,10 +130,10 @@ public interface IClientItemExtensions {
     /**
      * Called when an armor piece is about to be rendered, allowing parts of the model to be animated or changed.
      *
-     * @param itemStack       The item stack
-     * @param livingEntity    The entity weariing the armor
-     * @param equipmentSlot   The slot the armor is being worn in
-     * @param model           The Armor model being rendered
+     * @param itemStack       The item stack being worn
+     * @param livingEntity    The entity wearing the armor
+     * @param equipmentSlot   The slot the armor stack is being worn in
+     * @param model           The armor model being rendered
      * @param limbSwing       The swing position of the entity's walk animation
      * @param limbSwingAmount The swing speed of the entity's walk animation
      * @param partialTick     The partial tick time
