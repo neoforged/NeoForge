@@ -25,7 +25,7 @@ public class WandererTradesEvent extends Event {
     private final RegistryAccess registryAccess;
 
     /**
-     * @deprecated Removed in favour of a new constructor that allows RegistryAccess
+     * @deprecated Use {@link #WandererTradesEvent(List, List, RegistryAccess)} instead
      */
     @Deprecated(forRemoval = true, since = "1.21")
     public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare) {

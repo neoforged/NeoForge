@@ -61,7 +61,7 @@
      }
  
 +    /**
-+     * @deprecated Removed in favour of another method to allow for RegistryAccess
++     * @deprecated Use {@link #bootstrap(FeatureFlagSet, net.minecraft.core.RegistryAccess)} instead
 +     */
 +    @Deprecated(forRemoval = true, since = "1.21")
      public static PotionBrewing bootstrap(FeatureFlagSet p_341301_) {

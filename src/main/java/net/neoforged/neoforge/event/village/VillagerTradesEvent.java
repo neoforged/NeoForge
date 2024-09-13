@@ -32,7 +32,7 @@ public class VillagerTradesEvent extends Event {
     private final RegistryAccess registryAccess;
 
     /**
-     * @deprecated Removed in favour of a new constructor that allows RegistryAccess
+     * @deprecated Use {@link #VillagerTradesEvent(Int2ObjectMap, VillagerProfession, RegistryAccess)} instead
      */
     @Deprecated(forRemoval = true, since = "1.21")
     public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type) {
