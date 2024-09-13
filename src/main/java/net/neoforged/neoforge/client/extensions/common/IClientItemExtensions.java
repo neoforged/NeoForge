@@ -128,7 +128,7 @@ public interface IClientItemExtensions {
     }
 
     /**
-     * Called when an armor piece is about to be rendered, allowing parts of the model to be animation or changed.
+     * Called when an armor piece is about to be rendered, allowing parts of the model to be animated or changed.
      *
      * @param itemStack       The item stack
      * @param livingEntity    The entity weariing the armor
