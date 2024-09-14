@@ -16,7 +16,7 @@
          this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
      }
  
-@@ -427,6 +_,7 @@
+@@ -427,12 +_,13 @@
  
          this.minecraft.debugRenderer.clear();
          this.minecraft.player.resetPos();
@@ -24,6 +24,13 @@
          this.minecraft.player.setId(p_105030_.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
+         this.minecraft.gameMode.adjustPlayer(this.minecraft.player);
+         this.minecraft.cameraEntity = this.minecraft.player;
+-        this.startWaitingForNewLevel(this.minecraft.player, this.level, ReceivingLevelScreen.Reason.OTHER);
++        this.startWaitingForNewLevel(this.minecraft.player, this.level, ReceivingLevelScreen.Reason.OTHER, null, null);
+         this.minecraft.player.setReducedDebugInfo(p_105030_.reducedDebugInfo());
+         this.minecraft.player.setShowDeathScreen(p_105030_.showDeathScreen());
+         this.minecraft.player.setDoLimitedCrafting(p_105030_.doLimitedCrafting());
 @@ -828,7 +_,8 @@
                          chatcomponent$state,
                          this.strictErrorHandling,
@@ -34,6 +41,15 @@
                      )
                  )
              );
+@@ -1142,7 +_,7 @@
+             localplayer1 = this.minecraft.gameMode.createPlayer(this.level, localplayer.getStats(), localplayer.getRecipeBook());
+         }
+ 
+-        this.startWaitingForNewLevel(localplayer1, this.level, receivinglevelscreen$reason);
++        this.startWaitingForNewLevel(localplayer1, this.level, receivinglevelscreen$reason, localplayer.isDeadOrDying() ? null : resourcekey, localplayer.isDeadOrDying() ? null : resourcekey1);
+         localplayer1.setId(localplayer.getId());
+         this.minecraft.player = localplayer1;
+         if (flag) {
 @@ -1164,6 +_,7 @@
          }
  
@@ -54,6 +70,23 @@
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
+@@ -1420,9 +_,15 @@
+         }
+     }
+ 
++    /** @deprecated Neo: use {@link #startWaitingForNewLevel(LocalPlayer, ClientLevel, ReceivingLevelScreen.Reason, ResourceKey, ResourceKey)} instead. */
++    @Deprecated
+     private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, ReceivingLevelScreen.Reason p_341690_) {
++        this.startWaitingForNewLevel(p_304688_, p_304528_, p_341690_, null, null);
++    }
++
++    private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, ReceivingLevelScreen.Reason p_341690_, @Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
+         this.levelLoadStatusManager = new LevelLoadStatusManager(p_304688_, p_304528_, this.minecraft.levelRenderer);
+-        this.minecraft.setScreen(new ReceivingLevelScreen(this.levelLoadStatusManager::levelReady, p_341690_));
++        this.minecraft.setScreen(net.neoforged.neoforge.client.DimensionTransitionScreenManager.getScreen(toDimension, fromDimension).create(this.levelLoadStatusManager::levelReady, p_341690_));
+     }
+ 
+     @Override
 @@ -1471,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {

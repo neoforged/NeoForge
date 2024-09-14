@@ -68,7 +68,7 @@ runs {
     data {
         configure neoforgeProject.runTypes.data
 
-        programArguments.addAll '--flat', '--all', '--validate',
+        arguments.addAll '--flat', '--all', '--validate',
                 '--mod', 'data_gen_test',
                 '--mod', 'global_loot_test',
                 '--mod', 'scaffolding_test',
@@ -90,13 +90,14 @@ runs {
         gameDir.mkdirs();
 
         workingDirectory.set gameDir
-        programArguments.addAll '--gameDir', gameDir.absolutePath
+        arguments.addAll '--gameDir', gameDir.absolutePath
     }
 }
 
 //We need the assets and natives tasks from the forge project.
 runs.configureEach {
-    dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
+    dependsOn.add(neoforgeProject.runtime.assets)
+    dependsOn.add(neoforgeProject.runtime.natives)
     modSource neoforgeProject.sourceSets.main
     modSource testframeworkProject.sourceSets.main
 }
@@ -104,10 +105,10 @@ runs.configureEach {
 afterEvaluate {
     runs.data {
         // Override --output that forge already has
-        def args = new ArrayList<String>(programArguments.get());
+        def args = new ArrayList<String>(arguments.get());
         def outputIndex = args.indexOf('--output');
         args.set(outputIndex+1, file('src/generated/resources/').absolutePath);
-        programArguments.set(args);
+        arguments.set(args);
     }
     runs.junit.modSources.all().get().values().remove(sourceSets.main)
 }
