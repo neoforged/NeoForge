@@ -31,6 +31,25 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/" + item.getPath()));
     }
 
+    public ItemModelBuilder handheldItem(Item item) {
+        return handheldItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    }
+
+    public ItemModelBuilder handheldItem(ResourceLocation item) {
+        return getBuilder(item.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/" + item.getPath()));
+    }
+
+    public ItemModelBuilder spawnEggItem(Item item) {
+        return spawnEggItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    }
+
+    public ItemModelBuilder spawnEggItem(ResourceLocation item) {
+        return getBuilder(item.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/template_spawn_egg"));
+    }
+
     @Override
     public String getName() {
         return "Item Models: " + modid;
