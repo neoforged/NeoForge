@@ -1,5 +1,16 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
+@@ -233,6 +_,10 @@
+     private int rainSoundTime;
+     private final float[] rainSizeX = new float[1024];
+     private final float[] rainSizeZ = new float[1024];
++    /**
++     * Neo: Indicates whether outline effect post-processing was requested for the current frame outside of vanilla codepaths
++     */
++    private boolean outlineEffectRequested = false;
+ 
+     public LevelRenderer(Minecraft p_234245_, EntityRenderDispatcher p_234246_, BlockEntityRenderDispatcher p_234247_, RenderBuffers p_234248_) {
+         this.minecraft = p_234245_;
 @@ -256,6 +_,8 @@
      }
  
@@ -98,7 +109,17 @@
                  this.blockEntityRenderDispatcher.render(blockentity, f, posestack, multibuffersource$buffersource);
                  posestack.popPose();
              }
-@@ -1085,6 +_,7 @@
+@@ -1080,11 +_,17 @@
+         multibuffersource$buffersource.endBatch(Sheets.hangingSignSheet());
+         multibuffersource$buffersource.endBatch(Sheets.chestSheet());
+         this.renderBuffers.outlineBufferSource().endOutlineBatch();
++        // Neo: handle outline effect requests outside glowing entities
++        if (this.outlineEffectRequested) {
++            flag2 |= this.shouldShowEntityOutlines();
++            this.outlineEffectRequested = false;
++        }
+         if (flag2) {
+             this.entityEffect.process(p_348530_.getGameTimeDeltaTicks());
              this.minecraft.getMainRenderTarget().bindWrite(false);
          }
  
@@ -199,7 +220,7 @@
          float f = this.level.effects().getCloudHeight();
          if (!Float.isNaN(f)) {
              float f1 = 12.0F;
-@@ -2488,6 +_,23 @@
+@@ -2488,6 +_,31 @@
          this.viewArea.setDirty(p_109502_, p_109503_, p_109504_, p_109505_);
      }
  
@@ -218,6 +239,14 @@
 +        synchronized (this.globalBlockEntities) {
 +            this.globalBlockEntities.forEach(blockEntityConsumer);
 +        }
++    }
++
++    /**
++     * Neo: Request outline effect post-processing to be enabled for the current frame. Must be called before block
++     * entities are done rendering, ideally early during the frame
++     */
++    public void requestOutlineEffect() {
++        this.outlineEffectRequested = true;
 +    }
 +
      public void playJukeboxSong(Holder<JukeboxSong> p_350918_, BlockPos p_350830_) {

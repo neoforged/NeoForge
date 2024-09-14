@@ -436,6 +436,11 @@ public class Tags {
          * Examples are Rotten Flesh's Hunger or Pufferfish's Nausea, or Poisonous Potato's Poison.
          */
         public static final TagKey<Item> FOODS_FOOD_POISONING = tag("foods/food_poisoning");
+        /**
+         * All foods edible by animals excluding poisonous foods.
+         * (Does not include {@link ItemTags#PARROT_POISONOUS_FOOD})
+         */
+        public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
