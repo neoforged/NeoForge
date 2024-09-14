@@ -5,11 +5,13 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
@@ -27,7 +29,7 @@ public class RecipePriorityManager extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Logger LOGGER = LogManager.getLogger();
 
-    private Map<ResourceLocation, Integer> recipePriorities = ImmutableMap.of();
+    private Object2IntMap<ResourceLocation> recipePriorities = Object2IntMaps.emptyMap();
     private static final String folder = "recipe_priorities";
 
     public RecipePriorityManager() {
@@ -62,7 +64,7 @@ public class RecipePriorityManager extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
-        ImmutableMap.Builder<ResourceLocation, Integer> builder = ImmutableMap.builder();
+        Object2IntMap<ResourceLocation> builder = new Object2IntOpenHashMap<>();
         for (Map.Entry<ResourceLocation, JsonElement> entry : resourceList.entrySet()) {
             JsonElement json = entry.getValue();
             if (json instanceof JsonObject jsonObject) {
@@ -78,14 +80,14 @@ public class RecipePriorityManager extends SimpleJsonResourceReloadListener {
                 }
             }
         }
-        this.recipePriorities = builder.build();
+        this.recipePriorities = Object2IntMaps.unmodifiable(builder);
         LOGGER.info("Loaded {} recipe priority overrides", this.recipePriorities.size());
     }
 
     /**
      * An immutable map of the registered recipe priorities in layered order.
      */
-    public Map<ResourceLocation, Integer> getRecipePriorities() {
+    public Object2IntMap<ResourceLocation> getRecipePriorities() {
         return this.recipePriorities;
     }
 }
