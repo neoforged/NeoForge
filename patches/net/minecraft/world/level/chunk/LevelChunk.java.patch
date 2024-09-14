@@ -17,15 +17,7 @@
          for (Entry<Heightmap.Types, Heightmap> entry : p_196851_.getHeightmaps()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
-@@ -271,14 +_,14 @@
-                 boolean flag2 = blockstate.hasBlockEntity();
-                 if (!this.level.isClientSide) {
-                     blockstate.onRemove(this.level, p_62865_, p_62866_, p_62867_);
--                } else if (!blockstate.is(block) && flag2) {
-+                } else if ((!blockstate.is(block) || !p_62866_.hasBlockEntity()) && flag2) {
-                     this.removeBlockEntity(p_62865_);
-                 }
- 
+@@ -278,7 +_,7 @@
                  if (!levelchunksection.getBlockState(j, k, l).is(block)) {
                      return null;
                  } else {
@@ -34,7 +26,7 @@
                          p_62866_.onPlace(this.level, p_62865_, blockstate, p_62867_);
                      }
  
-@@ -322,6 +_,10 @@
+@@ -327,6 +_,10 @@
      @Nullable
      public BlockEntity getBlockEntity(BlockPos p_62868_, LevelChunk.EntityCreationType p_62869_) {
          BlockEntity blockentity = this.blockEntities.get(p_62868_);
@@ -45,7 +37,7 @@
          if (blockentity == null) {
              CompoundTag compoundtag = this.pendingBlockEntities.remove(p_62868_);
              if (compoundtag != null) {
-@@ -339,9 +_,6 @@
+@@ -344,9 +_,6 @@
                      this.addAndRegisterBlockEntity(blockentity);
                  }
              }
@@ -55,7 +47,7 @@
          }
  
          return blockentity;
-@@ -355,6 +_,7 @@
+@@ -360,6 +_,7 @@
              }
  
              this.updateBlockEntityTicker(p_156391_);
@@ -63,7 +55,7 @@
          }
      }
  
-@@ -398,6 +_,7 @@
+@@ -403,6 +_,7 @@
              BlockEntity blockentity = this.blockEntities.put(blockpos.immutable(), p_156374_);
              if (blockentity != null && blockentity != p_156374_) {
                  blockentity.setRemoved();
@@ -71,7 +63,7 @@
              }
          }
      }
-@@ -407,9 +_,14 @@
+@@ -412,9 +_,14 @@
      public CompoundTag getBlockEntityNbtForSaving(BlockPos p_62932_, HolderLookup.Provider p_323699_) {
          BlockEntity blockentity = this.getBlockEntity(p_62932_);
          if (blockentity != null && !blockentity.isRemoved()) {
@@ -86,7 +78,7 @@
          } else {
              CompoundTag compoundtag = this.pendingBlockEntities.get(p_62932_);
              if (compoundtag != null) {
-@@ -431,6 +_,7 @@
+@@ -436,6 +_,7 @@
                  }
  
                  blockentity.setRemoved();
@@ -94,7 +86,7 @@
              }
          }
  
-@@ -491,7 +_,7 @@
+@@ -496,7 +_,7 @@
          p_187974_.accept((p_338077_, p_338078_, p_338079_) -> {
              BlockEntity blockentity = this.getBlockEntity(p_338077_, LevelChunk.EntityCreationType.IMMEDIATE);
              if (blockentity != null && p_338079_ != null && blockentity.getType() == p_338078_) {
@@ -103,7 +95,7 @@
              }
          });
      }
-@@ -599,6 +_,7 @@
+@@ -604,6 +_,7 @@
      }
  
      public void clearAllBlockEntities() {
@@ -111,7 +103,7 @@
          this.blockEntities.values().forEach(BlockEntity::setRemoved);
          this.blockEntities.clear();
          this.tickersInLevel.values().forEach(p_187966_ -> p_187966_.rebind(NULL_TICKER));
-@@ -606,6 +_,7 @@
+@@ -611,6 +_,7 @@
      }
  
      public void registerAllBlockEntitiesAfterLevelLoad() {
@@ -119,23 +111,22 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              if (this.level instanceof ServerLevel serverlevel) {
                  this.addGameEventListener(p_187988_, serverlevel);
-@@ -657,6 +_,15 @@
+@@ -662,6 +_,14 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
-+    // FORGE START
++    // Neo: Threadsafe lighting system for BlockEntities that change lighting based on dynamic data changing.
 +    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
 +
 +    @Override
 +    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
 +        return auxLightManager;
 +    }
-+    // FORGE END
 +
      class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
          private final T blockEntity;
          private final BlockEntityTicker<T> ticker;
-@@ -674,6 +_,7 @@
+@@ -679,6 +_,7 @@
                  if (LevelChunk.this.isTicking(blockpos)) {
                      try {
                          ProfilerFiller profilerfiller = LevelChunk.this.level.getProfiler();
@@ -143,7 +134,7 @@
                          profilerfiller.push(this::getType);
                          BlockState blockstate = LevelChunk.this.getBlockState(blockpos);
                          if (this.blockEntity.getType().isValid(blockstate)) {
-@@ -695,7 +_,15 @@
+@@ -700,7 +_,15 @@
                          CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking block entity");
                          CrashReportCategory crashreportcategory = crashreport.addCategory("Block entity being ticked");
                          this.blockEntity.fillCrashReportCategory(crashreportcategory);

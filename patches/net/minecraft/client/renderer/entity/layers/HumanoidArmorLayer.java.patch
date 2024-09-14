@@ -1,19 +1,26 @@
 --- a/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
-@@ -66,22 +_,24 @@
+@@ -66,22 +_,28 @@
              if (armoritem.getEquipmentSlot() == p_117122_) {
                  this.getParentModel().copyPropertiesTo(p_117124_);
                  this.setPartVisibility(p_117124_, p_117122_);
 +                net.minecraft.client.model.Model model = getArmorModelHook(p_117121_, itemstack, p_117122_, p_117124_);
                  boolean flag = this.usesInnerModel(p_117122_);
                  ArmorMaterial armormaterial = armoritem.getMaterial().value();
-                 int i = itemstack.is(ItemTags.DYEABLE) ? FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(itemstack, -6265536)) : -1;
+-                int i = itemstack.is(ItemTags.DYEABLE) ? FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(itemstack, -6265536)) : -1;
  
-                 for (ArmorMaterial.Layer armormaterial$layer : armormaterial.layers()) {
-                     int j = armormaterial$layer.dyeable() ? i : -1;
+-                for (ArmorMaterial.Layer armormaterial$layer : armormaterial.layers()) {
+-                    int j = armormaterial$layer.dyeable() ? i : -1;
 -                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, armormaterial$layer.texture(flag));
-+                    var texture = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_117121_, itemstack, armormaterial$layer, flag, p_117122_);
-+                    this.renderModel(p_117119_, p_117120_, p_117123_, model, j, texture);
++                net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack);
++                int fallbackColor = extensions.getDefaultDyeColor(itemstack);
++                for (int layerIdx = 0; layerIdx < armormaterial.layers().size(); layerIdx++) {
++                    ArmorMaterial.Layer armormaterial$layer = armormaterial.layers().get(layerIdx);
++                    int j = extensions.getArmorLayerTintColor(itemstack, p_117121_, armormaterial$layer, layerIdx, fallbackColor);
++                    if (j != 0) {
++                        var texture = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_117121_, itemstack, armormaterial$layer, flag, p_117122_);
++                        this.renderModel(p_117119_, p_117120_, p_117123_, model, j, texture);
++                    }
                  }
  
                  ArmorTrim armortrim = itemstack.get(DataComponents.TRIM);

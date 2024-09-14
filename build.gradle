@@ -2,31 +2,18 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 plugins {
-    id 'net.neoforged.gradleutils' version '3.0.0-alpha.10' apply false
+    id 'net.neoforged.gradleutils' version '3.0.0'
     id 'com.diffplug.spotless' version '6.22.0' apply false
     id 'net.neoforged.licenser' version '0.7.2'
     id 'neoforge.formatting-conventions'
+    id 'neoforge.versioning'
 }
-
-apply plugin: 'net.neoforged.gradleutils'
 
 ext.isPreReleaseVersion = project.minecraft_version.contains('w') || project.minecraft_version.contains('-')
 
 if (isPreReleaseVersion) {
     project.version = "${project.neoforge_snapshot_next_stable}.0-alpha.${project.minecraft_version}.${(new Date()).format('yyyyMMdd.HHmmss', TimeZone.getTimeZone('UTC'))}"
 } else {
-    gradleutils.version {
-        minecraftVersion project.minecraft_version
-        versionPrefix = null // Reset version prefix, which is set by prev. line
-        tags {
-            label = 'beta'
-            cleanMarkerLabel = 'stable'
-        }
-        branches {
-            suffixBranch = true
-        }
-    }
-
     project.version = gradleutils.version.toString()
 }
 

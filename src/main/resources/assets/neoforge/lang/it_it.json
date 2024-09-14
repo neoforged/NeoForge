@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "La lista delle mod del server non è compatibile",
   "fml.menu.multiplayer.networkincompatible": "L'elenco dei messaggi di rete del server non è compatibile",
   "fml.menu.multiplayer.missingdatapackregistries": "Missing required datapack registries: %1$s",
-  "fml.menu.loadingmods": "{0,choice,0#No mods|1#1 mod|1<%s mods} loaded",
+  "fml.menu.branding": "%s (%s mods)",
   "fml.menu.notification.title": "Notifica di Avvio",
   "fml.menu.accessdenied.title": "Accesso al Server Negato",
   "fml.menu.accessdenied.message": "Fancy Mod Loader could not connect to this server\nThe server %1$s has forbidden modded access",
@@ -107,58 +107,166 @@
   "commands.neoforge.chunkgen.started": "Generating %1$s chunks, in an area of %2$sx%3$s chunks (%4$sx%5$s blocks).",
   "commands.neoforge.chunkgen.success": "Generazione Completata!",
   "commands.neoforge.chunkgen.error": "Generation experienced %1$s errors! Check the log for more information.",
-  "commands.neoforge.chunkgen.stopped": "Generation stopped! %1$s out of %2$s chunks generated. (%3$s%)",
-  "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%)",
+  "commands.neoforge.chunkgen.stopped": "Generation stopped! %1$s out of %2$s chunks generated. (%3$s%%)",
+  "commands.neoforge.chunkgen.status": "Generation status! %1$s out of %2$s chunks generated. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Nessuna pregenerazione attualmente in esecuzione. Esegui `/neoforge genera help` per vedere i comandi per iniziare la generazione.",
   "commands.neoforge.chunkgen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Genera un quadrato centrato sulla posizione data di chunkRadius * 2 su ogni lato.\n§2/neoforge generate stop §r§f- Ferma la generazione corrente e mostra i progressi che aveva completato.\n§2/neoforge generate status §r- Visualizza i progressi completati per la generazione corrente.\n§2/neoforge generate help §r- Visualizza questo messaggio.\nSuggerimenti generali: Se eseguito da una console server, è possibile eseguire la generazione in diverse dimensioni utilizzando /execute in <dimension> neoforge generate...",
+  "commands.neoforge.timespeed.query": "Time in %s flows at a rate of %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.query.default": "Time in %s flows normally (20 minutes per day).",
+  "commands.neoforge.timespeed.set": "Set flow of time in %s to %sx (%s minutes per day).",
+  "commands.neoforge.timespeed.set.default": "Set flow of time in %s to default (20 minutes per day).",
   "commands.config.getwithtype": "Configurazione per %s di tipo %s trovata in %s",
   "commands.config.noconfig": "Configurazione per %s di tipo %s non trovata",
   "neoforge.update.beta.1": "%sATTENZIONE: %sNeoForge Beta",
   "neoforge.update.beta.2": "Potrebbero verificarsi problemi importanti, verificare prima di segnalare.",
   "neoforge.update.newversion": "Nuova versione di NeoForge disponibile: %s",
   "neoforge.menu.updatescreen.title": "Aggiornamento mod",
-  "neoforge.configgui.removeErroringEntities.tooltip": "Imposta a VERO per rimuovere qualsiasi entità che lancia un errore nel suo metodo di update invece di chiudere il server e segnalare un crash log. ATTENZIONE: QUESTO POTREBBE ROMPERE QUALUNQUE COSA, UTILIZZARE CON PARSIMONIA, NON SIAMO REPSPONSABILI DEI DANNI.",
-  "neoforge.configgui.removeErroringEntities": "Rimuovi Entità in Errore",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Imposta a VERO per rimuovere qualsiasi entità blocco che lancia un errore nel suo metodo di update invece di chiudere il server e segnalare un crash log. ATTENZIONE: QUESTO POTREBBE ROMPERE QUALUNQUE COSA, UTILIZZARE CON PARSIMONIA, NON SIAMO REPSPONSABILI DEI DANNI.",
-  "neoforge.configgui.removeErroringBlockEntities": "Rimuovi Entità Blocco in Errore",
-  "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Impostare a Vero per controllare la casella di delimitazione della collisione di tutta l'entità per le scale anziché solo il blocco in cui si trovano. Causa differenze evidenti nella meccanica quindi il comportamento predefinito è quello della vanilla. Predefinito: falso.",
-  "neoforge.configgui.fullBoundingBoxLadders": "Scale Tutta la Bounding Box",
-  "neoforge.configgui.logCascadingWorldGeneration.tooltip": "Scrivi nei log problemi di generazione a cascata durante la popolazione del terreno.",
-  "neoforge.configgui.logCascadingWorldGeneration": "Log Generazione del Mondo a Cascata",
-  "neoforge.configgui.fixVanillaCascading.tooltip": "Risolvi i problemi vanilla che causano generazione del mondo a cascata. Questo CAMBIA la generazione del mondo vanilla quindi NON segnalare bug relativi alle differenze del mondo se questo flag è attivo.",
-  "neoforge.configgui.fixVanillaCascading": "Risolvi Vanilla a Cascata",
-  "neoforge.configgui.dimensionUnloadQueueDelay.tooltip": "Il tempo in tick il quale il server attenderà quando una dimensione è stata impostata per essere liberata. Questo può essere utile quando si caricano e liberano rapidamente dimensioni, come ad esempio gettando oggetti attraverso un portale del nether svariate volte al secondo.",
-  "neoforge.configgui.dimensionUnloadQueueDelay": "Ritardo durante la liberazione delle dimensione",
-  "neoforge.configgui.clumpingThreshold.tooltip": "Controlla la soglia numerica alla quale il Packet51 è preferito rispetto a Packet52, predefinito e minimo 64, massimo 1024.",
-  "neoforge.configgui.clumpingThreshold": "Soglia Di Clumping Pacchetti",
-  "neoforge.configgui.treatEmptyTagsAsAir.tooltip": "La vanilla permette la creazione di ricette usando tag vuoti come aria, permettendo di creare con niente in quel slot. Questo cambia i tag vuoti per usare BARRIER come oggetto, per evitare di creare con l'aria.",
-  "neoforge.configgui.treatEmptyTagsAsAir": "Tratta i tag vuoti come aria",
-  "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "Salta il controllo se un ingrediente è vuoto durante la deserializzazione delle ricette senza forma per evitare che ingredienti complessi memorizzino i tag troppo presto.",
-  "neoforge.configgui.skipEmptyShapelessCheck": "Salta il controllo degli ingredienti vuoti nella deserializzazione delle ricette senza forma",
-  "neoforge.configgui.forceSystemNanoTime.tooltip": "Forza l'uso di System.nanoTime invece di glfwGetTime come fornitore principale di tempo al client.",
-  "neoforge.configgui.forceSystemNanoTime": "Forza System.nanoTime",
-  "neoforge.configgui.zoomInMissingModelTextInGui.tooltip": "Disattiva per rendere il testo del modello mancante nella gui adatto all'interno dello slot.",
-  "neoforge.configgui.zoomInMissingModelTextInGui": "Zoom nel testo del modello mancante nella GUI",
-  "neoforge.configgui.forgeCloudsEnabled.tooltip": "Abilita il caricamento della geometria delle nuvole nella GPU per un rendering più veloce.",
-  "neoforge.configgui.forgeCloudsEnabled": "Usa il renderer delle nuvole di NeoForge",
-  "neoforge.configgui.disableStairSlabCulling.tooltip": "Disabilita l'abbattimento delle facce nascoste accanto alle scale e alle lastre. Causa rendering aggiuntivo, ma potrebbe risolvere alcuni pacchetti di risorse che sfruttano questa meccanica in vanilla.",
-  "neoforge.configgui.disableStairSlabCulling": "Disabilita l'abbattimento delle scala/lastra",
-  "neoforge.configgui.alwaysSetupTerrainOffThread.tooltip": "Permetti a NeoForge di mettere in coda tutti gli aggiornamenti dei chunk nel thread di aggiornamento chunk.\nPuò aumentare significativamente il FPS ma può anche causare uno strano lag nel rendering.\nNon consigliato per i computer senza un numero significativo di core disponibili.",
-  "neoforge.configgui.alwaysSetupTerrainOffThread": "Forza il rendering dei chunk nel thread",
+  "neoforge.configuration.uitext.title": "%s Configuration",
+  "neoforge.configuration.uitext.type.client": "Client Settings",
+  "neoforge.configuration.uitext.type.server": "Server Settings",
+  "neoforge.configuration.uitext.type.common": "Common settings",
+  "neoforge.configuration.uitext.type.startup": "Startup settings",
+  "neoforge.configuration.uitext.title.client": "%s Client Configuration",
+  "neoforge.configuration.uitext.title.server": "%s Server Configuration",
+  "neoforge.configuration.uitext.title.common": "%s Common Configuration",
+  "neoforge.configuration.uitext.title.startup": "%s Startup Configuration",
+  "neoforge.configuration.uitext.notonline": [
+    {
+      "text": "Settings in here are determined by the server and cannot be changed while online.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notlan": [
+    {
+      "text": "Settings in here cannot be edited while your game is open to LAN. Please return to the main menu and load the world again.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.notloaded": [
+    {
+      "text": "Settings in here are only available while a world is loaded.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.unsupportedelement": [
+    {
+      "text": "This value cannot be edited in the UI. Please contact the mod author about providing a custom UI for it.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.longstring": [
+    {
+      "text": "This value is too long to be edited in the UI. Please edit it in the config file.",
+      "color": "red"
+    }
+  ],
+  "neoforge.configuration.uitext.section": "%s...",
+  "neoforge.configuration.uitext.sectiontext": "Edit",
+  "neoforge.configuration.uitext.breadcrumb": [
+    {
+      "index": 0
+    },
+    {
+      "text": " > ",
+      "color": "gold",
+      "bold": true
+    },
+    {
+      "index": 1
+    }
+  ],
+  "neoforge.configuration.uitext.listelement": "%s:",
+  "neoforge.configuration.uitext.undo": "Undo",
+  "neoforge.configuration.uitext.undo.tooltip": "Reverts changes on this screen only.",
+  "neoforge.configuration.uitext.reset": "Reset",
+  "neoforge.configuration.uitext.reset.tooltip": "Reverts everything on this screen to its default value.",
+  "neoforge.configuration.uitext.newlistelement": "+",
+  "neoforge.configuration.uitext.listelementup": "⏶",
+  "neoforge.configuration.uitext.listelementdown": "⏷",
+  "neoforge.configuration.uitext.listelementremove": "❌",
+  "neoforge.configuration.uitext.rangetooltip": [
+    {
+      "text": "\n\nRange: ",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    }
+  ],
+  "neoforge.configuration.uitext.filenametooltip": [
+    {
+      "text": "File: \"",
+      "color": "gray"
+    },
+    {
+      "index": 0,
+      "color": "gray"
+    },
+    {
+      "text": "\"",
+      "color": "gray"
+    }
+  ],
+  "neoforge.configuration.uitext.common": "Common Options",
+  "neoforge.configuration.uitext.client": "Client Options",
+  "neoforge.configuration.uitext.server": "Server Options",
+  "neoforge.configuration.uitext.startup": "Startup Options",
+  "neoforge.configuration.uitext.restart.game.title": "Minecraft needs to be restarted",
+  "neoforge.configuration.uitext.restart.game.text": "One or more of the configuration option that were changed will only take effect when the game is started.",
+  "neoforge.configuration.uitext.restart.server.title": "World needs to be reloaded",
+  "neoforge.configuration.uitext.restart.server.text": "One or more of the configuration option that were changed will only take effect when the world is reloaded.",
+  "neoforge.configuration.uitext.restart.return": "Ignore",
+  "neoforge.configuration.uitext.restart.return.tooltip": [
+    {
+      "text": "Your changes will have no effect until you restart!",
+      "color": "red",
+      "bold": true
+    }
+  ],
+  "neoforge.configuration.title": "NeoForge Configuration",
+  "neoforge.configuration.section.neoforge.client.toml": "Client settings",
+  "neoforge.configuration.section.neoforge.client.toml.title": "Client settings",
+  "neoforge.configuration.section.neoforge.common.toml": "Common settings",
+  "neoforge.configuration.section.neoforge.common.toml.title": "Common settings",
+  "neoforge.configuration.section.neoforge.server.toml": "Server settings",
+  "neoforge.configuration.section.neoforge.server.toml.title": "Server settings",
+  "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
+  "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
+  "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Abilita la pipeline di rendering dei blocchi NeoForge - risolve l'illuminazione dei modelli personalizzati.",
-  "neoforge.configgui.forgeLightPipelineEnabled": "Abilita Pipeline di illuminazione NeoForge",
-  "neoforge.configgui.selectiveResourceReloadEnabled.tooltip": "Se abilitata, rende più rapide specifiche attività di ricarica come il cambio di lingua.",
-  "neoforge.configgui.selectiveResourceReloadEnabled": "Abilita Caricamento Selettivo Delle Risorse",
-  "neoforge.configgui.showLoadWarnings.tooltip": "Se abilitata, NeoForge mostrerà tutti gli avvisi che si sono verificati durante il caricamento.",
+  "neoforge.configgui.fullBoundingBoxLadders": "Scale Tutta la Bounding Box",
+  "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Impostare a Vero per controllare la casella di delimitazione della collisione di tutta l'entità per le scale anziché solo il blocco in cui si trovano. Causa differenze evidenti nella meccanica quindi il comportamento predefinito è quello della vanilla. Predefinito: falso.",
+  "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
+  "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.",
+  "neoforge.configgui.logUntranslatedItemTagWarnings": "Log Untranslated Item Tags",
+  "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.",
+  "neoforge.configgui.permissionHandler": "Permission Handler",
+  "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
+  "neoforge.configgui.removeErroringBlockEntities": "Rimuovi Entità Blocco in Errore",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
+    "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    {
+      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "color": "red",
+      "bold": true
+    }
+  ],
+  "neoforge.configgui.removeErroringEntities": "Rimuovi Entità in Errore",
+  "neoforge.configgui.removeErroringEntities.tooltip": [
+    "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.\n\n",
+    {
+      "text": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",
+      "color": "red",
+      "bold": true
+    }
+  ],
   "neoforge.configgui.showLoadWarnings": "Mostra Avvisi del Caricamento",
-  "neoforge.configgui.disableVersionCheck.tooltip": "Impostare a Vero per disabilitare la meccanica di controllo della versione di NeoForge. NeoForge chiede un piccolo file json sul nostro server per informazioni sulla versione. Per maggiori dettagli vedere la classe ForgeVersion sul nostro github.",
-  "neoforge.configgui.disableVersionCheck": "Disabilita Controllo Versione NeoForge",
-  "neoforge.configgui.cachePackAccess.tooltip": "Impostare a Vero per memorizzare gli elenchi delle risorse in pacchetti di risorse e dati",
-  "neoforge.configgui.cachePackAccess": "Accesso Pacchetto Cache",
-  "neoforge.configgui.indexVanillaPackCachesOnThread.tooltip": "Impostare a Vero per indicizzare le risorse e i pacchetti di dati vanilla sul thread",
-  "neoforge.configgui.indexVanillaPackCachesOnThread": "Indicizza pacchetti di risorse vanilla sul thread",
-  "neoforge.configgui.indexModPackCachesOnThread.tooltip": "Impostare a Vero per indicizzare le risorse e i pacchetti di dati delle mod sul thread",
-  "neoforge.configgui.indexModPackCachesOnThread": "Indicizza pacchetti di risorse mod sul thread",
+  "neoforge.configgui.showLoadWarnings.tooltip": "Se abilitata, NeoForge mostrerà tutti gli avvisi che si sono verificati durante il caricamento.",
+  "neoforge.configgui.useCombinedDepthStencilAttachment": "Use combined DEPTH_STENCIL Attachment",
+  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",
@@ -200,5 +308,8 @@
   "neoforge.network.aux_light_data.failed": "Errore durante la gestione dei dati della luce per il chunk %s: %s",
   "neoforge.network.data_maps.failed": "Gestione della sincronizzazione del registro della mappa dati fallita per il registro %s: %s",
   "neoforge.network.data_maps.missing_our": "Impossibile connettersi al server in quanto manca un registro della mappa dati obbligatorio presente nel client: %s",
-  "neoforge.network.data_maps.missing_their": "Impossibile connettersi al server in quanto presenta un registro della mappa dati obbligatorio assente nel client: %s"
+  "neoforge.network.data_maps.missing_their": "Impossibile connettersi al server in quanto presenta un registro della mappa dati obbligatorio assente nel client: %s",
+  "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
+  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details"
 }

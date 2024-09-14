@@ -52,12 +52,24 @@
              RenderSystem.applyModelViewMatrix();
              Lighting.setupFor3DItems();
              GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
-@@ -1079,7 +_,7 @@
+@@ -1070,7 +_,8 @@
+ 
+             if (this.minecraft.getOverlay() != null) {
+                 try {
+-                    this.minecraft.getOverlay().render(guigraphics, i, j, p_348648_.getRealtimeDeltaTicks());
++                    // Neo: Fix https://bugs.mojang.com/browse/MC-273464
++                    this.minecraft.getOverlay().render(guigraphics, i, j, p_348648_.getGameTimeDeltaPartialTick(false));
+                 } catch (Throwable throwable2) {
+                     CrashReport crashreport = CrashReport.forThrowable(throwable2, "Rendering overlay");
+                     CrashReportCategory crashreportcategory = crashreport.addCategory("Overlay render details");
+@@ -1079,7 +_,9 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
 -                    this.minecraft.screen.renderWithTooltip(guigraphics, i, j, p_348648_.getRealtimeDeltaTicks());
-+                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, this.minecraft.getTimer().getRealtimeDeltaTicks());
++                    // Neo: Wrap Screen#render to allow for GUI Layers and ScreenEvent.Render.[Pre/Post]
++                    // Also fixes https://bugs.mojang.com/browse/MC-273464
++                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, p_348648_.getGameTimeDeltaPartialTick(false));
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");

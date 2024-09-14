@@ -47,7 +47,6 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
@@ -124,8 +123,6 @@ public class FluidType {
         this.viscosity = properties.viscosity;
         this.rarity = properties.rarity;
         this.dripInfo = properties.dripInfo;
-
-        this.initClient();
     }
 
     /* Default Accessors */
@@ -849,27 +846,10 @@ public class FluidType {
         return name != null ? name.toString() : "Unregistered FluidType";
     }
 
-    private Object renderProperties;
-
-    /*
-       DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
-       Call RenderProperties.get instead
+    /**
+     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
      */
-    public Object getRenderPropertiesInternal() {
-        return renderProperties;
-    }
-
-    private void initClient() {
-        // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
-        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !DatagenModLoader.isRunningDataGen()) {
-            initializeClient(properties -> {
-                if (properties == this)
-                    throw new IllegalStateException("Don't extend IFluidTypeRenderProperties in your fluid type, use an anonymous class instead.");
-                this.renderProperties = properties;
-            });
-        }
-    }
-
+    @Deprecated(forRemoval = true, since = "1.21")
     public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {}
 
     /**

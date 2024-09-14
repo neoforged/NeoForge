@@ -16,8 +16,8 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -62,8 +62,8 @@ public class CustomShieldTest {
         }
 
         @Override
-        public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
-            return toolAction == ToolActions.SHIELD_BLOCK;
+        public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+            return itemAbility == ItemAbilities.SHIELD_BLOCK;
         }
     }
 }

@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.MushroomCow;
@@ -19,51 +21,51 @@ import net.minecraft.world.entity.monster.Bogged;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ * This interfaces allows shears (modded & vanilla) and {@linkplain Entity entities} (modded & vanilla) to cooperate
+ * without needing advance knowledge of each other.
+ * <p>
+ * In the future, this system may function for implementations on {@link Block}s as well.
  *
- * This allows for mods to create there own Shear-like items
- * and have them interact with Blocks/Entities without extra work.
- * Also, if your block/entity supports the Shears, this allows you
- * to support mod-shears as well.
- *
- * TODO: reconsider this system, currently it is implemented but not checked for, for blocks.
+ * TODO: Implement support for {@link Block} or remove default implementations from vanilla block classes.
  */
 public interface IShearable {
     /**
-     * Checks if the object is currently shearable
-     * Example: Sheep return false when they have no wool
+     * Checks if this object can be sheared.
+     * <p>
+     * For example, Sheep return false when they have no wool.
      *
-     * @param item  The ItemStack that is being used, may be empty.
+     * @param item  The shear tool that is being used, may be empty.
      * @param level The current level.
-     * @param pos   Block's position in level.
-     * @return If this is shearable, and onSheared should be called.
+     * @param pos   The block position of this object (if this is an entity, the value of {@link Entity#blockPosition()}.
+     * @return If this is shearable, and {@link #onSheared} may be called.
      */
     default boolean isShearable(@Nullable Player player, ItemStack item, Level level, BlockPos pos) {
-        //Default to checking readyForShearing if we are the vanilla shearable interface, and if we aren't assume a default of true
+        // Default to checking readyForShearing if we are the vanilla shearable interface, and if we aren't assume a default of true
         return !(this instanceof Shearable shearable) || shearable.readyForShearing();
     }
 
     /**
-     * Performs the shear function on this object.
-     * This is called for both client, and server.
-     * The object should perform all actions related to being sheared,
-     * except for dropping of the items, and removal of the block.
-     * As those are handled by ItemShears itself.
+     * Shears this object. This function is called on both sides, and is responsible for performing any and all actions that happen when sheared, except spawning drops.
      * <p>
-     * For entities, they should trust their internal location information over the values passed into this function.
+     * Drops that are spawned as a result of being sheared should be returned from this method, and will be spawned on the server using {@link #spawnShearedDrop}.
+     * <p>
+     * {@linkplain Entity Entities} may respect their internal position values instead of relying on the {@code pos} parameter.
      *
-     * @param item  The ItemStack that is being used, may be empty.
+     * @param item  The shear tool that is being used, may be empty.
      * @param level The current level.
-     * @param pos   If this is a block, the block's position in level.
-     * @return A List containing all items that resulted from the shearing process. May be empty.
+     * @param pos   The block position of this object (if this is an entity, the value of {@link Entity#blockPosition()}.
+     * @return A list holding all dropped items resulting from the shear operation, or an empty list if nothing dropped.
      */
+    @SuppressWarnings("deprecation") // Expected call to deprecated vanilla Shearable#shear
     default List<ItemStack> onSheared(@Nullable Player player, ItemStack item, Level level, BlockPos pos) {
         if (this instanceof LivingEntity entity && this instanceof Shearable shearable) {
             if (!level.isClientSide) {
-                List<ItemEntity> drops = new ArrayList<>();
-                entity.captureDrops(drops);
+                entity.captureDrops(new ArrayList<>());
                 shearable.shear(player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS);
                 return entity.captureDrops(null).stream().map(ItemEntity::getItem).toList();
             }
@@ -74,31 +76,39 @@ public interface IShearable {
     /**
      * Performs the logic used to drop a shear result into the world at the correct position and with the proper movement.
      * <br>
-     * For entities, they should trust their internal location information over the values passed into this function.
+     * {@linkplain Entity Entities} may respect their internal position values instead of relying on the {@code pos} parameter.
      *
      * @param level The current level.
-     * @param pos   If this is a block, the block's position in level.
-     * @param drop  The ItemStack to drop.
+     * @param pos   The block position of this object (if this is an entity, the value of {@link Entity#blockPosition()}.
+     * @param drop  The stack to drop, from the list of drops returned by {@link #onSheared}.
      */
     default void spawnShearedDrop(Level level, BlockPos pos, ItemStack drop) {
         if (this instanceof SnowGolem golem) {
-            golem.spawnAtLocation(drop, 1.7F);
+            // SnowGolem#shear uses spawnAtLocation(..., this.getEyeHeight());
+            golem.spawnAtLocation(drop, golem.getEyeHeight());
         } else if (this instanceof Bogged bogged) {
-            bogged.spawnAtLocation(drop);
+            // Bogged#spawnShearedMushrooms uses spawnAtLocation(..., this.getBbHeight());
+            bogged.spawnAtLocation(drop, bogged.getBbHeight());
         } else if (this instanceof MushroomCow cow) {
-            // Note: Vanilla uses addFreshEntity instead of spawnAtLocation for spawning mooshrooms drops
-            // In case a mod is capturing drops for the entity we instead do it the same way we patch in MushroomCow#shear
+            // We patch Mooshrooms from using addFreshEntity to spawnAtLocation to spawnAtLocation to capture the drops.
+            // In case a mod is also capturing drops, we also replicate that logic here.
             ItemEntity itemEntity = cow.spawnAtLocation(drop, cow.getBbHeight());
-            if (itemEntity != null) itemEntity.setNoPickUpDelay();
-        } else if (this instanceof LivingEntity entity) {
+            if (itemEntity != null) {
+                itemEntity.setNoPickUpDelay();
+            }
+        } else if (this instanceof Entity entity) {
+            // Everything else uses the "default" rules invented by Sheep#shear, which uses a y-offset of 1 and these random delta movement values.
             ItemEntity itemEntity = entity.spawnAtLocation(drop, 1);
             if (itemEntity != null) {
-                itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().add(
-                        ((entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.1F),
-                        (entity.getRandom().nextFloat() * 0.05F),
-                        ((entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.1F)));
+                RandomSource rand = entity.getRandom();
+                Vec3 newDelta = itemEntity.getDeltaMovement().add(
+                        (rand.nextFloat() - rand.nextFloat()) * 0.1F,
+                        rand.nextFloat() * 0.05F,
+                        (rand.nextFloat() - rand.nextFloat()) * 0.1F);
+                itemEntity.setDeltaMovement(newDelta);
             }
         } else {
+            // If we aren't an entity, fallback to spawning the item at the given position.
             level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), drop));
         }
     }

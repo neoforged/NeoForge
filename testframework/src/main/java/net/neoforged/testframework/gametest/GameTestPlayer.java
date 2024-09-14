@@ -99,7 +99,7 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
 
     @SuppressWarnings("unchecked")
     private Stream<Packet<? extends ClientCommonPacketListener>> outboundPackets() {
-        return ((EmbeddedChannel) connection.connection.channel()).outboundMessages().stream()
+        return ((EmbeddedChannel) connection.getConnection().channel()).outboundMessages().stream()
                 .filter(Packet.class::isInstance).map(obj -> (Packet<? extends ClientCommonPacketListener>) obj)
                 .flatMap((Function<Packet<? extends ClientCommonPacketListener>, Stream<? extends Packet<? extends ClientCommonPacketListener>>>) packet -> {
                     if (!(packet instanceof ClientboundBundlePacket clientboundBundlePacket)) return Stream.of(packet);

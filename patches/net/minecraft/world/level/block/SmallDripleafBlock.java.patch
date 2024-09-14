@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/SmallDripleafBlock.java
++++ b/net/minecraft/world/level/block/SmallDripleafBlock.java
+@@ -90,6 +_,8 @@
+         } else {
+             BlockPos blockpos = p_154617_.below();
+             BlockState blockstate = p_154616_.getBlockState(blockpos);
++            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_154616_, blockpos, Direction.UP, p_154615_);
++            if (!soilDecision.isDefault()) return soilDecision.isTrue();
+             return this.mayPlaceOn(blockstate, p_154616_, blockpos);
+         }
+     }

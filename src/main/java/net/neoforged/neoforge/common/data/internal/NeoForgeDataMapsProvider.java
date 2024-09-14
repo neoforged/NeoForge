@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.data.internal;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -20,9 +21,13 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.random.Weight;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
+import net.minecraft.world.entity.ai.behavior.WorkAtComposter;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.HoneycombItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -34,9 +39,11 @@ import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
 import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
 import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
+import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
     public NeoForgeDataMapsProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
@@ -46,7 +53,8 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
     @Override
     protected void gather() {
         final var compostables = builder(NeoForgeDataMaps.COMPOSTABLES);
-        ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new Compostable(chance), false));
+        final List<Item> villagerCompostables = ObfuscationReflectionHelper.getPrivateValue(WorkAtComposter.class, null, "COMPOSTABLE_ITEMS");
+        ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new Compostable(chance, villagerCompostables.contains(item.asItem())), false));
 
         final var fuels = builder(NeoForgeDataMaps.FURNACE_FUELS);
         AbstractFurnaceBlockEntity.buildFuels((value, time) -> value.ifLeft(item -> fuels.add(item.builtInRegistryHolder(), new FurnaceFuel(time), false))
@@ -70,5 +78,15 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         Arrays.stream(ObfuscationReflectionHelper.<EntityType<?>[], MonsterRoomFeature>getPrivateValue(MonsterRoomFeature.class, null, "MOBS"))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .forEach((type, weight) -> monsterRoomMobs.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(type), new MonsterRoomMob(Weight.of((int) (weight * 100))), false));
+
+        final var oxidizables = builder(NeoForgeDataMaps.OXIDIZABLES);
+        WeatheringCopper.NEXT_BY_BLOCK.get().forEach((now, after) -> {
+            oxidizables.add(now.builtInRegistryHolder(), new Oxidizable(after), false);
+        });
+
+        final var waxables = builder(NeoForgeDataMaps.WAXABLES);
+        HoneycombItem.WAXABLES.get().forEach((now, after) -> {
+            waxables.add(now.builtInRegistryHolder(), new Waxable(after), false);
+        });
     }
 }

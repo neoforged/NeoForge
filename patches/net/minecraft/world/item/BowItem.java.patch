@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -26,7 +_,7 @@
-     public void releaseUsing(ItemStack p_40667_, Level p_40668_, LivingEntity p_40669_, int p_40670_) {
-         if (p_40669_ instanceof Player player) {
+@@ -28,6 +_,8 @@
              ItemStack itemstack = player.getProjectile(p_40667_);
--            if (!itemstack.isEmpty()) {
-+            if (!itemstack.isEmpty()) { // Porting 1.20.5 redo EventHooks.onArrowLoose
+             if (!itemstack.isEmpty()) {
                  int i = this.getUseDuration(p_40667_, p_40669_) - p_40670_;
++                i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty());
++                if (i < 0) return;
                  float f = getPowerForTime(i);
                  if (!((double)f < 0.1)) {
+                     List<ItemStack> list = draw(p_40667_, itemstack, player);
 @@ -82,6 +_,10 @@
      public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
          ItemStack itemstack = p_40673_.getItemInHand(p_40674_);

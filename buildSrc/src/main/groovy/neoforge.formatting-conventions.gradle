@@ -34,7 +34,8 @@ spotless {
         indentWithSpaces()
         removeUnusedImports()
         toggleOffOn()
-        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
+        // Pin version to 4.31 because of a Spotless bug https://github.com/diffplug/spotless/issues/1992
+        eclipse('4.31').configFile rootProject.file('codeformat/formatter-config.xml')
         importOrder()
 
         // courtesy of diffplug/spotless#240

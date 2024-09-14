@@ -5,14 +5,16 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import com.google.common.collect.Multimap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -25,8 +27,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -47,13 +47,15 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.ApiStatus;
@@ -67,19 +69,13 @@ public interface IItemExtension {
 
     /**
      * ItemStack sensitive version of getDefaultAttributeModifiers. Used when a stack has no {@link DataComponents#ATTRIBUTE_MODIFIERS} component.
+     * 
+     * @see {@link IItemStackExtension#getAttributeModifiers()} for querying effective attribute modifiers.
      */
     @SuppressWarnings("deprecation")
     default ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         return self().getDefaultAttributeModifiers();
     }
-
-    /**
-     * Called to allow items to modify the attributes on them.
-     *
-     * @param slot      The slot to adjust the attributes for.
-     * @param modifiers Modifiers currently on the stack either because of a {@link DataComponents#ATTRIBUTE_MODIFIERS} component, or the default attribute modifiers
-     */
-    default void adjustAttributeModifiers(ItemStack stack, EquipmentSlot slot, Multimap<Holder<Attribute>, AttributeModifier> modifiers) {}
 
     /**
      * Called when a player drops the item into the world, returning false from this
@@ -392,13 +388,13 @@ public interface IItemExtension {
 
     /**
      * Queries if an item can perform the given action.
-     * See {@link ToolActions} for a description of each stock action
+     * See {@link ItemAbilities} for a description of each stock action
      * 
-     * @param stack      The stack being used
-     * @param toolAction The action being queried
+     * @param stack       The stack being used
+     * @param itemAbility The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+    default boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
         return false;
     }
 
@@ -429,17 +425,43 @@ public interface IItemExtension {
      * either from the enchantment table or other random enchantment mechanisms.
      * As a special case, books are primary items for every enchantment.
      * <p>
-     * Other application mechanisms, such as the anvil, check {@link Enchantment#isSupportedItem(ItemStack)} instead.
-     * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag.
+     * Other application mechanisms, such as the anvil, check {@link #supportsEnchantment(ItemStack, Holder)} instead.
+     * If you want those mechanisms to be able to apply an enchantment, you will need to add your item to the relevant tag or override that method.
      *
      * @param stack       the item stack to be enchanted
      * @param enchantment the enchantment to be applied
      * @return true if this item should be treated as a primary item for the enchantment
      * @apiNote Call via {@link IItemStackExtension#isPrimaryItemFor(Holder)}
+     * 
+     * @see #supportsEnchantment(ItemStack, Holder)
      */
     @ApiStatus.OverrideOnly
     default boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
-        return stack.getItem() == Items.BOOK || enchantment.value().isPrimaryItem(stack);
+        if (stack.getItem() == Items.BOOK) {
+            return true;
+        }
+        Optional<HolderSet<Item>> primaryItems = enchantment.value().definition().primaryItems();
+        return this.supportsEnchantment(stack, enchantment) && (primaryItems.isEmpty() || stack.is(primaryItems.get()));
+    }
+
+    /**
+     * Checks if the provided enchantment is applicable to the passed item stack.
+     * <p>
+     * By default, this checks if the {@link EnchantmentDefinition#supportedItems()} contains this item,
+     * special casing enchanted books as they may receive any enchantment.
+     * <p>
+     * Overriding this method allows for dynamic logic that would not be possible using the tag system.
+     *
+     * @param stack       the item stack to be enchanted
+     * @param enchantment the enchantment to be applied
+     * @return true if this item can accept the enchantment
+     * @apiNote Call via {@link IItemStackExtension#supportsEnchantment(Holder)}
+     * 
+     * @see #isPrimaryItemFor(ItemStack, Holder)
+     */
+    @ApiStatus.OverrideOnly
+    default boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+        return stack.is(Items.ENCHANTED_BOOK) || enchantment.value().isSupportedItem(stack);
     }
 
     /**
@@ -732,5 +754,33 @@ public interface IItemExtension {
      */
     default boolean canGrindstoneRepair(ItemStack stack) {
         return false;
+    }
+
+    /**
+     * {@return false to make item entity immune to the damage.}
+     */
+    default boolean canBeHurtBy(ItemStack stack, DamageSource source) {
+        return true;
+    }
+
+    /**
+     * Handles enchanting an item (i.e. in the enchanting table), potentially transforming it to a new item in the process.
+     * <p>
+     * {@linkplain Items#BOOK Books} use this functionality to transform themselves into enchanted books.
+     *
+     * @param stack        The stack being enchanted.
+     * @param enchantments The enchantments being applied.
+     * @return The newly-enchanted stack.
+     */
+    default ItemStack applyEnchantments(ItemStack stack, List<EnchantmentInstance> enchantments) {
+        if (stack.is(Items.BOOK)) {
+            stack = stack.transmuteCopy(Items.ENCHANTED_BOOK);
+        }
+
+        for (EnchantmentInstance inst : enchantments) {
+            stack.enchant(inst.enchantment, inst.level);
+        }
+
+        return stack;
     }
 }

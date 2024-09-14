@@ -1,4 +1,15 @@
 {
+  "neoforge:overlays": {
+    "entries": [
+      {
+        "directory": "neoforge_overlays_test",
+        "formats": [
+          0,
+          2147483647
+        ]
+      }
+    ]
+  },
   "overlays": {
     "entries": [
       {

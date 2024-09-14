@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/saveddata/SavedData.java
 +++ b/net/minecraft/world/level/saveddata/SavedData.java
+@@ -37,7 +_,7 @@
+             NbtUtils.addCurrentDataVersion(compoundtag);
+ 
+             try {
+-                NbtIo.writeCompressed(compoundtag, p_77758_.toPath());
++                net.neoforged.neoforge.common.IOUtilities.writeNbtCompressed(compoundtag, p_77758_.toPath());
+             } catch (IOException ioexception) {
+                 LOGGER.error("Could not save data {}", this, ioexception);
+             }
 @@ -47,7 +_,10 @@
      }
  

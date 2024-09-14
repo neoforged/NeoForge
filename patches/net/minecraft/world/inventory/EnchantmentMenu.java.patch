@@ -37,6 +37,25 @@
                      }
  
                      for (int l = 0; l < 3; l++) {
+@@ -163,14 +_,10 @@
+                             List<EnchantmentInstance> list = this.getEnchantmentList(p_347276_.registryAccess(), itemstack, p_39466_, this.costs[p_39466_]);
+                             if (!list.isEmpty()) {
+                                 p_39465_.onEnchantmentPerformed(itemstack, i);
+-                                if (itemstack.is(Items.BOOK)) {
+-                                    itemstack2 = itemstack.transmuteCopy(Items.ENCHANTED_BOOK);
+-                                    this.enchantSlots.setItem(0, itemstack2);
+-                                }
+-
+-                                for (EnchantmentInstance enchantmentinstance : list) {
+-                                    itemstack2.enchant(enchantmentinstance.enchantment, enchantmentinstance.level);
+-                                }
++                                // Neo: Allow items to transform themselves when enchanted, instead of relying on hardcoded transformations for Items.BOOK
++                                itemstack2 = itemstack.getItem().applyEnchantments(itemstack, list);
++                                this.enchantSlots.setItem(0, itemstack2);
++                                net.neoforged.neoforge.common.CommonHooks.onPlayerEnchantItem(p_39465_, itemstack2, list);
+ 
+                                 itemstack1.consume(i, p_39465_);
+                                 if (itemstack1.isEmpty()) {
 @@ -249,7 +_,7 @@
                  if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
                      return ItemStack.EMPTY;
