@@ -33,10 +33,19 @@ import org.jetbrains.annotations.Nullable;
  **/
 public class EntityTeleportEvent extends EntityEvent implements ICancellableEvent {
     private GlobalVec3 target;
+    /**
+     * @deprecated Use {@link #getTarget()} and {@link #setTargetX(double)} instead.
+     */
     @Deprecated(since = "1.21.1", forRemoval = true)
     protected double targetX;
+    /**
+     * @deprecated Use {@link #getTarget()} and {@link #setTargetY(double)} instead.
+     */
     @Deprecated(since = "1.21.1", forRemoval = true)
     protected double targetY;
+    /**
+     * @deprecated Use {@link #getTarget()} and {@link #setTargetZ(double)} instead.
+     */
     @Deprecated(since = "1.21.1", forRemoval = true)
     protected double targetZ;
 
@@ -84,23 +93,37 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         return target.level instanceof ServerLevel serverlevel ? serverlevel : backup;
     }
 
+    // TODO: Update Javadoc when the deprecated constructors get removed 
     /**
      * Checks if the event sub-type support changing the target level.
      * <p>
-     * Note that a positive result is not a guarantee that the change will be honored by a modded mode of teleportation. We do not recommend changing the target level when original source and target levels are the same.
+     * 
+     * @apiNote At the moment, a positive result is not a guarantee that the change will be honored by a modded mode of teleportation.
+     *          Only changing the target level when the original target level is different from the source level can be considered safe in 1.21.1.
+     * @implSpec This needs to be overwritten by subclasses depending on the capabilities of the code firing the event.
+     * @return <code>true</code> if the event also supports changing the target's level, <code>false</code> if it only supports changing its coordinates.
      */
     public boolean supportsTargetLevelChange() {
         return true;
     }
 
+    // TODO: Update Javadoc when the deprecated constructors get removed 
     /**
-     * Changes the target Level of the teleportation. Will throw an {@link IllegalStateException} if that is not supported or if the type of the provided level (client/server) doesn't match the original value's.
-     * <p>
-     * Note that a positive result is not a guarantee that the change will be honored by a modded mode of teleportation. We do not recommend changing the target level when original source and target levels are the same.
+     * Changes the target Level of the teleportation. Will throw an {@link IllegalStateException} if that is not supported or if the type
+     * of the provided level (client/server) doesn't match the original value's.
+     * 
+     * @apiNote At the moment, there's no guarantee that the change will be honored by a modded mode of teleportation. Only changing the
+     *          target level when the original target level is different from the source level can be considered safe in 1.21.1.
+     * @param targetLevel The new level.
+     * @throws IllegalStateException if the event does not support changing the target level or if the type of the provided level
+     *                               (client/server) doesn't match the original value's.
      */
     public void setTargetLevel(Level targetLevel) {
         if ((target.level instanceof ServerLevel) != (targetLevel instanceof ServerLevel)) {
             throw new IllegalStateException("Type of Level (ServerLevel/ClientLevel) must match to avoid side confusion");
+        }
+        if (!supportsTargetLevelChange()) {
+            throw new IllegalStateException("This kind of teleporting does not support dimension changing. Cancel the event and teleport manually instead.");
         }
         target = target.withLevel(targetLevel);
     }
@@ -110,6 +133,12 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         return target;
     }
 
+    /**
+     * Returns the current target location, which is either the original target location or the one set by an earlier event subscriber.
+     * 
+     * @apiNote This method will be removed after 1.21.1 and its return value will be available from {@link #getTarget()}.
+     * @return The target location, including the level.
+     */
     public GlobalVec3 getGlobalTarget() {
         return target;
     }
@@ -131,6 +160,12 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         return new GlobalVec3(getEntity());
     }
 
+    /**
+     * Returns the source location.
+     * 
+     * @apiNote This method will be removed after 1.21.1 and its return value will be available from {@link #getPrev()}.
+     * @return The source location, including the level.
+     */
     public GlobalVec3 getGlobalPrev() {
         return new GlobalVec3(getEntity());
     }
@@ -141,8 +176,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
@@ -168,8 +201,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
      * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
@@ -192,8 +223,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
@@ -222,11 +251,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         public boolean supportsTargetLevelChange() {
             return false;
         }
-
-        @Override
-        public void setTargetLevel(Level targetLevel) {
-            throw new IllegalStateException("Enderman/Shulker teleporting does not support dimension changing. Cancel the event and teleport manually instead.");
-        }
     }
 
     /**
@@ -234,8 +258,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
@@ -286,8 +308,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * This event is {@link ICancellableEvent}.<br>
      * If the event is not canceled, the entity will be teleported.
      * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
@@ -314,11 +334,6 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
 
         public boolean supportsTargetLevelChange() {
             return false;
-        }
-
-        @Override
-        public void setTargetLevel(Level targetLevel) {
-            throw new IllegalStateException("Chorus Fruit teleporting does not support dimension changing. Cancel the event and teleport manually instead.");
         }
     }
 }
