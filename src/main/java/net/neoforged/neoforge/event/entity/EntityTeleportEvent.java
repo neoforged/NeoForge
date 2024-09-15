@@ -84,13 +84,13 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
     }
 
     public Level getTargetLevel() {
-        return target.level;
+        return target.getLevel();
     }
 
     @ApiStatus.Internal
     // Casting helper. Backup case shouldn't ever happen, see protection in setTargetLevel().
     public ServerLevel getTargetServerLevelOr(ServerLevel backup) {
-        return target.level instanceof ServerLevel serverlevel ? serverlevel : backup;
+        return target.getLevel(backup) instanceof ServerLevel serverlevel ? serverlevel : backup;
     }
 
     // TODO: Update Javadoc when the deprecated constructors get removed 
@@ -119,7 +119,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      *                               (client/server) doesn't match the original value's.
      */
     public void setTargetLevel(Level targetLevel) {
-        if ((target.level instanceof ServerLevel) != (targetLevel instanceof ServerLevel)) {
+        if ((target.getLevel() instanceof ServerLevel) != (targetLevel instanceof ServerLevel)) {
             throw new IllegalStateException("Type of Level (ServerLevel/ClientLevel) must match to avoid side confusion");
         }
         if (!supportsTargetLevelChange()) {
