@@ -54,13 +54,11 @@ public class ModifiableStructureInfo {
     }
 
     /**
-     * Internal neoforge method; the game will crash if mods invoke this.
+     * Internal NeoForge method. Will do nothing if this modifier had already been applied.
      * Creates and caches the modified structure info.
      * 
      * @param structure          named structure with original data.
      * @param structureModifiers structure modifiers to apply.
-     * 
-     * @throws IllegalStateException if invoked more than once.
      */
     @ApiStatus.Internal
     public void applyStructureModifiers(final Holder<Structure> structure, final List<StructureModifier> structureModifiers) {
