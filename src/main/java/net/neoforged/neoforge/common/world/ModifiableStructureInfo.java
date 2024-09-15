@@ -66,7 +66,7 @@ public class ModifiableStructureInfo {
     @ApiStatus.Internal
     public void applyStructureModifiers(final Holder<Structure> structure, final List<StructureModifier> structureModifiers) {
         if (this.modifiedStructureInfo != null)
-            throw new IllegalStateException(String.format(Locale.ENGLISH, "Structure %s already modified", structure));
+            return;
 
         StructureInfo original = this.getOriginalStructureInfo();
         final StructureInfo.Builder builder = StructureInfo.Builder.copyOf(original);

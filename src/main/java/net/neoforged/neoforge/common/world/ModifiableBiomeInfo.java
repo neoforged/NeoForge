@@ -80,7 +80,7 @@ public class ModifiableBiomeInfo {
     @ApiStatus.Internal
     public boolean applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers, RegistryAccess registryAccess) {
         if (this.modifiedBiomeInfo != null)
-            throw new IllegalStateException(String.format(Locale.ENGLISH, "Biome %s already modified", biome));
+            return true;
 
         BiomeInfo original = this.getOriginalBiomeInfo();
         final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(original);
