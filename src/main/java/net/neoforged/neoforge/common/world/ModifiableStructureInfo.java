@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.world;
 
 import java.util.List;
-import java.util.Locale;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.Structure.StructureSettings;
