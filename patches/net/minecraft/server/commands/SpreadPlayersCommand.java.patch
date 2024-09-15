@@ -20,7 +20,7 @@
              );
 +            if (!event.isCanceled()) {
 +                entity.teleportTo(
-+                          event.getTargetServerlevelOr(p_138731_),
++                          event.getTargetServerLevelOr(p_138731_),
 +                          event.getTargetX(),
 +                          event.getTargetY(),
 +                          event.getTargetZ(),

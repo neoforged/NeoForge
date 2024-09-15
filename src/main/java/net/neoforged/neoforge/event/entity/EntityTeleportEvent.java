@@ -80,7 +80,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
 
     @ApiStatus.Internal
     // Casting helper. Backup case shouldn't ever happen, see protection in setTargetLevel().
-    public ServerLevel getTargetServerlevelOr(ServerLevel backup) {
+    public ServerLevel getTargetServerLevelOr(ServerLevel backup) {
         return target.level instanceof ServerLevel serverlevel ? serverlevel : backup;
     }
 

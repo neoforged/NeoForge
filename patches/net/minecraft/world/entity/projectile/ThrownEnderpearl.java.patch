@@ -14,7 +14,7 @@
                          entity.changeDimension(
                              new DimensionTransition(
 -                                serverlevel, this.position(), entity.getDeltaMovement(), entity.getYRot(), entity.getXRot(), DimensionTransition.DO_NOTHING
-+                                    event.getTargetServerlevelOr(serverlevel), event.getTarget(), entity.getDeltaMovement(), entity.getYRot(), entity.getXRot(), DimensionTransition.DO_NOTHING
++                                    event.getTargetServerLevelOr(serverlevel), event.getTarget(), entity.getDeltaMovement(), entity.getYRot(), entity.getXRot(), DimensionTransition.DO_NOTHING
                              )
                          );
                          entity.resetFallDistance();
@@ -22,7 +22,7 @@
 -                        entity.hurt(this.damageSources().fall(), 5.0F);
 -                        this.playSound(serverlevel, this.position());
 +                        entity.hurt(this.damageSources().fall(), event.getAttackDamage());
-+                        this.playSound(event.getTargetServerlevelOr(serverlevel), this.position());
++                        this.playSound(event.getTargetServerLevelOr(serverlevel), this.position());
 +                        } //Forge: End
                      }
                  } else {

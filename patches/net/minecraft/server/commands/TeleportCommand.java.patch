@@ -8,7 +8,7 @@
 +        if (event.isCanceled()) {
 +             return;
 +        }
-+        p_139017_ = event.getTargetServerlevelOr(p_139017_);
++        p_139017_ = event.getTargetServerLevelOr(p_139017_);
 +        p_139018_ = event.getTargetX();
 +        p_139019_ = event.getTargetY();
 +        p_139020_ = event.getTargetZ();
