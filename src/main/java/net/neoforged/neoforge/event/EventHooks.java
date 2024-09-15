@@ -831,61 +831,43 @@ public class EventHooks {
 
     @Deprecated(since = "1.21.1", forRemoval = true)
     public static EntityTeleportEvent.TeleportCommand onEntityTeleportCommand(Entity entity, double targetX, double targetY, double targetZ) {
-        EntityTeleportEvent.TeleportCommand event = new EntityTeleportEvent.TeleportCommand(entity, targetX, targetY, targetZ);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.TeleportCommand(entity, targetX, targetY, targetZ));
     }
 
     public static EntityTeleportEvent.TeleportCommand onEntityTeleportCommand(Entity entity, GlobalVec3 target) {
-        EntityTeleportEvent.TeleportCommand event = new EntityTeleportEvent.TeleportCommand(entity, target);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.TeleportCommand(entity, target));
     }
 
     @Deprecated(since = "1.21.1", forRemoval = true)
     public static EntityTeleportEvent.SpreadPlayersCommand onEntityTeleportSpreadPlayersCommand(Entity entity, double targetX, double targetY, double targetZ) {
-        EntityTeleportEvent.SpreadPlayersCommand event = new EntityTeleportEvent.SpreadPlayersCommand(entity, targetX, targetY, targetZ);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.SpreadPlayersCommand(entity, targetX, targetY, targetZ));
     }
 
     public static EntityTeleportEvent.SpreadPlayersCommand onEntityTeleportSpreadPlayersCommand(Entity entity, GlobalVec3 target) {
-        EntityTeleportEvent.SpreadPlayersCommand event = new EntityTeleportEvent.SpreadPlayersCommand(entity, target);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.SpreadPlayersCommand(entity, target));
     }
 
     @Deprecated(since = "1.21.1", forRemoval = true)
     public static EntityTeleportEvent.EnderEntity onEnderTeleport(LivingEntity entity, double targetX, double targetY, double targetZ) {
-        EntityTeleportEvent.EnderEntity event = new EntityTeleportEvent.EnderEntity(entity, targetX, targetY, targetZ);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.EnderEntity(entity, targetX, targetY, targetZ));
     }
 
     public static EntityTeleportEvent.EnderEntity onEnderTeleport(LivingEntity entity, GlobalVec3 target) {
-        EntityTeleportEvent.EnderEntity event = new EntityTeleportEvent.EnderEntity(entity, target);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.EnderEntity(entity, target));
     }
 
     @ApiStatus.Internal
     public static EntityTeleportEvent.EnderPearl onEnderPearlLand(ServerPlayer entity, GlobalVec3 target, ThrownEnderpearl pearlEntity, float attackDamage, HitResult hitResult) {
-        EntityTeleportEvent.EnderPearl event = new EntityTeleportEvent.EnderPearl(entity, target, pearlEntity, attackDamage, hitResult);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.EnderPearl(entity, target, pearlEntity, attackDamage, hitResult));
     }
 
     @Deprecated(since = "1.21.1", forRemoval = true)
     public static EntityTeleportEvent.ChorusFruit onChorusFruitTeleport(LivingEntity entity, double targetX, double targetY, double targetZ) {
-        EntityTeleportEvent.ChorusFruit event = new EntityTeleportEvent.ChorusFruit(entity, targetX, targetY, targetZ);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.ChorusFruit(entity, targetX, targetY, targetZ));
     }
 
     public static EntityTeleportEvent.ChorusFruit onChorusFruitTeleport(LivingEntity entity, GlobalVec3 target) {
-        EntityTeleportEvent.ChorusFruit event = new EntityTeleportEvent.ChorusFruit(entity, target);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
+        return NeoForge.EVENT_BUS.post(new EntityTeleportEvent.ChorusFruit(entity, target));
     }
 
     public static boolean onPermissionChanged(GameProfile gameProfile, int newLevel, PlayerList playerList) {
