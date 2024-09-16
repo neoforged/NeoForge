@@ -108,24 +108,28 @@
          return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
      }
  
-@@ -127,11 +_,13 @@
+@@ -127,11 +_,19 @@
          });
      }
  
 -    public static class TagAppender<T> {
 +    public static class TagAppender<T> implements net.neoforged.neoforge.common.extensions.ITagAppenderExtension<T> {
          private final TagBuilder builder;
-+        private final String modId;
  
--        protected TagAppender(TagBuilder p_256426_) {
--            this.builder = p_256426_;
-+        protected TagAppender(TagBuilder p_236454_, String modId) {
-+            this.builder = p_236454_;
+         protected TagAppender(TagBuilder p_256426_) {
++            this(p_256426_, "<unknown>");
++        }
++
++        private final String modId;
++        /** @deprecated Neo: The additional mod ID parameter is unused; use the one-parameter constructor instead. */
++        @Deprecated(forRemoval = true, since = "1.21.1")
++        protected TagAppender(TagBuilder p_256426_, String modId) {
+             this.builder = p_256426_;
 +            this.modId = modId;
          }
  
          public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
-@@ -169,6 +_,19 @@
+@@ -169,6 +_,22 @@
          public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation p_176842_) {
              this.builder.addOptionalTag(p_176842_);
              return this;
@@ -136,10 +140,13 @@
 +             return this;
 +        }
 +
++        // TODO: In 1.21.2, mark this as @ApiStatus.Internal
 +        public TagBuilder getInternalBuilder() {
 +             return builder;
 +        }
 +
++        /** @deprecated Neo: Avoid using this method to get the mod ID, as this method will be removed in 1.21.2. */
++        @Deprecated(forRemoval = true, since = "1.21.1")
 +        public String getModID() {
 +             return modId;
          }
