@@ -210,8 +210,8 @@ public class GlobalVec3 extends Vec3 {
     }
 
     @Override
-    public GlobalVec3 align(EnumSet<Axis> p_82518_) {
-        return new GlobalVec3(dimension, level, super.align(p_82518_));
+    public GlobalVec3 align(EnumSet<Axis> axis) {
+        return new GlobalVec3(dimension, level, super.align(axis));
     }
 
     @Override

@@ -93,21 +93,21 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         return target.getLevel(backup) instanceof ServerLevel serverlevel ? serverlevel : backup;
     }
 
-    // TODO: Update Javadoc when the deprecated constructors get removed 
+    // TODO: Update Javadoc (remove apiNote) when the deprecated constructors get removed 
     /**
      * Checks if the event sub-type support changing the target level.
      * <p>
      * 
      * @apiNote At the moment, a positive result is not a guarantee that the change will be honored by a modded mode of teleportation.
      *          Only changing the target level when the original target level is different from the source level can be considered safe in 1.21.1.
-     * @implSpec This needs to be overwritten by subclasses depending on the capabilities of the code firing the event.
-     * @return <code>true</code> if the event also supports changing the target's level, <code>false</code> if it only supports changing its coordinates.
+     * @implSpec This needs to be overridden by subclasses depending on the capabilities of the code firing the event.
+     * @return {@code true} if the event also supports changing the target's level, {@code false} if it only supports changing its coordinates.
      */
     public boolean supportsTargetLevelChange() {
         return true;
     }
 
-    // TODO: Update Javadoc when the deprecated constructors get removed 
+    // TODO: Update Javadoc (remove apiNote) when the deprecated constructors get removed 
     /**
      * Changes the target Level of the teleportation. Will throw an {@link IllegalStateException} if that is not supported or if the type
      * of the provided level (client/server) doesn't match the original value's.
