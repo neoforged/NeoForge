@@ -10,16 +10,17 @@ import net.minecraft.world.entity.player.Player;
 
 public class SweepAttackEvent extends PlayerEvent {
     private final Entity target;
-    private final boolean vanillaAllowSweepPreconditions, disabledByCrit;
+    private final boolean vanillaAllowSweepPreconditions, itemSupportSweep, disabledByCrit;
 
     private boolean allowSweep;
 
-    public SweepAttackEvent(Player player, Entity target, boolean vanillaAllowSweepPreconditions, boolean disabledByCrit) {
+    public SweepAttackEvent(Player player, Entity target, boolean vanillaAllowSweepPreconditions, boolean itemSupportSweep, boolean disabledByCrit) {
         super(player);
         this.target = target;
         this.vanillaAllowSweepPreconditions = vanillaAllowSweepPreconditions;
+        this.itemSupportSweep = itemSupportSweep;
         this.disabledByCrit = disabledByCrit;
-        this.allowSweep = vanillaAllowSweepPreconditions && !disabledByCrit;
+        this.allowSweep = vanillaAllowSweepPreconditions && itemSupportSweep && !disabledByCrit;
     }
 
     /**
@@ -37,6 +38,13 @@ public class SweepAttackEvent extends PlayerEvent {
     }
 
     /**
+     * @return true if the attack weapon support sweep attack.
+     */
+    public boolean itemSupportSweep() {
+        return itemSupportSweep;
+    }
+
+    /**
      * @return true if the sweep attack would be disabled by critical hit
      */
     public boolean sweepDisabledByCrit() {
@@ -47,7 +55,7 @@ public class SweepAttackEvent extends PlayerEvent {
      * @return true if the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}.
      */
     public boolean vanillaAllowSweep() {
-        return vanillaAllowSweepPreconditions && !disabledByCrit;
+        return vanillaAllowSweepPreconditions && itemSupportSweep && !disabledByCrit;
     }
 
     /**

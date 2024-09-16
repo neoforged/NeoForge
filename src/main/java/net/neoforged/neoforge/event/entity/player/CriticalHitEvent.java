@@ -73,7 +73,8 @@ public class CriticalHitEvent extends PlayerEvent {
     }
 
     /**
-     * Changes the critical hit state. If set to true, {@code disableSweep} will also be set to true.
+     * Changes the critical hit state. If set to true, {@code disableSweep} will also be set to true.<br>
+     * Don't forget to check {@link Player#getAttackStrengthScale(float)}
      *
      * @param isCriticalHit true if the attack should critically hit
      */
@@ -85,7 +86,8 @@ public class CriticalHitEvent extends PlayerEvent {
     }
 
     /**
-     * Changes the attack to critical hit without disabling sweep
+     * Changes the attack to critical hit without disabling sweep<br>
+     * Don't forget to check {@link Player#getAttackStrengthScale(float)}
      */
     public void setCriticalHitRetainSweep() {
         this.isCriticalHit = true;
