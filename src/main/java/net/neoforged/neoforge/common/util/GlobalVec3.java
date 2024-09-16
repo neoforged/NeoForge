@@ -14,6 +14,7 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -122,7 +123,7 @@ public class GlobalVec3 extends Vec3 {
         return level.get();
     }
 
-    public Level getLevel(Level anotherLevel) {
+    public Level getLevel(ServerLevel anotherLevel) {
         return getLevel(anotherLevel.getServer());
     }
 
