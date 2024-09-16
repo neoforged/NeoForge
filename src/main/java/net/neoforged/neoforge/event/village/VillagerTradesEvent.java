@@ -15,6 +15,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * VillagerTradesEvent is fired during reload by {@link TagsUpdatedEvent}. It is used to gather the trade lists for each profession.
@@ -34,11 +35,12 @@ public class VillagerTradesEvent extends Event {
     /**
      * @deprecated Use {@link #VillagerTradesEvent(Int2ObjectMap, VillagerProfession, RegistryAccess)} instead
      */
-    @Deprecated(forRemoval = true, since = "1.21")
+    @Deprecated(forRemoval = true, since = "1.21.1")
     public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type) {
         this(trades, type, RegistryAccess.EMPTY);
     }
 
+    @ApiStatus.Internal
     public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type, RegistryAccess registryAccess) {
         this.trades = trades;
         this.type = type;
