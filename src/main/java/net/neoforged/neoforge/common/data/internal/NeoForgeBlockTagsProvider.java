@@ -80,7 +80,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.SKULLS).add(Blocks.SKELETON_SKULL, Blocks.SKELETON_WALL_SKULL, Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD, Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD, Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD);
         tag(Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS);
         tag(Tags.Blocks.NETHERRACKS).add(Blocks.NETHERRACK);
-        tag(Tags.Blocks.OBSIDIANS).add(Blocks.OBSIDIAN);
+        tag(Tags.Blocks.OBSIDIANS).add(Blocks.OBSIDIAN).add(Blocks.CRYING_OBSIDIAN);
         tag(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE).add(Blocks.DEEPSLATE);
         tag(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK).add(Blocks.NETHERRACK);
         tag(Tags.Blocks.ORE_BEARING_GROUND_STONE).add(Blocks.STONE);
