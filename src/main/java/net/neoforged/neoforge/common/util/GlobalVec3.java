@@ -156,7 +156,7 @@ public class GlobalVec3 extends Vec3 {
 
     protected void sameDim(Vec3 other) {
         if (other instanceof GlobalVec3 other3 && other3.dimension != dimension) {
-            throw new IllegalStateException("Cannot compute with GlobalPoses that are in different dimensions");
+            throw new IllegalStateException("Cannot compute with GlobalPoses (" + this + " and " + other + ") that are in different dimensions");
         }
     }
 
