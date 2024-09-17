@@ -11,10 +11,12 @@ import net.neoforged.neoforge.common.CommonHooks;
 
 /**
  * This event is fired when a player attacks an entity in {@link Player#attack(Entity)}.
- * It can be used to change the critical hit status and damage modifier
  * <p>
- * In the event the attack was not a critical hit, the event will still be fired, but it will be preemptively cancelled.
- **/
+ * It can be used to change the critical hit status and the critical damage multiplier.
+ * Additionally, this event allows controlling if the critical hit will impact sweep conditions.
+ * <p>
+ * This event is fired on both the logical client and logical server.
+ */
 public class CriticalHitEvent extends PlayerEvent {
     private final Entity target;
     private final float vanillaDmgMultiplier;
@@ -22,7 +24,7 @@ public class CriticalHitEvent extends PlayerEvent {
 
     private float dmgMultiplier;
     private boolean isCriticalHit;
-    private boolean disableSweep;
+    private boolean disableSweep = true;
 
     /**
      * Fire via {@link CommonHooks#fireCriticalHit(Player, Entity, boolean, float)}
@@ -31,7 +33,7 @@ public class CriticalHitEvent extends PlayerEvent {
         super(player);
         this.target = target;
         this.dmgMultiplier = this.vanillaDmgMultiplier = dmgMultiplier;
-        this.disableSweep = this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
+        this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
     }
 
     /**
@@ -73,31 +75,12 @@ public class CriticalHitEvent extends PlayerEvent {
     }
 
     /**
-     * Changes the critical hit state. If set to true, {@code disableSweep} will also be set to true.<br>
-     * Don't forget to check {@link Player#getAttackStrengthScale(float)}
+     * Changes the critical hit state.
      *
      * @param isCriticalHit true if the attack should critically hit
      */
     public void setCriticalHit(boolean isCriticalHit) {
         this.isCriticalHit = isCriticalHit;
-        if (isCriticalHit) {
-            this.disableSweep = true;
-        }
-    }
-
-    /**
-     * Changes the attack to critical hit without disabling sweep<br>
-     * Don't forget to check {@link Player#getAttackStrengthScale(float)}
-     */
-    public void setCriticalHitRetainSweep() {
-        this.isCriticalHit = true;
-    }
-
-    /**
-     * Set if this attack should disable sweep attack
-     */
-    public void setDisableSweep(boolean disableSweep) {
-        this.disableSweep = disableSweep;
     }
 
     /**
@@ -119,8 +102,23 @@ public class CriticalHitEvent extends PlayerEvent {
     }
 
     /**
-     * @return true if the attack would disable sweep attack.
-     *         Note that this is only part of the sweep attack conditions.
+     * Sets if this attack should prevent a sweep from occurring.
+     * <p>
+     * In vanilla, a critical hit always prevents a sweep from occurring.
+     * This method can allow an attack to both critically hit and sweep without having to validate the other sweep conditions.
+     * 
+     * @see {@link SweepAttackEvent} for more advanced sweep attack handling.
+     */
+    public void setDisableSweep(boolean disableSweep) {
+        this.disableSweep = disableSweep;
+    }
+
+    /**
+     * If this attack is a {@linkplain #isCriticalHit() critical hit}, returns if a sweep should be prevented.
+     * <p>
+     * If this attack is <b>not</b> a critical hit, the return value of this method is meaningless.
+     * 
+     * @see {@link SweepAttackEvent} for more advanced sweep attack handling.
      */
     public boolean disableSweep() {
         return disableSweep;

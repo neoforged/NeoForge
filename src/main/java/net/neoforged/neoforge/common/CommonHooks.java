@@ -927,14 +927,12 @@ public class CommonHooks {
     /**
      * Fires the {@link SweepAttackEvent} and returns the resulting event.
      *
-     * @param player                  The attacking player
-     * @param target                  The attack target
-     * @param allowSweepPreconditions If the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}, other than the condition of not critical hit.
-     * @param itemSupportSweep        If the weapon support sweep attack
-     * @param disabledByCrit          If the vanilla sweep attack would have been disabled by critical hit
+     * @param player         The attacking player.
+     * @param target         The attack target.
+     * @param isVanillaSweep If the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}.
      */
-    public static SweepAttackEvent fireSweepAttack(Player player, Entity target, boolean allowSweepPreconditions, boolean itemSupportSweep, boolean disabledByCrit) {
-        return NeoForge.EVENT_BUS.post(new SweepAttackEvent(player, target, allowSweepPreconditions, itemSupportSweep, disabledByCrit));
+    public static SweepAttackEvent fireSweepAttack(Player player, Entity target, boolean isVanillaSweep) {
+        return NeoForge.EVENT_BUS.post(new SweepAttackEvent(player, target, isVanillaSweep));
     }
 
     /**

@@ -254,7 +254,7 @@
                  if (p_36347_.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE)
                      && p_36347_ instanceof Projectile projectile
                      && projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this, this, true)) {
-@@ -1170,18 +_,25 @@
+@@ -1170,19 +_,28 @@
                          && !this.isPassenger()
                          && p_36347_ instanceof LivingEntity
                          && !this.isSprinting();
@@ -271,21 +271,23 @@
                      boolean flag2 = false;
                      double d0 = (double)(this.walkDist - this.walkDistO);
 -                    if (flag4 && !flag1 && !flag && this.onGround() && d0 < (double)this.getSpeed()) {
--                        ItemStack itemstack1 = this.getItemInHand(InteractionHand.MAIN_HAND);
++                    // Neo: Replace !flag1 (!isCriticalHit) with the logic from the CriticalHitEvent.
++                    boolean critBlocksSweep = critEvent.isCriticalHit() && critEvent.disableSweep();
++                    if (flag4 && !critBlocksSweep && !flag && this.onGround() && d0 < (double)this.getSpeed()) {
++                        // Neo: Make sweep attacks check SWORD_SWEEP instead of instanceof SwordItem.
+                         ItemStack itemstack1 = this.getItemInHand(InteractionHand.MAIN_HAND);
 -                        if (itemstack1.getItem() instanceof SwordItem) {
 -                            flag2 = true;
 -                        }
-+                    boolean allowSweepPreconditions = flag4 && !flag && this.onGround() && d0 < (double)this.getSpeed();
-+                    boolean itemSupportSweep = this.getItemInHand(InteractionHand.MAIN_HAND).canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_SWEEP);
-+                    // Neo: the boolean local allowSweepPreconditions is the vanilla sweep attack condition, excluding the condition of not doing critical hit
-+                    // Fire the sweep attack event based on current information.
-+                    // The sweep attack event default result will be allowSweepPreconditions && itemSupportSweep && !critEvent.disableSweep()
-+                    var sweepEvent = net.neoforged.neoforge.common.CommonHooks.fireSweepAttack(this, p_36347_, allowSweepPreconditions, itemSupportSweep, critEvent.disableSweep());
-+                    if (sweepEvent.allowSweep()) {
-+                        flag2 = true;
++                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_SWEEP);
                      }
++
++                    // Neo: Fire the SweepAttackEvent and overwrite the value of flag2 (the local controlling if a sweep will occur).
++                    var sweepEvent = net.neoforged.neoforge.common.CommonHooks.fireSweepAttack(this, p_36347_, flag2);
++                    flag2 = sweepEvent.isSweeping();
  
                      float f6 = 0.0F;
+                     if (p_36347_ instanceof LivingEntity livingentity) {
 @@ -1217,11 +_,12 @@
  
                              for (LivingEntity livingentity2 : this.level()
