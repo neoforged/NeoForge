@@ -115,7 +115,7 @@ public class GlobalVec3 extends Vec3 {
     /**
      * Returns the level of this global position if it is available.
      * <p>
-     * Use {@link #getLevel(MinecraftServer)} or {@link #getLevel(Level)} if possible.
+     * Use {@link #getLevel(MinecraftServer)} or {@link #getLevel(ServerLevel)} if possible.
      * 
      * @return The level.
      */
