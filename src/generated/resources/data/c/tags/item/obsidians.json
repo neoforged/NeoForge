@@ -1,6 +1,7 @@
 {
   "values": [
     "minecraft:obsidian",
+    "minecraft:crying_obsidian",
     {
       "id": "#forge:obsidian",
       "required": false
