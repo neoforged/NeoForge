@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.component.DataComponents;
@@ -181,7 +180,7 @@ public class TooltipUtil {
             boolean isMerged = NeoForgeMod.shouldMergeAttributeTooltips() && (!baseModif.children.isEmpty() || baseBonus != 0);
             MutableComponent text = attr.value().toBaseComponent(amt, entityBase, isMerged, ctx.flag());
             tooltip.accept(padded(" ", text).withStyle(isMerged ? ChatFormatting.GOLD : ChatFormatting.DARK_GREEN));
-            if (FMLEnvironment.dist.isClient() && ClientAccess.hasShiftDown() && isMerged) {
+            if (ctx.flag().hasShiftDown() && isMerged) {
                 // Display the raw base value, and then all children modifiers.
                 text = attr.value().toBaseComponent(rawBase, entityBase, false, ctx.flag());
                 tooltip.accept(list().append(text.withStyle(ChatFormatting.DARK_GREEN)));
@@ -228,7 +227,7 @@ public class TooltipUtil {
                         var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
                         MutableComponent comp = attr.value().toComponent(fakeModif, ctx.flag());
                         tooltip.accept(comp.withStyle(comp.getStyle().withColor(color)));
-                        if (FMLEnvironment.dist.isClient() && ClientAccess.hasShiftDown() && merged[i]) {
+                        if (ctx.flag().hasShiftDown() && merged[i]) {
                             shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(list().append(attr.value().toComponent(modif, ctx.flag()))));
                         }
                     } else {
@@ -345,10 +344,6 @@ public class TooltipUtil {
     private static class ClientAccess {
         static TooltipFlag getTooltipFlag() {
             return Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL;
-        }
-
-        static boolean hasShiftDown() {
-            return Screen.hasShiftDown();
         }
     }
 }
