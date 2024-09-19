@@ -135,6 +135,7 @@ dependencies {
     }
 
     userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
+    compileOnly(jarJar(project(":neoforge-coremods")))
 }
 
 runTypes {
@@ -205,6 +206,8 @@ runs {
 }
 
 runs.configureEach { it ->
+    modSources.add project(":neoforge-coremods").sourceSets.main
+
     final File gameDir = project.file("run/${it.name}") as File
     gameDir.mkdirs();
 
