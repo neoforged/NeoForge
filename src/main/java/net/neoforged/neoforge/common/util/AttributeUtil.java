@@ -16,9 +16,16 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.extensions.IAttributeExtension;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Utility code to support {@link IAttributeExtension}.
+ * 
+ * @see {@link TooltipUtil} for additional tooltip-related code
+ */
 public class AttributeUtil {
     /**
      * UUID of the base modifier for Attack Damage
@@ -39,7 +46,7 @@ public class AttributeUtil {
      * Comparator for {@link AttributeModifier}. First compares by operation, then amount, then the ID.
      */
     public static final Comparator<AttributeModifier> ATTRIBUTE_MODIFIER_COMPARATOR = Comparator.comparing(AttributeModifier::operation)
-            .thenComparing(Comparator.comparingDouble(AttributeModifier::amount))
+            .thenComparing(Comparator.comparingDouble(a -> -Math.abs(a.amount()))) // Sort most impactful modifiers first
             .thenComparing(Comparator.comparing(AttributeModifier::id));
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -52,10 +59,12 @@ public class AttributeUtil {
     }
 
     /**
+     * Returns a sorted, mutable {@link Multimap} containing all the attribute modifiers on an item stack for the given group.
+     * <p>
+     * This includes attribute modifiers from components (or default modifiers, if not present), enchantments, and the {@link ItemAttributeModifierEvent}.
      * 
-     * @param stack
-     * @param slot
-     * @return
+     * @param stack The stack to query modifiers for.
+     * @param slot  The slot group to query modifiers for.
      */
     public static Multimap<Holder<Attribute>, AttributeModifier> getSortedModifiers(ItemStack stack, EquipmentSlotGroup slot) {
         Multimap<Holder<Attribute>, AttributeModifier> map = AttributeUtil.sortedMap();

@@ -14,11 +14,13 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -29,126 +31,212 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.maps.MapId;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.extensions.IAttributeExtension;
 import net.neoforged.neoforge.common.util.AttributeUtil;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Tooltip generating utility code to support {@link IAttributeExtension}.
+ * 
+ * @see {@link AttributeUtil} for additional non-tooltip code
+ */
 public class TooltipUtil {
     public static final ResourceLocation FAKE_MERGED_ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "fake_merged_modifier");
 
-    public static void addAttributeTooltips(@Nullable Player player, ItemStack stack, Consumer<Component> tooltip, TooltipFlag flag) {
+    /**
+     * Checks if attribute modifer tooltips should show, and if they should, adds tooltips for all attribute modifiers present on an item stack to the stack's tooltip lines.
+     * <p>
+     * After the tooltip lines have been added, fires the {@link AddAttributeTooltipsEvent} to allow mods to add additional attribute-related lines.
+     * 
+     * @param tooltip A consumer to add the tooltip lines to.
+     * @param ctx     The tooltip context
+     */
+    public static void addAttributeTooltips(ItemStack stack, Consumer<Component> tooltip, AttributeTooltipContext ctx) {
         ItemAttributeModifiers modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         if (modifiers.showInTooltip()) {
-            applyModifierTooltips(player, stack, tooltip, flag);
+            applyModifierTooltips(stack, tooltip, ctx);
         }
-        NeoForge.EVENT_BUS.post(new AddAttributeTooltipsEvent(stack, player, tooltip, flag));
+        NeoForge.EVENT_BUS.post(new AddAttributeTooltipsEvent(stack, tooltip, ctx));
     }
 
-    public static void applyModifierTooltips(@Nullable Player player, ItemStack stack, Consumer<Component> tooltip, TooltipFlag flag) {
+    /**
+     * Unconditionally applies the attribute modifier tooltips for all attribute modifiers present on the item stack.
+     * <p>
+     * Before application, this method posts the {@link GatherSkippedAttributeTooltipsEvent} to determine which tooltips should be skipped.
+     * 
+     * @param stack
+     * @param tooltip
+     * @param ctx
+     */
+    public static void applyModifierTooltips(ItemStack stack, Consumer<Component> tooltip, AttributeTooltipContext ctx) {
         Set<ResourceLocation> skips = new HashSet<>();
-        NeoForge.EVENT_BUS.post(new GatherSkippedAttributeTooltipsEvent(stack, player, skips, flag));
+        var event = NeoForge.EVENT_BUS.post(new GatherSkippedAttributeTooltipsEvent(stack, skips, ctx));
+        if (event.isSkippingAll()) {
+            return;
+        }
 
         for (EquipmentSlotGroup group : EquipmentSlotGroup.values()) {
             Multimap<Holder<Attribute>, AttributeModifier> modifiers = AttributeUtil.getSortedModifiers(stack, group);
-            applyTextFor(player, stack, tooltip, modifiers, group, skips, flag);
+            Component groupName = Component.translatable("item.modifiers." + group.getSerializedName()).withStyle(ChatFormatting.GRAY);
+            applyTextFor(stack, tooltip, modifiers, groupName, skips, ctx);
         }
     }
 
-    public static void applyTextFor(@Nullable Player player, ItemStack stack, Consumer<Component> tooltip, Multimap<Holder<Attribute>, AttributeModifier> modifierMap,
-            EquipmentSlotGroup group, Set<ResourceLocation> skips, TooltipFlag flag) {
-        if (!modifierMap.isEmpty()) {
-            modifierMap.values().removeIf(m -> skips.contains(m.id()));
+    /**
+     * Applies the text for a single group of modifiers to the tooltip for a given item stack.
+     * <p>
+     * This method will attempt to merge multiple modifiers for a single attribute into a single modifier if {@linkplain NeoForgeMod#enableMergedAttributeTooltips()} was called.
+     * 
+     * @param stack       The item stack that owns the modifiers
+     * @param tooltip     The consumer to append tooltip components to
+     * @param modifierMap A mutable map of modifiers for the given group
+     * @param groupName   The name of the current modifier group
+     * @param skips       A set of modifier IDs to not apply to the tooltip
+     * @param ctx         The tooltip context
+     */
+    public static void applyTextFor(ItemStack stack, Consumer<Component> tooltip, Multimap<Holder<Attribute>, AttributeModifier> modifierMap, Component groupName, Set<ResourceLocation> skips, AttributeTooltipContext ctx) {
+        // Remove any skipped modifiers before doing any logic
+        modifierMap.values().removeIf(m -> skips.contains(m.id()));
 
-            tooltip.accept(Component.empty());
-            tooltip.accept(Component.translatable("item.modifiers." + group.getSerializedName()).withStyle(ChatFormatting.GRAY));
+        // Don't add anything if there is nothing in the group
+        if (modifierMap.isEmpty()) {
+            return;
+        }
 
-            if (modifierMap.isEmpty()) return;
+        // Add an empty line, then the name of the group
+        tooltip.accept(Component.empty());
+        tooltip.accept(groupName);
 
-            Map<Holder<Attribute>, BaseModifier> baseModifs = new IdentityHashMap<>();
+        // Collect all the base modifiers
+        Map<Holder<Attribute>, BaseModifier> baseModifs = new IdentityHashMap<>();
 
-            modifierMap.forEach((attr, modif) -> {
-                if (modif.id().equals(attr.value().getBaseID())) {
-                    baseModifs.put(attr, new BaseModifier(modif, new ArrayList<>()));
-                }
-            });
+        var it = modifierMap.entries().iterator();
+        while (it.hasNext()) {
+            Entry<Holder<Attribute>, AttributeModifier> entry = it.next();
+            Holder<Attribute> attr = entry.getKey();
+            AttributeModifier modif = entry.getValue();
+            if (modif.id().equals(attr.value().getBaseId())) {
+                baseModifs.put(attr, new BaseModifier(modif, new ArrayList<>()));
+                // Remove base modifiers from the main map after collection so we don't need to check for them later.
+                it.remove();
+            }
+        }
 
-            modifierMap.forEach((attr, modif) -> {
-                BaseModifier base = baseModifs.get(attr);
-                if (base != null && base.base != modif) {
-                    base.children.add(modif);
-                }
-            });
+        // Collect children of all base modifiers for merging logic
+        modifierMap.forEach((attr, modif) -> {
+            BaseModifier base = baseModifs.get(attr);
+            if (base != null) {
+                base.children.add(modif);
+            }
+        });
 
-            for (Map.Entry<Holder<Attribute>, BaseModifier> entry : baseModifs.entrySet()) {
-                Holder<Attribute> attr = entry.getKey();
-                BaseModifier baseModif = entry.getValue();
-                double entityBase = player == null ? 0 : player.getAttributeBaseValue(attr);
-                double base = baseModif.base.amount() + entityBase;
-                final double rawBase = base;
-                double amt = base;
-                double baseBonus = attr.value().getBonusBaseValue(stack);
+        // Add tooltip lines for base modifiers
+        for (Map.Entry<Holder<Attribute>, BaseModifier> entry : baseModifs.entrySet()) {
+            Holder<Attribute> attr = entry.getKey();
+            BaseModifier baseModif = entry.getValue();
+            double entityBase = ctx.player() == null ? 0 : ctx.player().getAttributeBaseValue(attr);
+            double base = baseModif.base.amount() + entityBase;
+            final double rawBase = base;
+            double amt = base;
+
+            // Compute the base value including merged modifiers if merging is enabled
+            if (NeoForgeMod.shouldMergeAttributeTooltips()) {
                 for (AttributeModifier modif : baseModif.children) {
-                    if (modif.operation() == Operation.ADD_VALUE) base = amt = amt + modif.amount();
-                    else if (modif.operation() == Operation.ADD_MULTIPLIED_BASE) amt += modif.amount() * base;
-                    else amt *= 1 + modif.amount();
-                }
-                amt += baseBonus;
-                boolean isMerged = !baseModif.children.isEmpty() || baseBonus != 0;
-                MutableComponent text = attr.value().toBaseComponent(amt, entityBase, isMerged, flag);
-                tooltip.accept(padded(" ", text).withStyle(isMerged ? ChatFormatting.GOLD : ChatFormatting.DARK_GREEN));
-                if (Screen.hasShiftDown() && isMerged) {
-                    // Display the raw base value, and then all children modifiers.
-                    text = attr.value().toBaseComponent(rawBase, entityBase, false, flag);
-                    tooltip.accept(list().append(text.withStyle(ChatFormatting.DARK_GREEN)));
-                    for (AttributeModifier modifier : baseModif.children) {
-                        tooltip.accept(list().append(attr.value().toComponent(modifier, flag)));
-                    }
-                    if (baseBonus > 0) {
-                        attr.value().addBonusTooltips(stack, tooltip, flag);
+                    switch (modif.operation()) {
+                        case ADD_VALUE:
+                            base = amt = amt + modif.amount();
+                            break;
+                        case ADD_MULTIPLIED_BASE:
+                            amt += modif.amount() * base;
+                            break;
+                        case ADD_MULTIPLIED_TOTAL:
+                            amt *= 1 + modif.amount();
+                            break;
                     }
                 }
             }
 
-            for (Holder<Attribute> attr : modifierMap.keySet()) {
-                if (baseModifs.containsKey(attr)) continue;
-                Collection<AttributeModifier> modifs = modifierMap.get(attr);
-                // Initiate merged-tooltip logic if we have more than one modifier for a given attribute.
-                if (modifs.size() > 1) {
-                    double[] sums = new double[3];
-                    boolean[] merged = new boolean[3];
-                    Map<Operation, List<AttributeModifier>> shiftExpands = new HashMap<>();
-                    for (AttributeModifier modifier : modifs) {
-                        if (modifier.amount() == 0) continue;
-                        if (sums[modifier.operation().ordinal()] != 0) merged[modifier.operation().ordinal()] = true;
-                        sums[modifier.operation().ordinal()] += modifier.amount();
-                        shiftExpands.computeIfAbsent(modifier.operation(), k -> new LinkedList<>()).add(modifier);
+            double baseBonus = attr.value().getBonusBaseValue(stack);
+            amt += baseBonus;
+
+            boolean isMerged = NeoForgeMod.shouldMergeAttributeTooltips() && (!baseModif.children.isEmpty() || baseBonus != 0);
+            MutableComponent text = attr.value().toBaseComponent(amt, entityBase, isMerged, ctx.flag());
+            tooltip.accept(padded(" ", text).withStyle(isMerged ? ChatFormatting.GOLD : ChatFormatting.DARK_GREEN));
+            if (FMLEnvironment.dist.isClient() && Screen.hasShiftDown() && isMerged) {
+                // Display the raw base value, and then all children modifiers.
+                text = attr.value().toBaseComponent(rawBase, entityBase, false, ctx.flag());
+                tooltip.accept(list().append(text.withStyle(ChatFormatting.DARK_GREEN)));
+                for (AttributeModifier modifier : baseModif.children) {
+                    tooltip.accept(list().append(attr.value().toComponent(modifier, ctx.flag())));
+                }
+                if (baseBonus > 0) {
+                    attr.value().addBonusTooltips(stack, tooltip, ctx.flag());
+                }
+            }
+        }
+
+        for (Holder<Attribute> attr : modifierMap.keySet()) {
+            // Skip attributes who have already been processed during the base modifier stage
+            if (NeoForgeMod.shouldMergeAttributeTooltips() && baseModifs.containsKey(attr)) {
+                continue;
+            }
+
+            Collection<AttributeModifier> modifs = modifierMap.get(attr);
+            // Initiate merged-tooltip logic if we have more than one modifier for a given attribute.
+            if (NeoForgeMod.shouldMergeAttributeTooltips() && modifs.size() > 1) {
+                double[] sums = new double[3];
+                boolean[] merged = new boolean[3];
+                Map<Operation, List<AttributeModifier>> shiftExpands = new HashMap<>();
+
+                for (AttributeModifier modifier : modifs) {
+                    if (modifier.amount() == 0) continue;
+                    if (sums[modifier.operation().ordinal()] != 0) merged[modifier.operation().ordinal()] = true;
+                    sums[modifier.operation().ordinal()] += modifier.amount();
+                    shiftExpands.computeIfAbsent(modifier.operation(), k -> new LinkedList<>()).add(modifier);
+                }
+
+                for (Operation op : Operation.values()) {
+                    int i = op.ordinal();
+
+                    // If the merged value comes out to 0, just ignore the whole stack
+                    if (sums[i] == 0) {
+                        continue;
                     }
-                    for (Operation op : Operation.values()) {
-                        int i = op.ordinal();
-                        if (sums[i] == 0) continue;
-                        if (merged[i]) {
-                            TextColor color = sums[i] < 0 ? TextColor.fromRgb(0xF93131) : TextColor.fromRgb(0x7A7AF9);
-                            if (sums[i] < 0) sums[i] *= -1;
-                            var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
-                            MutableComponent comp = attr.value().toComponent(fakeModif, flag);
-                            tooltip.accept(comp.withStyle(comp.getStyle().withColor(color)));
-                            if (merged[i] && Screen.hasShiftDown()) {
-                                shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(list().append(attr.value().toComponent(modif, flag))));
-                            }
-                        } else {
-                            var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
-                            tooltip.accept(attr.value().toComponent(fakeModif, flag));
+
+                    // Handle merged modifier stacks by creating a "fake" merged modifier with the underlying value.
+                    if (merged[i]) {
+                        TextColor color = attr.value().getMergedStyle(sums[i] > 0);
+                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
+                        MutableComponent comp = attr.value().toComponent(fakeModif, ctx.flag());
+                        tooltip.accept(comp.withStyle(comp.getStyle().withColor(color)));
+                        if (FMLEnvironment.dist.isClient() && Screen.hasShiftDown() && merged[i]) {
+                            shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(list().append(attr.value().toComponent(modif, ctx.flag()))));
                         }
+                    } else {
+                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
+                        tooltip.accept(attr.value().toComponent(fakeModif, ctx.flag()));
                     }
-                } else modifs.forEach(m -> {
-                    if (m.amount() != 0) tooltip.accept(attr.value().toComponent(m, flag));
-                });
+                }
+            } else {
+                for (AttributeModifier m : modifs) {
+                    if (m.amount() != 0) {
+                        tooltip.accept(attr.value().toComponent(m, ctx.flag()));
+                    }
+                }
             }
         }
     }
@@ -168,4 +256,55 @@ public class TooltipUtil {
     }
 
     public static record BaseModifier(AttributeModifier base, List<AttributeModifier> children) {}
+
+    /**
+     * Extended {@link TooltipContext} used when generating attribute tooltips.
+     */
+    public static interface AttributeTooltipContext extends Item.TooltipContext {
+        /**
+         * {@return the player for whom tooltips are being generated for, if known}
+         */
+        @Nullable
+        Player player();
+
+        /**
+         * {@return the current tooltip flag}
+         */
+        TooltipFlag flag();
+
+        public static AttributeTooltipContext of(@Nullable Player player, Item.TooltipContext itemCtx, TooltipFlag flag) {
+            return new AttributeTooltipContext() {
+                @Override
+                public Provider registries() {
+                    return itemCtx.registries();
+                }
+
+                @Override
+                public float tickRate() {
+                    return itemCtx.tickRate();
+                }
+
+                @Override
+                public MapItemSavedData mapData(MapId id) {
+                    return itemCtx.mapData(id);
+                }
+
+                @Override
+                public Level level() {
+                    return itemCtx.level();
+                }
+
+                @Nullable
+                @Override
+                public Player player() {
+                    return player;
+                }
+
+                @Override
+                public TooltipFlag flag() {
+                    return flag;
+                }
+            };
+        }
+    }
 }

@@ -148,13 +148,14 @@
              if (this.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
              }
-@@ -752,7 +_,8 @@
+@@ -752,7 +_,9 @@
              this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.DYED_COLOR, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
 -            this.addAttributeTooltips(consumer, p_41652_);
 +            // Neo: Replace attribute tooltips with custom handling
-+            net.neoforged.neoforge.client.util.TooltipUtil.addAttributeTooltips(p_41652_, this, consumer, p_41653_);
++            net.neoforged.neoforge.client.util.TooltipUtil.addAttributeTooltips(this, consumer,
++                    net.neoforged.neoforge.client.util.TooltipUtil.AttributeTooltipContext.of(p_41652_, p_339637_, p_41653_));
              this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
              AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
              if (adventuremodepredicate != null && adventuremodepredicate.showInTooltip()) {

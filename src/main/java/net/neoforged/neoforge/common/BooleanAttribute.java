@@ -44,28 +44,26 @@ public class BooleanAttribute extends Attribute {
     @Override
     public MutableComponent toValueComponent(@Nullable Operation op, double value, TooltipFlag flag) {
         if (op == null) {
-            return Component.translatable("apothic_attributes.value.boolean." + (value > 0 ? "enabled" : "disabled"));
+            return Component.translatable("neoforge.value.boolean." + (value > 0 ? "enabled" : "disabled"));
         } else if (op == Operation.ADD_VALUE && value > 0) {
-            return Component.translatable("apothic_attributes.value.boolean.enable");
+            return Component.translatable("neoforge.value.boolean.enable");
         } else if (op == Operation.ADD_MULTIPLIED_TOTAL && (int) value == -1) {
-            return Component.translatable("apothic_attributes.value.boolean.force_disable");
+            return Component.translatable("neoforge.value.boolean.force_disable");
         } else {
-            return Component.translatable("apothic_attributes.value.boolean.invalid");
+            return Component.translatable("neoforge.value.boolean.invalid");
         }
     }
 
     @Override
     public MutableComponent toComponent(AttributeModifier modif, TooltipFlag flag) {
-        Attribute attr = this.ths();
         double value = modif.amount();
 
         MutableComponent comp;
-
         if (value > 0.0D) {
-            comp = Component.translatable("apothic_attributes.modifier.bool", this.toValueComponent(modif.operation(), value, flag), Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.BLUE);
+            comp = Component.translatable("neoforge.modifier.bool", this.toValueComponent(modif.operation(), value, flag), Component.translatable(this.getDescriptionId())).withStyle(ChatFormatting.BLUE);
         } else {
             value *= -1.0D;
-            comp = Component.translatable("apothic_attributes.modifier.bool", this.toValueComponent(modif.operation(), value, flag), Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.RED);
+            comp = Component.translatable("neoforge.modifier.bool", this.toValueComponent(modif.operation(), value, flag), Component.translatable(this.getDescriptionId())).withStyle(ChatFormatting.RED);
         }
 
         return comp.append(this.getDebugInfo(modif, flag));

@@ -6,36 +6,38 @@
 package net.neoforged.neoforge.client.event;
 
 import java.util.function.Consumer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.client.util.TooltipUtil;
+import net.neoforged.neoforge.client.util.TooltipUtil.AttributeTooltipContext;
 
 /**
- * This event is used to add additional attribute tooltip lines without having to manually locate the inject point.
+ * This event is fired after attribute tooltip lines have been added to an item stack's tooltip in {@link TooltipUtil#addAttributeTooltips}.
+ * <p>
+ * It can be used to add additional tooltip lines adjacent to the attribute lines without having to manually locate the inject point.
  * <p>
  * This event is only fired on the {@linkplain Dist#CLIENT physical client}.
  */
-public class AddAttributeTooltipsEvent extends PlayerEvent {
+public class AddAttributeTooltipsEvent extends Event {
     protected final ItemStack stack;
     protected final Consumer<Component> tooltip;
-    protected final TooltipFlag flag;
+    protected final AttributeTooltipContext ctx;
 
-    public AddAttributeTooltipsEvent(ItemStack stack, @Nullable Player player, Consumer<Component> tooltip, TooltipFlag flag) {
-        super(player);
+    public AddAttributeTooltipsEvent(ItemStack stack, Consumer<Component> tooltip, AttributeTooltipContext ctx) {
         this.stack = stack;
         this.tooltip = tooltip;
-        this.flag = flag;
+        this.ctx = ctx;
     }
 
     /**
-     * Use to determine if the advanced information on item tooltips is being shown, toggled by F3+H.
+     * The current tooltip context.
      */
-    public TooltipFlag getFlags() {
-        return this.flag;
+    public AttributeTooltipContext getContext() {
+        return this.ctx;
     }
 
     /**
@@ -46,18 +48,20 @@ public class AddAttributeTooltipsEvent extends PlayerEvent {
     }
 
     /**
-     * Adds a single {@link Component} to the itemstack's tooltip.
+     * Adds one or more {@link Component}s to the tooltip.
      */
-    public void addTooltipLine(Component comp) {
-        this.tooltip.accept(comp);
+    public void addTooltipLines(Component... comps) {
+        for (Component comp : comps) {
+            this.tooltip.accept(comp);
+        }
     }
 
     /**
-     * This event is fired with a null player during startup when populating search trees for tooltips.
+     * Checks if the attribute tooltips should be shown on the current item stack.
+     * <p>
+     * This event is fired even if the component would prevent the normal tooltip lines from showing.
      */
-    @Override
-    @Nullable
-    public Player getEntity() {
-        return super.getEntity();
+    public boolean shouldShow() {
+        return this.stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY).showInTooltip();
     }
 }

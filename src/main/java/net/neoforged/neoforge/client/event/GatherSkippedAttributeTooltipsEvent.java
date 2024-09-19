@@ -7,37 +7,35 @@ package net.neoforged.neoforge.client.event;
 
 import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.client.util.TooltipUtil.AttributeTooltipContext;
 
 /**
- * This event is used to collect UUIDs of attribute modifiers that will not be displayed in item tooltips.
+ * This event is used to collect the IDs of attribute modifiers that will not be displayed in item tooltips.
  * <p>
- * This allows hiding specific modifiers for whatever reason. They will still be shown in the attributes GUI.
+ * It allows hiding some (or all) of the modifiers, potentially for displaying them in an alternative way (or for hiding information from the player).
  * <p>
  * This event is only fired on the {@linkplain Dist#CLIENT physical client}.
  */
-public class GatherSkippedAttributeTooltipsEvent extends PlayerEvent {
+public class GatherSkippedAttributeTooltipsEvent extends Event {
     protected final ItemStack stack;
     protected final Set<ResourceLocation> skips;
-    protected final TooltipFlag flag;
+    protected final AttributeTooltipContext ctx;
+    protected boolean skipAll = false;
 
-    public GatherSkippedAttributeTooltipsEvent(ItemStack stack, @Nullable Player player, Set<ResourceLocation> skips, TooltipFlag flag) {
-        super(player);
+    public GatherSkippedAttributeTooltipsEvent(ItemStack stack, Set<ResourceLocation> skips, AttributeTooltipContext ctx) {
         this.stack = stack;
         this.skips = skips;
-        this.flag = flag;
+        this.ctx = ctx;
     }
 
     /**
-     * Use to determine if the advanced information on item tooltips is being shown, toggled by F3+H.
+     * The current tooltip context.
      */
-    public TooltipFlag getFlags() {
-        return this.flag;
+    public AttributeTooltipContext getContext() {
+        return this.ctx;
     }
 
     /**
@@ -48,18 +46,30 @@ public class GatherSkippedAttributeTooltipsEvent extends PlayerEvent {
     }
 
     /**
-     * Mark the ResourceLocation of a specific attribute modifier as skipped, causing it to not be displayed in the tooltip.
+     * Marks the id of a specific attribute modifier as skipped, causing it to not be displayed in the tooltip.
      */
-    public void skipID(ResourceLocation id) {
+    public void skipId(ResourceLocation id) {
         this.skips.add(id);
     }
 
     /**
-     * This event is fired with a null player during startup when populating search trees for tooltips.
+     * Checks if a given id is skipped or not. If all modifiers are skipped, this method always returns true.
      */
-    @Override
-    @Nullable
-    public Player getEntity() {
-        return super.getEntity();
+    public boolean isSkipped(ResourceLocation id) {
+        return this.skipAll || this.skips.contains(id);
+    }
+
+    /**
+     * Sets if the event should skip displaying all attribute modifiers.
+     */
+    public void setSkipAll(boolean skip) {
+        this.skipAll = skip;
+    }
+
+    /**
+     * Checks if the event will cause all attribute modifiers to be skipped.
+     */
+    public boolean isSkippingAll() {
+        return this.skipAll;
     }
 }
