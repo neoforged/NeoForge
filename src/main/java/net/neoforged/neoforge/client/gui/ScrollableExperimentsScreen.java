@@ -1,5 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.gui;
 
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,7 +18,8 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.layouts.*;
+import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.ExperimentsScreen;
@@ -20,15 +29,11 @@ import net.minecraft.server.packs.repository.PackRepository;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-
 @ApiStatus.Internal
 public class ScrollableExperimentsScreen extends ExperimentsScreen {
     private static final int DEFAULT_LIST_HEIGHT = 121;
     private static final int ROW_PADDING = 4;
-    private static final int LIST_PADDING = ROW_PADDING + 40;
+    private static final int LIST_PADDING = ROW_PADDING + 34;
     private static final int ENTRY_HEIGHT = 42;
 
     @Nullable
@@ -51,14 +56,11 @@ public class ScrollableExperimentsScreen extends ExperimentsScreen {
 
         this.listLayout = contentLayout.addChild(LinearLayout.vertical());
         this.selectionList = new ExperimentSelectionList(this.minecraft);
-        this.packs.forEach((pack, selected) -> {
-            selectionList.addEntry(new ExperimentSelectionList.ExperimentEntry(
-                    getHumanReadableTitle(pack),
-                    () -> this.packs.getBoolean(pack),
-                    flag -> this.packs.put(pack, flag.booleanValue()),
-                    pack.getDescription()
-            ));
-        });
+        this.packs.forEach((pack, selected) -> selectionList.addEntry(new ExperimentSelectionList.ExperimentEntry(
+                getHumanReadableTitle(pack),
+                () -> this.packs.getBoolean(pack),
+                flag -> this.packs.put(pack, flag.booleanValue()),
+                pack.getDescription())));
         this.listLayout.addChild(selectionList);
 
         LinearLayout footerLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
