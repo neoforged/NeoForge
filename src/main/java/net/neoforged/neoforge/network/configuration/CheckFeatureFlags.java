@@ -56,7 +56,7 @@ public record CheckFeatureFlags(ServerConfigurationPacketListener listener) impl
         if (localFlags.equals(remoteFlags)) {
             context.reply(FeatureFlagAcknowledgePayload.INSTANCE);
         } else {
-            context.disconnect(Component.translatable("neoforge.network.extensible_enums.enum_entry_mismatch"));
+            context.disconnect(Component.translatable("neoforge.network.feature_flags.entry_mismatch"));
 
             StringBuilder message = new StringBuilder("The server and client have different sets of custom FeatureFlags");
             Set<ResourceLocation> missingLocal = Sets.difference(remoteFlags, localFlags);
