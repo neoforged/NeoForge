@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.gui;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -12,6 +14,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -69,8 +73,10 @@ public class GuiLayerManager {
                 layer.layer().render(guiGraphics, partialTick);
                 NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
             }
-
-            guiGraphics.pose().translate(0.0F, 0.0F, Z_SEPARATION);
+            // clear depth values to keep hud rendered at the same depth
+            guiGraphics.pose().translate(0, 0, -1000);
+            guiGraphics.fill(LayerRenderType.GUI, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), -1);
+            guiGraphics.pose().translate(0, 0, 1000);
         }
 
         guiGraphics.pose().popPose();
@@ -86,5 +92,22 @@ public class GuiLayerManager {
 
     public int getLayerCount() {
         return this.layers.size();
+    }
+
+    private static class LayerRenderType extends RenderType {
+        public static final RenderType GUI = create(
+                "reverse_gui",
+                DefaultVertexFormat.POSITION_COLOR,
+                VertexFormat.Mode.QUADS,
+                786432,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RENDERTYPE_GUI_SHADER)
+                        .setWriteMaskState(RenderStateShard.DEPTH_WRITE)
+                        .setDepthTestState(GREATER_DEPTH_TEST)
+                        .createCompositeState(false));
+
+        public LayerRenderType(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize, boolean affectsCrumbling, boolean sortOnUpload, Runnable setupState, Runnable clearState) {
+            super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setupState, clearState);
+        }
     }
 }
