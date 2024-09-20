@@ -117,7 +117,7 @@ public class Tags {
         public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
          * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
-         * Crying Obsidian, for example, is a light block and harder to obtain and has its own tag instead of being here.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
          */
         public static final TagKey<Block> OBSIDIANS_NORMAL = tag("obsidians/normal");
         public static final TagKey<Block> OBSIDIANS_CRYING = tag("obsidians/crying");
@@ -493,7 +493,7 @@ public class Tags {
         public static final TagKey<Item> OBSIDIANS = tag("obsidians");
         /**
          * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
-         * Crying Obsidian, for example, is a light block and harder to obtain and has its own tag instead of being here.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
          */
         public static final TagKey<Item> OBSIDIANS_NORMAL = tag("obsidians/normal");
         public static final TagKey<Item> OBSIDIANS_CRYING = tag("obsidians/crying");
