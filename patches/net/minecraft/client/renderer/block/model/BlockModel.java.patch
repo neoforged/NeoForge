@@ -12,10 +12,20 @@
      }
  
      public static BlockModel fromString(String p_111464_) {
-@@ -104,10 +_,15 @@
+@@ -104,10 +_,25 @@
          this.overrides = p_273099_;
      }
  
++    @Override
++    public void setName(String name) {
++        this.name = name;
++    }
++
++    @Override
++    public com.mojang.serialization.MapCodec<? extends UnbakedModel> codec() {
++        return net.neoforged.neoforge.client.resource.model.ModelCodecs.BLOCK_MODEL;
++    }
++
 +    @Deprecated
      public List<BlockElement> getElements() {
 +        if (customData.hasCustomGeometry()) return java.util.Collections.emptyList();

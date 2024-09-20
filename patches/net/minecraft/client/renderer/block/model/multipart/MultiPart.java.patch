@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/renderer/block/model/multipart/MultiPart.java
++++ b/net/minecraft/client/renderer/block/model/multipart/MultiPart.java
+@@ -41,6 +_,11 @@
+         this.selectors = p_111966_;
+     }
+ 
++    @Override
++    public com.mojang.serialization.MapCodec<? extends UnbakedModel> codec() {
++        return null;
++    }
++
+     public List<Selector> getSelectors() {
+         return this.selectors;
+     }

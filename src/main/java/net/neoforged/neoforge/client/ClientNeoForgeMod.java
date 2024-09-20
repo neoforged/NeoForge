@@ -35,6 +35,7 @@ import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistriesSetup;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
@@ -50,6 +51,7 @@ public class ClientNeoForgeMod {
         TagConventionLogWarningClient.init();
 
         modEventBus.register(ClientNeoForgeMod.class);
+        NeoForgeClientRegistriesSetup.setup(modEventBus);
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 

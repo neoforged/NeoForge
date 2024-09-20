@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
+@@ -41,7 +_,7 @@
+ import org.slf4j.Logger;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class ModelManager implements PreparableReloadListener, AutoCloseable {
++public class ModelManager extends net.neoforged.neoforge.resource.ContextAwareReloadListener implements PreparableReloadListener, AutoCloseable {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final Map<ResourceLocation, ResourceLocation> VANILLA_ATLASES = Map.of(
+         Sheets.BANNER_SHEET,
 @@ -63,13 +_,14 @@
          TextureAtlas.LOCATION_BLOCKS,
          ResourceLocation.withDefaultNamespace("blocks")
@@ -16,14 +25,50 @@
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
          this.blockColors = p_119407_;
-@@ -100,6 +_,7 @@
+@@ -100,14 +_,16 @@
          Executor p_249221_
      ) {
          p_250336_.startTick();
+-        CompletableFuture<Map<ResourceLocation, BlockModel>> completablefuture = loadBlockModels(p_251134_, p_250550_);
 +        net.neoforged.neoforge.client.model.geometry.GeometryLoaderManager.init();
-         CompletableFuture<Map<ResourceLocation, BlockModel>> completablefuture = loadBlockModels(p_251134_, p_250550_);
++        CompletableFuture<Map<ResourceLocation, UnbakedModel>> completablefuture = loadUnbakedModels(this.makeConditionalOps(), p_251134_, p_250550_);
++        /*CompletableFuture<Map<ResourceLocation, BlockModel>> completablefuture = loadBlockModels(p_251134_, p_250550_);*/
          CompletableFuture<Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>>> completablefuture1 = loadBlockStates(p_251134_, p_250550_);
          CompletableFuture<ModelBakery> completablefuture2 = completablefuture.thenCombineAsync(
+             completablefuture1,
+             (p_251201_, p_251281_) -> new ModelBakery(
+                     this.blockColors,
+                     p_250336_,
+-                    (Map<ResourceLocation, BlockModel>)p_251201_,
++                    (Map<ResourceLocation, UnbakedModel>)p_251201_,
+                     (Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>>)p_251281_
+                 ),
+             p_250550_
+@@ -128,17 +_,22 @@
+     }
+ 
+     private static CompletableFuture<Map<ResourceLocation, BlockModel>> loadBlockModels(ResourceManager p_251361_, Executor p_252189_) {
++        // Unchecked cast here is intentional
++        return (CompletableFuture<Map<ResourceLocation, BlockModel>>)(CompletableFuture)loadUnbakedModels(com.mojang.serialization.JsonOps.INSTANCE, p_251361_, p_252189_);
++    }
++
++    private static CompletableFuture<Map<ResourceLocation, UnbakedModel>> loadUnbakedModels(com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> ops, ResourceManager p_251361_, Executor p_252189_) {
+         return CompletableFuture.<Map<ResourceLocation, Resource>>supplyAsync(() -> ModelBakery.MODEL_LISTER.listMatchingResources(p_251361_), p_252189_)
+             .thenCompose(
+                 p_250597_ -> {
+-                    List<CompletableFuture<Pair<ResourceLocation, BlockModel>>> list = new ArrayList<>(p_250597_.size());
++                    List<CompletableFuture<Pair<ResourceLocation, UnbakedModel>>> list = new ArrayList<>(p_250597_.size());
+ 
+                     for (Entry<ResourceLocation, Resource> entry : p_250597_.entrySet()) {
+                         list.add(CompletableFuture.supplyAsync(() -> {
+                             try {
+                                 Pair pair;
+                                 try (Reader reader = entry.getValue().openAsReader()) {
+-                                    pair = Pair.of(entry.getKey(), BlockModel.fromStream(reader));
++                                    pair = Pair.of(entry.getKey(), net.neoforged.neoforge.client.resource.model.ModelManagerHooks.loadUnbakedModel(ops, reader));
+                                 }
+ 
+                                 return pair;
 @@ -218,6 +_,8 @@
                              .collect(Collectors.joining("\n"))
                      )
