@@ -247,6 +247,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.NUGGETS_IRON, "Iron Nuggets");
         add(Tags.Items.NUGGETS_GOLD, "Gold Nuggets");
         add(Tags.Items.OBSIDIANS, "Obsidians");
+        add(Tags.Items.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Items.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Items.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
