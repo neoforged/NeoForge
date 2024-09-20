@@ -69,6 +69,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
         add(Tags.Blocks.NEEDS_NETHERITE_TOOL, "Needs Netherite Tools");
         add(Tags.Blocks.OBSIDIANS, "Obsidians");
+        add(Tags.Blocks.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Blocks.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");

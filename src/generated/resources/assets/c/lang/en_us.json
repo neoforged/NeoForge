@@ -53,6 +53,8 @@
   "tag.block.c.hidden_from_recipe_viewers": "Hidden From Recipe Viewers",
   "tag.block.c.netherracks": "Netherracks",
   "tag.block.c.obsidians": "Obsidians",
+  "tag.block.c.obsidians.crying": "Crying Obsidians",
+  "tag.block.c.obsidians.normal": "Normal Obsidians",
   "tag.block.c.ore_bearing_ground.deepslate": "Deepslate Ore Bearing Ground",
   "tag.block.c.ore_bearing_ground.netherrack": "Netherrack Ore Bearing Ground",
   "tag.block.c.ore_bearing_ground.stone": "Stone Ore Bearing Ground",
