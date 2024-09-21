@@ -12,13 +12,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -103,7 +101,7 @@ public class AttributeUtil {
     }
 
     /**
-     * Unconditionally applies the attribute modifier tooltips for all attribute modifiers present on the item stack.
+     * Applies the attribute modifier tooltips for all attribute modifiers present on the item stack.
      * <p>
      * Before application, this method posts the {@link GatherSkippedAttributeTooltipsEvent} to determine which tooltips should be skipped.
      * <p>
@@ -113,17 +111,20 @@ public class AttributeUtil {
      * @param ctx     The tooltip context.
      */
     public static void applyModifierTooltips(ItemStack stack, Consumer<Component> tooltip, AttributeTooltipContext ctx) {
-        Set<ResourceLocation> skips = new HashSet<>();
-        var event = NeoForge.EVENT_BUS.post(new GatherSkippedAttributeTooltipsEvent(stack, skips, ctx));
+        var event = NeoForge.EVENT_BUS.post(new GatherSkippedAttributeTooltipsEvent(stack, ctx));
         if (event.isSkippingAll()) {
             return;
         }
 
         for (EquipmentSlotGroup group : EquipmentSlotGroup.values()) {
+            if (event.isSkipped(group)) {
+                continue;
+            }
+
             Multimap<Holder<Attribute>, AttributeModifier> modifiers = getSortedModifiers(stack, group);
 
             // Remove any skipped modifiers before doing any logic
-            modifiers.values().removeIf(m -> skips.contains(m.id()));
+            modifiers.values().removeIf(m -> event.isSkipped(m.id()));
 
             if (modifiers.isEmpty()) {
                 continue;

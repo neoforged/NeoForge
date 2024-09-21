@@ -5,8 +5,11 @@
 
 package net.neoforged.neoforge.client.event;
 
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
@@ -20,13 +23,15 @@ import net.neoforged.neoforge.common.util.AttributeTooltipContext;
  */
 public class GatherSkippedAttributeTooltipsEvent extends Event {
     protected final ItemStack stack;
-    protected final Set<ResourceLocation> skips;
+    protected final Set<ResourceLocation> skippedIds;
+    protected final Set<EquipmentSlotGroup> skippedGroups;
     protected final AttributeTooltipContext ctx;
     protected boolean skipAll = false;
 
-    public GatherSkippedAttributeTooltipsEvent(ItemStack stack, Set<ResourceLocation> skips, AttributeTooltipContext ctx) {
+    public GatherSkippedAttributeTooltipsEvent(ItemStack stack, AttributeTooltipContext ctx) {
         this.stack = stack;
-        this.skips = skips;
+        this.skippedIds = new HashSet<>();
+        this.skippedGroups = EnumSet.noneOf(EquipmentSlotGroup.class);
         this.ctx = ctx;
     }
 
@@ -48,14 +53,28 @@ public class GatherSkippedAttributeTooltipsEvent extends Event {
      * Marks the id of a specific attribute modifier as skipped, causing it to not be displayed in the tooltip.
      */
     public void skipId(ResourceLocation id) {
-        this.skips.add(id);
+        this.skippedIds.add(id);
+    }
+
+    /**
+     * Marks an entire {@link EquipmentSlotGroup} as skipped, preventing all modifiers for that group from showing.
+     */
+    public void skipGroup(EquipmentSlotGroup group) {
+        this.skippedGroups.add(group);
     }
 
     /**
      * Checks if a given id is skipped or not. If all modifiers are skipped, this method always returns true.
      */
     public boolean isSkipped(ResourceLocation id) {
-        return this.skipAll || this.skips.contains(id);
+        return this.skipAll || this.skippedIds.contains(id);
+    }
+
+    /**
+     * Checks if a given group is skipped or not. If all modifiers are skipped, this method always returns true.
+     */
+    public boolean isSkipped(EquipmentSlotGroup group) {
+        return this.skipAll || this.skippedGroups.contains(group);
     }
 
     /**
