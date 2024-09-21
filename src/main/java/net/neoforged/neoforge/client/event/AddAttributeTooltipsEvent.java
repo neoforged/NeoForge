@@ -10,7 +10,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.common.util.AttributeUtil;
@@ -20,7 +19,7 @@ import net.neoforged.neoforge.common.util.AttributeUtil;
  * <p>
  * It can be used to add additional tooltip lines adjacent to the attribute lines without having to manually locate the inject point.
  * <p>
- * This event is only fired on the {@linkplain Dist#CLIENT physical client}.
+ * This event may be fired on both the logical client and logical server.
  */
 public class AddAttributeTooltipsEvent extends Event {
     protected final ItemStack stack;

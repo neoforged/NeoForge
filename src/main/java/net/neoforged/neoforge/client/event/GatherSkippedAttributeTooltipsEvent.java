@@ -8,7 +8,6 @@ package net.neoforged.neoforge.client.event;
 import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
@@ -17,7 +16,7 @@ import net.neoforged.neoforge.common.util.AttributeTooltipContext;
  * <p>
  * It allows hiding some (or all) of the modifiers, potentially for displaying them in an alternative way (or for hiding information from the player).
  * <p>
- * This event is only fired on the {@linkplain Dist#CLIENT physical client}.
+ * This event may be fired on both the logical client and logical server.
  */
 public class GatherSkippedAttributeTooltipsEvent extends Event {
     protected final ItemStack stack;
