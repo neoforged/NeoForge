@@ -81,10 +81,11 @@ public class TooltipUtil {
      * Unconditionally applies the attribute modifier tooltips for all attribute modifiers present on the item stack.
      * <p>
      * Before application, this method posts the {@link GatherSkippedAttributeTooltipsEvent} to determine which tooltips should be skipped.
+     * <p>
+     * This method is also responsible for adding the modifier group category labels.
      * 
-     * @param stack
-     * @param tooltip
-     * @param ctx
+     * @param tooltip A consumer to add the tooltip lines to.
+     * @param ctx     The tooltip context
      */
     public static void applyModifierTooltips(ItemStack stack, Consumer<Component> tooltip, AttributeTooltipContext ctx) {
         Set<ResourceLocation> skips = new HashSet<>();
@@ -95,35 +96,37 @@ public class TooltipUtil {
 
         for (EquipmentSlotGroup group : EquipmentSlotGroup.values()) {
             Multimap<Holder<Attribute>, AttributeModifier> modifiers = AttributeUtil.getSortedModifiers(stack, group);
-            Component groupName = Component.translatable("item.modifiers." + group.getSerializedName()).withStyle(ChatFormatting.GRAY);
-            applyTextFor(stack, tooltip, modifiers, groupName, skips, ctx);
+
+            // Remove any skipped modifiers before doing any logic
+            modifiers.values().removeIf(m -> skips.contains(m.id()));
+
+            if (modifiers.isEmpty()) {
+                continue;
+            }
+
+            // Add an empty line, then the name of the group, then the modifiers.
+            tooltip.accept(Component.empty());
+            tooltip.accept(Component.translatable("item.modifiers." + group.getSerializedName()).withStyle(ChatFormatting.GRAY));
+
+            applyTextFor(stack, tooltip, modifiers, ctx);
         }
     }
 
     /**
-     * Applies the text for a single group of modifiers to the tooltip for a given item stack.
+     * Applies the text for the provided attribute modifiers to the tooltip for a given item stack.
      * <p>
      * This method will attempt to merge multiple modifiers for a single attribute into a single modifier if {@linkplain NeoForgeMod#enableMergedAttributeTooltips()} was called.
      * 
      * @param stack       The item stack that owns the modifiers
      * @param tooltip     The consumer to append tooltip components to
-     * @param modifierMap A mutable map of modifiers for the given group
-     * @param groupName   The name of the current modifier group
-     * @param skips       A set of modifier IDs to not apply to the tooltip
+     * @param modifierMap A mutable map of modifiers to convert into tooltip lines
      * @param ctx         The tooltip context
      */
-    public static void applyTextFor(ItemStack stack, Consumer<Component> tooltip, Multimap<Holder<Attribute>, AttributeModifier> modifierMap, Component groupName, Set<ResourceLocation> skips, AttributeTooltipContext ctx) {
-        // Remove any skipped modifiers before doing any logic
-        modifierMap.values().removeIf(m -> skips.contains(m.id()));
-
+    public static void applyTextFor(ItemStack stack, Consumer<Component> tooltip, Multimap<Holder<Attribute>, AttributeModifier> modifierMap, AttributeTooltipContext ctx) {
         // Don't add anything if there is nothing in the group
         if (modifierMap.isEmpty()) {
             return;
         }
-
-        // Add an empty line, then the name of the group
-        tooltip.accept(Component.empty());
-        tooltip.accept(groupName);
 
         // Collect all the base modifiers
         Map<Holder<Attribute>, BaseModifier> baseModifs = new IdentityHashMap<>();
