@@ -154,8 +154,8 @@
              this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
 -            this.addAttributeTooltips(consumer, p_41652_);
 +            // Neo: Replace attribute tooltips with custom handling
-+            net.neoforged.neoforge.client.util.TooltipUtil.addAttributeTooltips(this, consumer,
-+                    net.neoforged.neoforge.client.util.TooltipUtil.AttributeTooltipContext.of(p_41652_, p_339637_, p_41653_));
++            net.neoforged.neoforge.common.util.AttributeUtil.addAttributeTooltips(this, consumer,
++                    net.neoforged.neoforge.common.util.AttributeTooltipContext.of(p_41652_, p_339637_, p_41653_));
              this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
              AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
              if (adventuremodepredicate != null && adventuremodepredicate.showInTooltip()) {

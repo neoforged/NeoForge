@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.client.util.TooltipUtil.AttributeTooltipContext;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 /**
  * This event is used to collect the IDs of attribute modifiers that will not be displayed in item tooltips.

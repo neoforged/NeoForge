@@ -12,11 +12,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.client.util.TooltipUtil;
-import net.neoforged.neoforge.client.util.TooltipUtil.AttributeTooltipContext;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.common.util.AttributeUtil;
 
 /**
- * This event is fired after attribute tooltip lines have been added to an item stack's tooltip in {@link TooltipUtil#addAttributeTooltips}.
+ * This event is fired after attribute tooltip lines have been added to an item stack's tooltip in {@link AttributeUtil#addAttributeTooltips}.
  * <p>
  * It can be used to add additional tooltip lines adjacent to the attribute lines without having to manually locate the inject point.
  * <p>

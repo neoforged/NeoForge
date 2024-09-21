@@ -5,7 +5,7 @@
          }
  
 +        // Neo: Override handling of potion attribute tooltips to support IAttributeExtension
-+        net.neoforged.neoforge.client.util.TooltipUtil.addPotionTooltip(list, p_331296_);
++        net.neoforged.neoforge.common.util.AttributeUtil.addPotionTooltip(list, p_331296_);
 +        if (true) return;
 +
          if (!list.isEmpty()) {
