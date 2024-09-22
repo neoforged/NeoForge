@@ -22,7 +22,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
@@ -289,7 +288,7 @@ public class AttributeUtil {
      * Creates a sorted {@link TreeMultimap} used to ensure a stable iteration order of item attribute modifiers.
      */
     public static Multimap<Holder<Attribute>, AttributeModifier> sortedMap() {
-        return TreeMultimap.create(Comparator.comparing(Holder::value, Comparator.comparing(BuiltInRegistries.ATTRIBUTE::getKey, ResourceLocation::compareTo)), ATTRIBUTE_MODIFIER_COMPARATOR);
+        return TreeMultimap.create(Comparator.comparing(Holder::getKey), ATTRIBUTE_MODIFIER_COMPARATOR);
     }
 
     /**
