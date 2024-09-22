@@ -210,9 +210,9 @@ public class AttributeUtil {
             if (ctx.flag().hasShiftDown() && isMerged) {
                 // Display the raw base value, and then all children modifiers.
                 text = attr.value().toBaseComponent(rawBase, entityBase, false, ctx.flag());
-                tooltip.accept(list().append(text.withStyle(ChatFormatting.DARK_GREEN)));
+                tooltip.accept(listHeader().append(text.withStyle(ChatFormatting.DARK_GREEN)));
                 for (AttributeModifier modifier : baseModif.children) {
-                    tooltip.accept(list().append(attr.value().toComponent(modifier, ctx.flag())));
+                    tooltip.accept(listHeader().append(attr.value().toComponent(modifier, ctx.flag())));
                 }
                 if (baseBonus > 0) {
                     attr.value().addBonusTooltips(stack, tooltip, ctx.flag());
@@ -255,7 +255,7 @@ public class AttributeUtil {
                         MutableComponent comp = attr.value().toComponent(fakeModif, ctx.flag());
                         tooltip.accept(comp.withStyle(comp.getStyle().withColor(color)));
                         if (ctx.flag().hasShiftDown() && merged[i]) {
-                            shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(list().append(attr.value().toComponent(modif, ctx.flag()))));
+                            shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(listHeader().append(attr.value().toComponent(modif, ctx.flag()))));
                         }
                     } else {
                         var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
@@ -314,7 +314,7 @@ public class AttributeUtil {
     /**
      * Creates a mutable component starting with the char used to represent a drop-down list.
      */
-    private static MutableComponent list() {
+    private static MutableComponent listHeader() {
         return Component.literal(" \u2507 ").withStyle(ChatFormatting.GRAY);
     }
 
