@@ -79,8 +79,8 @@ public class AttributeUtil {
      * Comparator for {@link AttributeModifier}. First compares by operation, then amount, then the ID.
      */
     public static final Comparator<AttributeModifier> ATTRIBUTE_MODIFIER_COMPARATOR = Comparator.comparing(AttributeModifier::operation)
-            .thenComparing(Comparator.comparingDouble(a -> -Math.abs(a.amount()))) // Sort most impactful modifiers first
-            .thenComparing(Comparator.comparing(AttributeModifier::id));
+            .thenComparingDouble(a -> -Math.abs(a.amount())) // Sort most impactful modifiers first
+            .thenComparing(AttributeModifier::id);
 
     private static final Logger LOGGER = LogManager.getLogger();
 
