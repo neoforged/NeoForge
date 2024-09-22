@@ -11,7 +11,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -229,36 +229,41 @@ public class AttributeUtil {
             Collection<AttributeModifier> modifs = modifierMap.get(attr);
             // Initiate merged-tooltip logic if we have more than one modifier for a given attribute.
             if (NeoForgeMod.shouldMergeAttributeTooltips() && modifs.size() > 1) {
-                double[] sums = new double[3];
-                boolean[] merged = new boolean[3];
-                Map<Operation, List<AttributeModifier>> shiftExpands = new HashMap<>();
+                Map<Operation, MergedModifierData> mergeData = new EnumMap<>(Operation.class);
 
                 for (AttributeModifier modifier : modifs) {
-                    if (modifier.amount() == 0) continue;
-                    if (sums[modifier.operation().ordinal()] != 0) merged[modifier.operation().ordinal()] = true;
-                    sums[modifier.operation().ordinal()] += modifier.amount();
-                    shiftExpands.computeIfAbsent(modifier.operation(), k -> new LinkedList<>()).add(modifier);
+                    if (modifier.amount() == 0) {
+                        continue;
+                    }
+
+                    MergedModifierData data = mergeData.computeIfAbsent(modifier.operation(), op -> new MergedModifierData());
+                    if (data.sum != 0) {
+                        // If the sum for this operation is non-zero, we've already consumed one modifier. Consuming a second means we've merged.
+                        data.isMerged = true;
+                    }
+                    data.sum += modifier.amount();
+                    data.children.add(modifier);
                 }
 
                 for (Operation op : Operation.values()) {
-                    int i = op.ordinal();
+                    MergedModifierData data = mergeData.get(op);
 
                     // If the merged value comes out to 0, just ignore the whole stack
-                    if (sums[i] == 0) {
+                    if (data == null || data.sum == 0) {
                         continue;
                     }
 
                     // Handle merged modifier stacks by creating a "fake" merged modifier with the underlying value.
-                    if (merged[i]) {
-                        TextColor color = attr.value().getMergedStyle(sums[i] > 0);
-                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
+                    if (data.isMerged) {
+                        TextColor color = attr.value().getMergedStyle(data.sum > 0);
+                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, data.sum, op);
                         MutableComponent comp = attr.value().toComponent(fakeModif, ctx.flag());
                         tooltip.accept(comp.withStyle(comp.getStyle().withColor(color)));
-                        if (ctx.flag().hasShiftDown() && merged[i]) {
-                            shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(listHeader().append(attr.value().toComponent(modif, ctx.flag()))));
+                        if (ctx.flag().hasShiftDown()) {
+                            data.children.forEach(modif -> tooltip.accept(listHeader().append(attr.value().toComponent(modif, ctx.flag()))));
                         }
                     } else {
-                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
+                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, data.sum, op);
                         tooltip.accept(attr.value().toComponent(fakeModif, ctx.flag()));
                     }
                 }
@@ -336,6 +341,15 @@ public class AttributeUtil {
      * Used during attribute merging logic within {@link AttributeUtil#applyTextFor}.
      */
     private static record BaseModifier(AttributeModifier base, List<AttributeModifier> children) {}
+
+    /**
+     * State-tracking object used to merge attribute modifier tooltips in {@link AttributeUtil#applyTextFor}.
+     */
+    private static class MergedModifierData {
+        double sum = 0;
+        boolean isMerged = false;
+        private List<AttributeModifier> children = new LinkedList<>();
+    }
 
     /**
      * Client bouncer class to avoid class loading issues. Access to this class still needs a dist check.
