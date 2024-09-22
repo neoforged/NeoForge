@@ -48,7 +48,7 @@ public class BooleanAttribute extends Attribute {
         } else if (op == Operation.ADD_VALUE && value > 0) {
             return Component.translatable("neoforge.value.boolean.enable");
         } else if (op == Operation.ADD_MULTIPLIED_TOTAL && (int) value == -1) {
-            return Component.translatable("neoforge.value.boolean.force_disable");
+            return Component.translatable("neoforge.value.boolean.disable");
         } else {
             return Component.translatable("neoforge.value.boolean.invalid");
         }
@@ -58,13 +58,8 @@ public class BooleanAttribute extends Attribute {
     public MutableComponent toComponent(AttributeModifier modif, TooltipFlag flag) {
         double value = modif.amount();
 
-        MutableComponent comp;
-        if (value > 0.0D) {
-            comp = Component.translatable("neoforge.modifier.bool", this.toValueComponent(modif.operation(), value, flag), Component.translatable(this.getDescriptionId())).withStyle(ChatFormatting.BLUE);
-        } else {
-            value *= -1.0D;
-            comp = Component.translatable("neoforge.modifier.bool", this.toValueComponent(modif.operation(), value, flag), Component.translatable(this.getDescriptionId())).withStyle(ChatFormatting.RED);
-        }
+        ChatFormatting color = this.getStyle(value > 0);
+        MutableComponent comp = Component.translatable("neoforge.modifier.bool", this.toValueComponent(modif.operation(), value, flag), Component.translatable(this.getDescriptionId())).withStyle(color);
 
         return comp.append(this.getDebugInfo(modif, flag));
     }

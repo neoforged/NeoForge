@@ -274,7 +274,7 @@
   "neoforge.value.boolean.enabled": "Enabled",
   "neoforge.value.boolean.disabled": "Disabled",
   "neoforge.value.boolean.enable": "Enables",
-  "neoforge.value.boolean.force_disable": "Forcibly Disables",
+  "neoforge.value.boolean.disable": "Disables",
   "neoforge.value.boolean.invalid": "Invalid",
 
   "neoforge.modifier.plus": "+%s %s",
