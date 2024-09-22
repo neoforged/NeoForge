@@ -278,6 +278,6 @@
   "neoforge.value.boolean.invalid": "Invalid",
 
   "neoforge.modifier.plus": "+%s %s",
-  "neoforge.modifier.take": "-%s %s",
+  "neoforge.modifier.take": "%s %s",
   "neoforge.modifier.bool": "%s %s"
 }

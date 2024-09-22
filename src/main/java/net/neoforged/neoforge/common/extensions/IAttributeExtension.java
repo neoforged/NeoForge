@@ -34,11 +34,10 @@ public interface IAttributeExtension {
     /**
      * Converts the value of an attribute modifier to the value that will be displayed.
      * <p>
-     * For multiplication modifiers, this method is responsible for converting the value to percentage form.<br>
-     * The only vanilla attribute which performs value formatting is Knockback Resistance.<br>
+     * For multiplicative modifiers, this method is responsible for converting the value to percentage form.
      *
      * @param op    The operation of the modifier. Null if we are just displaying the raw value and not a modifier.
-     * @param value The value to convert. Attribute modifiers (non-null operations) should pass the absolute value of {@link AttributeModifier#amount()}.
+     * @param value The value to convert. Either the current attribute value (if null operation) or the attribute modifier's amount.
      * @param flag  The tooltip flag.
      * @return The component form of the formatted value.
      */
@@ -65,10 +64,11 @@ public interface IAttributeExtension {
         Attribute attr = self();
         double value = modif.amount();
         String key = value > 0 ? "neoforge.modifier.plus" : "neoforge.modifier.take";
+        ChatFormatting color = attr.getStyle(value > 0);
 
         Component attrDesc = Component.translatable(attr.getDescriptionId());
-        Component valueComp = this.toValueComponent(modif.operation(), Math.abs(value), flag);
-        MutableComponent comp = Component.translatable(key, valueComp, attrDesc).withStyle(attr.getStyle(value > 0));
+        Component valueComp = this.toValueComponent(modif.operation(), value, flag);
+        MutableComponent comp = Component.translatable(key, valueComp, attrDesc).withStyle(color);
 
         return comp.append(this.getDebugInfo(modif, flag));
     }
@@ -89,9 +89,9 @@ public interface IAttributeExtension {
             double advValue = (modif.operation() == Operation.ADD_MULTIPLIED_TOTAL ? 1 : 0) + modif.amount();
             String valueStr = FORMAT.format(advValue);
             String txt = switch (modif.operation()) {
-                case ADD_VALUE -> advValue > 0 ? String.format("[+%s]", valueStr) : String.format("[%s]", valueStr);
-                case ADD_MULTIPLIED_BASE -> advValue > 0 ? String.format("[+%sx]", valueStr) : String.format("[%sx]", valueStr);
-                case ADD_MULTIPLIED_TOTAL -> String.format("[x%s]", valueStr);
+                case ADD_VALUE -> String.format(Locale.ROOT, advValue > 0 ? "[+%s]" : "[%s]", valueStr);
+                case ADD_MULTIPLIED_BASE -> String.format(Locale.ROOT, advValue > 0 ? "[+%sx]" : "[%sx]", valueStr);
+                case ADD_MULTIPLIED_TOTAL -> String.format(Locale.ROOT, "[x%s]", valueStr);
             };
             debugInfo = Component.literal(" ").append(Component.literal(txt).withStyle(ChatFormatting.GRAY));
         }
