@@ -168,12 +168,12 @@ public class AttributeUtil {
         }
 
         // Collect children of all base modifiers for merging logic
-        modifierMap.forEach((attr, modif) -> {
-            BaseModifier base = baseModifs.get(attr);
+        for (Map.Entry<Holder<Attribute>, AttributeModifier> entry : modifierMap.entries()) {
+            BaseModifier base = baseModifs.get(entry.getKey());
             if (base != null) {
-                base.children.add(modif);
+                base.children.add(entry.getValue());
             }
-        });
+        }
 
         // Add tooltip lines for base modifiers
         for (Map.Entry<Holder<Attribute>, BaseModifier> entry : baseModifs.entrySet()) {
