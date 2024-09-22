@@ -11,11 +11,13 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attribute.Sentiment;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -99,11 +101,9 @@ public interface IAttributeExtension {
     }
 
     /**
-     * Gets the specific UUID that represents a "base" (green) modifier for this attribute.
+     * Gets the specific ID that represents a "base" (green) modifier for this attribute.
      *
-     * @param modif The attribute modifier being checked.
-     * @param flag  The tooltip flag.
-     * @return The UUID of the "base" modifier, or null, if no such modifier may exist.
+     * @return The ID of the "base" modifier, or null, if no such modifier may exist.
      */
     @Nullable
     default ResourceLocation getBaseId() {
@@ -114,29 +114,28 @@ public interface IAttributeExtension {
     }
 
     /**
-     * Converts an attribute modifier into its tooltip representation.
+     * Converts a "base" attribute modifier (as dictated by {@link #getBaseId()}) into a text component.
      * <p>
-     * This method does not handle formatting of "base" modifiers, such as Attack Damage or Attack Speed.
-     * <p>
+     * Similar to {@link #toComponent}, this method is responsible for adding debug information when the tooltip flag {@linkplain TooltipFlag#isAdvanced() is advanced}.
      *
-     * @param modif The attribute modifier being converted to a component.
-     * @param flag  The tooltip flag.
+     * @param value      The value to be shown (after having been added to the entity's base value)
+     * @param entityBase The entity's base value for this attribute from {@link LivingEntity#getAttributeBaseValue(Holder)}.
+     * @param merged     If we are displaying a merged base component (which will have a non-merged base component as a child).
+     * @param flag       The tooltip flag.
      * @return The component representation of the passed attribute modifier.
      */
     default MutableComponent toBaseComponent(double value, double entityBase, boolean merged, TooltipFlag flag) {
         Attribute attr = self();
-
-        Component debugInfo = CommonComponents.EMPTY;
-
-        if (flag.isAdvanced() && !merged) {
-            // Advanced Tooltips cause us to emit the entity's base value and the base value of the item.
-            debugInfo = Component.literal(" ")
-                    .append(Component.translatable("neoforge.adv.base", FORMAT.format(entityBase), FORMAT.format(value - entityBase)).withStyle(ChatFormatting.GRAY));
-        }
-
         MutableComponent comp = Component.translatable("attribute.modifier.equals.0", FORMAT.format(value), Component.translatable(attr.getDescriptionId()));
 
-        return comp.append(debugInfo);
+        // Emit both the value of the modifier, and the entity's base value as debug information, since both are flattened into the modifier.
+        // Skip showing debug information here when displaying a merged modifier, since it will be shown if the user holds shift to display the un-merged modifier.
+        if (flag.isAdvanced() && !merged) {
+            Component debugInfo = Component.literal(" ").append(Component.translatable("neoforge.adv.base", FORMAT.format(entityBase), FORMAT.format(value - entityBase)).withStyle(ChatFormatting.GRAY));
+            comp.append(debugInfo);
+        }
+
+        return comp;
     }
 
     /**
@@ -150,14 +149,14 @@ public interface IAttributeExtension {
     TextColor getMergedStyle(boolean isPositive);
 
     /**
-     * Certain attributes, such as Attack Damage, are increased by an Enchantment that doesn't actually apply
-     * an attribute modifier.<br>
+     * Certain attributes, such as Attack Damage, are increased by an Enchantment that doesn't actually apply an attribute modifier.
+     * <p>
      * This method allows for including certain additional variables in the computation of "base" attribute values.
      *
      * @param stack The stack in question.
      * @return Any bonus value to be applied to the attribute's value, after all modifiers have been applied.
      * 
-     * @apiNote This method is experimental as it only exists to support displaying Sharpness in item tooltips, which is currently broken by MC-271840
+     * @apiNote This method is experimental as it only exists to support displaying Sharpness in item tooltips, which is currently broken by MC-271840.
      */
     @ApiStatus.Experimental
     default double getBonusBaseValue(ItemStack stack) {
@@ -173,7 +172,7 @@ public interface IAttributeExtension {
      * @param tooltip The tooltip consumer.
      * @param flag    The tooltip flag.
      * 
-     * @apiNote This method is experimental as it only exists to support displaying Sharpness in item tooltips, which is currently broken by MC-271840
+     * @apiNote This method is experimental as it only exists to support displaying Sharpness in item tooltips, which is currently broken by MC-271840.
      */
     @ApiStatus.Experimental
     default void addBonusTooltips(ItemStack stack, Consumer<Component> tooltip, TooltipFlag flag) {
