@@ -23,7 +23,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
@@ -281,13 +280,8 @@ public class AttributeUtil {
      * @param tooltips The tooltip consumer to add lines to.
      */
     public static void addPotionTooltip(List<Pair<Holder<Attribute>, AttributeModifier>> list, Consumer<Component> tooltips) {
-        if (!list.isEmpty()) {
-            tooltips.accept(CommonComponents.EMPTY);
-            tooltips.accept(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
-
-            for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
-                tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), getTooltipFlag()));
-            }
+        for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
+            tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), getTooltipFlag()));
         }
     }
 
