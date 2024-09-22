@@ -123,10 +123,10 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
                 message.append("\n").append(enumClass).append(": ");
                 switch (entry.getValue()) {
                     case EXTENSIBILITY -> {
-                        if (remoteEnumEntries.get(enumClass) == null) {
-                            message.append("Enum is extensible on the client but not on the server");
-                        } else {
+                        if (remoteEnumEntries.containsKey(enumClass)) {
                             message.append("Enum is extensible on the server but not on the client");
+                        } else {
+                            message.append("Enum is extensible on the client but not on the server");
                         }
                     }
                     case NETWORK_CHECK -> message.append("Mismatched NetworkCheck (server: ")
