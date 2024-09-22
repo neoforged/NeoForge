@@ -38,7 +38,7 @@ public interface IAttributeExtension {
      * The only vanilla attribute which performs value formatting is Knockback Resistance.<br>
      *
      * @param op    The operation of the modifier. Null if we are just displaying the raw value and not a modifier.
-     * @param value The value of the modifier.
+     * @param value The value to convert. Attribute modifiers (non-null operations) should pass the absolute value of {@link AttributeModifier#amount()}.
      * @param flag  The tooltip flag.
      * @return The component form of the formatted value.
      */
@@ -64,15 +64,11 @@ public interface IAttributeExtension {
     default MutableComponent toComponent(AttributeModifier modif, TooltipFlag flag) {
         Attribute attr = self();
         double value = modif.amount();
+        String key = value > 0 ? "neoforge.modifier.plus" : "neoforge.modifier.take";
 
-        MutableComponent comp;
-
-        if (value > 0.0D) {
-            comp = Component.translatable("neoforge.modifier.plus", this.toValueComponent(modif.operation(), value, flag), Component.translatable(attr.getDescriptionId())).withStyle(attr.getStyle(true));
-        } else {
-            value *= -1.0D;
-            comp = Component.translatable("neoforge.modifier.take", this.toValueComponent(modif.operation(), value, flag), Component.translatable(attr.getDescriptionId())).withStyle(attr.getStyle(false));
-        }
+        Component attrDesc = Component.translatable(attr.getDescriptionId());
+        Component valueComp = this.toValueComponent(modif.operation(), Math.abs(value), flag);
+        MutableComponent comp = Component.translatable(key, valueComp, attrDesc).withStyle(attr.getStyle(value > 0));
 
         return comp.append(this.getDebugInfo(modif, flag));
     }
