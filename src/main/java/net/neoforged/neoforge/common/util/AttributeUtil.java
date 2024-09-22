@@ -95,7 +95,7 @@ public class AttributeUtil {
     public static void addAttributeTooltips(ItemStack stack, Consumer<Component> tooltip, AttributeTooltipContext ctx) {
         ItemAttributeModifiers modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         if (modifiers.showInTooltip()) {
-            AttributeUtil.applyModifierTooltips(stack, tooltip, ctx);
+            applyModifierTooltips(stack, tooltip, ctx);
         }
         NeoForge.EVENT_BUS.post(new AddAttributeTooltipsEvent(stack, tooltip, ctx));
     }
@@ -134,7 +134,7 @@ public class AttributeUtil {
             tooltip.accept(Component.empty());
             tooltip.accept(Component.translatable("item.modifiers." + group.getSerializedName()).withStyle(ChatFormatting.GRAY));
 
-            AttributeUtil.applyTextFor(stack, tooltip, modifiers, ctx);
+            applyTextFor(stack, tooltip, modifiers, ctx);
         }
     }
 
@@ -212,9 +212,9 @@ public class AttributeUtil {
             if (ctx.flag().hasShiftDown() && isMerged) {
                 // Display the raw base value, and then all children modifiers.
                 text = attr.value().toBaseComponent(rawBase, entityBase, false, ctx.flag());
-                tooltip.accept(AttributeUtil.list().append(text.withStyle(ChatFormatting.DARK_GREEN)));
+                tooltip.accept(list().append(text.withStyle(ChatFormatting.DARK_GREEN)));
                 for (AttributeModifier modifier : baseModif.children) {
-                    tooltip.accept(AttributeUtil.list().append(attr.value().toComponent(modifier, ctx.flag())));
+                    tooltip.accept(list().append(attr.value().toComponent(modifier, ctx.flag())));
                 }
                 if (baseBonus > 0) {
                     attr.value().addBonusTooltips(stack, tooltip, ctx.flag());
@@ -253,14 +253,14 @@ public class AttributeUtil {
                     // Handle merged modifier stacks by creating a "fake" merged modifier with the underlying value.
                     if (merged[i]) {
                         TextColor color = attr.value().getMergedStyle(sums[i] > 0);
-                        var fakeModif = new AttributeModifier(AttributeUtil.FAKE_MERGED_ID, sums[i], op);
+                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
                         MutableComponent comp = attr.value().toComponent(fakeModif, ctx.flag());
                         tooltip.accept(comp.withStyle(comp.getStyle().withColor(color)));
                         if (ctx.flag().hasShiftDown() && merged[i]) {
-                            shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(AttributeUtil.list().append(attr.value().toComponent(modif, ctx.flag()))));
+                            shiftExpands.get(Operation.BY_ID.apply(i)).forEach(modif -> tooltip.accept(list().append(attr.value().toComponent(modif, ctx.flag()))));
                         }
                     } else {
-                        var fakeModif = new AttributeModifier(AttributeUtil.FAKE_MERGED_ID, sums[i], op);
+                        var fakeModif = new AttributeModifier(FAKE_MERGED_ID, sums[i], op);
                         tooltip.accept(attr.value().toComponent(fakeModif, ctx.flag()));
                     }
                 }
@@ -286,7 +286,7 @@ public class AttributeUtil {
             tooltips.accept(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
 
             for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
-                tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), AttributeUtil.getTooltipFlag()));
+                tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), getTooltipFlag()));
             }
         }
     }
@@ -307,7 +307,7 @@ public class AttributeUtil {
      * @param slot  The slot group to query modifiers for.
      */
     public static Multimap<Holder<Attribute>, AttributeModifier> getSortedModifiers(ItemStack stack, EquipmentSlotGroup slot) {
-        Multimap<Holder<Attribute>, AttributeModifier> map = AttributeUtil.sortedMap();
+        Multimap<Holder<Attribute>, AttributeModifier> map = sortedMap();
         stack.forEachModifier(slot, (attr, modif) -> {
             if (attr != null && modif != null) {
                 map.put(attr, modif);
