@@ -43,22 +43,11 @@ public interface IAttributeExtension {
      * @return The component form of the formatted value.
      */
     default MutableComponent toValueComponent(@Nullable Operation op, double value, TooltipFlag flag) {
-        // Knockback Resistance should be a PercentageAttribute, but we can't registry replace attributes, so we do this here.
-        // For Knockback Resistance, vanilla hardcodes a multiplier of 10 for addition values to hide numbers lower than 1,
-        // but representing the value as a percentage better expresses the intent of the modifier.
-        if (this == Attributes.KNOCKBACK_RESISTANCE.value()) {
-            return Component.translatable("neoforge.value.percent", FORMAT.format(value * 100));
+        if (isNullOrAddition(op)) {
+            return Component.translatable("neoforge.value.flat", FORMAT.format(value));
         }
 
-        // Speed has no metric, so displaying everything as percent works better for the user.
-        // However, Speed also operates in that the default is 0.1, not 1, so we have to special-case it instead of including it above.
-        if (this == Attributes.MOVEMENT_SPEED.value() && isNullOrAddition(op)) {
-            return Component.translatable("neoforge.value.percent", FORMAT.format(value * 1000));
-        }
-
-        // Default case for "normal" ranged attributes.
-        String key = isNullOrAddition(op) ? "neoforge.value.flat" : "neoforge.value.percent";
-        return Component.translatable(key, FORMAT.format(isNullOrAddition(op) ? value : value * 100));
+        return Component.translatable("neoforge.value.percent", FORMAT.format(value * 100));
     }
 
     /**
