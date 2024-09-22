@@ -341,7 +341,6 @@ public class AttributeUtil {
      * Client bouncer class to avoid class loading issues. Access to this class still needs a dist check.
      */
     private static class ClientAccess {
-        @SuppressWarnings("resource")
         static TooltipFlag getTooltipFlag() {
             return Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL;
         }
