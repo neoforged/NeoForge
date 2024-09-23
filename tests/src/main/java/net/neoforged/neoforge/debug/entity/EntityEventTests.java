@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.entity;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
@@ -13,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
@@ -27,8 +29,10 @@ import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
+import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -162,6 +166,41 @@ public class EntityEventTests {
                             helper.assertEntityPresent(EntityType.PLAYER, 0, 2, 0);
                             helper.assertTrue(player.level().dimension() == Level.OVERWORLD, "Dimension change was not prevented");
                         }))
+                .thenExecute(helper::killAllEntities)
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests that the FinalizeSpawnEvent is emitted at all")
+    static void entityFinalizeSpawnEvent(final DynamicTest test) {
+        // Identify the entity we spawn in this test by their spawn location, since we do not have
+        // access to the entity object at all before the event is emitted.
+        AtomicReference<BlockPos> spawnPosRef = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final FinalizeSpawnEvent event) -> {
+            if (Objects.equals(spawnPosRef.get(), event.getEntity().blockPosition())) {
+                event.setSpawnCancelled(true);
+                test.pass();
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenExecute(() -> {
+                    var spawnPos = helper.absolutePos(BlockPos.ZERO);
+                    spawnPosRef.set(spawnPos);
+                    EntityType.PIG.create(
+                            helper.getLevel(),
+                            ignored -> {},
+                            spawnPos,
+                            MobSpawnType.SPAWN_EGG,
+                            false,
+                            false);
+                })
+                .thenExecute(() -> {
+                    // The event handler canceled the spawn
+                    helper.assertEntityNotPresent(EntityType.PIG);
+                })
+                .thenWaitUntil(() -> helper.assertValueEqual(test.status(), Test.Status.PASSED, "listener called"))
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
     }
