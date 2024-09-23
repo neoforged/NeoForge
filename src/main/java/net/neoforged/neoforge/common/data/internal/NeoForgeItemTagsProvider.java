@@ -406,7 +406,6 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.FOODS_COOKED_FISH).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "foods/cooked_fishes"));
         tag(Tags.Items.FOODS_SOUP).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "foods/soups"));
         tag(Tags.Items.FOODS_CANDY).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "foods/candies"));
-        tag(Tags.Items.FOODS_PIE).addOptionalTag(ResourceLocation.fromNamespaceAndPath("c", "foods/pies"));
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Item> tagWithOptionalLegacy(TagKey<Item> tag) {
