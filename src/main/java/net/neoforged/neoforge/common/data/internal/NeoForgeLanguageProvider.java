@@ -10,6 +10,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,11 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        // Vanilla Dimensions
+        addDimension(Level.OVERWORLD, "Overworld");
+        addDimension(Level.NETHER, "The Nether");
+        addDimension(Level.END, "The End");
+
         // Blocks
         add(Tags.Blocks.BARRELS, "Barrels");
         add(Tags.Blocks.BARRELS_WOODEN, "Wooden Barrels");
@@ -209,6 +215,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_RAW_MEAT, "Raw Meats");
         add(Tags.Items.FOODS_SOUP, "Soups");
         add(Tags.Items.FOODS_VEGETABLE, "Vegetables");
+        add(Tags.Items.ANIMAL_FOODS, "Animal Foods");
         add(Tags.Items.GEMS, "Gems");
         add(Tags.Items.GEMS_AMETHYST, "Amethyst Gems");
         add(Tags.Items.GEMS_DIAMOND, "Diamond Gems");

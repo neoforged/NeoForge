@@ -1,4 +1,7 @@
 {
+  "dimension.minecraft.overworld": "Overworld",
+  "dimension.minecraft.the_end": "The End",
+  "dimension.minecraft.the_nether": "The Nether",
   "tag.block.c.barrels": "Barrels",
   "tag.block.c.barrels.wooden": "Wooden Barrels",
   "tag.block.c.bookshelves": "Bookshelves",
@@ -133,6 +136,7 @@
   "tag.fluid.c.rabbit_stew": "Rabbit Stew",
   "tag.fluid.c.suspicious_stew": "Suspicious Stew",
   "tag.fluid.c.water": "Water",
+  "tag.item.c.animal_foods": "Animal Foods",
   "tag.item.c.armors": "Armors",
   "tag.item.c.barrels": "Barrels",
   "tag.item.c.barrels.wooden": "Wooden Barrels",

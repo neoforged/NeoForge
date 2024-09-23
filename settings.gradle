@@ -7,7 +7,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.150'
+    id 'net.neoforged.gradle.platform' version '7.0.163'
 }
 
 rootProject.name = rootDir.name
@@ -24,3 +24,7 @@ include ':tests'
 project(":tests").projectDir = file("tests")
 
 include ':testframework'
+include ':coremods'
+// Ensure a unique artifact id within JIJ that does not conflict with net.neoforged:coremods, which is
+// another external dependency.
+project(":coremods").name = "neoforge-coremods"
