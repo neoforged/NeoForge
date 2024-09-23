@@ -72,14 +72,14 @@ public class GatherSkippedAttributeTooltipsEvent extends Event {
      * Checks if a given id is skipped or not. If all modifiers are skipped, this method always returns true.
      */
     public boolean isSkipped(ResourceLocation id) {
-        return this.skipAll || this.getSkippedIds().contains(id);
+        return this.skipAll || (this.skippedIds != null && this.skippedIds.contains(id));
     }
 
     /**
      * Checks if a given group is skipped or not. If all modifiers are skipped, this method always returns true.
      */
     public boolean isSkipped(EquipmentSlotGroup group) {
-        return this.skipAll || this.getSkippedGroups().contains(group);
+        return this.skipAll || (this.skippedGroups != null && this.skippedGroups.contains(group));
     }
 
     /**
