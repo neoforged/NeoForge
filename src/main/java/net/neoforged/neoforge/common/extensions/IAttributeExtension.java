@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.extensions;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
@@ -23,11 +22,9 @@ import net.minecraft.world.entity.ai.attributes.Attribute.Sentiment;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.AttributeUtil;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public interface IAttributeExtension {
@@ -147,49 +144,6 @@ public interface IAttributeExtension {
      * @param positive If the attribute modifier value is positive or not.
      */
     TextColor getMergedStyle(boolean isPositive);
-
-    /**
-     * Certain attributes, such as Attack Damage, are increased by an Enchantment that doesn't actually apply an attribute modifier.
-     * <p>
-     * This method allows for including certain additional variables in the computation of "base" attribute values.
-     *
-     * @param stack The stack in question.
-     * @return Any bonus value to be applied to the attribute's value, after all modifiers have been applied.
-     * 
-     * @apiNote This method is experimental as it only exists to support displaying Sharpness in item tooltips, which is currently broken by MC-271840.
-     */
-    @ApiStatus.Experimental
-    default double getBonusBaseValue(ItemStack stack) {
-        // if (this == Attributes.ATTACK_DAMAGE) return EnchantmentHelper.getDamageBonus(stack, MobType.UNDEFINED);
-        return 0;
-    }
-
-    /**
-     * This method is invoked when {@link #getBonusBaseValue(ItemStack)} returns a value higher than zero.<br>
-     * It is responsible for adding tooltip lines that explain where the bonus values from {@link #getBonusBaseValue(ItemStack)} are from.
-     *
-     * @param stack   The stack in question.
-     * @param tooltip The tooltip consumer.
-     * @param flag    The tooltip flag.
-     * 
-     * @apiNote This method is experimental as it only exists to support displaying Sharpness in item tooltips, which is currently broken by MC-271840.
-     */
-    @ApiStatus.Experimental
-    default void addBonusTooltips(ItemStack stack, Consumer<Component> tooltip, TooltipFlag flag) {
-        // if (this == Attributes.ATTACK_DAMAGE) {
-        // float sharpness = EnchantmentHelper.getDamageBonus(stack, MobType.UNDEFINED);
-        // Component debugInfo = CommonComponents.EMPTY;
-        // if (flag.isAdvanced()) {
-        // // Show the user that this fake modifier is from Sharpness.
-        // debugInfo = Component.literal(" ").append(Component.translatable("neoforge.adv.sharpness_bonus",
-        // sharpness).withStyle(ChatFormatting.GRAY));
-        // }
-        // MutableComponent comp = AttributeHelper.list()
-        // .append(Component.translatable("attribute.modifier.plus.0", ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(sharpness),
-        // Component.translatable(this.ths().getDescriptionId())).withStyle(ChatFormatting.BLUE));
-        // tooltip.accept(comp.append(debugInfo));
-        // }
-    }
 
     public static boolean isNullOrAddition(@Nullable Operation op) {
         return op == null || op == Operation.ADD_VALUE;

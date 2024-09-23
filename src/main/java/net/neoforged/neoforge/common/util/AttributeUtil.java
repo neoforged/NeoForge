@@ -201,10 +201,7 @@ public class AttributeUtil {
                 }
             }
 
-            double baseBonus = attr.value().getBonusBaseValue(stack);
-            amt += baseBonus;
-
-            boolean isMerged = NeoForgeMod.shouldMergeAttributeTooltips() && (!baseModif.children.isEmpty() || baseBonus != 0);
+            boolean isMerged = NeoForgeMod.shouldMergeAttributeTooltips() && !baseModif.children.isEmpty();
             MutableComponent text = attr.value().toBaseComponent(amt, entityBase, isMerged, ctx.flag());
             tooltip.accept(Component.literal(" ").append(text).withStyle(isMerged ? ChatFormatting.GOLD : ChatFormatting.DARK_GREEN));
             if (ctx.flag().hasShiftDown() && isMerged) {
@@ -213,9 +210,6 @@ public class AttributeUtil {
                 tooltip.accept(listHeader().append(text.withStyle(ChatFormatting.DARK_GREEN)));
                 for (AttributeModifier modifier : baseModif.children) {
                     tooltip.accept(listHeader().append(attr.value().toComponent(modifier, ctx.flag())));
-                }
-                if (baseBonus > 0) {
-                    attr.value().addBonusTooltips(stack, tooltip, ctx.flag());
                 }
             }
         }
