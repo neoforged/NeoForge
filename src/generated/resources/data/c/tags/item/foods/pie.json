@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:pumpkin_pie",
+    {
+      "id": "#c:foods/pies",
+      "required": false
+    }
+  ]
+}
