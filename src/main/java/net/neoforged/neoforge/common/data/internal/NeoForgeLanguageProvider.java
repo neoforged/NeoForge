@@ -69,6 +69,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
         add(Tags.Blocks.NEEDS_NETHERITE_TOOL, "Needs Netherite Tools");
         add(Tags.Blocks.OBSIDIANS, "Obsidians");
+        add(Tags.Blocks.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Blocks.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
@@ -215,6 +217,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_RAW_MEAT, "Raw Meats");
         add(Tags.Items.FOODS_SOUP, "Soups");
         add(Tags.Items.FOODS_VEGETABLE, "Vegetables");
+        add(Tags.Items.ANIMAL_FOODS, "Animal Foods");
         add(Tags.Items.GEMS, "Gems");
         add(Tags.Items.GEMS_AMETHYST, "Amethyst Gems");
         add(Tags.Items.GEMS_DIAMOND, "Diamond Gems");
@@ -246,6 +249,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.NUGGETS_IRON, "Iron Nuggets");
         add(Tags.Items.NUGGETS_GOLD, "Gold Nuggets");
         add(Tags.Items.OBSIDIANS, "Obsidians");
+        add(Tags.Items.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Items.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Items.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");

@@ -70,6 +70,18 @@ public final class ModelData {
         return new Builder(null);
     }
 
+    /**
+     * Helper to create a {@link ModelData} instance for a single property-value pair, without the verbosity
+     * and runtime overhead of creating a builder object.
+     */
+    public static <T> ModelData of(ModelProperty<T> property, T value) {
+        Preconditions.checkState(property.test(value), "The provided value is invalid for this property.");
+        // Must use one of the two map types from the builder to avoid megamorphic calls to Map.get() later
+        Reference2ReferenceArrayMap<ModelProperty<?>, Object> map = new Reference2ReferenceArrayMap<>(1);
+        map.put(property, value);
+        return new ModelData(map);
+    }
+
     public static final class Builder {
         /**
          * Hash maps are slower than array maps for *extremely* small maps (empty maps or singletons are the most

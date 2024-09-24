@@ -254,12 +254,12 @@
                  if (p_36347_.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE)
                      && p_36347_ instanceof Projectile projectile
                      && projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this, this, true)) {
-@@ -1170,8 +_,12 @@
+@@ -1170,19 +_,28 @@
                          && !this.isPassenger()
                          && p_36347_ instanceof LivingEntity
                          && !this.isSprinting();
 +                    // Neo: Fire the critical hit event and override the critical hit status and damage multiplier based on the event.
-+                    // The boolean local above (flag2) is the vanilla critical hit result.
++                    // The boolean local above (flag1) is the vanilla critical hit result.
 +                    var critEvent = net.neoforged.neoforge.common.CommonHooks.fireCriticalHit(this, p_36347_, flag1, flag1 ? 1.5F : 1.0F);
 +                    flag1 = critEvent.isCriticalHit();
                      if (flag1) {
@@ -268,17 +268,26 @@
                      }
  
                      float f3 = f + f1;
-@@ -1179,9 +_,7 @@
+                     boolean flag2 = false;
                      double d0 = (double)(this.walkDist - this.walkDistO);
-                     if (flag4 && !flag1 && !flag && this.onGround() && d0 < (double)this.getSpeed()) {
+-                    if (flag4 && !flag1 && !flag && this.onGround() && d0 < (double)this.getSpeed()) {
++                    // Neo: Replace !flag1 (!isCriticalHit) with the logic from the CriticalHitEvent.
++                    boolean critBlocksSweep = critEvent.isCriticalHit() && critEvent.disableSweep();
++                    if (flag4 && !critBlocksSweep && !flag && this.onGround() && d0 < (double)this.getSpeed()) {
++                        // Neo: Make sweep attacks check SWORD_SWEEP instead of instanceof SwordItem.
                          ItemStack itemstack1 = this.getItemInHand(InteractionHand.MAIN_HAND);
 -                        if (itemstack1.getItem() instanceof SwordItem) {
 -                            flag2 = true;
 -                        }
 +                        flag2 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_SWEEP);
                      }
++
++                    // Neo: Fire the SweepAttackEvent and overwrite the value of flag2 (the local controlling if a sweep will occur).
++                    var sweepEvent = net.neoforged.neoforge.common.CommonHooks.fireSweepAttack(this, p_36347_, flag2);
++                    flag2 = sweepEvent.isSweeping();
  
                      float f6 = 0.0F;
+                     if (p_36347_ instanceof LivingEntity livingentity) {
 @@ -1217,11 +_,12 @@
  
                              for (LivingEntity livingentity2 : this.level()
