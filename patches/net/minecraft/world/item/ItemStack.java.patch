@@ -148,7 +148,18 @@
              if (this.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
              }
-@@ -784,12 +_,14 @@
+@@ -752,7 +_,9 @@
+             this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
+             this.addToTooltip(DataComponents.DYED_COLOR, p_339637_, consumer, p_41653_);
+             this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
+-            this.addAttributeTooltips(consumer, p_41652_);
++            // Neo: Replace attribute tooltips with custom handling
++            net.neoforged.neoforge.common.util.AttributeUtil.addAttributeTooltips(this, consumer,
++                    net.neoforged.neoforge.common.util.AttributeTooltipContext.of(p_41652_, p_339637_, p_41653_));
+             this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
+             AdventureModePredicate adventuremodepredicate = this.get(DataComponents.CAN_BREAK);
+             if (adventuremodepredicate != null && adventuremodepredicate.showInTooltip()) {
+@@ -784,10 +_,15 @@
                  list.add(DISABLED_ITEM_TOOLTIP);
              }
  
@@ -157,12 +168,13 @@
          }
      }
  
++    /**
++     * @deprecated Neo: Use {@link net.neoforged.neoforge.client.util.TooltipUtil#addAttributeTooltips}
++     */
++    @Deprecated
      private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_) {
          ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-+        // Neo: We don't need to call IItemStackExtension#getAttributeModifiers here, since it will be done in forEachModifier.
          if (itemattributemodifiers.showInTooltip()) {
-             for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
-                 MutableBoolean mutableboolean = new MutableBoolean(true);
 @@ -897,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
