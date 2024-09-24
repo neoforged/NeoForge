@@ -243,5 +243,16 @@
   "neoforge.network.data_maps.missing_their": "Не вдається приєднатися до сервера, оскільки присутні обов'язкові мапи даних реєстру, що відсутні на клієнті: %s",
   "neoforge.network.extensible_enums.no_vanilla_server": "Цей клієнт не підтримує ванільні сервери, тому що він має розширені значення enum, що використовуються у роботі з серверами",
   "neoforge.network.extensible_enums.enum_set_mismatch": "Набір значень розширюваних enum, на клієнті й сервері не збігаються. Переконайтеся, що ви використовуєте однакові версії NeoForge",
-  "neoforge.network.extensible_enums.enum_entry_mismatch": "Набір значень, що додаються до розширюваних enum, на клієнті й сервері не збігаються. Переконайтеся, що ви використовуєте однакові версії моду і NeoForge. Дивіться журнал для додаткової інформації"
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "Набір значень, що додаються до розширюваних enum, на клієнті й сервері не збігаються. Переконайтеся, що ви використовуєте однакові версії моду і NeoForge. Дивіться журнал для додаткової інформації",
+  "neoforge.attribute.debug.base": "[Entity: %s | Item: %s]",
+  "neoforge.value.flat": "%s",
+  "neoforge.value.percent": "%s%%",
+  "neoforge.value.boolean.enabled": "Enabled",
+  "neoforge.value.boolean.disabled": "Disabled",
+  "neoforge.value.boolean.enable": "Enables",
+  "neoforge.value.boolean.disable": "Disables",
+  "neoforge.value.boolean.invalid": "Invalid",
+  "neoforge.modifier.plus": "+%s %s",
+  "neoforge.modifier.take": "%s %s",
+  "neoforge.modifier.bool": "%s %s"
 }
