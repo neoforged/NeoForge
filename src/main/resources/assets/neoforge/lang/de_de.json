@@ -243,5 +243,16 @@
   "neoforge.network.data_maps.missing_their": "Kann keine Verbindung zum Server herstellen, da obligatorische Registrierungsdatenkarten auf dem Server vorhanden sind, die auf dem Client fehlen: %s",
   "neoforge.network.extensible_enums.no_vanilla_server": "Dieser Client unterstützt Vanilla-Server nicht, da er erweiterte Enums in dem an den Server gerichteten Netzwerk verwendet",
   "neoforge.network.extensible_enums.enum_set_mismatch": "Die Menge der erweiterten Enums auf dem Client und dem Server stimmen nicht überein. Stelle sicher, dass du die gleiche NeoForge-Version wie der Server verwendest",
-  "neoforge.network.extensible_enums.enum_entry_mismatch": "Die Werte, die zu erweiterten Enums auf dem Client und dem Server hinzugefügt wurden, stimmen nicht überein. Stelle sicher, dass du die gleichen Mod- und NeoForge-Versionen wie der Server verwendest. Weitere Details findest du im Log"
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "Die Werte, die zu erweiterten Enums auf dem Client und dem Server hinzugefügt wurden, stimmen nicht überein. Stelle sicher, dass du die gleichen Mod- und NeoForge-Versionen wie der Server verwendest. Weitere Details findest du im Log",
+  "neoforge.attribute.debug.base": "[Entity: %s | Item: %s]",
+  "neoforge.value.flat": "%s",
+  "neoforge.value.percent": "%s%%",
+  "neoforge.value.boolean.enabled": "Enabled",
+  "neoforge.value.boolean.disabled": "Disabled",
+  "neoforge.value.boolean.enable": "Enables",
+  "neoforge.value.boolean.disable": "Disables",
+  "neoforge.value.boolean.invalid": "Invalid",
+  "neoforge.modifier.plus": "+%s %s",
+  "neoforge.modifier.take": "%s %s",
+  "neoforge.modifier.bool": "%s %s"
 }
