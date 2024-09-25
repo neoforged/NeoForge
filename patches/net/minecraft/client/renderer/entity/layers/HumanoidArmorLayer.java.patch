@@ -35,7 +35,7 @@
 -                    int j = armormaterial$layer.dyeable() ? i : -1;
 -                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, armormaterial$layer.texture(flag));
 +                net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack);
-+                extensions.setupModelAnimations(p_117121_, itemstack, p_117122_, p_117124_, limbSwing, limbSwingAmount, partialTick, ageInTicks, netHeadYaw, headPitch);
++                extensions.setupModelAnimations(p_117121_, itemstack, p_117122_, model, limbSwing, limbSwingAmount, partialTick, ageInTicks, netHeadYaw, headPitch);
 +                int fallbackColor = extensions.getDefaultDyeColor(itemstack);
 +                for (int layerIdx = 0; layerIdx < armormaterial.layers().size(); layerIdx++) {
 +                    ArmorMaterial.Layer armormaterial$layer = armormaterial.layers().get(layerIdx);
