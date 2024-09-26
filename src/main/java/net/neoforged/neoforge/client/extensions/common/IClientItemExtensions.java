@@ -141,7 +141,7 @@ public interface IClientItemExtensions {
      * @param netHeadYaw      The yaw (Y rotation) of the entity's head
      * @param headPitch       The pitch (X rotation) of the entity's head
      */
-    default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
+    default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
 
     /**
      * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
