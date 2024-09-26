@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+/** This is a copy-paste of {@link ModMismatchDisconnectedScreen}*/
 public class RegistryConfigMismatchScreen extends Screen {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Component reason;
