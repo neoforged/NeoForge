@@ -64,6 +64,7 @@
   "fml.registryconfigmismatchscreen.table.reason": "Mismatch Detail",
   "fml.registryconfigmismatchscreen.title": "Mismatch in Registry Configs",
   "fml.registryconfigmismatchscreen.overwrite": "Overwrite local configs",
+  "fml.registryconfigmismatchscreen.mismatch": "%s entries in conflict",
 
   "fml.resources.modresources": "Resources for %1$s mod files",
   "fml.resources.moddata": "Data for %1$s mod files",
