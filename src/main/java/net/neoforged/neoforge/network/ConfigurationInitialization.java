@@ -17,6 +17,7 @@ import net.neoforged.neoforge.network.configuration.CommonVersionTask;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
+import net.neoforged.neoforge.network.configuration.SyncRegistryConfigTask;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.payload.CommonRegisterPayload;
 import net.neoforged.neoforge.network.payload.CommonVersionPayload;
@@ -24,6 +25,8 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.RegistryConfigAckPayload;
+import net.neoforged.neoforge.network.payload.RegistryConfigDataPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -34,6 +37,10 @@ public class ConfigurationInitialization {
      * and most importantly before vanilla's own {@link SynchronizeRegistriesTask}.
      */
     public static void configureEarlyTasks(ServerConfigurationPacketListener listener, Consumer<ConfigurationTask> tasks) {
+        if (listener.hasChannel(RegistryConfigDataPayload.TYPE) &&
+                listener.hasChannel(RegistryConfigAckPayload.TYPE)) {
+            tasks.accept(new SyncRegistryConfigTask(listener));
+        }
         if (listener.hasChannel(FrozenRegistrySyncStartPayload.TYPE) &&
                 listener.hasChannel(FrozenRegistryPayload.TYPE) &&
                 listener.hasChannel(FrozenRegistrySyncCompletedPayload.TYPE)) {
