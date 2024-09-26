@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.network.syncreg.RegistryConfigHandler;
+import net.neoforged.neoforge.network.registryconfigsync.RegistryConfigHandler;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

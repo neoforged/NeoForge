@@ -25,8 +25,8 @@ import net.neoforged.neoforge.client.gui.RegistryConfigMismatchScreen;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.RegistryConfigAckPayload;
 import net.neoforged.neoforge.network.payload.RegistryConfigDataPayload;
-import net.neoforged.neoforge.network.syncreg.RegistryConfigHandler;
-import net.neoforged.neoforge.network.syncreg.RegistryConfigHandlers;
+import net.neoforged.neoforge.network.registryconfigsync.RegistryConfigHandler;
+import net.neoforged.neoforge.network.registryconfigsync.RegistryConfigHandlers;
 import org.slf4j.Logger;
 
 public record SyncRegistryConfigTask(ServerConfigurationPacketListener listener) implements ConfigurationTask {

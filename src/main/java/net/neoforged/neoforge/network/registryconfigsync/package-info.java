@@ -6,7 +6,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 
-package net.neoforged.neoforge.network.syncreg;
+package net.neoforged.neoforge.network.registryconfigsync;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;

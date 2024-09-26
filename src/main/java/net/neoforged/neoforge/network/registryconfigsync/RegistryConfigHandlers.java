@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.network.syncreg;
+package net.neoforged.neoforge.network.registryconfigsync;
 
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
