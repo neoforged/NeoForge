@@ -30,7 +30,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-/** This is a copy-paste of {@link ModMismatchDisconnectedScreen}*/
+/** This is a copy-paste of {@link ModMismatchDisconnectedScreen} */
 public class RegistryConfigMismatchScreen extends Screen {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Component reason;
@@ -64,7 +64,7 @@ public class RegistryConfigMismatchScreen extends Screen {
         int btnY = Math.min((height + listHeight) / 2 + 50, height - 25);
         int btnW = Math.min(210, width / 2 - 20);
 
-        Button rep = addRenderableWidget(Button.builder(Component.literal("Replace Entries"),//TODO info
+        Button rep = addRenderableWidget(Button.builder(Component.translatable("fml.registryconfigmismatchscreen.overwrite"),
                 button -> Optional.ofNullable(replaceAction).ifPresent(Runnable::run))
                 .bounds(Math.min(width * 3 / 4 - btnW / 2, lstX),
                         btnY, btnW, 20)
@@ -104,8 +104,8 @@ public class RegistryConfigMismatchScreen extends Screen {
             if (!mismatchedChannelData.isEmpty()) {
                 //Each table row contains the channel id(s) and the reason for the corresponding channel mismatch.
                 rows.add(new Row(
-                        Component.translatable("fml.modmismatchscreen.table.channelname"),
-                        Component.translatable("fml.modmismatchscreen.table.reason")));//TODO
+                        Component.translatable("fml.registryconfigmismatchscreen.table.type"),
+                        Component.translatable("fml.registryconfigmismatchscreen.table.reason")));
                 int i = 0;
                 for (var channelData : mismatchedChannelData.entrySet()) {
                     rows.add(new Row(
@@ -120,6 +120,8 @@ public class RegistryConfigMismatchScreen extends Screen {
             contentSize = lineTable.size();
             scrollDistance = 0;
         }
+
+        // Start copying ModMismatchDisconnectedScreen$MismatchInfoPanel
 
         /**
          * Splits the raw channel namespace and mismatch reason strings, making them use multiple lines if needed, to fit within the table dimensions.

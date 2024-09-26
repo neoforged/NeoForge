@@ -5,28 +5,25 @@
 
 package net.neoforged.neoforge.network.syncreg;
 
+import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.network.event.RegisterRegistryConfigHandlersEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 public class RegistryConfigHandlers {
+    private static Map<ResourceLocation, RegistryConfigHandler> MAP;
 
-	private static Map<ResourceLocation, RegistryConfigHandler> MAP;
+    public static void init() {
+        MAP = ModLoader.postEventWithReturn(new RegisterRegistryConfigHandlersEvent()).getHandlers();
+    }
 
-	public static void init() {
-		MAP = ModLoader.postEventWithReturn(new RegisterRegistryConfigHandlersEvent()).getHandlers();
-	}
+    public static Map<ResourceLocation, RegistryConfigHandler> getAllHandlers() {
+        return MAP;
+    }
 
-	public static Map<ResourceLocation, RegistryConfigHandler> getAllHandlers() {
-		return MAP;
-	}
-
-	@Nullable
-	public static RegistryConfigHandler getHandler(ResourceLocation key) {
-		return MAP.get(key);
-	}
-
+    @Nullable
+    public static RegistryConfigHandler getHandler(ResourceLocation key) {
+        return MAP.get(key);
+    }
 }
