@@ -1,0 +1,21 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:required_flags",
+      "flags": [
+        "neotests_test:test_flag"
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "minecraft:dirt"
+    }
+  ],
+  "result": {
+    "count": 64,
+    "id": "minecraft:diamond"
+  }
+}

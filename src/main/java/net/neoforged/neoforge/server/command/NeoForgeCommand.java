@@ -8,6 +8,7 @@ package net.neoforged.neoforge.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
+import net.neoforged.neoforge.flag.FlagsCommand;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -24,6 +25,7 @@ public class NeoForgeCommand {
                         .then(TagsCommand.register())
                         .then(DumpCommand.register())
                         .then(TimeSpeedCommand.register())
-                        .then(DataComponentCommand.register()));
+                        .then(DataComponentCommand.register())
+                        .then(FlagsCommand.register()));
     }
 }

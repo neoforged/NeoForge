@@ -8,6 +8,8 @@ package net.neoforged.neoforge.common.conditions;
 import java.util.List;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.flag.Flag;
+import net.neoforged.neoforge.flag.RequiredFlagsCondition;
 
 public interface IConditionBuilder {
     default ICondition and(ICondition... values) {
@@ -40,5 +42,9 @@ public interface IConditionBuilder {
 
     default ICondition tagEmpty(TagKey<Item> tag) {
         return new TagEmptyCondition(tag.location());
+    }
+
+    default ICondition requiredFlags(Flag... requiredFlags) {
+        return new RequiredFlagsCondition(requiredFlags);
     }
 }

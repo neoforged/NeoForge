@@ -9,3 +9,11 @@
              );
              RegistryAccess.Frozen registryaccess$frozen = layeredregistryaccess1.getAccessForLoading(RegistryLayer.DIMENSIONS);
              RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(
+@@ -50,6 +_,7 @@
+                     closeableresourcemanager,
+                     layeredregistryaccess2,
+                     worlddataconfiguration.enabledFeatures(),
++                    net.neoforged.neoforge.flag.FlagManager.createImmutable(worlddataconfiguration.enabledModdedFeatures()),
+                     p_214363_.commandSelection(),
+                     p_214363_.functionCompilationLevel(),
+                     p_214366_,

@@ -214,7 +214,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1733,24 +_,106 @@
+@@ -1733,24 +_,110 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
@@ -243,7 +243,7 @@
          public void onSectionChange(Entity p_215086_) {
              p_215086_.updateDynamicGameEventListener(DynamicGameEventListener::move);
          }
-     }
++    }
 +
 +    @Override
 +    public java.util.Collection<net.neoforged.neoforge.entity.PartEntity<?>> getPartEntities() {
@@ -323,4 +323,8 @@
 +        }
 +    }
 +
++    @Override
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        return server.getModdedFlagManager();
+     }
  }

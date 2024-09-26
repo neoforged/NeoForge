@@ -10,6 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.LevelReader;
+import net.neoforged.neoforge.flag.Flag;
+import net.neoforged.neoforge.flag.FlagManager;
 
 public interface ILevelReaderExtension {
     private LevelReader self() {
@@ -36,5 +38,16 @@ public interface ILevelReaderExtension {
      */
     default <T> Optional<Holder.Reference<T>> holder(ResourceKey<T> key) {
         return this.self().registryAccess().holder(key);
+    }
+
+    /**
+     * Returns a valid and synced {@link FlagManager} or empty of none can be obtained.
+     * <p>
+     * Modders may use this for all their {@link Flag flag} state testing needs.
+     *
+     * @return Valid and synced {@link FlagManager} or empty.
+     */
+    default FlagManager getModdedFlagManager() {
+        return FlagManager.EMPTY;
     }
 }

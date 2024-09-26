@@ -148,7 +148,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 Thread thread, Path tempDir, LevelStorageSource.LevelStorageAccess access, PackRepository resources) {
             resources.reload();
             WorldDataConfiguration config = new WorldDataConfiguration(
-                    new DataPackConfig(new ArrayList<>(resources.getAvailableIds()), List.of()), FeatureFlags.REGISTRY.allFlags());
+                    new DataPackConfig(new ArrayList<>(resources.getAvailableIds()), List.of()), FeatureFlags.REGISTRY.allFlags(), net.neoforged.neoforge.flag.Flag.getFlags());
             LevelSettings levelsettings = new LevelSettings(
                     "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, config);
             WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(resources, config, false, true);

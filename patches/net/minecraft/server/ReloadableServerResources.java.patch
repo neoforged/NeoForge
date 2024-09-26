@@ -1,15 +1,32 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
-@@ -49,6 +_,8 @@
+@@ -40,7 +_,7 @@
+     private final ServerAdvancementManager advancements;
+     private final ServerFunctionLibrary functionLibrary;
+ 
+-    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
++    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, net.neoforged.neoforge.flag.FlagManager moddedFlagManager, Commands.CommandSelection p_206858_, int p_206859_) {
+         this.fullRegistryHolder = new ReloadableServerRegistries.Holder(p_206857_);
+         this.registryLookup = new ReloadableServerResources.ConfigurableRegistryLookup(p_206857_);
+         this.registryLookup.missingTagAccessPolicy(ReloadableServerResources.MissingTagAccessPolicy.CREATE_NEW);
+@@ -49,6 +_,16 @@
          this.commands = new Commands(p_206858_, CommandBuildContext.simple(this.registryLookup, p_250695_));
          this.advancements = new ServerAdvancementManager(this.registryLookup);
          this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
 +        // Neo: Create context object
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager);
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager, moddedFlagManager);
++    }
++
++    /**
++     * Prefer {@link #ReloadableServerResources(RegistryAccess.Frozen, FeatureFlagSet, net.neoforged.neoforge.flag.FlagManager, Commands.CommandSelection, int)}
++     */
++    @Deprecated
++    private ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
++        this(p_206857_, p_250695_, net.neoforged.neoforge.flag.FlagManager.EMPTY, p_206858_, p_206859_);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -75,6 +_,24 @@
+@@ -75,10 +_,29 @@
          return List.of(this.tagManager, this.recipes, this.functionLibrary, this.advancements);
      }
  
@@ -34,9 +51,17 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -90,14 +_,27 @@
+         FeatureFlagSet p_250212_,
++        net.neoforged.neoforge.flag.FlagManager moddedFlagManager,
+         Commands.CommandSelection p_249301_,
+         int p_251126_,
+         Executor p_249136_,
+@@ -88,25 +_,55 @@
+             .thenCompose(
+                 p_335211_ -> {
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
-                         p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
+-                        p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
++                        p_335211_.compositeAccess(), p_250212_, moddedFlagManager, p_249301_, p_251126_
                      );
 +                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
 +                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
@@ -63,7 +88,25 @@
                          .thenApply(p_214306_ -> reloadableserverresources);
                  }
              );
-@@ -107,6 +_,7 @@
+     }
+ 
++    /**
++     * @deprecated Prefer to use {@link #loadResources(ResourceManager, LayeredRegistryAccess, FeatureFlagSet, net.neoforged.neoforge.flag.FlagManager, Commands.CommandSelection, int, Executor, Executor)}.
++     */
++    @Deprecated
++    public static CompletableFuture<ReloadableServerResources> loadResources(
++            ResourceManager p_248588_,
++            LayeredRegistryAccess<RegistryLayer> p_335667_,
++            FeatureFlagSet p_250212_,
++            Commands.CommandSelection p_249301_,
++            int p_251126_,
++            Executor p_249136_,
++            Executor p_249601_
++    ) {
++        return loadResources(p_248588_, p_335667_, p_250212_, net.neoforged.neoforge.flag.FlagManager.EMPTY, p_249301_, p_251126_, p_249136_, p_249601_);
++    }
++
+     public void updateRegistryTags() {
          this.tagManager.getResult().forEach(p_335204_ -> updateRegistryTags(this.fullRegistryHolder.get(), (TagManager.LoadResult<?>)p_335204_));
          AbstractFurnaceBlockEntity.invalidateCache();
          Blocks.rebuildCache();

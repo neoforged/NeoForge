@@ -9,6 +9,16 @@
      static Minecraft instance;
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;
+@@ -399,6 +_,9 @@
+     private final long clientStartTimeMs;
+     private long clientTickCount;
+     private String debugPath = "root";
++    @org.jetbrains.annotations.Nullable
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public net.neoforged.neoforge.flag.FlagManager clientModdedFlagManager;
+ 
+     public Minecraft(GameConfig p_91084_) {
+         super("Client");
 @@ -435,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
@@ -336,10 +346,11 @@
          this.level = p_91157_;
          this.updateLevelInEngines(p_91157_);
          if (!this.isLocalServer) {
-@@ -2093,6 +_,7 @@
+@@ -2093,6 +_,8 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
++        this.clientModdedFlagManager = null;
 +        net.neoforged.neoforge.client.ClientHooks.firePlayerLogout(this.gameMode, this.player);
          this.gameMode = null;
          this.narrator.clear();
@@ -378,14 +389,29 @@
                  if (itemstack == null) {
                      return;
                  }
-@@ -2794,6 +_,10 @@
- 
-     public void updateMaxMipLevel(int p_91313_) {
+@@ -2796,6 +_,10 @@
          this.modelManager.updateMaxMipLevel(p_91313_);
-+    }
-+
-+    public ItemColors getItemColors() {
-+        return this.itemColors;
      }
  
++    public ItemColors getItemColors() {
++        return this.itemColors;
++    }
++
      public EntityModelSet getEntityModels() {
+         return this.entityModels;
+     }
+@@ -2868,6 +_,14 @@
+     @Nullable
+     public static String getLauncherBrand() {
+         return System.getProperty("minecraft.launcher.brand");
++    }
++
++    public net.neoforged.neoforge.flag.FlagManager getModdedFlagManager() {
++        if(clientModdedFlagManager != null)
++            return clientModdedFlagManager;
++        if(singleplayerServer != null)
++            return singleplayerServer.getModdedFlagManager();
++        return net.neoforged.neoforge.flag.FlagManager.EMPTY;
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

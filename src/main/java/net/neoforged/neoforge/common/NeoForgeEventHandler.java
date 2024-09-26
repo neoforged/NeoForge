@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.flag.ClientboundSyncFlags;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
@@ -97,6 +98,11 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         UsernameCache.setUsername(event.getEntity().getUUID(), event.getEntity().getGameProfile().getName());
+
+        if (event.getEntity() instanceof ServerPlayer sPlayer) {
+            var flagManager = sPlayer.server.getModdedFlagManager();
+            PacketDistributor.sendToPlayer(sPlayer, new ClientboundSyncFlags(flagManager.getEnabledFlags()));
+        }
     }
 
     @SubscribeEvent

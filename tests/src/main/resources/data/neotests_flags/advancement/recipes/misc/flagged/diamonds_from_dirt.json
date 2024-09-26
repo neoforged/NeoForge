@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:required_flags",
+      "flags": [
+        "neotests_test:test_flag"
+      ]
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dirt": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#minecraft:dirt"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "neotests_flags:flagged/diamonds_from_dirt"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_dirt"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "neotests_flags:flagged/diamonds_from_dirt"
+    ]
+  }
+}
