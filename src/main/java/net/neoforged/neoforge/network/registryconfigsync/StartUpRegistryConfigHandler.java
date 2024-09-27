@@ -102,5 +102,4 @@ public class StartUpRegistryConfigHandler implements RegistryConfigHandler {
             default -> throw new IllegalStateException("Unexpected value: " + obj);
         };
     }
-
 }
