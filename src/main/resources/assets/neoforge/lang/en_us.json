@@ -62,7 +62,7 @@
   "fml.modmismatchscreen.simplifiedview": "Simplified view",
   "fml.registryconfigmismatchscreen.table.type": "Registry Config Type",
   "fml.registryconfigmismatchscreen.table.reason": "Mismatch Detail",
-  "fml.registryconfigmismatchscreen.title": "Mismatch in Registry Configs",
+  "fml.registryconfigmismatchscreen.title": "Mismatch in Registry Configs. Note that overwriting local config might corrupt your single player saves. Backup first if necessary.",
   "fml.registryconfigmismatchscreen.overwrite": "Overwrite local configs",
   "fml.registryconfigmismatchscreen.mismatch": "%s entries in conflict",
 

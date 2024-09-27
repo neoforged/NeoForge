@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
  * Template registry config handler that sync entries in start up config marked with {@link net.neoforged.neoforge.common.ModConfigSpec.RestartType#REGISTRY}
  * <br>
  * Modders need to create this handler and register through {@link net.neoforged.neoforge.network.event.RegisterRegistryConfigHandlersEvent}
+ * <br>
+ * Note that it might not be able to serialize all kinds of config entries. In the case where default implementation fails, override corresponding methods.
  */
 public class StartUpRegistryConfigHandler implements RegistryConfigHandler {
     private final ModConfigSpec config;
@@ -47,6 +49,7 @@ public class StartUpRegistryConfigHandler implements RegistryConfigHandler {
         for (var e : config.getSpec().entrySet()) {
             ModConfigSpec.ConfigValue<?> value = e.getValue();
             if (value.getSpec().restartType() == ModConfigSpec.RestartType.REGISTRY) {
+                // use getRawData instead of getRaw to get raw config object instead of the parsed value
                 var val = encode(value.getRawData());
                 var serverVal = obj.get(e.getKey());
                 if (!val.equals(serverVal)) {
@@ -66,12 +69,16 @@ public class StartUpRegistryConfigHandler implements RegistryConfigHandler {
         for (var e : config.getSpec().entrySet()) {
             ModConfigSpec.ConfigValue<?> value = e.getValue();
             if (value.getSpec().restartType() == ModConfigSpec.RestartType.REGISTRY) {
+                // use setRawData to set raw config object instead of the parsed value
                 value.setRawData(decode(obj.get(e.getKey())));
             }
         }
         config.save();
     }
 
+    /**
+     * Encode raw config object into json.
+     */
     protected JsonElement encode(@Nullable Object obj) {
         if (obj == null) return JsonNull.INSTANCE;
         return switch (obj) {
@@ -79,10 +86,13 @@ public class StartUpRegistryConfigHandler implements RegistryConfigHandler {
             case Number num -> new JsonPrimitive(num);
             case Boolean bool -> new JsonPrimitive(bool);
             case List<?> list -> list.stream().map(this::encode).collect(JsonArray::new, JsonArray::add, JsonArray::addAll);
-            default -> throw new IllegalStateException("Unexpected value: " + obj);
+            default -> throw new IllegalStateException("Unexpected value of class: " + obj.getClass());
         };
     }
 
+    /**
+     * Decode json into raw config object
+     */
     @Nullable
     protected Object decode(JsonElement obj) {
         return switch (obj) {
@@ -92,4 +102,5 @@ public class StartUpRegistryConfigHandler implements RegistryConfigHandler {
             default -> throw new IllegalStateException("Unexpected value: " + obj);
         };
     }
+
 }
