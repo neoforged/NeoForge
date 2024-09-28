@@ -152,7 +152,7 @@
                      TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(holder);
                      int l1 = i;
                      int i1 = j;
-@@ -488,29 +_,59 @@
+@@ -488,29 +_,61 @@
          }
      }
  
@@ -168,6 +168,8 @@
 +    }
 +
 +    private void renderHotbar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
++        // Neo: Fix bugs caused by rendering ItemStack at high z offset
++        clearDepth(p_316628_);
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
              this.spectatorGui.renderHotbar(p_316628_);
          } else {
@@ -390,7 +392,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1292,8 +_,17 @@
+@@ -1292,8 +_,25 @@
          }
      }
  
@@ -401,6 +403,14 @@
 +
 +    public int getLayerCount() {
 +        return this.layerManager.getLayerCount();
++    }
++
++    /**
++     * Must call this at the beginning of overlays that could render ItemStack,
++     * to prevent visual bugs when rendering ItemStack at high z offset
++     */
++    public void clearDepth(GuiGraphics guiGraphics) {
++        this.layerManager.clearDepth(guiGraphics);
 +    }
 +
      @OnlyIn(Dist.CLIENT)

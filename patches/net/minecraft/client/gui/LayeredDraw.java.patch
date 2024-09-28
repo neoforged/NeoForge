@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/LayeredDraw.java
++++ b/net/minecraft/client/gui/LayeredDraw.java
+@@ -38,6 +_,10 @@
+         }
+     }
+ 
++    /**
++     * If this overlay could render ItemStack, it should call {@link Gui#clearDepth} at the beginning. <hr>
++     * See usage in {@link Gui#renderHotbar}
++     */
+     @OnlyIn(Dist.CLIENT)
+     public interface Layer {
+         void render(GuiGraphics p_316811_, DeltaTracker p_348559_);

@@ -35,6 +35,7 @@ public class GuiLayerManager {
     public static final float Z_SEPARATION = LayeredDraw.Z_SEPARATION;
     private final List<NamedLayer> layers = new ArrayList<>();
     private boolean initialized = false;
+    private int drawnLayerCount = -1;
 
     public record NamedLayer(ResourceLocation name, LayeredDraw.Layer layer) {}
 
@@ -65,21 +66,37 @@ public class GuiLayerManager {
         NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics, partialTick));
     }
 
+    /**
+     * Reset z offset to prevent visual bugs caused by high z offset.
+     * Only effective when called inside {@link GuiLayerManager#renderInner}
+     */
+    public void clearDepth(GuiGraphics guiGraphics) {
+        // prevent unnecessary calls
+        if (drawnLayerCount <= 0) return;
+        drawnLayerCount = 0;
+        // clear depth values to keep hud rendered at the same depth
+        guiGraphics.pose().popPose();
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0, 0, -1000);
+        guiGraphics.fill(LayerRenderType.GUI, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), -1);
+        guiGraphics.pose().translate(0, 0, 1000);
+    }
+
     private void renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick) {
         guiGraphics.pose().pushPose();
-
+        drawnLayerCount = 0; // enable clearDepth
         for (var layer : this.layers) {
             if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
                 layer.layer().render(guiGraphics, partialTick);
                 NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
+                drawnLayerCount++;
             }
-            // clear depth values to keep hud rendered at the same depth
-            guiGraphics.pose().translate(0, 0, -1000);
-            guiGraphics.fill(LayerRenderType.GUI, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), -1);
-            guiGraphics.pose().translate(0, 0, 1000);
+            guiGraphics.pose().translate(0, 0, Z_SEPARATION);
         }
-
+        // reset depth to fix screen render bug
+        clearDepth(guiGraphics);
         guiGraphics.pose().popPose();
+        drawnLayerCount = -1; // disable clearDepth
     }
 
     public void initModdedLayers() {
