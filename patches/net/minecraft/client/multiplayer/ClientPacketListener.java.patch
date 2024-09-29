@@ -8,14 +8,16 @@
      @Nullable
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
-@@ -366,6 +_,7 @@
+@@ -366,7 +_,8 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
  
+-        this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
 +        this.connectionType = p_295121_.connectionType();
-         this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
++        this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures, this.registryAccess);
      }
  
+     public ClientSuggestionProvider getSuggestionsProvider() {
 @@ -427,12 +_,13 @@
  
          this.minecraft.debugRenderer.clear();

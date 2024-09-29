@@ -128,6 +128,22 @@ public interface IClientItemExtensions {
     }
 
     /**
+     * Called when an armor piece is about to be rendered, allowing parts of the model to be animated or changed.
+     *
+     * @param itemStack       The item stack being worn
+     * @param livingEntity    The entity wearing the armor
+     * @param equipmentSlot   The slot the armor stack is being worn in
+     * @param model           The armor model being rendered
+     * @param limbSwing       The swing position of the entity's walk animation
+     * @param limbSwingAmount The swing speed of the entity's walk animation
+     * @param partialTick     The partial tick time
+     * @param ageInTicks      The total age of the entity, with partialTick already applied
+     * @param netHeadYaw      The yaw (Y rotation) of the entity's head
+     * @param headPitch       The pitch (X rotation) of the entity's head
+     */
+    default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
+
+    /**
      * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
      * <p>
      * This is where pumpkins would render their overlay.
