@@ -797,6 +797,11 @@ public class EventHooks {
         return event.getNewTime();
     }
 
+    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
+        return onResourceReload(serverResources, registryAccess, List.of());
+    }
+
+    @ApiStatus.Internal
     public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess, List<PreparableReloadListener> listeners) {
         AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess, listeners);
         NeoForge.EVENT_BUS.post(event);

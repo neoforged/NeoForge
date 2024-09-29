@@ -21,6 +21,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.resource.ContextAwareReloadListener;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The main ResourceManager is recreated on each reload, just after {@link ReloadableServerResources}'s creation.
@@ -33,6 +34,11 @@ public class AddReloadListenerEvent extends Event {
     private final ReloadableServerResources serverResources;
     private final RegistryAccess registryAccess;
 
+    public AddReloadListenerEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
+        this(serverResources, registryAccess, List.of());
+    }
+
+    @ApiStatus.Internal
     public AddReloadListenerEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess, List<PreparableReloadListener> listeners) {
         this.serverResources = serverResources;
         this.registryAccess = registryAccess;
