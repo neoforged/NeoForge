@@ -206,6 +206,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");
         add(Tags.Items.FOODS_CANDY, "Candies");
+        add(Tags.Items.FOODS_PIE, "Pies");
         add(Tags.Items.FOODS_COOKED_FISH, "Cooked Fishes");
         add(Tags.Items.FOODS_COOKED_MEAT, "Cooked Meats");
         add(Tags.Items.FOODS_COOKIE, "Cookies");
