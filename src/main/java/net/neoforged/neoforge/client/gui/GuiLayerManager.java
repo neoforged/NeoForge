@@ -61,14 +61,16 @@ public class GuiLayerManager {
             return;
         }
 
+        drawnLayerCount = 0; // enable clearDepth
         renderInner(guiGraphics, partialTick);
 
         NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics, partialTick));
+        drawnLayerCount = -1; // disable clearDepth
     }
 
     /**
      * Reset z offset to prevent visual bugs caused by high z offset.
-     * Only effective when called inside {@link GuiLayerManager#renderInner}
+     * Only effective when called inside {@link GuiLayerManager#render}
      */
     public void clearDepth(GuiGraphics guiGraphics) {
         // prevent unnecessary calls
@@ -84,7 +86,6 @@ public class GuiLayerManager {
 
     private void renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick) {
         guiGraphics.pose().pushPose();
-        drawnLayerCount = 0; // enable clearDepth
         for (var layer : this.layers) {
             if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
                 layer.layer().render(guiGraphics, partialTick);
@@ -93,10 +94,7 @@ public class GuiLayerManager {
             }
             guiGraphics.pose().translate(0, 0, Z_SEPARATION);
         }
-        // reset depth to fix screen render bug
-        clearDepth(guiGraphics);
         guiGraphics.pose().popPose();
-        drawnLayerCount = -1; // disable clearDepth
     }
 
     public void initModdedLayers() {

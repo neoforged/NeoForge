@@ -152,7 +152,7 @@
                      TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(holder);
                      int l1 = i;
                      int i1 = j;
-@@ -488,29 +_,61 @@
+@@ -488,29 +_,59 @@
          }
      }
  
@@ -168,8 +168,6 @@
 +    }
 +
 +    private void renderHotbar(GuiGraphics p_316628_, DeltaTracker p_348543_) {
-+        // Neo: Fix bugs caused by rendering ItemStack at high z offset
-+        clearDepth(p_316628_);
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
              this.spectatorGui.renderHotbar(p_316628_);
          } else {
