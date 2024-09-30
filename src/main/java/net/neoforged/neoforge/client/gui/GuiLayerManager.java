@@ -92,8 +92,10 @@ public class GuiLayerManager {
                 NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
                 drawnLayerCount++;
             }
+
             guiGraphics.pose().translate(0.0F, 0.0F, Z_SEPARATION);
         }
+
         guiGraphics.pose().popPose();
     }
 
