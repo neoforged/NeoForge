@@ -345,6 +345,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Fluids.MILK, "Milk");
         add(Tags.Fluids.GASEOUS, "Gaseous");
         add(Tags.Fluids.HONEY, "Honey");
+        add(Tags.Fluids.EXPERIENCE, "Experience");
         add(Tags.Fluids.POTION, "Potion");
         add(Tags.Fluids.SUSPICIOUS_STEW, "Suspicious Stew");
         add(Tags.Fluids.MUSHROOM_STEW, "Mushroom Stew");

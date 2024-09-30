@@ -791,6 +791,11 @@ public class Tags {
          */
         public static final TagKey<Fluid> HONEY = tag("honey");
         /**
+         * Holds all fluids related to experience.<br></br>
+         * (Standard unit for experience is 20mb per 1 experience)
+         */
+        public static final TagKey<Fluid> EXPERIENCE = tag("experience");
+        /**
          * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
          * The effects and color of the potion fluid should be read from {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}
          * component that people should be attaching to the fluidstack of this fluid.<br></br>

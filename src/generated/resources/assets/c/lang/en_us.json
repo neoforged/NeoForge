@@ -128,6 +128,7 @@
   "tag.entity_type.c.minecarts": "Minecarts",
   "tag.entity_type.c.teleporting_not_supported": "Teleporting Not Supported",
   "tag.fluid.c.beetroot_soup": "Beetroot Soup",
+  "tag.fluid.c.experience": "Experience",
   "tag.fluid.c.gaseous": "Gaseous",
   "tag.fluid.c.hidden_from_recipe_viewers": "Hidden From Recipe Viewers",
   "tag.fluid.c.honey": "Honey",
