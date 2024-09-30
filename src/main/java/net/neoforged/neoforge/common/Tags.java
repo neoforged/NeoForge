@@ -768,12 +768,12 @@ public class Tags {
      */
     public static class Fluids {
         /**
-         * Holds all fluids related to water.
+         * Holds all fluids related to water.<p>
          * This tag is done to help out multi-loader mods/datapacks where the vanilla water tag has attached behaviors outside Neo.
          */
         public static final TagKey<Fluid> WATER = tag("water");
         /**
-         * Holds all fluids related to lava.
+         * Holds all fluids related to lava.<p>
          * This tag is done to help out multi-loader mods/datapacks where the vanilla lava tag has attached behaviors outside Neo.
          */
         public static final TagKey<Fluid> LAVA = tag("lava");
@@ -786,41 +786,48 @@ public class Tags {
          */
         public static final TagKey<Fluid> GASEOUS = tag("gaseous");
         /**
-         * Holds all fluids related to honey.<br></br>
+         * Holds all fluids related to honey.
+         * <p>
          * (Standard unit for honey bottle is 250mb per bottle)
          */
         public static final TagKey<Fluid> HONEY = tag("honey");
         /**
-         * Holds all fluids related to experience.<br></br>
+         * Holds all fluids related to experience.
+         * <p>
          * (Standard unit for experience is 20mb per 1 experience)
          */
         public static final TagKey<Fluid> EXPERIENCE = tag("experience");
         /**
          * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
          * The effects and color of the potion fluid should be read from {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}
-         * component that people should be attaching to the fluidstack of this fluid.<br></br>
+         * component that people should be attaching to the fluidstack of this fluid.
+         * <p>
          * (Standard unit for potions is 250mb per bottle)
          */
         public static final TagKey<Fluid> POTION = tag("potion");
         /**
          * Holds all fluids related to Suspicious Stew.
          * The effects of the suspicious stew fluid should be read from {@link net.minecraft.core.component.DataComponents#SUSPICIOUS_STEW_EFFECTS}
-         * component that people should be attaching to the fluidstack of this fluid.<br></br>
+         * component that people should be attaching to the fluidstack of this fluid.
+         * <p>
          * (Standard unit for suspicious stew is 250mb per bowl)
          */
         public static final TagKey<Fluid> SUSPICIOUS_STEW = tag("suspicious_stew");
         /**
-         * Holds all fluids related to Mushroom Stew.<br></br>
+         * Holds all fluids related to Mushroom Stew.
+         * <p>
          * (Standard unit for mushroom stew is 250mb per bowl)
          */
         public static final TagKey<Fluid> MUSHROOM_STEW = tag("mushroom_stew");
         /**
-         * Holds all fluids related to Rabbit Stew.<br></br>
+         * Holds all fluids related to Rabbit Stew.
+         * <p>
          * (Standard unit for rabbit stew is 250mb per bowl)
          */
         public static final TagKey<Fluid> RABBIT_STEW = tag("rabbit_stew");
         /**
-         * Holds all fluids related to Beetroot Soup.<br></br>
+         * Holds all fluids related to Beetroot Soup.
+         * <p>
          * (Standard unit for beetroot soup is 250mb per bowl)
          */
         public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
