@@ -109,6 +109,7 @@ public class AddSectionGeometryEvent extends Event {
 
     public static final class SectionRenderingContext {
         private final Function<RenderType, VertexConsumer> getOrCreateLayer;
+        private final Function<IBufferDefinition, VertexConsumer> customLayerFunction;
         private final BlockAndTintGetter region;
         private final PoseStack poseStack;
 
@@ -122,6 +123,24 @@ public class AddSectionGeometryEvent extends Event {
         public SectionRenderingContext(
                 Function<RenderType, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
             this.getOrCreateLayer = getOrCreateLayer;
+            this.customLayerFunction = bufferDefinition -> getOrCreateChunkBuffer(VanillaBufferDefinitions.bakeVanillaRenderType(bufferDefinition));
+            this.region = region;
+            this.poseStack = poseStack;
+        }
+
+        /**
+         * @param getOrCreateLayer    a function that, given a "chunk render type", returns the corresponding buffer and
+         *                            adds it to the section if it is not already present.
+         * @param customLayerFunction a function that, given a {@link IBufferDefinition "chunk buffer definition"}, returns the corresponding buffer and
+         *                            adds it to the section if it is not already present.
+         * @param region              a view of the section and some surrounding blocks
+         * @param poseStack           the transformations to use, currently set to the chunk origin at unit scaling and no
+         *                            rotation.
+         */
+        public SectionRenderingContext(
+                Function<RenderType, VertexConsumer> getOrCreateLayer, Function<IBufferDefinition, VertexConsumer> customLayerFunction, BlockAndTintGetter region, PoseStack poseStack) {
+            this.getOrCreateLayer = getOrCreateLayer;
+            this.customLayerFunction = customLayerFunction;
             this.region = region;
             this.poseStack = poseStack;
         }
@@ -154,7 +173,7 @@ public class AddSectionGeometryEvent extends Event {
          *                                  {@link RegisterChunkBufferDefinitionEvent#register(IBufferDefinition, IChunkBufferCallback)}.
          */
         public VertexConsumer getOrCreateChunkBuffer(IBufferDefinition bufferDefinition) {
-            return getOrCreateChunkBuffer(VanillaBufferDefinitions.bakeVanillaRenderType(bufferDefinition));
+            return customLayerFunction.apply(bufferDefinition);
         }
 
         /**
