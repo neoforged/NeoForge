@@ -798,7 +798,7 @@ public class Tags {
          */
         public static final TagKey<Fluid> EXPERIENCE = tag("experience");
         /**
-         * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
+         * Holds all fluids related to potions. The effects of the potion fluid should be read from DataComponents.
          * The effects and color of the potion fluid should be read from {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}
          * component that people should be attaching to the fluidstack of this fluid.
          * <p>
