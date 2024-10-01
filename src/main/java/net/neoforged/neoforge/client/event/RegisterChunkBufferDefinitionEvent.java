@@ -24,10 +24,10 @@ import net.neoforged.neoforge.client.buffer.chunk.ISectionLayerRenderer;
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterChunkLayerBufferDefinitionEvent extends Event implements IModBusEvent {
+public class RegisterChunkBufferDefinitionEvent extends Event implements IModBusEvent {
     private final RenderLevelStageEvent.Stage stage;
 
-    public RegisterChunkLayerBufferDefinitionEvent(RenderLevelStageEvent.Stage stage) {
+    public RegisterChunkBufferDefinitionEvent(RenderLevelStageEvent.Stage stage) {
         this.stage = stage;
     }
 

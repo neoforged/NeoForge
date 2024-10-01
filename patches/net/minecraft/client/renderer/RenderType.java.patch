@@ -13,17 +13,17 @@
 +    static {
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasEvent());
 +        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterBufferDefinitionEvent());
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_CUTOUT_MIPPED_BLOCKS_BLOCKS));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_CUTOUT_MIPPED_BLOCKS_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL));
 +
 +        ImmutableList.Builder<RenderType> builder = ImmutableList.builder();
 +        builder.addAll(CHUNK_BUFFER_LAYERS);

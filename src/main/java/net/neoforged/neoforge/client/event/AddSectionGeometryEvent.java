@@ -21,6 +21,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.buffer.IBufferDefinition;
 import net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions;
+import net.neoforged.neoforge.client.buffer.chunk.IChunkBufferCallback;
 import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer;
 import net.neoforged.neoforge.client.model.lighting.QuadLighter;
 import net.neoforged.neoforge.common.NeoForge;
@@ -142,6 +143,16 @@ public class AddSectionGeometryEvent extends Event {
             return getOrCreateLayer.apply(type);
         }
 
+        /**
+         * Returns the builder for the given {@link IBufferDefinition} in the chunk section. If the buffer definition is not already
+         * present in the section, marks the type as present in the section.
+         *
+         * @param bufferDefinition the buffer definition to retrieve a builder for. This has to be a chunk buffer definition that registered through
+         *                         {@link RegisterChunkBufferDefinitionEvent#register(IBufferDefinition, IChunkBufferCallback)}.
+         * @return a vertex consumer adding geometry of the specified layer
+         * @throws IllegalArgumentException if the passed chunk buffer definition is not registered through
+         *                                  {@link RegisterChunkBufferDefinitionEvent#register(IBufferDefinition, IChunkBufferCallback)}.
+         */
         public VertexConsumer getOrCreateChunkBuffer(IBufferDefinition bufferDefinition) {
             return getOrCreateChunkBuffer(VanillaBufferDefinitions.bakeVanillaRenderType(bufferDefinition));
         }
