@@ -1,5 +1,40 @@
 --- a/net/minecraft/client/renderer/RenderType.java
 +++ b/net/minecraft/client/renderer/RenderType.java
+@@ -742,7 +_,34 @@
+             .setWriteMaskState(COLOR_WRITE)
+             .createCompositeState(false)
+     );
++
++    //Neo: Add additional chunk buffer layers
+     public static final ImmutableList<RenderType> CHUNK_BUFFER_LAYERS = ImmutableList.of(solid(), cutoutMipped(), cutout(), translucent(), tripwire());
++    public static final ImmutableList<RenderType> NEOFORGE_CHUNK_BUFFER_LAYERS;
++
++    //Neo: RenderType initializes before the ClientHooks, Move the logic into ClientHooks may disrupt classloading order
++    static {
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasEvent());
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterBufferDefinitionEvent());
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_CUTOUT_MIPPED_BLOCKS_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER));
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterChunkLayerBufferDefinitionEvent(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL));
++
++        ImmutableList.Builder<RenderType> builder = ImmutableList.builder();
++        builder.addAll(CHUNK_BUFFER_LAYERS);
++        builder.addAll(net.neoforged.neoforge.client.buffer.chunk.ChunkLayerBufferDefinitions.getBufferDefinitions().stream().map(net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions::bakeVanillaRenderType).toList());
++
++        NEOFORGE_CHUNK_BUFFER_LAYERS = builder.build();
++    }
++
+     public final VertexFormat format;
+     public final VertexFormat.Mode mode;
+     public final int bufferSize;
 @@ -968,7 +_,7 @@
      }
  
@@ -42,6 +77,15 @@
      }
  
      public static RenderType lightning() {
+@@ -1152,7 +_,7 @@
+     }
+ 
+     public static List<RenderType> chunkBufferLayers() {
+-        return CHUNK_BUFFER_LAYERS;
++        return NEOFORGE_CHUNK_BUFFER_LAYERS;
+     }
+ 
+     public int bufferSize() {
 @@ -1453,5 +_,17 @@
          public String toString() {
              return this.name;

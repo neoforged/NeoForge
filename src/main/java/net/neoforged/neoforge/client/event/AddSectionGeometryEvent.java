@@ -19,6 +19,8 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.buffer.IBufferDefinition;
+import net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions;
 import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer;
 import net.neoforged.neoforge.client.model.lighting.QuadLighter;
 import net.neoforged.neoforge.common.NeoForge;
@@ -138,6 +140,10 @@ public class AddSectionGeometryEvent extends Event {
                     type.getChunkLayerId() != -1,
                     "Cannot create a chunk render buffer for a non-chunk render type");
             return getOrCreateLayer.apply(type);
+        }
+
+        public VertexConsumer getOrCreateChunkBuffer(IBufferDefinition bufferDefinition) {
+            return getOrCreateChunkBuffer(VanillaBufferDefinitions.bakeVanillaRenderType(bufferDefinition));
         }
 
         /**
