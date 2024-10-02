@@ -36,10 +36,6 @@ public class VanillaBufferDefinitions {
 
     public static RenderType bakeVanillaRenderType(IBufferDefinition bufferDefinition) {
         return BAKED_VANILLA_RENDER_TYPES.computeIfAbsent(bufferDefinition, bufferDefinition1 -> {
-            if (bufferDefinition1 instanceof LegacyRenderTypeBufferDefinition legacy) {
-                return legacy.getRenderType();
-            }
-
             List<TextureState> textures = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.TEXTURE);
             Optional<Supplier<ShaderInstance>> shaderSupplier = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.SHADER);
             Optional<TransparencyState> transparencyState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.TRANSPARENCY);

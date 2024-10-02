@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.buffer.param.general.BooleanParam;
 import net.neoforged.neoforge.client.buffer.param.general.FloatParam;
 import net.neoforged.neoforge.client.buffer.param.general.IntegerParam;
+import net.neoforged.neoforge.client.buffer.param.general.StringParam;
 import net.neoforged.neoforge.client.buffer.param.general.Vector2fParam;
 import net.neoforged.neoforge.client.buffer.param.general.Vector3fParam;
 import net.neoforged.neoforge.client.buffer.param.state.OutputState;
@@ -31,7 +32,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 /**
- * Stores {@link IBufferDefinitionParamType} provided by NeoForge and
+ * Stores {@link IBufferDefinitionParamType} provided by NeoForge and {@link ResourceLocation alias} registered through {@link net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasEvent}
  */
 public class BufferDefinitionParamTypeManager {
     private static final Map<ResourceLocation, IBufferDefinitionParamType<?, ?>> BUFFER_DEFINITION_PARAM_TYPES = new HashMap<>();
@@ -53,7 +54,7 @@ public class BufferDefinitionParamTypeManager {
     public static final IBufferDefinitionParamType<Optional<GlStateManager.LogicOp>, ColorLogicParam> COLOR_LOGIC = register("color_logic", ColorLogicParam.Vanilla.NO_COLOR_LOGIC);
     public static final IBufferDefinitionParamType<OptionalDouble, FragmentDiscardParam> FRAGMENT_DISCARD = register("fragment_discard", FragmentDiscardParam.Vanilla.ZERO);
     public static final IBufferDefinitionParamType<RenderType.OutlineProperty, OutlineParam> OUTLINE = register("outline", OutlineParam.Vanilla.AFFECTS_OUTLINE);
-    public static final IBufferDefinitionParamType<String, NameParam> NAME = register("name", new NameParam("baked_buffer_definition"));
+    public static final IBufferDefinitionParamType<String, StringParam> NAME = register("name", new StringParam("buffer_definition"));
     public static final IBufferDefinitionParamType<VertexFormat, FormatParam> FORMAT = register("format", FormatParam.Vanilla.BLOCK);
     public static final IBufferDefinitionParamType<VertexFormat.Mode, ModeParam> MODE = register("mode", ModeParam.Vanilla.QUADS);
     public static final IBufferDefinitionParamType<Integer, IntegerParam> SIZE = register("size", new IntegerParam(0));
