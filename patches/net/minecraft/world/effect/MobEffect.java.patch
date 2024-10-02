@@ -9,6 +9,19 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
+@@ -64,6 +_,12 @@
+         this.particleFactory = p_333515_ -> p_333716_;
+     }
+ 
++    protected MobEffect(MobEffectCategory category, int color, Function<MobEffectInstance, ParticleOptions> particleFactory) {
++        this.category = category;
++        this.color = color;
++        this.particleFactory = particleFactory;
++    }
++
+     public int getBlendDurationTicks() {
+         return this.blendDurationTicks;
+     }
 @@ -130,6 +_,18 @@
          return this;
      }
