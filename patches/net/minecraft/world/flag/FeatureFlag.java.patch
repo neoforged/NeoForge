@@ -4,7 +4,7 @@
  public class FeatureFlag {
      final FeatureFlagUniverse universe;
      final long mask;
-+    final int offset;
++    final int extMaskIndex;
 +    final boolean modded;
  
 +    /**
@@ -18,7 +18,7 @@
 +    FeatureFlag(FeatureFlagUniverse p_249115_, int p_251067_, int offset, boolean modded) {
          this.universe = p_249115_;
          this.mask = 1L << p_251067_;
-+        this.offset = offset;
++        this.extMaskIndex = offset - 1;
 +        this.modded = modded;
 +    }
 +

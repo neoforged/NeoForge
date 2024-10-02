@@ -37,21 +37,21 @@
  
      public static FeatureFlagSet of(FeatureFlag p_252331_) {
 -        return new FeatureFlagSet(p_252331_.universe, p_252331_.mask);
-+        long[] extMask = computeExtendedMask(p_252331_.universe, p_252331_.offset, p_252331_.mask, java.util.List.of());
-+        return new FeatureFlagSet(p_252331_.universe, p_252331_.offset > 0 ? 0L : p_252331_.mask, extMask);
++        long[] extMask = computeExtendedMask(p_252331_.universe, p_252331_.extMaskIndex, p_252331_.mask, java.util.List.of());
++        return new FeatureFlagSet(p_252331_.universe, p_252331_.extMaskIndex >= 0 ? 0L : p_252331_.mask, extMask);
      }
  
      public static FeatureFlagSet of(FeatureFlag p_251008_, FeatureFlag... p_249805_) {
 -        long i = p_249805_.length == 0 ? p_251008_.mask : computeMask(p_251008_.universe, p_251008_.mask, Arrays.asList(p_249805_));
 -        return new FeatureFlagSet(p_251008_.universe, i);
-+        long i = p_249805_.length == 0 ? (p_251008_.offset > 0 ? 0L : p_251008_.mask) : computeMask(p_251008_.universe, p_251008_.offset > 0 ? 0L : p_251008_.mask, Arrays.asList(p_249805_));
-+        long[] extMask = computeExtendedMask(p_251008_.universe, p_251008_.offset, p_251008_.mask, p_249805_.length == 0 ? java.util.List.of() : Arrays.asList(p_249805_));
++        long i = p_249805_.length == 0 ? (p_251008_.extMaskIndex >= 0 ? 0L : p_251008_.mask) : computeMask(p_251008_.universe, p_251008_.extMaskIndex >= 0 ? 0L : p_251008_.mask, Arrays.asList(p_249805_));
++        long[] extMask = computeExtendedMask(p_251008_.universe, p_251008_.extMaskIndex, p_251008_.mask, p_249805_.length == 0 ? java.util.List.of() : Arrays.asList(p_249805_));
 +        return new FeatureFlagSet(p_251008_.universe, i, extMask);
      }
  
      private static long computeMask(FeatureFlagUniverse p_249684_, long p_250982_, Iterable<FeatureFlag> p_251734_) {
          for (FeatureFlag featureflag : p_251734_) {
-+            if (featureflag.offset > 0) continue;
++            if (featureflag.extMaskIndex >= 0) continue;
              if (p_249684_ != featureflag.universe) {
                  throw new IllegalStateException("Mismatched feature universe, expected '" + p_249684_ + "', but got '" + featureflag.universe + "'");
              }
@@ -59,21 +59,21 @@
          return p_250982_;
      }
  
-+    private static long[] computeExtendedMask(FeatureFlagUniverse universe, int firstOffset, long firstMask, Iterable<FeatureFlag> otherFlags) {
++    private static long[] computeExtendedMask(FeatureFlagUniverse universe, int firstExtIndex, long firstMask, Iterable<FeatureFlag> otherFlags) {
 +        long[] extMask = EMPTY_EXT_MASK;
-+        if (firstOffset > 0) {
-+            extMask = new long[firstOffset + 1];
-+            extMask[firstOffset] |= firstMask;
++        if (firstExtIndex >= 0) {
++            extMask = new long[firstExtIndex + 1];
++            extMask[firstExtIndex] |= firstMask;
 +        }
 +        for (FeatureFlag flag : otherFlags) {
-+            if (flag.offset == 0) continue;
++            if (flag.extMaskIndex < 0) continue;
 +            if (universe != flag.universe) {
 +                throw new IllegalStateException("Mismatched feature universe, expected '" + universe + "', but got '" + flag.universe + "'");
 +            }
-+            if (flag.offset >= extMask.length) {
-+                extMask = Arrays.copyOfRange(extMask, 0, flag.offset + 1);
++            if (flag.extMaskIndex >= extMask.length) {
++                extMask = Arrays.copyOfRange(extMask, 0, flag.extMaskIndex + 1);
 +            }
-+            extMask[flag.offset] |= flag.mask;
++            extMask[flag.extMaskIndex] |= flag.mask;
 +        }
 +        return extMask;
 +    }
@@ -83,11 +83,11 @@
 +        if (this.universe != p_249521_.universe) {
 +            return false;
 +        }
-+        if (p_249521_.offset == 0) {
++        if (p_249521_.extMaskIndex < 0) {
 +            return (this.mask & p_249521_.mask) != 0L;
 +        }
-+        if (this.extendedMask.length > p_249521_.offset) {
-+            return (this.extendedMask[p_249521_.offset] & p_249521_.mask) != 0L;
++        if (this.extendedMask.length > p_249521_.extMaskIndex) {
++            return (this.extendedMask[p_249521_.extMaskIndex] & p_249521_.mask) != 0L;
 +        }
 +        return false;
      }
