@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
@@ -138,7 +139,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions;
-import net.neoforged.neoforge.client.buffer.chunk.ChunkLayerBufferDefinitions;
+import net.neoforged.neoforge.client.buffer.chunk.ChunkBufferDefinitionManager;
 import net.neoforged.neoforge.client.buffer.chunk.IChunkBufferCallback;
 import net.neoforged.neoforge.client.buffer.chunk.ISectionLayerRenderer;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
@@ -159,6 +160,8 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
+import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasEvent;
+import net.neoforged.neoforge.client.event.RegisterBufferDefinitionsEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -299,7 +302,7 @@ public class ClientHooks {
     }
 
     public static void dispatchCustomChunkBuffers(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, Vector3f position) {
-        ChunkLayerBufferDefinitions.getBufferDefinitions(stage).forEach(entry -> {
+        ChunkBufferDefinitionManager.getChunkBufferDefinitions(stage).forEach(entry -> {
             RenderType renderType = VanillaBufferDefinitions.bakeVanillaRenderType(entry.bufferDefinition());
             IChunkBufferCallback callback = entry.callback();
             ISectionLayerRenderer sectionLayerRenderer = ISectionLayerRenderer.vanilla(renderType, levelRenderer);
@@ -1032,6 +1035,10 @@ public class ClientHooks {
         }
     }
 
+    public static ImmutableList<RenderType> getChunkBufferLayers() {
+        return ChunkBufferDefinitionManager.getChunkBufferLayers();
+    }
+
     // Make sure the below method is only ever called once (by forge).
     private static boolean initializedClientHooks = false;
 
@@ -1047,9 +1054,12 @@ public class ClientHooks {
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
+        ModLoader.postEvent(new RegisterBufferDefinitionParamTypeAliasEvent());
+        ModLoader.postEvent(new RegisterBufferDefinitionsEvent());
         ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
+        ChunkBufferDefinitionManager.init();
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         ClientHooks.onRegisterKeyMappings(mc.options);

@@ -19,6 +19,6 @@ import net.neoforged.fml.event.IModBusEvent;
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterBufferDefinitionEvent extends Event implements IModBusEvent {
+public class RegisterBufferDefinitionsEvent extends Event implements IModBusEvent {
 
 }

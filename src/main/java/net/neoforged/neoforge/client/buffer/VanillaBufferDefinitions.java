@@ -19,7 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.neoforged.neoforge.client.buffer.param.BufferDefinitionParamTypes;
+import net.neoforged.neoforge.client.buffer.param.BufferDefinitionParamTypeManager;
 import net.neoforged.neoforge.client.buffer.param.state.OutputState;
 import net.neoforged.neoforge.client.buffer.param.state.TextureState;
 import net.neoforged.neoforge.client.buffer.param.state.TransparencyState;
@@ -40,20 +40,20 @@ public class VanillaBufferDefinitions {
                 return legacy.getRenderType();
             }
 
-            List<TextureState> textures = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.TEXTURE);
-            Optional<Supplier<ShaderInstance>> shaderSupplier = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.SHADER);
-            Optional<TransparencyState> transparencyState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.TRANSPARENCY);
-            int depthFunction = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.DEPTH);
-            boolean cull = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.CULL);
-            boolean lightmap = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.LIGHTMAP);
-            boolean overlay = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.OVERLAY);
-            Optional<OutputState> outputState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.OUTPUT);
-            WriteMaskState writeMaskState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.WRITE_MASK);
-            OptionalDouble lineWidth = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.LINE);
-            Optional<GlStateManager.LogicOp> logicOp = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.COLOR_LOGIC);
-            RenderType.OutlineProperty outlineProperty = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.OUTLINE);
+            List<TextureState> textures = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.TEXTURE);
+            Optional<Supplier<ShaderInstance>> shaderSupplier = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.SHADER);
+            Optional<TransparencyState> transparencyState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.TRANSPARENCY);
+            int depthFunction = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.DEPTH);
+            boolean cull = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.CULL);
+            boolean lightmap = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.LIGHTMAP);
+            boolean overlay = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.OVERLAY);
+            Optional<OutputState> outputState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.OUTPUT);
+            WriteMaskState writeMaskState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.WRITE_MASK);
+            OptionalDouble lineWidth = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.LINE);
+            Optional<GlStateManager.LogicOp> logicOp = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.COLOR_LOGIC);
+            RenderType.OutlineProperty outlineProperty = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.OUTLINE);
 
-            Optional<RenderStateShard.LayeringStateShard> viewOffsetLayeringRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypes.VIEW_OFFSET).map(offset -> new RenderStateShard.LayeringStateShard("view_offset_layering", () -> {
+            Optional<RenderStateShard.LayeringStateShard> viewOffsetLayeringRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.VIEW_OFFSET).map(offset -> new RenderStateShard.LayeringStateShard("view_offset_layering", () -> {
                 Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
                 matrix4fstack.pushMatrix();
                 matrix4fstack.scale(offset.x, offset.y, offset.z);
@@ -74,7 +74,7 @@ public class VanillaBufferDefinitions {
                 }
             })).orElse(RenderStateShard.MAIN_TARGET);
 
-            Optional<RenderStateShard.LayeringStateShard> polygonOffsetLayeringRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypes.POLYGON_OFFSET).map(offset -> new RenderStateShard.LayeringStateShard("polygon_offset_layering", () -> {
+            Optional<RenderStateShard.LayeringStateShard> polygonOffsetLayeringRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.POLYGON_OFFSET).map(offset -> new RenderStateShard.LayeringStateShard("polygon_offset_layering", () -> {
                 RenderSystem.polygonOffset(offset.x, offset.y);
                 RenderSystem.enablePolygonOffset();
             }, () -> {
@@ -108,8 +108,8 @@ public class VanillaBufferDefinitions {
             RenderStateShard.OverlayStateShard overlayStateShard = new RenderStateShard.OverlayStateShard(overlay);
             RenderStateShard.WriteMaskStateShard writeMaskStateShard = new RenderStateShard.WriteMaskStateShard(writeMaskState.writeColor(), writeMaskState.writeDepth());
             RenderStateShard.LineStateShard lineStateShard = new RenderStateShard.LineStateShard(lineWidth);
-            Optional<RenderStateShard.TexturingStateShard> glintTexturingRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypes.GLINT_SCALE).map(scale -> new RenderStateShard.TexturingStateShard("glint_texturing", () -> RenderStateShard.setupGlintTexturing(8.0F), RenderSystem::resetTextureMatrix));
-            Optional<RenderStateShard.TexturingStateShard> offsetTexturingRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypes.TEXTURE_OFFSET).map(offset -> new RenderStateShard.OffsetTexturingStateShard(offset.x, offset.y));
+            Optional<RenderStateShard.TexturingStateShard> glintTexturingRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.GLINT_SCALE).map(scale -> new RenderStateShard.TexturingStateShard("glint_texturing", () -> RenderStateShard.setupGlintTexturing(8.0F), RenderSystem::resetTextureMatrix));
+            Optional<RenderStateShard.TexturingStateShard> offsetTexturingRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.TEXTURE_OFFSET).map(offset -> new RenderStateShard.OffsetTexturingStateShard(offset.x, offset.y));
 
             RenderType.CompositeState compositeState = new RenderType.CompositeState(
                     textureStateShard,
@@ -127,13 +127,13 @@ public class VanillaBufferDefinitions {
                     colorLogicStateShard,
                     outlineProperty);
 
-            VertexFormat vertexFormat = bufferDefinition1.getParam(BufferDefinitionParamTypes.FORMAT).orElseThrow(() -> new IllegalStateException("Vanilla baked buffer definition must have param \"FORMAT\""));
-            VertexFormat.Mode mode = bufferDefinition1.getParam(BufferDefinitionParamTypes.MODE).orElseThrow(() -> new IllegalStateException("Vanilla baked buffer definition must have param \"MODE\""));
-            int size = bufferDefinition1.getParam(BufferDefinitionParamTypes.SIZE).orElseThrow(() -> new IllegalStateException("Vanilla baked buffer definition must have param \"SIZE\""));
+            VertexFormat vertexFormat = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.FORMAT).orElseThrow(() -> new IllegalStateException("Vanilla baked buffer definition must have param \"FORMAT\""));
+            VertexFormat.Mode mode = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.MODE).orElseThrow(() -> new IllegalStateException("Vanilla baked buffer definition must have param \"MODE\""));
+            int size = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.SIZE).orElseThrow(() -> new IllegalStateException("Vanilla baked buffer definition must have param \"SIZE\""));
 
-            String name = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.NAME);
-            boolean affectsCrumbling = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.CRUMBLING);
-            boolean sortOnUpload = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypes.SORT);
+            String name = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.NAME);
+            boolean affectsCrumbling = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.CRUMBLING);
+            boolean sortOnUpload = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.SORT);
 
             return RenderType.create(name, vertexFormat, mode, size, affectsCrumbling, sortOnUpload, compositeState);
         });

@@ -25,7 +25,7 @@ public record TransparencyParam(Optional<TransparencyState> transparencyState) i
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.TRANSPARENCY;
+        return BufferDefinitionParamTypeManager.TRANSPARENCY;
     }
     public static final class Vanilla {
         public static final TransparencyParam NO_TRANSPARENCY = new TransparencyParam();

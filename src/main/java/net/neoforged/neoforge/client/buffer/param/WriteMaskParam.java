@@ -21,6 +21,6 @@ public record WriteMaskParam(WriteMaskState writeMaskState) implements IBufferDe
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.WRITE_MASK;
+        return BufferDefinitionParamTypeManager.WRITE_MASK;
     }
 }

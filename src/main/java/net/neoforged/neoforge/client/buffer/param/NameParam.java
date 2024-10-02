@@ -13,6 +13,6 @@ public record NameParam(String name) implements IBufferDefinitionParam<String> {
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.NAME;
+        return BufferDefinitionParamTypeManager.NAME;
     }
 }

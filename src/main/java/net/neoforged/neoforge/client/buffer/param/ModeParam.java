@@ -16,7 +16,7 @@ public record ModeParam(VertexFormat.Mode mode) implements IBufferDefinitionPara
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.MODE;
+        return BufferDefinitionParamTypeManager.MODE;
     }
     public static final class Vanilla {
         public static final ModeParam LINES = new ModeParam(VertexFormat.Mode.LINES);

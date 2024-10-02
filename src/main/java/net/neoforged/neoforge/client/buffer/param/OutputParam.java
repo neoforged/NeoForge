@@ -25,7 +25,7 @@ public record OutputParam(Optional<OutputState> renderTargetSupplier) implements
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.OUTPUT;
+        return BufferDefinitionParamTypeManager.OUTPUT;
     }
     public static final class Vanilla {
         public static final OutputParam MAIN_TARGET = new OutputParam();

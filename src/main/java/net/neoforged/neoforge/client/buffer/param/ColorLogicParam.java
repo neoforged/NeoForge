@@ -25,7 +25,7 @@ public record ColorLogicParam(Optional<GlStateManager.LogicOp> logicOp) implemen
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.COLOR_LOGIC;
+        return BufferDefinitionParamTypeManager.COLOR_LOGIC;
     }
     public static final class Vanilla {
         public static final ColorLogicParam NO_COLOR_LOGIC = new ColorLogicParam(Optional.empty());

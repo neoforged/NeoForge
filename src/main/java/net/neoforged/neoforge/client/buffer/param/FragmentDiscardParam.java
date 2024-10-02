@@ -24,7 +24,7 @@ public record FragmentDiscardParam(OptionalDouble cutoff) implements IBufferDefi
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.FRAGMENT_DISCARD;
+        return BufferDefinitionParamTypeManager.FRAGMENT_DISCARD;
     }
     public static final class Vanilla {
         public static final FragmentDiscardParam ONE = new FragmentDiscardParam(1.0);

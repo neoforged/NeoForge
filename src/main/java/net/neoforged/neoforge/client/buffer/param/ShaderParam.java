@@ -27,7 +27,7 @@ public record ShaderParam(Optional<Supplier<ShaderInstance>> shaderSupplier) imp
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.SHADER;
+        return BufferDefinitionParamTypeManager.SHADER;
     }
     public static final class Vanilla {
         public static final ShaderParam NO_SHADER = new ShaderParam();

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.buffer.chunk;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,16 +14,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.neoforge.client.buffer.IBufferDefinition;
+import net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions;
+import net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Stores registered {@link IBufferDefinition} for {@link RenderType#chunkBufferLayers() vanilla chunk buffer layers}.
  * 
- * @see net.minecraft.client.renderer.RenderType#NEOFORGE_CHUNK_BUFFER_LAYERS
+ * @see RenderType#chunkBufferLayers()
  */
-public class ChunkLayerBufferDefinitions {
-    private static final Map<RenderLevelStageEvent.Stage, HashSet<Entry>> CHUNK_LAYER_BUFFER_DEFINITIONS = new HashMap<>();
+public class ChunkBufferDefinitionManager {
+    private static final Map<RenderLevelStageEvent.Stage, HashSet<Entry>> CHUNK_BUFFER_DEFINITIONS = new HashMap<>();
+    private static ImmutableList<RenderType> chunkBufferLayers = RenderType.CHUNK_BUFFER_LAYERS;
 
     /**
      * Register an {@link IBufferDefinition} into {@link RenderType#chunkBufferLayers() vanilla chunk buffer layers } with a {@link IChunkBufferCallback#passThrough() default callback}.
@@ -31,7 +35,7 @@ public class ChunkLayerBufferDefinitions {
      * @param definition The chunk buffer definition to be registered
      */
     public static void register(RenderLevelStageEvent.Stage stage, IBufferDefinition definition) {
-        CHUNK_LAYER_BUFFER_DEFINITIONS.computeIfAbsent(stage, k -> new HashSet<>()).add(new Entry(definition, IChunkBufferCallback.passThrough()));
+        CHUNK_BUFFER_DEFINITIONS.computeIfAbsent(stage, k -> new HashSet<>()).add(new Entry(definition, IChunkBufferCallback.passThrough()));
     }
 
     /**
@@ -42,17 +46,28 @@ public class ChunkLayerBufferDefinitions {
      * @param callback   THe callback behaviour when the {@link IBufferDefinition chunk buffer} is rendered in level
      */
     public static void register(RenderLevelStageEvent.Stage stage, IBufferDefinition definition, IChunkBufferCallback callback) {
-        CHUNK_LAYER_BUFFER_DEFINITIONS.computeIfAbsent(stage, k -> new HashSet<>()).add(new Entry(definition, callback));
+        CHUNK_BUFFER_DEFINITIONS.computeIfAbsent(stage, k -> new HashSet<>()).add(new Entry(definition, callback));
     }
 
     @ApiStatus.Internal
-    public static Set<Entry> getBufferDefinitions(RenderLevelStageEvent.Stage stage) {
-        return CHUNK_LAYER_BUFFER_DEFINITIONS.computeIfAbsent(stage, k -> new HashSet<>());
+    public static void init() {
+        RegisterChunkBufferDefinitionsEvent.collectChunkBufferDefinitions();
+        chunkBufferLayers = ImmutableList.<RenderType>builder().addAll(RenderType.CHUNK_BUFFER_LAYERS).addAll(getChunkBufferDefinitions().stream().map(VanillaBufferDefinitions::bakeVanillaRenderType).toList()).build();
     }
 
     @ApiStatus.Internal
-    public static Set<IBufferDefinition> getBufferDefinitions() {
-        return CHUNK_LAYER_BUFFER_DEFINITIONS.values().stream().flatMap(Collection::stream).map(Entry::bufferDefinition).collect(Collectors.toSet());
+    public static ImmutableList<RenderType> getChunkBufferLayers() {
+        return chunkBufferLayers;
+    }
+
+    @ApiStatus.Internal
+    public static Set<Entry> getChunkBufferDefinitions(RenderLevelStageEvent.Stage stage) {
+        return CHUNK_BUFFER_DEFINITIONS.computeIfAbsent(stage, k -> new HashSet<>());
+    }
+
+    @ApiStatus.Internal
+    public static Set<IBufferDefinition> getChunkBufferDefinitions() {
+        return CHUNK_BUFFER_DEFINITIONS.values().stream().flatMap(Collection::stream).map(Entry::bufferDefinition).collect(Collectors.toSet());
     }
 
     @ApiStatus.Internal

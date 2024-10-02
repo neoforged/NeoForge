@@ -17,7 +17,7 @@ public record FormatParam(VertexFormat vertexFormat) implements IBufferDefinitio
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.FORMAT;
+        return BufferDefinitionParamTypeManager.FORMAT;
     }
     public static final class Vanilla {
         public static final FormatParam BLIT_SCREEN = new FormatParam(DefaultVertexFormat.BLIT_SCREEN);

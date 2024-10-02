@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.buffer;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.buffer.param.BufferDefinitionParamTypes;
+import net.neoforged.neoforge.client.buffer.param.BufferDefinitionParamTypeManager;
 import net.neoforged.neoforge.client.buffer.param.IBufferDefinitionParam;
 import net.neoforged.neoforge.client.buffer.param.IBufferDefinitionParamType;
 
@@ -88,7 +88,7 @@ public class DefaultBufferDefinition implements IBufferDefinition {
         }
 
         private Optional<IBufferDefinitionParamType<?, ?>> getParamType(ResourceLocation resourceLocation) {
-            return Optional.ofNullable(BufferDefinitionParamTypes.getParamType(resourceLocation));
+            return Optional.ofNullable(BufferDefinitionParamTypeManager.getParamType(resourceLocation));
         }
     }
 }

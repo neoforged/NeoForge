@@ -16,7 +16,7 @@ public record LineParam(OptionalDouble width) implements IBufferDefinitionParam<
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.LINE;
+        return BufferDefinitionParamTypeManager.LINE;
     }
     public static final class Vanilla {
         public static final LineParam DEFAULT_LINE = new LineParam(OptionalDouble.of(1.0));

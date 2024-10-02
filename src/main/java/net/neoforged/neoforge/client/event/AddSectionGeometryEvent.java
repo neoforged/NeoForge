@@ -167,10 +167,10 @@ public class AddSectionGeometryEvent extends Event {
          * present in the section, marks the type as present in the section.
          *
          * @param bufferDefinition the buffer definition to retrieve a builder for. This has to be a chunk buffer definition that registered through
-         *                         {@link RegisterChunkBufferDefinitionEvent#register(IBufferDefinition, IChunkBufferCallback)}.
+         *                         {@link RegisterChunkBufferDefinitionsEvent#register(IBufferDefinition, IChunkBufferCallback)}.
          * @return a vertex consumer adding geometry of the specified layer
          * @throws IllegalArgumentException if the passed chunk buffer definition is not registered through
-         *                                  {@link RegisterChunkBufferDefinitionEvent#register(IBufferDefinition, IChunkBufferCallback)}.
+         *                                  {@link RegisterChunkBufferDefinitionsEvent#register(IBufferDefinition, IChunkBufferCallback)}.
          */
         public VertexConsumer getOrCreateChunkBuffer(IBufferDefinition bufferDefinition) {
             return customLayerFunction.apply(bufferDefinition);

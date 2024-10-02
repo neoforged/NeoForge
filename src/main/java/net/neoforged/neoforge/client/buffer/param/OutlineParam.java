@@ -16,7 +16,7 @@ public record OutlineParam(RenderType.OutlineProperty outlineProperty) implement
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.OUTLINE;
+        return BufferDefinitionParamTypeManager.OUTLINE;
     }
     public static final class Vanilla {
         public static final OutlineParam NONE = new OutlineParam(RenderType.OutlineProperty.NONE);

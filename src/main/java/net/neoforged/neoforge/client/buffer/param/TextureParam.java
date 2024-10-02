@@ -31,7 +31,7 @@ public record TextureParam(List<TextureState> states) implements IBufferDefiniti
 
     @Override
     public IBufferDefinitionParamType<?, ?> getType() {
-        return BufferDefinitionParamTypes.TEXTURE;
+        return BufferDefinitionParamTypeManager.TEXTURE;
     }
     public static final class Vanilla {
         public static final TextureParam EMPTY = new TextureParam();

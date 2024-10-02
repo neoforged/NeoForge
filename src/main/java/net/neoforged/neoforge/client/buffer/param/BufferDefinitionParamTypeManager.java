@@ -33,7 +33,7 @@ import org.joml.Vector3f;
 /**
  * Stores {@link IBufferDefinitionParamType} provided by NeoForge and
  */
-public class BufferDefinitionParamTypes {
+public class BufferDefinitionParamTypeManager {
     private static final Map<ResourceLocation, IBufferDefinitionParamType<?, ?>> BUFFER_DEFINITION_PARAM_TYPES = new HashMap<>();
 
     public static final IBufferDefinitionParamType<List<TextureState>, TextureParam> TEXTURE = register("texture", TextureParam.Vanilla.EMPTY);
