@@ -794,7 +794,7 @@ public class Tags {
         /**
          * Holds all fluids related to experience.
          * <p>
-         * (Standard unit for experience is 20mb per 1 experience)
+         * (Standard unit for experience is 20mb per 1 experience. However, extraction from Bottle o' Enchanting should yield 250mb while smashing yields less)
          */
         public static final TagKey<Fluid> EXPERIENCE = tag("experience");
         /**
