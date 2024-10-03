@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -63,13 +_,14 @@
+@@ -63,18 +_,20 @@
          TextureAtlas.LOCATION_BLOCKS,
          ResourceLocation.withDefaultNamespace("blocks")
      );
@@ -16,6 +16,12 @@
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
          this.blockColors = p_119407_;
+         this.maxMipmapLevels = p_119408_;
+         this.blockModelShaper = new BlockModelShaper(this);
++        Map<ResourceLocation, ResourceLocation> VANILLA_ATLASES = net.neoforged.neoforge.client.ClientHooks.gatherMaterialAtlases(ModelManager.VANILLA_ATLASES);
+         this.atlases = new AtlasSet(VANILLA_ATLASES, p_119406_);
+     }
+ 
 @@ -100,6 +_,7 @@
          Executor p_249221_
      ) {
