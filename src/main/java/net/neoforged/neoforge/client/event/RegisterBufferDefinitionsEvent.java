@@ -11,7 +11,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 
 /**
- * Event that fires after {@link RegisterBufferDefinitionParamTypeAliasEvent},
+ * Event that fires after {@link RegisterBufferDefinitionParamTypeAliasesEvent},
  * indicating all {@link net.minecraft.resources.ResourceLocation alias} for the {@link net.neoforged.neoforge.client.buffer.param.IBufferDefinitionParamType} is registered.
  * It is safe to build {@link net.neoforged.neoforge.client.buffer.IBufferDefinition} here or after the event is fired.
  *

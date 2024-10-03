@@ -26,16 +26,17 @@ import net.neoforged.neoforge.client.buffer.param.state.OutputState;
 import net.neoforged.neoforge.client.buffer.param.state.TextureState;
 import net.neoforged.neoforge.client.buffer.param.state.TransparencyState;
 import net.neoforged.neoforge.client.buffer.param.state.WriteMaskState;
+import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasesEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 /**
- * Stores {@link IBufferDefinitionParamType} provided by NeoForge and {@link ResourceLocation alias} registered through {@link net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasEvent}
+ * Stores {@link IBufferDefinitionParamType} provided by NeoForge and {@link ResourceLocation alias} registered through {@link RegisterBufferDefinitionParamTypeAliasesEvent}
  */
 public class BufferDefinitionParamTypeManager {
-    private static final Map<ResourceLocation, IBufferDefinitionParamType<?, ?>> BUFFER_DEFINITION_PARAM_TYPES = new HashMap<>();
+    private static final Map<ResourceLocation, IBufferDefinitionParamType<?, ?>> BUFFER_DEFINITION_PARAM_TYPE_ALIASES = new HashMap<>();
 
     public static final IBufferDefinitionParamType<List<TextureState>, TextureParam> TEXTURE = register("texture", TextureParam.Vanilla.EMPTY);
     public static final IBufferDefinitionParamType<Optional<Supplier<ShaderInstance>>, ShaderParam> SHADER = register("shader", ShaderParam.Vanilla.NO_SHADER);
@@ -77,7 +78,7 @@ public class BufferDefinitionParamTypeManager {
      */
     @SuppressWarnings("unchecked")
     public static <T, P extends IBufferDefinitionParam<T>> IBufferDefinitionParamType<T, P> register(ResourceLocation resourceLocation, P defaultValue) {
-        return (IBufferDefinitionParamType<T, P>) BUFFER_DEFINITION_PARAM_TYPES.computeIfAbsent(resourceLocation, resourceLocation1 -> IBufferDefinitionParamType.simple(resourceLocation1, defaultValue));
+        return (IBufferDefinitionParamType<T, P>) BUFFER_DEFINITION_PARAM_TYPE_ALIASES.computeIfAbsent(resourceLocation, resourceLocation1 -> IBufferDefinitionParamType.simple(resourceLocation1, defaultValue));
     }
 
     /**
@@ -87,7 +88,7 @@ public class BufferDefinitionParamTypeManager {
      * @param paramType        the param type to be registered
      */
     public static void register(ResourceLocation resourceLocation, IBufferDefinitionParamType<?, ?> paramType) {
-        BUFFER_DEFINITION_PARAM_TYPES.putIfAbsent(resourceLocation, paramType);
+        BUFFER_DEFINITION_PARAM_TYPE_ALIASES.putIfAbsent(resourceLocation, paramType);
     }
 
     /**
@@ -98,6 +99,6 @@ public class BufferDefinitionParamTypeManager {
      */
     @Nullable
     public static IBufferDefinitionParamType<?, ?> getParamType(ResourceLocation resourceLocation) {
-        return BUFFER_DEFINITION_PARAM_TYPES.get(resourceLocation);
+        return BUFFER_DEFINITION_PARAM_TYPE_ALIASES.get(resourceLocation);
     }
 }

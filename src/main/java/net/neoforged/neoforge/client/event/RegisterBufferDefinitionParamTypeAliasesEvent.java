@@ -22,7 +22,7 @@ import net.neoforged.neoforge.client.buffer.param.IBufferDefinitionParamType;
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterBufferDefinitionParamTypeAliasEvent extends Event implements IModBusEvent {
+public class RegisterBufferDefinitionParamTypeAliasesEvent extends Event implements IModBusEvent {
     /**
      * Register an {@link ResourceLocation alias} for a given {@link IBufferDefinitionParamType}
      * 

@@ -160,7 +160,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
-import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasEvent;
+import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasesEvent;
 import net.neoforged.neoforge.client.event.RegisterBufferDefinitionsEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
@@ -1054,7 +1054,7 @@ public class ClientHooks {
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
-        ModLoader.postEvent(new RegisterBufferDefinitionParamTypeAliasEvent());
+        ModLoader.postEvent(new RegisterBufferDefinitionParamTypeAliasesEvent());
         ModLoader.postEvent(new RegisterBufferDefinitionsEvent());
         ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());

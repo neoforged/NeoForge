@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.buffer.param.IBufferDefinitionParam;
 import net.neoforged.neoforge.client.buffer.param.IBufferDefinitionParamType;
 import net.neoforged.neoforge.client.buffer.param.general.IGeneralUsageParam;
-import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasEvent;
+import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasesEvent;
 
 public interface IBufferDefinitionBuilder {
     /**
@@ -30,7 +30,7 @@ public interface IBufferDefinitionBuilder {
      * @param resourceLocation the registered location of the param type
      * @param param            the param value
      * @return the builder itself
-     * @see RegisterBufferDefinitionParamTypeAliasEvent
+     * @see RegisterBufferDefinitionParamTypeAliasesEvent
      */
     IBufferDefinitionBuilder withParam(ResourceLocation resourceLocation, IBufferDefinitionParam<?> param);
 
