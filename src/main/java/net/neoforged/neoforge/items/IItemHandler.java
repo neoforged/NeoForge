@@ -5,12 +5,14 @@
 
 package net.neoforged.neoforge.items;
 
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-public interface IItemHandler {
+public interface IItemHandler extends Iterable<ItemStack> {
     /**
      * Returns the number of slots available
      *
@@ -99,4 +101,45 @@ public interface IItemHandler {
      *         false if the slot can never insert the ItemStack in any situation.
      */
     boolean isItemValid(int slot, ItemStack stack);
+
+    @Override
+    default Iterator<ItemStack> iterator() {
+        return new Iterator<ItemStack>() {
+            private int expectedSize = getSlots();
+            private int slotCursor = 0;
+            private int slotForRemoval = -1;
+
+            private void checkCME() {
+                if (expectedSize != getSlots())
+                    throw new ConcurrentModificationException(this + " has changed its slot count");
+            }
+
+            @Override
+            public boolean hasNext() {
+                return slotCursor != getSlots();
+            }
+
+            @Override
+            public ItemStack next() {
+                checkCME();
+                final ItemStack next = getStackInSlot(slotCursor);
+                slotForRemoval = slotCursor;
+                slotCursor++;
+                return next;
+            }
+
+            @Override
+            public void remove() {
+                if (slotForRemoval < 0)
+                    throw new IllegalStateException();
+                checkCME();
+
+                extractItem(slotForRemoval, getSlotLimit(slotForRemoval), false);
+                if (slotForRemoval < slotCursor)
+                    slotCursor--;
+                slotForRemoval = -1;
+                expectedSize = getSlots();
+            }
+        };
+    }
 }
