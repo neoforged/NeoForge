@@ -250,6 +250,6 @@ modId="may_fly_attribute_item"
 modId="client_information_updated_test"
 [[mods]]
 modId="custom_feature_flags_pack_test"
-featureFlags="pack_test_feature_flags.json"
+featureFlags="game_test_feature_flags.json"
 
 # ADD ABOVE THIS LINE
