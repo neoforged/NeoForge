@@ -55,7 +55,7 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
         return simpleBlockItem(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block)));
     }
 
-    public ItemModelBuilder simpleBlockItem(ResourceLocation item) {
+    public ItemModelBuilder simpleBlockItem(ResourceLocation block) {
         return withExistingParent(item.toString(), ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "block/" + item.getPath()));
     }
 
