@@ -10,7 +10,6 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
-import java.util.Locale;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
@@ -67,20 +66,18 @@ public class ModifiableBiomeInfo {
     }
 
     /**
-     * Internal forge method; the game will crash if mods invoke this.
+     * Internal NeoForge method. Will do nothing if this modifier had already been applied.
      * Creates and caches the modified biome info.
      * 
      * @param biome          named biome with original data.
      * @param biomeModifiers biome modifiers to apply.
      *
      * @return whether the biome's network-synced data was modified
-     * 
-     * @throws IllegalStateException if invoked more than once.
      */
     @ApiStatus.Internal
     public boolean applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers, RegistryAccess registryAccess) {
         if (this.modifiedBiomeInfo != null)
-            throw new IllegalStateException(String.format(Locale.ENGLISH, "Biome %s already modified", biome));
+            return true;
 
         BiomeInfo original = this.getOriginalBiomeInfo();
         final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(original);

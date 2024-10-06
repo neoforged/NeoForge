@@ -116,6 +116,12 @@ public class Tags {
         public static final TagKey<Block> NETHERRACKS = tag("netherracks");
         public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
+         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         */
+        public static final TagKey<Block> OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final TagKey<Block> OBSIDIANS_CRYING = tag("obsidians/crying");
+        /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */
         public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
@@ -424,6 +430,10 @@ public class Tags {
          */
         public static final TagKey<Item> FOODS_CANDY = tag("foods/candy");
         /**
+         * Pies and other pie-like foods belong in this tag.
+         */
+        public static final TagKey<Item> FOODS_PIE = tag("foods/pie");
+        /**
          * Any gold-based foods would go in this tag. Such as Golden Apples or Glistering Melon Slice.
          */
         public static final TagKey<Item> FOODS_GOLDEN = tag("foods/golden");
@@ -485,6 +495,12 @@ public class Tags {
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");
         public static final TagKey<Item> OBSIDIANS = tag("obsidians");
+        /**
+         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         */
+        public static final TagKey<Item> OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final TagKey<Item> OBSIDIANS_CRYING = tag("obsidians/crying");
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */

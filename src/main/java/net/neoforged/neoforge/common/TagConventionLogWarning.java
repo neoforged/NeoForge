@@ -411,6 +411,9 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.ITEM, "candy", Tags.Items.FOODS_CANDY),
             createForgeMapEntry(Registries.ITEM, "candies", Tags.Items.FOODS_CANDY),
             createMapEntry(Registries.ITEM, "c", "foods/candies", Tags.Items.FOODS_CANDY),
+            createForgeMapEntry(Registries.ITEM, "pie", Tags.Items.FOODS_PIE),
+            createForgeMapEntry(Registries.ITEM, "pies", Tags.Items.FOODS_PIE),
+            createMapEntry(Registries.ITEM, "c", "foods/pies", Tags.Items.FOODS_PIE),
 
             createForgeMapEntry(Registries.FLUID, "water", Tags.Fluids.WATER),
             createForgeMapEntry(Registries.FLUID, "lava", Tags.Fluids.LAVA),
