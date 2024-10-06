@@ -15,12 +15,10 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -154,33 +152,6 @@ public abstract class ModelEvent extends Event {
                     model.getVariant().equals(ModelResourceLocation.STANDALONE_VARIANT),
                     "Side-loaded models must use the '" + ModelResourceLocation.STANDALONE_VARIANT + "' variant");
             models.add(model);
-        }
-    }
-
-    /**
-     * Allows users to register their own {@link IGeometryLoader geometry loaders} for use in block/item models.
-     *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
-     *
-     * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-     */
-    public static class RegisterGeometryLoaders extends ModelEvent implements IModBusEvent {
-        private final Map<ResourceLocation, IGeometryLoader<?>> loaders;
-
-        @ApiStatus.Internal
-        public RegisterGeometryLoaders(Map<ResourceLocation, IGeometryLoader<?>> loaders) {
-            this.loaders = loaders;
-        }
-
-        /**
-         * Registers a new geometry loader.
-         * 
-         * @param key    the ID of the loader
-         * @param loader the geometry loader to register
-         */
-        public void register(ResourceLocation key, IGeometryLoader<?> loader) {
-            Preconditions.checkArgument(!loaders.containsKey(key), "Geometry loader already registered: " + key);
-            loaders.put(key, loader);
         }
     }
 }

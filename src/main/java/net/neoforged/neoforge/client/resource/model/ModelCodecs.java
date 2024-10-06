@@ -6,12 +6,14 @@
 package net.neoforged.neoforge.client.resource.model;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.Products.P6;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,12 +26,12 @@ import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
@@ -74,14 +76,16 @@ public class ModelCodecs {
     private static final MapCodec<BlockFaceUV> BLOCK_FACE_UV = RecordCodecBuilder.mapCodec(
             it -> it.group(
                     floatArray(4, 4).optionalFieldOf("uv").forGetter(uvs -> Optional.ofNullable(uvs.uvs)),
-                    Codec.INT.optionalFieldOf("rotation", 0).forGetter(uvs -> uvs.rotation)).apply(it, (uvs, rotation) -> new BlockFaceUV(uvs.orElse(null), rotation)));
+                    Codec.INT.optionalFieldOf("rotation", 0).forGetter(uvs -> uvs.rotation))
+                    .apply(it, (uvs, rotation) -> new BlockFaceUV(uvs.orElse(null), rotation)));
     private static final Codec<BlockElementFace> BLOCK_ELEMENT_FACE = RecordCodecBuilder.create(
             it -> it.group(
                     Direction.CODEC.lenientOptionalFieldOf("cullface").forGetter(bef -> Optional.ofNullable(bef.cullForDirection())),
                     Codec.INT.optionalFieldOf("tintindex", BlockElementFace.NO_TINT).forGetter(BlockElementFace::tintIndex),
                     Codec.STRING.fieldOf("texture").forGetter(BlockElementFace::texture),
                     BLOCK_FACE_UV.forGetter(BlockElementFace::uv),
-                    Codec.unit(ExtraFaceData.DEFAULT).optionalFieldOf("neoforge_data").forGetter(bef -> Optional.ofNullable(bef.getFaceData()))).apply(it, (cull, tint, texture, uv, extra) -> new BlockElementFace(cull.orElse(null), tint, texture, uv, extra.orElse(null), new MutableObject<>())));
+                    ExtraFaceData.CODEC.optionalFieldOf("neoforge_data").forGetter(bef -> Optional.ofNullable(bef.getFaceData())))
+                    .apply(it, (cull, tint, texture, uv, extra) -> new BlockElementFace(cull.orElse(null), tint, texture, uv, extra.orElse(null), new MutableObject<>())));
     private static final Codec<BlockElementRotation> BLOCK_ELEMENT_ROTATION = RecordCodecBuilder.create(
             it -> it.group(
                     ExtraCodecs.VECTOR3F.fieldOf("origin").forGetter(BlockElementRotation::origin),
@@ -91,7 +95,8 @@ public class ModelCodecs {
                             return DataResult.error(() -> "Invalid rotation " + angle + " found, only -45/-22.5/0/22.5/45 allowed");
                         return DataResult.success(angle);
                     }).forGetter(BlockElementRotation::angle),
-                    Codec.BOOL.optionalFieldOf("rescale", false).forGetter(BlockElementRotation::rescale)).apply(it, (origin, axis, angle, rescale) -> new BlockElementRotation(origin.mul(1 / 16f), axis, angle, rescale)));
+                    Codec.BOOL.optionalFieldOf("rescale", false).forGetter(BlockElementRotation::rescale))
+                    .apply(it, (origin, axis, angle, rescale) -> new BlockElementRotation(origin.mul(1 / 16f), axis, angle, rescale)));
     private static final Codec<BlockElement> BLOCK_ELEMENT = RecordCodecBuilder.create(
             it -> it.group(
                     ExtraCodecs.VECTOR3F.fieldOf("from").forGetter(elem -> elem.from),
@@ -99,7 +104,8 @@ public class ModelCodecs {
                     Codec.simpleMap(Direction.CODEC, BLOCK_ELEMENT_FACE, StringRepresentable.keys(Direction.values())).fieldOf("faces").forGetter(elem -> elem.faces),
                     BLOCK_ELEMENT_ROTATION.optionalFieldOf("rotation").forGetter(elem -> Optional.ofNullable(elem.rotation)),
                     Codec.BOOL.optionalFieldOf("shade", true).forGetter(elem -> elem.shade),
-                    Codec.unit(ExtraFaceData.DEFAULT).optionalFieldOf("neoforge_data", ExtraFaceData.DEFAULT).forGetter(BlockElement::getFaceData)).apply(it, (from, to, faces, rotation, shade, extra) -> new BlockElement(from, to, faces, rotation.orElse(null), shade, extra)));
+                    ExtraFaceData.CODEC.optionalFieldOf("neoforge_data", ExtraFaceData.DEFAULT).forGetter(BlockElement::getFaceData))
+                    .apply(it, (from, to, faces, rotation, shade, extra) -> new BlockElement(from, to, faces, rotation.orElse(null), shade, extra)));
     private static final Codec<BlockModel.GuiLight> GUI_LIGHT = Codec.STRING.xmap(BlockModel.GuiLight::getByName, BlockModel.GuiLight::name);
     private static final Codec<ItemOverride> ITEM_OVERRIDE = RecordCodecBuilder.create(
             it -> it.group(
@@ -122,7 +128,8 @@ public class ModelCodecs {
                             .xmap(v -> v.set(Mth.clamp(v.x, -4f, 4f), Mth.clamp(v.y, -4f, 4f), Mth.clamp(v.z, -4f, 4f)),
                                     Function.identity())
                             .forGetter(tf -> tf.scale),
-                    ExtraCodecs.VECTOR3F.optionalFieldOf("right_rotation", ItemTransform.Deserializer.DEFAULT_ROTATION).forGetter(t -> t.rightRotation)).apply(it, ItemTransform::new));
+                    ExtraCodecs.VECTOR3F.optionalFieldOf("right_rotation", ItemTransform.Deserializer.DEFAULT_ROTATION).forGetter(t -> t.rightRotation))
+                    .apply(it, ItemTransform::new));
 
     private static final Codec<ItemTransforms> ITEM_TRANSFORMS = Codec.unboundedMap(ItemDisplayContext.CODEC, ITEM_TRANSFORM)
             .xmap(
@@ -146,26 +153,27 @@ public class ModelCodecs {
                             .filter(p -> p.getValue() != ItemTransform.NO_TRANSFORM)
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
+    public static <O extends TopLevelUnbakedModel> P6<Mu<O>, Optional<ResourceLocation>, Map<String, Either<Material, String>>, Optional<Boolean>, Optional<GuiLight>, ItemTransforms, List<ItemOverride>> commonCodec() {
+        return RecordCodecBuilder.<O>instance()
+                .group(
+                        ResourceLocation.CODEC.optionalFieldOf("parent").forGetter(bm -> Optional.ofNullable(bm.getParentLocation())),
+                        Codec.unboundedMap(Codec.STRING, MATERIAL_OR_REFERENCE).optionalFieldOf("textures", Map.of()).forGetter(
+                                TopLevelUnbakedModel::getOwnTextureMap),
+                        Codec.BOOL.optionalFieldOf("ambientocclusion").forGetter(bm -> Optional.ofNullable(bm.getOwnAmbientOcclusion())),
+                        GUI_LIGHT.optionalFieldOf("gui_light").forGetter(bm -> Optional.ofNullable(bm.getOwnGuiLight())),
+                        ITEM_TRANSFORMS.optionalFieldOf("display", ItemTransforms.NO_TRANSFORMS).forGetter(TopLevelUnbakedModel::getOwnTransforms),
+                        ITEM_OVERRIDE.listOf().optionalFieldOf("overrides", List.of()).forGetter(TopLevelUnbakedModel::getOwnOverrides));
+    }
+
     public static final MapCodec<BlockModel> BLOCK_MODEL = RecordCodecBuilder.mapCodec(
             it -> it.group(
-                    ResourceLocation.CODEC.optionalFieldOf("parent").forGetter(bm -> Optional.ofNullable(bm.getParentLocation())),
-                    BLOCK_ELEMENT.listOf().optionalFieldOf("elements", List.of()).forGetter(BlockModel::getElements),
-                    Codec.unboundedMap(Codec.STRING, MATERIAL_OR_REFERENCE).optionalFieldOf("textures", Map.of()).forGetter(bm -> bm.textureMap),
-                    Codec.BOOL.optionalFieldOf("ambientocclusion").forGetter(bm -> Optional.ofNullable(bm.hasAmbientOcclusion)),
-                    GUI_LIGHT.optionalFieldOf("gui_light").forGetter(bm -> Optional.ofNullable(bm.guiLight)),
-                    ITEM_TRANSFORMS.optionalFieldOf("display", ItemTransforms.NO_TRANSFORMS).forGetter(BlockModel::getTransforms),
-                    ITEM_OVERRIDE.listOf().optionalFieldOf("overrides", List.of()).forGetter(BlockModel::getOverrides)).apply(it, (parent, elements, textures, ao, guiLight, display, overrides) -> new BlockModel(parent.orElse(null), elements, textures, ao.orElse(null), guiLight.orElse(null), display, overrides)));
+                    BLOCK_ELEMENT.listOf().optionalFieldOf("elements", List.of()).forGetter(BlockModel::getElements))
+                    .and(ModelCodecs.commonCodec())
+                    .apply(it, (elements, parent, textures, ao, guiLight, display, overrides) -> new BlockModel(parent.orElse(null), elements, textures, ao.orElse(null), guiLight.orElse(null), display, overrides)));
 
-    public static Codec<UnbakedModel> UNBAKED_MODEL = NeoForgeExtraCodecs.dispatchMapOrElse(
+    public static Codec<TopLevelUnbakedModel> UNBAKED_MODEL = NeoForgeExtraCodecs.dispatchMapOrElse(
             NeoForgeClientRegistries.UNBAKED_MODEL_SERIALIZERS.byNameCodec(),
-            (UnbakedModel mdl) -> {
-                if (mdl.codec() == null)
-                    return MapCodec.unit(null);
-
-                return mdl.codec();
-            },
-            Function.identity(),
-            BLOCK_MODEL)
+            TopLevelUnbakedModel::codec, Function.identity(), BLOCK_MODEL)
             .xmap(Either::unwrap, Either::left)
             .codec();
     //public static Codec<Optional<WithConditions<UnbakedModel>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(UNBAKED_MODEL);

@@ -11,7 +11,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.DynamicOps;
 import java.io.Reader;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.util.GsonHelper;
 
 public class ModelManagerHooks {
@@ -19,7 +18,7 @@ public class ModelManagerHooks {
 
     private ModelManagerHooks() {}
 
-    public static UnbakedModel loadUnbakedModel(DynamicOps<JsonElement> ops, Reader reader) {
+    public static TopLevelUnbakedModel loadUnbakedModel(DynamicOps<JsonElement> ops, Reader reader) {
         var element = GsonHelper.fromJson(GSON, reader, JsonElement.class);
         return ModelCodecs.UNBAKED_MODEL.parse(ops, element)
                 .getOrThrow(JsonParseException::new);

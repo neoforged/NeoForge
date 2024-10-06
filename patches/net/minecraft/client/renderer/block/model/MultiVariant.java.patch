@@ -1,17 +1,5 @@
 --- a/net/minecraft/client/renderer/block/model/MultiVariant.java
 +++ b/net/minecraft/client/renderer/block/model/MultiVariant.java
-@@ -31,6 +_,11 @@
-         this.variants = p_111847_;
-     }
- 
-+    @Override
-+    public com.mojang.serialization.MapCodec<? extends UnbakedModel> codec() {
-+        return null;
-+    }
-+
-     public List<Variant> getVariants() {
-         return this.variants;
-     }
 @@ -68,7 +_,7 @@
              WeightedBakedModel.Builder weightedbakedmodel$builder = new WeightedBakedModel.Builder();
  

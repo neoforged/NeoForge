@@ -25,13 +25,12 @@
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
          this.blockColors = p_119407_;
-@@ -100,14 +_,16 @@
+@@ -100,14 +_,15 @@
          Executor p_249221_
      ) {
          p_250336_.startTick();
 -        CompletableFuture<Map<ResourceLocation, BlockModel>> completablefuture = loadBlockModels(p_251134_, p_250550_);
-+        net.neoforged.neoforge.client.model.geometry.GeometryLoaderManager.init();
-+        CompletableFuture<Map<ResourceLocation, UnbakedModel>> completablefuture = loadUnbakedModels(this.makeConditionalOps(), p_251134_, p_250550_);
++        CompletableFuture<Map<ResourceLocation, net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel>> completablefuture = loadUnbakedModels(this.makeConditionalOps(), p_251134_, p_250550_);
 +        /*CompletableFuture<Map<ResourceLocation, BlockModel>> completablefuture = loadBlockModels(p_251134_, p_250550_);*/
          CompletableFuture<Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>>> completablefuture1 = loadBlockStates(p_251134_, p_250550_);
          CompletableFuture<ModelBakery> completablefuture2 = completablefuture.thenCombineAsync(
@@ -40,7 +39,7 @@
                      this.blockColors,
                      p_250336_,
 -                    (Map<ResourceLocation, BlockModel>)p_251201_,
-+                    (Map<ResourceLocation, UnbakedModel>)p_251201_,
++                    (Map<ResourceLocation, net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel>)p_251201_,
                      (Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>>)p_251281_
                  ),
              p_250550_
@@ -52,12 +51,12 @@
 +        return (CompletableFuture<Map<ResourceLocation, BlockModel>>)(CompletableFuture)loadUnbakedModels(com.mojang.serialization.JsonOps.INSTANCE, p_251361_, p_252189_);
 +    }
 +
-+    private static CompletableFuture<Map<ResourceLocation, UnbakedModel>> loadUnbakedModels(com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> ops, ResourceManager p_251361_, Executor p_252189_) {
++    private static CompletableFuture<Map<ResourceLocation, net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel>> loadUnbakedModels(com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> ops, ResourceManager p_251361_, Executor p_252189_) {
          return CompletableFuture.<Map<ResourceLocation, Resource>>supplyAsync(() -> ModelBakery.MODEL_LISTER.listMatchingResources(p_251361_), p_252189_)
              .thenCompose(
                  p_250597_ -> {
 -                    List<CompletableFuture<Pair<ResourceLocation, BlockModel>>> list = new ArrayList<>(p_250597_.size());
-+                    List<CompletableFuture<Pair<ResourceLocation, UnbakedModel>>> list = new ArrayList<>(p_250597_.size());
++                    List<CompletableFuture<Pair<ResourceLocation, net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel>>> list = new ArrayList<>(p_250597_.size());
  
                      for (Entry<ResourceLocation, Resource> entry : p_250597_.entrySet()) {
                          list.add(CompletableFuture.supplyAsync(() -> {
