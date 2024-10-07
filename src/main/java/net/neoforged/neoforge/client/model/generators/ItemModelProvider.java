@@ -56,7 +56,7 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
     }
 
     public ItemModelBuilder simpleBlockItem(ResourceLocation block) {
-        return withExistingParent(item.toString(), ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "block/" + item.getPath()));
+        return withExistingParent(block.toString(), ResourceLocation.fromNamespaceAndPath(block.getNamespace(), "block/" + block.getPath()));
     }
 
     @Override
