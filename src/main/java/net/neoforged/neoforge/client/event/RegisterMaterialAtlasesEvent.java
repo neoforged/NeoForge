@@ -46,7 +46,7 @@ public class RegisterMaterialAtlasesEvent extends Event implements IModBusEvent 
      * @param atlasInfoLocation The location of the atlas info JSON relative to the {@code atlases} directory
      */
     public void register(ResourceLocation atlasLocation, ResourceLocation atlasInfoLocation) {
-        ResourceLocation oldAtlasInfoLoc = this.atlases.put(atlasLocation, atlasInfoLocation);
+        ResourceLocation oldAtlasInfoLoc = this.atlases.putIfAbsent(atlasLocation, atlasInfoLocation);
         if (oldAtlasInfoLoc != null) {
             throw new IllegalStateException(String.format(
                     "Duplicate registration of atlas: %s (old info: %s, new info: %s)",
