@@ -158,53 +158,48 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     }
 
     public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutput<T> builder) {
-        return addProvider(run, builder.build(dataGenerator.getPackOutput()));
+        return addProvider(run, builder.create(dataGenerator.getPackOutput()));
     }
 
     public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutputFileHelper<T> builder) {
-        return addProvider(run, builder.build(dataGenerator.getPackOutput(), existingFileHelper));
+        return addProvider(run, builder.create(dataGenerator.getPackOutput(), existingFileHelper));
     }
 
     public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutputLookup<T> builder) {
-        return addProvider(run, builder.build(dataGenerator.getPackOutput(), config.lookupProvider));
+        return addProvider(run, builder.create(dataGenerator.getPackOutput(), config.lookupProvider));
     }
 
     public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutputLookupFileHelper<T> builder) {
-        return addProvider(run, builder.build(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper));
+        return addProvider(run, builder.create(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper));
     }
 
-    public void createBlockAndItemTags(BlockTagsProvider blockTagsProvider, ItemTagsProvider itemTagsProvider) {
-        var blockTags = createProvider(includeServer(), blockTagsProvider::build);
-        addProvider(includeServer(), itemTagsProvider.build(dataGenerator.getPackOutput(), config.lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+    public void createBlockAndItemTags(DataProviderFromOutputLookupFileHelper<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
+        var blockTags = createProvider(includeServer(), blockTagsProvider);
+        addProvider(includeServer(), itemTagsProvider.create(dataGenerator.getPackOutput(), config.lookupProvider, blockTags.contentsGetter(), existingFileHelper));
     }
 
     @FunctionalInterface
     public interface DataProviderFromOutput<T extends DataProvider> {
-        T build(PackOutput output);
+        T create(PackOutput output);
     }
 
     @FunctionalInterface
     public interface DataProviderFromOutputLookup<T extends DataProvider> {
-        T build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider);
+        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider);
     }
 
     @FunctionalInterface
     public interface DataProviderFromOutputFileHelper<T extends DataProvider> {
-        T build(PackOutput output, ExistingFileHelper existingFileHelper);
+        T create(PackOutput output, ExistingFileHelper existingFileHelper);
     }
 
     @FunctionalInterface
     public interface DataProviderFromOutputLookupFileHelper<T extends DataProvider> {
-        T build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper);
-    }
-
-    @FunctionalInterface
-    public interface BlockTagsProvider {
-        TagsProvider<Block> build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper);
+        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper);
     }
 
     @FunctionalInterface
     public interface ItemTagsProvider {
-        TagsProvider<Item> build(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter, ExistingFileHelper existingFileHelper);
+        TagsProvider<Item> create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter, ExistingFileHelper existingFileHelper);
     }
 }
