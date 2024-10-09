@@ -43,11 +43,10 @@
      public boolean canEnchant(ItemStack p_44689_) {
          return this.definition.supportedItems().contains(p_44689_.getItemHolder());
      }
-@@ -503,6 +_,15 @@
-     public static Enchantment.Builder enchantment(Enchantment.EnchantmentDefinition p_345873_) {
+@@ -504,12 +_,26 @@
          return new Enchantment.Builder(p_345873_);
      }
-+
+ 
 +//    TODO: Reimplement. Not sure if we want to patch EnchantmentDefinition or hack this in as an EnchantmentEffectComponent.
 +//    /**
 +//     * Is this enchantment allowed to be enchanted on books via Enchantment Table
@@ -56,6 +55,46 @@
 +//    public boolean isAllowedOnBooks() {
 +//        return true;
 +//    }
- 
++
      public static class Builder {
          private final Enchantment.EnchantmentDefinition definition;
+         private HolderSet<Enchantment> exclusiveSet = HolderSet.direct();
+         private final Map<DataComponentType<?>, List<?>> effectLists = new HashMap<>();
+         private final DataComponentMap.Builder effectMapBuilder = DataComponentMap.builder();
+ 
++        /**
++         * Neo: Allow customizing or changing the {@link Component} created by the enchantment builder.
++         */
++        protected java.util.function.UnaryOperator<MutableComponent> nameFactory = java.util.function.UnaryOperator.identity();
++
+         public Builder(Enchantment.EnchantmentDefinition p_345317_) {
+             this.definition = p_345317_;
+         }
+@@ -562,6 +_,16 @@
+             return this;
+         }
+ 
++        /**
++         * Allows specifying an operator that can customize the default {@link Component} created by {@link #build(ResourceLocation)}.
++         *
++         * @return this
++         */
++        public Enchantment.Builder withCustomName(java.util.function.UnaryOperator<MutableComponent> nameFactory) {
++            this.nameFactory = nameFactory;
++            return this;
++        }
++
+         private <E> List<E> getEffectsList(DataComponentType<List<E>> p_344770_) {
+             return (List<E>)this.effectLists.computeIfAbsent(p_344770_, p_346247_ -> {
+                 ArrayList<E> arraylist = new ArrayList<>();
+@@ -572,7 +_,9 @@
+ 
+         public Enchantment build(ResourceLocation p_344988_) {
+             return new Enchantment(
+-                Component.translatable(Util.makeDescriptionId("enchantment", p_344988_)), this.definition, this.exclusiveSet, this.effectMapBuilder.build()
++                // Neo: permit custom name components instead of a single hardcoded translatable component.
++                this.nameFactory.apply(Component.translatable(Util.makeDescriptionId("enchantment", p_344988_))),
++                this.definition, this.exclusiveSet, this.effectMapBuilder.build()
+             );
+         }
+     }
