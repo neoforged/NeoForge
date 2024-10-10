@@ -29,7 +29,7 @@
      @Override
      public boolean canFireProjectileWeapon(ProjectileWeaponItem p_32144_) {
 -        return p_32144_ == Items.BOW;
-+        return p_32144_.getDefaultInstance().is(net.neoforged.neoforge.common.Tags.Items.SKELETON_USABLE_BOWS);
++        return p_32144_.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Items.SKELETON_USABLE_BOWS);
      }
  
      @Override
