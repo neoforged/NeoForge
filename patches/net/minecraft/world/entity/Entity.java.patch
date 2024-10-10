@@ -333,12 +333,12 @@
          return Mth.lerp(p_352259_, this.yRotO, this.yRot);
      }
  
-+    @Deprecated // Neo: Use version without motion instead
++    @Deprecated // Neo: Use no parameter version instead
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
-+        return this.updateFluidHeightAndDoFluidPushing(p_204032_);
++        return this.updateFluidHeightAndDoFluidPushing();
 +    }
 +
-+    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_) {
++    public boolean updateFluidHeightAndDoFluidPushing() {
          if (this.touchingUnloadedChunk()) {
              return false;
          } else {
@@ -358,13 +358,15 @@
                      for (int j2 = i1; j2 < j1; j2++) {
                          blockpos$mutableblockpos.set(l1, i2, j2);
                          FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
+-                        if (fluidstate.is(p_204032_)) {
 +                        net.neoforged.neoforge.fluids.FluidType fluidType = fluidstate.getFluidType();
-                         if (fluidstate.is(p_204032_)) {
++                        if (!fluidType.isAir()) {
                              double d1 = (double)((float)i2 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                              if (d1 >= aabb.minY) {
-                                 flag1 = true;
+-                                flag1 = true;
 -                                d0 = Math.max(d1 - aabb.minY, d0);
 -                                if (flag) {
++                                flag1 = fluidType.actsLikeWater();
 +                                if (interimCalcs == null) {
 +                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>();
 +                                }
