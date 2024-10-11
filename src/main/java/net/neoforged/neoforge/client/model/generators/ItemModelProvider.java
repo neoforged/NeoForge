@@ -10,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /**
@@ -29,6 +30,33 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
         return getBuilder(item.toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/" + item.getPath()));
+    }
+
+    public ItemModelBuilder handheldItem(Item item) {
+        return handheldItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    }
+
+    public ItemModelBuilder handheldItem(ResourceLocation item) {
+        return getBuilder(item.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/" + item.getPath()));
+    }
+
+    public ItemModelBuilder spawnEggItem(Item item) {
+        return spawnEggItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    }
+
+    public ItemModelBuilder spawnEggItem(ResourceLocation item) {
+        return getBuilder(item.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/template_spawn_egg"));
+    }
+
+    public ItemModelBuilder simpleBlockItem(Block block) {
+        return simpleBlockItem(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block)));
+    }
+
+    public ItemModelBuilder simpleBlockItem(ResourceLocation block) {
+        return withExistingParent(block.toString(), ResourceLocation.fromNamespaceAndPath(block.getNamespace(), "block/" + block.getPath()));
     }
 
     @Override
