@@ -51,6 +51,16 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
                 .parent(new ModelFile.UncheckedModelFile("item/template_spawn_egg"));
     }
 
+    public ItemModelBuilder musicDiscItem(Item item) {
+        return musicDiscItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    }
+
+    public ItemModelBuilder musicDiscItem(ResourceLocation item) {
+        return getBuilder(item.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/template_music_disc"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/" + item.getPath()));
+    }
+
     public ItemModelBuilder simpleBlockItem(Block block) {
         return simpleBlockItem(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block)));
     }
