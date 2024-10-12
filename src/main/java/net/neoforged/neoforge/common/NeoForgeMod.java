@@ -35,6 +35,7 @@ import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.sounds.SoundEvent;
@@ -53,14 +54,12 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
-import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -196,7 +195,7 @@ public class NeoForgeMod {
             SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
 
     public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new PercentageAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
-    public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true).setSentiment(Sentiment.NEUTRAL));
+    public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 32.0D, 0.0D, 32.0).setSyncable(true).setSentiment(Sentiment.NEUTRAL));
 
     /**
      * This attribute controls if the player may use creative flight when not in creative mode.
@@ -273,18 +272,14 @@ public class NeoForgeMod {
      */
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<BiomeModifiers.AddCarversBiomeModifier>> ADD_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_carvers", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.AddCarversBiomeModifier::biomes),
-            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.AddCarversBiomeModifier::carvers),
-            GenerationStep.Carving.CODEC.fieldOf("step").forGetter(BiomeModifiers.AddCarversBiomeModifier::step)).apply(builder, BiomeModifiers.AddCarversBiomeModifier::new)));
+            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.AddCarversBiomeModifier::carvers)).apply(builder, BiomeModifiers.AddCarversBiomeModifier::new)));
 
     /**
      * Stock biome modifier for removing carvers from biomes.
      */
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<BiomeModifiers.RemoveCarversBiomeModifier>> REMOVE_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_carvers", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::biomes),
-            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::carvers),
-            Codec.either(GenerationStep.Carving.CODEC.listOf(), GenerationStep.Carving.CODEC).xmap(
-                    either -> either.map(Set::copyOf, Set::of),
-                    set -> set.size() == 1 ? Either.right(set.toArray(GenerationStep.Carving[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("steps", EnumSet.allOf(GenerationStep.Carving.class)).forGetter(BiomeModifiers.RemoveCarversBiomeModifier::steps))
+            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::carvers))
             .apply(builder, BiomeModifiers.RemoveCarversBiomeModifier::new)));
 
     /**
@@ -424,7 +419,7 @@ public class NeoForgeMod {
             .addDripstoneDripping(PointedDripstoneBlock.WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_WATER, Blocks.WATER_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON)) {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
-            if (reader instanceof Level level) {
+            if (reader instanceof ServerLevel level) {
                 return level.getGameRules().getBoolean(GameRules.RULE_WATER_SOURCE_CONVERSION);
             }
             //Best guess fallback to default (true)
@@ -451,7 +446,7 @@ public class NeoForgeMod {
             .addDripstoneDripping(PointedDripstoneBlock.LAVA_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_LAVA, Blocks.LAVA_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_LAVA_INTO_CAULDRON)) {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
-            if (reader instanceof Level level) {
+            if (reader instanceof ServerLevel level) {
                 return level.getGameRules().getBoolean(GameRules.RULE_LAVA_SOURCE_CONVERSION);
             }
             //Best guess fallback to default (false)
@@ -622,7 +617,7 @@ public class NeoForgeMod {
         gen.addProvider(event.includeServer(), new NeoForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeEnchantmentTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider(packOutput, lookupProvider));
+        gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider.Runner(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new NeoForgeLootTableProvider(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new NeoForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeStructureTagsProvider(packOutput, lookupProvider, existingFileHelper));

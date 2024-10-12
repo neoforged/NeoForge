@@ -8,7 +8,7 @@
  
      public ModelResourceLocation(ResourceLocation id, String variant) {
          variant = lowercaseVariant(variant);
-@@ -21,6 +_,14 @@
+@@ -17,6 +_,14 @@
  
      public static ModelResourceLocation inventory(ResourceLocation p_352141_) {
          return new ModelResourceLocation(p_352141_, "inventory");

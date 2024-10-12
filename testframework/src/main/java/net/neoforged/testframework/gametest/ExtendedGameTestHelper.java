@@ -27,8 +27,12 @@ import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.network.Connection;
+import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -53,6 +57,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -128,6 +133,10 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         NetworkRegistry.configureMockConnection(connection);
         this.getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         this.getLevel().getServer().getConnection().getConnections().add(connection);
+        connection.setupInboundProtocol((ProtocolInfo<ServerGamePacketListener>) connection.getInboundProtocol(), new ServerGamePacketListenerImpl(serverplayer.getServer(), connection, serverplayer, commonlistenercookie) {
+            @Override
+            protected void keepConnectionAlive() {}
+        });
         this.testInfo.addListener(serverplayer);
         serverplayer.gameMode.changeGameModeForPlayer(gameType);
         serverplayer.setYRot(180);
@@ -136,8 +145,8 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         return serverplayer;
     }
 
-    public Player makeOpMockPlayer(int commandLevel) {
-        return new Player(this.getLevel(), BlockPos.ZERO, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player")) {
+    public ServerPlayer makeOpMockPlayer(int commandLevel) {
+        return new FakePlayer(this.getLevel(), new GameProfile(UUID.randomUUID(), "test-mock-player")) {
             @Override
             public boolean isSpectator() {
                 return false;
@@ -233,7 +242,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
         if (count < lowerLimit) {
             throw new GameTestAssertPosException(
-                    "Expected at least " + lowerLimit + " " + item.getDescription().getString() + " items to exist (found " + count + ")",
+                    "Expected at least " + lowerLimit + " " + item.getName().getString() + " items to exist (found " + count + ")",
                     blockpos,
                     pos,
                     this.getTick());

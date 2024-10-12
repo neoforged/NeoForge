@@ -22,8 +22,8 @@ public record DifferenceIngredient(Ingredient base, Ingredient subtracted) imple
                     .apply(builder, DifferenceIngredient::new));
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return Stream.of(base.getItems()).filter(subtracted.negate());
+    public Stream<ItemStack> stacks() {
+        return base.stacks().stream().filter(subtracted.negate());
     }
 
     @Override

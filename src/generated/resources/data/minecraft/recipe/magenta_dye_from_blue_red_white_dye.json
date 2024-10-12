@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "magenta_dye",
+  "ingredients": [
+    "#c:dyes/blue",
+    "#c:dyes/red",
+    "#c:dyes/red",
+    "#c:dyes/white"
+  ],
+  "result": {
+    "count": 4,
+    "id": "minecraft:magenta_dye"
+  }
+}

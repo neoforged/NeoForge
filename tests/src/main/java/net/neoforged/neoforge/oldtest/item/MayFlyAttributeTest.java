@@ -44,7 +44,7 @@ public class MayFlyAttributeTest {
     }
 
     /** Successful "scope item" using the Forge method, all cases of stopping using the item will remove the flight ability */
-    public static DeferredItem<Item> GOOD = ITEMS.register("good_scope", () -> new InvertedTelescope(new Item.Properties()));
+    public static DeferredItem<Item> GOOD = ITEMS.registerItem("good_scope", InvertedTelescope::new);
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {

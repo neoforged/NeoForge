@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
@@ -25,12 +24,12 @@ public final class RenderTypeHelper {
      * Provides a {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} for the given {@link DefaultVertexFormat#BLOCK} format.
      * This should be called for each {@link RenderType} returned by {@link BakedModel#getRenderTypes(BlockState, RandomSource, ModelData)}.
      * <p>
-     * Mimics the behavior of vanilla's {@link ItemBlockRenderTypes#getRenderType(BlockState, boolean)}.
+     * Mimics the behavior of vanilla's {@link ItemBlockRenderTypes#getRenderType(BlockState)}.
      */
-    public static RenderType getEntityRenderType(RenderType chunkRenderType, boolean cull) {
+    public static RenderType getEntityRenderType(RenderType chunkRenderType) {
         if (chunkRenderType != RenderType.translucent())
             return Sheets.cutoutBlockSheet();
-        return cull || !Minecraft.useShaderTransparency() ? Sheets.translucentCullBlockSheet() : Sheets.translucentItemSheet();
+        return Sheets.translucentItemSheet();
     }
 
     /**
@@ -48,17 +47,17 @@ public final class RenderTypeHelper {
     /**
      * Provides a fallback {@link RenderType} for the given {@link ItemStack} in the case that none is explicitly specified.
      * <p>
-     * Mimics the behavior of vanilla's {@link ItemBlockRenderTypes#getRenderType(ItemStack, boolean)}
+     * Mimics the behavior of vanilla's {@link ItemBlockRenderTypes#getRenderType(ItemStack)}
      * but removes the need to query the model again if the item is a {@link BlockItem}.
      */
-    public static RenderType getFallbackItemRenderType(ItemStack stack, BakedModel model, boolean cull) {
+    public static RenderType getFallbackItemRenderType(ItemStack stack, BakedModel model) {
         if (stack.getItem() instanceof BlockItem blockItem) {
             var renderTypes = model.getRenderTypes(blockItem.getBlock().defaultBlockState(), RandomSource.create(42), ModelData.EMPTY);
             if (renderTypes.contains(RenderType.translucent()))
-                return getEntityRenderType(RenderType.translucent(), cull);
+                return getEntityRenderType(RenderType.translucent());
             return Sheets.cutoutBlockSheet();
         }
-        return cull ? Sheets.translucentCullBlockSheet() : Sheets.translucentItemSheet();
+        return Sheets.translucentItemSheet();
     }
 
     private RenderTypeHelper() {}

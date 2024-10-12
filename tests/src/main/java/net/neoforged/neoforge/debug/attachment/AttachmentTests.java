@@ -144,7 +144,7 @@ public class AttachmentTests {
             var player = helper.makeMockPlayer();
             var stack = new ItemStack(Items.IRON_SWORD);
             var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-            enchantments.set(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SHARPNESS), 3);
+            enchantments.set(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SHARPNESS), 3);
             stack.set(DataComponents.ENCHANTMENTS, enchantments.toImmutable());
             player.setData(stackType, stack);
             helper.catchException(() -> {

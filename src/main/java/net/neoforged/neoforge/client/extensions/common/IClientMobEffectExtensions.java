@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
-import java.util.function.Consumer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.neoforged.fml.LogicalSide;
@@ -16,7 +15,7 @@ import net.neoforged.fml.LogicalSide;
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link MobEffect}.
  *
- * @see MobEffect#initializeClient(Consumer)
+ * @see RegisterClientExtensionsEvent
  */
 public interface IClientMobEffectExtensions {
     IClientMobEffectExtensions DEFAULT = new IClientMobEffectExtensions() {};
@@ -59,7 +58,7 @@ public interface IClientMobEffectExtensions {
      * @param blitOffset  The blit offset
      * @return true to prevent default rendering, false otherwise
      */
-    default boolean renderInventoryIcon(MobEffectInstance instance, EffectRenderingInventoryScreen<?> screen, GuiGraphics guiGraphics, int x, int y, int blitOffset) {
+    default boolean renderInventoryIcon(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int x, int y, int blitOffset) {
         return false;
     }
 
@@ -74,7 +73,7 @@ public interface IClientMobEffectExtensions {
      * @param blitOffset  The blit offset
      * @return true to prevent default rendering, false otherwise
      */
-    default boolean renderInventoryText(MobEffectInstance instance, EffectRenderingInventoryScreen<?> screen, GuiGraphics guiGraphics, int x, int y, int blitOffset) {
+    default boolean renderInventoryText(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int x, int y, int blitOffset) {
         return false;
     }
 

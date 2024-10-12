@@ -47,7 +47,7 @@ public class ModifyRegistriesEvent extends Event implements IModBusEvent {
      */
     @SuppressWarnings("unchecked")
     public <T> Registry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
-        Registry<T> registry = (Registry<T>) BuiltInRegistries.REGISTRY.get(key.location());
+        Registry<T> registry = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(key.location());
         if (registry == null) {
             throw new IllegalArgumentException("No registry with key " + key);
         }

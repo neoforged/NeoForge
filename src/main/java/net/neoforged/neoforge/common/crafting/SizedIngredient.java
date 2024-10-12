@@ -8,13 +8,10 @@ package net.neoforged.neoforge.common.crafting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
-import java.util.stream.Stream;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -29,53 +26,19 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class SizedIngredient {
     /**
-     * The "flat" codec for {@link SizedIngredient}.
-     *
-     * <p>The count is serialized inline with the rest of the ingredient, for example:
-     *
-     * <pre>{@code
-     * {
-     *     "item": "minecraft:apple",
-     *     "count": 3
-     * }
-     * }</pre>
-     *
-     * Array ingredients are serialized using the compound ingredient type:
-     *
-     * <pre>{@code
-     * {
-     *     "type": "neoforge:compound",
-     *     "ingredients": [
-     *         { "item": "minecraft:coal" },
-     *         { "item": "minecraft:charcoal" }
-     *     ],
-     *     "count": 2
-     * }
-     * }</pre>
-     *
-     * See {@link Ingredient#MAP_CODEC_NONEMPTY} for details of the ingredient serialization.
-     */
-    public static final Codec<SizedIngredient> FLAT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Ingredient.MAP_CODEC_NONEMPTY.forGetter(SizedIngredient::ingredient),
-            NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(SizedIngredient::count))
-            .apply(instance, SizedIngredient::new));
-
-    /**
      * The "nested" codec for {@link SizedIngredient}.
      *
      * <p>The count is serialized separately from the rest of the ingredient, for example:
      *
      * <pre>{@code
      * {
-     *     "ingredient": {
-     *         "item": "minecraft:apple"
-     *     },
+     *     "ingredient": "minecraft:apple",
      *     "count": 3
      * }
      * }</pre>
      */
     public static final Codec<SizedIngredient> NESTED_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(SizedIngredient::ingredient),
+            Ingredient.CODEC.fieldOf("ingredient").forGetter(SizedIngredient::ingredient),
             NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(SizedIngredient::count))
             .apply(instance, SizedIngredient::new));
 
@@ -91,13 +54,6 @@ public final class SizedIngredient {
      */
     public static SizedIngredient of(ItemLike item, int count) {
         return new SizedIngredient(Ingredient.of(item), count);
-    }
-
-    /**
-     * Helper method to create a simple sized ingredient that matches items in a tag.
-     */
-    public static SizedIngredient of(TagKey<Item> tag, int count) {
-        return new SizedIngredient(Ingredient.of(tag), count);
     }
 
     private final Ingredient ingredient;
@@ -133,11 +89,11 @@ public final class SizedIngredient {
     /**
      * Returns a list of the stacks from this {@link #ingredient}, with an updated {@link #count}.
      *
-     * @implNote the array is cached and should not be modified, just like {@link Ingredient#getItems()}.
+     * @implNote the array is cached and should not be modified, just like {@link Ingredient#stacks()}.
      */
-    public ItemStack[] getItems() {
+    public ItemStack[] stacks() {
         if (cachedStacks == null) {
-            cachedStacks = Stream.of(ingredient.getItems())
+            cachedStacks = ingredient.stacks().stream()
                     .map(s -> s.copyWithCount(count))
                     .toArray(ItemStack[]::new);
         }

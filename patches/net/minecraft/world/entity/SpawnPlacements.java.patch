@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/SpawnPlacements.java
 +++ b/net/minecraft/world/entity/SpawnPlacements.java
-@@ -46,6 +_,10 @@
+@@ -47,6 +_,10 @@
  public class SpawnPlacements {
      private static final Map<EntityType<?>, SpawnPlacements.Data> DATA_BY_TYPE = Maps.newHashMap();
  
@@ -11,13 +11,13 @@
      private static <T extends Mob> void register(
          EntityType<T> p_21755_, SpawnPlacementType p_321847_, Heightmap.Types p_21757_, SpawnPlacements.SpawnPredicate<T> p_21758_
      ) {
-@@ -73,7 +_,13 @@
-         EntityType<T> p_217075_, ServerLevelAccessor p_217076_, MobSpawnType p_217077_, BlockPos p_217078_, RandomSource p_217079_
+@@ -74,7 +_,13 @@
+         EntityType<T> p_217075_, ServerLevelAccessor p_217076_, EntitySpawnReason p_361433_, BlockPos p_217078_, RandomSource p_217079_
      ) {
          SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.get(p_217075_);
--        return spawnplacements$data == null || ((SpawnPredicate<T>)spawnplacements$data.predicate).test(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
-+        boolean vanillaResult = spawnplacements$data == null || spawnplacements$data.predicate.test((EntityType)p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
-+        return net.neoforged.neoforge.event.EventHooks.checkSpawnPlacements(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_, vanillaResult);
+-        return spawnplacements$data == null || ((SpawnPredicate<T>)spawnplacements$data.predicate).test(p_217075_, p_217076_, p_361433_, p_217078_, p_217079_);
++        boolean vanillaResult = spawnplacements$data == null || spawnplacements$data.predicate.test((EntityType)p_217075_, p_217076_, p_361433_, p_217078_, p_217079_);
++        return net.neoforged.neoforge.event.EventHooks.checkSpawnPlacements(p_217075_, p_217076_, p_361433_, p_217078_, p_217079_, vanillaResult);
 +    }
 +
 +    // Neo: Added to allow for checking if an entity has a spawn placement
@@ -26,10 +26,10 @@
      }
  
      static {
-@@ -168,5 +_,16 @@
+@@ -183,5 +_,16 @@
      @FunctionalInterface
      public interface SpawnPredicate<T extends Entity> {
-         boolean test(EntityType<T> p_217081_, ServerLevelAccessor p_217082_, MobSpawnType p_217083_, BlockPos p_217084_, RandomSource p_217085_);
+         boolean test(EntityType<T> p_217081_, ServerLevelAccessor p_217082_, EntitySpawnReason p_363558_, BlockPos p_217084_, RandomSource p_217085_);
 +    }
 +
 +    /**

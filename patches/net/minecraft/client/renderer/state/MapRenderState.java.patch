@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/state/MapRenderState.java
++++ b/net/minecraft/client/renderer/state/MapRenderState.java
+@@ -17,6 +_,7 @@
+ 
+     @OnlyIn(Dist.CLIENT)
+     public static class MapDecorationRenderState {
++        public net.minecraft.core.Holder<net.minecraft.world.level.saveddata.maps.MapDecorationType> type;
+         @Nullable
+         public TextureAtlasSprite atlasSprite;
+         public byte x;

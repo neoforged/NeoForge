@@ -20,7 +20,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ChunkResult;
-import net.minecraft.server.level.ChunkTaskPriorityQueueSorter;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
@@ -164,7 +163,7 @@ public class GenerationTask {
                     LOGGER.warn("Encountered unexpected error while generating chunk", throwable);
                     this.acceptChunkResult(chunkLongPos, ChunkHolder.UNLOADED_CHUNK);
                 }
-            }, runnable -> chunkMap.scheduleOnMainThreadMailbox(ChunkTaskPriorityQueueSorter.message(holder, runnable)));
+            }, runnable -> chunkMap.scheduleOnMainThreadMailbox(runnable));
         }
     }
 

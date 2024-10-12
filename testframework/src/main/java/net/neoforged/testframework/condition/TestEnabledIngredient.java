@@ -22,7 +22,7 @@ public record TestEnabledIngredient(Ingredient base, TestFramework framework, St
     public static final MapCodec<TestEnabledIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            Ingredient.CODEC_NONEMPTY.fieldOf("base").forGetter(i -> i.base),
+                            Ingredient.CODEC.fieldOf("base").forGetter(i -> i.base),
                             MutableTestFramework.REFERENCE_CODEC.fieldOf("framework").forGetter(i -> i.framework),
                             Codec.STRING.fieldOf("testId").forGetter(i -> i.testId))
                     .apply(builder, TestEnabledIngredient::new));
@@ -32,8 +32,8 @@ public record TestEnabledIngredient(Ingredient base, TestFramework framework, St
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return Stream.of(base.getItems());
+    public Stream<ItemStack> stacks() {
+        return base.stacks().stream();
     }
 
     @Override

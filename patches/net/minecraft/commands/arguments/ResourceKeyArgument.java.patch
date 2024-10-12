@@ -1,0 +1,31 @@
+--- a/net/minecraft/commands/arguments/ResourceKeyArgument.java
++++ b/net/minecraft/commands/arguments/ResourceKeyArgument.java
+@@ -49,6 +_,9 @@
+     private static final DynamicCommandExceptionType ERROR_INVALID_ADVANCEMENT = new DynamicCommandExceptionType(
+         p_378835_ -> Component.translatableEscape("advancement.advancementNotFound", p_378835_)
+     );
++    private static final com.mojang.brigadier.exceptions.SimpleCommandExceptionType ERROR_NO_RECIPES_ON_CLIENT = new com.mojang.brigadier.exceptions.SimpleCommandExceptionType(
++            Component.translatable("commands.neoforge.vanilla.resource_key.no_recipes_on_client")
++    );
+     final ResourceKey<? extends Registry<T>> registryKey;
+ 
+     public ResourceKeyArgument(ResourceKey<? extends Registry<T>> p_212367_) {
+@@ -91,6 +_,9 @@
+     }
+ 
+     public static RecipeHolder<?> getRecipe(CommandContext<CommandSourceStack> p_380134_, String p_379840_) throws CommandSyntaxException {
++        if (p_380134_.getSource().getUnsidedLevel().isClientSide()) {
++            throw ERROR_NO_RECIPES_ON_CLIENT.create();
++        }
+         RecipeManager recipemanager = p_380134_.getSource().getServer().getRecipeManager();
+         ResourceKey<Recipe<?>> resourcekey = getRegistryKey(p_380134_, p_379840_, Registries.RECIPE, ERROR_INVALID_RECIPE);
+         return recipemanager.byKey(resourcekey).orElseThrow(() -> ERROR_INVALID_RECIPE.create(resourcekey.location()));
+@@ -98,7 +_,7 @@
+ 
+     public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> p_379729_, String p_379326_) throws CommandSyntaxException {
+         ResourceKey<Advancement> resourcekey = getRegistryKey(p_379729_, p_379326_, Registries.ADVANCEMENT, ERROR_INVALID_ADVANCEMENT);
+-        AdvancementHolder advancementholder = p_379729_.getSource().getServer().getAdvancements().get(resourcekey.location());
++        AdvancementHolder advancementholder = p_379729_.getSource().getAdvancement(resourcekey.location());
+         if (advancementholder == null) {
+             throw ERROR_INVALID_ADVANCEMENT.create(resourcekey.location());
+         } else {

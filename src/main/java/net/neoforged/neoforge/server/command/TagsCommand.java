@@ -11,7 +11,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -75,7 +74,7 @@ class TagsCommand {
                                         .executes(ctx -> listTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))))
                         .then(Commands.literal("get")
                                 .then(Commands.argument("tag", ResourceLocationArgument.id())
-                                        .suggests(CommandUtils.suggestFromRegistry(r -> r.getTagNames().map(TagKey::location)::iterator, "registry", ROOT_REGISTRY_KEY))
+                                        .suggests(CommandUtils.suggestFromRegistry(r -> r.getTags().map(HolderSet.Named::key).map(TagKey::location)::iterator, "registry", ROOT_REGISTRY_KEY))
                                         .executes(ctx -> listTagElements(ctx, 1))
                                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
                                                 .executes(ctx -> listTagElements(ctx, IntegerArgumentType.getInteger(ctx, "page"))))))
@@ -90,7 +89,7 @@ class TagsCommand {
     private static int listTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
+        final Registry<?> registry = ctx.getSource().getServer().registryAccess().lookup(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
         final long tagCount = registry.getTags().count();
@@ -103,7 +102,6 @@ class TagsCommand {
                 page,
                 ChatFormatting.DARK_GREEN,
                 () -> registry.getTags()
-                        .map(Pair::getSecond)
                         .map(s -> s.unwrap().map(k -> k.location().toString(), Object::toString))),
                 false);
 
@@ -113,14 +111,15 @@ class TagsCommand {
     private static int listTagElements(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
+        final Registry<?> registry = ctx.getSource().getServer().registryAccess().lookup(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
         final ResourceLocation tagLocation = ResourceLocationArgument.getId(ctx, "tag");
         final TagKey<?> tagKey = TagKey.create(cast(registryKey), tagLocation);
 
-        final HolderSet.Named<?> tag = registry.getTag(cast(tagKey))
-                .orElseThrow(() -> UNKNOWN_TAG.create(tagKey.location(), registryKey.location()));
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Optional<HolderSet.Named<?>> optional = registry.get(TagsCommand.<ResourceKey>cast(tagKey));
+        final HolderSet.Named<?> tag = optional.orElseThrow(() -> UNKNOWN_TAG.create(tagKey.location(), registryKey.location()));
 
         ctx.getSource().sendSuccess(() -> createMessage(
                 Component.translatable("commands.neoforge.tags.tag_key",
@@ -139,14 +138,14 @@ class TagsCommand {
     private static int queryElementTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
+        final Registry<?> registry = ctx.getSource().getServer().registryAccess().lookup(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
         final ResourceLocation elementLocation = ResourceLocationArgument.getId(ctx, "element");
         final ResourceKey<?> elementKey = ResourceKey.create(cast(registryKey), elementLocation);
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        final Optional<Holder<?>> elementHolderOpt = registry.getHolder(TagsCommand.<ResourceKey>cast(elementKey));
+        final Optional<Holder<?>> elementHolderOpt = registry.get(TagsCommand.<ResourceKey>cast(elementKey));
         final Holder<?> elementHolder = elementHolderOpt.orElseThrow(() -> UNKNOWN_ELEMENT.create(elementLocation, registryKey.location()));
 
         final long containingTagsCount = elementHolder.tags().count();

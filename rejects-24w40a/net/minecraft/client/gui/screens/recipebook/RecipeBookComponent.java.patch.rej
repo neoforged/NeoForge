@@ -1,0 +1,11 @@
+++++ REJECTED HUNK: 1
+@@ -134,7 +134,7 @@
+         this.initFilterButtonTextures();
+         this.tabButtons.clear();
+ 
+-        for (RecipeBookCategories recipebookcategories : RecipeBookCategories.getCategories(this.menu.getRecipeBookType())) {
++        for(RecipeBookCategories recipebookcategories : this.menu.getRecipeBookCategories()) {
+             this.tabButtons.add(new RecipeBookTabButton(recipebookcategories));
+         }
+ 
+++++ END HUNK

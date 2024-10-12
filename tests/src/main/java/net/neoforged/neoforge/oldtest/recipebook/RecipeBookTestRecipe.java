@@ -15,26 +15,30 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     public final Ingredients ingredients;
     private final int width;
     private final int height;
-    private final NonNullList<Ingredient> items;
+    private final List<Optional<Ingredient>> items;
+    @Nullable
+    private PlacementInfo placementInfo;
 
     public RecipeBookTestRecipe(Ingredients ingredients) {
         this.ingredients = ingredients;
@@ -45,9 +49,16 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
             pattern.add("  ");
         this.items = pattern.stream()
                 .flatMap(s -> Stream.of(s.substring(0, 1), s.substring(1, 2)))
-                .map(s -> s.equals(" ") ? Ingredient.EMPTY : ingredients.recipe.get(s))
-                .peek(i -> Objects.requireNonNull(i, "A key in sculpting pattern was not defined!"))
-                .collect(Collectors.toCollection(NonNullList::create));
+                .map(s -> {
+                    if (s.equals(" ")) {
+                        return Optional.<Ingredient>empty();
+                    } else {
+                        var ing = ingredients.recipe.get(s);
+                        Objects.requireNonNull(ing, "A key in sculpting pattern was not defined!");
+                        return Optional.of(ing);
+                    }
+                })
+                .toList();
     }
 
     /**
@@ -67,11 +78,10 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
     {
         for (int x = 0; x < 2; ++x) {
             for (int y = 0; y < 4; ++y) {
-                Ingredient ingredient = Ingredient.EMPTY;
                 int idx = mirror ? this.width - x - 1 + y * this.width : x + y * this.width;
-                ingredient = this.items.get(idx);
+                var ingredient = this.items.get(idx);
 
-                if (!ingredient.test(input.getItem(x + y * 2)))
+                if (!Ingredient.testOptionalIngredient(ingredient, input.getItem(x + y * 2)))
                     return false;
             }
         }
@@ -81,50 +91,39 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
 
     @Override
     public ItemStack assemble(CraftingInput p_44001_, HolderLookup.Provider registryAccess) {
-        return this.getResultItem(registryAccess).copy();
+        return this.ingredients.result.copy();
     }
 
     @Override
-    public boolean canCraftInDimensions(int p_43999_, int p_44000_) {
-        return this.width <= p_43999_ && this.height <= p_44000_; //used for recipe book
-    }
-
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
-        return this.ingredients.result();
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<RecipeBookTestRecipe> getSerializer() {
         return RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<RecipeBookTestRecipe> getType() {
         return RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get();
     }
 
     @Override
-    public String getGroup() {
+    public String group() {
         return this.ingredients.group;
     }
 
     @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return this.items;
+    public PlacementInfo placementInfo() {
+        if (this.placementInfo == null) {
+            this.placementInfo = PlacementInfo.createFromOptionals(this.items);
+        }
+        return this.placementInfo;
     }
 
     @Override
-    public boolean isIncomplete() {
-        return this.getIngredients().isEmpty() ||
-                this.getIngredients().stream()
-                        .filter((ingredient) -> !ingredient.isEmpty())
-                        .anyMatch(Ingredient::hasNoItems);
-    }
-
-    @Override
-    public ItemStack getToastSymbol() {
-        return new ItemStack(Items.NETHERITE_BLOCK);
+    public RecipeBookCategory recipeBookCategory() {
+        if (this.ingredients.result.is(Items.DIAMOND_BLOCK)) {
+            return RecipeBookExtensionTest.RECIPE_BOOK_TEST_CAT1.get();
+        } else {
+            return RecipeBookExtensionTest.RECIPE_BOOK_TEST_CAT2.get();
+        }
     }
 
     public record Ingredients(String group, List<String> pattern, Map<String, Ingredient> recipe, ItemStack result) {

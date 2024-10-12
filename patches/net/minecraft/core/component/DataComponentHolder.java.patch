@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/component/DataComponentHolder.java
 +++ b/net/minecraft/core/component/DataComponentHolder.java
-@@ -2,7 +_,7 @@
- 
+@@ -3,7 +_,7 @@
+ import java.util.stream.Stream;
  import javax.annotation.Nullable;
  
 -public interface DataComponentHolder {

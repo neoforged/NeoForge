@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link Ingredient} that matches {@link ItemStack}s of {@link Block}s from a {@link TagKey<Block>}, useful in cases
  * like {@code "minecraft:convertable_to_mud"} where there isn't an accompanying item tag
  * <p>
- * Notice: This should not be used as a replacement for the normal {@link Ingredient#of(TagKey)},
+ * Notice: This should not be used as a replacement for the normal item tag ingredient.
  * This should only be used when there is no way an item tag can be used in your use case
  */
 public class BlockTagIngredient implements ICustomIngredient {
@@ -63,7 +63,7 @@ public class BlockTagIngredient implements ICustomIngredient {
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
+    public Stream<ItemStack> stacks() {
         dissolve();
         return Stream.of(itemStacks);
     }

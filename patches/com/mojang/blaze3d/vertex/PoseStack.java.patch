@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/PoseStack.java
 +++ b/com/mojang/blaze3d/vertex/PoseStack.java
-@@ -13,7 +_,7 @@
+@@ -14,7 +_,7 @@
  import org.joml.Vector3f;
  
  @OnlyIn(Dist.CLIENT)

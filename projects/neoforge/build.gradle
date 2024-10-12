@@ -215,6 +215,10 @@ runs.configureEach { it ->
     it.arguments.addAll '--gameDir', gameDir.absolutePath
 }
 
+tasks.register("genPatches") {
+    dependsOn tasks.unpackSourcePatches
+}
+
 launcherProfile {
     arguments {
         game '--fml.neoForgeVersion'

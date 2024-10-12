@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:stone"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    }
+    "#": "minecraft:stone",
+    "I": "#c:ingots/iron"
   },
   "pattern": [
     " I ",

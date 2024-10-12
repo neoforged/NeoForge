@@ -11,7 +11,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -42,21 +41,17 @@ public abstract class MobEffectEvent extends LivingEvent {
      */
     public static class Remove extends MobEffectEvent implements ICancellableEvent {
         private final Holder<MobEffect> effect;
-        @Nullable
-        private final EffectCure cure;
 
         @ApiStatus.Internal
-        public Remove(LivingEntity living, Holder<MobEffect> effect, @Nullable EffectCure cure) {
+        public Remove(LivingEntity living, Holder<MobEffect> effect) {
             super(living, living.getEffect(effect));
             this.effect = effect;
-            this.cure = cure;
         }
 
         @ApiStatus.Internal
-        public Remove(LivingEntity living, MobEffectInstance effectInstance, @Nullable EffectCure cure) {
+        public Remove(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
             this.effect = effectInstance.getEffect();
-            this.cure = cure;
         }
 
         /**
@@ -64,14 +59,6 @@ public abstract class MobEffectEvent extends LivingEvent {
          */
         public Holder<MobEffect> getEffect() {
             return this.effect;
-        }
-
-        /**
-         * {@return the {@link EffectCure} the effect is being cured by. Null if the effect is not removed due to being cured}
-         */
-        @Nullable
-        public EffectCure getCure() {
-            return cure;
         }
 
         /**

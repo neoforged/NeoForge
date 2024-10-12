@@ -29,7 +29,7 @@ public class MultiLayerModelTest {
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).noOcclusion()));
+    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerSimpleBlock(blockName, Block.Properties.of().mapColor(MapColor.WOOD).noOcclusion());
     private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
     public MultiLayerModelTest(IEventBus modEventBus) {

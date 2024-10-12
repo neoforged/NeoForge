@@ -67,7 +67,7 @@ public class DataComponentIngredient implements ICustomIngredient {
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
+    public Stream<ItemStack> stacks() {
         return Stream.of(stacks);
     }
 

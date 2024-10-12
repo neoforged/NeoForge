@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/ServerExplosion.java
++++ b/net/minecraft/world/level/ServerExplosion.java
+@@ -174,7 +_,9 @@
+         int i1 = Mth.floor(this.center.z - (double)f - 1.0);
+         int j1 = Mth.floor(this.center.z + (double)f + 1.0);
+ 
+-        for (Entity entity : this.level.getEntities(this.source, new AABB((double)i, (double)k, (double)i1, (double)j, (double)l, (double)j1))) {
++        List<Entity> list = this.level.getEntities(this.source, new AABB((double)i, (double)k, (double)i1, (double)j, (double)l, (double)j1));
++        net.neoforged.neoforge.event.EventHooks.onExplosionDetonate(this.level, this, list, f);
++        for (Entity entity : list) {
+             if (!entity.ignoreExplosion(this)) {
+                 double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / (double)f;
+                 if (d0 <= 1.0) {
+@@ -205,6 +_,7 @@
+                         d2 *= d6;
+                         d3 *= d6;
+                         Vec3 vec3 = new Vec3(d1, d2, d3);
++                        vec3 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec3);
+                         entity.setDeltaMovement(entity.getDeltaMovement().add(vec3));
+                         if (entity instanceof Player) {
+                             Player player = (Player)entity;

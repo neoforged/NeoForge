@@ -190,6 +190,21 @@
     "minecraft:oxeye_daisy": {
       "chance": 0.65
     },
+    "minecraft:pale_hanging_moss": {
+      "chance": 0.3
+    },
+    "minecraft:pale_moss_block": {
+      "chance": 0.65
+    },
+    "minecraft:pale_moss_carpet": {
+      "chance": 0.3
+    },
+    "minecraft:pale_oak_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:pale_oak_sapling": {
+      "chance": 0.3
+    },
     "minecraft:peony": {
       "chance": 0.65
     },

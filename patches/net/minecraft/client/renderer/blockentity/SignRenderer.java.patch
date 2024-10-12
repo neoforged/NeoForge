@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/SignRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SignRenderer.java
-@@ -250,6 +_,15 @@
+@@ -251,6 +_,15 @@
          return LayerDefinition.create(meshdefinition, 64, 32);
      }
  
@@ -14,5 +14,5 @@
 +    }
 +
      @OnlyIn(Dist.CLIENT)
-     public static final class SignModel extends Model {
-         public final ModelPart root;
+     static record Models(Model standing, Model wall) {
+     }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BigDripleafBlock.java
 +++ b/net/minecraft/world/level/block/BigDripleafBlock.java
-@@ -146,6 +_,8 @@
+@@ -148,6 +_,8 @@
      protected boolean canSurvive(BlockState p_152289_, LevelReader p_152290_, BlockPos p_152291_) {
          BlockPos blockpos = p_152291_.below();
          BlockState blockstate = p_152290_.getBlockState(blockpos);

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -49,7 +50,7 @@ public final class TagConventionLogWarningClient {
                 if (!FMLLoader.isProduction() == isConfigSetToDev) {
                     List<TagKey<?>> untranslatedTags = new ObjectArrayList<>();
                     RegistryAccess.Frozen registryAccess = serverStartingEvent.getServer().registryAccess();
-                    extractUnregisteredModdedTags(registryAccess.registryOrThrow(Registries.ITEM), untranslatedTags);
+                    extractUnregisteredModdedTags(registryAccess.lookupOrThrow(Registries.ITEM), untranslatedTags);
 
                     if (!untranslatedTags.isEmpty()) {
                         StringBuilder stringBuilder = new StringBuilder();
@@ -80,7 +81,7 @@ public final class TagConventionLogWarningClient {
     }
 
     private static void extractUnregisteredModdedTags(Registry<?> registry, List<TagKey<?>> untranslatedTags) {
-        registry.getTagNames().forEach(itemTagKey -> {
+        registry.getTags().map(HolderSet.Named::key).forEach(itemTagKey -> {
             // We do not translate vanilla's tags at this moment.
             if (itemTagKey.location().getNamespace().equals("minecraft")) {
                 return;
