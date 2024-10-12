@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "magenta_dye",
+  "ingredients": [
+    "#c:dyes/purple",
+    "#c:dyes/pink"
+  ],
+  "result": {
+    "count": 2,
+    "id": "minecraft:magenta_dye"
+  }
+}

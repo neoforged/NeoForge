@@ -39,7 +39,7 @@ public class TagFluidIngredient extends FluidIngredient {
 
     @Override
     protected Stream<FluidStack> generateStacks() {
-        return BuiltInRegistries.FLUID.getTag(tag)
+        return BuiltInRegistries.FLUID.get(tag)
                 .stream()
                 .flatMap(HolderSet::stream)
                 .map(fluid -> new FluidStack(fluid, FluidType.BUCKET_VOLUME));

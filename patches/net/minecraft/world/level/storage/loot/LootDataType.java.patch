@@ -1,15 +1,14 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataType.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataType.java
-@@ -16,7 +_,7 @@
+@@ -9,14 +_,26 @@
+ import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
  import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
- import org.slf4j.Logger;
  
 -public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator) {
-+public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, Codec<Optional<T>> conditionalCodec, java.util.function.BiConsumer<T, ResourceLocation> idSetter) {
-     private static final Logger LOGGER = LogUtils.getLogger();
++public record LootDataType<T>(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, Codec<java.util.Optional<T>> conditionalCodec, java.util.function.BiConsumer<T, net.minecraft.resources.ResourceLocation> idSetter) {
      public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(
          Registries.PREDICATE, LootItemCondition.DIRECT_CODEC, createSimpleValidator()
-@@ -24,17 +_,33 @@
+     );
      public static final LootDataType<LootItemFunction> MODIFIER = new LootDataType<>(
          Registries.ITEM_MODIFIER, LootItemFunctions.ROOT_CODEC, createSimpleValidator()
      );
@@ -24,39 +23,21 @@
 +        this(registryKey, codec, validator, null, (it, id) -> {});
 +    }
 +
-+    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, ResourceLocation> idSetter) {
++    private LootDataType(ResourceKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator, @org.jetbrains.annotations.Nullable T defaultValue, java.util.function.BiConsumer<T, net.minecraft.resources.ResourceLocation> idSetter) {
 +        this(registryKey, codec, validator, defaultValue, net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec), idSetter);
 +    }
  
      public void runValidation(ValidationContext p_279366_, ResourceKey<T> p_336149_, T p_279124_) {
          this.validator.run(p_279366_, p_336149_, p_279124_);
-     }
- 
-     public <V> Optional<T> deserialize(ResourceLocation p_279253_, DynamicOps<V> p_324006_, V p_324329_) {
--        DataResult<T> dataresult = this.codec.parse(p_324006_, p_324329_);
--        dataresult.error()
--            .ifPresent(p_350259_ -> LOGGER.error("Couldn't parse element {}/{} - {}", this.registryKey.location(), p_279253_, p_350259_.message()));
--        return dataresult.result();
-+        var dataresult = this.conditionalCodec.parse(p_324006_, p_324329_);
-+        dataresult.error().ifPresent(p_338121_ -> LOGGER.error("Couldn't parse element {}:{} - {}", this.registryKey, p_279253_, p_338121_.message()));
-+        return dataresult.result().map(it -> {
-+            it.ifPresent(val -> idSetter.accept(val, p_279253_));
-+            T value = it.orElse(defaultValue);
-+            if (value instanceof LootTable lootTable) value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(p_279253_, lootTable);
-+            return value;
-+        });
-     }
- 
-     public static Stream<LootDataType<?>> values() {
-@@ -48,9 +_,11 @@
+@@ -33,9 +_,11 @@
      }
  
      private static LootDataType.Validator<LootTable> createLootTableValidator() {
--        return (p_339557_, p_339558_, p_339559_) -> p_339559_.validate(
--                p_339557_.setParams(p_339559_.getParamSet()).enterElement("{" + p_339558_.registry() + "/" + p_339558_.location() + "}", p_339558_)
+-        return (p_380902_, p_380903_, p_380904_) -> p_380904_.validate(
+-                p_380902_.setContextKeySet(p_380904_.getParamSet()).enterElement("{" + p_380903_.registry() + "/" + p_380903_.location() + "}", p_380903_)
 +        return (p_279333_, p_279227_, p_279406_) -> {
 +            p_279406_.validate(
-+                    p_279333_.setParams(p_279406_.getParamSet()).enterElement("{" + p_279227_.registry() + ":" + p_279227_.location() + "}", p_279227_)
++                    p_279333_.setContextKeySet(p_279406_.getParamSet()).enterElement("{" + p_279227_.registry() + ":" + p_279227_.location() + "}", p_279227_)
              );
 +        };
      }

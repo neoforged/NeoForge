@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/LevelChunkSection.java
 +++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
-@@ -65,7 +_,7 @@
+@@ -73,7 +_,7 @@
  
          FluidState fluidstate = blockstate.getFluidState();
          FluidState fluidstate1 = p_62995_.getFluidState();
@@ -9,7 +9,7 @@
              this.nonEmptyBlockCount--;
              if (blockstate.isRandomlyTicking()) {
                  this.tickingBlockCount--;
-@@ -76,7 +_,7 @@
+@@ -84,7 +_,7 @@
              this.tickingFluidCount--;
          }
  
@@ -18,7 +18,7 @@
              this.nonEmptyBlockCount++;
              if (p_62995_.isRandomlyTicking()) {
                  this.tickingBlockCount++;
-@@ -114,7 +_,7 @@
+@@ -122,7 +_,7 @@
  
              public void accept(BlockState p_204444_, int p_204445_) {
                  FluidState fluidstate = p_204444_.getFluidState();

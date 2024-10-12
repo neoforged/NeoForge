@@ -32,8 +32,8 @@ public class MusicDiscTest {
     private static final ResourceKey<JukeboxSong> TEST_SONG = ResourceKey.create(
             Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(MOD_ID, "test_song"));
 
-    private static final DeferredItem<Item> TEST_MUSIC_DISC = ITEMS.register("test_music_disc",
-            () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).jukeboxPlayable(TEST_SONG)));
+    private static final DeferredItem<Item> TEST_MUSIC_DISC = ITEMS.registerItem("test_music_disc",
+            props -> new Item(props.stacksTo(1).rarity(Rarity.EPIC).jukeboxPlayable(TEST_SONG)));
 
     public MusicDiscTest(IEventBus modBus) {
         ITEMS.register(modBus);

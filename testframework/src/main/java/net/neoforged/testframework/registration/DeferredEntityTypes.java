@@ -28,6 +28,6 @@ public class DeferredEntityTypes extends DeferredRegister<EntityType<?>> {
     }
 
     public <E extends Entity> DeferredEntityTypeBuilder<E, EntityType<E>> registerType(String name, Supplier<EntityType.Builder<E>> sup) {
-        return (DeferredEntityTypeBuilder<E, EntityType<E>>) super.register(name, () -> sup.get().build(name));
+        return (DeferredEntityTypeBuilder<E, EntityType<E>>) super.register(name, rl -> sup.get().build(ResourceKey.create(getRegistryKey(), rl)));
     }
 }

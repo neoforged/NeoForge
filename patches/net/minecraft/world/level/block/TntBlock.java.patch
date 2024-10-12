@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/TntBlock.java
 +++ b/net/minecraft/world/level/block/TntBlock.java
-@@ -41,10 +_,14 @@
+@@ -43,10 +_,14 @@
      }
  
      @Override
@@ -16,16 +16,16 @@
                  p_57467_.removeBlock(p_57468_, false);
              }
          }
-@@ -53,7 +_,7 @@
+@@ -55,7 +_,7 @@
      @Override
-     protected void neighborChanged(BlockState p_57457_, Level p_57458_, BlockPos p_57459_, Block p_57460_, BlockPos p_57461_, boolean p_57462_) {
+     protected void neighborChanged(BlockState p_57457_, Level p_57458_, BlockPos p_57459_, Block p_57460_, @Nullable Orientation p_364510_, boolean p_57462_) {
          if (p_57458_.hasNeighborSignal(p_57459_)) {
 -            explode(p_57458_, p_57459_);
 +            onCaughtFire(p_57457_, p_57458_, p_57459_, null, null);
              p_57458_.removeBlock(p_57459_, false);
          }
      }
-@@ -61,7 +_,7 @@
+@@ -63,7 +_,7 @@
      @Override
      public BlockState playerWillDestroy(Level p_57445_, BlockPos p_57446_, BlockState p_57447_, Player p_57448_) {
          if (!p_57445_.isClientSide() && !p_57448_.isCreative() && p_57447_.getValue(UNSTABLE)) {
@@ -35,7 +35,7 @@
  
          return super.playerWillDestroy(p_57445_, p_57446_, p_57447_, p_57448_);
 @@ -79,10 +_,12 @@
-         }
+         p_364953_.addFreshEntity(primedtnt);
      }
  
 +    @Deprecated //Forge: Prefer using IForgeBlock#catchFire
@@ -59,7 +59,7 @@
 @@ -119,7 +_,7 @@
              BlockPos blockpos = p_57431_.getBlockPos();
              Entity entity = p_57432_.getOwner();
-             if (p_57432_.isOnFire() && p_57432_.mayInteract(p_57429_, blockpos)) {
+             if (p_57432_.isOnFire() && p_57432_.mayInteract(serverlevel, blockpos)) {
 -                explode(p_57429_, blockpos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
 +                onCaughtFire(p_57430_, p_57429_, blockpos, null, entity instanceof LivingEntity ? (LivingEntity)entity : null);
                  p_57429_.removeBlock(blockpos, false);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -322,7 +_,7 @@
+@@ -313,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player p_35472_, InteractionHand p_35473_) {
          ItemStack itemstack = p_35472_.getItemInHand(p_35473_);
@@ -9,7 +9,7 @@
              return super.mobInteract(p_35472_, p_35473_);
          } else if (this.isBaby()) {
              this.setUnhappy();
-@@ -742,8 +_,9 @@
+@@ -719,8 +_,9 @@
  
      @Override
      protected Component getTypeName() {
@@ -20,32 +20,28 @@
          );
      }
  
-@@ -799,7 +_,7 @@
+@@ -781,10 +_,11 @@
  
      @Override
      public void thunderHit(ServerLevel p_35409_, LightningBolt p_35410_) {
 -        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL) {
 +        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
              LOGGER.info("Villager {} was struck by lightning {}.", this, p_35410_);
-             Witch witch = EntityType.WITCH.create(p_35409_);
-             if (witch != null) {
-@@ -812,6 +_,7 @@
-                 }
- 
-                 witch.setPersistenceRequired();
-+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, witch);
-                 p_35409_.addFreshEntityWithPassengers(witch);
+             Witch witch = this.convertTo(EntityType.WITCH, ConversionParams.single(this, false, false), p_381540_ -> {
+                 p_381540_.finalizeSpawn(p_35409_, p_35409_.getCurrentDifficultyAt(p_381540_.blockPosition()), EntitySpawnReason.CONVERSION, null);
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_381540_);
+                 p_381540_.setPersistenceRequired();
                  this.releaseAllPois();
-                 this.discard();
-@@ -831,7 +_,10 @@
+             });
+@@ -804,7 +_,10 @@
      @Override
-     public boolean wantsToPickUp(ItemStack p_35543_) {
+     public boolean wantsToPickUp(ServerLevel p_376823_, ItemStack p_35543_) {
          Item item = p_35543_.getItem();
--        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item))
-+        // Neo: Patched so that Farmer Villagers will pick up SpecialPlantable items. Also fixes MC-274244 by making "minecraft:villager_plantable_seeds" tagged items also be picked up by Farmer Villagers to be planted later.
-+        boolean isFarmerDesiredSeed = (p_35543_.is(ItemTags.VILLAGER_PLANTABLE_SEEDS) || (p_35543_.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this)))
+-        return (p_35543_.is(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().getProfession().requestedItems().contains(item))
++        // Neo: Allow Farmer Villagers to pick up SpecialPlantable items.
++        boolean isFarmerDesiredSeed = (p_35543_.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this))
 +                && this.getVillagerData().getProfession().secondaryPoi().stream().anyMatch(secondaryPoi -> secondaryPoi.defaultBlockState().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
-+        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item) || isFarmerDesiredSeed)
++        return (p_35543_.is(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().getProfession().requestedItems().contains(item) || isFarmerDesiredSeed)
              && this.getInventory().canAddItem(p_35543_);
      }
  

@@ -126,7 +126,7 @@ public final class StructureModifiers {
                         continue;
                     overrides.removeSpawns(spawnerData -> {
                         ResourceLocation key = BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.type);
-                        return this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.getHolderOrThrow(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+                        return this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.getOrThrow(ResourceKey.create(Registries.ENTITY_TYPE, key)));
                     });
                 }
             }

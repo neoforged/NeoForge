@@ -17,7 +17,7 @@ import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +33,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
@@ -91,7 +91,7 @@ public class PlayerEventTests {
                             context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
                         }
                         test.pass();
-                        event.cancelWithResult(ItemInteractionResult.sidedSuccess(level.isClientSide));
+                        event.cancelWithResult(InteractionResult.SUCCESS);
                     }
                 }
             }
@@ -248,7 +248,7 @@ public class PlayerEventTests {
         });
 
         test.onGameTest(helper -> {
-            DamageSource source = new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.MOB_ATTACK));
+            DamageSource source = new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK));
             helper.startSequence(() -> helper.makeMockPlayer(GameType.SURVIVAL))
                     .thenExecute(player -> player.invulnerableTime = 0)
                     .thenExecute(player -> player.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE)))
@@ -270,15 +270,17 @@ public class PlayerEventTests {
                 return;
             }
 
-            var oldTransition = event.getDimensionTransition();
-            var newTransition = new DimensionTransition(oldTransition.newLevel(),
+            var oldTransition = event.getTeleportTransition();
+            var newTransition = new TeleportTransition(oldTransition.newLevel(),
                     event.getEntity().position().relative(Direction.SOUTH, 1),
-                    oldTransition.speed(),
+                    oldTransition.deltaMovement(),
                     oldTransition.xRot(),
                     oldTransition.yRot(),
                     oldTransition.missingRespawnBlock(),
-                    oldTransition.postDimensionTransition());
-            event.setDimensionTransition(newTransition);
+                    oldTransition.asPassenger(),
+                    oldTransition.relatives(),
+                    oldTransition.postTeleportTransition());
+            event.setTeleportTransition(newTransition);
         });
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))

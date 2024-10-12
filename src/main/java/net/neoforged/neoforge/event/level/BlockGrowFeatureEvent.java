@@ -72,7 +72,7 @@ public class BlockGrowFeatureEvent extends LevelEvent implements ICancellableEve
      * @param featureKey a {@linkplain ResourceKey} referencing a new feature to be placed instead of the current feature.
      */
     public void setFeature(ResourceKey<ConfiguredFeature<?, ?>> featureKey) {
-        this.feature = this.getLevel().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(featureKey).orElse(null);
+        this.feature = this.getLevel().registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(featureKey).orElse(null);
     }
 
     /**

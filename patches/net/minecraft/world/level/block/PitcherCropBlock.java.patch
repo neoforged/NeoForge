@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PitcherCropBlock.java
 +++ b/net/minecraft/world/level/block/PitcherCropBlock.java
-@@ -86,12 +_,13 @@
+@@ -93,12 +_,13 @@
  
      @Override
      public boolean canSurvive(BlockState p_277671_, LevelReader p_277477_, BlockPos p_278085_) {
@@ -16,7 +16,7 @@
      }
  
      @Override
-@@ -125,7 +_,7 @@
+@@ -132,7 +_,7 @@
  
      @Override
      public void randomTick(BlockState p_277950_, ServerLevel p_277589_, BlockPos p_277937_, RandomSource p_277887_) {

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "minecraft:planks"
-    },
-    "-": {
-      "item": "minecraft:stone_slab"
-    },
-    "I": {
-      "tag": "c:rods/wooden"
-    }
+    "#": "#minecraft:planks",
+    "-": "minecraft:stone_slab",
+    "I": "#c:rods/wooden"
   },
   "pattern": [
     "I-I",

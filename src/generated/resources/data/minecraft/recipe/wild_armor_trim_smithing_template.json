@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:gems/diamond"
-    },
-    "C": {
-      "item": "minecraft:mossy_cobblestone"
-    },
-    "S": {
-      "item": "minecraft:wild_armor_trim_smithing_template"
-    }
+    "#": "#c:gems/diamond",
+    "C": "minecraft:mossy_cobblestone",
+    "S": "minecraft:wild_armor_trim_smithing_template"
   },
   "pattern": [
     "#S#",
