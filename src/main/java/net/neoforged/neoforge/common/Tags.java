@@ -1039,6 +1039,9 @@ public class Tags {
         public static final TagKey<Biome> IS_UNDERGROUND = tag("is_underground");
         public static final TagKey<Biome> IS_CAVE = tag("is_cave");
 
+        /**
+         * Biomes whose flora primarily consists of vibrant thick vegetation and pools of water. Think of Lush Caves as an example.
+         */
         public static final TagKey<Biome> IS_LUSH = tag("is_lush");
         public static final TagKey<Biome> IS_MAGICAL = tag("is_magical");
         public static final TagKey<Biome> IS_RARE = tag("is_rare");
