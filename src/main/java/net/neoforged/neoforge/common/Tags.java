@@ -134,15 +134,18 @@ public class Tags {
          */
         public static final TagKey<Block> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
         /**
-         * Ores which on average result in more than one resource worth of materials
+         * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
+         * (example, Redstone Ore)
          */
         public static final TagKey<Block> ORE_RATES_DENSE = tag("ore_rates/dense");
         /**
-         * Ores which on average result in one resource worth of materials
+         * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Coal Ore)
          */
         public static final TagKey<Block> ORE_RATES_SINGULAR = tag("ore_rates/singular");
         /**
-         * Ores which on average result in less than one resource worth of materials
+         * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
          */
         public static final TagKey<Block> ORE_RATES_SPARSE = tag("ore_rates/sparse");
         public static final TagKey<Block> ORES = tag("ores");
