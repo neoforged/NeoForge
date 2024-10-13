@@ -591,6 +591,9 @@ public class Tags {
         public static final TagKey<Item> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
         public static final TagKey<Item> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
 
+        /**
+         * For items that are explicitly seeds for use cases such as refilling a bird feeder block or certain seed-based recipes.
+         */
         public static final TagKey<Item> SEEDS = tag("seeds");
         public static final TagKey<Item> SEEDS_BEETROOT = tag("seeds/beetroot");
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
