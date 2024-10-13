@@ -550,6 +550,10 @@ public class Tags {
         public static final TagKey<Item> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
+        /**
+         * All kinds of potion items that can hold various effects including splash and lingering potions from vanilla.
+         */
+        public static final TagKey<Item> POTIONS = tag("potions");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
@@ -886,6 +890,11 @@ public class Tags {
         public static final TagKey<Biome> IS_COLD_OVERWORLD = tag("is_cold/overworld");
         public static final TagKey<Biome> IS_COLD_NETHER = tag("is_cold/nether");
         public static final TagKey<Biome> IS_COLD_END = tag("is_cold/end");
+
+        public static final TagKey<Biome> IS_TEMPERATE = tag("is_temperate");
+        public static final TagKey<Biome> IS_TEMPERATE_OVERWORLD = tag("is_temperate/overworld");
+        public static final TagKey<Biome> IS_TEMPERATE_NETHER = tag("is_temperate/nether");
+        public static final TagKey<Biome> IS_TEMPERATE_END = tag("is_temperate/end");
 
         public static final TagKey<Biome> IS_SPARSE_VEGETATION = tag("is_sparse_vegetation");
         public static final TagKey<Biome> IS_SPARSE_VEGETATION_OVERWORLD = tag("is_sparse_vegetation/overworld");

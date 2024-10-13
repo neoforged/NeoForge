@@ -274,6 +274,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
+        add(Tags.Items.POTIONS, "Potions");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");
@@ -384,6 +385,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_COLD_OVERWORLD, "Cold Overworld");
         add(Tags.Biomes.IS_COLD_NETHER, "Cold Nether");
         add(Tags.Biomes.IS_COLD_END, "Cold End");
+        add(Tags.Biomes.IS_TEMPERATE, "Temperate");
+        add(Tags.Biomes.IS_TEMPERATE_OVERWORLD, "Temperate Overworld");
+        add(Tags.Biomes.IS_TEMPERATE_NETHER, "Temperate Nether");
+        add(Tags.Biomes.IS_TEMPERATE_END, "Temperate End");
         add(Tags.Biomes.IS_SPARSE_VEGETATION, "Sparse Vegetation");
         add(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD, "Sparse Overworld Vegetation");
         add(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER, "Sparse Nether Vegetation");
