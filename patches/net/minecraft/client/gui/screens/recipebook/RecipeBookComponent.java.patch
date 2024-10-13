@@ -1,10 +1,12 @@
 --- a/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
 +++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
-@@ -260,6 +_,7 @@
+@@ -260,7 +_,8 @@
  
          for (RecipeBookTabButton recipebooktabbutton : this.tabButtons) {
              ExtendedRecipeBookCategory extendedrecipebookcategory = recipebooktabbutton.getCategory();
-+            // TODO 1.21.2: make this accessible to mods.
-             if (extendedrecipebookcategory instanceof SearchRecipeBookCategory) {
+-            if (extendedrecipebookcategory instanceof SearchRecipeBookCategory) {
++            // Neo: Add support for modded search categories.
++            if (extendedrecipebookcategory instanceof SearchRecipeBookCategory || net.neoforged.neoforge.client.RecipeBookManager.getSearchCategories().containsKey(extendedrecipebookcategory)) {
                  recipebooktabbutton.visible = true;
                  recipebooktabbutton.setPosition(i, j + 27 * l++);
+             } else if (recipebooktabbutton.updateVisibility(this.book)) {

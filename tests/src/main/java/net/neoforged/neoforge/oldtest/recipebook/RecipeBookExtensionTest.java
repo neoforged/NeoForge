@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.ExtendedRecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -24,6 +25,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterRecipeBookSearchCategoriesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -49,6 +51,7 @@ public class RecipeBookExtensionTest {
     public static final DeferredRegister<RecipeBookCategory> RECIPE_BOOK_CATEGORY = DeferredRegister.create(BuiltInRegistries.RECIPE_BOOK_CATEGORY, MOD_ID);
     public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> RECIPE_BOOK_TEST_CAT1 = RECIPE_BOOK_CATEGORY.register("cat1", RecipeBookCategory::new);
     public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> RECIPE_BOOK_TEST_CAT2 = RECIPE_BOOK_CATEGORY.register("cat2", RecipeBookCategory::new);
+    public static final ExtendedRecipeBookCategory SEARCH_CATEGORY = new ExtendedRecipeBookCategory() {};
 
     public RecipeBookExtensionTest(IEventBus modBus) {
         if (!ENABLED)
@@ -81,6 +84,11 @@ public class RecipeBookExtensionTest {
             if (!ENABLED)
                 return;
             event.register(RECIPE_BOOK_TEST_MENU_TYPE.get(), RecipeBookTestScreen::new);
+        }
+
+        @SubscribeEvent
+        public static void registerSearchCategories(RegisterRecipeBookSearchCategoriesEvent event) {
+            event.register(SEARCH_CATEGORY, RECIPE_BOOK_TEST_CAT1.get(), RECIPE_BOOK_TEST_CAT2.get());
         }
     }
 

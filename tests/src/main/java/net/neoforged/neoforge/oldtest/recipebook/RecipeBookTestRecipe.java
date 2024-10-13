@@ -29,6 +29,9 @@ import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,10 +47,7 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
         this.ingredients = ingredients;
         this.width = ingredients.pattern.get(0).length();
         this.height = ingredients.pattern.size();
-        List<String> pattern = new ArrayList<>(ingredients.pattern); //might need to reverse this list.
-        while (pattern.size() != 4)
-            pattern.add("  ");
-        this.items = pattern.stream()
+        this.items = ingredients.pattern.stream()
                 .flatMap(s -> Stream.of(s.substring(0, 1), s.substring(1, 2)))
                 .map(s -> {
                     if (s.equals(" ")) {
@@ -76,12 +76,12 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
 
     private boolean matches(CraftingInput input, boolean mirror) //unsure about the last boolean
     {
-        for (int x = 0; x < 2; ++x) {
-            for (int y = 0; y < 4; ++y) {
+        for (int x = 0; x < this.width; ++x) {
+            for (int y = 0; y < this.height; ++y) {
                 int idx = mirror ? this.width - x - 1 + y * this.width : x + y * this.width;
                 var ingredient = this.items.get(idx);
 
-                if (!Ingredient.testOptionalIngredient(ingredient, input.getItem(x + y * 2)))
+                if (!Ingredient.testOptionalIngredient(ingredient, input.getItem(x + y * this.width)))
                     return false;
             }
         }
@@ -115,6 +115,17 @@ public class RecipeBookTestRecipe implements Recipe<CraftingInput> {
             this.placementInfo = PlacementInfo.createFromOptionals(this.items);
         }
         return this.placementInfo;
+    }
+
+    @Override
+    public List<RecipeDisplay> display() {
+        return List.of(
+                new ShapedCraftingRecipeDisplay(
+                        width,
+                        height,
+                        items.stream().map(p_380107_ -> p_380107_.map(Ingredient::display).orElse(SlotDisplay.Empty.INSTANCE)).toList(),
+                        new SlotDisplay.ItemStackSlotDisplay(ingredients.result),
+                        new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)));
     }
 
     @Override
