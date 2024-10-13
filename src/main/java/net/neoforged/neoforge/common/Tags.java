@@ -906,10 +906,17 @@ public class Tags {
         public static final TagKey<Biome> IS_TEMPERATE_NETHER = tag("is_temperate/nether");
         public static final TagKey<Biome> IS_TEMPERATE_END = tag("is_temperate/end");
 
+        /**
+         * If a biome has trees but spawn infrequently like a Savanna or Sparse Jungle, then the biome is considered having sparse vegetation. It does NOT mean no trees.
+         */
         public static final TagKey<Biome> IS_SPARSE_VEGETATION = tag("is_sparse_vegetation");
         public static final TagKey<Biome> IS_SPARSE_VEGETATION_OVERWORLD = tag("is_sparse_vegetation/overworld");
         public static final TagKey<Biome> IS_SPARSE_VEGETATION_NETHER = tag("is_sparse_vegetation/nether");
         public static final TagKey<Biome> IS_SPARSE_VEGETATION_END = tag("is_sparse_vegetation/end");
+        /**
+         * If a biome has more vegetation than a regular Forest biome, then it is considered having dense vegetation.
+         * This is more subjective so simply do your best with classifying your biomes.
+         */
         public static final TagKey<Biome> IS_DENSE_VEGETATION = tag("is_dense_vegetation");
         public static final TagKey<Biome> IS_DENSE_VEGETATION_OVERWORLD = tag("is_dense_vegetation/overworld");
         public static final TagKey<Biome> IS_DENSE_VEGETATION_NETHER = tag("is_dense_vegetation/nether");
