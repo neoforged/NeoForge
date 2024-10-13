@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Standard implementation for an ingredient and a count.
@@ -58,8 +57,6 @@ public final class SizedIngredient {
 
     private final Ingredient ingredient;
     private final int count;
-    @Nullable
-    private ItemStack[] cachedStacks;
 
     public SizedIngredient(Ingredient ingredient, int count) {
         if (count <= 0) {
@@ -84,20 +81,6 @@ public final class SizedIngredient {
      */
     public boolean test(ItemStack stack) {
         return ingredient.test(stack) && stack.getCount() >= count;
-    }
-
-    /**
-     * Returns a list of the stacks from this {@link #ingredient}, with an updated {@link #count}.
-     *
-     * @implNote the array is cached and should not be modified, just like {@link Ingredient#stacks()}.
-     */
-    public ItemStack[] stacks() {
-        if (cachedStacks == null) {
-            cachedStacks = ingredient.stacks().stream()
-                    .map(s -> s.copyWithCount(count))
-                    .toArray(ItemStack[]::new);
-        }
-        return cachedStacks;
     }
 
     @Override

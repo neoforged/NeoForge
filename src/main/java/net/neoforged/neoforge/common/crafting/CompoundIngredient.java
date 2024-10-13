@@ -8,8 +8,11 @@ package net.neoforged.neoforge.common.crafting;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
@@ -33,8 +36,8 @@ public record CompoundIngredient(List<Ingredient> children) implements ICustomIn
     }
 
     @Override
-    public Stream<ItemStack> stacks() {
-        return children.stream().flatMap(child -> child.stacks().stream());
+    public Stream<Holder<Item>> items() {
+        return children.stream().flatMap(child -> child.items().stream());
     }
 
     @Override
@@ -60,5 +63,10 @@ public record CompoundIngredient(List<Ingredient> children) implements ICustomIn
     @Override
     public IngredientType<?> getType() {
         return NeoForgeMod.COMPOUND_INGREDIENT_TYPE.get();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return new SlotDisplay.Composite(children.stream().map(Ingredient::display).toList());
     }
 }

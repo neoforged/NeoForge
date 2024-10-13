@@ -8,8 +8,11 @@ package net.neoforged.neoforge.common.crafting;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 /** Ingredient that matches everything from the first ingredient that is not included in the second ingredient */
@@ -22,8 +25,8 @@ public record DifferenceIngredient(Ingredient base, Ingredient subtracted) imple
                     .apply(builder, DifferenceIngredient::new));
 
     @Override
-    public Stream<ItemStack> stacks() {
-        return base.stacks().stream().filter(subtracted.negate());
+    public Stream<Holder<Item>> items() {
+        return base.items().stream().filter(i -> !subtracted.test(i.value().getDefaultInstance()));
     }
 
     @Override
@@ -34,6 +37,14 @@ public record DifferenceIngredient(Ingredient base, Ingredient subtracted) imple
     @Override
     public boolean isSimple() {
         return base.isSimple() && subtracted.isSimple();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        // TODO: better handling in case the subingredients are not simple?
+        return new SlotDisplay.Composite(items()
+                .map(Ingredient::displayForSingleItem)
+                .toList());
     }
 
     @Override

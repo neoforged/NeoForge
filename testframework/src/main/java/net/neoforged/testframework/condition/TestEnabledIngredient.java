@@ -9,8 +9,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.testframework.TestFramework;
@@ -32,8 +35,8 @@ public record TestEnabledIngredient(Ingredient base, TestFramework framework, St
     }
 
     @Override
-    public Stream<ItemStack> stacks() {
-        return base.stacks().stream();
+    public Stream<Holder<Item>> items() {
+        return base.items().stream();
     }
 
     @Override
@@ -44,5 +47,10 @@ public record TestEnabledIngredient(Ingredient base, TestFramework framework, St
     @Override
     public IngredientType<?> getType() {
         return TestFrameworkMod.TEST_ENABLED_INGREDIENT.get();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return base.display();
     }
 }

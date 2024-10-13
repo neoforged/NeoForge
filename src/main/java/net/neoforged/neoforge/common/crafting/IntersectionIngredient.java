@@ -10,8 +10,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 /** Ingredient that matches if all child ingredients match */
@@ -52,10 +55,10 @@ public record IntersectionIngredient(List<Ingredient> children) implements ICust
     }
 
     @Override
-    public Stream<ItemStack> stacks() {
+    public Stream<Holder<Item>> items() {
         return children.stream()
-                .flatMap(child -> child.stacks().stream())
-                .filter(this::test);
+                .flatMap(child -> child.items().stream())
+                .filter(i -> test(i.value().getDefaultInstance()));
     }
 
     @Override
@@ -66,6 +69,14 @@ public record IntersectionIngredient(List<Ingredient> children) implements ICust
             }
         }
         return true;
+    }
+
+    @Override
+    public SlotDisplay display() {
+        // TODO: better handling in case the subingredients are not simple?
+        return new SlotDisplay.Composite(items()
+                .map(Ingredient::displayForSingleItem)
+                .toList());
     }
 
     @Override

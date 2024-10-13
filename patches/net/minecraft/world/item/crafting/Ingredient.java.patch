@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -24,18 +_,22 @@
+@@ -24,18 +_,20 @@
  import net.minecraft.world.level.ItemLike;
  
  public final class Ingredient implements Predicate<ItemStack> {
@@ -23,13 +23,11 @@
      @Nullable
      private List<Holder<Item>> items;
 +    @Nullable
-+    private List<ItemStack> stacks;
-+    @Nullable
 +    private net.neoforged.neoforge.common.crafting.ICustomIngredient customIngredient = null;
  
      private Ingredient(HolderSet<Item> p_365027_) {
          p_365027_.unwrap().ifRight(p_360057_ -> {
-@@ -48,19 +_,50 @@
+@@ -48,19 +_,32 @@
          this.values = p_365027_;
      }
  
@@ -42,13 +40,12 @@
          return p_362504_.<Boolean>map(p_360060_ -> p_360060_.test(p_363604_)).orElseGet(p_363604_::isEmpty);
      }
  
-+    /** @deprecated Neo: Prefer {@link #stacks}. */
-+    @Deprecated
++
      public List<Holder<Item>> items() {
          if (this.items == null) {
 -            this.items = ImmutableList.copyOf(this.values);
 +            if (this.customIngredient != null) {
-+                this.items = this.customIngredient.stacks().map(ItemStack::getItemHolder).distinct().toList();
++                this.items = this.customIngredient.items().toList();
 +            } else {
 +                this.items = ImmutableList.copyOf(this.values);
 +            }
@@ -57,23 +54,6 @@
          return this.items;
      }
  
-+    /**
-+     * NBT-aware version of {@link #items}.
-+     *
-+     * @see net.neoforged.neoforge.common.crafting.ICustomIngredient#stacks
-+     */
-+    public List<ItemStack> stacks() {
-+        if (this.stacks == null) {
-+            if (this.customIngredient != null) {
-+                this.stacks = this.customIngredient.stacks().toList();
-+            } else {
-+                this.stacks = this.values.stream().map(ItemStack::new).toList();
-+            }
-+        }
-+
-+        return this.stacks;
-+    }
-+
      public boolean test(ItemStack p_43914_) {
 +        if (this.customIngredient != null) {
 +            return this.customIngredient.test(p_43914_);
@@ -81,27 +61,8 @@
          List<Holder<Item>> list = this.items();
  
          for (int i = 0; i < list.size(); i++) {
-@@ -72,9 +_,68 @@
-         return false;
-     }
+@@ -74,7 +_,49 @@
  
-+    /**
-+     * Returns {@code true} if this ingredient has an empty stack list.
-+     * This will catch "accidentally empty" ingredients, for example a tag ingredient that has an empty tag.
-+     */
-+    // TODO 1.21.2: Do we want to keep this?
-+    public boolean hasNoItems() {
-+        var stacks = stacks();
-+        if (stacks.isEmpty())
-+            return true;
-+        if (stacks.size() == 1) {
-+            // If we potentially added a barrier due to the ingredient being an empty tag, try and check if it is the stack we added
-+            ItemStack stack = stacks.getFirst();
-+            return stack.getItem() == net.minecraft.world.item.Items.BARRIER && stack.getHoverName() instanceof net.minecraft.network.chat.MutableComponent hoverName && hoverName.getString().startsWith("Empty Tag: ");
-+        }
-+        return false;
-+    }
-+
      @Override
      public boolean equals(Object p_301003_) {
 -        return p_301003_ instanceof Ingredient ingredient ? Objects.equals(this.values, ingredient.values) : false;
@@ -151,3 +112,13 @@
      }
  
      public static Ingredient of(ItemLike p_364285_) {
+@@ -94,6 +_,9 @@
+     }
+ 
+     public SlotDisplay display() {
++        if (this.customIngredient != null) {
++            return this.customIngredient.display();
++        }
+         return (SlotDisplay)this.values
+             .unwrap()
+             .map(SlotDisplay.TagSlotDisplay::new, p_380837_ -> new SlotDisplay.Composite(p_380837_.stream().map(Ingredient::displayForSingleItem).toList()));
