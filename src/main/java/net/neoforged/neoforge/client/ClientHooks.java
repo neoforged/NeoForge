@@ -7,7 +7,6 @@ package net.neoforged.neoforge.client;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
@@ -160,8 +159,6 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
-import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasesEvent;
-import net.neoforged.neoforge.client.event.RegisterBufferDefinitionsEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -1035,10 +1032,6 @@ public class ClientHooks {
         }
     }
 
-    public static ImmutableList<RenderType> getChunkBufferLayers() {
-        return ChunkBufferDefinitionManager.getChunkBufferLayers();
-    }
-
     // Make sure the below method is only ever called once (by forge).
     private static boolean initializedClientHooks = false;
 
@@ -1054,12 +1047,9 @@ public class ClientHooks {
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
-        ModLoader.postEvent(new RegisterBufferDefinitionParamTypeAliasesEvent());
-        ModLoader.postEvent(new RegisterBufferDefinitionsEvent());
         ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
-        ChunkBufferDefinitionManager.init();
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         ClientHooks.onRegisterKeyMappings(mc.options);

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.buffer.chunk;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.client.renderer.RenderType;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.buffer.IBufferDefinition;
-import net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions;
+import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAliasesEvent;
+import net.neoforged.neoforge.client.event.RegisterBufferDefinitionsEvent;
 import net.neoforged.neoforge.client.event.RegisterChunkBufferDefinitionsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -26,7 +27,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class ChunkBufferDefinitionManager {
     private static final Map<RenderLevelStageEvent.Stage, HashSet<Entry>> CHUNK_BUFFER_DEFINITIONS = new HashMap<>();
-    private static ImmutableList<RenderType> chunkBufferLayers = RenderType.CHUNK_BUFFER_LAYERS;
 
     /**
      * Register an {@link IBufferDefinition} into {@link RenderType#chunkBufferLayers() vanilla chunk buffer layers } with a {@link IChunkBufferCallback#passThrough() default callback}.
@@ -51,13 +51,9 @@ public class ChunkBufferDefinitionManager {
 
     @ApiStatus.Internal
     public static void init() {
+        ModLoader.postEvent(new RegisterBufferDefinitionParamTypeAliasesEvent());
+        ModLoader.postEvent(new RegisterBufferDefinitionsEvent());
         RegisterChunkBufferDefinitionsEvent.collectChunkBufferDefinitions();
-        chunkBufferLayers = ImmutableList.<RenderType>builder().addAll(RenderType.CHUNK_BUFFER_LAYERS).addAll(getChunkBufferDefinitions().stream().map(VanillaBufferDefinitions::bakeVanillaRenderType).toList()).build();
-    }
-
-    @ApiStatus.Internal
-    public static ImmutableList<RenderType> getChunkBufferLayers() {
-        return chunkBufferLayers;
     }
 
     @ApiStatus.Internal
