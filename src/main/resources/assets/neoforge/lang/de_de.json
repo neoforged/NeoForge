@@ -76,11 +76,11 @@
   "commands.neoforge.setdim.invalid.dim": "Die angegebene Dimension-ID (%1$s) ist ungültig.",
   "commands.neoforge.setdim.invalid.nochange": "Die ausgewählte Entität (%1$s) ist bereits in der angegebenen Dimension (%2$s).",
   "commands.neoforge.setdim.deprecated": "Dieser Befehl ist veraltet und wird in 1.17 entfernt, verwende stattdessen %s.",
-  "commands.neoforge.tps.invalid": "Ungültige Dimension %1$s Mögliche Werte: %2$s",
-  "commands.neoforge.tps.summary.all": "Insgesamt: Mittlere Tickdauer: %1$s ms. Mittlere TPS: %2$s",
+  "commands.neoforge.tps.overall": "Insgesamt: %s TPS (%s ms/Tick)",
+  "commands.neoforge.tps.tooltip": "Mittlere TPS; höher ist besser. Ziel-TPS: %s",
+  "commands.neoforge.tps.dimension": "%s: %s TPS (%s ms/Tick)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (Dimensionstyp: %s)",
   "commands.neoforge.mods.list": "Modliste: %1$s",
-  "commands.neoforge.tps.summary.basic": "Dimension %1$s: Mittlere Tickdauer: %2$s ms. Mittlere TPS: %3$s",
-  "commands.neoforge.tps.summary.named": "Dimension %1$s (%2$s): Mittlere Tickdauer: %3$s ms. Mittlere TPS: %4$s",
   "commands.neoforge.tracking.entity.enabled": "Entitäts-Tracking für %d Sekunden aktiviert.",
   "commands.neoforge.tracking.entity.reset": "Entitäts-Timing-Daten wurden gelöscht!",
   "commands.neoforge.tracking.invalid": "Ungültige Tracking-Daten.",
@@ -115,6 +115,14 @@
   "commands.neoforge.timespeed.query.default": "Die Zeit in %s vergeht normal (20 Minuten pro Tag).",
   "commands.neoforge.timespeed.set": "Die Zeit in %s vergeht jetzt %sx so schnell wie üblich (%s Minuten pro Tag).",
   "commands.neoforge.timespeed.set.default": "Die Zeit in %s vergeht jetzt normal (20 Minuten pro Tag).",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "Du hältst kein Item",
+  "commands.neoforge.data_components.list.title": "Datenkomponenten auf %s:",
+  "commands.neoforge.data_components.list.entry": "\n  - %s",
+  "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
+  "commands.neoforge.data_components.list.tooltip.default": "Komponente %s enthält den Standardwert",
+  "commands.neoforge.data_components.list.tooltip.deleted": "Komponente %s mit Wert %s wurde gelöscht",
+  "commands.neoforge.data_components.list.tooltip.modified": "Komponente %s wurde von %s auf %s geändert",
+  "commands.neoforge.data_components.list.tooltip.added": "Komponente %s wurde mit dem Wert %s hinzugefügt",
   "commands.config.getwithtype": "Konfiguration für %s vom Typ %s gefunden bei %s",
   "commands.config.noconfig": "Konfiguration für %s vom Typ %s nicht gefunden",
   "neoforge.update.beta.1": "%sWARNUNG: %sNeoForge Beta",
@@ -122,59 +130,23 @@
   "neoforge.update.newversion": "Neue NeoForge-Version verfügbar: %s",
   "neoforge.menu.updatescreen.title": "Mod Update",
   "neoforge.configuration.uitext.title": "%s Einstellungen",
-  "neoforge.configuration.uitext.type.client": "Clienteinstellungen",
-  "neoforge.configuration.uitext.type.server": "Servereinstellungen",
+  "neoforge.configuration.uitext.type.client": "Client Einstellungen",
+  "neoforge.configuration.uitext.type.server": "Server Einstellungen",
   "neoforge.configuration.uitext.type.common": "Gemeinsame Einstellungen",
-  "neoforge.configuration.uitext.type.startup": "Starteinstellungen",
-  "neoforge.configuration.uitext.title.client": "%s Clienteinstellungen",
-  "neoforge.configuration.uitext.title.server": "%s Servereinstellungen",
-  "neoforge.configuration.uitext.title.common": "%s Gemeinsame Einstellungen",
+  "neoforge.configuration.uitext.type.startup": "Start Einstellungen",
+  "neoforge.configuration.uitext.title.client": "%s Client Konfiguration",
+  "neoforge.configuration.uitext.title.server": "%s Server Konfiguration",
+  "neoforge.configuration.uitext.title.common": "%s allgemeine Konfiguration",
   "neoforge.configuration.uitext.title.startup": "%s Starteinstellungen",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "Diese Einstellungen werden vom Server übernommen und können nicht geändert werden während Du online bist.",
-      "color": "rot"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "Diese Einstellungen können nicht geändert werden, während du dein Spiel für andere im LAN geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
-      "color": "rot"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "Diese Einstellungen sind nur verfügbar, wenn du dich in einer Welt befindest.",
-      "color": "rot"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "Diese Einstellungen können nicht in der Benutzeroberfläche bearbeitet werden. Kontaktiere die/den Autor:Innen des/der Mod(s) und bitte ihn/sie ein angepasstes Bedienelement zu implementieren.",
-      "color": "rot"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "Dieser Wert ist zu lang, um hier bearbeitet werden zu können. Bitte bearbeite ihn in der Konfigurationsdatei.",
-      "color": "red"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "Diese Einstellungen werden vom Server übernommen und können nicht geändert werden während Du online bist.",
+  "neoforge.configuration.uitext.notlan": "Diese Einstellungen können nicht geändert werden während Du Dein Spiel für andere geöffnet hast. Bitte kehre ins Hauptmenü zurück und lade den Spielstand erneut.",
+  "neoforge.configuration.uitext.notloaded": "Diese Einstellungen sind nur verfügbar, wenn du dich in einer Welt befindest.",
+  "neoforge.configuration.uitext.unsupportedelement": "Diese Einstellungen können nicht in der Benutzeroberfläche bearbeitet werden. Kontaktiere die/den Autor:Innen des/der Mod(s) und bitte ihn/sie ein angepasstes Bedienelement zu implementieren.",
+  "neoforge.configuration.uitext.longstring": "Dieser Wert ist zu lang, um hier bearbeitet werden zu können. Bitte bearbeite ihn in der Konfigurationsdatei.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Bearbeiten",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "Gold",
-      "bold": true
-    },
-    {
-      "index": 0
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Rückgängig",
   "neoforge.configuration.uitext.undo.tooltip": "Änderungen werden nur auf diesem Bildschirm rückgängig gemacht.",
@@ -184,47 +156,19 @@
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\nWertebereich: ",
-      "color": "grau"
-    },
-    {
-      "index": 0,
-      "color": "grau"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "Datei: \"",
-      "color": "grau"
-    },
-    {
-      "index": 0,
-      "color": "grau"
-    },
-    {
-      "text": "\"",
-      "color": "grau"
-    }
-  ],
+  "neoforge.configuration.uitext.rangetooltip": "Wertebereich: %s",
+  "neoforge.configuration.uitext.filenametooltip": "Datei: \"%s\"",
   "neoforge.configuration.uitext.common": "Gemeinsame Einstellungen",
   "neoforge.configuration.uitext.client": "Clienteinstellungen",
   "neoforge.configuration.uitext.server": "Servereinstellungen",
   "neoforge.configuration.uitext.startup": "Starteinstellungen",
   "neoforge.configuration.uitext.restart.game.title": "Minecraft muss neu gestartet werden",
-  "neoforge.configuration.uitext.restart.game.text": "Eine oder mehrere der geänderten Einstellungen sind nur wirksam, wenn das Spiel gestartet wird.",
-  "neoforge.configuration.uitext.restart.server.title": "Spielstand muss neu geladen werden",
+  "neoforge.configuration.uitext.restart.game.text": "Eine oder mehrere der geänderten Einstellungen sind nur wirksam, wenn das Spiel neu-gestartet wird.",
+  "neoforge.configuration.uitext.restart.server.title": "Welt muss neu geladen werden",
   "neoforge.configuration.uitext.restart.server.text": "Eine oder mehrere der geänderten Einstellungen sind nur wirksam, wenn die Welt neu geladen wird.",
   "neoforge.configuration.uitext.restart.return": "Ignorieren",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "Deine Änderungen haben keine Wirkung, bis das Spiel neu gestartet wird!",
-      "color": "red",
-      "bold": true
-    }
-  ],
-  "neoforge.configuration.title": "NeoForge-Konfiguration",
+  "neoforge.configuration.uitext.restart.return.tooltip": "Deine Änderungen haben keine Wirkung, bis das Spiel neu gestartet wird!",
+  "neoforge.configuration.title": "NeoForge Konfiguration",
   "neoforge.configuration.section.neoforge.client.toml": "Client-Einstellungen",
   "neoforge.configuration.section.neoforge.client.toml.title": "Client-Einstellungen",
   "neoforge.configuration.section.neoforge.common.toml": "Gemeinsame Einstellungen",
@@ -237,32 +181,20 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Aktiviert die NeoForge Block-Darstellungs-Pipeline - korrigiert die Beleuchtung von benutzerdefinierten Modellen.",
   "neoforge.configgui.fullBoundingBoxLadders": "Leitern im gesamten Kollisionsbereich",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Ändere dies zu 'true', um den gesamten Kollisionsbereich einer Entität, anstatt nur den Block, in dem sie sich befindet, auf Leitern zu überprüfen. Verursacht merkliche Unterschiede in der Spielmechanik, daher ist die Standardeinstellung die Vanilla-Funktionsweise. Standardwert: 'false'.",
-  "neoforge.configgui.logLegacyTagWarnings": "Veraltete Tags melden",
-  "neoforge.configgui.logLegacyTagWarnings.tooltip": "Eine Konfiguration, die hauptsächlich für Entwickler gedacht ist. Meldet Tags von Mods im Log, die den 'forge'-Namensraum verwenden, wenn man der integrierte Server verwendet. Standard ist DEV_SHORT.",
-  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Unübersetzte Konfigurationstexte melden",
+  "neoforge.configgui.logLegacyTagWarnings": "Veraltete Tags protokollieren",
+  "neoforge.configgui.logLegacyTagWarnings.tooltip": "Eine Konfigurationsoption hauptsächlich für Entwickler. Protokolliert Tags von Modifikationen, die den 'forge'-Namensraum verwenden, wenn sie auf einem integrierten Server ausgeführt werden. Standard ist DEV_SHORT.",
+  "neoforge.configgui.logUntranslatedConfigurationWarnings": "Nicht übersetzte Konfigurationsschlüssel protokollieren",
   "neoforge.configgui.logUntranslatedConfigurationWarnings.tooltip": "Eine Konfiguration, die hauptsächlich für Entwickler gedacht ist. Meldet Konfigurationswerte im Log, die keine Übersetzung haben, wenn man den Client in einer Entwicklungsumgebung verwendet.",
-  "neoforge.configgui.logUntranslatedItemTagWarnings": "Unübersetzte Item-Tags melden",
+  "neoforge.configgui.logUntranslatedItemTagWarnings": "Nicht übersetzte Item-Tags protokollieren",
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Eine Konfiguration, die hauptsächlich für Entwickler gedacht ist. Meldet Item-Tags von Mods im Log, die keine Übersetzungen haben, wenn man den integrierten Server verwendet. Das gewünschte Format ist tag.item.<namespace>.<path> für den Übersetzungsschlüssel. Standard ist SILENCED.",
   "neoforge.configgui.permissionHandler": "Berechtigungsverwalter",
   "neoforge.configgui.permissionHandler.tooltip": "Der vom Server verwendete Berechtigungsverwalter. Standard ist neoforge:default_handler, wenn kein Handler mit diesem Namen registriert wurde.",
   "neoforge.configgui.removeErroringBlockEntities": "Fehlerhafte Block-Entitäten entfernen",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Aktiviere diese Option, um alle Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen.\n\n",
-    {
-      "text": "SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN. SPARSAM VERWENDEN. WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Aktiviere diese Option, um alle Block-Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN. SPARSAM VERWENDEN. WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",
   "neoforge.configgui.removeErroringEntities": "Fehlerhafte Entitäten entfernen",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Aktiviere diese Option, um alle Block-Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen.\n\n",
-    {
-      "text": "SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN. SPARSAM VERWENDEN. WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",
-      "color": "red",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Aktiviere diese Option, um alle Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN. SPARSAM VERWENDEN. WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",
   "neoforge.configgui.showLoadWarnings": "Ladewarnungen anzeigen",
   "neoforge.configgui.showLoadWarnings.tooltip": "Wenn aktiviert, zeigt NeoForge alle Warnungen an, die beim Laden aufgetreten sind.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Kombinierten DEPTH_STENCIL-Aufsatz verwenden",

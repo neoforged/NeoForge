@@ -10,6 +10,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,11 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        // Vanilla Dimensions
+        addDimension(Level.OVERWORLD, "Overworld");
+        addDimension(Level.NETHER, "The Nether");
+        addDimension(Level.END, "The End");
+
         // Blocks
         add(Tags.Blocks.BARRELS, "Barrels");
         add(Tags.Blocks.BARRELS_WOODEN, "Wooden Barrels");
@@ -63,6 +69,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
         add(Tags.Blocks.NEEDS_NETHERITE_TOOL, "Needs Netherite Tools");
         add(Tags.Blocks.OBSIDIANS, "Obsidians");
+        add(Tags.Blocks.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Blocks.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
@@ -152,9 +160,14 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CONCRETE_POWDERS, "Concrete Powders");
         add(Tags.Items.CROPS, "Crops");
         add(Tags.Items.CROPS_BEETROOT, "Beetroot Crops");
+        add(Tags.Items.CROPS_CACTUS, "Cactus Crops");
         add(Tags.Items.CROPS_CARROT, "Carrot Crops");
+        add(Tags.Items.CROPS_COCOA_BEAN, "Cocoa Bean Crops");
+        add(Tags.Items.CROPS_MELON, "Melon Crops");
         add(Tags.Items.CROPS_NETHER_WART, "Nether Wart Crops");
         add(Tags.Items.CROPS_POTATO, "Potato Crops");
+        add(Tags.Items.CROPS_PUMPKIN, "Pumpkin Crops");
+        add(Tags.Items.CROPS_SUGAR_CANE, "Sugar Cane Crops");
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
         add(Tags.Items.DUSTS, "Dusts");
         add(Tags.Items.DUSTS_GLOWSTONE, "Glowstone Dusts");
@@ -193,6 +206,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");
         add(Tags.Items.FOODS_CANDY, "Candies");
+        add(Tags.Items.FOODS_PIE, "Pies");
         add(Tags.Items.FOODS_COOKED_FISH, "Cooked Fishes");
         add(Tags.Items.FOODS_COOKED_MEAT, "Cooked Meats");
         add(Tags.Items.FOODS_COOKIE, "Cookies");
@@ -204,6 +218,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_RAW_MEAT, "Raw Meats");
         add(Tags.Items.FOODS_SOUP, "Soups");
         add(Tags.Items.FOODS_VEGETABLE, "Vegetables");
+        add(Tags.Items.ANIMAL_FOODS, "Animal Foods");
         add(Tags.Items.GEMS, "Gems");
         add(Tags.Items.GEMS_AMETHYST, "Amethyst Gems");
         add(Tags.Items.GEMS_DIAMOND, "Diamond Gems");
@@ -235,6 +250,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.NUGGETS_IRON, "Iron Nuggets");
         add(Tags.Items.NUGGETS_GOLD, "Gold Nuggets");
         add(Tags.Items.OBSIDIANS, "Obsidians");
+        add(Tags.Items.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Items.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Items.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");

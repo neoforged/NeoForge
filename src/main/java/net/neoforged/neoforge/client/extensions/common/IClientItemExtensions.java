@@ -14,13 +14,17 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -124,6 +128,22 @@ public interface IClientItemExtensions {
     }
 
     /**
+     * Called when an armor piece is about to be rendered, allowing parts of the model to be animated or changed.
+     *
+     * @param itemStack       The item stack being worn
+     * @param livingEntity    The entity wearing the armor
+     * @param equipmentSlot   The slot the armor stack is being worn in
+     * @param model           The armor model being rendered
+     * @param limbSwing       The swing position of the entity's walk animation
+     * @param limbSwingAmount The swing speed of the entity's walk animation
+     * @param partialTick     The partial tick time
+     * @param ageInTicks      The total age of the entity, with partialTick already applied
+     * @param netHeadYaw      The yaw (Y rotation) of the entity's head
+     * @param headPitch       The pitch (X rotation) of the entity's head
+     */
+    default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
+
+    /**
      * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
      * <p>
      * This is where pumpkins would render their overlay.
@@ -164,6 +184,42 @@ public interface IClientItemExtensions {
      */
     default boolean shouldSpreadAsEntity(ItemStack stack) {
         return true;
+    }
+
+    /**
+     * Called when armor layers are rendered by {@link net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer}.
+     * <p>
+     * Allows custom dye colors to be specified per-layer; default vanilla behavior allows for only a single dye color
+     * (specified by the {@link net.minecraft.core.component.DataComponents#DYED_COLOR} data component) for all layers.
+     * <p>
+     * Returning 0 here will cause rendering of this layer to be skipped entirely; this is recommended if the layer
+     * doesn't need to be rendered for a particular armor slot.
+     *
+     * @param stack         the armor item stack being rendered
+     * @param entity        the entity wearing the armor
+     * @param layer         the armor layer being rendered
+     * @param layerIdx      an index into the list of layers for the {@code ArmorMaterial} used by this item
+     * @param fallbackColor the return value of {@link #getDefaultDyeColor(ItemStack)}, passed as a parameter for
+     *                      performance
+     * @return a custom color for the layer, in ARGB format, or 0 to skip rendering
+     */
+    default int getArmorLayerTintColor(ItemStack stack, LivingEntity entity, ArmorMaterial.Layer layer, int layerIdx, int fallbackColor) {
+        return layer.dyeable() ? fallbackColor : 0xFFFFFFFF;
+    }
+
+    /**
+     * Called once per render pass of equipped armor items, regardless of the number of layers; the return value of this
+     * method is passed to {@link #getArmorLayerTintColor(ItemStack, LivingEntity, ArmorMaterial.Layer, int, int)} as
+     * the {@code fallbackColor} parameter.
+     * <p>
+     * You can override this method for your custom armor item to provide an alternative default color for the item when
+     * no explicit color is specified.
+     *
+     * @param stack the armor item stack
+     * @return a default color for the layer, in ARGB format
+     */
+    default int getDefaultDyeColor(ItemStack stack) {
+        return stack.is(ItemTags.DYEABLE) ? FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(stack, DyedItemColor.LEATHER_COLOR)) : 0xFFFFFFFF;
     }
 
     enum FontContext {

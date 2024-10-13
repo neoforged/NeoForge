@@ -76,11 +76,11 @@
   "commands.neoforge.setdim.invalid.dim": "Вказаний ID виміру (%1$s) некоректний.",
   "commands.neoforge.setdim.invalid.nochange": "Обрана сутність (%1$s) вже у вказаному вимірі (%2$s).",
   "commands.neoforge.setdim.deprecated": "Ця команда застаріла і буде видалена у версії 1.17, використовуйте %s замість цього.",
-  "commands.neoforge.tps.invalid": "Неприпустимий вимір %1$s Можливі значення: %2$s",
-  "commands.neoforge.tps.summary.all": "Загалом: Середній час тіку: %1$s мс. Середній TPS: %2$s",
+  "commands.neoforge.tps.overall": "Загалом: %s TPS (%s мс/тік)",
+  "commands.neoforge.tps.tooltip": "Середній TPS; чим вище, тим краще. Цільовий TPS: %s",
+  "commands.neoforge.tps.dimension": "%s: %s TPS (%s мс/тік)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (Тип виміру: %s)",
   "commands.neoforge.mods.list": "Список модів: %1$s",
-  "commands.neoforge.tps.summary.basic": "Вимір %1$s: Середній час тіку: %2$s мс. Середній TPS: %3$s",
-  "commands.neoforge.tps.summary.named": "Вимір %1$s (%2$s): Середній час тіку: %3$s мс. Середній TPS: %4$s",
   "commands.neoforge.tracking.entity.enabled": "Відстеження сутностей увімкнено на %d секунд.",
   "commands.neoforge.tracking.entity.reset": "Данні таймінгів сутностей були очищені!",
   "commands.neoforge.tracking.invalid": "Невірні дані відстеження.",
@@ -115,6 +115,14 @@
   "commands.neoforge.timespeed.query.default": "Час в %s тече нормально (20 хвилин на день).",
   "commands.neoforge.timespeed.set": "Встановіть час в %s до %sx (%s хвилин на день).",
   "commands.neoforge.timespeed.set.default": "Встановіть потік часу в %s за замовчуванням (20 хвилин на день).",
+  "commands.neoforge.data_components.list.error.held_stack_empty": "Ви не тримаєте будь-який предмет",
+  "commands.neoforge.data_components.list.title": "Компоненти даних на %s:",
+  "commands.neoforge.data_components.list.entry": "\n  - %s",
+  "commands.neoforge.data_components.list.entry.key_value": "%s: %s",
+  "commands.neoforge.data_components.list.tooltip.default": "Компонент %s зберігає його значення за замовчуванням",
+  "commands.neoforge.data_components.list.tooltip.deleted": "Компонент %s зі значенням %s було видалено",
+  "commands.neoforge.data_components.list.tooltip.modified": "Компонент %s був змінений з %s в %s",
+  "commands.neoforge.data_components.list.tooltip.added": "Компонент %s був доданий зі значенням %s",
   "commands.config.getwithtype": "Конфіг для %s типу %s знайдена в %s",
   "commands.config.noconfig": "Конфіг для %s типу %s не знайдено",
   "neoforge.update.beta.1": "%sПОПЕРЕДЖЕННЯ: %sNeoForge Beta",
@@ -130,51 +138,15 @@
   "neoforge.configuration.uitext.title.server": "Серверна конфігурація %s",
   "neoforge.configuration.uitext.title.common": "Загальна конфігурація %s",
   "neoforge.configuration.uitext.title.startup": "Запускова конфігурація %s",
-  "neoforge.configuration.uitext.notonline": [
-    {
-      "text": "Налаштування тут визначаються сервером і не можуть бути змінені доки ви в мережі.",
-      "color": "червоний"
-    }
-  ],
-  "neoforge.configuration.uitext.notlan": [
-    {
-      "text": "Налаштування тут не можуть бути відредаговані, поки ваша гра відкрита для локальної мережі. Будь ласка, поверніться до головного меню і завантажте світ ще раз.",
-      "color": "червоний"
-    }
-  ],
-  "neoforge.configuration.uitext.notloaded": [
-    {
-      "text": "Налаштування тут доступні після завантаження світу.",
-      "color": "червоний"
-    }
-  ],
-  "neoforge.configuration.uitext.unsupportedelement": [
-    {
-      "text": "Це значення не можна редагувати в інтерфейсі. Будь ласка, зв'яжіться з автором мода про надання користувацького інтерфейсу для нього.",
-      "color": "червоний"
-    }
-  ],
-  "neoforge.configuration.uitext.longstring": [
-    {
-      "text": "Це значення задовге для редагування в інтерфейсі. Будь ласка, відредагуйте його у файлі конфігурації.",
-      "color": "червоний"
-    }
-  ],
+  "neoforge.configuration.uitext.notonline": "Налаштування тут визначаються сервером і не можуть бути змінені доки ви в мережі.",
+  "neoforge.configuration.uitext.notlan": "Налаштування тут не можуть бути відредаговані, поки ваша гра відкрита для локальної мережі. Будь ласка, поверніться до головного меню і завантажте світ ще раз.",
+  "neoforge.configuration.uitext.notloaded": "Налаштування тут доступні після завантаження світу.",
+  "neoforge.configuration.uitext.unsupportedelement": "Це значення не можна редагувати в інтерфейсі. Будь ласка, зв'яжіться з автором мода про надання користувацького інтерфейсу для нього.",
+  "neoforge.configuration.uitext.longstring": "Це значення задовге для редагування в інтерфейсі. Будь ласка, відредагуйте його у файлі конфігурації.",
   "neoforge.configuration.uitext.section": "%s...",
   "neoforge.configuration.uitext.sectiontext": "Змінити",
-  "neoforge.configuration.uitext.breadcrumb": [
-    {
-      "index": 0
-    },
-    {
-      "text": " > ",
-      "color": "золотий",
-      "bold": true
-    },
-    {
-      "index": 1
-    }
-  ],
+  "neoforge.configuration.uitext.breadcrumb.order": "%1$s %2$s %3$s",
+  "neoforge.configuration.uitext.breadcrumb.separator": ">",
   "neoforge.configuration.uitext.listelement": "%s:",
   "neoforge.configuration.uitext.undo": "Скасувати",
   "neoforge.configuration.uitext.undo.tooltip": "Повертає зміни тільки на цьому екрані.",
@@ -184,30 +156,8 @@
   "neoforge.configuration.uitext.listelementup": "⏶",
   "neoforge.configuration.uitext.listelementdown": "⏷",
   "neoforge.configuration.uitext.listelementremove": "❌",
-  "neoforge.configuration.uitext.rangetooltip": [
-    {
-      "text": "\n\nДіапазон: ",
-      "color": "сірий"
-    },
-    {
-      "index": 0,
-      "color": "сірий"
-    }
-  ],
-  "neoforge.configuration.uitext.filenametooltip": [
-    {
-      "text": "Файл: \"",
-      "color": "сірий"
-    },
-    {
-      "index": 0,
-      "color": "сірий"
-    },
-    {
-      "text": "\"",
-      "color": "сірий"
-    }
-  ],
+  "neoforge.configuration.uitext.rangetooltip": "Range: %s",
+  "neoforge.configuration.uitext.filenametooltip": "File: \"%s\"",
   "neoforge.configuration.uitext.common": "Загальні параметри",
   "neoforge.configuration.uitext.client": "Клієнтські параметри",
   "neoforge.configuration.uitext.server": "Серверні параметри",
@@ -217,13 +167,7 @@
   "neoforge.configuration.uitext.restart.server.title": "Світ має бути перезавантажений",
   "neoforge.configuration.uitext.restart.server.text": "Один чи кілька параметрів конфігурації, які були змінені, набудуть чинності лише після перезавантаження світу.",
   "neoforge.configuration.uitext.restart.return": "Ігнорувати",
-  "neoforge.configuration.uitext.restart.return.tooltip": [
-    {
-      "text": "Зміни не матимуть ніякого ефекту, поки ви не перезавантажитеся!",
-      "color": "червоний",
-      "bold": true
-    }
-  ],
+  "neoforge.configuration.uitext.restart.return.tooltip": "Зміни не матимуть ніякого ефекту, поки ви не перезавантажитеся!",
   "neoforge.configuration.title": "Конфігурація NeoForge",
   "neoforge.configuration.section.neoforge.client.toml": "Клієнтські налаштування",
   "neoforge.configuration.section.neoforge.client.toml.title": "Клієнтські налаштування",
@@ -246,23 +190,11 @@
   "neoforge.configgui.permissionHandler": "Менеджер дозволів",
   "neoforge.configgui.permissionHandler.tooltip": "Менеджер дозволів, що використовує сервер. За замовчуванням neoforge:default_handler, коли такого обробника не зареєстровано з таким іменем.",
   "neoforge.configgui.removeErroringBlockEntities": "Видалити блок-сутності, які викликають помилки",
-  "neoforge.configgui.removeErroringBlockEntities.tooltip": [
-    "Встановіть значення \"true\", для видалення будь-якого об'єкта, що спричиняє помилки в методі оновлення, замість закриття сервера та створення журналу про аварію.\n\n",
-    {
-      "text": "УВАГА: ЦЕ МОЖЕ ПОШКОДИТИ ВСЕ.\nВИКОРИСТОВУЙТЕ ОБЕРЕЖНО.\nМИ НЕ ВІДПОВІДАЛЬНІ ЗА ПОШКОДЖЕННЯ.",
-      "color": "червоний",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "УВАГА: ЦЕ МОЖЕ ПОШКОДИТИ ВСЕ.\nВИКОРИСТОВУЙТЕ ОБЕРЕЖНО.\nМИ НЕ ВІДПОВІДАЛЬНІ ЗА ПОШКОДЖЕННЯ.",
   "neoforge.configgui.removeErroringEntities": "Видалити сутності, які викликають помилки",
-  "neoforge.configgui.removeErroringEntities.tooltip": [
-    "Встановіть значення \"true\", для видалення будь-якого блок-сутності, що спричиняє помилки в методі оновлення, замість закриття сервера та створення журналу про аварію.\n\n",
-    {
-      "text": "УВАГА: ЦЕ МОЖЕ ПОШКОДИТИ ВСЕ.\nВИКОРИСТОВУЙТЕ ОБЕРЕЖНО.\nМИ НЕ ВІДПОВІДАЛЬНІ ЗА ПОШКОДЖЕННЯ.",
-      "color": "червоний",
-      "bold": true
-    }
-  ],
+  "neoforge.configgui.removeErroringEntities.tooltip": "Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log.",
+  "neoforge.configgui.removeErroringEntities.tooltip.warning": "УВАГА: ЦЕ МОЖЕ ПОШКОДИТИ ВСЕ.\nВИКОРИСТОВУЙТЕ ОБЕРЕЖНО.\nМИ НЕ ВІДПОВІДАЛЬНІ ЗА ПОШКОДЖЕННЯ.",
   "neoforge.configgui.showLoadWarnings": "Показувати попередження при завантаженні",
   "neoforge.configgui.showLoadWarnings.tooltip": "Коли увімкнено, NeoForge покаже всі попередження, що сталися під час завантаження.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Використовувати комбінований атрибут DEPTH_STENCIL",

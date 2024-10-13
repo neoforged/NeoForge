@@ -116,6 +116,12 @@ public class Tags {
         public static final TagKey<Block> NETHERRACKS = tag("netherracks");
         public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
+         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         */
+        public static final TagKey<Block> OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final TagKey<Block> OBSIDIANS_CRYING = tag("obsidians/crying");
+        /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */
         public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
@@ -315,11 +321,20 @@ public class Tags {
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
         public static final TagKey<Item> CLUSTERS = tag("clusters");
+        /**
+         * For raw materials harvested from growable plants. Crop items can be edible like carrots or
+         * non-edible like wheat and cocoa beans.
+         */
         public static final TagKey<Item> CROPS = tag("crops");
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
+        public static final TagKey<Item> CROPS_CACTUS = tag("crops/cactus");
         public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
+        public static final TagKey<Item> CROPS_COCOA_BEAN = tag("crops/cocoa_bean");
+        public static final TagKey<Item> CROPS_MELON = tag("crops/melon");
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
+        public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
+        public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
@@ -415,6 +430,10 @@ public class Tags {
          */
         public static final TagKey<Item> FOODS_CANDY = tag("foods/candy");
         /**
+         * Pies and other pie-like foods belong in this tag.
+         */
+        public static final TagKey<Item> FOODS_PIE = tag("foods/pie");
+        /**
          * Any gold-based foods would go in this tag. Such as Golden Apples or Glistering Melon Slice.
          */
         public static final TagKey<Item> FOODS_GOLDEN = tag("foods/golden");
@@ -427,6 +446,11 @@ public class Tags {
          * Examples are Rotten Flesh's Hunger or Pufferfish's Nausea, or Poisonous Potato's Poison.
          */
         public static final TagKey<Item> FOODS_FOOD_POISONING = tag("foods/food_poisoning");
+        /**
+         * All foods edible by animals excluding poisonous foods.
+         * (Does not include {@link ItemTags#PARROT_POISONOUS_FOOD})
+         */
+        public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
@@ -471,6 +495,12 @@ public class Tags {
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");
         public static final TagKey<Item> OBSIDIANS = tag("obsidians");
+        /**
+         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         */
+        public static final TagKey<Item> OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final TagKey<Item> OBSIDIANS_CRYING = tag("obsidians/crying");
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */
@@ -1128,16 +1158,11 @@ public class Tags {
         ResourceLocation registryIdentifier = tagKey.registry().location();
         ResourceLocation tagIdentifier = tagKey.location();
 
-        if (!registryIdentifier.getNamespace().equals("minecraft")) {
-            stringBuilder.append(registryIdentifier.getNamespace())
-                    .append(".");
-        }
-
-        stringBuilder.append(registryIdentifier.getPath().replace("/", "."))
+        stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))
                 .append(".")
                 .append(tagIdentifier.getNamespace())
                 .append(".")
-                .append(tagIdentifier.getPath().replace("/", ".").replace(":", "."));
+                .append(tagIdentifier.getPath().replace("/", "."));
 
         return stringBuilder.toString();
     }

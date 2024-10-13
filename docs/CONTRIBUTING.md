@@ -12,20 +12,21 @@ Contributing to NeoForge
 1. Have preliminary discussions on Discord (`#neoforge-github`)
 2. Fork the repository
 3. Check out your fork
-4. Make a branch
-5. Run `gradlew setup` from the project root to decompile sources and apply current patches
-6. Import project into your IDE (IntelliJ/Eclipse) or Reload Gradle Project
-7. Modify the patched Minecraft sources in `projects/neoforge/src/main/java` as needed. The unmodified sources are available in `projects/base/src/main/java` for your reference. Do not modify these.
-8. Test your changes
+4. Fetch tags from the upstream repository by running `git remote add upstream https://github.com/neoforged/NeoForge.git` followed by `git fetch upstream --tags`
+5. Make a branch
+6. Run `gradlew setup` from the project root to decompile sources and apply current patches
+7. Import project into your IDE (IntelliJ/Eclipse) or Reload Gradle Project
+8. Modify the patched Minecraft sources in `projects/neoforge/src/main/java` as needed. The unmodified sources are available in `projects/base/src/main/java` for your reference. Do not modify these.
+9. Test your changes
    - Run the game (Runs are available in the IDE)
    - Run `gradlew :tests:runGameTestServer` or `Tests: GameTestServer` from IDE
    - Run `gradlew :tests:runGameTestClient` or `Tests: GameTestClient` from IDE
    - If possible, write an automated test under the tests project. See [NEOGAMETESTS.md](NEOGAMETESTS.md) for more info.
-9. Run `gradlew unpackSourcePatches` to generate patch-files from the patched sources
-10. Run `gradlew applyAllFormatting` to automatically format sources
-11. Check correct formatting with `gradlew spotlessCheck`
-12. Commit & Push
-13. Make PR
+10. Run `gradlew unpackSourcePatches` to generate patch-files from the patched sources
+11. Run `gradlew applyAllFormatting` to automatically format sources
+12. Check correct formatting with `gradlew spotlessCheck`
+13. Commit & Push
+14. Make PR
 
 ## Porting
 

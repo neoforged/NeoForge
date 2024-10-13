@@ -133,11 +133,11 @@ public class MegaModelTest {
 
             @Override
             public ModelData getModelData() {
-                return ModelData.builder().with(TestData.PROPERTY, new TestData(new Transformation(
+                return ModelData.of(TestData.PROPERTY, new TestData(new Transformation(
                         new Vector3f(0, y * 0.2f, 0),
                         new Quaternionf(1f, 1f, 1f, 1f),
                         Transformation.identity().getScale(),
-                        new Quaternionf(1f, 1f, 1f, 1f)))).build();
+                        new Quaternionf(1f, 1f, 1f, 1f))));
             }
         }
     }

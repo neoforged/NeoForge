@@ -11,15 +11,20 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.DataMapHooks;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
@@ -74,6 +79,19 @@ public class NeoForgeDataMaps {
             id("monster_room_mobs"), Registries.ENTITY_TYPE, MonsterRoomMob.CODEC).synced(MonsterRoomMob.WEIGHT_CODEC, false).build();
 
     /**
+     * The {@linkplain Block} data map that replaces {@link WeatheringCopper#NEXT_BY_BLOCK}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/block/oxidizables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code next_oxidized_stage}, a block that the object should convert into once it changes oxidizing states</li>
+     * </ul>
+     *
+     * The inverted map of this can be found at {@link DataMapHooks#getInverseOxidizablesMap()}
+     */
+    public static final DataMapType<Block, Oxidizable> OXIDIZABLES = DataMapType.builder(
+            id("oxidizables"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.OXIDIZABLE_CODEC, false).build();
+
+    /**
      * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/entity_type/parrot_imitations.json}, and the values are objects with 1 field:
@@ -110,6 +128,19 @@ public class NeoForgeDataMaps {
     public static final DataMapType<GameEvent, VibrationFrequency> VIBRATION_FREQUENCIES = DataMapType.builder(
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
+    /**
+     * The {@linkplain Block} data map that replaces {@link HoneycombItem#WAXABLES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/block/waxables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code waxed}, a block that the object should convert into once it is right clicked with a {@link ItemAbilities#AXE_WAX_OFF} ability</li>
+     * </ul>
+     *
+     * The inverted map of this can be found at {@link DataMapHooks#INVERSE_WAXABLES_DATAMAP}
+     */
+    public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
+            id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
+
     private static ResourceLocation id(final String name) {
         return ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, name);
     }
@@ -119,8 +150,10 @@ public class NeoForgeDataMaps {
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
+        event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
+        event.register(WAXABLES);
     }
 }

@@ -109,6 +109,15 @@
             }
         },
         {
+            "enum": "net/minecraft/client/gui/font/providers/GlyphProviderType",
+            "name": "NEOTESTS_REFERENCE_2",
+            "constructor": "(Ljava/lang/String;Lcom/mojang/serialization/MapCodec;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/client/CustomGlyphProviderTypeTest",
+                "field": "REFERENCE_2_PARAMS"
+            }
+        },
+        {
             "enum": "net/minecraft/world/entity/vehicle/Boat$Type",
             "name": "NEOTESTS_PAPER",
             "constructor": "(Ljava/util/function/Supplier;Ljava/lang/String;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Z)V",

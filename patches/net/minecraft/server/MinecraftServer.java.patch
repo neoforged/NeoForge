@@ -9,6 +9,15 @@
          thread.setUncaughtExceptionHandler((p_177909_, p_177910_) -> LOGGER.error("Uncaught exception in server thread", p_177910_));
          if (Runtime.getRuntime().availableProcessors() > 4) {
              thread.setPriority(8);
+@@ -315,7 +_,7 @@
+             this.structureTemplateManager = new StructureTemplateManager(p_236726_.resourceManager(), p_236724_, p_236728_, holdergetter);
+             this.serverThread = p_236723_;
+             this.executor = Util.backgroundExecutor();
+-            this.potionBrewing = PotionBrewing.bootstrap(this.worldData.enabledFeatures());
++            this.potionBrewing = PotionBrewing.bootstrap(this.worldData.enabledFeatures(), this.registryAccess());
+         }
+     }
+ 
 @@ -372,6 +_,7 @@
          this.readScoreboard(dimensiondatastorage);
          this.commandStorage = new CommandStorage(dimensiondatastorage);

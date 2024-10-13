@@ -38,8 +38,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -205,6 +205,7 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
@@ -924,6 +925,17 @@ public class CommonHooks {
     }
 
     /**
+     * Fires the {@link SweepAttackEvent} and returns the resulting event.
+     *
+     * @param player         The attacking player.
+     * @param target         The attack target.
+     * @param isVanillaSweep If the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}.
+     */
+    public static SweepAttackEvent fireSweepAttack(Player player, Entity target, boolean isVanillaSweep) {
+        return NeoForge.EVENT_BUS.post(new SweepAttackEvent(player, target, isVanillaSweep));
+    }
+
+    /**
      * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#forEachModifier(EquipmentSlot, BiConsumer)} instead.
      */
     public static ItemAttributeModifiers computeModifiedAttributes(ItemStack stack, ItemAttributeModifiers defaultModifiers) {
@@ -1308,7 +1320,7 @@ public class CommonHooks {
     }
 
     public static boolean canUseEntitySelectors(SharedSuggestionProvider provider) {
-        if (provider.hasPermission(Commands.LEVEL_GAMEMASTERS)) {
+        if (EntitySelectorParser.allowSelectors(provider)) {
             return true;
         } else if (provider instanceof CommandSourceStack source && source.source instanceof ServerPlayer player) {
             return PermissionAPI.getPermission(player, NeoForgeMod.USE_SELECTORS_PERMISSION);

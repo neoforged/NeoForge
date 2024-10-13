@@ -86,6 +86,7 @@ import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.CeilingHangingSignBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FurnaceBlock;
@@ -96,6 +97,7 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WallHangingSignBlock;
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -162,6 +164,8 @@ public class DataGeneratorTest {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
+                .add(GeneratingOverlayMetadataSection.NEOFORGE_TYPE, new GeneratingOverlayMetadataSection(List.of(
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("neoforge")),
@@ -740,6 +744,7 @@ public class DataGeneratorTest {
             pressurePlateBlock((PressurePlateBlock) Blocks.ACACIA_PRESSURE_PLATE, blockTexture(Blocks.ACACIA_PLANKS));
 
             signBlock((StandingSignBlock) Blocks.ACACIA_SIGN, (WallSignBlock) Blocks.ACACIA_WALL_SIGN, blockTexture(Blocks.ACACIA_PLANKS));
+            hangingSignBlock((CeilingHangingSignBlock) Blocks.ACACIA_HANGING_SIGN, (WallHangingSignBlock) Blocks.ACACIA_WALL_HANGING_SIGN, blockTexture(Blocks.STRIPPED_ACACIA_LOG));
 
             simpleBlock(Blocks.TORCH, models().torch("torch", mcLoc("block/torch")));
             horizontalBlock(Blocks.WALL_TORCH, models().torchWall("wall_torch", mcLoc("block/torch")), 90);
