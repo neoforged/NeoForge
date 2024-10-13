@@ -1047,6 +1047,9 @@ public class Tags {
          * Biomes whose theme revolves around magic. Like a forest full of fairies or plants of magical abilities.
          */
         public static final TagKey<Biome> IS_MAGICAL = tag("is_magical");
+        /**
+         * Intended for biomes that spawns infrequently and can be difficult to find.
+         */
         public static final TagKey<Biome> IS_RARE = tag("is_rare");
         public static final TagKey<Biome> IS_PLATEAU = tag("is_plateau");
         public static final TagKey<Biome> IS_MODIFIED = tag("is_modified");
