@@ -27,7 +27,7 @@
  
      private Ingredient(HolderSet<Item> p_365027_) {
          p_365027_.unwrap().ifRight(p_360057_ -> {
-@@ -48,19 +_,32 @@
+@@ -48,19 +_,31 @@
          this.values = p_365027_;
      }
  
@@ -40,7 +40,6 @@
          return p_362504_.<Boolean>map(p_360060_ -> p_360060_.test(p_363604_)).orElseGet(p_363604_::isEmpty);
      }
  
-+
      public List<Holder<Item>> items() {
          if (this.items == null) {
 -            this.items = ImmutableList.copyOf(this.values);
