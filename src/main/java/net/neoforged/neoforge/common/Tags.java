@@ -1051,6 +1051,9 @@ public class Tags {
          * Intended for biomes that spawns infrequently and can be difficult to find.
          */
         public static final TagKey<Biome> IS_RARE = tag("is_rare");
+        /**
+         * Biomes that spawn as a flat-topped hill often.
+         */
         public static final TagKey<Biome> IS_PLATEAU = tag("is_plateau");
         public static final TagKey<Biome> IS_MODIFIED = tag("is_modified");
         public static final TagKey<Biome> IS_SPOOKY = tag("is_spooky");
