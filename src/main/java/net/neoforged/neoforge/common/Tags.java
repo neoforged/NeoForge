@@ -486,6 +486,9 @@ public class Tags {
         public static final TagKey<Item> INGOTS_IRON = tag("ingots/iron");
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
         public static final TagKey<Item> LEATHERS = tag("leathers");
+        /**
+         * Small mushroom items. Not the full block forms.
+         */
         public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
         /**
          * For music disc-like materials to be used in recipes.
