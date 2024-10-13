@@ -1043,6 +1043,9 @@ public class Tags {
          * Biomes whose flora primarily consists of vibrant thick vegetation and pools of water. Think of Lush Caves as an example.
          */
         public static final TagKey<Biome> IS_LUSH = tag("is_lush");
+        /**
+         * Biomes whose theme revolves around magic. Like a forest full of fairies or plants of magical abilities.
+         */
         public static final TagKey<Biome> IS_MAGICAL = tag("is_magical");
         public static final TagKey<Biome> IS_RARE = tag("is_rare");
         public static final TagKey<Biome> IS_PLATEAU = tag("is_plateau");
