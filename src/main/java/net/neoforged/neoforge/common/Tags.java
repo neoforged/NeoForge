@@ -1055,6 +1055,9 @@ public class Tags {
          * Biomes that spawn as a flat-topped hill often.
          */
         public static final TagKey<Biome> IS_PLATEAU = tag("is_plateau");
+        /**
+         * For biomes that are intended to be creepy or scary. For example, see Deep Dark biome or Dark Forest biome.
+         */
         public static final TagKey<Biome> IS_SPOOKY = tag("is_spooky");
         /**
          * Biomes that lack any natural life or vegetation.
