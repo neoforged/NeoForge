@@ -12,7 +12,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 /** Ingredient that matches everything from the first ingredient that is not included in the second ingredient */
@@ -37,14 +36,6 @@ public record DifferenceIngredient(Ingredient base, Ingredient subtracted) imple
     @Override
     public boolean isSimple() {
         return base.isSimple() && subtracted.isSimple();
-    }
-
-    @Override
-    public SlotDisplay display() {
-        // TODO: better handling in case the subingredients are not simple?
-        return new SlotDisplay.Composite(items()
-                .map(Ingredient::displayForSingleItem)
-                .toList());
     }
 
     @Override

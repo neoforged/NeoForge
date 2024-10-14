@@ -72,8 +72,17 @@ public interface ICustomIngredient {
      * Returns the display for this ingredient.
      *
      * <p>The display is synced to the client, and is also used to retrieve the {@link ItemStack}s that are shown to the client.
+     *
+     * @implNote The default implementation just constructs a list of stacks from {@link #items()}.
+     *           This is generally suitable for {@link #isSimple() simple} ingredients.
+     *           Non-simple ingredients can either override this method to provide a more customized display,
+     *           or let data pack writers use {@link CustomDisplayIngredient} to override the display of an ingredient.
      */
-    SlotDisplay display();
+    default SlotDisplay display() {
+        return new SlotDisplay.Composite(items()
+                .map(Ingredient::displayForSingleItem)
+                .toList());
+    }
 
     /**
      * {@return a new {@link Ingredient} behaving as defined by this custom ingredient}
