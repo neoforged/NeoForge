@@ -560,13 +560,14 @@ public class Tags {
         public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
-         * Items that can hold various potion effects similar to how potion bottles do.
+         * Items that can hold various potion effects by making use of {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}.
          * Contents of this tag may not always be a kind of bottle. Buckets of potions could go here.
          * The subtags would be the name of the container that is holding the potion effects such as `c:potions/bucket` or `c:potions/vial` as examples.
          */
         public static final TagKey<Item> POTIONS = tag("potions");
         /**
-         * Variations of the potion bottle that can hold various effects. Examples are splash and lingering potions from vanilla.
+         * Variations of the potion bottle that can hold various effects by using {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}.
+         * Examples are splash and lingering potions from vanilla.
          * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
          */
         public static final TagKey<Item> POTION_BOTTLE = tag("potions/bottle");
