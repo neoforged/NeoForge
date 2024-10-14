@@ -35,7 +35,6 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tag(Tags.Biomes.IS_OVERWORLD).addTags(BiomeTags.IS_OVERWORLD);
 
         tag(Tags.Biomes.IS_HOT_OVERWORLD)
-                .add(Biomes.MANGROVE_SWAMP)
                 .add(Biomes.JUNGLE)
                 .add(Biomes.BAMBOO_JUNGLE)
                 .add(Biomes.SPARSE_JUNGLE)
@@ -47,6 +46,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.SAVANNA_PLATEAU)
                 .add(Biomes.WINDSWEPT_SAVANNA)
                 .add(Biomes.STONY_PEAKS)
+                .add(Biomes.MUSHROOM_FIELDS)
                 .add(Biomes.WARM_OCEAN);
         tag(Tags.Biomes.IS_HOT_NETHER)
                 .add(Biomes.NETHER_WASTES)
@@ -98,6 +98,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.CHERRY_GROVE)
                 .add(Biomes.MEADOW)
                 .add(Biomes.SWAMP)
+                .add(Biomes.MANGROVE_SWAMP)
                 .add(Biomes.BEACH)
                 .add(Biomes.OCEAN)
                 .add(Biomes.DEEP_OCEAN);
