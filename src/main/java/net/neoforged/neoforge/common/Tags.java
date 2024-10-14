@@ -895,7 +895,7 @@ public class Tags {
         public static final TagKey<Biome> IS_VOID = tag("is_void");
 
         /**
-         * Biomes that are between above 0.8 temperature. (Excluding 0.8)
+         * Biomes that are above 0.8 temperature. (Excluding 0.8)
          */
         public static final TagKey<Biome> IS_HOT = tag("is_hot");
         public static final TagKey<Biome> IS_HOT_OVERWORLD = tag("is_hot/overworld");
@@ -911,7 +911,7 @@ public class Tags {
         public static final TagKey<Biome> IS_TEMPERATE_END = tag("is_temperate/end");
 
         /**
-         * Biomes that are between below 0.5 temperature. (Excluding 0.5)
+         * Biomes that are below 0.5 temperature. (Excluding 0.5)
          */
         public static final TagKey<Biome> IS_COLD = tag("is_cold");
         public static final TagKey<Biome> IS_COLD_OVERWORLD = tag("is_cold/overworld");
