@@ -560,7 +560,8 @@ public class Tags {
         public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
-         * All kinds of potion items that can hold various effects including splash and lingering potions from vanilla.
+         * Variations of the Potion bottle that can hold various effects. Examples are Splash and Lingering Potions from vanilla.
+         * If a mod adds a new variant like Seeking Potion that applies effect to the closest entity at impact, that would in this tag.
          */
         public static final TagKey<Item> POTIONS = tag("potions");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
