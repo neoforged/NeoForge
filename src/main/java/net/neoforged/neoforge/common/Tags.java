@@ -135,12 +135,12 @@ public class Tags {
         public static final TagKey<Block> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
         /**
          * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
-         * (example, Redstone Ore)
+         * (example, Copper Ore)
          */
         public static final TagKey<Block> ORE_RATES_DENSE = tag("ore_rates/dense");
         /**
          * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
-         * (Example, Coal Ore)
+         * (Example, Iron Ore)
          */
         public static final TagKey<Block> ORE_RATES_SINGULAR = tag("ore_rates/singular");
         /**
@@ -520,15 +520,18 @@ public class Tags {
          */
         public static final TagKey<Item> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
         /**
-         * Ores which on average result in more than one resource worth of materials
+         * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
+         * (example, Copper Ore)
          */
         public static final TagKey<Item> ORE_RATES_DENSE = tag("ore_rates/dense");
         /**
-         * Ores which on average result in one resource worth of materials
+         * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Iron Ore)
          */
         public static final TagKey<Item> ORE_RATES_SINGULAR = tag("ore_rates/singular");
         /**
-         * Ores which on average result in less than one resource worth of materials
+         * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
          */
         public static final TagKey<Item> ORE_RATES_SPARSE = tag("ore_rates/sparse");
         public static final TagKey<Item> ORES = tag("ores");
@@ -891,20 +894,29 @@ public class Tags {
 
         public static final TagKey<Biome> IS_VOID = tag("is_void");
 
+        /**
+         * Biomes that are between above 0.8 temperature. (Excluding 0.8)
+         */
         public static final TagKey<Biome> IS_HOT = tag("is_hot");
         public static final TagKey<Biome> IS_HOT_OVERWORLD = tag("is_hot/overworld");
         public static final TagKey<Biome> IS_HOT_NETHER = tag("is_hot/nether");
         public static final TagKey<Biome> IS_HOT_END = tag("is_hot/end");
 
-        public static final TagKey<Biome> IS_COLD = tag("is_cold");
-        public static final TagKey<Biome> IS_COLD_OVERWORLD = tag("is_cold/overworld");
-        public static final TagKey<Biome> IS_COLD_NETHER = tag("is_cold/nether");
-        public static final TagKey<Biome> IS_COLD_END = tag("is_cold/end");
-
+        /**
+         * Biomes that are between 0.5 and 0.8 temperature range. (Including 0.5 and 0.8)
+         */
         public static final TagKey<Biome> IS_TEMPERATE = tag("is_temperate");
         public static final TagKey<Biome> IS_TEMPERATE_OVERWORLD = tag("is_temperate/overworld");
         public static final TagKey<Biome> IS_TEMPERATE_NETHER = tag("is_temperate/nether");
         public static final TagKey<Biome> IS_TEMPERATE_END = tag("is_temperate/end");
+
+        /**
+         * Biomes that are between below 0.5 temperature. (Excluding 0.5)
+         */
+        public static final TagKey<Biome> IS_COLD = tag("is_cold");
+        public static final TagKey<Biome> IS_COLD_OVERWORLD = tag("is_cold/overworld");
+        public static final TagKey<Biome> IS_COLD_NETHER = tag("is_cold/nether");
+        public static final TagKey<Biome> IS_COLD_END = tag("is_cold/end");
 
         /**
          * If a biome has trees but spawn infrequently like a Savanna or Sparse Jungle, then the biome is considered having sparse vegetation. It does NOT mean no trees.
