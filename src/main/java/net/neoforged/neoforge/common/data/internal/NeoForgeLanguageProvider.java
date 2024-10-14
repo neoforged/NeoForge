@@ -275,7 +275,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.POTIONS, "Potions");
-        add(Tags.Items.POTION_BOTTLED, "Bottled Potions");
+        add(Tags.Items.POTION_BOTTLE, "Bottle Potions");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");

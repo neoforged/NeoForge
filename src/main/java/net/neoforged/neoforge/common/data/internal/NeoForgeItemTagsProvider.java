@@ -196,8 +196,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.ORES_IN_GROUND_STONE, Tags.Items.ORES_IN_GROUND_STONE);
         copy(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES);
         copy(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, Tags.Items.PLAYER_WORKSTATIONS_FURNACES);
-        tag(Tags.Items.POTION_BOTTLED).add(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
-        tag(Tags.Items.POTIONS).addTags(Tags.Items.POTION_BOTTLED);
+        tag(Tags.Items.POTION_BOTTLE).add(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
+        tag(Tags.Items.POTIONS).addTags(Tags.Items.POTION_BOTTLE);
         tag(Tags.Items.RAW_MATERIALS).addTags(Tags.Items.RAW_MATERIALS_COPPER, Tags.Items.RAW_MATERIALS_GOLD, Tags.Items.RAW_MATERIALS_IRON);
         tag(Tags.Items.RAW_MATERIALS_COPPER).add(Items.RAW_COPPER);
         tag(Tags.Items.RAW_MATERIALS_GOLD).add(Items.RAW_GOLD);
