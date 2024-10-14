@@ -562,6 +562,7 @@ public class Tags {
         /**
          * Items that can hold various potion effects similar to how potion bottles do.
          * Contents of this tag may not always be a kind of bottle. Buckets of potions could go here.
+         * The subtags would be the verb form of the container such as `c:potions/bucketed` or `c:potions/vialed`
          */
         public static final TagKey<Item> POTIONS = tag("potions");
         /**
