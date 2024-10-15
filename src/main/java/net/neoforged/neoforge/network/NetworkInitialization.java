@@ -40,7 +40,7 @@ public class NetworkInitialization {
         final PayloadRegistrar registrar = event.registrar("1") // Update this version if the payload semantics change.
                 .optional();
         registrar
-                .configurationToClient(
+                .commonToClient(
                         ConfigFilePayload.TYPE,
                         ConfigFilePayload.STREAM_CODEC,
                         ClientPayloadHandler::handle)

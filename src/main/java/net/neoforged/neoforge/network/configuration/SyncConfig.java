@@ -25,7 +25,7 @@ public record SyncConfig(ServerConfigurationPacketListener listener) implements 
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
-        ConfigSync.syncConfigs().forEach(sender);
+        ConfigSync.syncAllConfigs(listener);
         listener().finishCurrentTask(type());
     }
 
