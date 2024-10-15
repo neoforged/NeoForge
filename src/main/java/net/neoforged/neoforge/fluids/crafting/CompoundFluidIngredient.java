@@ -9,6 +9,8 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
@@ -22,7 +24,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * @see CompoundIngredient CompoundIngredient, its item equivalent
  */
 public final class CompoundFluidIngredient extends FluidIngredient {
-    public static final MapCodec<CompoundFluidIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(FluidIngredient.LIST_CODEC_NON_EMPTY, "children", "ingredients").xmap(CompoundFluidIngredient::new, CompoundFluidIngredient::children);
+    public static final MapCodec<CompoundFluidIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(FluidIngredient.CODEC.listOf(1, Integer.MAX_VALUE), "children", "ingredients").xmap(CompoundFluidIngredient::new, CompoundFluidIngredient::children);
 
     private final List<FluidIngredient> children;
 
@@ -37,8 +39,6 @@ public final class CompoundFluidIngredient extends FluidIngredient {
      * Creates a compound ingredient from the given list of ingredients.
      */
     public static FluidIngredient of(FluidIngredient... children) {
-        if (children.length == 0)
-            return FluidIngredient.empty();
         if (children.length == 1)
             return children[0];
 
@@ -49,21 +49,15 @@ public final class CompoundFluidIngredient extends FluidIngredient {
      * Creates a compound ingredient from the given list of ingredients.
      */
     public static FluidIngredient of(List<FluidIngredient> children) {
-        if (children.isEmpty())
-            return FluidIngredient.empty();
         if (children.size() == 1)
             return children.getFirst();
 
         return new CompoundFluidIngredient(children);
     }
 
-    public static FluidIngredient of(Stream<FluidIngredient> stream) {
-        return of(stream.toList());
-    }
-
     @Override
-    public Stream<FluidStack> generateStacks() {
-        return children.stream().flatMap(FluidIngredient::generateStacks);
+    public Stream<Holder<Fluid>> generateFluids() {
+        return children.stream().flatMap(FluidIngredient::generateFluids);
     }
 
     @Override
