@@ -16,6 +16,11 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+/**
+ * Slot display for a given fluid stack, including fluid amount and data components.
+ *
+ * @param stack The fluid stack to be displayed.
+ */
 public record FluidStackSlotDisplay(FluidStack stack) implements SlotDisplay {
     public static final MapCodec<FluidStackSlotDisplay> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(FluidStack.CODEC.fieldOf("fluid").forGetter(FluidStackSlotDisplay::stack))
             .apply(instance, FluidStackSlotDisplay::new));

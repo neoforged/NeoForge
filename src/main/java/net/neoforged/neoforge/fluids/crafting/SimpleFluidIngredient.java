@@ -15,10 +15,12 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 
 /**
  * Fluid ingredient that matches the fluids specified by the given {@link HolderSet}.
@@ -68,6 +70,13 @@ public class SimpleFluidIngredient extends FluidIngredient {
     @Override
     public FluidIngredientType<?> getType() {
         return NeoForgeMod.SIMPLE_FLUID_INGREDIENT_TYPE.get();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return values.unwrapKey()
+                .<SlotDisplay>map(FluidTagSlotDisplay::new)
+                .orElseGet(super::display);
     }
 
     @Override

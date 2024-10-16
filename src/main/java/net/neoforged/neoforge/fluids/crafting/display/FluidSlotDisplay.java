@@ -20,6 +20,13 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
+/**
+ * Slot display for a single fluid holder.
+ * <p>
+ * Note that information on amount and data of the displayed fluid stack depends on the provided factory!
+ *
+ * @param fluid The fluid to be displayed.
+ */
 public record FluidSlotDisplay(Holder<Fluid> fluid) implements SlotDisplay {
     public static final MapCodec<FluidSlotDisplay> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(RegistryFixedCodec.create(Registries.FLUID).fieldOf("fluid").forGetter(FluidSlotDisplay::fluid))
             .apply(instance, FluidSlotDisplay::new));

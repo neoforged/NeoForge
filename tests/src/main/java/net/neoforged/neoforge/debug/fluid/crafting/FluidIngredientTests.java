@@ -47,8 +47,8 @@ public class FluidIngredientTests {
         helper.assertFalse(singleJson.isJsonObject(), "single fluid ingredient should not serialize as nested object!");
         helper.assertFalse(tagJson.isJsonObject(), "tag fluid ingredient should not serialize as nested object!");
 
-        helper.assertValueEqual(singleJson.toString(), "minecraft:water", "serialized single fluid ingredient to match HolderSet element format!");
-        helper.assertValueEqual(tagJson.toString(), "#c:water", "serialized tag fluid ingredient to match HolderSet tag format!");
+        helper.assertValueEqual(singleJson.getAsString(), Fluids.WATER.builtInRegistryHolder().getRegisteredName(), "serialized single fluid ingredient to match HolderSet element format!");
+        helper.assertValueEqual(tagJson.getAsString(), Tags.Fluids.WATER.location().toString(), "serialized tag fluid ingredient to match HolderSet tag format!");
 
         // tests that deserializing simple ingredients is reproducible and produces the desired ingredients
         var singleTwo = FluidIngredient.CODEC.parse(ops, singleJson)
@@ -56,7 +56,7 @@ public class FluidIngredientTests {
                 .orElseThrow();
         helper.assertValueEqual(singleFluid, singleTwo, "single fluid ingredient to be the same after being serialized and deserialized!");
 
-        var tagTwo = FluidIngredient.CODEC.parse(JsonOps.INSTANCE, tagJson)
+        var tagTwo = FluidIngredient.CODEC.parse(ops, tagJson)
                 .resultOrPartial(error -> helper.fail("Failed to deserialize single fluid ingredient from JSON: " + error))
                 .orElseThrow();
         helper.assertValueEqual(tagFluid, tagTwo, "tag fluid ingredient to be the same after being serialized and deserialized!");
@@ -77,7 +77,7 @@ public class FluidIngredientTests {
     static void sizedFluidIngredientSerialization(final GameTestHelper helper) {
         var sized = SizedFluidIngredient.of(Fluids.WATER, 1000);
 
-        var nestedResult = SizedFluidIngredient.NESTED_CODEC.encodeStart(JsonOps.INSTANCE, sized);
+        var nestedResult = SizedFluidIngredient.CODEC.encodeStart(JsonOps.INSTANCE, sized);
         var nestedJson = nestedResult.resultOrPartial((error) -> helper.fail("Error while encoding SizedFluidIngredient: " + error)).orElseThrow();
 
         helper.assertValueEqual(nestedJson.toString(), "{\"ingredient\":\"minecraft:water\",\"amount\":1000}", "(nested) serialized SizedFluidIngredient");

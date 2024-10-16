@@ -28,7 +28,7 @@ import net.neoforged.neoforge.fluids.FluidType;
  */
 public final class SizedFluidIngredient {
     /**
-     * The "nested" codec for {@link SizedFluidIngredient}.
+     * The codec for {@link SizedFluidIngredient}.
      *
      * <p>With this codec, the amount is serialized separately from the ingredient itself, for example:
      *
@@ -39,9 +39,23 @@ public final class SizedFluidIngredient {
      * }
      * }</pre>
      *
-     * TODO(max): improve documentation
+     * <p>
+     * or for custom ingredients:
+     *
+     * <pre>{@code
+     * {
+     *     "ingredient": {
+     *         "neoforge:type": "neoforge:intersection",
+     *         "children": [
+     *              "#example:tag1",
+     *              "#example:tag2"
+     *         ],
+     *     },
+     *     "amount": 4711
+     * }
+     * }</pre>
      */
-    public static final Codec<SizedFluidIngredient> NESTED_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<SizedFluidIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             FluidIngredient.CODEC.fieldOf("ingredient").forGetter(SizedFluidIngredient::ingredient),
             NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
             .apply(instance, SizedFluidIngredient::new));
