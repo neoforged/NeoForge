@@ -1,8 +1,11 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -485,7 +_,7 @@
+@@ -484,8 +_,10 @@
+             RenderSystem.clearColor(vector4f.x, vector4f.y, vector4f.z, 0.0F);
              RenderSystem.clear(16640);
          });
++        var preEvent = net.neoforged.neoforge.client.ClientHooks.fireFrameGraphSetupPre(framegraphbuilder, this.targets, frustum, p_109604_, p_254120_, p_323920_, p_348530_, profilerfiller);
++        flag2 |= preEvent.isOutlineProcessingEnabled();
          if (!flag1) {
 -            this.addSkyPass(framegraphbuilder, p_109604_, f, fogparameters1);
 +            this.addSkyPass(framegraphbuilder, p_109604_, f, fogparameters1, p_254120_, p_323920_);
@@ -18,7 +21,7 @@
          CloudStatus cloudstatus = this.minecraft.options.getCloudsType();
          if (cloudstatus != CloudStatus.OFF) {
              float f2 = this.level.effects().getCloudHeight();
-@@ -505,7 +_,7 @@
+@@ -505,12 +_,13 @@
              }
          }
  
@@ -27,6 +30,12 @@
          if (postchain != null) {
              postchain.addToFrame(framegraphbuilder, i, j, this.targets);
          }
+ 
+         this.addLateDebugPass(framegraphbuilder, vec3, fogparameters);
++        var postEvent = net.neoforged.neoforge.client.ClientHooks.fireFrameGraphSetupPost(framegraphbuilder, this.targets, frustum, p_109604_, p_254120_, p_323920_, p_348530_, profilerfiller);
+         profilerfiller.popPush("framegraph");
+         framegraphbuilder.execute(p_361796_, new FrameGraphBuilder.Inspector() {
+             @Override
 @@ -576,7 +_,9 @@
              double d2 = vec3.z();
              p_362234_.push("terrain");
