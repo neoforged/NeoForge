@@ -8,3 +8,19 @@
          return set;
      }
  
+@@ -77,6 +_,15 @@
+                     }
+                 }
+             );
++        // Neo: ensure standalone models registered in ModelEvent.RegisterAdditional are loaded
++        var it = set.iterator();
++        while (it.hasNext()) {
++            ModelResourceLocation mrl = it.next();
++            if (mrl.getVariant().equals(ModelResourceLocation.STANDALONE_VARIANT)) {
++                registerTopModel(mrl, getBlockModel(mrl.id()));
++                it.remove();
++            }
++        }
+         if (!set.isEmpty()) {
+             LOGGER.warn("Missing mandatory models: {}", set.stream().map(p_370354_ -> "\n\t" + p_370354_).collect(Collectors.joining()));
+         }
