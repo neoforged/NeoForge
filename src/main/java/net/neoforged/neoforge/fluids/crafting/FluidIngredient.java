@@ -98,7 +98,17 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     @ApiStatus.OverrideOnly
     protected abstract Stream<Holder<Fluid>> generateFluids();
 
-    // TODO(max): docs
+    /**
+     * {@return a slot display for this ingredient, used for display on the client-side}
+     *
+     * @implNote The default implementation just constructs a list of stacks from {@link #fluids()}.
+     *           This is generally suitable for {@link #isSimple() simple} ingredients.
+     *           Non-simple ingredients can either override this method to provide a more customized display,
+     *           or let data pack writers use {@link CustomDisplayFluidIngredient} to override the display of an ingredient.
+     *
+     * @see Ingredient#display()
+     * @see FluidSlotDisplay
+     */
     public SlotDisplay display() {
         return new SlotDisplay.Composite(fluids()
                 .stream()

@@ -20,6 +20,13 @@ import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
+/**
+ * Slot display that shows all fluids in a given tag.
+ *
+ * Note that information on amount and data of the displayed fluid stacks depends on the provided factory!
+ *
+ * @param tag The tag to be displayed.
+ */
 public record FluidTagSlotDisplay(TagKey<Fluid> tag) implements SlotDisplay {
     public static final MapCodec<FluidTagSlotDisplay> MAP_CODEC = RecordCodecBuilder.mapCodec(
             p_379704_ -> p_379704_.group(TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(FluidTagSlotDisplay::tag))
