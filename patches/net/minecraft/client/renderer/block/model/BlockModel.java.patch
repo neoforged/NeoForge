@@ -58,6 +58,19 @@
              for (BlockElement blockelement : this.getElements()) {
                  for (Direction direction : blockelement.faces.keySet()) {
                      BlockElementFace blockelementface = blockelement.faces.get(direction);
+@@ -161,7 +_,11 @@
+                 }
+             }
+ 
+-            return simplebakedmodel$builder.build();
++            var renderTypes = net.neoforged.neoforge.client.RenderTypeGroup.EMPTY;
++            if (this.customData.getRenderTypeHint() != null) {
++                renderTypes = this.customData.getRenderType(this.customData.getRenderTypeHint());
++            }
++            return simplebakedmodel$builder.build(renderTypes);
+         }
+     }
+ 
 @@ -229,7 +_,18 @@
          ItemTransform itemtransform5 = this.getTransform(ItemDisplayContext.GUI);
          ItemTransform itemtransform6 = this.getTransform(ItemDisplayContext.GROUND);
