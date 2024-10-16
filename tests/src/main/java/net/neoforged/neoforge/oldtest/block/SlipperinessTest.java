@@ -42,7 +42,7 @@ public class SlipperinessTest {
 
     @SubscribeEvent
     public static void registerItems(RegisterEvent e) {
-        e.register(Registries.ITEM, helper -> helper.register(BB_BLOCK.getId(), new BlockItem(BB_BLOCK.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, BB_BLOCK.getId())))));
+        e.register(Registries.ITEM, helper -> helper.register(BB_BLOCK.getId(), new BlockItem(BB_BLOCK.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, BB_BLOCK.getId())).useBlockDescriptionPrefix())));
     }
 
     /*

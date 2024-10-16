@@ -81,7 +81,7 @@ public class NewModelLoaderTest {
         }
     }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
-    public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props) {
+    public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
         public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
             return armorType == EquipmentSlot.HEAD;
