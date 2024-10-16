@@ -79,6 +79,7 @@
     "minecraft:consume_effect_type",
     "minecraft:recipe_display",
     "minecraft:slot_display",
+    "minecraft:recipe_book_category",
     "neoforge:attachment_types",
     "neoforge:biome_modifier_serializers",
     "neoforge:condition_codecs",
