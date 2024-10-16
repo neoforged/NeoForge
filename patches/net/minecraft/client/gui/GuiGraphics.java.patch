@@ -155,8 +155,9 @@
              int i1 = vector2ic.y();
              this.pose.pushPose();
              int j1 = 400;
-+            net.neoforged.neoforge.client.event.RenderTooltipEvent.Color colorEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipColor(this.tooltipStack, this, l, i1, preEvent.getFont(), p_282615_);
-             TooltipRenderUtil.renderTooltipBackground(this, l, i1, i, j, 400, p_371327_);
+-            TooltipRenderUtil.renderTooltipBackground(this, l, i1, i, j, 400, p_371327_);
++            var textureEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(this.tooltipStack, this, l, i1, preEvent.getFont(), p_282615_, p_371327_);
++            TooltipRenderUtil.renderTooltipBackground(this, l, i1, i, j, 400, textureEvent.getTexture());
              this.pose.translate(0.0F, 0.0F, 400.0F);
              int k1 = i1;
  
