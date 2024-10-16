@@ -496,7 +496,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
-            return this.register(name, key -> new BlockItem(block.get(), properties.setId(ResourceKey.create(Registries.ITEM, key))));
+            return this.register(name, key -> new BlockItem(block.get(), properties.setId(ResourceKey.create(Registries.ITEM, key)).useBlockDescriptionPrefix()));
         }
 
         /**

@@ -64,7 +64,7 @@ public class CompositeModelTest {
         }
     }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
-    public static DeferredItem<Item> composite_item = ITEMS.registerItem("composite_block", props -> new BlockItem(composite_block.get(), props) {
+    public static DeferredItem<Item> composite_item = ITEMS.registerItem("composite_block", props -> new BlockItem(composite_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
         public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
             return armorType == EquipmentSlot.HEAD;

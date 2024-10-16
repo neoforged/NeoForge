@@ -34,7 +34,7 @@ public class FlowerPotTest {
     public static final DeferredBlock<FlowerPotBlock> OAK_FLOWER_POT = BLOCKS.registerBlock(BLOCK_ID + "_oak", props -> new FlowerPotBlock(EMPTY_FLOWER_POT, () -> Blocks.OAK_SAPLING, props), Block.Properties.ofFullCopy(Blocks.FLOWER_POT));
 
     static {
-        ITEMS.register(BLOCK_ID, () -> new BlockItem(EMPTY_FLOWER_POT.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, EMPTY_FLOWER_POT.getId()))));
+        ITEMS.register(BLOCK_ID, () -> new BlockItem(EMPTY_FLOWER_POT.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, EMPTY_FLOWER_POT.getId())).useBlockDescriptionPrefix()));
     }
 
     @SubscribeEvent

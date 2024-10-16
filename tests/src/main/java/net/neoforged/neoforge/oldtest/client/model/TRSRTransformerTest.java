@@ -17,7 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -45,7 +44,7 @@ public class TRSRTransformerTest {
 
     private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("test", Block::new, Block.Properties.of().mapColor(MapColor.STONE));
     @SuppressWarnings("unused")
-    private static final DeferredItem<Item> TEST_ITEM = ITEMS.registerItem("test", props -> new BlockItem(TEST_BLOCK.get(), props));
+    private static final DeferredItem<BlockItem> TEST_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
     public TRSRTransformerTest(IEventBus modEventBus) {
         if (FMLEnvironment.dist.isClient()) {

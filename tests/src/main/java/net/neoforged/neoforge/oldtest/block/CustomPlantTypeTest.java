@@ -50,8 +50,8 @@ public class CustomPlantTypeTest {
     @SubscribeEvent
     public static void registerItems(RegisterEvent event) {
         event.register(Registries.ITEM, helper -> {
-            helper.register(CUSTOM_SOIL.getId(), new BlockItem(CUSTOM_SOIL.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, CUSTOM_SOIL.getId()))));
-            helper.register(CUSTOM_PLANT.getId(), new BlockItem(CUSTOM_PLANT.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, CUSTOM_PLANT.getId()))));
+            helper.register(CUSTOM_SOIL.getId(), new BlockItem(CUSTOM_SOIL.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, CUSTOM_SOIL.getId())).useBlockDescriptionPrefix()));
+            helper.register(CUSTOM_PLANT.getId(), new BlockItem(CUSTOM_PLANT.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, CUSTOM_PLANT.getId())).useBlockDescriptionPrefix()));
         });
     }
 
