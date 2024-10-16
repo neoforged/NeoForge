@@ -7,20 +7,14 @@ package net.neoforged.neoforge.debug.fluid.crafting;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import java.util.stream.Stream;
 import net.minecraft.Util;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -28,7 +22,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
-// TODO(max): move to unit tests instead!
+// TODO(max): move rest of these to unit tests!
 @ForEachTest(groups = { "fluid.crafting", "crafting.ingredient" })
 public class FluidIngredientTests {
 
@@ -73,104 +67,6 @@ public class FluidIngredientTests {
         })).isError();
 
         helper.assertTrue(nestedSimpleFailed, "Nested SimpleFluidIngredient should not have been deserialized from map!");
-
-        helper.succeed();
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Tests that custom ingredients correctly report hasNoFluids")
-    static void emptyFluidIngredientFails(final GameTestHelper helper) {
-        // these classes have checks in place to make sure they aren't populated with empty values
-        var emptyCompoundFailed = false;
-        try {
-            FluidIngredient compoundIngredient = FluidIngredient.of(Stream.empty());
-        } catch (Exception ignored) {
-            emptyCompoundFailed = true;
-        }
-        helper.assertTrue(emptyCompoundFailed, "Empty fluid ingredient should not have been able to be constructed!");
-
-        var emptySingleFailed = false;
-        try {
-            FluidIngredient compoundIngredient = FluidIngredient.of(Fluids.EMPTY);
-        } catch (Exception ignored) {
-            emptySingleFailed = true;
-        }
-        helper.assertTrue(emptySingleFailed, "SimpleFluidIngredient should not have been able to be constructed with empty fluid!");
-
-        helper.succeed();
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Tests that partial data matches work correctly on fluid ingredients")
-    static void fluidIngredientDataPartialMatchWorks(final GameTestHelper helper) {
-        var ingredient = DataComponentFluidIngredient.of(false, DataComponents.RARITY, Rarity.EPIC, Fluids.WATER);
-        var stack = new FluidStack(Fluids.WATER, 1000);
-
-        helper.assertFalse(ingredient.test(stack), "Fluid without custom data should not match DataComponentFluidIngredient!");
-
-        stack.applyComponents(DataComponentPatch.builder()
-                .set(DataComponents.RARITY, Rarity.UNCOMMON)
-                .build());
-
-        helper.assertFalse(ingredient.test(stack), "Fluid with incorrect data should not match DataComponentFluidIngredient!");
-
-        stack.applyComponents(DataComponentPatch.builder()
-                .set(DataComponents.RARITY, Rarity.EPIC)
-                .build());
-
-        helper.assertTrue(ingredient.test(stack), "Fluid with correct data should match DataComponentFluidIngredient!");
-
-        var data = CustomData.EMPTY.update(tag -> tag.putFloat("abcd", helper.getLevel().random.nextFloat()));
-        stack.applyComponents(DataComponentPatch.builder()
-                .set(DataComponents.CUSTOM_DATA, data)
-                .build());
-
-        helper.assertTrue(ingredient.test(stack), "Fluid with correct data should match partial DataComponentFluidIngredient regardless of extra data!");
-
-        helper.succeed();
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Tests that strict data matches work correctly on fluid ingredients")
-    static void fluidIngredientDataStrictMatchWorks(final GameTestHelper helper) {
-        var ingredient = DataComponentFluidIngredient.of(true, DataComponents.RARITY, Rarity.EPIC, Fluids.WATER);
-        var stack = new FluidStack(Fluids.WATER, 1000);
-
-        helper.assertFalse(ingredient.test(stack), "Fluid without custom data should not match DataComponentFluidIngredient!");
-
-        stack.applyComponents(DataComponentPatch.builder()
-                .set(DataComponents.RARITY, Rarity.UNCOMMON)
-                .build());
-
-        helper.assertFalse(ingredient.test(stack), "Fluid with incorrect data should not match DataComponentFluidIngredient!");
-
-        stack.applyComponents(DataComponentPatch.builder()
-                .set(DataComponents.RARITY, Rarity.EPIC)
-                .build());
-
-        helper.assertTrue(ingredient.test(stack), "Fluid with correct data should match DataComponentFluidIngredient!");
-
-        var data = CustomData.EMPTY.update(tag -> tag.putFloat("abcd", helper.getLevel().random.nextFloat()));
-        stack.applyComponents(DataComponentPatch.builder()
-                .set(DataComponents.CUSTOM_DATA, data)
-                .build());
-
-        helper.assertFalse(ingredient.test(stack), "Fluid with extra unspecified data should not match strict DataComponentFluidIngredient!");
-
-        helper.succeed();
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Tests that size and data components do not matter when matching fluid ingredients")
-    static void singleFluidIngredientIgnoresSizeAndData(final GameTestHelper helper) {
-        var ingredient = FluidIngredient.of(Fluids.WATER);
-
-        helper.assertTrue(ingredient.test(new FluidStack(Fluids.WATER, 1234)), "Single fluid ingredient should match regardless of fluid amount!");
-        helper.assertTrue(ingredient.test(new FluidStack(Fluids.WATER.builtInRegistryHolder(), 1234, DataComponentPatch.builder().set(DataComponents.RARITY, Rarity.COMMON).build())), "Single fluid ingredient should match regardless of fluid data!");
 
         helper.succeed();
     }
