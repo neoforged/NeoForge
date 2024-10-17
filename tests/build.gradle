@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'net.neoforged.gradle.platform'
-    id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
     id 'neoforge.formatting-conventions'
 }
