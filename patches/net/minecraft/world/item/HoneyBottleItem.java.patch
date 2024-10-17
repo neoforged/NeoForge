@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/item/HoneyBottleItem.java
 +++ b/net/minecraft/world/item/HoneyBottleItem.java
-@@ -28,7 +_,7 @@
+@@ -21,6 +_,8 @@
+ 
+     @Override
+     public ItemStack finishUsingItem(ItemStack p_41348_, Level p_41349_, LivingEntity p_41350_) {
++        // Make a copy for ObtainItemEvent
++        ItemStack copy = p_41348_.copy();
+         super.finishUsingItem(p_41348_, p_41349_, p_41350_);
+         if (p_41350_ instanceof ServerPlayer serverplayer) {
+             CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, p_41348_);
+@@ -28,17 +_,15 @@
          }
  
          if (!p_41349_.isClientSide) {
@@ -9,3 +18,15 @@
          }
  
          if (p_41348_.isEmpty()) {
+-            return new ItemStack(Items.GLASS_BOTTLE);
++            return net.neoforged.neoforge.event.EventHooks.returnToUsingHand(p_41350_, new ItemStack(Items.GLASS_BOTTLE), copy);
+         } else {
+             if (p_41350_ instanceof Player player && !player.hasInfiniteMaterials()) {
+                 ItemStack itemstack = new ItemStack(Items.GLASS_BOTTLE);
+-                if (!player.getInventory().add(itemstack)) {
+-                    player.drop(itemstack, false);
+-                }
++                net.neoforged.neoforge.event.EventHooks.givePlayer(player, itemstack, net.neoforged.neoforge.event.entity.item.ObtainItemEvent.container(copy, false));
+             }
+ 
+             return p_41348_;

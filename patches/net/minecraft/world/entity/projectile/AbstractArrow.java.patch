@@ -20,3 +20,12 @@
                      ProjectileDeflection projectiledeflection = this.hitTargetOrDeflectSelf(hitresult);
                      this.hasImpulse = true;
                      if (projectiledeflection != ProjectileDeflection.NONE) {
+@@ -590,7 +_,7 @@
+     protected boolean tryPickup(Player p_150121_) {
+         return switch (this.pickup) {
+             case DISALLOWED -> false;
+-            case ALLOWED -> p_150121_.getInventory().add(this.getPickupItem());
++            case ALLOWED -> net.neoforged.neoforge.event.EventHooks.addToInventory(p_150121_, this.getPickupItem(), net.neoforged.neoforge.event.entity.item.ObtainItemEvent.entity(this));
+             case CREATIVE_ONLY -> p_150121_.hasInfiniteMaterials();
+         };
+     }

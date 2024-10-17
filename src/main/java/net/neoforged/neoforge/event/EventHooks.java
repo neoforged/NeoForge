@@ -107,6 +107,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
@@ -125,6 +126,7 @@ import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
+import net.neoforged.neoforge.event.entity.item.ObtainItemEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
@@ -1135,5 +1137,77 @@ public class EventHooks {
         ModifyCustomSpawnersEvent event = new ModifyCustomSpawnersEvent(serverLevel, new ArrayList<>(customSpawners));
         NeoForge.EVENT_BUS.post(event);
         return event.getCustomSpawners();
+    }
+
+    /**
+     * Fires {@link ObtainItemEvent}.
+     *
+     * @param entity The entity that obtains the item
+     * @param stack  The stack to be obtained
+     * @param source The source of the obtained item. See {@link ObtainItemEvent}
+     * @return If part of the stack is taken away
+     */
+    public static boolean onObtainItem(LivingEntity entity, ItemStack stack, ObtainItemEvent.Source source) {
+        if (stack.isEmpty())
+            return false;
+        // make a copy to prevent listeners of this event to modify stack data
+        ItemStack copy = stack.copy();
+        ObtainItemEvent event = new ObtainItemEvent(entity, copy, source);
+        NeoForge.EVENT_BUS.post(event);
+        if (!FMLEnvironment.production && !copy.isEmpty()) {
+            if (!ItemStack.isSameItemSameComponents(copy, stack)) {
+                throw new IllegalStateException("Modification of stack data component is not allowed!");
+            }
+            if (copy.getCount() > stack.getCount()) {
+                throw new IllegalStateException("Increasing stack count is not allowed!");
+            }
+        }
+        if (copy.getCount() < stack.getCount()) {
+            stack.setCount(copy.getCount());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Fires {@link ObtainItemEvent} and give the remainder to player.
+     *
+     * @param player The player that obtains the item
+     * @param stack  The stack to be obtained
+     * @param source The source of the obtained item. See {@link ObtainItemEvent}
+     * @return If part of the stack is taken away by event listeners or the player
+     */
+    public static boolean addToInventory(Player player, ItemStack stack, ObtainItemEvent.Source source) {
+        return onObtainItem(player, stack, source) | player.getInventory().add(stack);
+    }
+
+    /**
+     * Fires {@link ObtainItemEvent}. Give the remainder to player. Then drop the remainder on ground.
+     *
+     * @param player The player that obtains the item
+     * @param stack  The stack to be obtained
+     * @param source The source of the obtained item. See {@link ObtainItemEvent}
+     */
+    public static void givePlayer(Player player, ItemStack stack, ObtainItemEvent.Source source) {
+        if (stack.isEmpty()) return;
+        onObtainItem(player, stack, source);
+        if (stack.isEmpty()) return;
+        player.getInventory().add(stack);
+        if (stack.isEmpty()) return;
+        player.drop(stack, false);
+    }
+
+    /**
+     * Called when entity consumes an item as last of the stack and returns the container to the using hand.
+     * Fires {@link ObtainItemEvent}. Returns the remainder.
+     *
+     * @param entity   The entity using item
+     * @param stack    The stack expected to be given to player as the container
+     * @param original The item consumed
+     * @return The container to be put back on hand, if any
+     */
+    public static ItemStack returnToUsingHand(LivingEntity entity, ItemStack stack, ItemStack original) {
+        onObtainItem(entity, stack, ObtainItemEvent.container(original, true));
+        return stack;
     }
 }

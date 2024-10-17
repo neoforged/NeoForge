@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/LootCommand.java
++++ b/net/minecraft/server/commands/LootCommand.java
+@@ -360,7 +_,7 @@
+ 
+         for (ItemStack itemstack : p_137986_) {
+             for (ServerPlayer serverplayer : p_137985_) {
+-                if (serverplayer.getInventory().add(itemstack.copy())) {
++                if (net.neoforged.neoforge.event.EventHooks.addToInventory(serverplayer, itemstack.copy(), net.neoforged.neoforge.event.entity.item.ObtainItemEvent.COMMAND)) {
+                     list.add(itemstack);
+                 }
+             }
