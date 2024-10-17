@@ -14,27 +14,3 @@
                  .result();
      }
  
-@@ -398,8 +_,7 @@
-     }
- 
-     static record Details(
--        int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect
--    ) {
-+        int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect) {
-         public static final MapCodec<MobEffectInstance.Details> MAP_CODEC = MapCodec.recursive(
-             "MobEffectInstance.Details",
-             p_323465_ -> RecordCodecBuilder.mapCodec(
-@@ -410,11 +_,11 @@
-                                 Codec.BOOL.optionalFieldOf("show_particles", Boolean.valueOf(true)).forGetter(MobEffectInstance.Details::showParticles),
-                                 Codec.BOOL.optionalFieldOf("show_icon").forGetter(p_323788_ -> Optional.of(p_323788_.showIcon())),
-                                 p_323465_.optionalFieldOf("hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
--                            )
-+                                )
-                             .apply(p_324063_, MobEffectInstance.Details::create)
-                 )
-         );
--        public static final StreamCodec<ByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
-+        public static final StreamCodec<RegistryFriendlyByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
-             p_329990_ -> StreamCodec.composite(
-                     ByteBufCodecs.VAR_INT,
-                     MobEffectInstance.Details::amplifier,

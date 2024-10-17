@@ -1,61 +1,5 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-@@ -49,7 +_,7 @@
-     private static final EntityDataAccessor<Integer> DATA_ID_DISPLAY_OFFSET = SynchedEntityData.defineId(AbstractMinecart.class, EntityDataSerializers.INT);
-     private static final EntityDataAccessor<Boolean> DATA_ID_CUSTOM_DISPLAY = SynchedEntityData.defineId(AbstractMinecart.class, EntityDataSerializers.BOOLEAN);
-     private static final ImmutableMap<Pose, ImmutableList<Integer>> POSE_DISMOUNT_HEIGHTS = ImmutableMap.of(
--        Pose.STANDING, ImmutableList.of(0, 1, -1), Pose.CROUCHING, ImmutableList.of(0, 1, -1), Pose.SWIMMING, ImmutableList.of(0, 1)
-+            Pose.STANDING, ImmutableList.of(0, 1, -1), Pose.CROUCHING, ImmutableList.of(0, 1, -1), Pose.SWIMMING, ImmutableList.of(0, 1)
-     );
-     protected static final float WATER_SLOWDOWN_FACTOR = 0.95F;
-     private boolean onRails;
-@@ -100,14 +_,14 @@
- 
-     @Nullable
-     public static <T extends AbstractMinecart> T createMinecart(
--        Level p_366408_,
--        double p_38121_,
--        double p_38122_,
--        double p_38123_,
--        EntityType<T> p_374583_,
--        EntitySpawnReason p_374412_,
--        ItemStack p_305892_,
--        @Nullable Player p_306203_
-+            Level p_366408_,
-+            double p_38121_,
-+            double p_38122_,
-+            double p_38123_,
-+            EntityType<T> p_374583_,
-+            EntitySpawnReason p_374412_,
-+            ItemStack p_305892_,
-+            @Nullable Player p_306203_
-     ) {
-         T t = (T)p_374583_.create(p_366408_, p_374412_);
-         if (t != null) {
-@@ -180,10 +_,10 @@
-                     for (int[] aint1 : aint) {
-                         blockpos$mutableblockpos.set(blockpos.getX() + aint1[0], blockpos.getY() + i, blockpos.getZ() + aint1[1]);
-                         double d0 = this.level()
--                            .getBlockFloorHeight(
--                                DismountHelper.nonClimbableShape(this.level(), blockpos$mutableblockpos),
--                                () -> DismountHelper.nonClimbableShape(this.level(), blockpos$mutableblockpos.below())
--                            );
-+                                .getBlockFloorHeight(
-+                                        DismountHelper.nonClimbableShape(this.level(), blockpos$mutableblockpos),
-+                                        () -> DismountHelper.nonClimbableShape(this.level(), blockpos$mutableblockpos.below())
-+                                );
-                         if (DismountHelper.isBlockFloorValid(d0)) {
-                             AABB aabb = new AABB((double)(-f), 0.0, (double)(-f), (double)f, (double)entitydimensions.height(), (double)f);
-                             Vec3 vec3 = Vec3.upFromBottomCenterOf(blockpos$mutableblockpos, d0);
-@@ -203,7 +_,7 @@
-                 double d2 = (double)p_38145_.getDimensions(pose1).height();
-                 int j = Mth.ceil(d1 - (double)blockpos$mutableblockpos.getY() + d2);
-                 double d3 = DismountHelper.findCeilingFrom(
--                    blockpos$mutableblockpos, j, p_381557_ -> this.level().getBlockState(p_381557_).getCollisionShape(this.level(), p_381557_)
-+                        blockpos$mutableblockpos, j, p_381557_ -> this.level().getBlockState(p_381557_).getCollisionShape(this.level(), p_381557_)
-                 );
-                 if (d1 + d2 <= d3) {
-                     p_38145_.setPose(pose1);
 @@ -420,8 +_,8 @@
  
      public Vec3 getRedstoneDirection(BlockPos p_361470_) {
@@ -67,12 +11,3 @@
              if (railshape == RailShape.EAST_WEST) {
                  if (this.isRedstoneConductor(p_361470_.west())) {
                      return new Vec3(1.0, 0.0, 0.0);
-@@ -531,7 +_,7 @@
- 
-         Vec3 vec3 = new Vec3(d0, 0.0, d1).normalize();
-         Vec3 vec31 = new Vec3((double)Mth.cos(this.getYRot() * (float) (Math.PI / 180.0)), 0.0, (double)Mth.sin(this.getYRot() * (float) (Math.PI / 180.0)))
--            .normalize();
-+                .normalize();
-         double d2 = Math.abs(vec3.dot(vec31));
-         if (!(d2 < 0.8F) || useExperimentalMovement(this.level())) {
-             Vec3 vec32 = this.getDeltaMovement();

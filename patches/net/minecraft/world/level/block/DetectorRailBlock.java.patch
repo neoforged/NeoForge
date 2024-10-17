@@ -11,15 +11,6 @@
          this.registerDefaultState(
              this.stateDefinition
                  .any()
-@@ -153,7 +_,7 @@
-             }
- 
-             List<AbstractMinecart> list1 = this.getInteractingMinecartOfType(
--                p_52455_, p_52456_, AbstractMinecart.class, EntitySelector.CONTAINER_ENTITY_SELECTOR
-+                    p_52455_, p_52456_, AbstractMinecart.class, EntitySelector.CONTAINER_ENTITY_SELECTOR
-             );
-             if (!list1.isEmpty()) {
-                 return AbstractContainerMenu.getRedstoneSignalFromContainer((Container)list1.get(0));
 @@ -299,6 +_,6 @@
  
      @Override

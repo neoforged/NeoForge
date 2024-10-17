@@ -9,19 +9,15 @@
                  this.makeSound(SoundEvents.HOGLIN_CONVERTED_TO_ZOMBIFIED);
                  this.finishConversion();
              }
-@@ -264,9 +_,12 @@
- 
-     private void finishConversion() {
+@@ -266,7 +_,10 @@
          this.convertTo(
--            EntityType.ZOGLIN,
--            ConversionParams.single(this, true, false),
+             EntityType.ZOGLIN,
+             ConversionParams.single(this, true, false),
 -            p_371903_ -> p_371903_.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0))
-+                EntityType.ZOGLIN,
-+                ConversionParams.single(this, true, false),
-+                p_371903_ -> {
-+                    p_371903_.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
-+                    net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_371903_);
-+                }
++            p_371903_ -> {
++                p_371903_.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_371903_);
++            }
          );
      }
  
