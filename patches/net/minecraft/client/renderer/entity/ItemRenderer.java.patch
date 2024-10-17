@@ -19,10 +19,12 @@
              VertexConsumer vertexconsumer;
              if (hasAnimatedTexture(p_361397_) && p_361397_.hasFoil()) {
                  PoseStack.Pose posestack$pose = p_360423_.last().copy();
-@@ -189,8 +_,10 @@
+@@ -188,9 +_,11 @@
+                 vertexconsumer = getFoilBuffer(p_360415_, rendertype, true, p_361397_.hasFoil());
              }
  
-             this.renderModelLists(p_363970_, p_361397_, p_361265_, p_364771_, p_360423_, vertexconsumer);
+-            this.renderModelLists(p_363970_, p_361397_, p_361265_, p_364771_, p_360423_, vertexconsumer);
++            this.renderModelLists(model, p_361397_, p_361265_, p_364771_, p_360423_, vertexconsumer);
 +            }
 +            }
          } else {
