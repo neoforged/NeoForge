@@ -9,8 +9,13 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
@@ -19,6 +24,7 @@ import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
@@ -102,5 +108,22 @@ public class ClientEventTests {
             Minecraft.getInstance().levelRenderer.setSectionDirty(section.x(), section.y(), section.z());
             test.requestConfirmation(player, Component.literal("Is a diamond block rendered above you?"));
         }
+    }
+
+    @TestHolder(description = { "Tests that RenderPlayerEvent is fired correctly and functions as expected" })
+    static void renderPlayerEvent(final DynamicTest test) {
+        test.whenEnabled(listeners -> {
+            var item = Items.IRON_BLOCK;
+            var itemStack = item.getDefaultInstance();
+            var modelId = ModelResourceLocation.inventory(BuiltInRegistries.ITEM.getKey(item));
+            listeners.forge().addListener((final RenderPlayerEvent.Post event) -> {
+                event.getPoseStack().pushPose();
+                event.getPoseStack().translate(0, 2, 0);
+                var model = Minecraft.getInstance().getModelManager().getModel(modelId);
+                Minecraft.getInstance().getItemRenderer().render(itemStack, ItemDisplayContext.GROUND, false, event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, model);
+                event.getPoseStack().popPose();
+            });
+            test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Is an iron block rendered above you in third-person?"));
+        });
     }
 }
