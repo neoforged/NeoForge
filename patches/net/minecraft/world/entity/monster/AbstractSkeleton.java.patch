@@ -24,3 +24,12 @@
          double d0 = p_32141_.getX() - this.getX();
          double d1 = p_32141_.getY(0.3333333333333333) - abstractarrow.getY();
          double d2 = p_32141_.getZ() - this.getZ();
+@@ -200,7 +_,7 @@
+ 
+     @Override
+     public boolean canFireProjectileWeapon(ProjectileWeaponItem p_32144_) {
+-        return p_32144_ == Items.BOW;
++        return p_32144_.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Items.SKELETON_USABLE_BOWS);
+     }
+ 
+     @Override
