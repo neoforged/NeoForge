@@ -149,7 +149,7 @@ public class RenderLevelStageEvent extends Event {
      * @see RegisterStageEvent
      */
     public static class Stage {
-        private static final Map<RenderType, Stage> RENDER_TYPE_STAGES = new HashMap<>();
+        static final Map<RenderType, Stage> RENDER_TYPE_STAGES = new HashMap<>();
 
         /**
          * Use this to render custom objects into the skybox.
