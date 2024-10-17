@@ -10,7 +10,6 @@ import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public abstract class CustomLoaderBuilder<T extends ModelBuilder<T>> {

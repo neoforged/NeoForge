@@ -1,5 +1,31 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
+@@ -77,7 +_,7 @@
+         BlockModel.fromString("{\"gui_light\": \"side\"}"), p_119297_ -> p_119297_.name = "block entity marker"
+     );
+     static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
+-    private final Map<ResourceLocation, BlockModel> modelResources;
++    private final Map<ResourceLocation, net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel> modelResources;
+     private final Set<ResourceLocation> loadingStack = new HashSet<>();
+     private final Map<ResourceLocation, UnbakedModel> unbakedCache = new HashMap<>();
+     final Map<ModelBakery.BakedCacheKey, BakedModel> bakedCache = new HashMap<>();
+@@ -89,14 +_,14 @@
+     public ModelBakery(
+         BlockColors p_249183_,
+         ProfilerFiller p_252014_,
+-        Map<ResourceLocation, BlockModel> p_251087_,
++        Map<ResourceLocation, net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel> p_251087_,
+         Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>> p_250416_
+     ) {
+         this.modelResources = p_251087_;
+         p_252014_.push("missing_model");
+ 
+         try {
+-            this.missingModel = this.loadBlockModel(MISSING_MODEL_LOCATION);
++            this.missingModel = this.loadUnbakedModel(MISSING_MODEL_LOCATION);
+             this.registerModel(MISSING_MODEL_VARIANT, this.missingModel);
+         } catch (IOException ioexception) {
+             LOGGER.error("Error loading missing model, should never happen :(", (Throwable)ioexception);
 @@ -117,6 +_,12 @@
          p_252014_.popPush("special");
          this.loadSpecialItemModelAndDependencies(ItemRenderer.TRIDENT_IN_HAND_MODEL);
@@ -13,6 +39,48 @@
          this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
          p_252014_.pop();
      }
+@@ -150,7 +_,7 @@
+ 
+                 try {
+                     if (!this.unbakedCache.containsKey(resourcelocation)) {
+-                        UnbakedModel unbakedmodel = this.loadBlockModel(resourcelocation);
++                        UnbakedModel unbakedmodel = this.loadUnbakedModel(resourcelocation);
+                         this.unbakedCache.put(resourcelocation, unbakedmodel);
+                         this.loadingStack.addAll(unbakedmodel.getDependencies());
+                     }
+@@ -192,6 +_,10 @@
+     }
+ 
+     private BlockModel loadBlockModel(ResourceLocation p_119365_) throws IOException {
++        return (BlockModel)loadUnbakedModel(p_119365_);
++    }
++
++    private UnbakedModel loadUnbakedModel(ResourceLocation p_119365_) throws IOException {
+         String s = p_119365_.getPath();
+         if ("builtin/generated".equals(s)) {
+             return GENERATION_MARKER;
+@@ -204,17 +_,17 @@
+                 throw new FileNotFoundException(p_119365_.toString());
+             } else {
+                 Reader reader = new StringReader(s2);
+-                BlockModel blockmodel1 = BlockModel.fromStream(reader);
+-                blockmodel1.name = p_119365_.toString();
++                net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel blockmodel1 = net.neoforged.neoforge.client.resource.model.ModelManagerHooks.loadUnbakedModel(com.mojang.serialization.JsonOps.INSTANCE, reader);
++                blockmodel1.setName(p_119365_.toString());
+                 return blockmodel1;
+             }
+         } else {
+             ResourceLocation resourcelocation = MODEL_LISTER.idToFile(p_119365_);
+-            BlockModel blockmodel = this.modelResources.get(resourcelocation);
++            net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel blockmodel = this.modelResources.get(resourcelocation);
+             if (blockmodel == null) {
+                 throw new FileNotFoundException(resourcelocation.toString());
+             } else {
+-                blockmodel.name = p_119365_.toString();
++                blockmodel.setName(p_119365_.toString());
+                 return blockmodel;
+             }
+         }
 @@ -246,14 +_,30 @@
          }
  

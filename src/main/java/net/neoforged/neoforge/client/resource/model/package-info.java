@@ -6,7 +6,7 @@
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package net.neoforged.neoforge.client.model.geometry;
+package net.neoforged.neoforge.client.resource.model;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.FieldsAreNonnullByDefault;

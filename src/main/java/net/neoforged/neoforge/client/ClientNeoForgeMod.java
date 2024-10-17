@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
@@ -20,7 +21,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
@@ -28,28 +28,33 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.model.CompositeModel;
-import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
-import net.neoforged.neoforge.client.model.ElementsModel;
-import net.neoforged.neoforge.client.model.EmptyModel;
-import net.neoforged.neoforge.client.model.ItemLayerModel;
-import net.neoforged.neoforge.client.model.SeparateTransformsModel;
-import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistriesSetup;
+import net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
+    private static final DeferredRegister<MapCodec<? extends TopLevelUnbakedModel>> UNBAKED_MODEL_SERIALIZERS = DeferredRegister.create(NeoForgeClientRegistries.UNBAKED_MODEL_SERIALIZERS, NeoForgeVersion.MOD_ID);
+
+    private static final DeferredHolder<MapCodec<? extends TopLevelUnbakedModel>, MapCodec<net.neoforged.neoforge.client.resource.model.CompositeModel>> COMPOSITE = UNBAKED_MODEL_SERIALIZERS.register("composite", () -> net.neoforged.neoforge.client.resource.model.CompositeModel.CODEC);
+
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
 
+        UNBAKED_MODEL_SERIALIZERS.register(modEventBus);
+
         modEventBus.register(ClientNeoForgeMod.class);
+        NeoForgeClientRegistriesSetup.setup(modEventBus);
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
@@ -64,19 +69,7 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
-    static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "empty"), EmptyModel.LOADER);
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "elements"), ElementsModel.Loader.INSTANCE);
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "obj"), ObjLoader.INSTANCE);
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "fluid_container"), DynamicFluidContainerModel.Loader.INSTANCE);
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), CompositeModel.Loader.INSTANCE);
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_layers"), ItemLayerModel.Loader.INSTANCE);
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "separate_transforms"), SeparateTransformsModel.Loader.INSTANCE);
-    }
-
-    @SubscribeEvent
     static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(ObjLoader.INSTANCE);
         event.registerReloadListener(AnimationLoader.INSTANCE);
     }
 

@@ -1,10 +1,23 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -77,9 +_,10 @@
-     public BlockModel parent;
+@@ -47,7 +_,8 @@
+ import org.slf4j.Logger;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class BlockModel implements UnbakedModel {
++public class BlockModel implements UnbakedModel, net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel
++{
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final FaceBakery FACE_BAKERY = new FaceBakery();
+     @VisibleForTesting
+@@ -74,12 +_,12 @@
+     @VisibleForTesting
+     public final Map<String, Either<Material, String>> textureMap;
+     @Nullable
+-    public BlockModel parent;
++    public net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel parent;
      @Nullable
      protected ResourceLocation parentLocation;
-+    public final net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext customData = new net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext(this);
  
      public static BlockModel fromStream(Reader p_111462_) {
 -        return GsonHelper.fromJson(GSON, p_111462_, BlockModel.class);
@@ -12,22 +25,93 @@
      }
  
      public static BlockModel fromString(String p_111464_) {
-@@ -104,10 +_,15 @@
+@@ -104,15 +_,69 @@
          this.overrides = p_273099_;
      }
  
++    @Override
++    public com.mojang.serialization.MapCodec<? extends net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel> codec() {
++        return net.neoforged.neoforge.client.resource.model.ModelCodecs.BLOCK_MODEL;
++    }
++
++    @Override
++    public void setName(String name) {
++        this.name = name;
++    }
++
++    @Override
++    public net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel getParent() {
++        return parent;
++    }
++
++    @Override
++    public void setParent(net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel parent) {
++        this.parent = parent;
++    }
++
++    @Override
++    public Map<String, Either<Material, String>> getOwnTextureMap() {
++        return this.textureMap;
++    }
++
++    @Override
++    public Boolean getOwnAmbientOcclusion() {
++        return this.hasAmbientOcclusion;
++    }
++
++    @Override
++    public BlockModel.GuiLight getOwnGuiLight() {
++        return this.guiLight;
++    }
++
++    @Override
++    public ItemTransforms getOwnTransforms() {
++        return this.transforms;
++    }
++
++    @Override
++    public List<ItemOverride> getOwnOverrides() {
++        return this.overrides;
++    }
++
 +    @Deprecated
      public List<BlockElement> getElements() {
-+        if (customData.hasCustomGeometry()) return java.util.Collections.emptyList();
-         return this.elements.isEmpty() && this.parent != null ? this.parent.getElements() : this.elements;
-     }
- 
+-        return this.elements.isEmpty() && this.parent != null ? this.parent.getElements() : this.elements;
++        return this.elements.isEmpty() && this.parent instanceof BlockModel blockModel ? blockModel.getElements() : this.elements;
++    }
++
 +    @Nullable
 +    public ResourceLocation getParentLocation() { return parentLocation; }
 +
++    @Override
++    public void setParentLocation(@Nullable ResourceLocation parentLocation) {
++        this.parentLocation = parentLocation;
+     }
+ 
      public boolean hasAmbientOcclusion() {
          if (this.hasAmbientOcclusion != null) {
              return this.hasAmbientOcclusion;
+         } else {
+-            return this.parent != null ? this.parent.hasAmbientOcclusion() : true;
++            return this.parent instanceof BlockModel blockModel ? blockModel.hasAmbientOcclusion() : true;
+         }
+     }
+ 
+@@ -120,12 +_,12 @@
+         if (this.guiLight != null) {
+             return this.guiLight;
+         } else {
+-            return this.parent != null ? this.parent.getGuiLight() : BlockModel.GuiLight.SIDE;
++            return this.parent instanceof BlockModel blockModel ? blockModel.getGuiLight() : BlockModel.GuiLight.SIDE;
+         }
+     }
+ 
+     public boolean isResolved() {
+-        return this.parentLocation == null || this.parent != null && this.parent.isResolved();
++        return net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel.super.isResolved();
+     }
+ 
+     public List<ItemOverride> getOverrides() {
 @@ -136,6 +_,10 @@
          return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(p_250138_, p_251800_, this.overrides);
      }
@@ -39,31 +123,68 @@
      @Override
      public Collection<ResourceLocation> getDependencies() {
          Set<ResourceLocation> set = Sets.newHashSet();
-@@ -184,6 +_,10 @@
-             blockmodel.parent = (BlockModel)unbakedmodel;
+@@ -155,9 +_,9 @@
+     public void resolveParents(Function<ResourceLocation, UnbakedModel> p_249059_) {
+         Set<UnbakedModel> set = Sets.newLinkedHashSet();
+ 
+-        for (BlockModel blockmodel = this; blockmodel.parentLocation != null && blockmodel.parent == null; blockmodel = blockmodel.parent) {
++        for (net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel blockmodel = this; blockmodel.getParentLocation() != null && blockmodel.getParent() == null; blockmodel = blockmodel.getParent()) {
+             set.add(blockmodel);
+-            UnbakedModel unbakedmodel = p_249059_.apply(blockmodel.parentLocation);
++            UnbakedModel unbakedmodel = p_249059_.apply(blockmodel.getParentLocation());
+             if (unbakedmodel == null) {
+                 LOGGER.warn("No parent '{}' while loading model '{}'", this.parentLocation, blockmodel);
+             }
+@@ -173,15 +_,15 @@
+             }
+ 
+             if (unbakedmodel == null) {
+-                blockmodel.parentLocation = ModelBakery.MISSING_MODEL_LOCATION;
+-                unbakedmodel = p_249059_.apply(blockmodel.parentLocation);
++                blockmodel.setParentLocation(ModelBakery.MISSING_MODEL_LOCATION);
++                unbakedmodel = p_249059_.apply(blockmodel.getParentLocation());
+             }
+ 
+-            if (!(unbakedmodel instanceof BlockModel)) {
++            if (!(unbakedmodel instanceof net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel)) {
+                 throw new IllegalStateException("BlockModel parent has to be a block model.");
+             }
+ 
+-            blockmodel.parent = (BlockModel)unbakedmodel;
++            blockmodel.setParent((net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel)unbakedmodel);
          }
  
-+        if (customData.hasCustomGeometry()) {
-+            customData.getCustomGeometry().resolveParents(p_249059_, customData);
-+        }
-+
          this.overrides.forEach(p_247932_ -> {
-             UnbakedModel unbakedmodel1 = p_249059_.apply(p_247932_.getModel());
-             if (!Objects.equals(unbakedmodel1, this)) {
-@@ -198,6 +_,12 @@
+@@ -198,7 +_,7 @@
      }
  
      public BakedModel bake(
+-        ModelBaker p_249720_, BlockModel p_111451_, Function<Material, TextureAtlasSprite> p_111452_, ModelState p_111453_, boolean p_111455_
 +            ModelBaker p_249720_, BlockModel p_111451_, Function<Material, TextureAtlasSprite> p_111452_, ModelState p_111453_, boolean p_111455_
-+    ) {
-+        return net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper.bake(this, p_249720_, p_111451_, p_111452_, p_111453_, p_111455_);
-+    }
-+
-+    public BakedModel bakeVanilla(
-         ModelBaker p_249720_, BlockModel p_111451_, Function<Material, TextureAtlasSprite> p_111452_, ModelState p_111453_, boolean p_111455_
      ) {
          TextureAtlasSprite textureatlassprite = p_111452_.apply(this.getMaterial("particle"));
-@@ -288,7 +_,18 @@
+         if (this.getRootModel() == ModelBakery.BLOCK_ENTITY_MARKER) {
+@@ -261,8 +_,8 @@
+     }
+ 
+     private Either<Material, String> findTextureEntry(String p_111486_) {
+-        for (BlockModel blockmodel = this; blockmodel != null; blockmodel = blockmodel.parent) {
+-            Either<Material, String> either = blockmodel.textureMap.get(p_111486_);
++        for (net.neoforged.neoforge.client.resource.model.TopLevelUnbakedModel blockmodel = this; blockmodel != null; blockmodel = blockmodel.getParent()) {
++            Either<Material, String> either = blockmodel.getOwnTextureMap().get(p_111486_);
+             if (either != null) {
+                 return either;
+             }
+@@ -276,7 +_,7 @@
+     }
+ 
+     public BlockModel getRootModel() {
+-        return this.parent == null ? this : this.parent.getRootModel();
++        return this.parent instanceof BlockModel blockModel ? blockModel.getRootModel() : this;
+     }
+ 
+     public ItemTransforms getTransforms() {
+@@ -288,11 +_,22 @@
          ItemTransform itemtransform5 = this.getTransform(ItemDisplayContext.GUI);
          ItemTransform itemtransform6 = this.getTransform(ItemDisplayContext.GROUND);
          ItemTransform itemtransform7 = this.getTransform(ItemDisplayContext.FIXED);
@@ -83,6 +204,11 @@
      }
  
      private ItemTransform getTransform(ItemDisplayContext p_270662_) {
+-        return this.parent != null && !this.transforms.hasTransform(p_270662_) ? this.parent.getTransform(p_270662_) : this.transforms.getTransform(p_270662_);
++        return this.parent instanceof BlockModel blockModel && !this.transforms.hasTransform(p_270662_) ? blockModel.getTransform(p_270662_) : this.transforms.getTransform(p_270662_);
+     }
+ 
+     @Override
 @@ -407,6 +_,8 @@
          public boolean lightLikeBlock() {
              return this == SIDE;

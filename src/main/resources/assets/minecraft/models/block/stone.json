@@ -1,0 +1,11 @@
+{
+  "type": "neoforge:composite",
+  "children": {
+    "test": {
+      "parent": "minecraft:block/iron_bars_post"
+    },
+    "test2": {
+      "parent": "minecraft:block/glass"
+    }
+  }
+}

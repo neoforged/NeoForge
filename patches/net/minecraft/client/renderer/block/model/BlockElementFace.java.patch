@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockElementFace.java
 +++ b/net/minecraft/client/renderer/block/model/BlockElementFace.java
-@@ -13,9 +_,23 @@
+@@ -13,9 +_,29 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -10,6 +10,12 @@
  
 +    public BlockElementFace(@Nullable Direction p_111359_, int p_111360_, String p_111361_, BlockFaceUV p_111362_) {
 +        this(p_111359_, p_111360_, p_111361_, p_111362_, null, new org.apache.commons.lang3.mutable.MutableObject<>());
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    @Nullable
++    public net.neoforged.neoforge.client.model.ExtraFaceData getFaceData() {
++        return this.faceData;
 +    }
 +
 +    @Override
