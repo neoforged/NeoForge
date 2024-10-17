@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.event;
 
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Predicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
@@ -21,6 +21,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.resource.ContextAwareReloadListener;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The main ResourceManager is recreated on each reload, just after {@link ReloadableServerResources}'s creation.
@@ -29,13 +30,19 @@ import net.neoforged.neoforge.resource.ContextAwareReloadListener;
  * The event is fired on the {@link NeoForge#EVENT_BUS}
  */
 public class AddReloadListenerEvent extends Event {
-    private final List<PreparableReloadListener> listeners = new ArrayList<>();
+    private final List<PreparableReloadListener> listeners;
     private final ReloadableServerResources serverResources;
     private final RegistryAccess registryAccess;
 
     public AddReloadListenerEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
+        this(serverResources, registryAccess, List.of());
+    }
+
+    @ApiStatus.Internal
+    public AddReloadListenerEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess, List<PreparableReloadListener> listeners) {
         this.serverResources = serverResources;
         this.registryAccess = registryAccess;
+        this.listeners = listeners;
     }
 
     /**
@@ -43,6 +50,20 @@ public class AddReloadListenerEvent extends Event {
      */
     public void addListener(PreparableReloadListener listener) {
         listeners.add(new WrappedStateAwareListener(listener));
+    }
+
+    /**
+     * @param listener the listener to add to the ResourceManager on reload
+     * @param before   a predicate for what listener to add this before
+     */
+    public void addListenerBefore(PreparableReloadListener listener, Predicate<PreparableReloadListener> before) {
+        for (int i = 0; i < listeners.size(); i++) {
+            PreparableReloadListener listener1 = listeners.get(i);
+            if (before.test(listener1)) {
+                listeners.add(i, new WrappedStateAwareListener(listener));
+                break;
+            }
+        }
     }
 
     public List<PreparableReloadListener> getListeners() {
