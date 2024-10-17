@@ -8,17 +8,14 @@ package net.neoforged.neoforge.fluids.crafting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
-import java.util.stream.Stream;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Standard implementation for a FluidIngredient with an amount.
@@ -31,55 +28,35 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class SizedFluidIngredient {
     /**
-     * The "flat" codec for {@link SizedFluidIngredient}.
+     * The codec for {@link SizedFluidIngredient}.
      *
-     * <p>The amount is serialized inline with the rest of the ingredient, for example:
+     * <p>With this codec, the amount is serialized separately from the ingredient itself, for example:
      *
      * <pre>{@code
      * {
-     *     "fluid": "minecraft:water",
-     *     "amount": 250
+     *     "ingredient": "minecraft:lava",
+     *     "amount": 1000
      * }
      * }</pre>
      *
      * <p>
-     * <p>
-     * Compound fluid ingredients are always serialized using the map codec, i.e.
-     *
-     * <pre>{@code
-     * {
-     *     "type": "neoforge:compound",
-     *     "ingredients": [
-     *         { "fluid": "minecraft:water" },
-     *         { "fluid": "minecraft:milk" }
-     *     ],
-     *     "amount": 500
-     * }
-     * }</pre>
-     *
-     * <p>
-     */
-    public static final Codec<SizedFluidIngredient> FLAT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            FluidIngredient.MAP_CODEC_NONEMPTY.forGetter(SizedFluidIngredient::ingredient),
-            NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
-            .apply(instance, SizedFluidIngredient::new));
-
-    /**
-     * The "nested" codec for {@link SizedFluidIngredient}.
-     *
-     * <p>With this codec, the amount is <i>always</i> serialized separately from the ingredient itself, for example:
+     * or for custom ingredients:
      *
      * <pre>{@code
      * {
      *     "ingredient": {
-     *         "fluid": "minecraft:lava"
+     *         "neoforge:type": "neoforge:intersection",
+     *         "children": [
+     *              "#example:tag1",
+     *              "#example:tag2"
+     *         ],
      *     },
-     *     "amount": 1000
+     *     "amount": 4711
      * }
      * }</pre>
      */
-    public static final Codec<SizedFluidIngredient> NESTED_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            FluidIngredient.CODEC_NON_EMPTY.fieldOf("ingredient").forGetter(SizedFluidIngredient::ingredient),
+    public static final Codec<SizedFluidIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            FluidIngredient.CODEC.fieldOf("ingredient").forGetter(SizedFluidIngredient::ingredient),
             NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
             .apply(instance, SizedFluidIngredient::new));
 
@@ -94,25 +71,8 @@ public final class SizedFluidIngredient {
         return new SizedFluidIngredient(FluidIngredient.of(fluid), amount);
     }
 
-    /**
-     * Helper method to create a simple sized ingredient that matches the given fluid stack
-     */
-    public static SizedFluidIngredient of(FluidStack stack) {
-        return new SizedFluidIngredient(FluidIngredient.single(stack), stack.getAmount());
-    }
-
-    /**
-     * Helper method to create a simple sized ingredient that matches fluids in a tag.
-     */
-    public static SizedFluidIngredient of(TagKey<Fluid> tag, int amount) {
-        return new SizedFluidIngredient(FluidIngredient.tag(tag), amount);
-    }
-
     private final FluidIngredient ingredient;
     private final int amount;
-
-    @Nullable
-    private FluidStack[] cachedStacks;
 
     public SizedFluidIngredient(FluidIngredient ingredient, int amount) {
         if (amount <= 0) {
@@ -137,20 +97,6 @@ public final class SizedFluidIngredient {
      */
     public boolean test(FluidStack stack) {
         return ingredient.test(stack) && stack.getAmount() >= amount;
-    }
-
-    /**
-     * Returns a list of the stacks from this {@link #ingredient}, with an updated {@link #amount}.
-     *
-     * @implNote the array is cached and should not be modified, just like {@link FluidIngredient#getStacks()}}.
-     */
-    public FluidStack[] getFluids() {
-        if (cachedStacks == null) {
-            cachedStacks = Stream.of(ingredient.getStacks())
-                    .map(s -> s.copyWithAmount(amount))
-                    .toArray(FluidStack[]::new);
-        }
-        return cachedStacks;
     }
 
     @Override
