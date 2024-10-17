@@ -4,10 +4,14 @@
         "Simple non-rich translation. ",
         {"index": 0}
     ],
+    "rich_translations_test.simple_rich_translation3": "%n[\"Simple non-rich translation. \",{\"index\": 0}]",
     "rich_translations_test.fancy_rich_translation": [
         "",
         {"text": "Ooo, colors!", "color": "red"},
         " ",
         {"index": 0, "color": "blue"}
-    ]
+    ],
+    "rich_translations_test.fancy_rich_translation3": "%n[\"\",{\"text\": \"Ooo, colors!\", \"color\": \"red\"},\" \",{\"index\": 0, \"color\": \"blue\"}]",
+    "rich_translations_test.simple_vanilla_translation": "Simple custom translation.",
+    "rich_translations_test.simple_custom_translation": "%n(neotest:test)Simple custom traXslatioX."
 }
