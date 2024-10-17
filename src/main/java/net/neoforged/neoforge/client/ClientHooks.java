@@ -158,6 +158,7 @@ import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterMaterialAtlasesEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
@@ -1119,5 +1120,11 @@ public class ClientHooks {
             return cachedFilteredTypes;
         }
         return RECIPE_BOOK_TYPES;
+    }
+
+    public static Map<ResourceLocation, ResourceLocation> gatherMaterialAtlases(Map<ResourceLocation, ResourceLocation> vanillaAtlases) {
+        vanillaAtlases = new HashMap<>(vanillaAtlases);
+        ModLoader.postEvent(new RegisterMaterialAtlasesEvent(vanillaAtlases));
+        return Map.copyOf(vanillaAtlases);
     }
 }
