@@ -17,6 +17,28 @@
              if (mobcategory != MobCategory.MISC) {
                  BlockPos blockpos = entity.blockPosition();
                  p_186527_.query(
+@@ -168,9 +_,11 @@
+                     if (player != null) {
+                         double d2 = player.distanceToSqr(d0, (double)i, d1);
+                         if (isRightDistanceToPlayerAndSpawnPoint(p_47040_, p_47041_, blockpos$mutableblockpos, d2)) {
++                            Holder<Biome> biomeAtPosition = p_47040_.getBiome(blockpos$mutableblockpos);
++                            WeightedRandomList<MobSpawnSettings.SpawnerData> mobsAtPosition = mobsAt(p_47040_, structuremanager, chunkgenerator, p_47039_, blockpos$mutableblockpos, biomeAtPosition);
+                             if (mobspawnsettings$spawnerdata == null) {
+                                 Optional<MobSpawnSettings.SpawnerData> optional = getRandomSpawnMobAt(
+-                                    p_47040_, structuremanager, chunkgenerator, p_47039_, p_47040_.random, blockpos$mutableblockpos
++                                    p_47040_, structuremanager, chunkgenerator, p_47039_, p_47040_.random, blockpos$mutableblockpos, biomeAtPosition, mobsAtPosition
+                                 );
+                                 if (optional.isEmpty()) {
+                                     break;
+@@ -182,7 +_,7 @@
+                             }
+ 
+                             if (isValidSpawnPostitionForType(
+-                                    p_47040_, p_47039_, structuremanager, chunkgenerator, mobspawnsettings$spawnerdata, blockpos$mutableblockpos, d2
++                                    p_47040_, p_47039_, structuremanager, chunkgenerator, mobspawnsettings$spawnerdata, blockpos$mutableblockpos, d2, mobsAtPosition
+                                 )
+                                 && p_47043_.test(mobspawnsettings$spawnerdata.type, blockpos$mutableblockpos, p_47041_)) {
+                                 Mob mob = getMobForSpawn(p_47040_, mobspawnsettings$spawnerdata.type);
 @@ -199,7 +_,7 @@
                                      l1++;
                                      p_47040_.addFreshEntityWithPassengers(mob);
@@ -26,7 +48,47 @@
                                          return;
                                      }
  
-@@ -272,7 +_,7 @@
+@@ -226,6 +_,11 @@
+         }
+     }
+ 
++    /**
++     * This method remains for vanilla binary compatibility.
++     * @deprecated Use {@link #isValidSpawnPostitionForType(ServerLevel, MobCategory, StructureManager, ChunkGenerator, MobSpawnSettings.SpawnerData, BlockPos.MutableBlockPos, double, WeightedRandomList)} instead.
++     */
++    @Deprecated(since = "1.21.1")
+     private static boolean isValidSpawnPostitionForType(
+         ServerLevel p_220422_,
+         MobCategory p_220423_,
+@@ -235,13 +_,26 @@
+         BlockPos.MutableBlockPos p_220427_,
+         double p_220428_
+     ) {
++        return isValidSpawnPostitionForType(p_220422_, p_220423_, p_220424_, p_220425_, p_220426_, p_220427_, p_220428_, null);
++    }
++
++    private static boolean isValidSpawnPostitionForType(
++        ServerLevel p_220422_,
++        MobCategory p_220423_,
++        StructureManager p_220424_,
++        ChunkGenerator p_220425_,
++        MobSpawnSettings.SpawnerData p_220426_,
++        BlockPos.MutableBlockPos p_220427_,
++        double p_220428_,
++        @Nullable WeightedRandomList<MobSpawnSettings.SpawnerData> mobList
++    ) {
+         EntityType<?> entitytype = p_220426_.type;
+         if (entitytype.getCategory() == MobCategory.MISC) {
+             return false;
+         } else if (!entitytype.canSpawnFarFromPlayer()
+             && p_220428_ > (double)(entitytype.getCategory().getDespawnDistance() * entitytype.getCategory().getDespawnDistance())) {
+             return false;
+-        } else if (!entitytype.canSummon() || !canSpawnMobAt(p_220422_, p_220424_, p_220425_, p_220423_, p_220426_, p_220427_)) {
++        } else if (!entitytype.canSummon() || !canSpawnMobAt(p_220422_, p_220424_, p_220425_, p_220423_, p_220426_, p_220427_, mobList)) {
+             return false;
+         } else if (!SpawnPlacements.isSpawnPositionOk(entitytype, p_220422_, p_220427_)) {
+             return false;
+@@ -272,18 +_,36 @@
          return p_46994_ > (double)(p_46993_.getType().getCategory().getDespawnDistance() * p_46993_.getType().getCategory().getDespawnDistance())
                  && p_46993_.removeWhenFarAway(p_46994_)
              ? false
@@ -34,7 +96,57 @@
 +            : net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(p_46993_, p_46992_, MobSpawnType.NATURAL);
      }
  
++    /**
++     * This method remains for vanilla binary compatibility.
++     * @deprecated Use {@link #getRandomSpawnMobAt(ServerLevel, StructureManager, ChunkGenerator, MobCategory, RandomSource, BlockPos, Holder, WeightedRandomList)} instead.
++     */
++    @Deprecated(since = "1.21.1")
      private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAt(
+         ServerLevel p_220430_, StructureManager p_220431_, ChunkGenerator p_220432_, MobCategory p_220433_, RandomSource p_220434_, BlockPos p_220435_
+     ) {
+         Holder<Biome> holder = p_220430_.getBiome(p_220435_);
++        return getRandomSpawnMobAt(p_220430_, p_220431_, p_220432_, p_220433_, p_220434_, p_220435_, holder, null);
++    }
++
++    private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAt(
++        ServerLevel p_220430_, StructureManager p_220431_, ChunkGenerator p_220432_, MobCategory p_220433_, RandomSource p_220434_, BlockPos p_220435_, Holder<Biome> biomeAtPos, @Nullable WeightedRandomList<MobSpawnSettings.SpawnerData> mobList
++    ) {
++        Holder<Biome> holder = biomeAtPos;
+         return p_220433_ == MobCategory.WATER_AMBIENT && holder.is(BiomeTags.REDUCED_WATER_AMBIENT_SPAWNS) && p_220434_.nextFloat() < 0.98F
+             ? Optional.empty()
++            : mobList != null ? mobList.getRandom(p_220434_)
+             : mobsAt(p_220430_, p_220431_, p_220432_, p_220433_, p_220435_, holder).getRandom(p_220434_);
+     }
+ 
++    /**
++     * This method remains for vanilla binary compatibility.
++     * @deprecated Use {@link #canSpawnMobAt(ServerLevel, StructureManager, ChunkGenerator, MobCategory, MobSpawnSettings.SpawnerData, BlockPos, WeightedRandomList)} instead.
++     */
++    @Deprecated(since = "1.21.1")
+     private static boolean canSpawnMobAt(
+         ServerLevel p_220437_,
+         StructureManager p_220438_,
+@@ -292,7 +_,19 @@
+         MobSpawnSettings.SpawnerData p_220441_,
+         BlockPos p_220442_
+     ) {
+-        return mobsAt(p_220437_, p_220438_, p_220439_, p_220440_, p_220442_, null).unwrap().contains(p_220441_);
++        return canSpawnMobAt(p_220437_, p_220438_, p_220439_, p_220440_, p_220441_, p_220442_, mobsAt(p_220437_, p_220438_, p_220439_, p_220440_, p_220442_, null));
++    }
++
++    private static boolean canSpawnMobAt(
++        ServerLevel p_220437_,
++        StructureManager p_220438_,
++        ChunkGenerator p_220439_,
++        MobCategory p_220440_,
++        MobSpawnSettings.SpawnerData p_220441_,
++        BlockPos p_220442_,
++        WeightedRandomList<MobSpawnSettings.SpawnerData> mobList
++    ) {
++        return mobList.unwrap().contains(p_220441_);
+     }
+ 
+     private static WeightedRandomList<MobSpawnSettings.SpawnerData> mobsAt(
 @@ -303,9 +_,14 @@
          BlockPos p_220448_,
          @Nullable Holder<Biome> p_220449_
