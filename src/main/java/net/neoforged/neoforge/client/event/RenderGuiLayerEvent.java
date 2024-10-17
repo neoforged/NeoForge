@@ -57,8 +57,10 @@ public abstract class RenderGuiLayerEvent extends Event {
 
     /**
      * Fired <b>before</b> a GUI layer is rendered to the screen.
+     * <br>The event is fired <b>regardless</b> if it being actually drawn on screen
+     * (use {@linkplain Pre#isGoingToRender()} to determine this)
      *
-     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}.
      * If this event is cancelled, then the layer will not be rendered, and the corresponding {@link Post} event will
      * not be fired.</p>
      *
@@ -68,24 +70,46 @@ public abstract class RenderGuiLayerEvent extends Event {
      * @see Post
      */
     public static class Pre extends RenderGuiLayerEvent implements ICancellableEvent {
+        private final boolean isGoingToRender;
+
         @ApiStatus.Internal
-        public Pre(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+        public Pre(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer, boolean isGoingToRender) {
             super(guiGraphics, partialTick, name, layer);
+            this.isGoingToRender = isGoingToRender;
+        }
+
+        /**
+         * Whenever element is actually going to render on screen if event is not canceled.
+         * <p>This is going to return <i>false</i> if element is currently not applicable for rendering, such
+         * as trying to render player health while player is in creative mode, or if Minecraft GUI is hidden by pressing F1.</p>
+         */
+        public boolean isGoingToRender() {
+            return isGoingToRender;
         }
     }
 
     /**
      * Fired <b>after</b> a GUI layer is rendered to the screen, if the corresponding {@link Pre} is not cancelled.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Post extends RenderGuiLayerEvent {
+        private final boolean actuallyRendered;
+
         @ApiStatus.Internal
-        public Post(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+        public Post(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer, boolean actuallyRendered) {
             super(guiGraphics, partialTick, name, layer);
+            this.actuallyRendered = actuallyRendered;
+        }
+
+        /**
+         * @see Pre#isGoingToRender()
+         */
+        public boolean actuallyRendered() {
+            return actuallyRendered;
         }
     }
 }
