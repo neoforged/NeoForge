@@ -9,6 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
+import net.neoforged.neoforge.network.configuration.SyncRegistryConfigTask;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
@@ -26,6 +27,8 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
+import net.neoforged.neoforge.network.payload.RegistryConfigAckPayload;
+import net.neoforged.neoforge.network.payload.RegistryConfigDataPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.ClientRegistryManager;
@@ -94,6 +97,14 @@ public class NetworkInitialization {
                 .playToClient(
                         ClientboundCustomSetTimePayload.TYPE,
                         ClientboundCustomSetTimePayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle);
+                        ClientPayloadHandler::handle)
+                .configurationToClient(
+                        RegistryConfigDataPayload.TYPE,
+                        RegistryConfigDataPayload.STREAM_CODEC,
+                        SyncRegistryConfigTask::handleData)
+                .configurationToServer(
+                        RegistryConfigAckPayload.TYPE,
+                        RegistryConfigAckPayload.STREAM_CODEC,
+                        SyncRegistryConfigTask::handleAck);
     }
 }

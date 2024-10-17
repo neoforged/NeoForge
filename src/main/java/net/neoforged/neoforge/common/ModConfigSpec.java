@@ -385,11 +385,11 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".<br>
          * This variant takes its default value directly and wraps it in a supplier.<br>
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineList(String, List, Supplier, Predicate)}
          */
         @Deprecated
@@ -399,10 +399,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".<br>
          * This variant takes its default value directly and wraps it in a supplier.
-         * 
+         *
          */
         public <T> ConfigValue<List<? extends T>> defineList(String path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
             return defineList(split(path), defaultValue, newElementSupplier, elementValidator);
@@ -410,10 +410,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".<br>
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineList(String, Supplier, Supplier, Predicate)}
          */
         @Deprecated
@@ -423,9 +423,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".
-         * 
+         *
          */
         public <T> ConfigValue<List<? extends T>> defineList(String path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
             return defineList(split(path), defaultSupplier, newElementSupplier, elementValidator);
@@ -433,10 +433,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its default value directly and wraps it in a supplier.<br>
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineList(List, List, Supplier, Predicate)}
          */
         @Deprecated
@@ -446,9 +446,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its default value directly and wraps it in a supplier.
-         * 
+         *
          */
         public <T> ConfigValue<List<? extends T>> defineList(List<String> path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
             return defineList(path, () -> defaultValue, newElementSupplier, elementValidator);
@@ -456,9 +456,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineList(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineList(List, Supplier, Supplier, Predicate)}
          */
         @Deprecated
@@ -468,9 +468,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * Build a new config value that holds a {@link List}.<p>
-         * 
+         *
          * This list cannot be empty. See also {@link #defineList(List, Supplier, Supplier, Predicate, Range)} for more control over the list size.
-         * 
+         *
          * @param <T>                The class of element of the list. Directly supported are {@link String}, {@link Boolean}, {@link Integer}, {@link Long} and {@link Double}.
          *                           Other classes will be saved using their string representation and will be read back from the config file as strings.
          * @param path               The key for the config value in list form, i.e. pre-split into section and key.
@@ -489,11 +489,11 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".<br>
          * This variant takes its default value directly and wraps it in a supplier.<br>
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineListAllowEmpty(String, List, Supplier, Predicate)}
          */
         @Deprecated
@@ -503,10 +503,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".<br>
          * This variant takes its default value directly and wraps it in a supplier.
-         * 
+         *
          */
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(split(path), defaultValue, newElementSupplier, elementValidator);
@@ -514,10 +514,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".<br>
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineListAllowEmpty(String, Supplier, Supplier, Predicate)}
          */
         @Deprecated
@@ -527,9 +527,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its key as a string and splits it on ".".
-         * 
+         *
          */
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(String path, Supplier<List<? extends T>> defaultSupplier, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(split(path), defaultSupplier, newElementSupplier, elementValidator);
@@ -537,10 +537,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its default value directly and wraps it in a supplier.<br>
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineListAllowEmpty(List, List, Supplier, Predicate)}
          */
         @Deprecated
@@ -550,9 +550,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant takes its default value directly and wraps it in a supplier.
-         * 
+         *
          */
         public <T> ConfigValue<List<? extends T>> defineListAllowEmpty(List<String> path, List<? extends T> defaultValue, Supplier<T> newElementSupplier, Predicate<Object> elementValidator) {
             return defineListAllowEmpty(path, () -> defaultValue, newElementSupplier, elementValidator);
@@ -560,9 +560,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * See {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)} for details.<p>
-         * 
+         *
          * This variant has no supplier for new elements, so no new elements can be added in the config UI.
-         * 
+         *
          * @deprecated Use {@link #defineListAllowEmpty(List, Supplier, Supplier, Predicate)}
          */
         @Deprecated
@@ -572,9 +572,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * Build a new config value that holds a {@link List}.<p>
-         * 
+         *
          * This list can be empty. See also {@link #defineList(List, Supplier, Supplier, Predicate, Range)} for more control over the list size.
-         * 
+         *
          * @param <T>                The class of element of the list. Directly supported are {@link String}, {@link Boolean}, {@link Integer}, {@link Long} and {@link Double}.
          *                           Other classes will be saved using their string representation and will be read back from the config file as strings.
          * @param path               The key for the config value in list form, i.e. pre-split into section and key.
@@ -593,7 +593,7 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * Build a new config value that holds a {@link List}.<p>
-         * 
+         *
          * @param <T>                The class of element of the list. Directly supported are {@link String}, {@link Boolean}, {@link Integer}, {@link Long} and {@link Double}.
          *                           Other classes will be saved using their string representation and will be read back from the config file as strings.
          * @param path               The key for the config value in list form, i.e. pre-split into section and key.
@@ -838,6 +838,16 @@ public class ModConfigSpec implements IConfigSpec {
             return this;
         }
 
+        /**
+         * Config values marked as needing a registry-affecting will need game restart as well,
+         * and will be added to {@link net.neoforged.neoforge.network.registryconfigsync.StartUpRegistryConfigHandler}
+         * constructed using this config spec to synchronize those entries to client with prompt
+         */
+        public Builder registryAffecting() {
+            context.registryAffecting();
+            return this;
+        }
+
         public Builder push(String path) {
             return push(split(path));
         }
@@ -953,6 +963,10 @@ public class ModConfigSpec implements IConfigSpec {
 
         public void gameRestart() {
             this.restartType = RestartType.GAME;
+        }
+
+        public void registryAffecting() {
+            this.restartType = RestartType.REGISTRY;
         }
 
         public RestartType restartType() {
@@ -1149,9 +1163,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * Creates a new empty element that can be added to the end of the list or null if the list doesn't support adding elements.<p>
-         * 
+         *
          * The element does not need to validate with either {@link #test(Object)} or {@link #testElement(Object)}, but it should give the user a good starting point for their edit.<p>
-         * 
+         *
          * Only used by the UI!
          */
         @Nullable
@@ -1161,9 +1175,9 @@ public class ModConfigSpec implements IConfigSpec {
 
         /**
          * Determines if a given object can be part of the list.<p>
-         * 
+         *
          * Note that the list-level validator overrules this.<p>
-         * 
+         *
          * Only used by the UI!
          */
         public boolean testElement(Object value) {
@@ -1237,6 +1251,23 @@ public class ModConfigSpec implements IConfigSpec {
 
         public T getRaw(Config config, List<String> path, Supplier<T> defaultSupplier) {
             return config.getOrElse(path, defaultSupplier);
+        }
+
+        @ApiStatus.Internal
+        @Nullable
+        public Object getRawData() {
+            Preconditions.checkNotNull(spec, "Cannot get config value before spec is built");
+            var loadedConfig = spec.loadedConfig;
+            Preconditions.checkState(loadedConfig != null, "Cannot get config value before config is loaded.");
+            return loadedConfig.config().get(path);
+        }
+
+        @ApiStatus.Internal
+        public void setRawData(@Nullable Object data) {
+            Preconditions.checkNotNull(spec, "Cannot set config value before spec is built");
+            var loadedConfig = spec.loadedConfig;
+            Preconditions.checkState(loadedConfig != null, "Cannot set config value before config is loaded.");
+            loadedConfig.config().set(path, data);
         }
 
         /**
@@ -1389,7 +1420,13 @@ public class ModConfigSpec implements IConfigSpec {
          * <p>
          * Cannot be used for {@linkplain ModConfig.Type#SERVER server configs}.
          */
-        GAME(ModConfig.Type.SERVER);
+        GAME(ModConfig.Type.SERVER),
+        /**
+         * Require a game restart, and will affect registry
+         * <p>
+         * Can only be used for {@linkplain ModConfig.Type#STARTUP startup configs}.
+         */
+        REGISTRY(ModConfig.Type.SERVER, ModConfig.Type.CLIENT, ModConfig.Type.COMMON);
 
         private final Set<ModConfig.Type> invalidTypes;
 
@@ -1403,7 +1440,10 @@ public class ModConfigSpec implements IConfigSpec {
         }
 
         public RestartType with(RestartType other) {
-            return other == NONE ? this : (other == GAME || this == GAME) ? GAME : WORLD;
+            if (other == NONE) return this;
+            if (other == REGISTRY || this == REGISTRY) return REGISTRY;
+            if (other == GAME || this == GAME) return GAME;
+            return WORLD;
         }
     }
 }
