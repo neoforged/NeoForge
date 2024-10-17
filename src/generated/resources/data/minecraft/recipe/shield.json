@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "W": {
-      "tag": "minecraft:planks"
-    },
-    "o": {
-      "tag": "c:ingots/iron"
-    }
+    "W": "#minecraft:wooden_tool_materials",
+    "o": "#c:ingots/iron"
   },
   "pattern": [
     "WoW",

@@ -60,9 +60,9 @@ public abstract class DataMapProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        gather();
-
         return lookupProvider.thenCompose(provider -> {
+            gather(provider);
+
             final DynamicOps<JsonElement> dynamicOps = RegistryOps.create(JsonOps.INSTANCE, provider);
 
             return CompletableFuture.allOf(this.builders.entrySet().stream().map(entry -> {
@@ -83,7 +83,7 @@ public abstract class DataMapProvider implements DataProvider {
     /**
      * Generate data map entries.
      */
-    protected abstract void gather();
+    protected abstract void gather(HolderLookup.Provider provider);
 
     @SuppressWarnings("unchecked")
     public <T, R> Builder<T, R> builder(DataMapType<R, T> type) {

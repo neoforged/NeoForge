@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -356,6 +_,10 @@
-         });
+@@ -373,6 +_,10 @@
+         ((MappedRegistry)p_365443_).bindAllTagsToEmpty();
      }
  
 +    public static java.util.Set<ResourceLocation> getVanillaRegistrationOrder() {

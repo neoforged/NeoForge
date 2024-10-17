@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.loading;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,7 +15,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -22,7 +22,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.LoadingOverlay;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.Mth;
@@ -80,9 +80,11 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
             displayWindow.render(0xff);
         } else {
             GlStateManager._clearColor(colour.redf(), colour.greenf(), colour.bluef(), 1f);
-            GlStateManager._clear(GlConst.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+            GlStateManager._clear(GlConst.GL_COLOR_BUFFER_BIT);
             displayWindow.render(0xFF);
         }
+        // EarlyWindow will call glBindTexture with 0. Make sure the GlStateManager's cache is aware of it.
+        RenderSystem.bindTexture(0);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA);
         var fbWidth = this.minecraft.getWindow().getWidth();
@@ -102,8 +104,8 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
         RenderSystem.getModelViewMatrix().identity();
-        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0.0F, fbWidth, 0.0F, fbHeight, 0.1f, -0.1f), VertexSorting.ORTHOGRAPHIC_Z);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0.0F, fbWidth, 0.0F, fbHeight, 0.1f, -0.1f), ProjectionType.ORTHOGRAPHIC);
+        RenderSystem.setShader(CoreShaders.RENDERTYPE_GUI_OVERLAY);
         // This is fill in around the edges - it's empty solid colour
         // top box from hpos
         addQuad(bufferbuilder, 0, fbWidth, wtop, fbHeight, colour, fade);
@@ -118,7 +120,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         // This is the actual screen data from the loading screen
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
         RenderSystem.setShaderTexture(0, displayWindow.getFramebufferTextureId());
         bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         bufferbuilder.addVertex(wleft, wbottom, 0f).setUv(0, 0).setColor(1f, 1f, 1f, fade);

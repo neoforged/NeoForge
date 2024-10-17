@@ -62,7 +62,7 @@ public class NewModelLoaderTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredBlock<Block> obj_block = BLOCKS.register("obj_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
+    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", props -> new Block(props) {
         @Override
         protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(BlockStateProperties.HORIZONTAL_FACING);
@@ -79,9 +79,9 @@ public class NewModelLoaderTest {
         public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
             return Block.box(2, 2, 2, 14, 14, 14);
         }
-    });
+    }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
-    public static DeferredItem<Item> obj_item = ITEMS.register("obj_block", () -> new BlockItem(obj_block.get(), new Item.Properties()) {
+    public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
         public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
             return armorType == EquipmentSlot.HEAD;

@@ -78,7 +78,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.RelativeMovement;
+import net.minecraft.world.entity.PositionMoveRotation;
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -91,6 +92,7 @@ public class FakePlayer extends ServerPlayer {
     public FakePlayer(ServerLevel level, GameProfile name) {
         super(level.getServer(), level, name, ClientInformation.createDefault());
         this.connection = new FakePlayerNetHandler(level.getServer(), this);
+        this.setInvulnerable(true);
     }
 
     @Override
@@ -98,11 +100,6 @@ public class FakePlayer extends ServerPlayer {
 
     @Override
     public void awardStat(Stat<?> stat, int amount) {}
-
-    @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        return true;
-    }
 
     @Override
     public boolean canHarmPlayer(Player player) {
@@ -304,7 +301,7 @@ public class FakePlayer extends ServerPlayer {
         public void handleLockDifficulty(ServerboundLockDifficultyPacket packet) {}
 
         @Override
-        public void teleport(double x, double y, double z, float yaw, float pitch, Set<RelativeMovement> relativeSet) {}
+        public void teleport(PositionMoveRotation posMoveRot, Set<Relative> relatives) {}
 
         @Override
         public void ackBlockChangesUpTo(int sequence) {}

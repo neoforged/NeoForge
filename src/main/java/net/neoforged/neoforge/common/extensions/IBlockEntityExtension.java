@@ -11,7 +11,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -94,16 +93,6 @@ public interface IBlockEntityExtension {
      */
     default ModelData getModelData() {
         return ModelData.EMPTY;
-    }
-
-    /**
-     * Returns whether this {@link BlockEntity} has custom outline rendering behavior.
-     *
-     * @param player the local player currently viewing this {@code BlockEntity}
-     * @return {@code true} to enable outline processing
-     */
-    default boolean hasCustomOutlineRendering(Player player) {
-        return false;
     }
 
     /**

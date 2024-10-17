@@ -9,8 +9,8 @@ import com.mojang.datafixers.util.Either;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
  * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
  */
 public class FinalizeSpawnEvent extends MobSpawnEvent implements ICancellableEvent {
-    private final MobSpawnType spawnType;
+    private final EntitySpawnReason spawnType;
 
     @Nullable
     private final Either<BlockEntity, Entity> spawner;
@@ -52,7 +52,7 @@ public class FinalizeSpawnEvent extends MobSpawnEvent implements ICancellableEve
      * @apiNote Fire via {@link EventHooks#onFinalizeSpawn} / {@link EventHooks#onFinalizeSpawnSpawner}.
      */
     @ApiStatus.Internal
-    public FinalizeSpawnEvent(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable Either<BlockEntity, Entity> spawner) {
+    public FinalizeSpawnEvent(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable Either<BlockEntity, Entity> spawner) {
         super(entity, level, x, y, z);
         this.difficulty = difficulty;
         this.spawnType = spawnType;
@@ -83,9 +83,9 @@ public class FinalizeSpawnEvent extends MobSpawnEvent implements ICancellableEve
      * Retrieves the type of mob spawn that happened (the event that caused the spawn). The enum names are self-explanatory.
      * 
      * @return The mob spawn type.
-     * @see MobSpawnType
+     * @see EntitySpawnReason
      */
-    public MobSpawnType getSpawnType() {
+    public EntitySpawnReason getSpawnType() {
         return this.spawnType;
     }
 

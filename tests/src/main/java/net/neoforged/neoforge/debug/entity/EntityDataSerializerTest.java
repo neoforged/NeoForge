@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.entity;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,7 +18,8 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -95,16 +97,21 @@ public class EntityDataSerializerTest {
 
         @Override
         protected void addAdditionalSaveData(CompoundTag tag) {}
+
+        @Override
+        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
+            return false;
+        }
     }
 
-    private static class TestEntityRenderer extends EntityRenderer<TestEntity> {
+    private static class TestEntityRenderer extends EntityRenderer<TestEntity, EntityRenderState> {
         public TestEntityRenderer(EntityRendererProvider.Context context) {
             super(context);
         }
 
         @Override
-        public ResourceLocation getTextureLocation(TestEntity entity) {
-            return null;
+        public EntityRenderState createRenderState() {
+            return new EntityRenderState();
         }
     }
 }

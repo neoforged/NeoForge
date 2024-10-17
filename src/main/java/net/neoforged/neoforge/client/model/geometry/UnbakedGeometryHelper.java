@@ -25,22 +25,14 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.BuiltInModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.model.ElementsModel;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.IModelBuilder;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.SimpleModelState;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -88,28 +80,6 @@ public class UnbakedGeometryHelper {
         }
 
         return new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(tex));
-    }
-
-    /**
-     * Helper for baking {@link BlockModel} instances. Handles baking custom geometries and deferring item model baking.
-     */
-    @ApiStatus.Internal
-    public static BakedModel bake(BlockModel blockModel, ModelBaker modelBaker, BlockModel owner, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, boolean guiLight3d) {
-        IUnbakedGeometry<?> customModel = blockModel.customData.getCustomGeometry();
-        if (customModel != null)
-            return customModel.bake(blockModel.customData, modelBaker, spriteGetter, modelState, blockModel.getOverrides(modelBaker, owner, spriteGetter));
-
-        // Handle vanilla item models here, since vanilla has a shortcut for them
-        if (blockModel.getRootModel() == ModelBakery.GENERATION_MARKER)
-            return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, blockModel).bakeVanilla(modelBaker, blockModel, spriteGetter, modelState, guiLight3d);
-
-        if (blockModel.getRootModel() == ModelBakery.BLOCK_ENTITY_MARKER) {
-            var particleSprite = spriteGetter.apply(blockModel.getMaterial("particle"));
-            return new BuiltInModel(blockModel.getTransforms(), blockModel.getOverrides(modelBaker, owner, spriteGetter), particleSprite, blockModel.getGuiLight().lightLikeBlock());
-        }
-
-        var elementsModel = new ElementsModel(blockModel.getElements());
-        return elementsModel.bake(blockModel.customData, modelBaker, spriteGetter, modelState, blockModel.getOverrides(modelBaker, owner, spriteGetter));
     }
 
     /**
@@ -198,7 +168,8 @@ public class UnbakedGeometryHelper {
                                     map.put(direction, new BlockElementFace(null, layerIndex, "layer" + layerIndex, new BlockFaceUV(null, 0)));
                             }),
                             null,
-                            true));
+                            true,
+                            0));
 
                     // Reset xStart
                     xStart = -1;
@@ -215,7 +186,7 @@ public class UnbakedGeometryHelper {
         for (BlockElement element : elements) {
             element.faces.forEach((side, face) -> {
                 var sprite = spriteGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(face.texture())));
-                var quad = bakeElementFace(element, face, sprite, side, modelState);
+                BakedQuad quad = BlockModel.bakeFace(element, face, sprite, side, modelState);
                 if (face.cullForDirection() == null)
                     builder.addUnculledFace(quad);
                 else
@@ -233,29 +204,6 @@ public class UnbakedGeometryHelper {
         var list = new ArrayList<BakedQuad>();
         bakeElements(IModelBuilder.collecting(list), elements, spriteGetter, modelState);
         return list;
-    }
-
-    /**
-     * Turns a single {@link BlockElementFace} into a {@link BakedQuad}.
-     */
-    public static BakedQuad bakeElementFace(BlockElement element, BlockElementFace face, TextureAtlasSprite sprite, Direction direction, ModelState state) {
-        return FACE_BAKERY.bakeQuad(element.from, element.to, face, sprite, direction, state, element.rotation, element.shade);
-    }
-
-    /**
-     * Create an {@link IQuadTransformer} to apply a {@link Transformation} that undoes the {@link ModelState}
-     * transform (blockstate transform), applies the given root transform and then re-applies the
-     * blockstate transform.
-     *
-     * @return an {@code IQuadTransformer} that applies the root transform to a baked quad that already has the
-     *         transformation of the given {@code ModelState} applied to it
-     */
-    public static IQuadTransformer applyRootTransform(ModelState modelState, Transformation rootTransform) {
-        // Move the origin of the ModelState transform and its inverse from the negative corner to the block center
-        // to replicate the way the ModelState transform is applied in the FaceBakery by moving the vertices such that
-        // the negative corner acts as the block center
-        Transformation transform = modelState.getRotation().applyOrigin(new Vector3f(.5F, .5F, .5F));
-        return QuadTransformers.applying(transform.compose(rootTransform).compose(transform.inverse()));
     }
 
     /**

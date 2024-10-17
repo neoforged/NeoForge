@@ -27,7 +27,7 @@
                      return true;
                  }
              }
-@@ -253,6 +_,19 @@
+@@ -257,6 +_,19 @@
      @Override
      public void setFocused(boolean p_93693_) {
          this.focused = p_93693_;

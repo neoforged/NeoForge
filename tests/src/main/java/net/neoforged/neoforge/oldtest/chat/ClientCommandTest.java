@@ -40,7 +40,7 @@ public class ClientCommandTest {
                         // Used for checking suggestion providers that are registered
                         .then(Commands.literal("registeredsuggest").then(
                                 Commands.argument("block", ResourceLocationArgument.id())
-                                        .suggests(SuggestionProviders.ALL_RECIPES)
+                                        .suggests(SuggestionProviders.AVAILABLE_SOUNDS)
                                         .executes(this::testCommand)))
                         // Used for checking if attempting to get the server on the client side errors
                         .then(Commands.literal("server")
@@ -65,23 +65,25 @@ public class ClientCommandTest {
                                             context.getSource().sendSuccess(() -> msg, false);
                                             return 1;
                                         })))
-                        // Used for checking if getting a known advancement works on the client side
-                        .then(Commands.literal("get_advancement")
-                                .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                        .executes((context) -> {
-                                            final Component msg = ResourceLocationArgument.getAdvancement(context, "advancement").value().display().get().getTitle();
-                                            context.getSource().sendSuccess(() -> msg, false);
-                                            return 1;
-                                        })))
-                        // Used for checking if getting a known recipe works on the client side
-                        .then(Commands.literal("get_recipe")
-                                .then(Commands.argument("recipe", ResourceLocationArgument.id())
-                                        .executes((context) -> {
-                                            final Component msg = ResourceLocationArgument.getRecipe(context, "recipe").value().getResultItem(context.getSource().registryAccess()).getDisplayName();
-                                            context.getSource()
-                                                    .sendSuccess(() -> msg, false);
-                                            return 1;
-                                        })))
+                        // 1.21.2 commands now directly use the registry for advancements and recipes
+                        // where advancements and recipes are not synced
+//                        // Used for checking if getting a known advancement works on the client side
+//                        .then(Commands.literal("get_advancement")
+//                                .then(Commands.argument("advancement", ResourceLocationArgument.id())
+//                                        .executes((context) -> {
+//                                            final Component msg = ResourceLocationArgument.getAdvancement(context, "advancement").value().display().get().getTitle();
+//                                            context.getSource().sendSuccess(() -> msg, false);
+//                                            return 1;
+//                                        })))
+//                        // Used for checking if getting a known recipe works on the client side
+//                        .then(Commands.literal("get_recipe")
+//                                .then(Commands.argument("recipe", ResourceLocationArgument.id())
+//                                        .executes((context) -> {
+//                                            final Component msg = ResourceLocationArgument.getRecipe(context, "recipe").value().getResultItem(context.getSource().registryAccess()).getDisplayName();
+//                                            context.getSource()
+//                                                    .sendSuccess(() -> msg, false);
+//                                            return 1;
+//                                        })))
                         // Used for checking if getting a team works on the client side
                         .then(Commands.literal("get_team")
                                 .then(Commands.argument("team", TeamArgument.team())
@@ -124,7 +126,7 @@ public class ClientCommandTest {
         context.getSource().sendSuccess(() -> Component.literal("Input: " + ResourceLocationArgument.getId(context, "block")), false);
         context.getSource().sendSuccess(() -> Component.literal("Teams: " + context.getSource().getAllTeams()), false);
         context.getSource().sendSuccess(() -> Component.literal("Players: " + context.getSource().getOnlinePlayerNames()), false);
-        context.getSource().sendSuccess(() -> Component.literal("First recipe: " + context.getSource().getRecipeNames().findFirst().get()), false);
+//        context.getSource().sendSuccess(() -> Component.literal("First recipe: " + context.getSource().getRecipeNames().findFirst().get()), false);
         context.getSource().sendSuccess(() -> Component.literal("Levels: " + context.getSource().levels()), false);
         context.getSource().sendSuccess(() -> Component.literal("Registry Access: " + context.getSource().registryAccess()), false);
         return 0;

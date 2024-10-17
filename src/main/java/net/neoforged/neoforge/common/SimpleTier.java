@@ -7,14 +7,14 @@ package net.neoforged.neoforge.common;
 
 import java.util.function.Supplier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 
 /**
  * Helper class to define a custom tier
+ * FIXME: is this still needed?
  */
-public class SimpleTier implements Tier {
+public class SimpleTier /*implements Tier*/ {
     private final TagKey<Block> incorrectBlocksForDrops;
     private final int uses;
     private final float speed;
@@ -32,35 +32,35 @@ public class SimpleTier implements Tier {
         this.repairIngredient = repairIngredient;
     }
 
-    @Override
+    /*@Override
     public int getUses() {
         return this.uses;
     }
-
+    
     @Override
     public float getSpeed() {
         return this.speed;
     }
-
+    
     @Override
     public float getAttackDamageBonus() {
         return this.attackDamageBonus;
     }
-
+    
     @Override
     public TagKey<Block> getIncorrectBlocksForDrops() {
         return incorrectBlocksForDrops;
     }
-
+    
     @Override
     public int getEnchantmentValue() {
         return this.enchantmentValue;
     }
-
+    
     @Override
     public Ingredient getRepairIngredient() {
         return this.repairIngredient.get();
-    }
+    }*/
 
     @Override
     public String toString() {

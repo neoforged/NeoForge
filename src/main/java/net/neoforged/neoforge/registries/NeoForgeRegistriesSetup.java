@@ -53,8 +53,11 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.NUMBER_FORMAT_TYPE, // NumberFormatTypes#STREAM_CODEC
             BuiltInRegistries.CUSTOM_STAT, // StatType creates a registry StreamCodec using the provided stat registry
             BuiltInRegistries.POSITION_SOURCE_TYPE, // PositionSource#STREAM_CODEC
-            BuiltInRegistries.ARMOR_MATERIAL, // TrimMaterial#DIRECT_STREAM_CODEC
-            BuiltInRegistries.MAP_DECORATION_TYPE // MapDecorationType#STREAM_CODEC
+            BuiltInRegistries.MAP_DECORATION_TYPE, // MapDecorationType#STREAM_CODEC
+            BuiltInRegistries.CONSUME_EFFECT_TYPE, // ConsumeEffect.STREAM_CODEC
+            BuiltInRegistries.RECIPE_DISPLAY, // RecipeDisplay.STREAM_CODEC
+            BuiltInRegistries.SLOT_DISPLAY, // SlotDisplay.STREAM_CODEC
+            BuiltInRegistries.RECIPE_BOOK_CATEGORY // RecipeDisplayEntry.STREAM_CODEC
     );
 
     private static void registerRegistries(NewRegistryEvent event) {

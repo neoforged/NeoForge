@@ -294,7 +294,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         for (DyeColor color : DyeColor.values()) {
             ResourceLocation key = ResourceLocation.fromNamespaceAndPath("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Block> tag = getForgeTag(prefix + color.getName());
-            Block block = BuiltInRegistries.BLOCK.get(key);
+            Block block = BuiltInRegistries.BLOCK.getValue(key);
             if (block == null || block == Blocks.AIR)
                 throw new IllegalStateException("Unknown vanilla block: " + key);
             tag(tag).add(block);

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "tag": "c:ingots/copper"
-    },
-    "I": {
-      "tag": "c:rods/wooden"
-    },
-    "X": {
-      "item": "minecraft:feather"
-    }
+    "#": "#c:ingots/copper",
+    "I": "#c:rods/wooden",
+    "X": "minecraft:feather"
   },
   "pattern": [
     "X",

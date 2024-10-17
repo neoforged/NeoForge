@@ -3,7 +3,7 @@
 @@ -59,7 +_,7 @@
          Stream<Holder<Enchantment>> stream = this.options
              .map(HolderSet::stream)
-             .orElseGet(() -> p_80430_.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).holders().map(Function.identity()))
+             .orElseGet(() -> p_80430_.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements().map(Function.identity()))
 -            .filter(p_344686_ -> !flag1 || p_344686_.value().canEnchant(p_80429_));
 +            .filter(p_344686_ -> !flag1 || p_80429_.supportsEnchantment(p_344686_)); // Neo: Respect IItemExtension#supportsEnchantment
          List<Holder<Enchantment>> list = stream.toList();

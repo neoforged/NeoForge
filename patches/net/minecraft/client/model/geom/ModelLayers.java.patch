@@ -1,36 +1,18 @@
 --- a/net/minecraft/client/model/geom/ModelLayers.java
 +++ b/net/minecraft/client/model/geom/ModelLayers.java
-@@ -213,27 +_,33 @@
+@@ -301,15 +_,18 @@
      }
  
-     public static ModelLayerLocation createRaftModelName(Boat.Type p_252002_) {
--        return createLocation("raft/" + p_252002_.getName(), "main");
-+        ResourceLocation location = ResourceLocation.parse(p_252002_.getName());
-+        return new ModelLayerLocation(location.withPrefix("raft/"), "main");
-     }
- 
-     public static ModelLayerLocation createChestRaftModelName(Boat.Type p_248520_) {
--        return createLocation("chest_raft/" + p_248520_.getName(), "main");
-+        ResourceLocation location = ResourceLocation.parse(p_248520_.getName());
-+        return new ModelLayerLocation(location.withPrefix("chest_raft/"), "main");
-     }
- 
-     public static ModelLayerLocation createBoatModelName(Boat.Type p_171290_) {
--        return createLocation("boat/" + p_171290_.getName(), "main");
-+        ResourceLocation location = ResourceLocation.parse(p_171290_.getName());
-+        return new ModelLayerLocation(location.withPrefix("boat/"), "main");
-     }
- 
-     public static ModelLayerLocation createChestBoatModelName(Boat.Type p_233551_) {
--        return createLocation("chest_boat/" + p_233551_.getName(), "main");
-+        ResourceLocation location = ResourceLocation.parse(p_233551_.getName());
-+        return new ModelLayerLocation(location.withPrefix("chest_boat/"), "main");
-     }
- 
-     public static ModelLayerLocation createSignModelName(WoodType p_171292_) {
--        return createLocation("sign/" + p_171292_.name(), "main");
+     public static ModelLayerLocation createStandingSignModelName(WoodType p_171292_) {
+-        return createLocation("sign/standing/" + p_171292_.name(), "main");
 +        ResourceLocation location = ResourceLocation.parse(p_171292_.name());
-+        return new ModelLayerLocation(location.withPrefix("sign/"), "main");
++        return new ModelLayerLocation(location.withPrefix("sign/standing/"), "main");
+     }
+ 
+     public static ModelLayerLocation createWallSignModelName(WoodType p_360963_) {
+-        return createLocation("sign/wall/" + p_360963_.name(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_360963_.name());
++        return new ModelLayerLocation(location.withPrefix("sign/wall/"), "main");
      }
  
      public static ModelLayerLocation createHangingSignModelName(WoodType p_252225_) {

@@ -25,7 +25,7 @@
          }
  
          return ImmutableMap.copyOf(map);
-@@ -77,11 +_,12 @@
+@@ -82,11 +_,12 @@
      }
  
      public List<Pack> rebuildSelected(Collection<String> p_10518_) {
@@ -40,7 +40,7 @@
              }
          }
  
-@@ -93,7 +_,7 @@
+@@ -98,7 +_,7 @@
      }
  
      public Collection<String> getAvailableIds() {
@@ -49,7 +49,7 @@
      }
  
      public Collection<Pack> getAvailablePacks() {
-@@ -101,7 +_,7 @@
+@@ -106,7 +_,7 @@
      }
  
      public Collection<String> getSelectedIds() {
@@ -58,7 +58,7 @@
      }
  
      public FeatureFlagSet getRequestedFeatureFlags() {
-@@ -115,6 +_,10 @@
+@@ -120,6 +_,10 @@
      @Nullable
      public Pack getPack(String p_10508_) {
          return this.available.get(p_10508_);

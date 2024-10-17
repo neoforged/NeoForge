@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/block/ChorusFlowerBlock.java
 +++ b/net/minecraft/world/level/block/ChorusFlowerBlock.java
-@@ -65,10 +_,13 @@
+@@ -66,10 +_,13 @@
          BlockPos blockpos = p_220982_.above();
-         if (p_220981_.isEmptyBlock(blockpos) && blockpos.getY() < p_220981_.getMaxBuildHeight()) {
+         if (p_220981_.isEmptyBlock(blockpos) && blockpos.getY() <= p_220981_.getMaxY()) {
              int i = p_220980_.getValue(AGE);
 -            if (i < 5) {
 +            if (i < 5 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_220981_, blockpos, p_220980_, true)) {
@@ -15,7 +15,7 @@
                  if (blockstate.is(Blocks.END_STONE)) {
                      flag = true;
                  } else if (blockstate.is(this.plant)) {
-@@ -77,6 +_,8 @@
+@@ -78,6 +_,8 @@
                      for (int k = 0; k < 4; k++) {
                          BlockState blockstate1 = p_220981_.getBlockState(p_220982_.below(j + 1));
                          if (!blockstate1.is(this.plant)) {
@@ -24,7 +24,7 @@
                              if (blockstate1.is(Blocks.END_STONE)) {
                                  flag1 = true;
                              }
-@@ -123,6 +_,7 @@
+@@ -124,6 +_,7 @@
                  } else {
                      this.placeDeadFlower(p_220981_, p_220982_);
                  }
@@ -32,7 +32,7 @@
              }
          }
      }
-@@ -159,6 +_,8 @@
+@@ -169,6 +_,8 @@
      @Override
      protected boolean canSurvive(BlockState p_51683_, LevelReader p_51684_, BlockPos p_51685_) {
          BlockState blockstate = p_51684_.getBlockState(p_51685_.below());

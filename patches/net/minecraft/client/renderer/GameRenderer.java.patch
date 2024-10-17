@@ -1,32 +1,24 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -311,6 +_,8 @@
-             this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/spider.json"));
+@@ -158,6 +_,8 @@
+             this.setPostEffect(ResourceLocation.withDefaultNamespace("spider"));
          } else if (p_109107_ instanceof EnderMan) {
-             this.loadEffect(ResourceLocation.withDefaultNamespace("shaders/post/invert.json"));
+             this.setPostEffect(ResourceLocation.withDefaultNamespace("invert"));
 +        } else {
 +            net.neoforged.neoforge.client.ClientHooks.loadEntityShader(p_109107_, this);
          }
      }
  
-@@ -714,6 +_,7 @@
-                 )
-             );
-             this.loadBlurEffect(p_250719_);
-+            net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterShadersEvent(p_250719_, list1));
-         } catch (IOException ioexception) {
-             list1.forEach(p_172729_ -> p_172729_.getFirst().close());
-             throw new RuntimeException("could not reload shaders", ioexception);
-@@ -872,7 +_,7 @@
-                 d0 *= Mth.lerp(this.minecraft.options.fovEffectScale().get(), 1.0, 0.85714287F);
+@@ -312,7 +_,7 @@
+                 f *= Mth.lerp(f2, 1.0F, 0.85714287F);
              }
  
--            return d0;
-+            return net.neoforged.neoforge.client.ClientHooks.getFieldOfView(this, p_109142_, p_109143_, d0, p_109144_);
+-            return f;
++            return net.neoforged.neoforge.client.ClientHooks.getFieldOfView(this, p_109142_, p_109143_, f, p_109144_);
          }
      }
  
-@@ -888,6 +_,10 @@
+@@ -328,6 +_,10 @@
                  return;
              }
  
@@ -37,48 +29,37 @@
              f2 /= (float)livingentity.hurtDuration;
              f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
              float f3 = livingentity.getHurtDir();
-@@ -1036,12 +_,12 @@
+@@ -474,12 +_,12 @@
                      (float)((double)window.getHeight() / window.getGuiScale()),
                      0.0F,
                      1000.0F,
 -                    21000.0F
 +                    net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane()
                  );
-             RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
+             RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
              Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
              matrix4fstack.pushMatrix();
 -            matrix4fstack.translation(0.0F, 0.0F, -11000.0F);
 +            matrix4fstack.translation(0.0F, 0.0F, 10000F - net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
-             RenderSystem.applyModelViewMatrix();
              Lighting.setupFor3DItems();
              GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
-@@ -1070,7 +_,8 @@
- 
-             if (this.minecraft.getOverlay() != null) {
-                 try {
--                    this.minecraft.getOverlay().render(guigraphics, i, j, p_348648_.getRealtimeDeltaTicks());
-+                    // Neo: Fix https://bugs.mojang.com/browse/MC-273464
-+                    this.minecraft.getOverlay().render(guigraphics, i, j, p_348648_.getGameTimeDeltaPartialTick(false));
-                 } catch (Throwable throwable2) {
-                     CrashReport crashreport = CrashReport.forThrowable(throwable2, "Rendering overlay");
-                     CrashReportCategory crashreportcategory = crashreport.addCategory("Overlay render details");
-@@ -1079,7 +_,9 @@
+             if (flag && p_109096_ && this.minecraft.level != null) {
+@@ -505,7 +_,8 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
--                    this.minecraft.screen.renderWithTooltip(guigraphics, i, j, p_348648_.getRealtimeDeltaTicks());
+-                    this.minecraft.screen.renderWithTooltip(guigraphics, i, j, p_348648_.getGameTimeDeltaTicks());
 +                    // Neo: Wrap Screen#render to allow for GUI Layers and ScreenEvent.Render.[Pre/Post]
-+                    // Also fixes https://bugs.mojang.com/browse/MC-273464
-+                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, p_348648_.getGameTimeDeltaPartialTick(false));
++                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, p_348648_.getGameTimeDeltaTicks());
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -1259,6 +_,8 @@
-             .levelRenderer
-             .prepareCullFrustum(camera.getPosition(), matrix4f1, this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));
-         this.minecraft.levelRenderer.renderLevel(p_348589_, flag, camera, this, this.lightTexture, matrix4f1, matrix4f);
-+        this.minecraft.getProfiler().popPush("neoforge_render_last");
+@@ -687,6 +_,8 @@
+         this.minecraft.levelRenderer.prepareCullFrustum(camera.getPosition(), matrix4f2, matrix4f1);
+         this.minecraft.getMainRenderTarget().bindWrite(true);
+         this.minecraft.levelRenderer.renderLevel(this.resourcePool, p_348589_, flag, camera, this, this.lightTexture, matrix4f2, matrix4f);
++        profilerfiller.popPush("neoforge_render_last");
 +        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, null, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
-         this.minecraft.getProfiler().popPush("hand");
+         profilerfiller.popPush("hand");
          if (this.renderHand) {
-             RenderSystem.clear(256, Minecraft.ON_OSX);
+             RenderSystem.clear(256);

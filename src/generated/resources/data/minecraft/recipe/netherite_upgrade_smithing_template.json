@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:gems/diamond"
-    },
-    "C": {
-      "item": "minecraft:netherrack"
-    },
-    "S": {
-      "item": "minecraft:netherite_upgrade_smithing_template"
-    }
+    "#": "#c:gems/diamond",
+    "C": "minecraft:netherrack",
+    "S": "minecraft:netherite_upgrade_smithing_template"
   },
   "pattern": [
     "#S#",

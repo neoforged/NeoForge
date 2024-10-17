@@ -377,7 +377,7 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
             quadBaker.setLight(uv2);
             quadBaker.setNormal(normal.x(), normal.y(), normal.z());
             if (i == 0) {
-                quadBaker.setDirection(Direction.getNearest(normal.x(), normal.y(), normal.z()));
+                quadBaker.setDirection(Direction.getApproximateNearest(normal.x(), normal.y(), normal.z()));
             }
             pos[i] = position;
             norm[i] = normal;

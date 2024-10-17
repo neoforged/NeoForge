@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.event.level.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
@@ -21,15 +21,15 @@ public class CreateFluidSourceEvent extends BlockEvent {
     private final boolean vanillaResult;
     private boolean canConvert;
 
-    public CreateFluidSourceEvent(Level level, BlockPos pos, BlockState state) {
+    public CreateFluidSourceEvent(ServerLevel level, BlockPos pos, BlockState state) {
         super(level, pos, state);
         this.vanillaResult = state.getFluidState().canConvertToSource(level, pos);
         this.canConvert = this.vanillaResult;
     }
 
     @Override
-    public Level getLevel() {
-        return (Level) super.getLevel();
+    public ServerLevel getLevel() {
+        return (ServerLevel) super.getLevel();
     }
 
     public FluidState getFluidState() {
@@ -39,7 +39,7 @@ public class CreateFluidSourceEvent extends BlockEvent {
     /**
      * Returns if the fluid would normally be converted to a source block.
      * <p>
-     * This is computed by calling {@link IFluidStateExtension#canConvertToSource(Level, BlockPos)}.
+     * This is computed by calling {@link IFluidStateExtension#canConvertToSource(ServerLevel, BlockPos)}.
      */
     public boolean getVanillaResult() {
         return this.vanillaResult;

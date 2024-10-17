@@ -8,12 +8,14 @@ package net.neoforged.neoforge.debug.block;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ThreadedLevelLightEngine;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -53,8 +55,8 @@ public class BlockPropertyTests {
                 .set(1, 1, 1, Blocks.AIR.defaultBlockState())
                 .set(1, 2, 1, Blocks.AIR.defaultBlockState()));
 
-        BlockPos lightPos = new BlockPos(1, 2, 1);
-        BlockPos testPos = new BlockPos(1, 3, 1);
+        BlockPos lightPos = new BlockPos(1, 1, 1);
+        BlockPos testPos = new BlockPos(1, 2, 1);
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(lightPos, lightBlock.get()))
@@ -64,7 +66,7 @@ public class BlockPropertyTests {
                 .thenWaitUntil(future -> helper.assertTrue(future.isDone(), "Light engine did not update to lit"))
                 .thenExecute(() -> helper.assertTrue(helper.getLevel().getLightEngine().getRawBrightness(helper.absolutePos(testPos), 15) == 14, "Lit light level was not as expected"))
                 .thenExecute(() -> helper.destroyBlock(lightPos))
-                .thenMap(() -> helper.getLevel().getChunkAt(helper.absolutePos(new BlockPos(1, 3, 1))))
+                .thenMap(() -> helper.getLevel().getChunkAt(helper.absolutePos(new BlockPos(1, 2, 1))))
                 .thenMap(chunk -> ((ThreadedLevelLightEngine) helper.getLevel().getLightEngine()).waitForPendingTasks(chunk.getPos().x, chunk.getPos().z))
                 .thenWaitUntil(future -> helper.assertTrue(future.isDone(), "Light engine did not update to unlit"))
                 .thenExecute(() -> helper.assertTrue(helper.getLevel().getLightEngine().getRawBrightness(helper.absolutePos(testPos), 15) == 0, "Unlit light level was not as expected"))
@@ -74,7 +76,7 @@ public class BlockPropertyTests {
     @GameTest(template = TestsMod.TEMPLATE_9x9)
     @TestHolder(description = "Adds a block whose resistance is based on a state property")
     static void explosionResistance(final DynamicTest test, final RegistrationHelper reg) {
-        final var resistantBlock = reg.blocks().register("resistant_block", () -> new Block(BlockBehaviour.Properties.of()) {
+        final var resistantBlock = reg.blocks().register("resistant_block", key -> new Block(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, key))) {
             {
                 this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.AGE_7, Integer.valueOf(0)));
             }

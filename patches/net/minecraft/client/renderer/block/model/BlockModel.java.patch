@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -77,9 +_,10 @@
+@@ -72,9 +_,10 @@
      public BlockModel parent;
      @Nullable
      protected ResourceLocation parentLocation;
@@ -11,8 +11,8 @@
 +        return GsonHelper.fromJson(net.neoforged.neoforge.client.model.ExtendedBlockModelDeserializer.INSTANCE, p_111462_, BlockModel.class);
      }
  
-     public static BlockModel fromString(String p_111464_) {
-@@ -104,10 +_,15 @@
+     public BlockModel(
+@@ -95,10 +_,15 @@
          this.overrides = p_273099_;
      }
  
@@ -28,42 +28,50 @@
      public boolean hasAmbientOcclusion() {
          if (this.hasAmbientOcclusion != null) {
              return this.hasAmbientOcclusion;
-@@ -136,6 +_,10 @@
-         return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(p_250138_, p_251800_, this.overrides);
-     }
+@@ -132,10 +_,18 @@
  
-+    public ItemOverrides getOverrides(ModelBaker p_250138_, BlockModel p_251800_, Function<Material, TextureAtlasSprite> spriteGetter) {
-+        return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(p_250138_, p_251800_, this.overrides, spriteGetter);
-+    }
-+
-     @Override
-     public Collection<ResourceLocation> getDependencies() {
-         Set<ResourceLocation> set = Sets.newHashSet();
-@@ -184,6 +_,10 @@
-             blockmodel.parent = (BlockModel)unbakedmodel;
+             this.parent = blockmodel;
          }
- 
-+        if (customData.hasCustomGeometry()) {
-+            customData.getCustomGeometry().resolveParents(p_249059_, customData);
-+        }
 +
-         this.overrides.forEach(p_247932_ -> {
-             UnbakedModel unbakedmodel1 = p_249059_.apply(p_247932_.getModel());
-             if (!Objects.equals(unbakedmodel1, this)) {
-@@ -198,6 +_,12 @@
++        if (customData.hasCustomGeometry()) {
++            customData.getCustomGeometry().resolveDependencies(p_361203_, customData);
++        }
      }
  
-     public BakedModel bake(
-+            ModelBaker p_249720_, BlockModel p_111451_, Function<Material, TextureAtlasSprite> p_111452_, ModelState p_111453_, boolean p_111455_
-+    ) {
-+        return net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper.bake(this, p_249720_, p_111451_, p_111452_, p_111453_, p_111455_);
-+    }
+     @Override
+     public BakedModel bake(ModelBaker p_252120_, Function<Material, TextureAtlasSprite> p_250023_, ModelState p_251130_) {
++        var customGeometry = this.customData.getCustomGeometry();
++        if (customGeometry != null) {
++            return customGeometry.bake(this.customData, p_252120_, p_250023_, p_251130_, this.overrides);
++        }
+         return this.bake(p_250023_, p_251130_, true);
+     }
+ 
+@@ -146,6 +_,10 @@
+         } else {
+             SimpleBakedModel.Builder simplebakedmodel$builder = new SimpleBakedModel.Builder(this, p_111455_).particle(textureatlassprite);
+ 
++            if (!this.customData.getRootTransform().isIdentity()) {
++                p_111453_ = net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper.composeRootTransformIntoModelState(p_111453_, this.customData.getRootTransform());
++            }
 +
-+    public BakedModel bakeVanilla(
-         ModelBaker p_249720_, BlockModel p_111451_, Function<Material, TextureAtlasSprite> p_111452_, ModelState p_111453_, boolean p_111455_
-     ) {
-         TextureAtlasSprite textureatlassprite = p_111452_.apply(this.getMaterial("particle"));
-@@ -288,7 +_,18 @@
+             for (BlockElement blockelement : this.getElements()) {
+                 for (Direction direction : blockelement.faces.keySet()) {
+                     BlockElementFace blockelementface = blockelement.faces.get(direction);
+@@ -161,7 +_,11 @@
+                 }
+             }
+ 
+-            return simplebakedmodel$builder.build();
++            var renderTypes = net.neoforged.neoforge.client.RenderTypeGroup.EMPTY;
++            if (this.customData.getRenderTypeHint() != null) {
++                renderTypes = this.customData.getRenderType(this.customData.getRenderTypeHint());
++            }
++            return simplebakedmodel$builder.build(renderTypes);
+         }
+     }
+ 
+@@ -229,7 +_,18 @@
          ItemTransform itemtransform5 = this.getTransform(ItemDisplayContext.GUI);
          ItemTransform itemtransform6 = this.getTransform(ItemDisplayContext.GROUND);
          ItemTransform itemtransform7 = this.getTransform(ItemDisplayContext.FIXED);
@@ -83,12 +91,14 @@
      }
  
      private ItemTransform getTransform(ItemDisplayContext p_270662_) {
-@@ -407,6 +_,8 @@
+@@ -347,6 +_,10 @@
+ 
          public boolean lightLikeBlock() {
              return this == SIDE;
-         }
++        }
 +
-+        public String getSerializedName() { return name; }
++        public String getSerializedName() {
++            return name;
+         }
      }
- 
-     @OnlyIn(Dist.CLIENT)
+ }

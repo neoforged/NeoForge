@@ -1,6 +1,6 @@
 --- a/com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.java
 +++ b/com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.java
-@@ -127,7 +_,7 @@
+@@ -128,7 +_,7 @@
      private void drawIcons(GuiGraphics p_282966_) {
          int i = this.numberOfPendingInvites;
          int j = 24;

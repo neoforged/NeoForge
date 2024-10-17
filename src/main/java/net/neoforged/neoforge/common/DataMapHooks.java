@@ -8,11 +8,16 @@ package net.neoforged.neoforge.common;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.HoneycombItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
@@ -62,6 +67,14 @@ public class DataMapHooks {
         return INVERSE_WAXABLES_DATAMAP.containsKey(block) ? INVERSE_WAXABLES_DATAMAP.get(block) : HoneycombItem.WAX_OFF_BY_BLOCK.get().get(block);
     }
 
+    @ApiStatus.Internal
+    public static FuelValues populateFuelValues(RegistryAccess lookupProvider, FeatureFlagSet features) {
+        FuelValues.Builder builder = new FuelValues.Builder(lookupProvider, features);
+        Registry<Item> registry = lookupProvider.lookupOrThrow(Registries.ITEM);
+        registry.getDataMap(NeoForgeDataMaps.FURNACE_FUELS).forEach((key, fuel) -> builder.add(registry.getValue(key), fuel.burnTime()));
+        return builder.build();
+    }
+
     @SubscribeEvent
     static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
         event.ifRegistry(Registries.BLOCK, registry -> {
@@ -69,7 +82,7 @@ public class DataMapHooks {
             INVERSE_WAXABLES_DATAMAP_INTERNAL.clear();
 
             registry.getDataMap(NeoForgeDataMaps.OXIDIZABLES).forEach((resourceKey, oxidizable) -> {
-                INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(oxidizable.nextOxidationStage(), BuiltInRegistries.BLOCK.get(resourceKey));
+                INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(oxidizable.nextOxidationStage(), BuiltInRegistries.BLOCK.getValue(resourceKey));
             });
 
             //noinspection deprecation
@@ -81,7 +94,7 @@ public class DataMapHooks {
             });
 
             registry.getDataMap(NeoForgeDataMaps.WAXABLES).forEach((resourceKey, waxable) -> {
-                INVERSE_WAXABLES_DATAMAP_INTERNAL.put(waxable.waxed(), BuiltInRegistries.BLOCK.get(resourceKey));
+                INVERSE_WAXABLES_DATAMAP_INTERNAL.put(waxable.waxed(), BuiltInRegistries.BLOCK.getValue(resourceKey));
             });
 
             //noinspection deprecation

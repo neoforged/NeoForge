@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -164,6 +_,7 @@
+@@ -165,6 +_,7 @@
      }
  
      private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
@@ -8,28 +8,18 @@
          ItemStack itemstack = p_155293_.get(3);
          PotionBrewing potionbrewing = p_155291_.potionBrewing();
  
-@@ -171,15 +_,17 @@
+@@ -172,8 +_,9 @@
              p_155293_.set(i, potionbrewing.mix(itemstack, p_155293_.get(i)));
          }
  
--        itemstack.shrink(1);
--        if (itemstack.getItem().hasCraftingRemainingItem()) {
--            ItemStack itemstack1 = new ItemStack(itemstack.getItem().getCraftingRemainingItem());
 +        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(p_155293_);
-+        if (itemstack.hasCraftingRemainingItem()) {
-+            ItemStack itemstack1 = itemstack.getCraftingRemainingItem();
-+            itemstack.shrink(1);
++        ItemStack itemstack1 = itemstack.getCraftingRemainder();
+         itemstack.shrink(1);
+-        ItemStack itemstack1 = itemstack.getItem().getCraftingRemainder();
+         if (!itemstack1.isEmpty()) {
              if (itemstack.isEmpty()) {
                  itemstack = itemstack1;
-             } else {
-                 Containers.dropItemStack(p_155291_, (double)p_155292_.getX(), (double)p_155292_.getY(), (double)p_155292_.getZ(), itemstack1);
-             }
-         }
-+        else itemstack.shrink(1);
- 
-         p_155293_.set(3, itemstack);
-         p_155291_.levelEvent(1035, p_155292_, 0);
-@@ -208,13 +_,13 @@
+@@ -209,13 +_,13 @@
  
      @Override
      public boolean canPlaceItem(int p_59017_, ItemStack p_59018_) {
@@ -39,7 +29,7 @@
              return potionbrewing.isIngredient(p_59018_);
          } else {
              return p_59017_ == 4
-                 ? p_59018_.is(Items.BLAZE_POWDER)
+                 ? p_59018_.is(ItemTags.BREWING_FUEL)
 -                : (p_59018_.is(Items.POTION) || p_59018_.is(Items.SPLASH_POTION) || p_59018_.is(Items.LINGERING_POTION) || p_59018_.is(Items.GLASS_BOTTLE))
 +                : (potionbrewing.isInput(p_59018_) || p_59018_.is(Items.GLASS_BOTTLE))
                      && this.getItem(p_59017_).isEmpty();

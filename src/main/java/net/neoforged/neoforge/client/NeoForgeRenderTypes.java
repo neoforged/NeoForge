@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 
@@ -157,7 +158,7 @@ public enum NeoForgeRenderTypes {
     }
 
     private static class Internal {
-        private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER = new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);
+        private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER = new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents.RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER);
 
         public static Function<ResourceLocation, RenderType> UNSORTED_TRANSLUCENT = Util.memoize(Internal::unsortedTranslucent);
 
@@ -165,7 +166,7 @@ public enum NeoForgeRenderTypes {
             final boolean sortingEnabled = false;
             var renderState = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                    .setTextureState(new TextureStateShard(textureLocation, false, false))
+                    .setTextureState(new TextureStateShard(textureLocation, TriState.DEFAULT, false))
                     .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
                     .setCullState(RenderType.NO_CULL)
                     .setLightmapState(RenderType.LIGHTMAP)
@@ -180,7 +181,7 @@ public enum NeoForgeRenderTypes {
         private static RenderType unlitTranslucent(ResourceLocation textureLocation, boolean sortingEnabled) {
             var renderState = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER)
-                    .setTextureState(new TextureStateShard(textureLocation, false, false))
+                    .setTextureState(new TextureStateShard(textureLocation, TriState.DEFAULT, false))
                     .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
                     .setCullState(RenderType.NO_CULL)
                     .setLightmapState(RenderType.LIGHTMAP)
@@ -194,7 +195,7 @@ public enum NeoForgeRenderTypes {
         private static RenderType layeredItemSolid(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_SOLID_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, false))
                     .setTransparencyState(RenderType.NO_TRANSPARENCY)
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
@@ -207,7 +208,7 @@ public enum NeoForgeRenderTypes {
         private static RenderType layeredItemCutout(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_CUTOUT_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, false))
                     .setTransparencyState(RenderType.NO_TRANSPARENCY)
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
@@ -220,7 +221,7 @@ public enum NeoForgeRenderTypes {
         private static RenderType layeredItemCutoutMipped(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_SMOOTH_CUTOUT_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, true))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, true))
                     .setTransparencyState(RenderType.NO_TRANSPARENCY)
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
@@ -233,7 +234,7 @@ public enum NeoForgeRenderTypes {
         private static RenderType layeredItemTranslucent(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, false))
                     .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
@@ -324,7 +325,7 @@ public enum NeoForgeRenderTypes {
         private static RenderType getTranslucentParticlesTarget(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
                     .setShaderState(RenderType.RENDERTYPE_TRANSLUCENT_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, true))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, true))
                     .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOutputState(RenderType.PARTICLES_TARGET)
@@ -338,7 +339,7 @@ public enum NeoForgeRenderTypes {
         private final BooleanSupplier mipmapSupplier;
 
         private CustomizableTextureState(ResourceLocation resLoc, BooleanSupplier blur, BooleanSupplier mipmap) {
-            super(resLoc, blur.getAsBoolean(), mipmap.getAsBoolean());
+            super(resLoc, blur.getAsBoolean() ? TriState.TRUE : TriState.DEFAULT, mipmap.getAsBoolean());
             blurSupplier = blur;
             mipmapSupplier = mipmap;
         }
@@ -346,7 +347,7 @@ public enum NeoForgeRenderTypes {
         @Override
         public void setupRenderState() {
             // must be done before super call as super uses the `blur` and `mipmap` fields within the `setupState` runnable | See super constructor
-            blur = blurSupplier.getAsBoolean();
+            blur = blurSupplier.getAsBoolean() ? TriState.TRUE : TriState.DEFAULT;
             mipmap = mipmapSupplier.getAsBoolean();
             super.setupRenderState();
         }

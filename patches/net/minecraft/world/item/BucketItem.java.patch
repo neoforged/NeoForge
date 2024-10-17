@@ -10,7 +10,7 @@
                          ItemStack itemstack2 = ItemUtils.createFilledResult(itemstack, p_40704_, itemstack3);
                          if (!p_40703_.isClientSide) {
 @@ -72,8 +_,8 @@
-                 return InteractionResultHolder.fail(itemstack);
+                 return InteractionResult.FAIL;
              } else {
                  BlockState blockstate = p_40703_.getBlockState(blockpos);
 -                BlockPos blockpos2 = blockstate.getBlock() instanceof LiquidBlockContainer && this.content == Fluids.WATER ? blockpos : blockpos1;

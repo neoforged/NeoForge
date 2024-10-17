@@ -87,8 +87,6 @@ public class NeoForgeConfig {
 
         public final BooleanValue showLoadWarnings;
 
-        public final BooleanValue useCombinedDepthStencilAttachment;
-
         public final BooleanValue logUntranslatedConfigurationWarnings;
 
         Client(ModConfigSpec.Builder builder) {
@@ -101,11 +99,6 @@ public class NeoForgeConfig {
                     .comment("When enabled, NeoForge will show any warnings that occurred during loading.")
                     .translation("neoforge.configgui.showLoadWarnings")
                     .define("showLoadWarnings", true);
-
-            useCombinedDepthStencilAttachment = builder
-                    .comment("Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.")
-                    .translation("neoforge.configgui.useCombinedDepthStencilAttachment")
-                    .define("useCombinedDepthStencilAttachment", false);
 
             logUntranslatedConfigurationWarnings = builder
                     .comment("A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.")

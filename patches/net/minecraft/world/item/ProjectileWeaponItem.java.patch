@@ -43,7 +43,7 @@
      public static ItemStack getHeldProjectile(LivingEntity p_43011_, Predicate<ItemStack> p_43012_) {
          if (p_43012_.test(p_43011_.getItemInHand(InteractionHand.OFF_HAND))) {
              return p_43011_.getItemInHand(InteractionHand.OFF_HAND);
-@@ -92,7 +_,7 @@
+@@ -91,7 +_,7 @@
              abstractarrow.setCritArrow(true);
          }
  
@@ -52,7 +52,7 @@
      }
  
      protected static List<ItemStack> draw(ItemStack p_331565_, ItemStack p_330406_, LivingEntity p_330823_) {
-@@ -115,7 +_,8 @@
+@@ -114,7 +_,8 @@
      }
  
      protected static ItemStack useAmmo(ItemStack p_331207_, ItemStack p_331434_, LivingEntity p_330302_, boolean p_330934_) {
@@ -62,7 +62,7 @@
              ? EnchantmentHelper.processAmmoUse(serverlevel, p_331207_, p_331434_, 1)
              : 0;
          if (i > p_331434_.getCount()) {
-@@ -132,5 +_,20 @@
+@@ -131,5 +_,20 @@
  
              return itemstack;
          }

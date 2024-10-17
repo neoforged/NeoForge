@@ -3,12 +3,8 @@
   "category": "misc",
   "group": "wooden_fence",
   "key": {
-    "#": {
-      "tag": "c:rods/wooden"
-    },
-    "W": {
-      "item": "minecraft:spruce_planks"
-    }
+    "#": "#c:rods/wooden",
+    "W": "minecraft:spruce_planks"
   },
   "pattern": [
     "W#W",

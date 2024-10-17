@@ -5,15 +5,15 @@
 
 package net.neoforged.neoforge.unittest;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
@@ -34,27 +34,27 @@ public class IngredientTests {
     @MethodSource("provideIngredientMatrix")
     void testCompoundIngredient(Ingredient a, Ingredient b) {
         final var ingredient = CompoundIngredient.of(a, b);
-        Assertions.assertThat(a.getItems()).allMatch(ingredient, "first ingredient");
-        Assertions.assertThat(b.getItems()).allMatch(ingredient, "second ingredient");
+        Assertions.assertThat(a.stacks()).allMatch(ingredient, "first ingredient");
+        Assertions.assertThat(b.stacks()).allMatch(ingredient, "second ingredient");
     }
 
     @Test
     void testDifferenceIngredients(MinecraftServer server) {
-        final var logs = Ingredient.of(ItemTags.LOGS);
+        final var logs = Ingredient.of(server.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.LOGS));
         final var acacia = Ingredient.of(Items.ACACIA_LOG);
         final var ingredient = DifferenceIngredient.of(logs, acacia);
 
-        Assertions.assertThat(logs.getItems())
+        Assertions.assertThat(logs.stacks())
                 .filteredOn(i -> !acacia.test(i))
-                .containsExactlyInAnyOrder(ingredient.getItems());
+                .containsExactlyInAnyOrder(ingredient.stacks().toArray(ItemStack[]::new));
     }
 
     @Test
     void testIntersectionIngredient(MinecraftServer server) {
         final var second = Ingredient.of(Items.BIRCH_LOG, Items.SPRUCE_LOG, Items.DISPENSER);
-        final var ingredient = IntersectionIngredient.of(Ingredient.of(ItemTags.LOGS), second);
+        final var ingredient = IntersectionIngredient.of(Ingredient.of(server.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.LOGS)), second);
 
-        Assertions.assertThat(Arrays.stream(ingredient.getItems()).map(ItemStack::getItem).distinct())
+        Assertions.assertThat(ingredient.stacks().stream().map(ItemStack::getItem).distinct())
                 .containsExactlyInAnyOrder(Items.BIRCH_LOG, Items.SPRUCE_LOG);
     }
 
@@ -70,15 +70,15 @@ public class IngredientTests {
         Assertions.assertThat(ingredient.test(stack)).withFailMessage("Modified ingredient matches").isFalse();
 
         stack.set(DataComponents.DAMAGE, 1);
-        stack.set(DataComponents.ITEM_NAME, Component.literal("name.."));
+        stack.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
         Assertions.assertThat(ingredient.test(stack)).withFailMessage("Strictness check failed for ingredient with strict: " + strict).isEqualTo(!strict);
     }
 
     private static Stream<Arguments> provideIngredientMatrix(MinecraftServer server) {
         final List<Ingredient> matrix = List.of(
-                Ingredient.of(Items.DISPENSER.getDefaultInstance()),
+                Ingredient.of(Items.DISPENSER),
                 Ingredient.of(Items.ACACIA_DOOR),
-                Ingredient.of(ItemTags.ANVIL));
+                Ingredient.of(server.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.ANVIL)));
 
         return matrix.stream()
                 .flatMap(i -> matrix.stream().map(i2 -> Arguments.of(i, i2)));

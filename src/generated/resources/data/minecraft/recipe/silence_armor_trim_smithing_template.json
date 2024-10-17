@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:gems/diamond"
-    },
-    "C": {
-      "tag": "c:cobblestones/deepslate"
-    },
-    "S": {
-      "item": "minecraft:silence_armor_trim_smithing_template"
-    }
+    "#": "#c:gems/diamond",
+    "C": "#c:cobblestones/deepslate",
+    "S": "minecraft:silence_armor_trim_smithing_template"
   },
   "pattern": [
     "#S#",

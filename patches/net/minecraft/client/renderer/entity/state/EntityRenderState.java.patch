@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/entity/state/EntityRenderState.java
++++ b/net/minecraft/client/renderer/entity/state/EntityRenderState.java
+@@ -27,6 +_,7 @@
+     public Vec3 nameTagAttachment;
+     @Nullable
+     public EntityRenderState.LeashState leashState;
++    public float partialTick;
+ 
+     @OnlyIn(Dist.CLIENT)
+     public static class LeashState {

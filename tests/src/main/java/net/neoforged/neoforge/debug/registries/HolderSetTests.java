@@ -46,10 +46,10 @@ public class HolderSetTests {
     private static List<HolderSet<Item>> createTestHolderSets() {
         Holder<Item> beef = Items.BEEF.builtInRegistryHolder();
         Holder<Item> cod = Items.COD.builtInRegistryHolder();
-        HolderLookup.RegistryLookup<Item> lookup = BuiltInRegistries.ITEM.asLookup();
+        HolderLookup.RegistryLookup<Item> lookup = BuiltInRegistries.ITEM;
         HolderSet<Item> singleton = HolderSet.direct(beef);
         HolderSet<Item> list = HolderSet.direct(beef, cod);
-        HolderSet<Item> tag = BuiltInRegistries.ITEM.getOrCreateTag(ItemTags.FISHES);
+        HolderSet<Item> tag = BuiltInRegistries.ITEM.getOrThrow(ItemTags.FISHES);
         HolderSet<Item> any = new AnyHolderSet<>(lookup);
         HolderSet<Item> and = new AndHolderSet<>(list, tag);
         HolderSet<Item> or = new OrHolderSet<>(singleton, and);

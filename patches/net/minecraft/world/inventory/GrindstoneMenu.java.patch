@@ -37,10 +37,10 @@
  
              private int getExperienceAmount(Level p_39632_) {
 +                if (xp > -1) return xp;
-                 int l = 0;
-                 l += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(0));
-                 l += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(1));
-@@ -125,6 +_,8 @@
+                 int i = 0;
+                 i += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(0));
+                 i += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(1));
+@@ -116,6 +_,8 @@
      }
  
      private void createResult() {
@@ -49,7 +49,7 @@
          this.resultSlots.setItem(0, this.computeResult(this.repairSlots.getItem(0), this.repairSlots.getItem(1)));
          this.broadcastChanges();
      }
-@@ -155,7 +_,7 @@
+@@ -146,7 +_,7 @@
              int k = p_332686_.getMaxDamage() - p_332686_.getDamageValue();
              int l = j + k + i * 5 / 100;
              int i1 = 1;
@@ -58,7 +58,7 @@
                  if (p_332723_.getMaxStackSize() < 2 || !ItemStack.matches(p_332723_, p_332686_)) {
                      return ItemStack.EMPTY;
                  }
-@@ -167,6 +_,7 @@
+@@ -158,6 +_,7 @@
              if (itemstack.isDamageableItem()) {
                  itemstack.set(DataComponents.MAX_DAMAGE, i);
                  itemstack.setDamageValue(Math.max(i - l, 0));

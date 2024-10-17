@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/monster/Evoker.java
 +++ b/net/minecraft/world/entity/monster/Evoker.java
-@@ -305,7 +_,7 @@
-                 return false;
-             } else if (Evoker.this.tickCount < this.nextAttackTickCount) {
-                 return false;
--            } else if (!Evoker.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            } else if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(Evoker.this.level(), Evoker.this)) {
+@@ -306,7 +_,7 @@
                  return false;
              } else {
-                 List<Sheep> list = Evoker.this.level()
+                 ServerLevel serverlevel = getServerLevel(Evoker.this.level());
+-                if (!serverlevel.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++                if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, Evoker.this)) {
+                     return false;
+                 } else {
+                     List<Sheep> list = serverlevel.getNearbyEntities(

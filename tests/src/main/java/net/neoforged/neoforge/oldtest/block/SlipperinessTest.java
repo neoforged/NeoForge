@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -31,7 +32,7 @@ public class SlipperinessTest {
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {
-        e.register(Registries.BLOCK, helper -> helper.register(BB_BLOCK.getId(), new Block(Block.Properties.of()) {
+        e.register(Registries.BLOCK, helper -> helper.register(BB_BLOCK.getId(), new Block(Block.Properties.of().setId(BB_BLOCK.unwrapKey().orElseThrow())) {
             @Override
             public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
                 return entity instanceof Boat ? 2 : super.getFriction(state, level, pos, entity);
@@ -41,7 +42,7 @@ public class SlipperinessTest {
 
     @SubscribeEvent
     public static void registerItems(RegisterEvent e) {
-        e.register(Registries.ITEM, helper -> helper.register(BB_BLOCK.getId(), new BlockItem(BB_BLOCK.get(), new Item.Properties())));
+        e.register(Registries.ITEM, helper -> helper.register(BB_BLOCK.getId(), new BlockItem(BB_BLOCK.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, BB_BLOCK.getId())).useBlockDescriptionPrefix())));
     }
 
     /*

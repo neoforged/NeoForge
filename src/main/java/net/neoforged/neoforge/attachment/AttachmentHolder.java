@@ -145,7 +145,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
                 continue;
             }
 
-            var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
+            var type = NeoForgeRegistries.ATTACHMENT_TYPES.getValue(keyLocation);
             if (type == null || type.serializer == null) {
                 LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
                 continue;
