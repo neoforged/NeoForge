@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SequencedMap;
 import java.util.SequencedSet;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -58,7 +59,7 @@ import org.jetbrains.annotations.ApiStatus;
 public class ResourcePackLoader {
     public static final String MOD_DATA_ID = "mod_data";
     public static final String MOD_RESOURCES_ID = "mod_resources";
-    private static Map<IModFile, Pack.ResourcesSupplier> modResourcePacks;
+    private static SequencedMap<IModFile, Pack.ResourcesSupplier> modResourcePacks;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final PackSelectionConfig MOD_PACK_SELECTION_CONFIG = new PackSelectionConfig(false, Pack.Position.TOP, false);
 
@@ -82,6 +83,10 @@ public class ResourcePackLoader {
                     .collect(Collectors.toMap(p -> p.getFirst().getFile(), Pair::getSecond, (u, v) -> {
                         throw new IllegalStateException(String.format(Locale.ENGLISH, "Duplicate key %s", u));
                     }, LinkedHashMap::new));
+
+            // Move NeoForge to the front to allow mods to override its resources regardless of mod load order
+            IModFile neoForge = ModList.get().getModFileById("neoforge").getFile();
+            modResourcePacks.putFirst(neoForge, modResourcePacks.remove(neoForge));
         }
     }
 
