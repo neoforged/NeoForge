@@ -48,6 +48,7 @@ import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
+import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.configuration.CommonRegisterTask;
 import net.neoforged.neoforge.network.configuration.CommonVersionTask;
 import net.neoforged.neoforge.network.connection.ConnectionType;
@@ -553,6 +554,10 @@ public class NetworkRegistry {
 
         // We are on the client, connected to a vanilla server, make sure we don't have any extended enums that may be sent to the server
         if (!CheckExtensibleEnums.handleVanillaServerConnection(listener)) {
+            return;
+        }
+        // We are on the client, connected to a vanilla server, make sure we don't have any modded feature flags
+        if (!CheckFeatureFlags.handleVanillaServerConnection(listener)) {
             return;
         }
 

@@ -9,6 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
+import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
@@ -21,6 +22,8 @@ import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumDataPayload;
+import net.neoforged.neoforge.network.payload.FeatureFlagAcknowledgePayload;
+import net.neoforged.neoforge.network.payload.FeatureFlagDataPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
@@ -64,6 +67,10 @@ public class NetworkInitialization {
                         ExtensibleEnumDataPayload.TYPE,
                         ExtensibleEnumDataPayload.STREAM_CODEC,
                         CheckExtensibleEnums::handleClientboundPayload)
+                .configurationToClient(
+                        FeatureFlagDataPayload.TYPE,
+                        FeatureFlagDataPayload.STREAM_CODEC,
+                        CheckFeatureFlags::handleClientboundPayload)
                 .configurationToServer(
                         KnownRegistryDataMapsReplyPayload.TYPE,
                         KnownRegistryDataMapsReplyPayload.STREAM_CODEC,
@@ -72,6 +79,10 @@ public class NetworkInitialization {
                         ExtensibleEnumAcknowledgePayload.TYPE,
                         ExtensibleEnumAcknowledgePayload.STREAM_CODEC,
                         CheckExtensibleEnums::handleServerboundPayload)
+                .configurationToServer(
+                        FeatureFlagAcknowledgePayload.TYPE,
+                        FeatureFlagAcknowledgePayload.STREAM_CODEC,
+                        CheckFeatureFlags::handleServerboundPayload)
                 .playToClient(
                         AdvancedAddEntityPayload.TYPE,
                         AdvancedAddEntityPayload.STREAM_CODEC,
