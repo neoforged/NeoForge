@@ -243,5 +243,16 @@
   "neoforge.network.data_maps.missing_their": "Nie można połączyć się z serwerem, ponieważ brakuje obowiązkowych map danych rejestru znajdujących się w kliencie: %s",
   "neoforge.network.extensible_enums.no_vanilla_server": "Ten klient nie obsługuje serwerów vanilla ponieważ posiada rozszerzone enums używane w sieciach związanych z serwerem",
   "neoforge.network.extensible_enums.enum_set_mismatch": "Zestaw rozszerzalnych enumerów na kliencie i serwerze nie pasuje. Upewnij się, że używasz tej samej wersji NeoForge co serwer",
-  "neoforge.network.extensible_enums.enum_entry_mismatch": "Zestaw wartości dodanych do rozszerzalnych enumów w kliencie i serwerze nie pasuje. Upewnij się, że używasz tych samych wersji modyfikacji i NeoForge co serwer. Więcej informacji znajdziesz w logu"
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "Zestaw wartości dodanych do rozszerzalnych enumów w kliencie i serwerze nie pasuje. Upewnij się, że używasz tych samych wersji modyfikacji i NeoForge co serwer. Więcej informacji znajdziesz w logu",
+  "neoforge.attribute.debug.base": "[Entity: %s | Item: %s]",
+  "neoforge.value.flat": "%s",
+  "neoforge.value.percent": "%s%%",
+  "neoforge.value.boolean.enabled": "Enabled",
+  "neoforge.value.boolean.disabled": "Disabled",
+  "neoforge.value.boolean.enable": "Enables",
+  "neoforge.value.boolean.disable": "Disables",
+  "neoforge.value.boolean.invalid": "Invalid",
+  "neoforge.modifier.plus": "+%s %s",
+  "neoforge.modifier.take": "%s %s",
+  "neoforge.modifier.bool": "%s %s"
 }
