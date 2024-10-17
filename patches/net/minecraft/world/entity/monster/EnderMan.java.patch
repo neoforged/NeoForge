@@ -29,7 +29,7 @@
          boolean flag = blockstate.blocksMotion();
          boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
          if (flag && !flag1) {
-+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, p_32544_, p_32545_, p_32546_);
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, new net.neoforged.neoforge.common.util.GlobalVec3(this.level(), p_32544_, p_32545_, p_32546_));
 +            if (event.isCanceled()) return false;
              Vec3 vec3 = this.position();
 -            boolean flag2 = this.randomTeleport(p_32544_, p_32545_, p_32546_, true);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/SpreadPlayersCommand.java
 +++ b/net/minecraft/server/commands/SpreadPlayersCommand.java
-@@ -259,15 +_,22 @@
+@@ -259,15 +_,23 @@
                  spreadplayerscommand$position = p_138732_[i++];
              }
  
@@ -12,14 +12,15 @@
 -                Set.of(),
 -                entity.getYRot(),
 -                entity.getXRot()
-+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity,
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity, new net.neoforged.neoforge.common.util.GlobalVec3(
++                      p_138731_,
 +                      (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
 +                      spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
-+                      (double)Mth.floor(spreadplayerscommand$position.z) + 0.5
++                      (double)Mth.floor(spreadplayerscommand$position.z) + 0.5)
              );
 +            if (!event.isCanceled()) {
 +                entity.teleportTo(
-+                          p_138731_,
++                          event.getTargetServerLevelOr(p_138731_),
 +                          event.getTargetX(),
 +                          event.getTargetY(),
 +                          event.getTargetZ(),
