@@ -13,6 +13,15 @@
                  return InteractionResult.SUCCESS;
              } else {
                  if (item instanceof DyeItem dyeitem && this.isOwnedBy(p_30412_)) {
+@@ -424,7 +_,7 @@
+                     this.setBodyArmorItem(itemstack.copyWithCount(1));
+                     itemstack.consume(1, p_30412_);
+                     return InteractionResult.SUCCESS;
+-                } else if (itemstack.is(Items.SHEARS)
++                } else if (itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_REMOVE_ARMOR)
+                     && this.isOwnedBy(p_30412_)
+                     && this.isWearingBodyArmor()
+                     && (!EnchantmentHelper.has(this.getBodyArmorItem(), EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) || p_30412_.isCreative())) {
 @@ -471,7 +_,7 @@
      }
  
