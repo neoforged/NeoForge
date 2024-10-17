@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/SignBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/SignBlockEntity.java
+@@ -270,7 +_,7 @@
+ 
+     public boolean playerIsTooFarAwayToEdit(UUID p_277978_) {
+         Player player = this.level.getPlayerByUUID(p_277978_);
+-        return player == null || !player.canInteractWithBlock(this.getBlockPos(), 4.0);
++        return player == null || !net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(player, this, 4.0);
+     }
+ 
+     public static void tick(Level p_277662_, BlockPos p_278050_, BlockState p_277927_, SignBlockEntity p_277928_) {

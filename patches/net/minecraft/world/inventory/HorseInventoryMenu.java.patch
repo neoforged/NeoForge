@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/inventory/HorseInventoryMenu.java
++++ b/net/minecraft/world/inventory/HorseInventoryMenu.java
+@@ -70,7 +_,7 @@
+             && this.horseContainer.stillValid(p_39661_)
+             && this.armorContainer.stillValid(p_39661_)
+             && this.horse.isAlive()
+-            && p_39661_.canInteractWithEntity(this.horse, 4.0);
++            && net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_39661_, this.horse, 4.0);
+     }
+ 
+     @Override

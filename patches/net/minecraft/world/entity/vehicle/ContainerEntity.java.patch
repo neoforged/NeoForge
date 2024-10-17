@@ -10,3 +10,11 @@
              if (p_219950_ != null) {
                  lootparams$builder.withLuck(p_219950_.getLuck()).withParameter(LootContextParams.THIS_ENTITY, p_219950_);
              }
+@@ -173,6 +_,6 @@
+     }
+ 
+     default boolean isChestVehicleStillValid(Player p_219955_) {
+-        return !this.isRemoved() && p_219955_.canInteractWithEntity(this.getBoundingBox(), 4.0);
++        return !this.isRemoved() && net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(p_219955_, this, 4.0);
+     }
+ }

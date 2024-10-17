@@ -98,6 +98,7 @@ import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
@@ -204,6 +205,7 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInMenuRangeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
@@ -1584,6 +1586,22 @@ public class CommonHooks {
             vanillaMap = Map.copyOf(vanillaMap);
         }
         return vanillaMap;
+    }
+
+    public static boolean menuRangeValidity(Player player, Level level, BlockPos blockPos, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.BlockMenu(player, level, blockPos, distance, player.canInteractWithBlock(blockPos, distance))).getStillValid();
+    }
+
+    public static boolean menuRangeValidity(Player player, Entity entity, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.EntityMenu(player, entity, distance)).getStillValid();
+    }
+
+    public static boolean menuRangeValidity(Player player, ContainerEntity containerEntity, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.ContainerEntityMenu(player, containerEntity, distance, player.canInteractWithEntity(containerEntity.getBoundingBox(), distance))).getStillValid();
+    }
+
+    public static boolean menuRangeValidity(Player player, BlockEntity blockEntity, double distance) {
+        return NeoForge.EVENT_BUS.post(new PlayerInMenuRangeEvent.BlockEntityMenu(player, blockEntity, distance, player.canInteractWithBlock(blockEntity.getBlockPos(), distance))).getStillValid();
     }
 
     public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
