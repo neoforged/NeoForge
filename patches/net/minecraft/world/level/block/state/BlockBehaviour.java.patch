@@ -18,6 +18,15 @@
      }
  
      public BlockBehaviour.Properties properties() {
+@@ -159,7 +_,7 @@
+     }
+ 
+     protected void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
+-        if (p_60515_.hasBlockEntity() && !p_60515_.is(p_60518_.getBlock())) {
++        if (p_60515_.hasBlockEntity() && (!p_60515_.is(p_60518_.getBlock()) || !p_60518_.hasBlockEntity())) {
+             p_60516_.removeBlockEntity(p_60517_);
+         }
+     }
 @@ -168,7 +_,7 @@
          if (!p_311951_.isAir() && p_312925_.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = p_311951_.getBlock();
@@ -128,6 +137,15 @@
              return this.getBlock().useItemOn(p_316374_, this.asState(), p_316651_, p_316877_.getBlockPos(), p_316623_, p_316469_, p_316877_);
          }
  
+@@ -797,7 +_,7 @@
+         }
+ 
+         public boolean hasBlockEntity() {
+-            return this.getBlock() instanceof EntityBlock;
++            return this.getBlock().hasBlockEntity(this.asState());
+         }
+ 
+         @Nullable
 @@ -825,6 +_,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }

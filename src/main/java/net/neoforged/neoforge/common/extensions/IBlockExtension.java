@@ -47,6 +47,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.CandleCakeBlock;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
@@ -1018,5 +1019,16 @@ public interface IBlockExtension {
         } else {
             return BubbleColumnDirection.NONE;
         }
+    }
+
+    /**
+     * Specifies if the incoming state has a BlockEntity or not. Override this method in your block if only certain BlockStates
+     * are to have BlockEntities. If you override this method, be sure to also change {@link EntityBlock#newBlockEntity} result
+     * as well to return null for BlockStates that do not have BlockEntities for your block.
+     *
+     * @return Whether this BlockState is intended to have a BlockEntity attached to it
+     */
+    default boolean hasBlockEntity(BlockState state) {
+        return state.getBlock() instanceof EntityBlock;
     }
 }
