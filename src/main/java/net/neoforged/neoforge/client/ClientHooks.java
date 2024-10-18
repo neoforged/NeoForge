@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -67,6 +68,7 @@ import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderDefines;
@@ -108,6 +110,7 @@ import net.minecraft.sounds.Music;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -147,6 +150,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.GatherEffectScreenTooltipsEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -1096,5 +1100,15 @@ public class ClientHooks {
         OUTLINE_PASS_RANDOM.setSeed(42);
         ChunkRenderTypeSet renderTypes = model.getRenderTypes(state, OUTLINE_PASS_RANDOM, level.getModelData(pos));
         return renderTypes.contains(RenderType.TRANSLUCENT) || renderTypes.contains(RenderType.TRIPWIRE);
+    }
+
+    @ApiStatus.Internal
+    public static FrameGraphSetupEvent.Pre fireFrameGraphSetupPre(FrameGraphBuilder builder, LevelTargetBundle targets, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
+        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent.Pre(builder, targets, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
+    }
+
+    @ApiStatus.Internal
+    public static FrameGraphSetupEvent.Post fireFrameGraphSetupPost(FrameGraphBuilder builder, LevelTargetBundle targets, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
+        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent.Post(builder, targets, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
     }
 }
