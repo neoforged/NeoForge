@@ -14,6 +14,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -1159,6 +1160,16 @@ public class Tags {
 
         private static TagKey<DamageType> neoforgeTag(String name) {
             return TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", name));
+        }
+    }
+
+    public static class MobEffects {
+        public static final TagKey<MobEffect> NOT_MILK_CURABLE = neoforgeTag("not_milk_curable");
+
+        public static final TagKey<MobEffect> NOT_TOTEM_CURABLE = neoforgeTag("not_totem_curable");
+
+        private static TagKey<MobEffect> neoforgeTag(String name) {
+            return TagKey.create(Registries.MOB_EFFECT, ResourceLocation.fromNamespaceAndPath("neoforge", name));
         }
     }
 
