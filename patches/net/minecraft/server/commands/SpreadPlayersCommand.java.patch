@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/SpreadPlayersCommand.java
 +++ b/net/minecraft/server/commands/SpreadPlayersCommand.java
-@@ -259,15 +_,22 @@
+@@ -259,16 +_,23 @@
                  spreadplayerscommand$position = p_138732_[i++];
              }
  
@@ -11,7 +11,8 @@
 -                (double)Mth.floor(spreadplayerscommand$position.z) + 0.5,
 -                Set.of(),
 -                entity.getYRot(),
--                entity.getXRot()
+-                entity.getXRot(),
+-                true
 +            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity,
 +                      (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
 +                      spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
@@ -25,7 +26,8 @@
 +                          event.getTargetZ(),
 +                          Set.of(),
 +                          entity.getYRot(),
-+                          entity.getXRot()
++                          entity.getXRot(),
++                          true
 +                );
 +            }
              double d2 = Double.MAX_VALUE;

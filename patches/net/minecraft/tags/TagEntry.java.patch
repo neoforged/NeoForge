@@ -18,7 +18,7 @@
 +
      public interface Lookup<T> {
          @Nullable
-         T element(ResourceLocation p_215956_);
+         T element(ResourceLocation p_215956_, boolean p_379371_);
 -
 -        @Nullable
          Collection<T> tag(ResourceLocation p_215957_);

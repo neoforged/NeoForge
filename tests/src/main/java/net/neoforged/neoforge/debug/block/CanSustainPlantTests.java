@@ -43,7 +43,7 @@ public class CanSustainPlantTests {
 
         final BlockPos belowBlock = new BlockPos(1, 1, 1);
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(player -> player.moveTo(helper.absolutePos(belowBlock).above().north().getCenter()))
+                .thenExecute(player -> player.moveTo(helper.absolutePos(belowBlock).north().getCenter()))
                 .thenExecute(player -> player.lookAt(EntityAnchorArgument.Anchor.EYES, helper.absolutePos(belowBlock).getCenter()))
 
                 .thenExecute(() -> helper.setBlock(belowBlock, Blocks.WATER))

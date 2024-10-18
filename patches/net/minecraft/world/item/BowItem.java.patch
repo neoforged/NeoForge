@@ -1,22 +1,22 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -28,6 +_,8 @@
-             ItemStack itemstack = player.getProjectile(p_40667_);
-             if (!itemstack.isEmpty()) {
+@@ -32,6 +_,8 @@
+                 return false;
+             } else {
                  int i = this.getUseDuration(p_40667_, p_40669_) - p_40670_;
 +                i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty());
-+                if (i < 0) return;
++                if (i < 0) return false;
                  float f = getPowerForTime(i);
-                 if (!((double)f < 0.1)) {
-                     List<ItemStack> list = draw(p_40667_, itemstack, player);
-@@ -82,6 +_,10 @@
-     public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
+                 if ((double)f < 0.1) {
+                     return false;
+@@ -89,6 +_,10 @@
+     public InteractionResult use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
          ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
          boolean flag = !p_40673_.getProjectile(itemstack).isEmpty();
 +
-+        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(itemstack, p_40672_, p_40673_, p_40674_, flag);
++        InteractionResult ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(itemstack, p_40672_, p_40673_, p_40674_, flag);
 +        if (ret != null) return ret;
 +
          if (!p_40673_.hasInfiniteMaterials() && !flag) {
-             return InteractionResultHolder.fail(itemstack);
+             return InteractionResult.FAIL;
          } else {

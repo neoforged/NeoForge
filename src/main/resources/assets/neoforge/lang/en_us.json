@@ -128,6 +128,8 @@
   "commands.neoforge.data_components.list.tooltip.modified": "Component %s was modified from %s to %s",
   "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
 
+  "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Recipe lookup is not possible in client commands",
+
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",
 

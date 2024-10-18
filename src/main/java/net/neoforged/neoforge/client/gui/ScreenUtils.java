@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.extensions.IGuiGraphicsExtension;
 import org.joml.Matrix4f;
@@ -108,7 +108,7 @@ public class ScreenUtils {
      */
     public static void blitWithBorder(GuiGraphics guiGraphics, ResourceLocation res, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight,
             int topBorder, int bottomBorder, int leftBorder, int rightBorder, float zLevel) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX);
         RenderSystem.setShaderTexture(0, res);
         blitWithBorder(guiGraphics, x, y, u, v, width, height, textureWidth, textureHeight, topBorder, bottomBorder, leftBorder, rightBorder, zLevel);
     }
@@ -213,7 +213,7 @@ public class ScreenUtils {
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -223,23 +223,5 @@ public class ScreenUtils {
         buffer.addVertex(mat, right, bottom, zLevel).setColor(endRed, endGreen, endBlue, endAlpha);
         BufferUploader.drawWithShader(buffer.buildOrThrow());
         RenderSystem.disableBlend();
-    }
-
-    public static void blitInscribed(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int boundsWidth, int boundsHeight, int rectWidth, int rectHeight) {
-        blitInscribed(guiGraphics, texture, x, y, boundsWidth, boundsHeight, rectWidth, rectHeight, true, true);
-    }
-
-    public static void blitInscribed(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int boundsWidth, int boundsHeight, int rectWidth, int rectHeight, boolean centerX, boolean centerY) {
-        if (rectWidth * boundsHeight > rectHeight * boundsWidth) {
-            int h = boundsHeight;
-            boundsHeight = (int) (boundsWidth * ((double) rectHeight / rectWidth));
-            if (centerY) y += (h - boundsHeight) / 2;
-        } else {
-            int w = boundsWidth;
-            boundsWidth = (int) (boundsHeight * ((double) rectWidth / rectHeight));
-            if (centerX) x += (w - boundsWidth) / 2;
-        }
-
-        guiGraphics.blit(texture, x, y, boundsWidth, boundsHeight, 0.0f, 0.0f, rectWidth, rectHeight, rectWidth, rectHeight);
     }
 }

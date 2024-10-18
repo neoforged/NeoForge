@@ -108,7 +108,7 @@ class NeoForgeRegistryCallbacks {
         @Override
         public void onAdd(Registry<PoiType> registry, int id, ResourceKey<PoiType> key, PoiType value) {
             value.matchingStates().forEach(state -> {
-                Holder<PoiType> oldType = BLOCKSTATE_TO_POI_TYPE_MAP.put(state, registry.getHolderOrThrow(key));
+                Holder<PoiType> oldType = BLOCKSTATE_TO_POI_TYPE_MAP.put(state, registry.getOrThrow(key));
                 if (oldType != null) {
                     throw new IllegalStateException(String.format(Locale.ENGLISH,
                             "Point of interest types %s and %s both list %s in their blockstates, this is not allowed. Blockstates can only have one point of interest type each.",

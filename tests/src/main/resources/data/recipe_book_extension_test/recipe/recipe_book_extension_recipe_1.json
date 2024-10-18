@@ -1,0 +1,16 @@
+{
+  "type": "recipe_book_extension_test:test_recipe",
+  "result": {
+    "id": "diamond_block"
+  },
+  "group": "test_1",
+  "pattern": [
+    "T ",
+    "T#",
+    "# "
+  ],
+  "key": {
+    "#": "minecraft:cobblestone",
+    "T": "minecraft:stone"
+  }
+}

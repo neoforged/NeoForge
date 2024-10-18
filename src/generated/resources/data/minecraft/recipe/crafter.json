@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": {
-      "tag": "c:ingots/iron"
-    },
-    "C": {
-      "item": "minecraft:crafting_table"
-    },
-    "D": {
-      "item": "minecraft:dropper"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    }
+    "#": "#c:ingots/iron",
+    "C": "minecraft:crafting_table",
+    "D": "minecraft:dropper",
+    "R": "minecraft:redstone"
   },
   "pattern": [
     "###",

@@ -3,12 +3,8 @@
   "category": "misc",
   "group": "banner",
   "key": {
-    "#": {
-      "item": "minecraft:magenta_wool"
-    },
-    "|": {
-      "tag": "c:rods/wooden"
-    }
+    "#": "minecraft:magenta_wool",
+    "|": "#c:rods/wooden"
   },
   "pattern": [
     "###",

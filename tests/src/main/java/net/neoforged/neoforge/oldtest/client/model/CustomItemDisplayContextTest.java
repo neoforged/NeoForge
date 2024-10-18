@@ -114,8 +114,8 @@ public class CustomItemDisplayContextTest {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
     public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.registerBlock("item_hanger", ItemHangerBlock::new, BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable());
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
-    public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> new BlockEntityType<>(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()));
+    public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.registerItem("item_hanger", props -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), props));
 
     public CustomItemDisplayContextTest(IEventBus modBus) {
         modBus.addListener(this::gatherData);

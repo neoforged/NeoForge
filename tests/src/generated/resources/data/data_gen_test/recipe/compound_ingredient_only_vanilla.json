@@ -2,17 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": [
-      {
-        "tag": "minecraft:planks"
-      },
-      {
-        "tag": "minecraft:logs"
-      },
-      {
-        "item": "minecraft:bedrock"
-      }
-    ]
+    "#": {
+      "neoforge:ingredient_type": "neoforge:compound",
+      "children": [
+        "#minecraft:planks",
+        "#minecraft:logs",
+        "minecraft:bedrock"
+      ]
+    }
   },
   "pattern": [
     "###",

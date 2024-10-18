@@ -24,7 +24,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.GameRules;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -152,9 +151,7 @@ public final class ClientPayloadHandler {
     public static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
         @SuppressWarnings("resource")
         final ClientLevel level = Minecraft.getInstance().level;
-        level.setGameTime(payload.gameTime());
-        level.setDayTime(payload.dayTime());
-        level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(payload.gameRule(), null);
+        level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
         level.setDayTimeFraction(payload.dayTimeFraction());
         level.setDayTimePerTick(payload.dayTimePerTick());
     }

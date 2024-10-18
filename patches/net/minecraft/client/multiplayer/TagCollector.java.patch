@@ -1,9 +1,0 @@
---- a/net/minecraft/client/multiplayer/TagCollector.java
-+++ b/net/minecraft/client/multiplayer/TagCollector.java
-@@ -44,5 +_,6 @@
-             this.applyTags(p_326147_, p_326446_ -> true);
-             refreshBuiltInTagDependentData();
-         }
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(p_326147_, true, p_326486_));
-     }
- }

@@ -167,7 +167,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      *         as FluidIngredients are generally not meant to match by amount
      *         and these stacks are mostly used for display.
      *         <p>
-     * @see ICustomIngredient#getItems()
+     * @see ICustomIngredient#stacks()
      */
     protected abstract Stream<FluidStack> generateStacks();
 

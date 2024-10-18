@@ -8,6 +8,8 @@ package net.neoforged.neoforge.common.crafting;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -22,8 +24,8 @@ public record DifferenceIngredient(Ingredient base, Ingredient subtracted) imple
                     .apply(builder, DifferenceIngredient::new));
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return Stream.of(base.getItems()).filter(subtracted.negate());
+    public Stream<Holder<Item>> items() {
+        return base.items().stream().filter(i -> !subtracted.test(i.value().getDefaultInstance()));
     }
 
     @Override

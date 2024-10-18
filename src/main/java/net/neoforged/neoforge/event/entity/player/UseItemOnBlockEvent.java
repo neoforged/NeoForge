@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -52,7 +51,7 @@ public class UseItemOnBlockEvent extends Event implements ICancellableEvent {
     private final Direction face;
     private final UseOnContext context;
     private final UsePhase usePhase;
-    private ItemInteractionResult cancellationResult = ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    private InteractionResult cancellationResult = InteractionResult.TRY_WITH_EMPTY_HAND;
 
     public UseItemOnBlockEvent(UseOnContext context, UsePhase usePhase) {
         super();
@@ -146,34 +145,34 @@ public class UseItemOnBlockEvent extends Event implements ICancellableEvent {
      *
      * @param result InteractionResult to return to the interaction logic
      *               <ul>
-     *               <li>{@link ItemInteractionResult#SUCCESS}, {@link ItemInteractionResult#CONSUME}, {@link ItemInteractionResult#CONSUME_PARTIAL}, and FAIL will prevent further types of interaction attempts
+     *               <li>{@link InteractionResult#SUCCESS}, {@link InteractionResult#CONSUME}, and FAIL will prevent further types of interaction attempts
      *               when provided from the ITEM_BEFORE_BLOCK phase.
-     *               <li>{@link ItemInteractionResult#SUCCESS}, {@link ItemInteractionResult#CONSUME}, and {@link ItemInteractionResult#CONSUME_PARTIAL} will trigger advancements on the server (except in the ITEM_BEFORE_BLOCK phase),
+     *               <li>{@link InteractionResult#SUCCESS}, {@link InteractionResult#CONSUME} will trigger advancements on the server (except in the ITEM_BEFORE_BLOCK phase),
      *               and will also prevent the ITEM_AFTER_BLOCK item interaction from occurring if provided during the BLOCK phase.
-     *               <li>{@link ItemInteractionResult#SUCCESS} will trigger the arm-swinging mechanic.
-     *               <li>{@link ItemInteractionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION} will always allow proceeding to the next phase.
-     *               <li>{@link ItemInteractionResult#SKIP_DEFAULT_BLOCK_INTERACTION} will not call the block's {@link net.minecraft.world.level.block.Block#useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult) use method}</li>
+     *               <li>{@link InteractionResult#SUCCESS} will trigger the arm-swinging mechanic.
+     *               <li>{@link InteractionResult#TRY_WITH_EMPTY_HAND} will always allow proceeding to the next phase.
+     *               <li>{@link InteractionResult#PASS} will not call the block's {@link net.minecraft.world.level.block.Block#useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult) use method}</li>
      *               </ul>
      */
-    public void cancelWithResult(ItemInteractionResult result) {
+    public void cancelWithResult(InteractionResult result) {
         this.setCancellationResult(result);
         this.setCanceled(true);
     }
 
     /**
-     * @return The {@link ItemInteractionResult} that will be returned to vanilla if the event is cancelled, instead of calling the relevant
-     *         method of the event. By default, this is {@link ItemInteractionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION}, meaning cancelled events will cause
+     * @return The {@link InteractionResult} that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+     *         method of the event. By default, this is {@link InteractionResult#TRY_WITH_EMPTY_HAND}, meaning cancelled events will cause
      *         the client to keep trying more interactions until something works.
      */
-    public ItemInteractionResult getCancellationResult() {
+    public InteractionResult getCancellationResult() {
         return cancellationResult;
     }
 
     /**
-     * Set the {@link ItemInteractionResult} that will be returned to vanilla if the event is cancelled, instead of calling the relevant
+     * Set the {@link InteractionResult} that will be returned to vanilla if the event is cancelled, instead of calling the relevant
      * method of the event.
      */
-    public void setCancellationResult(ItemInteractionResult result) {
+    public void setCancellationResult(InteractionResult result) {
         this.cancellationResult = result;
     }
 

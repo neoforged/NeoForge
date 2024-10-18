@@ -16,7 +16,7 @@
              }
          }
      }
-@@ -83,13 +_,15 @@
+@@ -92,13 +_,15 @@
          if (blockstate.is(this)) {
              return true;
          } else {

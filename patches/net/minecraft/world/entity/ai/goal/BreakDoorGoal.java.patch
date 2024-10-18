@@ -4,8 +4,8 @@
          if (!super.canUse()) {
              return false;
          } else {
--            return !this.mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+            return !net.neoforged.neoforge.common.CommonHooks.canEntityDestroy(this.mob.level(), this.doorPos, this.mob)
+-            return !getServerLevel(this.mob).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
++            return !net.neoforged.neoforge.common.CommonHooks.canEntityDestroy(getServerLevel(this.mob.level()), this.doorPos, this.mob)
                  ? false
                  : this.isValidDifficulty(this.mob.level().getDifficulty()) && !this.isOpen();
          }

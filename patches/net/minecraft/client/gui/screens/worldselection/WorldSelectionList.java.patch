@@ -8,15 +8,15 @@
      static final Logger LOGGER = LogUtils.getLogger();
      static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
-@@ -405,6 +_,7 @@
-             RenderSystem.enableBlend();
-             p_281612_.blit(this.icon.textureLocation(), p_282820_, p_283181_, 0.0F, 0.0F, 32, 32, 32, 32);
-             RenderSystem.disableBlend();
+@@ -403,6 +_,7 @@
+             p_281612_.drawString(this.minecraft.font, s1, p_282820_ + 32 + 3, p_283181_ + 9 + 3, -8355712, false);
+             p_281612_.drawString(this.minecraft.font, component, p_282820_ + 32 + 3, p_283181_ + 9 + 9 + 3, -8355712, false);
+             p_281612_.blit(RenderType::guiTextured, this.icon.textureLocation(), p_282820_, p_283181_, 0.0F, 0.0F, 32, 32, 32, 32);
 +            renderExperimentalWarning(p_281612_, p_283204_, p_283025_, p_283181_, p_282820_);
              if (this.minecraft.options.touchscreen().get() || p_283396_) {
                  p_281612_.fill(p_282820_, p_283181_, p_282820_ + 32, p_283181_ + 32, -1601138544);
                  int j = p_283204_ - p_282820_;
-@@ -511,6 +_,7 @@
+@@ -509,6 +_,7 @@
                                  this.doDeleteWorld();
                              }
  
@@ -24,7 +24,7 @@
                              this.minecraft.setScreen(this.screen);
                          },
                          Component.translatable("selectWorld.deleteQuestion"),
-@@ -647,6 +_,19 @@
+@@ -645,6 +_,19 @@
  
          public String getLevelName() {
              return this.summary.getLevelName();
@@ -34,7 +34,7 @@
 +        private void renderExperimentalWarning(GuiGraphics guiGraphics, int mouseX, int mouseY, int top, int left) {
 +            if (this.summary.getSettings() != null && this.summary.getSettings().getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental())) {
 +                int leftStart = left + WorldSelectionList.this.getRowWidth();
-+                guiGraphics.blit(WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON, leftStart - 36, top, 0.0F, 0.0F, 32, 32, 32, 32);
++                guiGraphics.blit(RenderType::guiTextured, WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON, leftStart - 36, top, 0.0F, 0.0F, 32, 32, 32, 32);
 +                if (WorldSelectionList.this.getEntryAtPosition(mouseX, mouseY) == this && mouseX > leftStart - 36 && mouseX < leftStart) {
 +                    var font = Minecraft.getInstance().font;
 +                    List<net.minecraft.util.FormattedCharSequence> tooltip = font.split(Component.translatable("neoforge.experimentalsettings.tooltip"), 200);

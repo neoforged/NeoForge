@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BushBlock.java
 +++ b/net/minecraft/world/level/block/BushBlock.java
-@@ -20,7 +_,7 @@
+@@ -21,7 +_,7 @@
      protected abstract MapCodec<? extends BushBlock> codec();
  
      protected boolean mayPlaceOn(BlockState p_51042_, BlockGetter p_51043_, BlockPos p_51044_) {
@@ -9,7 +9,7 @@
      }
  
      @Override
-@@ -33,7 +_,10 @@
+@@ -43,7 +_,10 @@
      @Override
      protected boolean canSurvive(BlockState p_51028_, LevelReader p_51029_, BlockPos p_51030_) {
          BlockPos blockpos = p_51030_.below();

@@ -1,15 +1,15 @@
 --- a/net/minecraft/stats/RecipeBookSettings.java
 +++ b/net/minecraft/stats/RecipeBookSettings.java
-@@ -11,7 +_,7 @@
- import net.minecraft.world.inventory.RecipeBookType;
- 
- public final class RecipeBookSettings {
+@@ -14,7 +_,7 @@
+     public static final StreamCodec<FriendlyByteBuf, RecipeBookSettings> STREAM_CODEC = StreamCodec.ofMember(
+         RecipeBookSettings::write, RecipeBookSettings::read
+     );
 -    private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = ImmutableMap.of(
 +    private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = net.neoforged.neoforge.common.CommonHooks.buildRecipeBookTypeTagFields(ImmutableMap.of(
          RecipeBookType.CRAFTING,
          Pair.of("isGuiOpen", "isFilteringCraftable"),
          RecipeBookType.FURNACE,
-@@ -20,7 +_,7 @@
+@@ -23,7 +_,7 @@
          Pair.of("isBlastingFurnaceGuiOpen", "isBlastingFurnaceFilteringCraftable"),
          RecipeBookType.SMOKER,
          Pair.of("isSmokerGuiOpen", "isSmokerFilteringCraftable")
@@ -18,13 +18,13 @@
      private final Map<RecipeBookType, RecipeBookSettings.TypeSettings> states;
  
      private RecipeBookSettings(Map<RecipeBookType, RecipeBookSettings.TypeSettings> p_12730_) {
-@@ -54,7 +_,8 @@
-     public static RecipeBookSettings read(FriendlyByteBuf p_12753_) {
-         Map<RecipeBookType, RecipeBookSettings.TypeSettings> map = Maps.newEnumMap(RecipeBookType.class);
+@@ -72,7 +_,8 @@
+     private static RecipeBookSettings read(FriendlyByteBuf p_12753_) {
+         Map<RecipeBookType, RecipeBookSettings.TypeSettings> map = new EnumMap<>(RecipeBookType.class);
  
 -        for (RecipeBookType recipebooktype : RecipeBookType.values()) {
 +        // Neo: filter out modded RecipeBookTypes when connected to a vanilla server
 +        for (RecipeBookType recipebooktype : net.neoforged.neoforge.common.CommonHooks.getFilteredRecipeBookTypeValues()) {
              boolean flag = p_12753_.readBoolean();
              boolean flag1 = p_12753_.readBoolean();
-             map.put(recipebooktype, new RecipeBookSettings.TypeSettings(flag, flag1));
+             if (flag || flag1) {

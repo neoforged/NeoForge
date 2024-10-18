@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -60,6 +_,7 @@
-     public static final int NUM_DATA_VALUES = 4;
+@@ -54,6 +_,7 @@
      public static final int BURN_TIME_STANDARD = 200;
      public static final int BURN_COOL_SPEED = 2;
+     public static final int UNKNOWN_LIT_DURATION = 0;
 +    private final RecipeType<? extends AbstractCookingRecipe> recipeType;
      protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
      int litTime;
-     int litDuration;
-@@ -72,9 +_,14 @@
+     int litDuration = 0;
+@@ -64,9 +_,14 @@
          public int get(int p_58431_) {
              switch (p_58431_) {
                  case 0:
@@ -24,57 +24,15 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingProgress;
                  case 3:
-@@ -114,18 +_,40 @@
+@@ -106,6 +_,7 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
 +        this.recipeType = p_154994_;
      }
  
-     public static void invalidateCache() {
-         fuelCache = null;
-     }
- 
-+    /**
-+     * @deprecated Neo: get burn times by calling {@link net.neoforged.neoforge.common.extensions.IItemStackExtension#getBurnTime(RecipeType)}
-+     */
-+    @Deprecated
-     public static Map<Item, Integer> getFuel() {
-         Map<Item, Integer> map = fuelCache;
-         if (map != null) {
-             return map;
-         } else {
-             Map<Item, Integer> map1 = Maps.newLinkedHashMap();
-+            buildFuels((e, time) -> e.ifRight(tag -> add(map1, tag, time)).ifLeft(item -> add(map1, item, time)));
-+            fuelCache = map1;
-+            return map1;
-+        }
-+    }
-+
-+    private static void add(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> consumer, ItemLike item, int time) {
-+        consumer.accept(com.mojang.datafixers.util.Either.left(item.asItem()), time);
-+    }
-+
-+    private static void add(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> consumer, TagKey<Item> tag, int time) {
-+        consumer.accept(com.mojang.datafixers.util.Either.right(tag), time);
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public static void buildFuels(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> map1) {
-+        {
-             add(map1, Items.LAVA_BUCKET, 20000);
-             add(map1, Blocks.COAL_BLOCK, 16000);
-             add(map1, Items.BLAZE_ROD, 2400);
-@@ -185,8 +_,6 @@
-             add(map1, Blocks.AZALEA, 100);
-             add(map1, Blocks.FLOWERING_AZALEA, 100);
-             add(map1, Blocks.MANGROVE_ROOTS, 300);
--            fuelCache = map1;
--            return map1;
-         }
-     }
- 
-@@ -226,9 +_,9 @@
+     private boolean isLit() {
+@@ -117,9 +_,9 @@
          super.loadAdditional(p_155025_, p_323468_);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
          ContainerHelper.loadAllItems(p_155025_, this.items, p_323468_);
@@ -84,10 +42,10 @@
 +        this.litTime = p_155025_.getInt("BurnTime");
 +        this.cookingProgress = p_155025_.getInt("CookTime");
 +        this.cookingTotalTime = p_155025_.getInt("CookTimeTotal");
-         this.litDuration = this.getBurnDuration(this.items.get(1));
+         this.litDuration = 0;
          CompoundTag compoundtag = p_155025_.getCompound("RecipesUsed");
  
-@@ -240,9 +_,9 @@
+@@ -131,9 +_,9 @@
      @Override
      protected void saveAdditional(CompoundTag p_187452_, HolderLookup.Provider p_323656_) {
          super.saveAdditional(p_187452_, p_323656_);
@@ -99,56 +57,25 @@
 +        p_187452_.putInt("CookTimeTotal", this.cookingTotalTime);
          ContainerHelper.saveAllItems(p_187452_, this.items, p_323656_);
          CompoundTag compoundtag = new CompoundTag();
-         this.recipesUsed.forEach((p_187449_, p_187450_) -> compoundtag.putInt(p_187449_.toString(), p_187450_));
-@@ -269,28 +_,30 @@
-             }
- 
-             int i = p_155017_.getMaxStackSize();
--            if (!p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
-+            if (!p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i, p_155017_)) {
-                 p_155017_.litTime = p_155017_.getBurnDuration(itemstack);
+         this.recipesUsed.forEach((p_380898_, p_380899_) -> compoundtag.putInt(p_380898_.location().toString(), p_380899_));
+@@ -170,11 +_,15 @@
                  p_155017_.litDuration = p_155017_.litTime;
                  if (p_155017_.isLit()) {
                      flag1 = true;
-+                    if (itemstack.hasCraftingRemainingItem())
-+                        p_155017_.items.set(1, itemstack.getCraftingRemainingItem());
++                    var remainder = itemstack.getCraftingRemainder();
++                    if (!remainder.isEmpty())
++                        p_155017_.items.set(1, remainder);
 +                    else
                      if (flag3) {
                          Item item = itemstack.getItem();
                          itemstack.shrink(1);
                          if (itemstack.isEmpty()) {
--                            Item item1 = item.getCraftingRemainingItem();
--                            p_155017_.items.set(1, item1 == null ? ItemStack.EMPTY : new ItemStack(item1));
-+                            p_155017_.items.set(1, itemstack.getCraftingRemainingItem());
+-                            p_155017_.items.set(1, item.getCraftingRemainder());
++                            p_155017_.items.set(1, item.getCraftingRemainder()); // Neo: Remainder is handled in the `if` check above.
                          }
                      }
                  }
-             }
- 
--            if (p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
-+            if (p_155017_.isLit() && canBurn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i, p_155017_)) {
-                 p_155017_.cookingProgress++;
-                 if (p_155017_.cookingProgress == p_155017_.cookingTotalTime) {
-                     p_155017_.cookingProgress = 0;
-                     p_155017_.cookingTotalTime = getTotalCookTime(p_155014_, p_155017_);
--                    if (burn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i)) {
-+                    if (burn(p_155014_.registryAccess(), recipeholder, p_155017_.items, i, p_155017_)) {
-                         p_155017_.setRecipeUsed(recipeholder);
-                     }
- 
-@@ -314,9 +_,9 @@
-         }
-     }
- 
--    private static boolean canBurn(RegistryAccess p_266924_, @Nullable RecipeHolder<?> p_301107_, NonNullList<ItemStack> p_155007_, int p_155008_) {
-+    private static boolean canBurn(RegistryAccess p_266924_, @Nullable RecipeHolder<?> p_301107_, NonNullList<ItemStack> p_155007_, int p_155008_, AbstractFurnaceBlockEntity furnace) {
-         if (!p_155007_.get(0).isEmpty() && p_301107_ != null) {
--            ItemStack itemstack = p_301107_.value().getResultItem(p_266924_);
-+            ItemStack itemstack = ((RecipeHolder<? extends AbstractCookingRecipe>) p_301107_).value().assemble(new SingleRecipeInput(furnace.getItem(0)), p_266924_);
-             if (itemstack.isEmpty()) {
-                 return false;
-             } else {
-@@ -326,9 +_,9 @@
+@@ -227,9 +_,9 @@
                  } else if (!ItemStack.isSameItemSameComponents(itemstack1, itemstack)) {
                      return false;
                  } else {
@@ -160,18 +87,7 @@
                  }
              }
          } else {
-@@ -336,15 +_,15 @@
-         }
-     }
- 
--    private static boolean burn(RegistryAccess p_266740_, @Nullable RecipeHolder<?> p_300910_, NonNullList<ItemStack> p_267073_, int p_267157_) {
--        if (p_300910_ != null && canBurn(p_266740_, p_300910_, p_267073_, p_267157_)) {
-+    private static boolean burn(RegistryAccess p_266740_, @Nullable RecipeHolder<?> p_300910_, NonNullList<ItemStack> p_267073_, int p_267157_, AbstractFurnaceBlockEntity furnace) {
-+        if (p_300910_ != null && canBurn(p_266740_, p_300910_, p_267073_, p_267157_, furnace)) {
-             ItemStack itemstack = p_267073_.get(0);
--            ItemStack itemstack1 = p_300910_.value().getResultItem(p_266740_);
-+            ItemStack itemstack1 = ((RecipeHolder<? extends AbstractCookingRecipe>) p_300910_).value().assemble(new SingleRecipeInput(furnace.getItem(0)), p_266740_);
-             ItemStack itemstack2 = p_267073_.get(2);
+@@ -251,7 +_,7 @@
              if (itemstack2.isEmpty()) {
                  p_267073_.set(2, itemstack1.copy());
              } else if (ItemStack.isSameItemSameComponents(itemstack2, itemstack1)) {
@@ -180,31 +96,21 @@
              }
  
              if (itemstack.is(Blocks.WET_SPONGE.asItem()) && !p_267073_.get(1).isEmpty() && p_267073_.get(1).is(Items.BUCKET)) {
-@@ -362,8 +_,7 @@
-         if (p_58343_.isEmpty()) {
-             return 0;
-         } else {
--            Item item = p_58343_.getItem();
--            return getFuel().getOrDefault(item, 0);
-+            return p_58343_.getBurnTime(this.recipeType);
-         }
+@@ -266,7 +_,7 @@
      }
  
-@@ -373,7 +_,7 @@
+     protected int getBurnDuration(FuelValues p_363501_, ItemStack p_58343_) {
+-        return p_363501_.burnDuration(p_58343_);
++        return p_58343_.getBurnTime(this.recipeType, p_363501_);
      }
  
-     public static boolean isFuel(ItemStack p_58400_) {
--        return getFuel().containsKey(p_58400_.getItem());
-+        return p_58400_.getBurnTime(null) > 0;
-     }
- 
-     @Override
-@@ -431,7 +_,7 @@
+     private static int getTotalCookTime(ServerLevel p_380169_, AbstractFurnaceBlockEntity p_222694_) {
+@@ -329,7 +_,7 @@
              return true;
          } else {
              ItemStack itemstack = this.items.get(1);
--            return isFuel(p_58390_) || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
-+            return p_58390_.getBurnTime(this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
+-            return this.level.fuelValues().isFuel(p_58390_) || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
++            return p_58390_.getBurnTime(this.recipeType, this.level.fuelValues()) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
          }
      }
  

@@ -1,69 +1,53 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -84,18 +_,18 @@
-         this.buildRecipes(
-             new RecipeOutput() {
-                 @Override
--                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @Nullable AdvancementHolder p_311794_) {
-+                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @Nullable AdvancementHolder p_311794_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
-                     if (!set.add(p_312039_)) {
-                         throw new IllegalStateException("Duplicate recipe " + p_312039_);
-                     } else {
--                        list.add(DataProvider.saveStable(p_324494_, p_324248_, Recipe.CODEC, p_312254_, RecipeProvider.this.recipePathProvider.json(p_312039_)));
-+                        list.add(DataProvider.saveStable(p_324494_, p_324248_, Recipe.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, conditions)), RecipeProvider.this.recipePathProvider.json(p_312039_)));
-                         if (p_311794_ != null) {
-                             list.add(
-                                 DataProvider.saveStable(
-                                     p_324494_,
-                                     p_324248_,
--                                    Advancement.CODEC,
--                                    p_311794_.value(),
-+                                    Advancement.CONDITIONAL_CODEC,
-+                                    Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_311794_.value(), conditions)),
-                                     RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
-                                 )
-                             );
-@@ -107,18 +_,26 @@
-                 public Advancement.Builder advancement() {
-                     return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
-                 }
--            }
-+            }, p_324248_
-         );
-         return CompletableFuture.allOf(list.toArray(CompletableFuture[]::new));
+@@ -566,8 +_,7 @@
      }
  
-     protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_) {
--        return DataProvider.saveStable(p_253674_, p_323646_, Advancement.CODEC, p_301116_.value(), this.advancementPathProvider.json(p_301116_.id()));
--    }
--
--    protected abstract void buildRecipes(RecipeOutput p_301172_);
--
--    protected static void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
-+        return buildAdvancement(p_253674_, p_323646_, p_301116_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
-+    }
-+
-+    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, HolderLookup.Provider p_323646_, AdvancementHolder p_301116_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
-+        return DataProvider.saveStable(p_253674_, p_323646_, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_301116_.value(), conditions)), this.advancementPathProvider.json(p_301116_.id()));
-+    }
-+
-+    protected void buildRecipes(RecipeOutput recipeOutput, HolderLookup.Provider holderLookup) {
-+        buildRecipes(recipeOutput);
-+    }
-+
-+    protected void buildRecipes(RecipeOutput p_301172_) {}
-+
-+    protected void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
-         BlockFamilies.getAllFamilies().filter(BlockFamily::shouldGenerateRecipe).forEach(p_313461_ -> generateRecipes(p_301146_, p_313461_, p_251836_));
-     }
- 
-@@ -611,8 +_,7 @@
-     }
- 
-     protected static void waxRecipes(RecipeOutput p_301254_, FeatureFlagSet p_313879_) {
+     protected void waxRecipes(FeatureFlagSet p_313879_) {
 -        HoneycombItem.WAXABLES
 -            .get()
 +        net.neoforged.neoforge.common.DataMapHooks.INVERSE_WAXABLES_DATAMAP
              .forEach(
-                 (p_337490_, p_337491_) -> {
-                     if (p_337491_.requiredFeatures().isSubsetOf(p_313879_)) {
+                 (p_359424_, p_359425_) -> {
+                     if (p_359425_.requiredFeatures().isSubsetOf(p_313879_)) {
+@@ -756,13 +_,13 @@
+                         final List<CompletableFuture<?>> list = new ArrayList<>();
+                         RecipeOutput recipeoutput = new RecipeOutput() {
+                             @Override
+-                            public void accept(ResourceKey<Recipe<?>> p_380360_, Recipe<?> p_362882_, @Nullable AdvancementHolder p_364507_) {
++                            public void accept(ResourceKey<Recipe<?>> p_380360_, Recipe<?> p_362882_, @Nullable AdvancementHolder p_364507_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+                                 if (!set.add(p_380360_)) {
+                                     throw new IllegalStateException("Duplicate recipe " + p_380360_.location());
+                                 } else {
+-                                    this.saveRecipe(p_380360_, p_362882_);
++                                    this.saveRecipe(p_380360_, p_362882_, conditions);
+                                     if (p_364507_ != null) {
+-                                        this.saveAdvancement(p_364507_);
++                                        this.saveAdvancement(p_364507_, conditions);
+                                     }
+                                 }
+                             }
+@@ -781,15 +_,21 @@
+                             }
+ 
+                             private void saveRecipe(ResourceKey<Recipe<?>> p_380099_, Recipe<?> p_364792_) {
++                                saveRecipe(p_380099_, p_364792_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++                            }
++                            private void saveRecipe(ResourceKey<Recipe<?>> p_380099_, Recipe<?> p_364792_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+                                 list.add(
+-                                    DataProvider.saveStable(p_364823_, p_364211_, Recipe.CODEC, p_364792_, packoutput$pathprovider.json(p_380099_.location()))
++                                    DataProvider.saveStable(p_364823_, p_364211_, Recipe.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_364792_, conditions)), packoutput$pathprovider.json(p_380099_.location()))
+                                 );
+                             }
+ 
+                             private void saveAdvancement(AdvancementHolder p_363148_) {
++                                saveAdvancement(p_363148_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++                            }
++                            private void saveAdvancement(AdvancementHolder p_363148_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+                                 list.add(
+                                     DataProvider.saveStable(
+-                                        p_364823_, p_364211_, Advancement.CODEC, p_363148_.value(), packoutput$pathprovider1.json(p_363148_.id())
++                                        p_364823_, p_364211_, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_363148_.value(), conditions)), packoutput$pathprovider1.json(p_363148_.id())
+                                     )
+                                 );
+                             }

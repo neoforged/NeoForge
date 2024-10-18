@@ -31,9 +31,9 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -137,12 +_,19 @@
+@@ -136,12 +_,19 @@
+                         this.serverCookies,
                          this.chatState,
-                         this.strictErrorHandling,
                          this.customReportDetails,
 -                        this.serverLinks
 +                        this.serverLinks,
@@ -53,7 +53,7 @@
      }
  
      @Override
-@@ -154,5 +_,51 @@
+@@ -153,5 +_,51 @@
      public void onDisconnect(DisconnectionDetails p_351005_) {
          super.onDisconnect(p_351005_);
          this.minecraft.clearDownloadedResourcePacks();

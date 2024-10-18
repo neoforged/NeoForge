@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.Event;
@@ -26,13 +25,15 @@ import org.jetbrains.annotations.ApiStatus;
 public class ComputeFovModifierEvent extends Event {
     private final Player player;
     private final float fovModifier;
+    private final float fovScale;
     private float newFovModifier;
 
     @ApiStatus.Internal
-    public ComputeFovModifierEvent(Player player, float fovModifier) {
+    public ComputeFovModifierEvent(Player player, float fovModifier, float fovScale) {
         this.player = player;
         this.fovModifier = fovModifier;
-        this.setNewFovModifier((float) Mth.lerp(Minecraft.getInstance().options.fovEffectScale().get(), 1.0F, fovModifier));
+        this.fovScale = fovScale;
+        this.setNewFovModifier(Mth.lerp(fovScale, 1.0F, fovModifier));
     }
 
     /**
@@ -47,6 +48,13 @@ public class ComputeFovModifierEvent extends Event {
      */
     public float getFovModifier() {
         return fovModifier;
+    }
+
+    /**
+     * {@return the FOV scale to use for interpolating the final FOV modifier}
+     */
+    public float getFovScale() {
+        return fovScale;
     }
 
     /**

@@ -214,6 +214,7 @@ public class NeoForgeExtraCodecs {
      * @param <E>           dispatched type
      * @param <B>           fallback type
      */
+    // TODO 1.21.2: probably not used anymore
     public static <A, E, B> MapCodec<Either<E, B>> dispatchMapOrElse(Codec<A> typeCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends MapCodec<? extends E>> codec, MapCodec<B> fallbackCodec) {
         var dispatchCodec = typeCodec.dispatchMap(type, codec);
         return new MapCodec<>() {

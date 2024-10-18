@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -128,7 +129,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @param fallDistance The fall distance
      * @return {@code true} if this entity can trample, {@code false} otherwise
      */
-    boolean canTrample(BlockState state, BlockPos pos, float fallDistance);
+    boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, float fallDistance);
 
     /**
      * Returns The classification of this entity

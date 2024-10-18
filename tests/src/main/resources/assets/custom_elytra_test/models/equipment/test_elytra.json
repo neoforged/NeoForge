@@ -1,0 +1,10 @@
+{
+    "layers": {
+        "wings": [
+            {
+                "texture": "custom_elytra_test:custom_elytra",
+                "use_player_texture": true
+            }
+        ]
+    }
+}

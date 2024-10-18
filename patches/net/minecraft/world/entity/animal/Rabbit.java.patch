@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/entity/animal/Rabbit.java
 +++ b/net/minecraft/world/entity/animal/Rabbit.java
-@@ -530,7 +_,7 @@
+@@ -531,7 +_,7 @@
          @Override
          public boolean canUse() {
              if (this.nextStartTick <= 0) {
--                if (!this.rabbit.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+                if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.rabbit.level(), this.rabbit)) {
+-                if (!getServerLevel(this.rabbit).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++                if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.rabbit.level()), this.rabbit)) {
                      return false;
                  }
  
-@@ -585,7 +_,7 @@
+@@ -586,7 +_,7 @@
          @Override
          protected boolean isValidTarget(LevelReader p_29785_, BlockPos p_29786_) {
              BlockState blockstate = p_29785_.getBlockState(p_29786_);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -54,20 +_,57 @@
+@@ -59,20 +_,57 @@
              || p_43080_.is(BlockTags.WOOL);
      }
  
@@ -19,9 +19,9 @@
 +                // Call onSheared on both sides (mirrors vanilla shear())
 +                List<ItemStack> drops = target.onSheared(player, stack, entity.level(), pos);
 +                // Spawn drops on the server side using spawnShearedDrop to retain vanilla mob-specific behavior
-+                if (!isClient) {
++                if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
 +                    for(ItemStack drop : drops) {
-+                        target.spawnShearedDrop(entity.level(), pos, drop);
++                        target.spawnShearedDrop(serverLevel, pos, drop);
 +                    }
 +                }
 +                // Call GameEvent.SHEAR on both sides
@@ -31,7 +31,7 @@
 +                    stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
 +                }
 +                // Return sided success if the entity was shearable
-+                return InteractionResult.sidedSuccess(isClient);
++                return InteractionResult.SUCCESS;
 +            }
 +        }
 +        return InteractionResult.PASS;

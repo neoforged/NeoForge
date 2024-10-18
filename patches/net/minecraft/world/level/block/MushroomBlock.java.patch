@@ -13,8 +13,8 @@
  
      public boolean growMushroom(ServerLevel p_221774_, BlockPos p_221775_, BlockState p_221776_, RandomSource p_221777_) {
          Optional<? extends Holder<ConfiguredFeature<?, ?>>> optional = p_221774_.registryAccess()
-             .registryOrThrow(Registries.CONFIGURED_FEATURE)
-             .getHolder(this.feature);
+             .lookupOrThrow(Registries.CONFIGURED_FEATURE)
+             .get(this.feature);
 +
 +        // Neo: Fire the BlockGrowFeatureEvent and update the result of the Optional local with the new feature.
 +        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(p_221774_, p_221777_, p_221775_, optional.orElse(null));

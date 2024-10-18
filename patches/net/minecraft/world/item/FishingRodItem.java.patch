@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/FishingRodItem.java
 +++ b/net/minecraft/world/item/FishingRodItem.java
-@@ -24,7 +_,11 @@
+@@ -25,7 +_,11 @@
          if (p_41291_.fishing != null) {
              if (!p_41290_.isClientSide) {
                  int i = p_41291_.fishing.retrieve(itemstack);
@@ -12,10 +12,10 @@
              }
  
              p_41290_.playSound(
-@@ -65,5 +_,10 @@
-     @Override
-     public int getEnchantmentValue() {
-         return 1;
+@@ -61,5 +_,10 @@
+         }
+ 
+         return InteractionResult.SUCCESS;
 +    }
 +
 +    @Override

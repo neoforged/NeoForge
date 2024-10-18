@@ -1,19 +1,41 @@
 --- a/net/minecraft/server/dedicated/ServerWatchdog.java
 +++ b/net/minecraft/server/dedicated/ServerWatchdog.java
-@@ -49,14 +_,14 @@
-                 ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
-                 ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
-                 StringBuilder stringbuilder = new StringBuilder();
--                Error error = new Error("Watchdog");
-+                Error error = new Error(String.format(java.util.Locale.ENGLISH, "ServerHangWatchdog detected that a single server tick took %.2f seconds (should be max 0.05)", k / 1000F)); // Forge: don't just make a crash report with a seemingly-inexplicable Error
+@@ -46,7 +_,13 @@
+                     String.format(Locale.ROOT, "%.2f", this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND)
+                 );
+                 LOGGER.error(LogUtils.FATAL_MARKER, "Considering it to be crashed, server will forcibly shutdown.");
+-                CrashReport crashreport = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId());
++                // Neo: don't just make a crash report with a seemingly-inexplicable Error
++                String message = String.format(
++                        Locale.ROOT,
++                        "ServerWatchdog detected that a single server tick took %.2f seconds (should be max %.2f)",
++                        (float)k / (float)TimeUtil.NANOSECONDS_PER_SECOND,
++                        this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND);
++                CrashReport crashreport = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId(), message);
+                 this.server.fillSystemReport(crashreport.getSystemReport());
+                 CrashReportCategory crashreportcategory = crashreport.addCategory("Performance stats");
+                 crashreportcategory.setDetail(
+@@ -77,17 +_,21 @@
+     }
  
-                 for (ThreadInfo threadinfo : athreadinfo) {
-                     if (threadinfo.getThreadId() == this.server.getRunningThread().getId()) {
-                         error.setStackTrace(threadinfo.getStackTrace());
-                     }
+     public static CrashReport createWatchdogCrashReport(String p_363165_, long p_364052_) {
++        return createWatchdogCrashReport(p_363165_, p_364052_, "Watchdog");
++    }
++
++    public static CrashReport createWatchdogCrashReport(String p_363165_, long p_364052_, String message) {
+         ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
+         ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
+         StringBuilder stringbuilder = new StringBuilder();
+-        Error error = new Error("Watchdog");
++        Error error = new Error(message);
  
--                    stringbuilder.append(threadinfo);
-+                    stringbuilder.append(net.neoforged.neoforge.logging.ThreadInfoUtil.getEntireStacktrace(threadinfo));
-                     stringbuilder.append("\n");
-                 }
+         for (ThreadInfo threadinfo : athreadinfo) {
+             if (threadinfo.getThreadId() == p_364052_) {
+                 error.setStackTrace(threadinfo.getStackTrace());
+             }
+ 
+-            stringbuilder.append(threadinfo);
++            stringbuilder.append(net.neoforged.neoforge.logging.ThreadInfoUtil.getEntireStacktrace(threadinfo));
+             stringbuilder.append("\n");
+         }
  

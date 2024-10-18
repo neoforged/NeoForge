@@ -1,25 +1,25 @@
 --- a/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
-@@ -118,6 +_,7 @@
-     public static void openFresh(Minecraft p_232897_, @Nullable Screen p_232898_) {
-         queueLoadScreen(p_232897_, PREPARING_WORLD_DATA);
-         PackRepository packrepository = new PackRepository(new ServerPacksSource(p_232897_.directoryValidator()));
+@@ -169,6 +_,7 @@
+     ) {
+         queueLoadScreen(p_372818_, PREPARING_WORLD_DATA);
+         PackRepository packrepository = new PackRepository(new ServerPacksSource(p_372818_.directoryValidator()));
 +        net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(packrepository, net.minecraft.server.packs.PackType.SERVER_DATA, false);
          WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
          CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
              worldloader$initconfig,
-@@ -243,6 +_,10 @@
-             WorldCreationContext worldcreationcontext = this.uiState.getSettings();
-             LevelSettings levelsettings = this.createLevelSettings(flag);
-             WorldData worlddata = new PrimaryLevelData(levelsettings, worldcreationcontext.options(), p_250577_, p_249994_);
-+            if(worlddata.worldGenSettingsLifecycle() != Lifecycle.stable()) {
+@@ -307,6 +_,10 @@
+             SystemToast.onPackCopyFailure(this.minecraft, s);
+             return false;
+         } else {
++            if (p_374211_.worldGenSettingsLifecycle() != Lifecycle.stable()) {
 +                // Neo: set experimental settings confirmation flag so user is not shown warning on next open
-+                ((PrimaryLevelData)worlddata).withConfirmedWarning(true);
++                ((PrimaryLevelData)p_374211_).withConfirmedWarning(true);
 +            }
              this.minecraft
                  .createWorldOpenFlows()
-                 .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, worlddata);
-@@ -428,7 +_,7 @@
+                 .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, p_374211_);
+@@ -491,7 +_,7 @@
                                          if (p_269627_) {
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
@@ -28,7 +28,7 @@
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),
-@@ -547,6 +_,7 @@
+@@ -605,6 +_,7 @@
          if (path != null) {
              if (this.tempDataPackRepository == null) {
                  this.tempDataPackRepository = ServerPacksSource.createPackRepository(path, this.packValidator);

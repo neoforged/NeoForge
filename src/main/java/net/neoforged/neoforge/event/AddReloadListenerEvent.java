@@ -15,7 +15,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
@@ -90,9 +89,9 @@ public class AddReloadListenerEvent extends Event {
         }
 
         @Override
-        public CompletableFuture<Void> reload(final PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller preparationsProfiler, final ProfilerFiller reloadProfiler, final Executor backgroundExecutor, final Executor gameExecutor) {
+        public CompletableFuture<Void> reload(final PreparationBarrier stage, final ResourceManager resourceManager, final Executor backgroundExecutor, final Executor gameExecutor) {
             if (!ModLoader.hasErrors())
-                return wrapped.reload(stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+                return wrapped.reload(stage, resourceManager, backgroundExecutor, gameExecutor);
             else
                 return CompletableFuture.completedFuture(null);
         }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ImposterProtoChunk.java
 +++ b/net/minecraft/world/level/chunk/ImposterProtoChunk.java
-@@ -219,6 +_,15 @@
+@@ -223,6 +_,15 @@
      }
  
      @Override
@@ -16,7 +16,7 @@
      public TickContainerAccess<Block> getBlockTicks() {
          return this.allowWrites ? this.wrapped.getBlockTicks() : BlackholeTickAccess.emptyContainer();
      }
-@@ -291,5 +_,10 @@
+@@ -290,5 +_,10 @@
      @Override
      public ChunkSkyLightSources getSkyLightSources() {
          return this.wrapped.getSkyLightSources();

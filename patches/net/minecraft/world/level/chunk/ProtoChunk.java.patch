@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/chunk/ProtoChunk.java
++++ b/net/minecraft/world/level/chunk/ProtoChunk.java
+@@ -134,7 +_,7 @@
+                         this.lightEngine.updateSectionStatus(p_63217_, flag1);
+                     }
+ 
+-                    if (LightEngine.hasDifferentLightProperties(blockstate, p_63218_)) {
++                    if (LightEngine.hasDifferentLightProperties(this, p_63217_, blockstate, p_63218_)) {
+                         this.skyLightSources.update(this, i1, j, k1);
+                         this.lightEngine.checkBlock(p_63217_);
+                     }

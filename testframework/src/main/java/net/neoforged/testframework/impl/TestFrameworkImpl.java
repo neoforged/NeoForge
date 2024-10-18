@@ -34,6 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
@@ -169,7 +170,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                         message = message.append("\n");
                     }
                 }
-                event.getEntity().sendSystemMessage(message);
+                ((ServerPlayer) event.getEntity()).sendSystemMessage(message);
             });
         }
     }
