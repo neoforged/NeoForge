@@ -12,18 +12,6 @@
      };
      ParticleRenderType PARTICLE_SHEET_TRANSLUCENT = new ParticleRenderType() {
          @Override
-@@ -60,6 +_,11 @@
-         public String toString() {
-             return "PARTICLE_SHEET_TRANSLUCENT";
-         }
-+
-+        @Override
-+        public boolean isTranslucent() {
-+            return false;
-+        }
-     };
-     ParticleRenderType CUSTOM = new ParticleRenderType() {
-         @Override
 @@ -89,4 +_,9 @@
  
      @Nullable
