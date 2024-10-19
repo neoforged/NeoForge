@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.ScreenEvent.Render;
 
 @Mod(LinearTextTextureFilteringTest.MODID)
@@ -22,14 +22,14 @@ public class LinearTextTextureFilteringTest {
     @SubscribeEvent
     public static void onGuiRenderPre(Render.Pre event) {
         if (ENABLED && event.getScreen() instanceof TitleScreen) {
-            NeoForgeRenderTypes.enableTextTextureLinearFiltering = true;
+            Minecraft.getInstance().font.enableTextTextureLinearFiltering = true;
         }
     }
 
     @SubscribeEvent
     public static void onGuiRenderPost(Render.Post event) {
         if (ENABLED && event.getScreen() instanceof TitleScreen) {
-            NeoForgeRenderTypes.enableTextTextureLinearFiltering = false;
+            Minecraft.getInstance().font.enableTextTextureLinearFiltering = false;
         }
     }
 }
