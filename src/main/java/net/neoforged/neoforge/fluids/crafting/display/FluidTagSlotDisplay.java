@@ -23,7 +23,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 /**
  * Slot display that shows all fluids in a given tag.
  *
- * Note that information on amount and data of the displayed fluid stacks depends on the provided factory!
+ * <p>Note that information on amount and data of the displayed fluid stacks depends on the provided factory!
  *
  * @param tag The tag to be displayed.
  */

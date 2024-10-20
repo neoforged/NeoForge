@@ -35,7 +35,6 @@ public class FluidIngredientCodecs {
                 .dispatch(FluidIngredient::getType, FluidIngredientType::streamCodec);
     }
 
-    @ApiStatus.Internal
     public static FluidIngredientType<SimpleFluidIngredient> simpleType() {
         MapCodec<SimpleFluidIngredient> erroringMapCodec = new MapCodec<>() {
             @Override
