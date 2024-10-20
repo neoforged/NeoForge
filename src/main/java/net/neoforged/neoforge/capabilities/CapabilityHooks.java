@@ -31,6 +31,8 @@ import net.neoforged.neoforge.items.wrapper.EntityArmorInvWrapper;
 import net.neoforged.neoforge.items.wrapper.EntityHandsInvWrapper;
 import net.neoforged.neoforge.items.wrapper.ForwardingItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.ItemEntityWrapper;
+import net.neoforged.neoforge.items.wrapper.ItemFrameWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
@@ -112,6 +114,14 @@ public class CapabilityHooks {
             event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new InvWrapper(entity));
         }
         event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInvWrapper(player.getInventory()));
+
+        for (var entityType : List.of(EntityType.ITEM_FRAME, EntityType.GLOW_ITEM_FRAME)) {
+            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (frame, ctx) -> new ItemFrameWrapper(frame));
+            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (frame, dir) -> dir == null || dir == frame.getDirection() ? new ItemFrameWrapper(frame) : null);
+        }
+
+        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.ITEM, (item, ctx) -> new ItemEntityWrapper(item));
+        event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, EntityType.ITEM, (item, ctx) -> new ItemEntityWrapper(item));
 
         // Items
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ComponentItemHandler(stack, DataComponents.CONTAINER, 27),
