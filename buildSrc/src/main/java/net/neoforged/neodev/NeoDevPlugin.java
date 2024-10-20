@@ -71,9 +71,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         var jstConfiguration = configurations.create("javaSourceTransformer", files -> {
             files.setCanBeConsumed(false);
             files.setCanBeResolved(true);
-            files.defaultDependencies(spec -> {
-                spec.add(Tools.JST.asDependency(project));
-            });
+            files.getDependencies().add(Tools.JST.asDependency(project));
         });
 
         var atFile = project.getRootProject().file("src/main/resources/META-INF/accesstransformer.cfg");
