@@ -7,6 +7,7 @@ package net.neoforged.neoforge.unittest;
 
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
@@ -30,12 +31,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 @ExtendWith(EphemeralTestServerProvider.class)
 public class IngredientTests {
+    private static List<ItemStack> ingredientItemsAsStacks(Ingredient ingredient) {
+        return ingredient.items().stream().map(i -> i.value().getDefaultInstance()).toList();
+    }
+
     @ParameterizedTest
     @MethodSource("provideIngredientMatrix")
     void testCompoundIngredient(Ingredient a, Ingredient b) {
         final var ingredient = CompoundIngredient.of(a, b);
-        Assertions.assertThat(a.stacks()).allMatch(ingredient, "first ingredient");
-        Assertions.assertThat(b.stacks()).allMatch(ingredient, "second ingredient");
+        Assertions.assertThat(ingredientItemsAsStacks(a)).allMatch(ingredient, "first ingredient");
+        Assertions.assertThat(ingredientItemsAsStacks(b)).allMatch(ingredient, "second ingredient");
     }
 
     @Test
@@ -44,9 +49,9 @@ public class IngredientTests {
         final var acacia = Ingredient.of(Items.ACACIA_LOG);
         final var ingredient = DifferenceIngredient.of(logs, acacia);
 
-        Assertions.assertThat(logs.stacks())
-                .filteredOn(i -> !acacia.test(i))
-                .containsExactlyInAnyOrder(ingredient.stacks().toArray(ItemStack[]::new));
+        Assertions.assertThat(logs.items())
+                .filteredOn(i -> !acacia.test(i.value().getDefaultInstance()))
+                .containsExactlyInAnyOrder(ingredient.items().toArray(Holder[]::new));
     }
 
     @Test
@@ -54,7 +59,7 @@ public class IngredientTests {
         final var second = Ingredient.of(Items.BIRCH_LOG, Items.SPRUCE_LOG, Items.DISPENSER);
         final var ingredient = IntersectionIngredient.of(Ingredient.of(server.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.LOGS)), second);
 
-        Assertions.assertThat(ingredient.stacks().stream().map(ItemStack::getItem).distinct())
+        Assertions.assertThat(ingredient.items().stream().map(Holder::value).distinct())
                 .containsExactlyInAnyOrder(Items.BIRCH_LOG, Items.SPRUCE_LOG);
     }
 

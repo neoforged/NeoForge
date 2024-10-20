@@ -169,14 +169,17 @@
                      p_363901_.popPose();
                  }
              }
-@@ -897,6 +_,7 @@
+@@ -897,8 +_,9 @@
              if (blockhitresult.getType() != HitResult.Type.MISS) {
                  BlockPos blockpos = blockhitresult.getBlockPos();
                  BlockState blockstate = this.level.getBlockState(blockpos);
 +                if (!net.neoforged.neoforge.client.ClientHooks.onDrawHighlight(this, p_363911_, blockhitresult, this.minecraft.getDeltaTracker(), p_361893_, p_362782_, p_361698_))
                  if (!blockstate.isAir() && this.level.getWorldBorder().isWithinBounds(blockpos)) {
-                     boolean flag = ItemBlockRenderTypes.getChunkRenderType(blockstate).sortOnUpload();
+-                    boolean flag = ItemBlockRenderTypes.getChunkRenderType(blockstate).sortOnUpload();
++                    boolean flag = net.neoforged.neoforge.client.ClientHooks.isInTranslucentBlockOutlinePass(this.level, blockpos, blockstate);
                      if (flag != p_361698_) {
+                         return;
+                     }
 @@ -1026,6 +_,7 @@
              compiledshaderprogram.clear();
              VertexBuffer.unbind();
