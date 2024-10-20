@@ -48,7 +48,7 @@ public class FluidIngredientTests {
         helper.assertFalse(tagJson.isJsonObject(), "tag fluid ingredient should not serialize as nested object!");
 
         helper.assertValueEqual(singleJson.getAsString(), Fluids.WATER.builtInRegistryHolder().getRegisteredName(), "serialized single fluid ingredient to match HolderSet element format!");
-        helper.assertValueEqual(tagJson.getAsString(), Tags.Fluids.WATER.location().toString(), "serialized tag fluid ingredient to match HolderSet tag format!");
+        helper.assertValueEqual(tagJson.getAsString(), "#" + Tags.Fluids.WATER.location(), "serialized tag fluid ingredient to match HolderSet tag format!");
 
         // tests that deserializing simple ingredients is reproducible and produces the desired ingredients
         var singleTwo = FluidIngredient.CODEC.parse(ops, singleJson)
