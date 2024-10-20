@@ -21,6 +21,7 @@ import net.neoforged.testframework.junit.EphemeralTestServerProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @ExtendWith(EphemeralTestServerProvider.class)
@@ -39,10 +40,10 @@ public class FluidIngredientTests {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
+    @ParameterizedTest
     @CsvSource({ "false", "true" })
     void fluidIngredientComponentMatchingWorks(boolean strict, MinecraftServer server) {
-        var ingredient = DataComponentFluidIngredient.of(false, DataComponents.RARITY, Rarity.EPIC, Fluids.WATER);
+        var ingredient = DataComponentFluidIngredient.of(strict, DataComponents.RARITY, Rarity.EPIC, Fluids.WATER);
         var stack = new FluidStack(Fluids.WATER, 1000);
 
         Assertions.assertThat(ingredient.test(stack))
@@ -65,8 +66,7 @@ public class FluidIngredientTests {
                 .withFailMessage("Fluid with correct data should match DataComponentFluidIngredient!")
                 .isTrue();
 
-        var num = server.overworld().random.nextFloat();
-        var data = CustomData.EMPTY.update(tag -> tag.putFloat("abcd", num));
+        var data = CustomData.EMPTY.update(tag -> tag.putFloat("abcd", 0.5F));
         stack.set(DataComponents.CUSTOM_DATA, data);
 
         Assertions.assertThat(ingredient.test(stack))
