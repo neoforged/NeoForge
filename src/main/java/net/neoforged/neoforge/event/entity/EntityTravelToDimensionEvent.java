@@ -14,7 +14,7 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * EntityTravelToDimensionEvent is fired before an Entity travels to a dimension.<br>
  * <br>
- * {@link #dimension} contains the id of the dimension the entity is traveling to.<br>
+ * {@link #dimension} contains the id of the dimension the entity is traveling to (may be the same as the entity's current dimension).<br>
  * <br>
  * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
  * If this event is canceled, the Entity does not travel to the dimension.<br>

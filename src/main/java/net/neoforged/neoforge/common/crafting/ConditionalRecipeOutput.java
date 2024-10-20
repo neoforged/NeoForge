@@ -8,7 +8,7 @@ package net.neoforged.neoforge.common.crafting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.apache.commons.lang3.ArrayUtils;
@@ -35,7 +35,7 @@ public class ConditionalRecipeOutput implements RecipeOutput {
     }
 
     @Override
-    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+    public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
         ICondition[] innerConditions;
         if (conditions.length == 0) {
             innerConditions = this.conditions;
@@ -45,5 +45,10 @@ public class ConditionalRecipeOutput implements RecipeOutput {
             innerConditions = ArrayUtils.addAll(this.conditions, conditions);
         }
         inner.accept(id, recipe, advancement, innerConditions);
+    }
+
+    @Override
+    public void includeRootAdvancement() {
+        inner.includeRootAdvancement();
     }
 }

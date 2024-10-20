@@ -48,12 +48,11 @@ public class GameTestTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
-    private static final DeferredBlock<Block> ENERGY_BLOCK = BLOCKS.register("energy_block",
-            () -> new EnergyBlock(Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredBlock<Block> ENERGY_BLOCK = BLOCKS.registerBlock("energy_block", EnergyBlock::new, Properties.of().mapColor(MapColor.STONE));
     @SuppressWarnings("unused")
     private static final DeferredItem<BlockItem> ENERGY_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(ENERGY_BLOCK);
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBlockEntity>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
-            () -> BlockEntityType.Builder.of(EnergyBlockEntity::new, ENERGY_BLOCK.get()).build(null));
+            () -> new BlockEntityType<>(EnergyBlockEntity::new, ENERGY_BLOCK.get()));
 
     public GameTestTest(IEventBus modBus) {
         if (ENABLED) {
@@ -96,7 +95,7 @@ public class GameTestTest {
     @GameTest(templateNamespace = MODID)
     public static void testWood(GameTestHelper helper) {
         // The woodPos is in the bottom center of the 3x3x3 structure
-        BlockPos woodPos = new BlockPos(1, 1, 1);
+        BlockPos woodPos = new BlockPos(1, 0, 1);
 
         // assertBlockState will convert the relative woodPos into a real world block position and check it with the predicate.
         // Relative positions are made absolute by adding their value to the block position of the structure tile entity,

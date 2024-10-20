@@ -1,24 +1,24 @@
 --- a/net/minecraft/world/level/storage/DimensionDataStorage.java
 +++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
-@@ -63,7 +_,7 @@
+@@ -69,7 +_,7 @@
      }
  
      @Nullable
 -    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, DataFixTypes p_295832_, String p_164870_) {
 +    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, @Nullable DataFixTypes p_295832_, String p_164870_) {
          try {
-             File file1 = this.getDataFile(p_164870_);
-             if (file1.exists()) {
-@@ -81,7 +_,7 @@
-         this.cache.put(p_164856_, p_164857_);
+             Path path = this.getDataFile(p_164870_);
+             if (Files.exists(path)) {
+@@ -88,7 +_,7 @@
+         p_164857_.setDirty();
      }
  
 -    public CompoundTag readTagFromDisk(String p_78159_, DataFixTypes p_295038_, int p_78160_) throws IOException {
 +    public CompoundTag readTagFromDisk(String p_78159_, @Nullable DataFixTypes p_295038_, int p_78160_) throws IOException {
-         File file1 = this.getDataFile(p_78159_);
- 
          CompoundTag compoundtag1;
-@@ -98,9 +_,16 @@
+         try (
+             InputStream inputstream = Files.newInputStream(this.getDataFile(p_78159_));
+@@ -103,9 +_,16 @@
                  }
              }
  
@@ -33,7 +33,20 @@
          }
 +
 +        // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
-+        net.neoforged.neoforge.common.IOUtilities.cleanupTempFiles(this.dataFolder.toPath(), p_78159_);
++        net.neoforged.neoforge.common.IOUtilities.cleanupTempFiles(this.dataFolder, p_78159_);
  
          return compoundtag1;
      }
+@@ -156,7 +_,11 @@
+     private static CompletableFuture<Void> tryWriteAsync(Path p_364583_, CompoundTag p_363128_) {
+         return CompletableFuture.runAsync(() -> {
+             try {
+-                NbtIo.writeCompressed(p_363128_, p_364583_);
++                // Neo: ensure parent directories exist if the SavedData's path contains slashes
++                if (!Files.exists(p_364583_)) {
++                    Files.createDirectories(p_364583_.getParent());
++                }
++                net.neoforged.neoforge.common.IOUtilities.writeNbtCompressed(p_363128_, p_364583_);
+             } catch (IOException ioexception) {
+                 LOGGER.error("Could not save data to {}", p_364583_.getFileName(), ioexception);
+             }

@@ -12,9 +12,9 @@
 @@ -119,7 +_,7 @@
          LightChunk lightchunk = this.chunkSource.getChunkForLighting(p_285274_.x, p_285274_.z);
          if (lightchunk != null) {
-             lightchunk.findBlockLightSources((p_285266_, p_285452_) -> {
--                int i = p_285452_.getLightEmission();
-+                int i = p_285452_.getLightEmission(chunkSource.getLevel(), p_285266_);
-                 this.enqueueIncrease(p_285266_.asLong(), LightEngine.QueueEntry.increaseLightFromEmission(i, isEmptyShape(p_285452_)));
+             lightchunk.findBlockLightSources((p_360252_, p_360253_) -> {
+-                int i = p_360253_.getLightEmission();
++                int i = p_360253_.getLightEmission(chunkSource.getLevel(), p_360252_);
+                 this.enqueueIncrease(p_360252_.asLong(), LightEngine.QueueEntry.increaseLightFromEmission(i, isEmptyShape(p_360253_)));
              });
          }

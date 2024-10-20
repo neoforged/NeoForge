@@ -17,7 +17,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
-import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -221,15 +220,13 @@ public final class BiomeModifiers {
      *
      * @param biomes  Biomes to add features to.
      * @param carvers ConfiguredWorldCarvers to add to biomes.
-     * @param step    Carving step to run features in.
      */
-    public record AddCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers,
-            GenerationStep.Carving step) implements BiomeModifier {
+    public record AddCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers) implements BiomeModifier {
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.ADD && this.biomes.contains(biome)) {
                 BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();
-                this.carvers.forEach(holder -> generationSettings.addCarver(this.step, holder));
+                this.carvers.forEach(generationSettings::addCarver);
             }
         }
 
@@ -253,27 +250,13 @@ public final class BiomeModifiers {
      *
      * @param biomes  Biomes to remove carvers from.
      * @param carvers ConfiguredWorldCarvers to remove from biomes.
-     * @param steps   Carving steps to remove carvers from. Can be
      */
-    public record RemoveCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers,
-            Set<GenerationStep.Carving> steps) implements BiomeModifier {
-        /**
-         * Creates a modifier that removes the given features from all decoration steps in the given biomes.
-         *
-         * @param biomes  Biomes to remove features from.
-         * @param carvers PlacedFeatures to remove from biomes.
-         */
-        public static RemoveCarversBiomeModifier allSteps(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers) {
-            return new RemoveCarversBiomeModifier(biomes, carvers, EnumSet.allOf(GenerationStep.Carving.class));
-        }
-
+    public record RemoveCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers) implements BiomeModifier {
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.REMOVE && this.biomes.contains(biome)) {
                 BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();
-                for (GenerationStep.Carving step : this.steps) {
-                    generationSettings.getCarvers(step).removeIf(this.carvers::contains);
-                }
+                generationSettings.getCarvers().removeIf(this.carvers::contains);
             }
         }
 

@@ -163,8 +163,8 @@ public class ModelDataManager {
         var modelDataManager = level.getModelDataManager();
         if (modelDataManager != null) {
             ChunkPos chunk = event.getChunk().getPos();
-            int maxSection = level.getMaxSection();
-            for (int y = level.getMinSection(); y < maxSection; y++) {
+            int maxSection = level.getMaxSectionY();
+            for (int y = level.getMinSectionY(); y < maxSection; y++) {
                 long section = SectionPos.asLong(chunk.x, y, chunk.z);
                 modelDataManager.needModelDataRefresh.remove(section);
                 modelDataManager.modelDataCache.remove(section);

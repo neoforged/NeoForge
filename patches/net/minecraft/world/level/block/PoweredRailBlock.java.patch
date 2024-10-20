@@ -25,7 +25,7 @@
              int k = p_55221_.getZ();
              boolean flag = true;
 -            RailShape railshape = p_55222_.getValue(SHAPE);
-+            RailShape railshape = p_55222_.getValue(getShapeProperty());
++            RailShape railshape = ((BaseRailBlock)p_55222_.getBlock()).getRailDirection(p_55222_, p_55220_, p_55221_, null);
              switch (railshape) {
                  case NORTH_SOUTH:
                      if (p_55223_) {
@@ -56,8 +56,8 @@
          if (flag1 != flag) {
              p_55233_.setBlock(p_55234_, p_55232_.setValue(POWERED, Boolean.valueOf(flag1)), 3);
              p_55233_.updateNeighborsAt(p_55234_.below(), this);
--            if (p_55232_.getValue(SHAPE).isAscending()) {
-+            if (p_55232_.getValue(getShapeProperty()).isAscending()) {
+-            if (p_55232_.getValue(SHAPE).isSlope()) {
++            if (((BaseRailBlock)p_55232_.getBlock()).getRailDirection(p_55232_, p_55233_, p_55234_, null).isSlope()) {
                  p_55233_.updateNeighborsAt(p_55234_.above(), this);
              }
          }

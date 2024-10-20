@@ -10,8 +10,8 @@
  
      public static ItemColors createDefault(BlockColors p_92684_) {
          ItemColors itemcolors = new ItemColors();
-@@ -105,17 +_,20 @@
-                     : FastColor.ARGB32.opaque(p_329710_.getOrDefault(DataComponents.MAP_COLOR, MapItemColor.DEFAULT).rgb()),
+@@ -101,17 +_,20 @@
+             (p_359075_, p_359076_) -> p_359076_ == 0 ? -1 : ARGB.opaque(p_359075_.getOrDefault(DataComponents.MAP_COLOR, MapItemColor.DEFAULT).rgb()),
              Items.FILLED_MAP
          );
 +        net.neoforged.neoforge.client.ClientHooks.onItemColorsInit(itemcolors, p_92684_);

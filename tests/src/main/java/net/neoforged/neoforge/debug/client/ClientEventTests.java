@@ -31,10 +31,10 @@ public class ClientEventTests {
     static void playerClientChatEvent(final ClientChatEvent event, final DynamicTest test) {
         if (event.getMessage().equals("Cancel")) {
             event.setCanceled(true);
-            Minecraft.getInstance().tell(() -> test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Was your message deleted?")));
+            Minecraft.getInstance().schedule(() -> test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Was your message deleted?")));
         } else if (event.getMessage().equals("Replace this text")) {
             event.setMessage("Text replaced.");
-            Minecraft.getInstance().tell(() -> test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Was your message modified?")));
+            Minecraft.getInstance().schedule(() -> test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Was your message modified?")));
         }
     }
 

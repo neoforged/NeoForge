@@ -1,25 +1,24 @@
 --- a/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/net/minecraft/client/gui/components/DebugScreenOverlay.java
-@@ -135,8 +_,15 @@
+@@ -141,8 +_,14 @@
+         Entity entity = this.minecraft.getCameraEntity();
          this.block = entity.pick(20.0, 0.0F, false);
          this.liquid = entity.pick(20.0, 0.0F, true);
-         p_281427_.drawManaged(() -> {
--            this.drawGameInformation(p_281427_);
--            this.drawSystemInformation(p_281427_);
-+            final List<String> gameInformation = this.collectGameInformationText();
-+            final List<String> systemInformation = this.collectSystemInformationText();
+-        this.drawGameInformation(p_281427_);
+-        this.drawSystemInformation(p_281427_);
 +
-+            var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getTimer(), gameInformation, systemInformation);
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++        final List<String> gameInformation = this.collectGameInformationText();
++        final List<String> systemInformation = this.collectSystemInformationText();
++        var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getDeltaTracker(), gameInformation, systemInformation);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++        this.renderLines(p_281427_, gameInformation, true);
++        this.renderLines(p_281427_, systemInformation, false);
 +
-+            this.renderLines(p_281427_, gameInformation, true);
-+            this.renderLines(p_281427_, systemInformation, false);
-+
-             if (this.renderFpsCharts) {
-                 int i = p_281427_.guiWidth();
-                 int j = i / 2;
-@@ -161,7 +_,11 @@
-         this.minecraft.getProfiler().pop();
+         this.profilerPieChart.setBottomOffset(10);
+         if (this.renderFpsCharts) {
+             int i = p_281427_.guiWidth();
+@@ -175,7 +_,11 @@
+         profilerfiller.pop();
      }
  
 -    protected void drawGameInformation(GuiGraphics p_281525_) {
@@ -31,7 +30,7 @@
          List<String> list = this.getGameInformation();
          list.add("");
          boolean flag = this.minecraft.getSingleplayerServer() != null;
-@@ -176,11 +_,25 @@
+@@ -190,11 +_,25 @@
                  + (this.renderNetworkCharts ? " visible" : " hidden")
          );
          list.add("For help: press F3 + Q");
@@ -58,7 +57,7 @@
          this.renderLines(p_281261_, list, false);
      }
  
-@@ -509,6 +_,13 @@
+@@ -523,6 +_,13 @@
              GlUtil.getRenderer(),
              GlUtil.getOpenGLVersion()
          );
@@ -72,7 +71,7 @@
          if (this.minecraft.showOnlyReducedInfo()) {
              return list;
          } else {
-@@ -545,6 +_,7 @@
+@@ -559,6 +_,7 @@
                  list.add("");
                  list.add(ChatFormatting.UNDERLINE + "Targeted Entity");
                  list.add(String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType())));

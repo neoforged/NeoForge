@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/recipebook/GhostSlots.java
++++ b/net/minecraft/client/gui/screens/recipebook/GhostSlots.java
+@@ -69,7 +_,7 @@
+             if (ghostslots$ghostslot != null) {
+                 ItemStack itemstack = ghostslots$ghostslot.getItem(this.slotSelectTime.currentIndex());
+                 p_363721_.renderComponentTooltip(
+-                    p_365392_.font, Screen.getTooltipFromItem(p_365392_, itemstack), p_363797_, p_363310_, itemstack.get(DataComponents.TOOLTIP_STYLE)
++                    p_365392_.font, Screen.getTooltipFromItem(p_365392_, itemstack), p_363797_, p_363310_, itemstack, itemstack.get(DataComponents.TOOLTIP_STYLE)
+                 );
+             }
+         }

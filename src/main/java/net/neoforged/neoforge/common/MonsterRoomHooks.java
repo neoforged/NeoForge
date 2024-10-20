@@ -26,7 +26,7 @@ public class MonsterRoomHooks {
     @SubscribeEvent
     public static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
         event.ifRegistry(Registries.ENTITY_TYPE, registry -> monsterRoomMobs = registry.getDataMap(NeoForgeDataMaps.MONSTER_ROOM_MOBS).entrySet().stream().map((entry) -> {
-            EntityType<?> type = Objects.requireNonNull(registry.get(entry.getKey()), "Nonexistent entity " + entry.getKey() + " in monster room datamap!");
+            EntityType<?> type = Objects.requireNonNull(registry.getValue(entry.getKey()), "Nonexistent entity " + entry.getKey() + " in monster room datamap!");
             return new MobEntry(type, entry.getValue().weight());
         }).toList());
     }

@@ -25,9 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
-import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.NeoForge;
@@ -62,7 +60,7 @@ public class GameData {
 
     public static void unfreezeData() {
         LOGGER.debug(REGISTRIES, "Unfreezing registries");
-        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof BaseMappedRegistry).forEach(r -> ((BaseMappedRegistry<?>) r).unfreeze());
+        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof BaseMappedRegistry).forEach(r -> ((BaseMappedRegistry<?>) r).unfreeze(true));
     }
 
     public static void freezeData() {
@@ -84,7 +82,7 @@ public class GameData {
         for (ResourceLocation rootRegistryName : ordered) {
             try {
                 ResourceKey<? extends Registry<?>> registryKey = ResourceKey.createRegistryKey(rootRegistryName);
-                Registry<?> registry = Objects.requireNonNull(BuiltInRegistries.REGISTRY.get(rootRegistryName));
+                Registry<?> registry = Objects.requireNonNull(BuiltInRegistries.REGISTRY.getValue(rootRegistryName));
                 RegisterEvent registerEvent = new RegisterEvent(registryKey, registry);
 
                 StartupNotificationManager.modLoaderMessage("REGISTERING " + registryKey.location());
@@ -104,9 +102,6 @@ public class GameData {
             SpawnPlacements.fireSpawnPlacementEvent();
             ModLoader.postEvent(new BlockEntityTypeAddBlocksEvent());
             CreativeModeTabRegistry.sortTabs();
-            if (FMLEnvironment.dist.isClient()) {
-                ClientExtensionsManager.earlyInit();
-            }
         }
     }
 
@@ -127,7 +122,6 @@ public class GameData {
         Set<ResourceLocation> ordered = new LinkedHashSet<>();
         ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
         ordered.add(Registries.DATA_COMPONENT_TYPE.location()); // Vanilla order is incorrect, Item depends on data components at construction time.
-        ordered.add(Registries.ARMOR_MATERIAL.location()); // Vanilla order is incorrect, ArmorItem depends on armor materials at construction time.
         ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
         ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
         return ordered;

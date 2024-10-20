@@ -1,14 +1,14 @@
 --- a/net/minecraft/core/Registry.java
 +++ b/net/minecraft/core/Registry.java
-@@ -22,7 +_,7 @@
+@@ -21,7 +_,7 @@
  import net.minecraft.util.ExtraCodecs;
  import net.minecraft.util.RandomSource;
  
--public interface Registry<T> extends Keyable, IdMap<T> {
-+public interface Registry<T> extends Keyable, IdMap<T>, net.neoforged.neoforge.registries.IRegistryExtension<T> {
+-public interface Registry<T> extends Keyable, HolderLookup.RegistryLookup<T>, IdMap<T> {
++public interface Registry<T> extends Keyable, HolderLookup.RegistryLookup<T>, IdMap<T>, net.neoforged.neoforge.registries.IRegistryExtension<T> {
+     @Override
      ResourceKey<? extends Registry<T>> key();
  
-     default Codec<T> byNameCodec() {
 @@ -48,7 +_,7 @@
      }
  

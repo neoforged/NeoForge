@@ -81,11 +81,15 @@ dependencies {
     runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
 
     moduleOnly "cpw.mods:securejarhandler:${project.securejarhandler_version}"
-    moduleOnly "org.ow2.asm:asm:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-commons:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-tree:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-util:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-analysis:${project.asm_version}"
+    for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
+        moduleOnly(asmModule) {
+            // Vanilla ships with ASM 9.3 transitively (via their OpenID connect library dependency), we require
+            // ASM in a more recent version and have to strictly require this to override the strict Minecraft version.
+            version {
+                strictly project.asm_version
+            }
+        }
+    }
     moduleOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
     moduleOnly "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
 
@@ -213,6 +217,10 @@ runs.configureEach { it ->
 
     it.workingDirectory.set gameDir
     it.arguments.addAll '--gameDir', gameDir.absolutePath
+}
+
+tasks.register("genPatches") {
+    dependsOn tasks.unpackSourcePatches
 }
 
 launcherProfile {

@@ -83,7 +83,7 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void add(ItemStack key, String name) {
-        add(key.getDescriptionId(), name);
+        add(key.getItem().getDescriptionId(), name);
     }
 
     /*

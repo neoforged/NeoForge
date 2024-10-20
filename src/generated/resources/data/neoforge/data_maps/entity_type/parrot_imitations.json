@@ -12,6 +12,12 @@
     "minecraft:cave_spider": {
       "sound": "minecraft:entity.parrot.imitate.spider"
     },
+    "minecraft:creaking": {
+      "sound": "minecraft:entity.parrot.imitate.creaking"
+    },
+    "minecraft:creaking_transient": {
+      "sound": "minecraft:entity.parrot.imitate.creaking"
+    },
     "minecraft:creeper": {
       "sound": "minecraft:entity.parrot.imitate.creeper"
     },

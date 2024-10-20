@@ -1,0 +1,11 @@
+--- a/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
++++ b/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
+@@ -26,6 +_,8 @@
+         } else {
+             LivingEntity livingentity = list.getFirst();
+             EquipmentSlot equipmentslot = livingentity.getEquipmentSlotForItem(p_371227_);
++            // Neo: Respect IItemExtension#canEquip in dispenseArmor
++            if (!p_371227_.canEquip(equipmentslot, livingentity)) return false;
+             ItemStack itemstack = p_371227_.split(1);
+             livingentity.setItemSlot(equipmentslot, itemstack);
+             if (livingentity instanceof Mob mob) {

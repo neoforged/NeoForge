@@ -8,9 +8,9 @@ package net.neoforged.neoforge.common.extensions;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Scoreboard;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Additional methods for {@link CommandSourceStack} so that commands and arguments can access various things without directly referencing using server specific classes
@@ -30,15 +30,9 @@ public interface ICommandSourceStackExtension {
     /**
      * @return the advancement from the id
      */
+    @Nullable
     default AdvancementHolder getAdvancement(ResourceLocation id) {
         return self().getServer().getAdvancements().get(id);
-    }
-
-    /**
-     * @return the recipe manager
-     */
-    default RecipeManager getRecipeManager() {
-        return self().getServer().getRecipeManager();
     }
 
     /**

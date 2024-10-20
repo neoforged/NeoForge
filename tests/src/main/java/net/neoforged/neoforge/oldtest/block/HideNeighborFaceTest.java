@@ -14,6 +14,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.neoforged.api.distmarker.Dist;
@@ -33,7 +34,7 @@ public class HideNeighborFaceTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
+    private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.registerBlock("glass_slab", GlassSlab::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS));
     private static final DeferredItem<BlockItem> GLASS_SLAB_ITEM = ITEMS.registerSimpleBlockItem(GLASS_SLAB);
 
     public HideNeighborFaceTest(IEventBus bus) {
@@ -42,8 +43,8 @@ public class HideNeighborFaceTest {
     }
 
     private static class GlassSlab extends SlabBlock {
-        public GlassSlab() {
-            super(Properties.ofFullCopy(Blocks.GLASS));
+        public GlassSlab(Properties props) {
+            super(props);
         }
 
         @Override

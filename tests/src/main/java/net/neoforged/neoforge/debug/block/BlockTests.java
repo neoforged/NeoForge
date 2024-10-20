@@ -8,15 +8,17 @@ package net.neoforged.neoforge.debug.block;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -25,8 +27,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BubbleColumnBlock;
@@ -77,7 +79,7 @@ public class BlockTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom fence gates without wood types work, allowing for the use of the vanilla block for non-wooden gates")
     static void woodlessFenceGate(final DynamicTest test, final RegistrationHelper reg) {
-        final var gate = reg.blocks().register("gate", () -> new FenceGateBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.ACACIA_FENCE_GATE), SoundEvents.BARREL_OPEN, SoundEvents.CHEST_CLOSE))
+        final var gate = reg.blocks().registerBlock("gate", props -> new FenceGateBlock(props, SoundEvents.BARREL_OPEN, SoundEvents.CHEST_CLOSE), BlockBehaviour.Properties.ofFullCopy(Blocks.ACACIA_FENCE_GATE))
                 .withLang("Woodless Fence Gate").withBlockItem();
         reg.provider(BlockStateProvider.class, prov -> prov.fenceGateBlock(gate.get(), ResourceLocation.withDefaultNamespace("block/iron_block")));
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
@@ -103,13 +105,13 @@ public class BlockTests {
     @EmptyTemplate(floor = true, value = "5x5x5") // barrier blocks may prevent respawn
     @TestHolder(description = "Tests if the Neo-added getRespawnPosition method correctly changes the position")
     static void customRespawnTest(final DynamicTest test, final RegistrationHelper reg) {
-        final var respawn = reg.blocks().register("respawn", () -> new Block(BlockBehaviour.Properties.of()) {
+        final var respawn = reg.blocks().register("respawn", key -> new Block(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, key))) {
             @Override
-            protected ItemInteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level world, BlockPos pos, Player player, InteractionHand p_316595_, BlockHitResult p_316140_) {
+            protected InteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level world, BlockPos pos, Player player, InteractionHand p_316595_, BlockHitResult p_316140_) {
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.setRespawnPosition(world.dimension(), pos, 0, false, true);
                 }
-                return ItemInteractionResult.sidedSuccess(world.isClientSide);
+                return InteractionResult.SUCCESS;
             }
 
             @Override
@@ -173,12 +175,11 @@ public class BlockTests {
         }
 
         @Override
-        protected BlockState updateShape(BlockState currentBlockState, Direction direction, BlockState sideBlockState, LevelAccessor levelAccessor, BlockPos currentBlockPos, BlockPos sideBlockPos) {
+        protected BlockState updateShape(BlockState currentBlockState, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos currentBlockPos, Direction direction, BlockPos sideBlockPos, BlockState sideBlockState, RandomSource randomSource) {
             if (direction == Direction.UP && sideBlockState.is(Blocks.WATER)) {
-                levelAccessor.scheduleTick(currentBlockPos, this, 1);
+                scheduledTickAccess.scheduleTick(currentBlockPos, this, 1);
             }
-
-            return super.updateShape(currentBlockState, direction, sideBlockState, levelAccessor, currentBlockPos, sideBlockPos);
+            return super.updateShape(currentBlockState, level, scheduledTickAccess, currentBlockPos, direction, sideBlockPos, sideBlockState, randomSource);
         }
 
         @Override

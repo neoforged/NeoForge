@@ -7,10 +7,11 @@ package net.neoforged.neoforge.client.model.geometry;
 
 import com.mojang.math.Transformation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -130,7 +131,7 @@ public class BlockGeometryBakingContext implements IGeometryBakingContext {
         this.gui3d = other.gui3d;
     }
 
-    public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> bakedTextureGetter, ModelState modelTransform, ItemOverrides overrides) {
+    public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> bakedTextureGetter, ModelState modelTransform, List<ItemOverride> overrides) {
         IUnbakedGeometry<?> geometry = getCustomGeometry();
         if (geometry == null)
             throw new IllegalStateException("Can not use custom baking without custom geometry");

@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/LevelEventHandler.java
++++ b/net/minecraft/client/renderer/LevelEventHandler.java
+@@ -435,8 +_,8 @@
+                 break;
+             case 2001:
+                 BlockState blockstate1 = Block.stateById(p_360434_);
+-                if (!blockstate1.isAir()) {
+-                    SoundType soundtype = blockstate1.getSoundType();
++                if (!blockstate1.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockstate1).playBreakSound(blockstate1, this.level, p_362181_)) {
++                    SoundType soundtype = blockstate1.getSoundType(this.level, p_362181_, null);
+                     this.level
+                         .playLocalSound(
+                             p_362181_, soundtype.getBreakSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F, false

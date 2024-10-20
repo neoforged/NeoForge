@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:gems/diamond"
-    },
-    "C": {
-      "item": "minecraft:terracotta"
-    },
-    "S": {
-      "item": "minecraft:shaper_armor_trim_smithing_template"
-    }
+    "#": "#c:gems/diamond",
+    "C": "minecraft:terracotta",
+    "S": "minecraft:shaper_armor_trim_smithing_template"
   },
   "pattern": [
     "#S#",

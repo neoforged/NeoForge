@@ -3,9 +3,7 @@
   "category": "misc",
   "group": "gold_ingot",
   "key": {
-    "#": {
-      "tag": "c:nuggets/gold"
-    }
+    "#": "#c:nuggets/gold"
   },
   "pattern": [
     "###",

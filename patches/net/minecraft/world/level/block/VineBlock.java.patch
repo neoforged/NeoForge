@@ -9,7 +9,7 @@
      public static final MapCodec<VineBlock> CODEC = simpleCodec(VineBlock::new);
      public static final BooleanProperty UP = PipeBlock.UP;
      public static final BooleanProperty NORTH = PipeBlock.NORTH;
-@@ -183,7 +_,7 @@
+@@ -192,7 +_,7 @@
      @Override
      protected void randomTick(BlockState p_222655_, ServerLevel p_222656_, BlockPos p_222657_, RandomSource p_222658_) {
          if (p_222656_.getGameRules().getBoolean(GameRules.RULE_DO_VINES_SPREAD)) {

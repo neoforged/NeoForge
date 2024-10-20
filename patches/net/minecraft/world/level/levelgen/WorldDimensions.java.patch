@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/WorldDimensions.java
 +++ b/net/minecraft/world/level/levelgen/WorldDimensions.java
-@@ -36,7 +_,8 @@
+@@ -37,7 +_,8 @@
  public record WorldDimensions(Map<ResourceKey<LevelStem>, LevelStem> dimensions) {
      public static final MapCodec<WorldDimensions> CODEC = RecordCodecBuilder.mapCodec(
          p_325905_ -> p_325905_.group(

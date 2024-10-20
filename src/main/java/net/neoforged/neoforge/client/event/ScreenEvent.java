@@ -13,7 +13,8 @@ import java.util.function.Consumer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.Event;
@@ -256,7 +257,7 @@ public abstract class ScreenEvent extends Event {
     }
 
     /**
-     * Fired ahead of rendering any active mob effects in the {@link EffectRenderingInventoryScreen inventory screen}.
+     * Fired ahead of rendering any active mob effects in the {@link EffectsInInventory} held by a {@link AbstractContainerScreen}.
      * Can be used to select the size of the effects display (full or compact) or even hide or replace vanilla's rendering entirely.
      * This event can also be used to modify the horizontal position of the stack of effects being rendered.
      *

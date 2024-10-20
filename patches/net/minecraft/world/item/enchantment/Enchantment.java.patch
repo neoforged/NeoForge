@@ -43,7 +43,7 @@
      public boolean canEnchant(ItemStack p_44689_) {
          return this.definition.supportedItems().contains(p_44689_.getItemHolder());
      }
-@@ -504,12 +_,26 @@
+@@ -511,12 +_,26 @@
          return new Enchantment.Builder(p_345873_);
      }
  
@@ -70,7 +70,7 @@
          public Builder(Enchantment.EnchantmentDefinition p_345317_) {
              this.definition = p_345317_;
          }
-@@ -562,6 +_,16 @@
+@@ -569,6 +_,16 @@
              return this;
          }
  
@@ -87,7 +87,7 @@
          private <E> List<E> getEffectsList(DataComponentType<List<E>> p_344770_) {
              return (List<E>)this.effectLists.computeIfAbsent(p_344770_, p_346247_ -> {
                  ArrayList<E> arraylist = new ArrayList<>();
-@@ -572,7 +_,9 @@
+@@ -579,7 +_,9 @@
  
          public Enchantment build(ResourceLocation p_344988_) {
              return new Enchantment(

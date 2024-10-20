@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/block/entity/FuelValues.java
++++ b/net/minecraft/world/level/block/entity/FuelValues.java
+@@ -32,6 +_,10 @@
+         return Collections.unmodifiableSequencedSet(this.values.keySet());
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link ItemStack#getBurnTime(net.minecraft.world.item.crafting.RecipeType, FuelValues)} instead
++     */
++    @Deprecated
+     public int burnDuration(ItemStack p_362816_) {
+         return p_362816_.isEmpty() ? 0 : this.values.getInt(p_362816_.getItem());
+     }
+@@ -41,7 +_,11 @@
+     }
+ 
+     public static FuelValues vanillaBurnTimes(HolderLookup.Provider p_362290_, FeatureFlagSet p_364291_, int p_363365_) {
+-        return new FuelValues.Builder(p_362290_, p_364291_)
++        return vanillaBurnTimes(new FuelValues.Builder(p_362290_, p_364291_), p_363365_);
++    }
++
++    public static FuelValues vanillaBurnTimes(FuelValues.Builder builder, int p_363365_) {
++        return builder
+             .add(Items.LAVA_BUCKET, p_363365_ * 100)
+             .add(Blocks.COAL_BLOCK, p_363365_ * 8 * 10)
+             .add(Items.BLAZE_ROD, p_363365_ * 12)

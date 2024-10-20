@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -60,7 +_,7 @@
+@@ -62,7 +_,7 @@
          if (playerHasShieldUseIntent(p_40529_)) {
              return InteractionResult.PASS;
          } else {
@@ -9,7 +9,7 @@
              if (optional.isEmpty()) {
                  return InteractionResult.PASS;
              } else {
-@@ -85,20 +_,19 @@
+@@ -87,20 +_,19 @@
          return p_345141_.getHand().equals(InteractionHand.MAIN_HAND) && player.getOffhandItem().is(Items.SHIELD) && !player.isSecondaryUseActive();
      }
  
@@ -34,7 +34,7 @@
                  if (optional2.isPresent()) {
                      p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
                      p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
-@@ -110,8 +_,19 @@
+@@ -112,8 +_,19 @@
          }
      }
  
@@ -46,7 +46,7 @@
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
          return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
-             .map(p_150689_ -> p_150689_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
+             .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
 +    }
 +
 +    @Override

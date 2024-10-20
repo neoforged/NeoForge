@@ -138,7 +138,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
     public static class JUnitServer extends MinecraftServer {
         private static final Logger LOGGER = LogUtils.getLogger();
         private static final Services NO_SERVICES = new Services(null, ServicesKeySet.EMPTY, null, null);
-        private static final GameRules TEST_GAME_RULES = Util.make(new GameRules(), rules -> {
+        private static final GameRules TEST_GAME_RULES = Util.make(new GameRules(FeatureFlags.REGISTRY.allFlags()), rules -> {
             rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null);
             rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
         });
@@ -163,8 +163,8 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                                 ctx -> {
                                     Registry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
                                     WorldDimensions.Complete worlddimensions$complete = ctx.datapackWorldgen()
-                                            .registryOrThrow(Registries.WORLD_PRESET)
-                                            .getHolderOrThrow(WorldPresets.FLAT)
+                                            .lookupOrThrow(Registries.WORLD_PRESET)
+                                            .getOrThrow(WorldPresets.FLAT)
                                             .value()
                                             .createWorldDimensions()
                                             .bake(registry);
