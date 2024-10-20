@@ -48,7 +48,7 @@
 +                    var model = this.selectors.get(k).model;
 +                    if (renderType == null || model.getRenderTypes(p_235050_, p_235052_, modelData).contains(renderType)) { // FORGE: Only put quad data if the model is using the render type passed
 +                        p_235052_.setSeed(j);
-+                        list.add(model.getQuads(p_235050_, p_235051_, RandomSource.create(k), net.neoforged.neoforge.client.model.data.MultipartModelData.resolve(modelData, model), renderType));
++                        list.add(model.getQuads(p_235050_, p_235051_, p_235052_, net.neoforged.neoforge.client.model.data.MultipartModelData.resolve(modelData, model), renderType));
 +                    }
                  }
              }
