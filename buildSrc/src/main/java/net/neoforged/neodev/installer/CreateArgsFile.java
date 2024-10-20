@@ -67,7 +67,7 @@ public abstract class CreateArgsFile extends DefaultTask {
 
     private String resolveClasspath() throws IOException {
         ArtifactPathsCollector classpathCollector = new ArtifactPathsCollector(getPathSeparator().get(), "libraries/");
-        getClasspath().getAsFileTree().visit(classpathCollector);
+        classpathCollector.visitFiles(getClasspath());
 
         var ourClasspath = classpathCollector + getPathSeparator().get()
                 + "libraries/net/minecraft/server/%s/server-%s-extra.jar".formatted(
@@ -104,7 +104,7 @@ public abstract class CreateArgsFile extends DefaultTask {
     public void createArgsFile() throws IOException {
         ArtifactPathsCollector modulePathCollector = new ArtifactPathsCollector(getPathSeparator().get(), "libraries/");
 
-        getModules().getAsFileTree().visit(modulePathCollector);
+        modulePathCollector.visitFiles(getModules());
 
         var replacements = new HashMap<String, String>();
         replacements.put("@MODULE_PATH@", modulePathCollector.toString());

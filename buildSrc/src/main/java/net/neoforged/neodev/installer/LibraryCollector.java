@@ -1,7 +1,5 @@
 package net.neoforged.neodev.installer;
 
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
@@ -24,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
+/**
+ * For each file in a collection, finds the repository that the file came from.
+ */
 class LibraryCollector extends ModuleIdentificationVisitor {
     private static final Logger LOGGER = Logging.getLogger(LibraryCollector.class);
     /**
@@ -67,59 +68,6 @@ class LibraryCollector extends ModuleIdentificationVisitor {
         LOGGER.info("Collecting libraries from:");
         for (var repo : repositoryUrls) {
             LOGGER.info(" - " + repo);
-        }
-    }
-
-    void visit(ResolvedArtifactResult artifactResult) throws IOException {
-        var componentId = artifactResult.getId().getComponentIdentifier();
-        if (componentId instanceof ModuleComponentIdentifier moduleComponentId) {
-            visitModule(
-                    artifactResult.getFile(),
-                    moduleComponentId.getGroup(),
-                    moduleComponentId.getModule(),
-                    moduleComponentId.getVersion(),
-                    guessMavenClassifier(artifactResult.getFile(), moduleComponentId),
-                    getExtension(artifactResult.getFile().getName())
-            );
-        } else {
-            LOGGER.warn("Cannot handle component: " + componentId);
-        }
-    }
-
-    private static String guessMavenClassifier(File file, ModuleComponentIdentifier id) {
-        var artifact = id.getModule();
-        var version = id.getVersion();
-        var expectedBasename = artifact + "-" + version;
-        var filename = file.getName();
-        var startOfExt = filename.lastIndexOf('.');
-        if (startOfExt != -1) {
-            filename = filename.substring(0, startOfExt);
-        }
-
-        if (filename.startsWith(expectedBasename + "-")) {
-            return filename.substring((expectedBasename + "-").length());
-        }
-        return "";
-    }
-
-    /**
-     * The filename includes the period.
-     */
-    private static String getExtension(String path) {
-        var lastSep = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
-
-        var potentialExtension = path.lastIndexOf('.');
-        if (potentialExtension > lastSep) {
-            // Check for a double extension like .tar.gz heuristically
-            var doubleExtensionStart = path.lastIndexOf('.', potentialExtension - 1);
-            // We only allow 3 chars maximum for the double extension
-            if (doubleExtensionStart > lastSep && potentialExtension - doubleExtensionStart <= 4) {
-                return path.substring(doubleExtensionStart);
-            }
-
-            return path.substring(potentialExtension);
-        } else {
-            return "";
         }
     }
 

@@ -2,6 +2,9 @@ package net.neoforged.neodev.installer;
 
 import java.io.File;
 
+/**
+ * Turns a collection of files into a classpath description, with libraries stored under a {@code prefix} folder following Maven structure.
+ */
 class ArtifactPathsCollector extends ModuleIdentificationVisitor {
 
     private final StringBuilder builder = new StringBuilder();
@@ -14,7 +17,7 @@ class ArtifactPathsCollector extends ModuleIdentificationVisitor {
     }
 
     @Override
-    protected void visitModule(File file, String group, String module, String version, String classifier, final String extension) throws Exception {
+    protected void visitModule(File file, String group, String module, String version, String classifier, final String extension) {
         builder.append(prefix);
         builder.append(group.replace(".", "/"));
         builder.append("/");

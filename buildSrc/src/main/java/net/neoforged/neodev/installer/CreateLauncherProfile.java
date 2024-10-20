@@ -64,7 +64,7 @@ public abstract class CreateLauncherProfile extends DefaultTask {
 
         getLogger().info("Collecting libraries for Launcher Profile");
         var profileFiller = new LibraryCollector(getRepositoryURLs().get());
-        getLibraries().getAsFileTree().visit(profileFiller);
+        profileFiller.visitFiles(getLibraries());
         var libraries = profileFiller.getLibraries();
 
         var gameArguments = new ArrayList<>(List.of(
@@ -82,7 +82,7 @@ public abstract class CreateLauncherProfile extends DefaultTask {
                 "-DlibraryDirectory=${library_directory}"));
 
         var modulePathCollector = new ArtifactPathsCollector("${classpath_separator}", "${library_directory}/");
-        getModulePath().getAsFileTree().visit(modulePathCollector);
+        modulePathCollector.visitFiles(getModulePath());
         jvmArguments.add("-p");
         jvmArguments.add(modulePathCollector.toString());
 

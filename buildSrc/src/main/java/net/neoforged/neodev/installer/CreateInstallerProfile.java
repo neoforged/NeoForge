@@ -134,7 +134,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
 
         getLogger().info("Collecting libraries for Installer Profile");
         var profileFiller = new LibraryCollector(getRepositoryURLs().get());
-        getLibraries().getAsFileTree().visit(profileFiller);
+        profileFiller.visitFiles(getLibraries());
         var libraries = new ArrayList<>(profileFiller.getLibraries());
 
         var universalJar = getUniversalJar().getAsFile().get().toPath();
