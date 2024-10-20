@@ -319,22 +319,9 @@ public interface IItemExtension {
      *
      * @param entity The entity swinging the item.
      * @return True to cancel any further processing by {@link LivingEntity}
-     * @deprecated To be replaced with hand sensitive version in 21.2
-     * @see #onEntitySwing(ItemStack, LivingEntity, InteractionHand)
-     */
-    @Deprecated(forRemoval = true, since = "21.1")
-    default boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
-        return false;
-    }
-
-    /**
-     * Called when a entity tries to play the 'swing' animation.
-     *
-     * @param entity The entity swinging the item.
-     * @return True to cancel any further processing by {@link LivingEntity}
      */
     default boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        return onEntitySwing(stack, entity);
+        return false;
     }
 
     /**
