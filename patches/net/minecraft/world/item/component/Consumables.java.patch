@@ -1,16 +1,14 @@
 --- a/net/minecraft/world/item/component/Consumables.java
 +++ b/net/minecraft/world/item/component/Consumables.java
-@@ -62,7 +_,13 @@
+@@ -62,7 +_,11 @@
      public static final Consumable SPIDER_EYE = defaultFood()
          .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.POISON, 100, 0)))
          .build();
 -    public static final Consumable MILK_BUCKET = defaultDrink().onConsume(ClearAllStatusEffectsConsumeEffect.INSTANCE).build();
 +    public static final Consumable MILK_BUCKET = defaultDrink().onConsume(new RemoveStatusEffectsConsumeEffect(new net.neoforged.neoforge.registries.holdersets.NotHolderSet<>(
 +            net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT,
-+            new net.neoforged.neoforge.registries.holdersets.LazyNamedHolderSet<>(
-+                    net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT,
-+                    net.neoforged.neoforge.common.Tags.MobEffects.NOT_MILK_CURABLE
-+            )
++            net.minecraft.core.registries.BuiltInRegistries.acquireBootstrapRegistrationLookup(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT)
++                    .getOrThrow(net.neoforged.neoforge.common.Tags.MobEffects.NOT_MILK_CURABLE)
 +    ))).build();
      public static final Consumable CHORUS_FRUIT = defaultFood().onConsume(new TeleportRandomlyConsumeEffect()).build();
  

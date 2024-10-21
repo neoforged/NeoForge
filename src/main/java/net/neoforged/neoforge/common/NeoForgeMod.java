@@ -26,7 +26,6 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -167,7 +166,6 @@ import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
-import net.neoforged.neoforge.registries.holdersets.LazyNamedHolderSet;
 import net.neoforged.neoforge.registries.holdersets.NotHolderSet;
 import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
 import net.neoforged.neoforge.server.command.EnumArgument;
@@ -359,12 +357,6 @@ public class NeoForgeMod {
      * Can be used in a holderset object with {@code { "type": "neoforge:not", "value": holderset }}</p>
      */
     public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", NotHolderSet.Type::new);
-
-    /**
-     * Stock holder set type that represents the values of the tag it is constructed from. Intended for cases where a tag needs to be specified as a holder set in a context
-     * where directly getting a {@link HolderSet.Named} from a registry is not possible.
-     */
-    public static final Holder<HolderSetType> LAZY_NAMED_HOLDER_SET = HOLDER_SET_TYPES.register("lazy_named", LazyNamedHolderSet.Type::new);
 
     private static final DeferredRegister<SlotDisplay.Type<?>> SLOT_DISPLAY_TYPES = DeferredRegister.create(Registries.SLOT_DISPLAY, NeoForgeVersion.MOD_ID);
 
