@@ -1,16 +1,14 @@
 --- a/net/minecraft/world/item/component/DeathProtection.java
 +++ b/net/minecraft/world/item/component/DeathProtection.java
-@@ -25,7 +_,13 @@
+@@ -25,7 +_,11 @@
      );
      public static final DeathProtection TOTEM_OF_UNDYING = new DeathProtection(
          List.of(
 -            new ClearAllStatusEffectsConsumeEffect(),
 +            new net.minecraft.world.item.consume_effects.RemoveStatusEffectsConsumeEffect(new net.neoforged.neoforge.registries.holdersets.NotHolderSet<>(
 +                    net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT,
-+                    new net.neoforged.neoforge.registries.holdersets.LazyNamedHolderSet<>(
-+                            net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT,
-+                            net.neoforged.neoforge.common.Tags.MobEffects.NOT_TOTEM_CURABLE
-+                    )
++                    net.minecraft.core.registries.BuiltInRegistries.acquireBootstrapRegistrationLookup(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT)
++                            .getOrThrow(net.neoforged.neoforge.common.Tags.MobEffects.NOT_TOTEM_CURABLE)
 +            )),
              new ApplyStatusEffectsConsumeEffect(
                  List.of(
