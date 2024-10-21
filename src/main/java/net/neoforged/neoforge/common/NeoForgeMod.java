@@ -116,6 +116,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLanguageProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeMobEffectsTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
@@ -636,6 +637,7 @@ public class NeoForgeMod {
         gen.addProvider(event.includeServer(), new NeoForgeDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeRegistryOrderReportProvider(packOutput));
         gen.addProvider(event.includeServer(), new NeoForgeDataMapsProvider(packOutput, lookupProvider));
+        gen.addProvider(event.includeServer(), new NeoForgeMobEffectsTagsProvider(packOutput, lookupProvider, existingFileHelper));
 
         gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
