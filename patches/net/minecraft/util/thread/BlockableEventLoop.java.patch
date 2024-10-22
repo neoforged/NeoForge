@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/thread/BlockableEventLoop.java
 +++ b/net/minecraft/util/thread/BlockableEventLoop.java
-@@ -56,10 +_,15 @@
+@@ -59,10 +_,15 @@
      }
  
      public CompletableFuture<Void> submitAsync(Runnable p_18690_) {

@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:ingots/netherite"
-    },
-    "S": {
-      "item": "minecraft:chiseled_stone_bricks"
-    }
+    "#": "#c:ingots/netherite",
+    "S": "minecraft:chiseled_stone_bricks"
   },
   "pattern": [
     "SSS",

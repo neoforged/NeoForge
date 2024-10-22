@@ -20,7 +20,7 @@
          ItemEnchantments itemenchantments = p_44845_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
          return itemenchantments.getLevel(p_346179_);
      }
-@@ -122,6 +_,12 @@
+@@ -128,6 +_,12 @@
      public static void runIterationOnItem(ItemStack p_345425_, EnchantmentHelper.EnchantmentVisitor p_345023_) {
          ItemEnchantments itemenchantments = p_345425_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -33,7 +33,7 @@
          for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
              p_345023_.accept(entry.getKey(), entry.getIntValue());
          }
-@@ -132,6 +_,10 @@
+@@ -138,6 +_,10 @@
      ) {
          if (!p_44852_.isEmpty()) {
              ItemEnchantments itemenchantments = p_44852_.get(DataComponents.ENCHANTMENTS);
@@ -44,7 +44,7 @@
              if (itemenchantments != null && !itemenchantments.isEmpty()) {
                  EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
  
-@@ -417,6 +_,12 @@
+@@ -438,6 +_,12 @@
      public static boolean hasTag(ItemStack p_345665_, TagKey<Enchantment> p_345928_) {
          ItemEnchantments itemenchantments = p_345665_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -57,25 +57,7 @@
          for (Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
              Holder<Enchantment> holder = entry.getKey();
              if (holder.is(p_345928_)) {
-@@ -484,7 +_,7 @@
- 
-     public static int getEnchantmentCost(RandomSource p_220288_, int p_220289_, int p_220290_, ItemStack p_220291_) {
-         Item item = p_220291_.getItem();
--        int i = item.getEnchantmentValue();
-+        int i = p_220291_.getEnchantmentValue();
-         if (i <= 0) {
-             return 0;
-         } else {
-@@ -529,7 +_,7 @@
-     public static List<EnchantmentInstance> selectEnchantment(RandomSource p_220298_, ItemStack p_220299_, int p_220300_, Stream<Holder<Enchantment>> p_346061_) {
-         List<EnchantmentInstance> list = Lists.newArrayList();
-         Item item = p_220299_.getItem();
--        int i = item.getEnchantmentValue();
-+        int i = p_220299_.getEnchantmentValue();
-         if (i <= 0) {
-             return list;
-         } else {
-@@ -575,7 +_,9 @@
+@@ -594,7 +_,9 @@
      public static List<EnchantmentInstance> getAvailableEnchantmentResults(int p_44818_, ItemStack p_44819_, Stream<Holder<Enchantment>> p_345348_) {
          List<EnchantmentInstance> list = Lists.newArrayList();
          boolean flag = p_44819_.is(Items.BOOK);

@@ -4,16 +4,16 @@
  import net.minecraft.world.ticks.TickContainerAccess;
  import org.slf4j.Logger;
  
--public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess {
-+public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolder {
+-public abstract class ChunkAccess implements BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess {
++public abstract class ChunkAccess implements BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolder {
      public static final int NO_FILLED_SECTION = -1;
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
-@@ -315,10 +_,19 @@
+@@ -324,10 +_,19 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
--        this.findBlocks(p_284897_ -> p_284897_.getLightEmission() != 0, p_285269_);
+-        this.findBlocks(p_360197_ -> p_360197_.getLightEmission() != 0, p_285269_);
 +        this.findBlocks(p_284897_ -> p_284897_.hasDynamicLightEmission() || p_284897_.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (p_284897_, pos) -> p_284897_.getLightEmission(this, pos) != 0, p_285269_);
      }
  
@@ -29,8 +29,8 @@
 +    public void findBlocks(Predicate<BlockState> p_285343_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-         for (int i = this.getMinSection(); i < this.getMaxSection(); i++) {
-@@ -330,8 +_,9 @@
+         for (int i = this.getMinSectionY(); i <= this.getMaxSectionY(); i++) {
+@@ -339,8 +_,9 @@
                      for (int k = 0; k < 16; k++) {
                          for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
@@ -42,9 +42,9 @@
                              }
                          }
                      }
-@@ -476,4 +_,72 @@
- 
-     public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
+@@ -482,6 +_,74 @@
+     public ChunkSkyLightSources getSkyLightSources() {
+         return this.skyLightSources;
      }
 +
 +    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
@@ -73,14 +73,14 @@
 +    @Override
 +    @Nullable
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        setUnsaved(true);
++        markUnsaved();
 +        return getAttachmentHolder().setData(type, data);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        setUnsaved(true);
++        markUnsaved();
 +        return getAttachmentHolder().removeData(type);
 +    }
 +
@@ -114,4 +114,6 @@
 +    // Neo: Allow for exposing the Level a chunk is tied to if available
 +    @Nullable
 +    public net.minecraft.world.level.Level getLevel() { return null; }
- }
+ 
+     public static record PackedTicks(List<SavedTick<Block>> blocks, List<SavedTick<Fluid>> fluids) {
+     }

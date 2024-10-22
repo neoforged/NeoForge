@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -61,11 +_,11 @@
+@@ -60,11 +_,11 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  import org.slf4j.Logger;
  
@@ -14,7 +14,7 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -186,7 +_,7 @@
+@@ -182,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
@@ -23,16 +23,30 @@
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", s);
-@@ -208,6 +_,8 @@
-         BlockState blockstate = p_152446_.getBlockState(p_152449_);
-         if (p_152445_.skipRendering(blockstate, p_152448_)) {
+@@ -200,12 +_,22 @@
+             || p_152464_.is(BlockTags.SHULKER_BOXES);
+     }
+ 
++    /**
++     * @deprecated Neo: use overload with level context instead
++     */
++    @Deprecated
+     public static boolean shouldRenderFace(BlockState p_152445_, BlockState p_361252_, Direction p_152448_) {
++        return shouldRenderFace(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO, p_152445_, p_361252_, p_152448_);
++    }
++
++    public static boolean shouldRenderFace(BlockGetter level, BlockPos pos, BlockState p_152445_, BlockState p_361252_, Direction p_152448_) {
+         VoxelShape voxelshape = p_361252_.getFaceOcclusionShape(p_152448_.getOpposite());
+         if (voxelshape == Shapes.block()) {
              return false;
-+        } else if (blockstate.hidesNeighborFace(p_152446_, p_152449_, p_152445_, p_152448_.getOpposite()) && p_152445_.supportsExternalFaceHiding()) {
+         } else if (p_152445_.skipRendering(p_361252_, p_152448_)) {
+             return false;
++        } else if (p_361252_.hidesNeighborFace(level, pos.relative(p_152448_), p_152445_, p_152448_.getOpposite()) && p_152445_.supportsExternalFaceHiding()) {
 +            return false;
-         } else if (blockstate.canOcclude()) {
-             Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(p_152445_, blockstate, p_152448_);
-             Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> object2bytelinkedopenhashmap = OCCLUSION_CACHE.get();
-@@ -281,24 +_,30 @@
+         } else if (voxelshape == Shapes.empty()) {
+             return true;
+         } else {
+@@ -278,24 +_,30 @@
  
      public static void dropResources(BlockState p_49951_, Level p_49952_, BlockPos p_49953_) {
          if (p_49952_ instanceof ServerLevel) {
@@ -67,15 +81,16 @@
          }
      }
  
-@@ -326,19 +_,26 @@
+@@ -323,20 +_,26 @@
      }
  
      private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
--        if (!p_152441_.isClientSide && !p_152443_.isEmpty() && p_152441_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-+        if (!p_152441_.isClientSide && !p_152443_.isEmpty() && p_152441_.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !p_152441_.restoringBlockSnapshots) {
+-        if (p_152441_ instanceof ServerLevel serverlevel && !p_152443_.isEmpty() && serverlevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
++        if (p_152441_ instanceof ServerLevel serverLevel && !p_152443_.isEmpty() && serverLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !p_152441_.restoringBlockSnapshots) {
              ItemEntity itementity = p_152442_.get();
              itementity.setDefaultPickUpDelay();
 -            p_152441_.addFreshEntity(itementity);
+-            return;
 +            // Neo: Add drops to the captured list if capturing is enabled.
 +            if (capturedDrops != null) {
 +                capturedDrops.add(itementity);
@@ -97,9 +112,9 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -385,8 +_,10 @@
+@@ -375,8 +_,10 @@
  
-     public void updateEntityAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
+     public void updateEntityMovementAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
          p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0, 0.0, 1.0));
 +        p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
      }
@@ -108,7 +123,7 @@
      public ItemStack getCloneItemStack(LevelReader p_304395_, BlockPos p_49824_, BlockState p_49825_) {
          return new ItemStack(this);
      }
-@@ -420,6 +_,7 @@
+@@ -410,6 +_,7 @@
      public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
      }
  
@@ -116,7 +131,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -485,6 +_,43 @@
+@@ -475,6 +_,35 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  
@@ -146,14 +161,6 @@
 +        List<ItemEntity> drops = capturedDrops;
 +        capturedDrops = null;
 +        return drops;
-+    }
-+
-+    /**
-+     * Neo: Allowing mods to define client behavior for their Blocks
-+     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
-+     */
-+    @Deprecated(forRemoval = true, since = "1.21")
-+    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions> consumer) {
 +    }
 +
 +    /** @deprecated */

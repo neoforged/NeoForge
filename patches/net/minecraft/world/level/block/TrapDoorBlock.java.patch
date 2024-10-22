@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/block/TrapDoorBlock.java
 +++ b/net/minecraft/world/level/block/TrapDoorBlock.java
-@@ -200,6 +_,17 @@
-         return super.updateShape(p_57554_, p_57555_, p_57556_, p_57557_, p_57558_, p_57559_);
+@@ -215,6 +_,17 @@
+         return super.updateShape(p_57554_, p_374386_, p_374038_, p_57558_, p_57555_, p_57559_, p_57556_, p_374093_);
      }
  
 +    // Neo: Allows Trapdoors to be climbable if any ladder, even modded ladders, is below Trapdoor

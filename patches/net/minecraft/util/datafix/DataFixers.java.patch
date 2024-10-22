@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1292,10 +_,35 @@
+@@ -1307,10 +_,35 @@
          Schema schema199 = p_14514_.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
          p_14514_.addFixer(ItemRenameFix.create(schema199, "Rename scute item to turtle_scute", unaryoperator2));
@@ -24,7 +24,7 @@
 +        // Neo: rename neo attributes to new MC attributes
 +        // Happens in 24w03a
 +        Schema neoSchema3804 = p_14514_.addSchema(3804, SAME_NAMESPACED);
-+        p_14514_.addFixer(new AttributesRename(
++        p_14514_.addFixer(new AttributesRenameLegacy(
 +                neoSchema3804,
 +                "(Neo) Rename reach attributes to vanilla",
 +                createRenamer(ImmutableMap.of(
@@ -36,15 +36,15 @@
          Schema schema201 = p_14514_.addSchema(3807, V3807::new);
          p_14514_.addFixer(new AddNewChoices(schema201, "Added Vault", References.BLOCK_ENTITY));
          Schema schema202 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1316,6 +_,18 @@
-         p_14514_.addFixer(
-             new AttributesRename(schema209, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
+@@ -1333,6 +_,18 @@
+                 schema209, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")
+             )
          );
 +
 +        // Neo: rename neo attributes to new MC attributes
 +        // Happens in 24w06a
 +        Schema neoSchema3815 = p_14514_.addSchema(3815, SAME_NAMESPACED);
-+        p_14514_.addFixer(new AttributesRename(
++        p_14514_.addFixer(new AttributesRenameLegacy(
 +                neoSchema3815,
 +                "(Neo) Rename gravity attribute to vanilla",
 +                createRenamer(

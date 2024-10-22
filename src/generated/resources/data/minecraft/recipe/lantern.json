@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:torch"
-    },
-    "X": {
-      "tag": "c:nuggets/iron"
-    }
+    "#": "minecraft:torch",
+    "X": "#c:nuggets/iron"
   },
   "pattern": [
     "XXX",

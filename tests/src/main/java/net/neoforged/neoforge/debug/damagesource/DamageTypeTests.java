@@ -81,7 +81,7 @@ public class DamageTypeTests {
         DamageScaling scaling = SCALING_ENUM_PARAMS.getValue();
         DeathMessageType msgType = MSGTYPE_ENUM_PARAMS.getValue();
 
-        Holder<Item> customSword = reg.registrar(Registries.ITEM).register("custom_damage_sword", () -> new Item(new Item.Properties()) {
+        Holder<Item> customSword = reg.items().registerItem("custom_damage_sword", props -> new Item(props) {
             @Override
             public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
                 if (entity instanceof LivingEntity living) {
@@ -111,7 +111,7 @@ public class DamageTypeTests {
 
             // Test that the damage type is used by the sword and set correctly.
             attacker.attack(target);
-            Registry<DamageType> dTypeReg = helper.getLevel().registryAccess().registry(Registries.DAMAGE_TYPE).get();
+            Registry<DamageType> dTypeReg = helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
             helper.assertTrue(dTypeReg.getResourceKey(target.getLastDamageSource().type()).get() == TEST_DMG_TYPE, "Incorrect damage type used");
 
             // Test that the scaling function works correctly.

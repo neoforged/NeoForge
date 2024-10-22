@@ -27,9 +27,15 @@ jobs:
 
       # GradleUtils will append the branch name to the version,
       # but for that we need a properly checked out branch
-      - name: Create branch for commit
+      - name: Create branch for commit (PR)
+        if: ${{ github.event_name == 'pull_request' }}
         run:
           git switch -C pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.ref }}
+
+      - name: Create branch for commit
+        if: ${{ github.event_name != 'pull_request' }}
+        run:
+          git switch -C ${{ github.ref_name }}
 
       - name: Setup JDK 21
         uses: neoforged/actions/setup-java@main
@@ -48,12 +54,13 @@ jobs:
         run: ./gradlew assemble checkFormatting
 
       - name: Run JCC
-        if: ${{ ! startsWith(github.event.pull_request.head.ref, 'refs/heads/port/') }}
+        if: ${{ ! startsWith(github.event.pull_request.head.ref, 'port/') && ! startsWith(github.ref_name, 'port/') && ! startsWith(github.event.pull_request.base.ref, 'port/') }}
         run: ./gradlew checkJarCompatibility
 
       - name: Upload JCC
-        if: ${{ ! startsWith(github.event.pull_request.head.ref, 'refs/heads/port/') }}
+        if: ${{ ! startsWith(github.event.pull_request.head.ref, 'port/') && ! startsWith(github.ref_name, 'port/') && ! startsWith(github.event.pull_request.base.ref, 'port/') }}
         uses: neoforged/action-jar-compatibility/upload@v1
 
       - name: Publish artifacts
+        if: ${{ github.event_name == 'pull_request' }}
         uses: neoforged/action-pr-publishing/upload@v1

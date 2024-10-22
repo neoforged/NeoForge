@@ -10,6 +10,7 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -503,7 +504,7 @@ public final class TagConventionLogWarning {
                     // We only care about vanilla registries
                     registryAccess.registries().forEach(registryEntry -> {
                         if (registryEntry.key().location().getNamespace().equals("minecraft")) {
-                            registryEntry.value().getTagNames().forEach(tagKey -> {
+                            registryEntry.value().getTags().map(HolderSet.Named::key).forEach(tagKey -> {
                                 // Grab tags under 'forge' namespace
                                 if (LEGACY_FORGE_TAGS.containsKey(tagKey) || tagKey.location().getNamespace().equals("forge")) {
                                     legacyTags.add(tagKey);

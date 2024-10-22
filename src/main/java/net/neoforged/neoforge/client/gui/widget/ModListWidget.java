@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -79,7 +80,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
                 //TODO: Consider adding more icons for visualization
                 RenderSystem.setShaderColor(1, 1, 1, 1);
                 guiGraphics.pose().pushPose();
-                guiGraphics.blit(VERSION_CHECK_ICONS, getX() + width - 12, top + entryHeight / 4, vercheck.status().getSheetOffset() * 8, (vercheck.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1)) == 1) ? 8 : 0, 8, 8, 64, 16);
+                guiGraphics.blit(RenderType::guiTextured, VERSION_CHECK_ICONS, getX() + width - 12, top + entryHeight / 4, vercheck.status().getSheetOffset() * 8, (vercheck.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1)) == 1) ? 8 : 0, 8, 8, 64, 16);
                 guiGraphics.pose().popPose();
             }
         }

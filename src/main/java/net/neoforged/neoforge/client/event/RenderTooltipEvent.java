@@ -12,7 +12,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
@@ -21,6 +23,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired during tooltip rendering.
@@ -28,7 +31,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see RenderTooltipEvent.GatherComponents
  * @see RenderTooltipEvent.Pre
- * @see RenderTooltipEvent.Color
+ * @see RenderTooltipEvent.Texture
  */
 public abstract class RenderTooltipEvent extends Event {
     protected final ItemStack itemStack;
@@ -99,7 +102,7 @@ public abstract class RenderTooltipEvent extends Event {
      *
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If this event is cancelled, then the list of components will be empty, causing the tooltip to not be rendered and
-     * the corresponding {@link RenderTooltipEvent.Pre} and {@link RenderTooltipEvent.Color} to not be fired.</p>
+     * the corresponding {@link RenderTooltipEvent.Pre} and {@link RenderTooltipEvent.Texture} to not be fired.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -179,7 +182,7 @@ public abstract class RenderTooltipEvent extends Event {
      *
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If this event is cancelled, then the tooltip will not be rendered and the corresponding
-     * {@link RenderTooltipEvent.Color} will not be fired.</p>
+     * {@link RenderTooltipEvent.Texture} will not be fired.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -247,136 +250,51 @@ public abstract class RenderTooltipEvent extends Event {
     }
 
     /**
-     * Fired when the colours for the tooltip background are determined.
-     * This can be used to modify the background color and the border's gradient colors.
+     * Fired when the textures for the tooltip background are determined.
+     * This can be used to modify the background and frame texture.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Color extends RenderTooltipEvent {
-        private final int originalBackground;
-        private final int originalBorderStart;
-        private final int originalBorderEnd;
-        private int backgroundStart;
-        private int backgroundEnd;
-        private int borderStart;
-        private int borderEnd;
+    public static class Texture extends RenderTooltipEvent {
+        @Nullable
+        private final ResourceLocation originalTexture;
+        @Nullable
+        private ResourceLocation texture;
 
         @ApiStatus.Internal
-        public Color(ItemStack stack, GuiGraphics graphics, int x, int y, Font fr, int background, int borderStart, int borderEnd, List<ClientTooltipComponent> components) {
-            super(stack, graphics, x, y, fr, components);
-            this.originalBackground = background;
-            this.originalBorderStart = borderStart;
-            this.originalBorderEnd = borderEnd;
-            this.backgroundStart = background;
-            this.backgroundEnd = background;
-            this.borderStart = borderStart;
-            this.borderEnd = borderEnd;
+        public Texture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable ResourceLocation texture) {
+            super(stack, graphics, x, y, font, components);
+            this.originalTexture = texture;
+            this.texture = texture;
         }
 
         /**
-         * {@return the gradient start color for the tooltip background (top edge)}
+         * {@return the original texture location given to the tooltip render method (may originate from {@link DataComponents#TOOLTIP_STYLE})}
          */
-        public int getBackgroundStart() {
-            return backgroundStart;
+        @Nullable
+        public ResourceLocation getOriginalTexture() {
+            return originalTexture;
         }
 
         /**
-         * {@return the gradient end color for the tooltip background (bottom edge)}
+         * {@return the texture location that will be used to render the tooltip}
          */
-        public int getBackgroundEnd() {
-            return backgroundEnd;
+        @Nullable
+        public ResourceLocation getTexture() {
+            return texture;
         }
 
         /**
-         * Sets the new color for the tooltip background. This sets both the gradient start and end color for the
-         * background to this color.
-         *
-         * @param background the new color for the tooltip background
+         * Set the texture to use for the tooltip background and frame or {@code null} to use the default textures.
+         * <p>
+         * The given {@link ResourceLocation} will be prefixed with {@code tooltip/} and suffixed with {@code _background}
+         * and {@code _frame} to determine the background and frame texture respectively
          */
-        public void setBackground(int background) {
-            this.backgroundStart = background;
-            this.backgroundEnd = background;
-        }
-
-        /**
-         * Sets the new start color for the gradient of the tooltip background (top edge).
-         *
-         * @param backgroundStart the new start color for the tooltip background
-         */
-        public void setBackgroundStart(int backgroundStart) {
-            this.backgroundStart = backgroundStart;
-        }
-
-        /**
-         * Sets the new end color for the gradient of the tooltip background (bottom edge).
-         *
-         * @param backgroundEnd the new end color for the tooltip background
-         */
-        public void setBackgroundEnd(int backgroundEnd) {
-            this.backgroundEnd = backgroundEnd;
-        }
-
-        /**
-         * {@return the gradient start color for the tooltip border (top edge)}
-         */
-        public int getBorderStart() {
-            return borderStart;
-        }
-
-        /**
-         * Sets the new start color for the gradient of the tooltip border (top edge).
-         *
-         * @param borderStart the new start color for the tooltip border
-         */
-        public void setBorderStart(int borderStart) {
-            this.borderStart = borderStart;
-        }
-
-        /**
-         * {@return the gradient end color for the tooltip border (bottom edge)}
-         */
-        public int getBorderEnd() {
-            return borderEnd;
-        }
-
-        /**
-         * Sets the new end color for the gradient of the tooltip border (bottom edge).
-         *
-         * @param borderEnd the new end color for the tooltip border
-         */
-        public void setBorderEnd(int borderEnd) {
-            this.borderEnd = borderEnd;
-        }
-
-        /**
-         * {@return the original tooltip background's gradient start color (top edge)}
-         */
-        public int getOriginalBackgroundStart() {
-            return originalBackground;
-        }
-
-        /**
-         * {@return the original tooltip background's gradient end color (bottom edge)}
-         */
-        public int getOriginalBackgroundEnd() {
-            return originalBackground;
-        }
-
-        /**
-         * {@return the original tooltip border's gradient start color (top edge)}
-         */
-        public int getOriginalBorderStart() {
-            return originalBorderStart;
-        }
-
-        /**
-         * {@return the original tooltip border's gradient end color (bottom edge)}
-         */
-        public int getOriginalBorderEnd() {
-            return originalBorderEnd;
+        public void setTexture(@Nullable ResourceLocation texture) {
+            this.texture = texture;
         }
     }
 }

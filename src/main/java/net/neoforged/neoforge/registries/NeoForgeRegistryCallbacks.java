@@ -48,12 +48,10 @@ class NeoForgeRegistryCallbacks {
         public void onBake(Registry<Block> registry) {
             // Vanilla does this in Blocks.<clinit>
 
-            // Init cache and loot table for new blocks only (the cache init is expensive).
+            // Init cache for new blocks only (the cache init is expensive).
             // State cache init cannot be done in onAdd because some of it might depend on other registries being populated in mod code.
-            // Loot table init cannot be done in onAdd because the loot table supplier might depend on blocks registered later.
             for (Block block : addedBlocks) {
                 block.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
-                block.getLootTable();
             }
             addedBlocks.clear();
 
@@ -108,7 +106,7 @@ class NeoForgeRegistryCallbacks {
         @Override
         public void onAdd(Registry<PoiType> registry, int id, ResourceKey<PoiType> key, PoiType value) {
             value.matchingStates().forEach(state -> {
-                Holder<PoiType> oldType = BLOCKSTATE_TO_POI_TYPE_MAP.put(state, registry.getHolderOrThrow(key));
+                Holder<PoiType> oldType = BLOCKSTATE_TO_POI_TYPE_MAP.put(state, registry.getOrThrow(key));
                 if (oldType != null) {
                     throw new IllegalStateException(String.format(Locale.ENGLISH,
                             "Point of interest types %s and %s both list %s in their blockstates, this is not allowed. Blockstates can only have one point of interest type each.",

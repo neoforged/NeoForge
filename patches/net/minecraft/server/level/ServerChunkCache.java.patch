@@ -1,15 +1,15 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -45,7 +_,7 @@
- import net.minecraft.world.level.storage.DimensionDataStorage;
+@@ -52,7 +_,7 @@
  import net.minecraft.world.level.storage.LevelStorageSource;
+ import org.slf4j.Logger;
  
 -public class ServerChunkCache extends ChunkSource {
 +public class ServerChunkCache extends ChunkSource implements net.neoforged.neoforge.common.extensions.IServerChunkCacheExtension {
-     private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.getStatusList();
+     private static final Logger LOGGER = LogUtils.getLogger();
      private final DistanceManager distanceManager;
      public final ServerLevel level;
-@@ -150,6 +_,10 @@
+@@ -165,6 +_,10 @@
                  }
              }
  
@@ -20,7 +20,7 @@
              profilerfiller.incrementCounter("getChunkCacheMiss");
              CompletableFuture<ChunkResult<ChunkAccess>> completablefuture = this.getChunkFutureMainThread(p_8360_, p_8361_, p_330876_, p_8363_);
              this.mainThreadProcessor.managedBlock(completablefuture::isDone);
-@@ -184,6 +_,7 @@
+@@ -199,6 +_,7 @@
              if (chunkholder == null) {
                  return null;
              } else {
@@ -28,16 +28,16 @@
                  ChunkAccess chunkaccess1 = chunkholder.getChunkIfPresent(ChunkStatus.FULL);
                  if (chunkaccess1 != null) {
                      this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
-@@ -356,7 +_,7 @@
-                 for (ServerChunkCache.ChunkAndHolder serverchunkcache$chunkandholder : list) {
-                     LevelChunk levelchunk1 = serverchunkcache$chunkandholder.chunk;
-                     ChunkPos chunkpos = levelchunk1.getPos();
--                    if (this.level.isNaturalSpawningAllowed(chunkpos) && this.chunkMap.anyPlayerCloseEnoughForSpawning(chunkpos)) {
-+                    if ((this.level.isNaturalSpawningAllowed(chunkpos) && this.chunkMap.anyPlayerCloseEnoughForSpawning(chunkpos)) || this.distanceManager.shouldForceTicks(chunkpos.toLong())) {
-                         levelchunk1.incrementInhabitedTime(j);
-                         if (flag1 && (this.spawnEnemies || this.spawnFriendlies) && this.level.getWorldBorder().isWithinBounds(chunkpos)) {
-                             NaturalSpawner.spawnForChunk(this.level, levelchunk1, naturalspawner$spawnstate, this.spawnFriendlies, this.spawnEnemies, flag);
-@@ -435,11 +_,17 @@
+@@ -384,7 +_,7 @@
+     private void collectTickingChunks(List<LevelChunk> p_363421_) {
+         this.chunkMap.forEachSpawnCandidateChunk(p_381767_ -> {
+             LevelChunk levelchunk = p_381767_.getTickingChunk();
+-            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos())) {
++            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos()) || this.distanceManager.shouldForceTicks(p_381767_.getPos().toLong())) {
+                 p_363421_.add(levelchunk);
+             }
+         });
+@@ -480,11 +_,17 @@
      }
  
      public <T> void addRegionTicket(TicketType<T> p_8388_, ChunkPos p_8389_, int p_8390_, T p_8391_) {

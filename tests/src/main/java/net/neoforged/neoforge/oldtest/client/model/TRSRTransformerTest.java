@@ -8,8 +8,8 @@ package net.neoforged.neoforge.oldtest.client.model;
 import com.mojang.math.Transformation;
 import java.util.List;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -17,7 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -43,9 +42,9 @@ public class TRSRTransformerTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register("test", () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("test", Block::new, Block.Properties.of().mapColor(MapColor.STONE));
     @SuppressWarnings("unused")
-    private static final DeferredItem<Item> TEST_ITEM = ITEMS.register("test", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
+    private static final DeferredItem<BlockItem> TEST_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
     public TRSRTransformerTest(IEventBus modEventBus) {
         if (FMLEnvironment.dist.isClient()) {
@@ -113,8 +112,8 @@ public class TRSRTransformerTest {
         }
 
         @Override
-        public ItemOverrides getOverrides() {
-            return base.getOverrides();
+        public BakedOverrides overrides() {
+            return base.overrides();
         }
     }
 }

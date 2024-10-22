@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipePattern.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
-@@ -20,7 +_,30 @@
+@@ -21,8 +_,31 @@
  import net.minecraft.world.item.ItemStack;
  
  public final class ShapedRecipePattern {
 +    /** @deprecated Neo: use {@link #getMaxWidth} and {@link #getMaxHeight} */ @Deprecated
      private static final int MAX_SIZE = 3;
+     public static final char EMPTY_SLOT = ' ';
 +    static int maxWidth = 3;
 +    static int maxHeight = 3;
 +
@@ -31,7 +32,7 @@
      public static final MapCodec<ShapedRecipePattern> MAP_CODEC = ShapedRecipePattern.Data.MAP_CODEC
          .flatXmap(
              ShapedRecipePattern::unpack,
-@@ -214,16 +_,16 @@
+@@ -206,16 +_,16 @@
  
      public static record Data(Map<Character, Ingredient> key, List<String> pattern) {
          private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(p_312085_ -> {

@@ -53,22 +53,22 @@ public class FluidEventTests {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> {
-                    helper.setBlock(2, 2, 1, Blocks.WATER);
-                    helper.setBlock(2, 2, 3, Blocks.WATER);
+                    helper.setBlock(2, 1, 1, Blocks.WATER);
+                    helper.setBlock(2, 1, 3, Blocks.WATER);
                 })
-                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.WATER, 2, 2, 2)) // Wait until the water spread
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 3, 1))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 3, 3))
-                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 2, 2), state -> state.getFluidState().is(Fluids.FLOWING_WATER) && !state.getFluidState().isSource(), () -> "Water block was a source!"))
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.WATER, 2, 1, 2)) // Wait until the water spread
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 2, 1))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 2, 3))
+                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 1, 2), state -> state.getFluidState().is(Fluids.FLOWING_WATER) && !state.getFluidState().isSource(), () -> "Water block was a source!"))
 
                 .thenIdle(5)
 
                 .thenExecute(() -> {
-                    helper.setBlock(2, 5, 1, Blocks.LAVA);
-                    helper.setBlock(2, 5, 3, Blocks.LAVA);
+                    helper.setBlock(2, 4, 1, Blocks.LAVA);
+                    helper.setBlock(2, 4, 3, Blocks.LAVA);
                 })
-                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.LAVA, 2, 5, 2)) // Wait until the lava spread
-                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 5, 2),
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.LAVA, 2, 4, 2)) // Wait until the lava spread
+                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 4, 2),
                         state -> state.getFluidState().isSource() && state.getFluidState().is(Fluids.LAVA), () -> "Lava source wasn't created"))
                 .thenSucceed());
     }

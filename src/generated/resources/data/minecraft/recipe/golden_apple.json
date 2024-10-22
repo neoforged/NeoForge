@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:ingots/gold"
-    },
-    "X": {
-      "item": "minecraft:apple"
-    }
+    "#": "#c:ingots/gold",
+    "X": "minecraft:apple"
   },
   "pattern": [
     "###",
