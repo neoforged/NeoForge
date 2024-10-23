@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:obsidian"
-    },
-    "B": {
-      "item": "minecraft:book"
-    },
-    "D": {
-      "tag": "c:gems/diamond"
-    }
+    "#": "minecraft:obsidian",
+    "B": "minecraft:book",
+    "D": "#c:gems/diamond"
   },
   "pattern": [
     " B ",

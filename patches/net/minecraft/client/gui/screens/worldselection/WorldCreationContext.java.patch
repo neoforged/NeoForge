@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldCreationContext.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldCreationContext.java
-@@ -74,6 +_,10 @@
+@@ -95,6 +_,10 @@
          );
      }
  
 +    public WorldCreationContext withDataConfiguration(WorldDataConfiguration dataConfiguration) {
-+        return new WorldCreationContext(this.options, this.datapackDimensions, this.selectedDimensions, this.worldgenRegistries, this.dataPackResources, dataConfiguration);
++        return new WorldCreationContext(this.options, this.datapackDimensions, this.selectedDimensions, this.worldgenRegistries, this.dataPackResources, dataConfiguration, this.initialWorldCreationOptions);
 +    }
 +
      public RegistryAccess.Frozen worldgenLoadContext() {

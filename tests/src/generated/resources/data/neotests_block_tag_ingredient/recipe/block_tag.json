@@ -3,17 +3,15 @@
   "category": "misc",
   "ingredients": [
     {
-      "type": "testframework:test_enabled",
+      "neoforge:ingredient_type": "testframework:test_enabled",
       "base": {
-        "type": "neoforge:block_tag",
+        "neoforge:ingredient_type": "neoforge:block_tag",
         "tag": "minecraft:convertable_to_mud"
       },
       "framework": "neotests:tests",
       "testId": "blockTagIngredient"
     },
-    {
-      "item": "minecraft:water_bucket"
-    }
+    "minecraft:water_bucket"
   ],
   "result": {
     "count": 1,

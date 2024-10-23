@@ -27,7 +27,7 @@ public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>
         this.helper = helper;
     }
 
-    public DeferredEntityTypeBuilder<E, T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E>>> renderer) {
+    public DeferredEntityTypeBuilder<E, T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E, ?>>> renderer) {
         if (FMLLoader.getDist().isClient()) {
             helper.eventListeners().accept((final EntityRenderersEvent.RegisterRenderers event) -> event.registerEntityRenderer(value(), renderer.get()::apply));
         }

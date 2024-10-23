@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": {
-      "tag": "c:cobblestones/normal"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    },
-    "T": {
-      "tag": "minecraft:planks"
-    },
-    "X": {
-      "tag": "c:ingots/iron"
-    }
+    "#": "#c:cobblestones/normal",
+    "R": "minecraft:redstone",
+    "T": "#minecraft:planks",
+    "X": "#c:ingots/iron"
   },
   "pattern": [
     "TTT",

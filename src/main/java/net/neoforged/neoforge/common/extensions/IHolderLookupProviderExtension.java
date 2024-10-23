@@ -28,7 +28,7 @@ public interface IHolderLookupProviderExtension {
      * Shortcut method to get an optional holder from a ResourceKey.
      */
     default <T> Optional<Holder.Reference<T>> holder(ResourceKey<T> key) {
-        Optional<HolderLookup.RegistryLookup<T>> registry = this.self().lookup(key.registryKey());
+        Optional<? extends HolderLookup.RegistryLookup<T>> registry = this.self().lookup(key.registryKey());
         return registry.flatMap(tRegistryLookup -> tRegistryLookup.get(key));
     }
 }

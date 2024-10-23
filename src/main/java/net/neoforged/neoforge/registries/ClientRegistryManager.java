@@ -40,7 +40,7 @@ public class ClientRegistryManager {
             try {
                 var regAccess = Minecraft.getInstance().level.registryAccess();
                 final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) regAccess
-                        .registryOrThrow(payload.registryKey());
+                        .lookupOrThrow(payload.registryKey());
                 registry.dataMaps.clear();
                 payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
                 NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(regAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));

@@ -3,7 +3,7 @@
 @@ -14,7 +_,7 @@
      }
  
-     public static boolean shouldSwim(Mob p_316787_) {
+     public static <T extends Mob> boolean shouldSwim(T p_316787_) {
 -        return p_316787_.isInWater() && p_316787_.getFluidHeight(FluidTags.WATER) > p_316787_.getFluidJumpThreshold() || p_316787_.isInLava();
 +        return p_316787_.isInWater() && p_316787_.getFluidHeight(FluidTags.WATER) > p_316787_.getFluidJumpThreshold() || p_316787_.isInLava() || p_316787_.isInFluidType((fluidType, height) -> p_316787_.canSwimInFluidType(fluidType) && height > p_316787_.getFluidJumpThreshold());
      }

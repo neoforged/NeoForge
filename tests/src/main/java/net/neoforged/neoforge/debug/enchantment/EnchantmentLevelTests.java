@@ -55,17 +55,17 @@ public class EnchantmentLevelTests {
         });
 
         test.onGameTest(helper -> {
-            var enchants = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+            var enchants = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
             ItemStack stack = new ItemStack(Items.IRON_SWORD);
 
-            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.FIRE_ASPECT)) == 0, "Fire Aspect level was not zero");
-            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.SHARPNESS)) == 1, "Sharpness level was not one");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getOrThrow(Enchantments.FIRE_ASPECT)) == 0, "Fire Aspect level was not zero");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getOrThrow(Enchantments.SHARPNESS)) == 1, "Sharpness level was not one");
 
             CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.put("boost_fire_aspect", new CompoundTag())); // Creates the sub-compound "boost_fire_aspect" which will trigger the event listener above.
-            stack.enchant(enchants.getHolderOrThrow(Enchantments.SHARPNESS), 5);
+            stack.enchant(enchants.getOrThrow(Enchantments.SHARPNESS), 5);
 
-            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.FIRE_ASPECT)) == 1, "Fire Aspect level was not one");
-            helper.assertTrue(stack.getEnchantmentLevel(enchants.getHolderOrThrow(Enchantments.SHARPNESS)) == 6, "Sharpness level was not six");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getOrThrow(Enchantments.FIRE_ASPECT)) == 1, "Fire Aspect level was not one");
+            helper.assertTrue(stack.getEnchantmentLevel(enchants.getOrThrow(Enchantments.SHARPNESS)) == 6, "Sharpness level was not six");
 
             helper.succeed();
         });

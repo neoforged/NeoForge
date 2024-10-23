@@ -26,9 +26,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "X": {
-      "item": "minecraft:dirt"
-    }
+    "X": "minecraft:dirt"
   },
   "pattern": [
     "XXX",

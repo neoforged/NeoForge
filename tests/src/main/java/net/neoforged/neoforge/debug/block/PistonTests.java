@@ -83,20 +83,20 @@ public class PistonTests {
         });
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.pullLever(1, 2, 1))
+                .thenExecute(() -> helper.pullLever(1, 1, 1))
                 .thenIdle(10)
 
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.PISTON_HEAD, 1, 2, 2)) // The piston should've extended
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.AIR, 1, 3, 2)) // This is where the shift block WOULD be
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(shiftOnPistonMove.get(), 1, 4, 2)) // Shift block should move upwards
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.PISTON_HEAD, 1, 1, 2)) // The piston should've extended
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.AIR, 1, 2, 2)) // This is where the shift block WOULD be
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(shiftOnPistonMove.get(), 1, 3, 2)) // Shift block should move upwards
 
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.COBBLESTONE, 1, 2, 0))
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.COBBLESTONE, 1, 1, 0))
 
                 .thenIdle(20)
-                .thenExecute(() -> helper.pullLever(1, 2, 1))
+                .thenExecute(() -> helper.pullLever(1, 1, 1))
                 .thenIdle(10)
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.COBBLESTONE, 2, 3, 1))
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.PISTON_HEAD, 2, 2, 1))
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.COBBLESTONE, 2, 2, 1))
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.PISTON_HEAD, 2, 1, 1))
 
                 .thenExecute(test::pass)
                 .thenSucceed());
@@ -109,14 +109,14 @@ public class PistonTests {
             "This test is GameTest-only!"
     })
     static void stickyBlocks(final DynamicTest test, final RegistrationHelper reg) {
-        final var blueBlock = reg.blocks().register("blue_block", () -> new Block(Block.Properties.of()) {
+        final var blueBlock = reg.blocks().registerBlock("blue_block", props -> new Block(props) {
             @Override
             public boolean isStickyBlock(BlockState state) {
                 return true;
             }
-        }).withBlockItem().withLang("Blue block").withDefaultWhiteModel().withColor(0x0000ff);
+        }, Block.Properties.of()).withBlockItem().withLang("Blue block").withDefaultWhiteModel().withColor(0x0000ff);
 
-        final var redBlock = reg.blocks().register("red_block", () -> new Block(Block.Properties.of()) {
+        final var redBlock = reg.blocks().registerBlock("red_block", props -> new Block(props) {
             @Override
             public boolean isStickyBlock(BlockState state) {
                 return true;
@@ -132,7 +132,7 @@ public class PistonTests {
                 if (other.getBlock() == Blocks.SLIME_BLOCK) return false;
                 return state.isStickyBlock() || other.isStickyBlock();
             }
-        }).withBlockItem().withLang("Red block").withDefaultWhiteModel().withColor(0xff0000);
+        }, Block.Properties.of()).withBlockItem().withLang("Red block").withDefaultWhiteModel().withColor(0xff0000);
 
         test.registerGameTestTemplate(() -> StructureTemplateBuilder.withSize(2, 5, 1)
                 .placeFloorLever(1, 1, 0, false)
@@ -142,14 +142,14 @@ public class PistonTests {
                 .set(0, 4, 0, Blocks.SLIME_BLOCK.defaultBlockState()));
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.pullLever(1, 2, 0))
-                .thenIdle(5)
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(blueBlock.get(), 0, 3, 0))
-                .thenExecute(() -> helper.pullLever(1, 2, 0))
+                .thenExecute(() -> helper.pullLever(1, 1, 0))
                 .thenIdle(5)
                 .thenWaitUntil(0, () -> helper.assertBlockPresent(blueBlock.get(), 0, 2, 0))
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(redBlock.get(), 0, 3, 0))
-                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.SLIME_BLOCK, 0, 5, 0))
+                .thenExecute(() -> helper.pullLever(1, 1, 0))
+                .thenIdle(5)
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(blueBlock.get(), 0, 1, 0))
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(redBlock.get(), 0, 2, 0))
+                .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.SLIME_BLOCK, 0, 4, 0))
                 .thenExecute(test::pass)
                 .thenSucceed());
     }

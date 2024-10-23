@@ -3,9 +3,9 @@
 @@ -158,6 +_,7 @@
                  )
                  .build();
-             this.resetButton = Button.builder(RESET_BUTTON_TITLE, p_346334_ -> {
+             this.resetButton = Button.builder(RESET_BUTTON_TITLE, p_359096_ -> {
 +                this.key.setToDefault();
-                 KeyBindsList.this.minecraft.options.setKey(p_345998_, p_345998_.getDefaultKey());
+                 p_345998_.setKey(p_345998_.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
              }).bounds(0, 0, 50, 20).createNarration(p_344899_ -> Component.translatable("narrator.controls.reset", p_345196_)).build();
 @@ -210,7 +_,7 @@

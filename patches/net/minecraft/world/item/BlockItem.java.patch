@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -82,11 +_,11 @@
+@@ -79,11 +_,11 @@
                          }
                      }
  
@@ -14,33 +14,18 @@
                          SoundSource.BLOCKS,
                          (soundtype.getVolume() + 1.0F) / 2.0F,
                          soundtype.getPitch() * 0.8F
-@@ -99,10 +_,16 @@
+@@ -96,8 +_,14 @@
          }
      }
  
 +    @Deprecated //Forge: Use more sensitive version {@link BlockItem#getPlaceSound(BlockState, IBlockReader, BlockPos, Entity) }
      protected SoundEvent getPlaceSound(BlockState p_40588_) {
          return p_40588_.getSoundType().getPlaceSound();
-     }
- 
++    }
++
 +    //Forge: Sensitive version of BlockItem#getPlaceSound
 +    protected SoundEvent getPlaceSound(BlockState state, Level world, BlockPos pos, Player entity) {
 +        return state.getSoundType(world, pos, entity).getPlaceSound();
-+    }
-+
-     @Nullable
-     public BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
-         return p_40609_;
-@@ -193,6 +_,12 @@
- 
-     public void registerBlocks(Map<Block, Item> p_40607_, Item p_40608_) {
-         p_40607_.put(this.getBlock(), p_40608_);
-+    }
-+
-+    /** @deprecated Neo: To be removed without replacement since registry replacement is not a feature anymore. */
-+    @Deprecated(forRemoval = true, since = "1.21.1")
-+    public void removeFromBlockToItemMap(Map<Block, Item> blockToItemMap, Item itemIn) {
-+        blockToItemMap.remove(this.getBlock());
      }
  
-     @Override
+     @Nullable
