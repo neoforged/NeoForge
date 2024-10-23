@@ -25,6 +25,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.LogoRenderer;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -374,30 +375,36 @@ public class ModListScreen extends Screen {
         VersionChecker.CheckResult vercheck = VersionChecker.getResult(selectedMod);
 
         @SuppressWarnings("resource")
-        Pair<ResourceLocation, Size2i> logoData = selectedMod.getLogoFile().map(logoFile -> {
-            TextureManager tm = this.minecraft.getTextureManager();
-            final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
-                    .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
-            try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod/" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
-                NativeImage logo = null;
-                IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
-                if (logoResource != null)
-                    logo = NativeImage.read(logoResource.get());
-                if (logo != null) {
+        Pair<ResourceLocation, Size2i> logoData;
 
-                    return Pair.of(tm.register("modlogo", new DynamicTexture(logo) {
-                        @Override
-                        public void upload() {
-                            this.bind();
-                            NativeImage td = this.getPixels();
-                            // Use custom "blur" value which controls texture filtering (nearest-neighbor vs linear)
-                            this.getPixels().upload(0, 0, 0, 0, 0, td.getWidth(), td.getHeight(), selectedMod.getLogoBlur(), false, false, false);
-                        }
-                    }), new Size2i(logo.getWidth(), logo.getHeight()));
-                }
-            } catch (IOException | IllegalArgumentException e) {}
-            return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
-        }).orElse(Pair.of(null, new Size2i(0, 0)));
+        if (selectedMod.getModId().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
+            logoData = Pair.of(LogoRenderer.MINECRAFT_LOGO, new Size2i(LogoRenderer.LOGO_TEXTURE_WIDTH, LogoRenderer.LOGO_TEXTURE_HEIGHT));
+        } else {
+            logoData = selectedMod.getLogoFile().map(logoFile -> {
+                TextureManager tm = this.minecraft.getTextureManager();
+                final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
+                        .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
+                try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod/" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
+                    NativeImage logo = null;
+                    IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
+                    if (logoResource != null)
+                        logo = NativeImage.read(logoResource.get());
+                    if (logo != null) {
+
+                        return Pair.of(tm.register("modlogo", new DynamicTexture(logo) {
+                            @Override
+                            public void upload() {
+                                this.bind();
+                                NativeImage td = this.getPixels();
+                                // Use custom "blur" value which controls texture filtering (nearest-neighbor vs linear)
+                                this.getPixels().upload(0, 0, 0, 0, 0, td.getWidth(), td.getHeight(), selectedMod.getLogoBlur(), false, false, false);
+                            }
+                        }), new Size2i(logo.getWidth(), logo.getHeight()));
+                    }
+                } catch (IOException | IllegalArgumentException e) {}
+                return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
+            }).orElse(Pair.of(null, new Size2i(0, 0)));
+        }
 
         lines.add(selectedMod.getDisplayName());
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.version", MavenVersionTranslator.artifactVersionToString(selectedMod.getVersion())));
