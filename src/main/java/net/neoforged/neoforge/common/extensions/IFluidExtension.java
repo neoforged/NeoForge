@@ -6,12 +6,12 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -72,7 +72,7 @@ public interface IFluidExtension {
      * @param pos   the location of the fluid
      * @return {@code true} if the fluid can create a source, {@code false} otherwise
      */
-    default boolean canConvertToSource(FluidState state, Level level, BlockPos pos) {
+    default boolean canConvertToSource(FluidState state, ServerLevel level, BlockPos pos) {
         return getFluidType().canConvertToSource(state, level, pos);
     }
 
@@ -83,7 +83,7 @@ public interface IFluidExtension {
      * @param boat  the boat trying to be used on the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    default boolean supportsBoating(FluidState state, Boat boat) {
+    default boolean supportsBoating(FluidState state, AbstractBoat boat) {
         return getFluidType().supportsBoating(state, boat);
     }
 

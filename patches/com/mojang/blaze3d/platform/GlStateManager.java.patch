@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/platform/GlStateManager.java
 +++ b/com/mojang/blaze3d/platform/GlStateManager.java
-@@ -945,4 +_,53 @@
+@@ -1009,4 +_,53 @@
              return INSTANCE.height;
          }
      }

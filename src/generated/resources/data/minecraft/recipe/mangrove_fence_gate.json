@@ -3,12 +3,8 @@
   "category": "redstone",
   "group": "wooden_fence_gate",
   "key": {
-    "#": {
-      "tag": "c:rods/wooden"
-    },
-    "W": {
-      "item": "minecraft:mangrove_planks"
-    }
+    "#": "#c:rods/wooden",
+    "W": "minecraft:mangrove_planks"
   },
   "pattern": [
     "#W#",

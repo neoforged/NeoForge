@@ -57,7 +57,7 @@ public class AddTableLootModifier extends LootModifier {
     @SuppressWarnings("deprecation")
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        context.getResolver().get(Registries.LOOT_TABLE, this.table).ifPresent(extraTable -> {
+        context.getResolver().lookupOrThrow(Registries.LOOT_TABLE).get(this.table).ifPresent(extraTable -> {
             // Don't run loot modifiers for subtables;
             // the added loot will be modifiable by downstream loot modifiers modifying the target table,
             // so if we modify it here then it could get modified twice.

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:gems/diamond"
-    },
-    "C": {
-      "item": "minecraft:sandstone"
-    },
-    "S": {
-      "item": "minecraft:dune_armor_trim_smithing_template"
-    }
+    "#": "#c:gems/diamond",
+    "C": "minecraft:sandstone",
+    "S": "minecraft:dune_armor_trim_smithing_template"
   },
   "pattern": [
     "#S#",

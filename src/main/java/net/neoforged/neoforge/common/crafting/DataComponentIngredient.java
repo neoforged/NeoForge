@@ -22,6 +22,7 @@ import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
@@ -35,7 +36,7 @@ public class DataComponentIngredient implements ICustomIngredient {
     public static final MapCodec<DataComponentIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            HolderSetCodec.create(Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false).fieldOf("items").forGetter(DataComponentIngredient::items),
+                            HolderSetCodec.create(Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false).fieldOf("items").forGetter(DataComponentIngredient::itemSet),
                             DataComponentPredicate.CODEC.fieldOf("components").forGetter(DataComponentIngredient::components),
                             Codec.BOOL.optionalFieldOf("strict", false).forGetter(DataComponentIngredient::isStrict))
                     .apply(builder, DataComponentIngredient::new));
@@ -67,8 +68,8 @@ public class DataComponentIngredient implements ICustomIngredient {
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return Stream.of(stacks);
+    public Stream<Holder<Item>> items() {
+        return items.stream();
     }
 
     @Override
@@ -81,7 +82,23 @@ public class DataComponentIngredient implements ICustomIngredient {
         return NeoForgeMod.DATA_COMPONENT_INGREDIENT_TYPE.get();
     }
 
-    public HolderSet<Item> items() {
+    @Override
+    public SlotDisplay display() {
+        return new SlotDisplay.Composite(Stream.of(stacks)
+                .map(stack -> {
+                    SlotDisplay display = new SlotDisplay.ItemStackSlotDisplay(stack);
+                    ItemStack remainder = stack.getCraftingRemainder();
+                    if (!remainder.isEmpty()) {
+                        SlotDisplay remainderDisplay = new SlotDisplay.ItemStackSlotDisplay(remainder);
+                        return new SlotDisplay.WithRemainder(display, remainderDisplay);
+                    } else {
+                        return display;
+                    }
+                })
+                .toList());
+    }
+
+    public HolderSet<Item> itemSet() {
         return items;
     }
 

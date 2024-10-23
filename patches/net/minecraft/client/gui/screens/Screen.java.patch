@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -116,6 +_,7 @@
+@@ -115,6 +_,7 @@
          }
      }
  
@@ -8,7 +8,7 @@
      @Override
      public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
          this.renderBackground(p_281549_, p_281550_, p_282878_, p_282465_);
-@@ -201,7 +_,7 @@
+@@ -200,7 +_,7 @@
      }
  
      public void onClose() {
@@ -17,7 +17,7 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
-@@ -242,7 +_,7 @@
+@@ -241,7 +_,7 @@
          return p_282833_.getTooltipLines(
              Item.TooltipContext.of(p_281881_.level),
              p_281881_.player,
@@ -26,7 +26,7 @@
          );
      }
  
-@@ -312,8 +_,11 @@
+@@ -311,8 +_,11 @@
          this.width = p_96608_;
          this.height = p_96609_;
          if (!this.initialized) {
@@ -38,7 +38,7 @@
          } else {
              this.repositionElements();
          }
-@@ -326,8 +_,11 @@
+@@ -325,8 +_,11 @@
      protected void rebuildWidgets() {
          this.clearWidgets();
          this.clearFocus();
@@ -50,15 +50,15 @@
      }
  
      @Override
-@@ -354,6 +_,7 @@
+@@ -353,6 +_,7 @@
  
-         this.renderBlurredBackground(p_294317_);
+         this.renderBlurredBackground();
          this.renderMenuBackground(p_283688_);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.BackgroundRendered(this, p_283688_));
      }
  
-     protected void renderBlurredBackground(float p_330683_) {
-@@ -467,6 +_,10 @@
+     protected void renderBlurredBackground() {
+@@ -458,6 +_,10 @@
      public void onFilesDrop(List<Path> p_96591_) {
      }
  
@@ -69,7 +69,7 @@
      private void scheduleNarration(long p_169381_, boolean p_169382_) {
          this.nextNarrationTime = Util.getMillis() + p_169381_;
          if (p_169382_) {
-@@ -643,5 +_,13 @@
+@@ -642,5 +_,13 @@
              this.index = p_169425_;
              this.priority = p_169426_;
          }

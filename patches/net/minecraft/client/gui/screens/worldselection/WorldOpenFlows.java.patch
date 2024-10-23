@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -65,7 +_,7 @@
+@@ -66,7 +_,7 @@
  import org.slf4j.Logger;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final UUID WORLD_PACK_ID = UUID.fromString("640a6a92-b6cb-48a0-b391-831586500359");
      private final Minecraft minecraft;
-@@ -210,7 +_,10 @@
+@@ -215,7 +_,10 @@
              component1 = Component.translatable("selectWorld.backupWarning.customized");
          } else {
              component = Component.translatable("selectWorld.backupQuestion.experimental");
@@ -21,7 +21,7 @@
          }
  
          this.minecraft.setScreen(new BackupConfirmScreen(p_307323_, (p_307085_, p_307086_) -> {
-@@ -377,10 +_,19 @@
+@@ -381,10 +_,19 @@
          WorldData worlddata = p_330774_.worldData();
          boolean flag = worlddata.worldGenOptions().isOldCustomizedWorld();
          boolean flag1 = worlddata.worldGenSettingsLifecycle() != Lifecycle.stable();

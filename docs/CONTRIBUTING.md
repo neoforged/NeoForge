@@ -22,7 +22,7 @@ Contributing to NeoForge
    - Run `gradlew :tests:runGameTestServer` or `Tests: GameTestServer` from IDE
    - Run `gradlew :tests:runGameTestClient` or `Tests: GameTestClient` from IDE
    - If possible, write an automated test under the tests project. See [NEOGAMETESTS.md](NEOGAMETESTS.md) for more info.
-10. Run `gradlew unpackSourcePatches` to generate patch-files from the patched sources
+10. Run `gradlew genPatches` to generate patch-files from the patched sources
 11. Run `gradlew applyAllFormatting` to automatically format sources
 12. Check correct formatting with `gradlew spotlessCheck`
 13. Commit & Push

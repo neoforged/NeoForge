@@ -43,7 +43,7 @@ public class SmoothQuadLighter extends QuadLighter {
                 for (int z = 0; z <= 2; z++) {
                     pos.setWithOffset(origin, x - 1, y - 1, z - 1);
                     BlockState neighborState = level.getBlockState(pos);
-                    t[x][y][z] = neighborState.getLightBlock(level, pos) < 15;
+                    t[x][y][z] = neighborState.getLightBlock() < 15;
                     int brightness = LevelRenderer.getLightColor(level, neighborState, pos);
                     s[x][y][z] = LightTexture.sky(brightness);
                     b[x][y][z] = LightTexture.block(brightness);
@@ -58,7 +58,7 @@ public class SmoothQuadLighter extends QuadLighter {
             BlockState thisStateShape = state.canOcclude() && state.useShapeForLightOcclusion() ? state : Blocks.AIR.defaultBlockState();
             BlockState otherStateShape = neighborState.canOcclude() && neighborState.useShapeForLightOcclusion() ? neighborState : Blocks.AIR.defaultBlockState();
 
-            if (neighborState.getLightBlock(level, pos) == 15 || Shapes.faceShapeOccludes(thisStateShape.getFaceOcclusionShape(level, origin, side), otherStateShape.getFaceOcclusionShape(level, pos, side.getOpposite()))) {
+            if (neighborState.getLightBlock() == 15 || Shapes.faceShapeOccludes(thisStateShape.getFaceOcclusionShape(side), otherStateShape.getFaceOcclusionShape(side.getOpposite()))) {
                 int x = side.getStepX() + 1;
                 int y = side.getStepY() + 1;
                 int z = side.getStepZ() + 1;

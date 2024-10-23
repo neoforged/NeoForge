@@ -96,9 +96,12 @@ public abstract class RenderHighlightEvent extends Event {
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Block extends RenderHighlightEvent implements ICancellableEvent {
+        private final boolean forTranslucentBlocks;
+
         @ApiStatus.Internal
-        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource) {
+        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource, boolean forTranslucentBlocks) {
             super(levelRenderer, camera, target, deltaTracker, poseStack, bufferSource);
+            this.forTranslucentBlocks = forTranslucentBlocks;
         }
 
         /**
@@ -107,6 +110,13 @@ public abstract class RenderHighlightEvent extends Event {
         @Override
         public BlockHitResult getTarget() {
             return (BlockHitResult) super.target;
+        }
+
+        /**
+         * {@return whether the event is fired for outlines on translucent or non-translucent blocks}
+         */
+        public boolean isForTranslucentBlocks() {
+            return forTranslucentBlocks;
         }
     }
 
@@ -118,6 +128,7 @@ public abstract class RenderHighlightEvent extends Event {
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
+    // TODO porting: reevaluate
     public static class Entity extends RenderHighlightEvent {
         @ApiStatus.Internal
         public Entity(LevelRenderer levelRenderer, Camera camera, EntityHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource) {

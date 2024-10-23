@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": {
-      "tag": "c:cobblestones/normal"
-    },
-    "Q": {
-      "item": "minecraft:quartz"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    }
+    "#": "#c:cobblestones/normal",
+    "Q": "minecraft:quartz",
+    "R": "minecraft:redstone"
   },
   "pattern": [
     "###",

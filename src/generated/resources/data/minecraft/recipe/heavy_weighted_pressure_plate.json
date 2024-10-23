@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": {
-      "tag": "c:ingots/iron"
-    }
+    "#": "#c:ingots/iron"
   },
   "pattern": [
     "##"

@@ -1,22 +1,22 @@
 --- a/net/minecraft/client/renderer/ItemBlockRenderTypes.java
 +++ b/net/minecraft/client/renderer/ItemBlockRenderTypes.java
-@@ -20,6 +_,7 @@
+@@ -18,6 +_,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public class ItemBlockRenderTypes {
 +    @Deprecated
-     private static final Map<Block, RenderType> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_353020_ -> {
+     private static final Map<Block, RenderType> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_378824_ -> {
          RenderType rendertype = RenderType.tripwire();
-         p_353020_.put(Blocks.TRIPWIRE, rendertype);
-@@ -335,6 +_,7 @@
-         p_353020_.put(Blocks.BUBBLE_COLUMN, rendertype3);
-         p_353020_.put(Blocks.TINTED_GLASS, rendertype3);
+         p_378824_.put(Blocks.TRIPWIRE, rendertype);
+@@ -340,6 +_,7 @@
+         p_378824_.put(Blocks.BUBBLE_COLUMN, rendertype3);
+         p_378824_.put(Blocks.TINTED_GLASS, rendertype3);
      });
 +    @Deprecated
      private static final Map<Fluid, RenderType> TYPE_BY_FLUID = Util.make(Maps.newHashMap(), p_109290_ -> {
          RenderType rendertype = RenderType.translucent();
          p_109290_.put(Fluids.FLOWING_WATER, rendertype);
-@@ -342,6 +_,8 @@
+@@ -347,6 +_,8 @@
      });
      private static boolean renderCutout;
  
@@ -25,7 +25,7 @@
      public static RenderType getChunkRenderType(BlockState p_109283_) {
          Block block = p_109283_.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -352,6 +_,8 @@
+@@ -357,6 +_,8 @@
          }
      }
  
@@ -34,25 +34,23 @@
      public static RenderType getMovingBlockRenderType(BlockState p_109294_) {
          Block block = p_109294_.getBlock();
          if (block instanceof LeavesBlock) {
-@@ -366,6 +_,8 @@
+@@ -371,11 +_,15 @@
          }
      }
  
-+    /** @deprecated Forge: Use {@link net.neoforged.neoforge.client.RenderTypeHelper#getEntityRenderType(RenderType, boolean)} while iterating through {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
++    /** @deprecated Forge: Use {@link net.neoforged.neoforge.client.RenderTypeHelper#getEntityRenderType(RenderType)} while iterating through {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
 +    @Deprecated // Note: this method does NOT support model-based render types
-     public static RenderType getRenderType(BlockState p_109285_, boolean p_109286_) {
-         RenderType rendertype = getChunkRenderType(p_109285_);
-         if (rendertype == RenderType.translucent()) {
-@@ -379,6 +_,8 @@
-         }
+     public static RenderType getRenderType(BlockState p_366653_) {
+         RenderType rendertype = getChunkRenderType(p_366653_);
+         return rendertype == RenderType.translucent() ? Sheets.translucentItemSheet() : Sheets.cutoutBlockSheet();
      }
  
-+    /** @deprecated Forge: Use {@link net.minecraft.client.resources.model.BakedModel#getRenderPasses(ItemStack, boolean)} and {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(ItemStack, boolean)}. */
++    /** @deprecated Forge: Use {@link net.minecraft.client.resources.model.BakedModel#getRenderPasses(ItemStack)} and {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(ItemStack)}. */
 +    @Deprecated // Note: this method does NOT support model-based render types
-     public static RenderType getRenderType(ItemStack p_109280_, boolean p_109281_) {
-         Item item = p_109280_.getItem();
-         if (item instanceof BlockItem) {
-@@ -396,5 +_,78 @@
+     public static RenderType getRenderType(ItemStack p_366701_) {
+         if (p_366701_.getItem() instanceof BlockItem blockitem) {
+             Block block = blockitem.getBlock();
+@@ -392,5 +_,78 @@
  
      public static void setFancy(boolean p_109292_) {
          renderCutout = p_109292_;

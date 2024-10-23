@@ -6,11 +6,13 @@
 package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.MapCodec;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
@@ -20,15 +22,13 @@ public record CompoundIngredient(List<Ingredient> children) implements ICustomIn
     public CompoundIngredient {
         if (children.isEmpty()) {
             // Empty ingredients are always represented as Ingredient.EMPTY.
-            throw new IllegalArgumentException("Compound ingredient must have at least one child");
+            throw new IllegalArgumentException("Compound ingredient must have at least one child.");
         }
     }
-    public static final MapCodec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::children);
+    public static final MapCodec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.CODEC.listOf(1, Integer.MAX_VALUE), "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::children);
 
     /** Creates a compound ingredient from the given list of ingredients */
     public static Ingredient of(Ingredient... children) {
-        if (children.length == 0)
-            return Ingredient.EMPTY;
         if (children.length == 1)
             return children[0];
 
@@ -36,8 +36,8 @@ public record CompoundIngredient(List<Ingredient> children) implements ICustomIn
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return children.stream().flatMap(child -> Arrays.stream(child.getItems()));
+    public Stream<Holder<Item>> items() {
+        return children.stream().flatMap(child -> child.items().stream());
     }
 
     @Override
@@ -63,5 +63,10 @@ public record CompoundIngredient(List<Ingredient> children) implements ICustomIn
     @Override
     public IngredientType<?> getType() {
         return NeoForgeMod.COMPOUND_INGREDIENT_TYPE.get();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return new SlotDisplay.Composite(children.stream().map(Ingredient::display).toList());
     }
 }

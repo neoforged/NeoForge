@@ -1,11 +1,11 @@
 --- a/net/minecraft/server/WorldLoader.java
 +++ b/net/minecraft/server/WorldLoader.java
-@@ -33,7 +_,7 @@
-             CloseableResourceManager closeableresourcemanager = pair.getSecond();
-             LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = RegistryLayer.createRegistryAccess();
-             LayeredRegistryAccess<RegistryLayer> layeredregistryaccess1 = loadAndReplaceLayer(
--                closeableresourcemanager, layeredregistryaccess, RegistryLayer.WORLDGEN, RegistryDataLoader.WORLDGEN_REGISTRIES
-+                closeableresourcemanager, layeredregistryaccess, RegistryLayer.WORLDGEN, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries()
+@@ -41,7 +_,7 @@
              );
-             RegistryAccess.Frozen registryaccess$frozen = layeredregistryaccess1.getAccessForLoading(RegistryLayer.DIMENSIONS);
-             RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(
+             RegistryAccess.Frozen registryaccess$frozen = layeredregistryaccess.getAccessForLoading(RegistryLayer.WORLDGEN);
+             List<HolderLookup.RegistryLookup<?>> list1 = TagLoader.buildUpdatedLookups(registryaccess$frozen, list);
+-            RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(closeableresourcemanager, list1, RegistryDataLoader.WORLDGEN_REGISTRIES);
++            RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(closeableresourcemanager, list1, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries());
+             List<HolderLookup.RegistryLookup<?>> list2 = Stream.concat(list1.stream(), registryaccess$frozen1.listRegistries()).toList();
+             RegistryAccess.Frozen registryaccess$frozen2 = RegistryDataLoader.load(closeableresourcemanager, list2, RegistryDataLoader.DIMENSION_REGISTRIES);
+             WorldDataConfiguration worlddataconfiguration = pair.getFirst();

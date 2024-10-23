@@ -1,21 +1,21 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -18,12 +_,14 @@
-     final CraftingBookCategory category;
-     final ItemStack result;
-     final NonNullList<Ingredient> ingredients;
+@@ -24,12 +_,14 @@
+     final List<Ingredient> ingredients;
+     @Nullable
+     private PlacementInfo placementInfo;
 +    private final boolean isSimple;
  
-     public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, ItemStack p_252071_, NonNullList<Ingredient> p_250689_) {
+     public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, ItemStack p_252071_, List<Ingredient> p_361103_) {
          this.group = p_249640_;
          this.category = p_249390_;
          this.result = p_252071_;
-         this.ingredients = p_250689_;
-+        this.isSimple = p_250689_.stream().allMatch(Ingredient::isSimple);
+         this.ingredients = p_361103_;
++        this.isSimple = p_361103_.stream().allMatch(Ingredient::isSimple);
      }
  
      @Override
-@@ -54,6 +_,12 @@
+@@ -59,6 +_,12 @@
      public boolean matches(CraftingInput p_346123_, Level p_44263_) {
          if (p_346123_.ingredientCount() != this.ingredients.size()) {
              return false;
@@ -28,19 +28,12 @@
          } else {
              return p_346123_.size() == 1 && this.ingredients.size() == 1
                  ? this.ingredients.getFirst().test(p_346123_.getItem(0))
-@@ -81,12 +_,12 @@
-                             .fieldOf("ingredients")
-                             .flatXmap(
-                                 p_301021_ -> {
--                                    Ingredient[] aingredient = p_301021_.stream().filter(p_300883_ -> !p_300883_.isEmpty()).toArray(Ingredient[]::new);
-+                                    Ingredient[] aingredient = p_301021_.toArray(Ingredient[]::new); // Neo skip the empty check and immediately create the array.
-                                     if (aingredient.length == 0) {
-                                         return DataResult.error(() -> "No ingredients for shapeless recipe");
-                                     } else {
--                                        return aingredient.length > 9
--                                            ? DataResult.error(() -> "Too many ingredients for shapeless recipe")
-+                                        return aingredient.length > ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth
-+                                            ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth))
-                                             : DataResult.success(NonNullList.of(Ingredient.EMPTY, aingredient));
-                                     }
-                                 },
+@@ -87,7 +_,7 @@
+                         Codec.STRING.optionalFieldOf("group", "").forGetter(p_301127_ -> p_301127_.group),
+                         CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_301133_ -> p_301133_.category),
+                         ItemStack.STRICT_CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
+-                        Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
++                        Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth)).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
+                     )
+                     .apply(p_360072_, ShapelessRecipe::new)
+         );

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -88,6 +_,10 @@
+@@ -84,6 +_,10 @@
      protected final Map<ResourceLocation, byte[]> serverCookies;
      protected Map<String, String> customReportDetails;
      protected ServerLinks serverLinks;
@@ -11,8 +11,8 @@
  
      protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
          this.minecraft = p_295454_;
-@@ -100,6 +_,8 @@
-         this.strictErrorHandling = p_294647_.strictErrorHandling();
+@@ -95,6 +_,8 @@
+         this.serverCookies = p_294647_.serverCookies();
          this.customReportDetails = p_294647_.customReportDetails();
          this.serverLinks = p_294647_.serverLinks();
 +        // Neo: Set the connection type based on the cookie from the previous phase.
@@ -20,7 +20,7 @@
      }
  
      @Override
-@@ -149,6 +_,33 @@
+@@ -142,6 +_,33 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
@@ -54,7 +54,7 @@
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
              PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-@@ -285,6 +_,8 @@
+@@ -278,6 +_,8 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -63,7 +63,7 @@
          this.connection.send(p_295097_);
      }
  
-@@ -292,6 +_,9 @@
+@@ -285,6 +_,9 @@
      public void onDisconnect(DisconnectionDetails p_350760_) {
          this.telemetryManager.onDisconnect();
          this.minecraft.disconnect(this.createDisconnectScreen(p_350760_), this.isTransferring);
@@ -73,7 +73,7 @@
          LOGGER.warn("Client disconnected with reason: {}", p_350760_.reason().getString());
      }
  
-@@ -415,5 +_,10 @@
+@@ -409,5 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }

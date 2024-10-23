@@ -2,20 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:gems/diamond"
-    },
+    "#": "#c:gems/diamond",
     "C": [
-      {
-        "item": "minecraft:copper_block"
-      },
-      {
-        "item": "minecraft:waxed_copper_block"
-      }
+      "minecraft:copper_block",
+      "minecraft:waxed_copper_block"
     ],
-    "S": {
-      "item": "minecraft:bolt_armor_trim_smithing_template"
-    }
+    "S": "minecraft:bolt_armor_trim_smithing_template"
   },
   "pattern": [
     "#S#",
