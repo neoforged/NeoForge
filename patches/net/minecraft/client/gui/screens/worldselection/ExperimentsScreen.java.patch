@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/gui/screens/worldselection/ExperimentsScreen.java
++++ b/net/minecraft/client/gui/screens/worldselection/ExperimentsScreen.java
+@@ -50,6 +_,11 @@
+ 
+     @Override
+     protected void init() {
++        if (net.minecraft.world.flag.FeatureFlags.REGISTRY.hasAnyModdedFlags()) {
++            this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ScrollableExperimentsScreen(this.parent, this.packRepository, this.output));
++            return;
++        }
++
+         this.layout.addTitleHeader(TITLE, this.font);
+         LinearLayout linearlayout = this.layout.addToContents(LinearLayout.vertical());
+         linearlayout.addChild(new MultiLineTextWidget(INFO, this.font).setMaxWidth(310), p_293611_ -> p_293611_.paddingBottom(15));
