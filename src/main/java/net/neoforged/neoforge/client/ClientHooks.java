@@ -778,11 +778,8 @@ public class ClientHooks {
         return preEvent;
     }
 
-    // TODO porting: potentially replace with a background texture event
-    public static RenderTooltipEvent.Color onRenderTooltipColor(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components) {
-        var colorEvent = new RenderTooltipEvent.Color(stack, graphics, x, y, font, 0xf0100010, 0x505000FF, 0x5028007f, components);
-        NeoForge.EVENT_BUS.post(colorEvent);
-        return colorEvent;
+    public static RenderTooltipEvent.Texture onRenderTooltipTexture(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components, @Nullable ResourceLocation texture) {
+        return NeoForge.EVENT_BUS.post(new RenderTooltipEvent.Texture(stack, graphics, x, y, font, components, texture));
     }
 
     public static List<ClientTooltipComponent> gatherTooltipComponents(ItemStack stack, List<? extends FormattedText> textElements, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {

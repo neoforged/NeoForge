@@ -18,6 +18,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -115,6 +116,8 @@ public class CustomTooltipTest {
     }
 
     private static class ClientEventHandler {
+        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ID, "test");
+
         @SubscribeEvent
         public static void gatherTooltips(RenderTooltipEvent.GatherComponents event) {
             if (event.getItemStack().getItem() == Items.STICK) {
@@ -126,12 +129,9 @@ public class CustomTooltipTest {
         }
 
         @SubscribeEvent
-        public static void preTooltip(RenderTooltipEvent.Color event) {
+        public static void preTooltip(RenderTooltipEvent.Texture event) {
             if (event.getItemStack().getItem() == Items.APPLE) {
-                event.setBackgroundStart(0xFF0000FF);
-                event.setBackgroundEnd(0xFFFFFF00);
-                event.setBorderStart(0xFFFF0000);
-                event.setBorderEnd(0xFF000011);
+                event.setTexture(TEXTURE);
             }
         }
     }

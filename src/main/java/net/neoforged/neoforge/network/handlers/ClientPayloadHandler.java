@@ -151,10 +151,7 @@ public final class ClientPayloadHandler {
     public static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
         @SuppressWarnings("resource")
         final ClientLevel level = Minecraft.getInstance().level;
-        level.getLevelData().setGameTime(payload.gameTime());
-        level.getLevelData().setDayTime(payload.dayTime());
-        // TODO porting: check whether the custom time system relies on this
-        //level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(payload.gameRule(), null);
+        level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
         level.setDayTimeFraction(payload.dayTimeFraction());
         level.setDayTimePerTick(payload.dayTimePerTick());
     }

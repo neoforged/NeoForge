@@ -48,12 +48,10 @@ class NeoForgeRegistryCallbacks {
         public void onBake(Registry<Block> registry) {
             // Vanilla does this in Blocks.<clinit>
 
-            // Init cache and loot table for new blocks only (the cache init is expensive).
+            // Init cache for new blocks only (the cache init is expensive).
             // State cache init cannot be done in onAdd because some of it might depend on other registries being populated in mod code.
-            // Loot table init cannot be done in onAdd because the loot table supplier might depend on blocks registered later.
             for (Block block : addedBlocks) {
                 block.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
-                block.getLootTable();
             }
             addedBlocks.clear();
 
