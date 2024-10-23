@@ -1,6 +1,28 @@
 --- a/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
-@@ -66,22 +_,28 @@
+@@ -54,34 +_,47 @@
+         float p_117104_,
+         float p_117105_
+     ) {
+-        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.CHEST, p_117098_, this.getArmorModel(EquipmentSlot.CHEST));
+-        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.LEGS, p_117098_, this.getArmorModel(EquipmentSlot.LEGS));
+-        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.FEET, p_117098_, this.getArmorModel(EquipmentSlot.FEET));
+-        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.HEAD, p_117098_, this.getArmorModel(EquipmentSlot.HEAD));
++        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.CHEST, p_117098_, this.getArmorModel(EquipmentSlot.CHEST), p_117100_, p_117101_, p_117102_, p_117103_, p_117104_, p_117105_);
++        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.LEGS, p_117098_, this.getArmorModel(EquipmentSlot.LEGS), p_117100_, p_117101_, p_117102_, p_117103_, p_117104_, p_117105_);
++        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.FEET, p_117098_, this.getArmorModel(EquipmentSlot.FEET), p_117100_, p_117101_, p_117102_, p_117103_, p_117104_, p_117105_);
++        this.renderArmorPiece(p_117096_, p_117097_, p_117099_, EquipmentSlot.HEAD, p_117098_, this.getArmorModel(EquipmentSlot.HEAD), p_117100_, p_117101_, p_117102_, p_117103_, p_117104_, p_117105_);
+     }
+ 
++    /** @deprecated Neo: use {@link #renderArmorPiece(PoseStack, MultiBufferSource, LivingEntity, EquipmentSlot, int, HumanoidModel, float, float, float, float, float, float)} instead. */
++    @Deprecated
+     private void renderArmorPiece(PoseStack p_117119_, MultiBufferSource p_117120_, T p_117121_, EquipmentSlot p_117122_, int p_117123_, A p_117124_) {
++        this.renderArmorPiece(p_117119_, p_117120_, p_117121_, p_117122_, p_117123_, p_117124_, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
++    }
++
++    private void renderArmorPiece(PoseStack p_117119_, MultiBufferSource p_117120_, T p_117121_, EquipmentSlot p_117122_, int p_117123_, A p_117124_, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+         ItemStack itemstack = p_117121_.getItemBySlot(p_117122_);
+         if (itemstack.getItem() instanceof ArmorItem armoritem) {
              if (armoritem.getEquipmentSlot() == p_117122_) {
                  this.getParentModel().copyPropertiesTo(p_117124_);
                  this.setPartVisibility(p_117124_, p_117122_);
@@ -13,6 +35,7 @@
 -                    int j = armormaterial$layer.dyeable() ? i : -1;
 -                    this.renderModel(p_117119_, p_117120_, p_117123_, p_117124_, j, armormaterial$layer.texture(flag));
 +                net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack);
++                extensions.setupModelAnimations(p_117121_, itemstack, p_117122_, model, limbSwing, limbSwingAmount, partialTick, ageInTicks, netHeadYaw, headPitch);
 +                int fallbackColor = extensions.getDefaultDyeColor(itemstack);
 +                for (int layerIdx = 0; layerIdx < armormaterial.layers().size(); layerIdx++) {
 +                    ArmorMaterial.Layer armormaterial$layer = armormaterial.layers().get(layerIdx);

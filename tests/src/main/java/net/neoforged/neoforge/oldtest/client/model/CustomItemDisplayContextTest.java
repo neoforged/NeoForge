@@ -34,6 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -167,6 +168,12 @@ public class CustomItemDisplayContextTest {
                     .translation(-2.25f, 1.5f, -0.25f).scale(0.48f)
                     .end()
                     .end();
+
+            handheldItem(Items.WOODEN_SWORD);
+
+            spawnEggItem(Items.SHEEP_SPAWN_EGG);
+
+            simpleBlockItem(Blocks.ACACIA_PLANKS);
         }
     }
 
