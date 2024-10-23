@@ -3,8 +3,12 @@
   "category": "building",
   "group": "mossy_cobblestone",
   "ingredients": [
-    "#c:cobblestones/normal",
-    "minecraft:vine"
+    {
+      "tag": "c:cobblestones/normal"
+    },
+    {
+      "item": "minecraft:vine"
+    }
   ],
   "result": {
     "count": 1,

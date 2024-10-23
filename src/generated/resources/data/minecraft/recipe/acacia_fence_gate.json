@@ -3,8 +3,12 @@
   "category": "redstone",
   "group": "wooden_fence_gate",
   "key": {
-    "#": "#c:rods/wooden",
-    "W": "minecraft:acacia_planks"
+    "#": {
+      "tag": "c:rods/wooden"
+    },
+    "W": {
+      "item": "minecraft:acacia_planks"
+    }
   },
   "pattern": [
     "#W#",

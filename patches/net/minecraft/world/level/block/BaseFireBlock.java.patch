@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -152,6 +_,7 @@
+@@ -143,6 +_,7 @@
          if (!p_49282_.is(p_49279_.getBlock())) {
              if (inPortalDimension(p_49280_)) {
                  Optional<PortalShape> optional = PortalShape.findEmptyPortalShape(p_49280_, p_49281_, Direction.Axis.X);
 +                optional = net.neoforged.neoforge.event.EventHooks.onTrySpawnPortal(p_49280_, p_49281_, optional);
                  if (optional.isPresent()) {
-                     optional.get().createPortalBlocks(p_49280_);
+                     optional.get().createPortalBlocks();
                      return;
-@@ -194,7 +_,7 @@
+@@ -185,7 +_,7 @@
              boolean flag = false;
  
              for (Direction direction : Direction.values()) {

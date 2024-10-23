@@ -8,7 +8,6 @@ package net.neoforged.neoforge.oldtest.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
@@ -19,7 +18,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -42,22 +40,22 @@ public class CustomPlantTypeTest {
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {
         event.register(Registries.BLOCK, helper -> {
-            helper.register(CUSTOM_SOIL.getId(), new CustomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).setId(CUSTOM_SOIL.unwrapKey().orElseThrow())));
-            helper.register(CUSTOM_PLANT.getId(), new CustomPlantBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().sound(SoundType.GRASS).setId(CUSTOM_PLANT.unwrapKey().orElseThrow())));
+            helper.register(CUSTOM_SOIL.getId(), new CustomBlock());
+            helper.register(CUSTOM_PLANT.getId(), new CustomPlantBlock());
         });
     }
 
     @SubscribeEvent
     public static void registerItems(RegisterEvent event) {
         event.register(Registries.ITEM, helper -> {
-            helper.register(CUSTOM_SOIL.getId(), new BlockItem(CUSTOM_SOIL.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, CUSTOM_SOIL.getId())).useBlockDescriptionPrefix()));
-            helper.register(CUSTOM_PLANT.getId(), new BlockItem(CUSTOM_PLANT.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, CUSTOM_PLANT.getId())).useBlockDescriptionPrefix()));
+            helper.register(CUSTOM_SOIL.getId(), new BlockItem(CUSTOM_SOIL.get(), new Item.Properties()));
+            helper.register(CUSTOM_PLANT.getId(), new BlockItem(CUSTOM_PLANT.get(), new Item.Properties()));
         });
     }
 
     public static class CustomBlock extends Block {
-        public CustomBlock(Properties props) {
-            super(props);
+        public CustomBlock() {
+            super(Properties.of().mapColor(MapColor.STONE));
         }
 
         @Override
@@ -70,8 +68,8 @@ public class CustomPlantTypeTest {
     }
 
     public static class CustomPlantBlock extends FlowerBlock {
-        public CustomPlantBlock(Properties props) {
-            super(MobEffects.WEAKNESS, 9, props);
+        public CustomPlantBlock() {
+            super(MobEffects.WEAKNESS, 9, Properties.of().mapColor(MapColor.PLANT).noCollission().sound(SoundType.GRASS));
         }
 
         @Override

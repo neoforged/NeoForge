@@ -19,8 +19,10 @@ public interface IModelBakerExtension {
     @Nullable
     UnbakedModel getTopLevelModel(ModelResourceLocation location);
 
+    @Nullable
     BakedModel bake(ResourceLocation location, ModelState state, Function<Material, TextureAtlasSprite> sprites);
 
+    @Nullable
     BakedModel bakeUncached(UnbakedModel model, ModelState state, Function<Material, TextureAtlasSprite> sprites);
 
     Function<Material, TextureAtlasSprite> getModelTextureGetter();

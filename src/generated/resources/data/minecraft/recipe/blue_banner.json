@@ -3,8 +3,12 @@
   "category": "misc",
   "group": "banner",
   "key": {
-    "#": "minecraft:blue_wool",
-    "|": "#c:rods/wooden"
+    "#": {
+      "item": "minecraft:blue_wool"
+    },
+    "|": {
+      "tag": "c:rods/wooden"
+    }
   },
   "pattern": [
     "###",

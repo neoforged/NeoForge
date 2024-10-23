@@ -56,7 +56,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
     }
 
     void fill() {
-        ((BaseMappedRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze(true);
+        ((BaseMappedRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze();
 
         for (final var registry : this.registries) {
             registerToRootRegistry(registry);

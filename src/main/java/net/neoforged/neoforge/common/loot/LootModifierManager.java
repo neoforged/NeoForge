@@ -25,13 +25,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonElement> {
+public class LootModifierManager extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Logger LOGGER = LogManager.getLogger();
 
@@ -39,7 +38,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonEl
     private static final String folder = "loot_modifiers";
 
     public LootModifierManager() {
-        super(ExtraCodecs.JSON, folder);
+        super(GSON, folder);
     }
 
     @Override

@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/projectile/ShulkerBullet.java
 +++ b/net/minecraft/world/entity/projectile/ShulkerBullet.java
-@@ -228,7 +_,7 @@
-             this.handlePortal();
-         }
+@@ -218,7 +_,7 @@
+             }
  
--        if (hitresult != null && this.isAlive() && hitresult.getType() != HitResult.Type.MISS) {
-+        if (hitresult != null && this.isAlive() && hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
-             this.hitTargetOrDeflectSelf(hitresult);
+             HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+-            if (hitresult.getType() != HitResult.Type.MISS) {
++            if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
+                 this.hitTargetOrDeflectSelf(hitresult);
+             }
          }
- 

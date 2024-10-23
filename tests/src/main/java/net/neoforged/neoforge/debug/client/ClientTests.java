@@ -70,14 +70,14 @@ public class ClientTests {
             if (stickKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.STICK)) {
-                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal("stick found!"));
+                    player.sendSystemMessage(Component.literal("stick found!"));
                     test.pass();
                 }
             }
             if (rockKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.COBBLESTONE)) {
-                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal("rock found!"));
+                    player.sendSystemMessage(Component.literal("rock found!"));
                     test.pass();
                 }
             }

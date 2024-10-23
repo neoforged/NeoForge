@@ -7,7 +7,6 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.FMLConfig;
@@ -50,7 +49,6 @@ public class ModsButton extends Button {
         int h = getHeight();
 
         guiGraphics.blit(
-                RenderType::guiTextured,
                 VERSION_CHECK_ICONS,
                 x + w - (h / 2 + 4),
                 y + (h / 2 - 4),

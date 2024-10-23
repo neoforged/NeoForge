@@ -5,19 +5,19 @@
 
 package net.neoforged.neoforge.event;
 
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.neoforged.bus.api.Event;
 
 /**
  * Fired when tags are updated on either server or client. This event can be used to refresh data that depends on tags.
  */
 public class TagsUpdatedEvent extends Event {
-    private final HolderLookup.Provider lookupProvider;
+    private final RegistryAccess registryAccess;
     private final UpdateCause updateCause;
     private final boolean integratedServer;
 
-    public TagsUpdatedEvent(HolderLookup.Provider lookupProvider, boolean fromClientPacket, boolean isIntegratedServerConnection) {
-        this.lookupProvider = lookupProvider;
+    public TagsUpdatedEvent(RegistryAccess registryAccess, boolean fromClientPacket, boolean isIntegratedServerConnection) {
+        this.registryAccess = registryAccess;
         this.updateCause = fromClientPacket ? UpdateCause.CLIENT_PACKET_RECEIVED : UpdateCause.SERVER_DATA_LOAD;
         this.integratedServer = isIntegratedServerConnection;
     }
@@ -25,8 +25,8 @@ public class TagsUpdatedEvent extends Event {
     /**
      * @return The dynamic registries that have had their tags rebound.
      */
-    public HolderLookup.Provider getLookupProvider() {
-        return lookupProvider;
+    public RegistryAccess getRegistryAccess() {
+        return registryAccess;
     }
 
     /**

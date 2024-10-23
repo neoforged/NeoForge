@@ -1,18 +1,16 @@
 --- a/net/minecraft/world/entity/animal/Fox.java
 +++ b/net/minecraft/world/entity/animal/Fox.java
-@@ -671,13 +_,18 @@
+@@ -677,13 +_,16 @@
  
      @Override
      protected void dropAllDeathLoot(ServerLevel p_348640_, DamageSource p_28536_) {
 +        super.dropAllDeathLoot(p_348640_, p_28536_);
 +    }
-+
-+    @Override
-+    protected void dropEquipment(ServerLevel p_348640_) { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
-+        super.dropEquipment(p_348640_);
++    protected void dropEquipment() { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
++        super.dropEquipment();
          ItemStack itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
          if (!itemstack.isEmpty()) {
-             this.spawnAtLocation(p_348640_, itemstack);
+             this.spawnAtLocation(itemstack);
              this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
          }
  
@@ -20,9 +18,9 @@
      }
  
      public static boolean isPathClear(Fox p_28472_, LivingEntity p_28473_) {
-@@ -837,6 +_,17 @@
+@@ -842,6 +_,17 @@
          protected void breed() {
-             ServerLevel serverlevel = this.level;
+             ServerLevel serverlevel = (ServerLevel)this.level;
              Fox fox = (Fox)this.animal.getBreedOffspring(serverlevel, this.partner);
 +            final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, fox);
 +            final boolean cancelled = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
@@ -38,16 +36,16 @@
              if (fox != null) {
                  ServerPlayer serverplayer = this.animal.getLoveCause();
                  ServerPlayer serverplayer1 = this.partner.getLoveCause();
-@@ -914,7 +_,7 @@
+@@ -919,7 +_,7 @@
          }
  
          protected void onReachedTarget() {
--            if (getServerLevel(Fox.this.level()).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(Fox.this.level()), Fox.this)) {
+-            if (Fox.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++            if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(Fox.this.level(), Fox.this)) {
                  BlockState blockstate = Fox.this.level().getBlockState(this.blockPos);
                  if (blockstate.is(Blocks.SWEET_BERRY_BUSH)) {
                      this.pickSweetBerries(blockstate);
-@@ -973,7 +_,7 @@
+@@ -978,7 +_,7 @@
  
          @Override
          public boolean canUse() {

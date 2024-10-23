@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
+import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -18,7 +19,7 @@ public class StencilEnableTest {
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
-        // TODO 1.21.2 if (ENABLED)
-        // TODO 1.21.2   event.enqueueWork(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
+        if (ENABLED)
+            event.enqueueWork(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
     }
 }

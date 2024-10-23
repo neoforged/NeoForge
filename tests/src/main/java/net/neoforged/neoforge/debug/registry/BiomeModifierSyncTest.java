@@ -92,8 +92,8 @@ public class BiomeModifierSyncTest {
                 return;
             }
             RegistryAccess access = changer.registryAccess();
-            access.lookup(Registries.BIOME).ifPresentOrElse(biomes -> {
-                var taiga = biomes.getValue(Biomes.TAIGA);
+            access.registry(Registries.BIOME).ifPresentOrElse(biomes -> {
+                var taiga = biomes.get(Biomes.TAIGA);
                 if (taiga == null) {
                     framework.changeStatus(test, Test.Status.failed("Taiga biome not found"), changer);
                     return;

@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "/": "#c:rods/wooden",
-    "_": "minecraft:smooth_stone_slab"
+    "/": {
+      "tag": "c:rods/wooden"
+    },
+    "_": {
+      "item": "minecraft:smooth_stone_slab"
+    }
   },
   "pattern": [
     "///",

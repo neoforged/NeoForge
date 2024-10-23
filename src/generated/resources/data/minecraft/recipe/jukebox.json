@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#minecraft:planks",
-    "X": "#c:gems/diamond"
+    "#": {
+      "tag": "minecraft:planks"
+    },
+    "X": {
+      "tag": "c:gems/diamond"
+    }
   },
   "pattern": [
     "###",

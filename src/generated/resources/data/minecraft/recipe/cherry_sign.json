@@ -3,8 +3,12 @@
   "category": "misc",
   "group": "wooden_sign",
   "key": {
-    "#": "minecraft:cherry_planks",
-    "X": "#c:rods/wooden"
+    "#": {
+      "item": "minecraft:cherry_planks"
+    },
+    "X": {
+      "tag": "c:rods/wooden"
+    }
   },
   "pattern": [
     "###",

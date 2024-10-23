@@ -9,15 +9,21 @@ import net.minecraft.client.renderer.RenderType;
 
 /**
  * A set of functionally equivalent shaders. One using {@link com.mojang.blaze3d.vertex.DefaultVertexFormat#BLOCK},
- * and the other one using {@link com.mojang.blaze3d.vertex.DefaultVertexFormat#NEW_ENTITY}.
+ * and the other two using {@link com.mojang.blaze3d.vertex.DefaultVertexFormat#NEW_ENTITY}.
+ * {@code entityFabulous} may support custom render targets and other aspects of the fabulous pipeline, or can otherwise
+ * be the same as {@code entity}.
  */
-public record RenderTypeGroup(RenderType block, RenderType entity) {
+public record RenderTypeGroup(RenderType block, RenderType entity, RenderType entityFabulous) {
     public RenderTypeGroup {
-        if ((block == null) != (entity == null))
+        if ((block == null) != (entity == null) || (block == null) != (entityFabulous == null))
             throw new IllegalArgumentException("The render types in a group must either be all null, or all non-null.");
     }
 
-    public static RenderTypeGroup EMPTY = new RenderTypeGroup(null, null);
+    public RenderTypeGroup(RenderType block, RenderType entity) {
+        this(block, entity, entity);
+    }
+
+    public static RenderTypeGroup EMPTY = new RenderTypeGroup(null, null, null);
 
     /**
      * {@return true if this group has render types or not. It either has all, or none}

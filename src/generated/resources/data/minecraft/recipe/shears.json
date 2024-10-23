@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": "#c:ingots/iron"
+    "#": {
+      "tag": "c:ingots/iron"
+    }
   },
   "pattern": [
     " #",

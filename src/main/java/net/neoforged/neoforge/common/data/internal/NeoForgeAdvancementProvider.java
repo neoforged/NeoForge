@@ -9,7 +9,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.Criterion;
@@ -32,18 +30,12 @@ import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.advancements.critereon.PlayerInteractTrigger;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderOwner;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.advancements.packs.VanillaAdvancementProvider;
 import net.minecraft.data.advancements.packs.VanillaHusbandryAdvancements;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -74,14 +66,14 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(ItemAbilities.SHEARS_REMOVE_ARMOR)).build(), Items.SHEARS));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build(), PiglinAi.BARTERING_ITEM));
         criteriaReplacers.add(replaceWearingPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE, predicate -> {
-            if (predicate.head().filter(item -> predicateMatches(item, ItemTags.PIGLIN_SAFE_ARMOR)).isPresent()) {
+            if (predicate.head().filter(item -> predicateMatches(item, Items.GOLDEN_HELMET)).isPresent()) {
                 return true;
-            } else if (predicate.chest().filter(item -> predicateMatches(item, ItemTags.PIGLIN_SAFE_ARMOR)).isPresent()) {
+            } else if (predicate.chest().filter(item -> predicateMatches(item, Items.GOLDEN_CHESTPLATE)).isPresent()) {
                 return true;
-            } else if (predicate.legs().filter(item -> predicateMatches(item, ItemTags.PIGLIN_SAFE_ARMOR)).isPresent()) {
+            } else if (predicate.legs().filter(item -> predicateMatches(item, Items.GOLDEN_LEGGINGS)).isPresent()) {
                 return true;
             }
-            return predicate.feet().filter(item -> predicateMatches(item, ItemTags.PIGLIN_SAFE_ARMOR)).isPresent();
+            return predicate.feet().filter(item -> predicateMatches(item, Items.GOLDEN_BOOTS)).isPresent();
         }));
         //Walk on powdered snow
         criteriaReplacers.add(replaceWearingPredicate(SnowBootsEntityPredicate.INSTANCE, predicate -> predicate.feet().filter(item -> predicateMatches(item, Items.LEATHER_BOOTS)).isPresent()));
@@ -133,13 +125,6 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
             }
         }
         return true;
-    }
-
-    private static boolean predicateMatches(ItemPredicate predicate, TagKey<Item> tagKey) {
-        return predicate.items().orElse(HolderSet.empty())
-                .unwrapKey()
-                .map(k -> k == tagKey)
-                .orElse(false);
     }
 
     private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceWearingPredicate(EntitySubPredicate subPredicate, Predicate<EntityEquipmentPredicate> shouldReplace) {
@@ -250,53 +235,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
     private record NeoForgeAdvancementGenerator(AdvancementSubProvider vanillaProvider, List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers) implements AdvancementGenerator {
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
-            // Warning: ugly code here.
-            // Wrap the registries to allow using any tag. This is used to make decoding using the codec work in `replacePlayerPredicate`.
-            var registriesWithAnyTag = new HolderLookup.Provider() {
-                @Override
-                public Stream<ResourceKey<? extends Registry<?>>> listRegistryKeys() {
-                    return registries.listRegistryKeys();
-                }
-
-                @Override
-                public <T> Optional<? extends HolderLookup.RegistryLookup<T>> lookup(ResourceKey<? extends Registry<? extends T>> p_256285_) {
-                    return registries.lookup(p_256285_);
-                }
-
-                @Override
-                public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> p_326817_) {
-                    return RegistryOps.create(p_326817_, new RegistryOps.RegistryInfoLookup() {
-                        @Override
-                        public <T> Optional<RegistryOps.RegistryInfo<T>> lookup(ResourceKey<? extends Registry<? extends T>> registry) {
-                            var builtInRegistry = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registry.location());
-                            return registries.lookup(registry)
-                                    // Need to pass the builtin registry as the holder owner to make deserialization work!
-                                    .map(lookup -> new RegistryOps.RegistryInfo<>(builtInRegistry, new HolderLookup.RegistryLookup.Delegate<>() {
-                                        @Override
-                                        public RegistryLookup<T> parent() {
-                                            return lookup;
-                                        }
-
-                                        @Override
-                                        public boolean canSerializeIn(HolderOwner<T> p_255875_) {
-                                            return parent().canSerializeIn(p_255875_);
-                                        }
-
-                                        @Override
-                                        public Optional<HolderSet.Named<T>> get(TagKey<T> tagKey) {
-                                            var ret = Delegate.super.get(tagKey);
-                                            if (ret.isEmpty()) {
-                                                ret = Optional.of(HolderSet.emptyNamed(lookup, tagKey));
-                                            }
-                                            return ret;
-                                        }
-                                    }, lookup.registryLifecycle()));
-                        }
-                    });
-                }
-            };
-            vanillaProvider.generate(registriesWithAnyTag, advancementHolder -> {
-                Advancement.Builder newBuilder = findAndReplaceInHolder(advancementHolder, registriesWithAnyTag);
+            vanillaProvider.generate(registries, advancementHolder -> {
+                Advancement.Builder newBuilder = findAndReplaceInHolder(advancementHolder, registries);
                 if (newBuilder != null) {
                     newBuilder.save(saver, advancementHolder.id(), existingFileHelper);
                 }

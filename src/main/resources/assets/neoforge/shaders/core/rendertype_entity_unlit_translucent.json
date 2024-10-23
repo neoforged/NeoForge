@@ -1,6 +1,19 @@
 {
-    "vertex": "neoforge:core/rendertype_entity_unlit_translucent",
-    "fragment": "neoforge:core/rendertype_entity_unlit_translucent",
+    "blend": {
+        "func": "add",
+        "srcrgb": "srcalpha",
+        "dstrgb": "1-srcalpha"
+    },
+    "vertex": "neoforge:rendertype_entity_unlit_translucent",
+    "fragment": "neoforge:rendertype_entity_unlit_translucent",
+    "attributes": [
+        "Position",
+        "Color",
+        "UV0",
+        "UV1",
+        "UV2",
+        "Normal"
+    ],
     "samplers": [
         { "name": "Sampler0" },
         { "name": "Sampler1" },

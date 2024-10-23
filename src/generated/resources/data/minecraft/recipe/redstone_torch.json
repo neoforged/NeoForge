@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:rods/wooden",
-    "X": "minecraft:redstone"
+    "#": {
+      "tag": "c:rods/wooden"
+    },
+    "X": {
+      "item": "minecraft:redstone"
+    }
   },
   "pattern": [
     "X",

@@ -8,8 +8,8 @@ package net.neoforged.neoforge.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -78,8 +78,8 @@ public abstract class BakedModelWrapper<T extends BakedModel> implements BakedMo
     }
 
     @Override
-    public BakedOverrides overrides() {
-        return originalModel.overrides();
+    public ItemOverrides getOverrides() {
+        return originalModel.getOverrides();
     }
 
     @Override
@@ -108,12 +108,12 @@ public abstract class BakedModelWrapper<T extends BakedModel> implements BakedMo
     }
 
     @Override
-    public List<RenderType> getRenderTypes(ItemStack itemStack) {
-        return originalModel.getRenderTypes(itemStack);
+    public List<RenderType> getRenderTypes(ItemStack itemStack, boolean fabulous) {
+        return originalModel.getRenderTypes(itemStack, fabulous);
     }
 
     @Override
-    public List<BakedModel> getRenderPasses(ItemStack itemStack) {
-        return originalModel.getRenderPasses(itemStack);
+    public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
+        return originalModel.getRenderPasses(itemStack, fabulous);
     }
 }

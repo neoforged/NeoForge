@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +29,7 @@ public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent {
     private final InteractionHand hand;
     private final Level level;
     private final boolean hasAmmo;
-    private InteractionResult action;
+    private InteractionResultHolder<ItemStack> action;
 
     public ArrowNockEvent(Player player, ItemStack item, InteractionHand hand, Level level, boolean hasAmmo) {
         super(player);
@@ -55,11 +55,11 @@ public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent {
         return this.hasAmmo;
     }
 
-    public InteractionResult getAction() {
+    public InteractionResultHolder<ItemStack> getAction() {
         return this.action;
     }
 
-    public void setAction(InteractionResult action) {
+    public void setAction(InteractionResultHolder<ItemStack> action) {
         this.action = action;
     }
 }

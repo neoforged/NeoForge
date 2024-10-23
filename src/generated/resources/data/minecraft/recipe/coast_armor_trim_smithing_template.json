@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:gems/diamond",
-    "C": "#c:cobblestones/normal",
-    "S": "minecraft:coast_armor_trim_smithing_template"
+    "#": {
+      "tag": "c:gems/diamond"
+    },
+    "C": {
+      "tag": "c:cobblestones/normal"
+    },
+    "S": {
+      "item": "minecraft:coast_armor_trim_smithing_template"
+    }
   },
   "pattern": [
     "#S#",

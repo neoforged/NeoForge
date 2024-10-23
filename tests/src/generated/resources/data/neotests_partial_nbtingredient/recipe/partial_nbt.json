@@ -2,12 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": "minecraft:diamond",
-    "E": "minecraft:emerald",
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
     "I": {
-      "neoforge:ingredient_type": "testframework:test_enabled",
+      "type": "testframework:test_enabled",
       "base": {
-        "neoforge:ingredient_type": "neoforge:components",
+        "type": "neoforge:components",
         "components": {
           "minecraft:damage": 2
         },

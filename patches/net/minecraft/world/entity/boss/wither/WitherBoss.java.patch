@@ -1,24 +1,24 @@
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-@@ -320,7 +_,7 @@
+@@ -322,7 +_,7 @@
  
              if (this.destroyBlocksTick > 0) {
                  this.destroyBlocksTick--;
--                if (this.destroyBlocksTick == 0 && p_376675_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+                if (this.destroyBlocksTick == 0 && net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_376675_, this)) {
+-                if (this.destroyBlocksTick == 0 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++                if (this.destroyBlocksTick == 0 && net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), this)) {
                      boolean flag = false;
                      int l = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
                      int i1 = Mth.floor(this.getBbHeight());
-@@ -329,7 +_,7 @@
+@@ -331,7 +_,7 @@
                          this.getBlockX() - l, this.getBlockY(), this.getBlockZ() - l, this.getBlockX() + l, this.getBlockY() + i1, this.getBlockZ() + l
                      )) {
-                         BlockState blockstate = p_376675_.getBlockState(blockpos);
+                         BlockState blockstate = this.level().getBlockState(blockpos);
 -                        if (canDestroy(blockstate)) {
 +                        if (blockstate.canEntityDestroy(this.level(), blockpos, this) && net.neoforged.neoforge.event.EventHooks.onEntityDestroyBlock(this, blockpos, blockstate)) {
-                             flag = p_376675_.destroyBlock(blockpos, true, this) || flag;
+                             flag = this.level().destroyBlock(blockpos, true, this) || flag;
                          }
                      }
-@@ -348,6 +_,10 @@
+@@ -350,6 +_,10 @@
          }
      }
  
@@ -29,7 +29,7 @@
      public static boolean canDestroy(BlockState p_31492_) {
          return !p_31492_.isAir() && !p_31492_.is(BlockTags.WITHER_IMMUNE);
      }
-@@ -493,6 +_,7 @@
+@@ -495,6 +_,7 @@
  
      @Override
      public void checkDespawn() {

@@ -15,7 +15,10 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 public class BiomeGenerationSettingsBuilder extends BiomeGenerationSettings.PlainBuilder {
     public BiomeGenerationSettingsBuilder(BiomeGenerationSettings orig) {
-        orig.getCarvers().forEach(this.getCarvers()::add);
+        orig.getCarvingStages().forEach(k -> {
+            carvers.put(k, new ArrayList<>());
+            orig.getCarvers(k).forEach(v -> carvers.get(k).add(v));
+        });
         orig.features().forEach(l -> {
             final ArrayList<Holder<PlacedFeature>> featureList = new ArrayList<>();
             l.forEach(featureList::add);
@@ -28,7 +31,7 @@ public class BiomeGenerationSettingsBuilder extends BiomeGenerationSettings.Plai
         return features.get(stage.ordinal());
     }
 
-    public List<Holder<ConfiguredWorldCarver<?>>> getCarvers() {
-        return carvers;
+    public List<Holder<ConfiguredWorldCarver<?>>> getCarvers(GenerationStep.Carving stage) {
+        return carvers.computeIfAbsent(stage, key -> new ArrayList<>());
     }
 }

@@ -3,9 +3,9 @@
   "category": "misc",
   "ingredients": [
     {
-      "neoforge:ingredient_type": "testframework:test_enabled",
+      "type": "testframework:test_enabled",
       "base": {
-        "neoforge:ingredient_type": "neoforge:components",
+        "type": "neoforge:components",
         "components": {
           "minecraft:damage": 4
         },
@@ -15,7 +15,9 @@
       "framework": "neotests:tests",
       "testId": "strictNBTIngredient"
     },
-    "minecraft:acacia_planks"
+    {
+      "item": "minecraft:acacia_planks"
+    }
   ],
   "result": {
     "count": 1,

@@ -142,7 +142,7 @@ public class RegistryManager {
                 return;
             }
 
-            MappedRegistry<?> registry = (MappedRegistry<?>) BuiltInRegistries.REGISTRY.getValue(registryName);
+            MappedRegistry<?> registry = (MappedRegistry<?>) BuiltInRegistries.REGISTRY.get(registryName);
             applySnapshot(registry, snapshot, missingEntries);
         });
 
@@ -185,7 +185,7 @@ public class RegistryManager {
         ResourceKey<? extends Registry<T>> registryKey = registry.key();
         Registry<T> backup = snapshot.getFullBackup();
 
-        forgeRegistry.unfreeze(false);
+        forgeRegistry.unfreeze();
 
         if (backup == null) {
             forgeRegistry.clear(false);

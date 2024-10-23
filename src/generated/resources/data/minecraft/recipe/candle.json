@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "H": "minecraft:honeycomb",
-    "S": "#c:strings"
+    "H": {
+      "item": "minecraft:honeycomb"
+    },
+    "S": {
+      "tag": "c:strings"
+    }
   },
   "pattern": [
     "S",

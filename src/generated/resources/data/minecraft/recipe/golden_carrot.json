@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:nuggets/gold",
-    "X": "minecraft:carrot"
+    "#": {
+      "tag": "c:nuggets/gold"
+    },
+    "X": {
+      "item": "minecraft:carrot"
+    }
   },
   "pattern": [
     "###",

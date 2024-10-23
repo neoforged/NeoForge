@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:gems/diamond",
-    "C": "minecraft:prismarine",
-    "S": "minecraft:tide_armor_trim_smithing_template"
+    "#": {
+      "tag": "c:gems/diamond"
+    },
+    "C": {
+      "item": "minecraft:prismarine"
+    },
+    "S": {
+      "item": "minecraft:tide_armor_trim_smithing_template"
+    }
   },
   "pattern": [
     "#S#",

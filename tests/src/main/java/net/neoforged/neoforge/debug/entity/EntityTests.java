@@ -16,9 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -105,11 +103,6 @@ public class EntityTests {
 
         @Override
         public void readSpawnData(RegistryFriendlyByteBuf additionalData) {}
-
-        @Override
-        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
-            return false;
-        }
     }
 
     public static final class AdaptedSpawnEntity extends Entity {
@@ -130,11 +123,6 @@ public class EntityTests {
         public void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> bundleBuilder) {
             bundleBuilder.accept(new CustomSyncPayload());
         }
-
-        @Override
-        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
-            return false;
-        }
     }
 
     public static final class SimpleEntity extends Entity {
@@ -150,11 +138,6 @@ public class EntityTests {
 
         @Override
         protected void addAdditionalSaveData(CompoundTag tag) {}
-
-        @Override
-        public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {
-            return false;
-        }
     }
 
     public record CustomSyncPayload() implements CustomPacketPayload {

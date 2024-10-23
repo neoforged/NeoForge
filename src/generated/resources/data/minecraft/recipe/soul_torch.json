@@ -2,11 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:rods/wooden",
-    "S": "#minecraft:soul_fire_base_blocks",
+    "#": {
+      "tag": "c:rods/wooden"
+    },
+    "S": {
+      "tag": "minecraft:soul_fire_base_blocks"
+    },
     "X": [
-      "minecraft:coal",
-      "minecraft:charcoal"
+      {
+        "item": "minecraft:coal"
+      },
+      {
+        "item": "minecraft:charcoal"
+      }
     ]
   },
   "pattern": [

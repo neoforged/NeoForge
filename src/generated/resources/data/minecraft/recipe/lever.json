@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:cobblestones/normal",
-    "X": "#c:rods/wooden"
+    "#": {
+      "tag": "c:cobblestones/normal"
+    },
+    "X": {
+      "tag": "c:rods/wooden"
+    }
   },
   "pattern": [
     "X",

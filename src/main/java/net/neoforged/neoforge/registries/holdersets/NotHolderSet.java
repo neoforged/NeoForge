@@ -149,11 +149,6 @@ public class NotHolderSet<T> implements ICustomHolderSet<T> {
         }
     }
 
-    @Override
-    public boolean isBound() {
-        return value.isBound();
-    }
-
     public static class Type implements HolderSetType {
         @Override
         public <T> MapCodec<? extends ICustomHolderSet<T>> makeCodec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {

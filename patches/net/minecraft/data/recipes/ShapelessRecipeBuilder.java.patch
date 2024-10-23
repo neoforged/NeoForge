@@ -1,0 +1,46 @@
+--- a/net/minecraft/data/recipes/ShapelessRecipeBuilder.java
++++ b/net/minecraft/data/recipes/ShapelessRecipeBuilder.java
+@@ -22,15 +_,21 @@
+     private final RecipeCategory category;
+     private final Item result;
+     private final int count;
++    private final ItemStack resultStack; // Neo: add stack result support
+     private final NonNullList<Ingredient> ingredients = NonNullList.create();
+     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+     @Nullable
+     private String group;
+ 
+     public ShapelessRecipeBuilder(RecipeCategory p_250837_, ItemLike p_251897_, int p_252227_) {
++        this(p_250837_, new ItemStack(p_251897_, p_252227_));
++    }
++
++    public ShapelessRecipeBuilder(RecipeCategory p_250837_, ItemStack result) {
+         this.category = p_250837_;
+-        this.result = p_251897_.asItem();
+-        this.count = p_252227_;
++        this.result = result.getItem();
++        this.count = result.getCount();
++        this.resultStack = result;
+     }
+ 
+     public static ShapelessRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
+@@ -41,6 +_,10 @@
+         return new ShapelessRecipeBuilder(p_252339_, p_250836_, p_249928_);
+     }
+ 
++    public static ShapelessRecipeBuilder shapeless(RecipeCategory p_252339_, ItemStack result) {
++        return new ShapelessRecipeBuilder(p_252339_, result);
++    }
++
+     public ShapelessRecipeBuilder requires(TagKey<Item> p_206420_) {
+         return this.requires(Ingredient.of(p_206420_));
+     }
+@@ -95,7 +_,7 @@
+         ShapelessRecipe shapelessrecipe = new ShapelessRecipe(
+             Objects.requireNonNullElse(this.group, ""),
+             RecipeBuilder.determineBookCategory(this.category),
+-            new ItemStack(this.result, this.count),
++            this.resultStack,
+             this.ingredients
+         );
+         p_301215_.accept(p_126206_, shapelessrecipe, advancement$builder.build(p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));

@@ -12,7 +12,6 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -53,7 +52,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
 
             poseStack.pushPose();
             poseStack.translate(offset.x, offset.y, offset.z);
-            ShapeRenderer.renderLineBox(poseStack, consumer, aabb, 1F, 0F, 0F, 1F);
+            LevelRenderer.renderLineBox(poseStack, consumer, aabb, 1F, 0F, 0F, 1F);
             poseStack.popPose();
         }
     }

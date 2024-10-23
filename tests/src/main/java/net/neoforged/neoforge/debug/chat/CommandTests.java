@@ -18,7 +18,6 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -56,7 +55,7 @@ public class CommandTests {
         });
 
         test.onGameTest(helper -> {
-            final ServerPlayer player = helper.makeOpMockPlayer(Commands.LEVEL_GAMEMASTERS);
+            final Player player = helper.makeOpMockPlayer(Commands.LEVEL_GAMEMASTERS);
             helper.startSequence()
                     .thenExecute(() -> helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "/attribute"))
                     .thenExecuteAfter(5, () -> helper.assertLivingEntityHasMobEffect(player, MobEffects.BLINDNESS, 2))
@@ -116,7 +115,7 @@ public class CommandTests {
     public final static class ErrorCatchingStack extends CommandSourceStack {
         public static ErrorCatchingStack createCommandSourceStack(Player player, int perm) {
             return new ErrorCatchingStack(
-                    CommandSource.NULL,
+                    player,
                     player.position(),
                     player.getRotationVector(),
                     player.level() instanceof ServerLevel ? (ServerLevel) player.level() : null,

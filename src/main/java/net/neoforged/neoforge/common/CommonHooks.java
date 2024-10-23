@@ -47,6 +47,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
@@ -72,6 +73,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
@@ -104,12 +106,15 @@ import net.minecraft.world.inventory.EnchantmentMenu;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -118,7 +123,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -265,7 +269,7 @@ public class CommonHooks {
 
     /**
      * Creates and posts an {@link EntityInvulnerabilityCheckEvent}. This is invoked in
-     * {@link Entity#isInvulnerableToBase(DamageSource)} and returns a post-listener result
+     * {@link Entity#isInvulnerableTo(DamageSource)} and returns a post-listener result
      * to the invulnerability status of the entity to the damage source.
      *
      * @param entity  the entity being checked for invulnerability
@@ -345,8 +349,7 @@ public class CommonHooks {
         for (EquipmentSlot slot : slots) {
             ItemStack armorPiece = armoredEntity.getItemBySlot(slot);
             if (armorPiece.isEmpty()) continue;
-            Equippable equippable = armorPiece.get(DataComponents.EQUIPPABLE);
-            float damageAfterFireResist = (equippable != null && equippable.damageOnHurt() && armorPiece.isDamageableItem() && armorPiece.canBeHurtBy(source)) ? damage : 0;
+            float damageAfterFireResist = (armorPiece.getItem() instanceof ArmorItem && armorPiece.canBeHurtBy(source)) ? damage : 0;
             armorMap.put(slot, new ArmorHurtEvent.ArmorEntry(armorPiece, damageAfterFireResist));
         }
 
@@ -738,13 +741,16 @@ public class CommonHooks {
         return craftingPlayer.get();
     }
 
-    public static ItemStack getCraftingRemainder(ItemStack stack) {
-        stack = stack.getCraftingRemainder();
-        if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
-            EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
-            return ItemStack.EMPTY;
+    public static ItemStack getCraftingRemainingItem(ItemStack stack) {
+        if (stack.getItem().hasCraftingRemainingItem(stack)) {
+            stack = stack.getItem().getCraftingRemainingItem(stack);
+            if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
+                EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
+                return ItemStack.EMPTY;
+            }
+            return stack;
         }
-        return stack;
+        return ItemStack.EMPTY;
     }
 
     public static boolean onPlayerAttackTarget(Player player, Entity target) {
@@ -866,8 +872,7 @@ public class CommonHooks {
         throw new RuntimeException("Mod fluids must override getFluidType.");
     }
 
-    // FIXME: is this still needed
-    /*public static TagKey<Block> getTagFromVanillaTier(Tiers tier) {
+    public static TagKey<Block> getTagFromVanillaTier(Tiers tier) {
         return switch (tier) {
             case WOOD -> Tags.Blocks.NEEDS_WOOD_TOOL;
             case GOLD -> Tags.Blocks.NEEDS_GOLD_TOOL;
@@ -876,7 +881,7 @@ public class CommonHooks {
             case DIAMOND -> BlockTags.NEEDS_DIAMOND_TOOL;
             case NETHERITE -> Tags.Blocks.NEEDS_NETHERITE_TOOL;
         };
-    }*/
+    }
 
     public static Collection<CreativeModeTab> onCheckCreativeTabs(CreativeModeTab... vanillaTabs) {
         final List<CreativeModeTab> tabs = new ArrayList<>(Arrays.asList(vanillaTabs));
@@ -957,7 +962,7 @@ public class CommonHooks {
         ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
         String modId = registryName == null ? null : registryName.getNamespace();
         if ("minecraft".equals(modId)) {
-            if (itemStack.has(DataComponents.STORED_ENCHANTMENTS)) {
+            if (item instanceof EnchantedBookItem) {
                 Set<Holder<Enchantment>> enchantments = itemStack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY).keySet();
                 if (enchantments.size() == 1) {
                     Holder<Enchantment> enchantmentHolder = enchantments.iterator().next();
@@ -983,8 +988,8 @@ public class CommonHooks {
         return modId;
     }
 
-    public static boolean onFarmlandTrample(ServerLevel level, BlockPos pos, BlockState state, float fallDistance, Entity entity) {
-        if (entity.canTrample(level, state, pos, fallDistance)) {
+    public static boolean onFarmlandTrample(Level level, BlockPos pos, BlockState state, float fallDistance, Entity entity) {
+        if (entity.canTrample(state, pos, fallDistance)) {
             BlockEvent.FarmlandTrampleEvent event = new BlockEvent.FarmlandTrampleEvent(level, pos, state, fallDistance, entity);
             NeoForge.EVENT_BUS.post(event);
             return !event.isCanceled();
@@ -1021,7 +1026,7 @@ public class CommonHooks {
         return id;
     }
 
-    public static boolean canEntityDestroy(ServerLevel level, BlockPos pos, LivingEntity entity) {
+    public static boolean canEntityDestroy(Level level, BlockPos pos, LivingEntity entity) {
         if (!level.isLoaded(pos))
             return false;
         BlockState state = level.getBlockState(pos);
@@ -1259,14 +1264,14 @@ public class CommonHooks {
             return fallback;
         }
         try {
-            return BuiltInRegistries.MOB_EFFECT.getValue(ResourceLocation.parse(registryName));
+            return BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(registryName));
         } catch (ResourceLocationException e) {
             return fallback;
         }
     }
 
-    public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player) {
-        return NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
+    public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player, ItemStack mask) {
+        return mask.isEnderMask(player, enderMan) || NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
     }
 
     private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.of(() -> {
@@ -1489,7 +1494,11 @@ public class CommonHooks {
         poiManager.flush(chunkPos); // Make sure all POI in chunk are saved to disk first.
 
         // Remove the cached POIs for this chunk's location.
-        poiManager.remove(chunkPos);
+        int SectionPosMinY = SectionPos.blockToSectionCoord(chunkAccess.getMinBuildHeight());
+        for (int currentSectionY = 0; currentSectionY < chunkAccess.getSectionsCount(); currentSectionY++) {
+            long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
+            poiManager.remove(sectionPosKey);
+        }
     }
 
     /**

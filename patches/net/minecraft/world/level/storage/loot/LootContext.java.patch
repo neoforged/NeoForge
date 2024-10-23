@@ -64,7 +64,7 @@
  
 @@ -140,6 +_,11 @@
  
-         public ContextKey<? extends Entity> getParam() {
+         public LootContextParam<? extends Entity> getParam() {
              return this.param;
 +        }
 +

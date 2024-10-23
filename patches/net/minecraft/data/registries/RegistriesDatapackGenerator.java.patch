@@ -48,10 +48,10 @@
 +        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(p_256449_.elementCodec());
          return p_256492_.lookup(resourcekey)
              .map(
-                 p_367836_ -> {
+                 p_349921_ -> {
                      PackOutput.PathProvider packoutput$pathprovider = this.output.createRegistryElementsPathProvider(resourcekey);
                      return CompletableFuture.allOf(
-                         p_367836_.listElements()
+                         p_349921_.listElements()
 +                            .filter(holder -> this.namespacePredicate.test(holder.key().location().getNamespace()))
                              .map(
                                  p_256105_ -> dumpValue(

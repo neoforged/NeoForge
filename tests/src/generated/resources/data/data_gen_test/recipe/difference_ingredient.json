@@ -3,9 +3,13 @@
   "category": "equipment",
   "key": {
     "#": {
-      "neoforge:ingredient_type": "neoforge:difference",
-      "base": "#minecraft:fences",
-      "subtracted": "#minecraft:non_flammable_wood"
+      "type": "neoforge:difference",
+      "base": {
+        "tag": "minecraft:fences"
+      },
+      "subtracted": {
+        "tag": "minecraft:non_flammable_wood"
+      }
     }
   },
   "pattern": [

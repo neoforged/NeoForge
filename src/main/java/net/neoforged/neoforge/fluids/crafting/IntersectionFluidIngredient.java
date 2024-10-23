@@ -11,11 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-import net.minecraft.core.Holder;
-import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
 
 /**
  * FluidIngredient that matches if all child ingredients match
@@ -31,7 +28,7 @@ public final class IntersectionFluidIngredient extends FluidIngredient {
     public static final MapCodec<IntersectionFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            FluidIngredient.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("children").forGetter(IntersectionFluidIngredient::children))
+                            FluidIngredient.LIST_CODEC_NON_EMPTY.fieldOf("children").forGetter(IntersectionFluidIngredient::children))
                     .apply(builder, IntersectionFluidIngredient::new));
     private final List<FluidIngredient> children;
 
@@ -61,10 +58,10 @@ public final class IntersectionFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public Stream<Holder<Fluid>> generateFluids() {
+    public Stream<FluidStack> generateStacks() {
         return children.stream()
-                .flatMap(child -> child.fluids().stream())
-                .filter(fluid -> test(new FluidStack(fluid, FluidType.BUCKET_VOLUME)));
+                .flatMap(FluidIngredient::generateStacks)
+                .filter(this);
     }
 
     @Override

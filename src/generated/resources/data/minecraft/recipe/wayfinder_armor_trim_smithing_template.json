@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:gems/diamond",
-    "C": "minecraft:terracotta",
-    "S": "minecraft:wayfinder_armor_trim_smithing_template"
+    "#": {
+      "tag": "c:gems/diamond"
+    },
+    "C": {
+      "item": "minecraft:terracotta"
+    },
+    "S": {
+      "item": "minecraft:wayfinder_armor_trim_smithing_template"
+    }
   },
   "pattern": [
     "#S#",

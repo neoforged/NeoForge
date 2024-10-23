@@ -8,7 +8,6 @@ package net.neoforged.neoforge.client.event;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.client.renderer.FogRenderer.FogMode;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.level.material.FogType;
@@ -81,13 +80,13 @@ public abstract class ViewportEvent extends Event {
         private FogShape fogShape;
 
         @ApiStatus.Internal
-        public RenderFog(FogMode mode, FogType type, Camera camera, float partialTicks, FogParameters fogParameters) {
+        public RenderFog(FogMode mode, FogType type, Camera camera, float partialTicks, float nearPlaneDistance, float farPlaneDistance, FogShape fogShape) {
             super(Minecraft.getInstance().gameRenderer, camera, partialTicks);
             this.mode = mode;
             this.type = type;
-            setFarPlaneDistance(fogParameters.end());
-            setNearPlaneDistance(fogParameters.start());
-            setFogShape(fogParameters.shape());
+            setFarPlaneDistance(farPlaneDistance);
+            setNearPlaneDistance(nearPlaneDistance);
+            setFogShape(fogShape);
         }
 
         /**
@@ -327,10 +326,10 @@ public abstract class ViewportEvent extends Event {
      */
     public static class ComputeFov extends ViewportEvent {
         private final boolean usedConfiguredFov;
-        private float fov;
+        private double fov;
 
         @ApiStatus.Internal
-        public ComputeFov(GameRenderer renderer, Camera camera, float renderPartialTicks, float fov, boolean usedConfiguredFov) {
+        public ComputeFov(GameRenderer renderer, Camera camera, double renderPartialTicks, double fov, boolean usedConfiguredFov) {
             super(renderer, camera, renderPartialTicks);
             this.usedConfiguredFov = usedConfiguredFov;
             this.setFOV(fov);
@@ -339,7 +338,7 @@ public abstract class ViewportEvent extends Event {
         /**
          * {@return the raw field of view value}
          */
-        public float getFOV() {
+        public double getFOV() {
             return fov;
         }
 
@@ -348,7 +347,7 @@ public abstract class ViewportEvent extends Event {
          *
          * @param fov the new FOV value
          */
-        public void setFOV(float fov) {
+        public void setFOV(double fov) {
             this.fov = fov;
         }
 

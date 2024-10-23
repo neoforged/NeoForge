@@ -3,8 +3,12 @@
   "category": "building",
   "group": "mossy_cobblestone",
   "ingredients": [
-    "#c:cobblestones/normal",
-    "minecraft:moss_block"
+    {
+      "tag": "c:cobblestones/normal"
+    },
+    {
+      "item": "minecraft:moss_block"
+    }
   ],
   "result": {
     "count": 1,

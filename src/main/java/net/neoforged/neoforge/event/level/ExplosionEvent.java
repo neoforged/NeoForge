@@ -6,9 +6,10 @@
 package net.neoforged.neoforge.event.level;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerExplosion;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -26,9 +27,9 @@ import net.neoforged.neoforge.common.NeoForge;
  */
 public abstract class ExplosionEvent extends Event {
     private final Level level;
-    private final ServerExplosion explosion;
+    private final Explosion explosion;
 
-    public ExplosionEvent(Level level, ServerExplosion explosion) {
+    public ExplosionEvent(Level level, Explosion explosion) {
         this.level = level;
         this.explosion = explosion;
     }
@@ -37,7 +38,7 @@ public abstract class ExplosionEvent extends Event {
         return level;
     }
 
-    public ServerExplosion getExplosion() {
+    public Explosion getExplosion() {
         return explosion;
     }
 
@@ -49,7 +50,7 @@ public abstract class ExplosionEvent extends Event {
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      */
     public static class Start extends ExplosionEvent implements ICancellableEvent {
-        public Start(Level level, ServerExplosion explosion) {
+        public Start(Level level, Explosion explosion) {
             super(level, explosion);
         }
     }
@@ -64,16 +65,15 @@ public abstract class ExplosionEvent extends Event {
     public static class Detonate extends ExplosionEvent {
         private final List<Entity> entityList;
 
-        public Detonate(Level level, ServerExplosion explosion, List<Entity> entityList) {
+        public Detonate(Level level, Explosion explosion, List<Entity> entityList) {
             super(level, explosion);
             this.entityList = entityList;
         }
 
         /** return the list of blocks affected by the explosion. */
-        // FIXME porting: explosions changed a bit
-        /*public List<BlockPos> getAffectedBlocks() {
+        public List<BlockPos> getAffectedBlocks() {
             return getExplosion().getToBlow();
-        }*/
+        }
 
         /** return the list of entities affected by the explosion. */
         public List<Entity> getAffectedEntities() {

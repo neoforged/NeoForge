@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverride;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -33,7 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -46,7 +46,6 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
@@ -83,11 +82,11 @@ public class FullPotsAccessorDemo {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
-    private static final DeferredBlock<Block> DIORITE_POT = BLOCKS.registerBlock("diorite_pot", DioriteFlowerPotBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.NONE).instabreak().noOcclusion());
+    private static final DeferredBlock<Block> DIORITE_POT = BLOCKS.register("diorite_pot", DioriteFlowerPotBlock::new);
     private static final DeferredItem<BlockItem> DIORITE_POT_ITEM = ITEMS.registerSimpleBlockItem(DIORITE_POT);
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DioriteFlowerPotBlockEntity>> DIORITE_POT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
             "diorite_pot",
-            () -> new BlockEntityType<>(DioriteFlowerPotBlockEntity::new, DIORITE_POT.get()));
+            () -> BlockEntityType.Builder.of(DioriteFlowerPotBlockEntity::new, DIORITE_POT.get()).build(null));
 
     public FullPotsAccessorDemo(IEventBus bus) {
         if (ENABLED) {
@@ -106,12 +105,12 @@ public class FullPotsAccessorDemo {
     private static class DioriteFlowerPotBlock extends Block implements EntityBlock {
         private static final VoxelShape SHAPE = Block.box(5.0D, 0.0D, 5.0D, 11.0D, 6.0D, 11.0D);
 
-        public DioriteFlowerPotBlock(Properties props) {
-            super(props);
+        public DioriteFlowerPotBlock() {
+            super(Properties.of().mapColor(MapColor.NONE).instabreak().noOcclusion());
         }
 
         @Override
-        public InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             if (level.getBlockEntity(pos) instanceof DioriteFlowerPotBlockEntity be) {
                 boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().containsKey(BuiltInRegistries.ITEM.getKey(item));
                 boolean hasFlower = be.plant != Blocks.AIR;
@@ -138,9 +137,9 @@ public class FullPotsAccessorDemo {
                     }
 
                     level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.sidedSuccess(level.isClientSide());
                 } else {
-                    return InteractionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
             return super.useItemOn(stack, state, level, pos, player, hand, hit);
@@ -212,7 +211,7 @@ public class FullPotsAccessorDemo {
         @Override
         public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             super.loadAdditional(tag, holderLookup);
-            plant = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(tag.getString("plant")));
+            plant = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(tag.getString("plant")));
         }
 
         @Override
@@ -240,13 +239,13 @@ public class FullPotsAccessorDemo {
 
         private record DioritePotModelGeometry(UnbakedModel wrappedModel) implements IUnbakedGeometry<DioritePotModelGeometry> {
             @Override
-            public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> overrides) {
+            public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
                 return new DioritePotModel(wrappedModel.bake(baker, spriteGetter, modelState));
             }
 
             @Override
-            public void resolveDependencies(UnbakedModel.Resolver modelGetter, IGeometryBakingContext context) {
-                wrappedModel.resolveDependencies(modelGetter);
+            public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+                wrappedModel.resolveParents(modelGetter);
             }
         }
 

@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#minecraft:soul_fire_base_blocks",
-    "L": "#minecraft:logs",
-    "S": "#c:rods/wooden"
+    "#": {
+      "tag": "minecraft:soul_fire_base_blocks"
+    },
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
   },
   "pattern": [
     " S ",

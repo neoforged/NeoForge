@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/npc/AbstractVillager.java
 +++ b/net/minecraft/world/entity/npc/AbstractVillager.java
-@@ -129,6 +_,7 @@
+@@ -127,6 +_,7 @@
          if (this.tradingPlayer instanceof ServerPlayer) {
              CriteriaTriggers.TRADE.trigger((ServerPlayer)this.tradingPlayer, this, p_35274_.getResult());
          }
@@ -8,7 +8,7 @@
      }
  
      protected abstract void rewardTradeXp(MerchantOffer p_35299_);
-@@ -185,13 +_,6 @@
+@@ -183,13 +_,6 @@
          }
  
          this.readInventoryFromTag(p_35290_, this.registryAccess());
@@ -16,9 +16,9 @@
 -
 -    @Nullable
 -    @Override
--    public Entity teleport(TeleportTransition p_379715_) {
+-    public Entity changeDimension(DimensionTransition p_350994_) {
 -        this.stopTrading();
--        return super.teleport(p_379715_);
+-        return super.changeDimension(p_350994_);
      }
  
      protected void stopTrading() {

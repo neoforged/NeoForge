@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
@@ -219,22 +218,16 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * If this event is canceled, the entity will not be teleported.
      */
-    public static class ItemConsumption extends EntityTeleportEvent implements ICancellableEvent {
+    public static class ChorusFruit extends EntityTeleportEvent implements ICancellableEvent {
         private final LivingEntity entityLiving;
-        private final ItemStack itemStack;
 
-        public ItemConsumption(LivingEntity entity, ItemStack itemStack, double targetX, double targetY, double targetZ) {
+        public ChorusFruit(LivingEntity entity, double targetX, double targetY, double targetZ) {
             super(entity, targetX, targetY, targetZ);
             this.entityLiving = entity;
-            this.itemStack = itemStack;
         }
 
         public LivingEntity getEntityLiving() {
             return entityLiving;
-        }
-
-        public ItemStack getConsumedItem() {
-            return itemStack;
         }
     }
 }

@@ -20,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SuggestionProviders;
@@ -106,28 +105,7 @@ public class ClientCommandHandler {
      */
     public static ClientCommandSourceStack getSource() {
         LocalPlayer player = Minecraft.getInstance().player;
-        CommandSource commandSource = new CommandSource() {
-            @Override
-            public boolean acceptsSuccess() {
-                return true;
-            }
-
-            @Override
-            public boolean acceptsFailure() {
-                return true;
-            }
-
-            @Override
-            public boolean shouldInformAdmins() {
-                return true;
-            }
-
-            @Override
-            public void sendSystemMessage(Component message) {
-                Minecraft.getInstance().gui.getChat().addMessage(message);
-            }
-        };
-        return new ClientCommandSourceStack(commandSource, player.position(), player.getRotationVector(), player.getPermissionLevel(),
+        return new ClientCommandSourceStack(player, player.position(), player.getRotationVector(), player.getPermissionLevel(),
                 player.getName().getString(), player.getDisplayName(), player);
     }
 
@@ -179,7 +157,7 @@ public class ClientCommandHandler {
                 // in case of unknown command, let the server try and handle it
                 return false;
             }
-            Minecraft.getInstance().gui.getChat().addMessage(
+            Minecraft.getInstance().player.sendSystemMessage(
                     Component.literal("").append(ComponentUtils.fromMessage(syntax.getRawMessage())).withStyle(ChatFormatting.RED));
             if (syntax.getInput() != null && syntax.getCursor() >= 0) {
                 int position = Math.min(syntax.getInput().length(), syntax.getCursor());
@@ -195,12 +173,12 @@ public class ClientCommandHandler {
                     details.append(Component.literal(syntax.getInput().substring(position)).withStyle(ChatFormatting.RED, ChatFormatting.UNDERLINE));
                 }
                 details.append(Component.translatable("command.context.here").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC));
-                Minecraft.getInstance().gui.getChat().addMessage(Component.literal("").append(details).withStyle(ChatFormatting.RED));
+                Minecraft.getInstance().player.sendSystemMessage(Component.literal("").append(details).withStyle(ChatFormatting.RED));
             }
         } catch (Exception generic)// Probably thrown by the command
         {
             MutableComponent message = Component.literal(generic.getMessage() == null ? generic.getClass().getName() : generic.getMessage());
-            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("command.failed")
+            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("command.failed")
                     .withStyle(ChatFormatting.RED)
                     .withStyle((style) -> style
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, message))));

@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": "#c:rods/wooden",
-    "X": "#minecraft:diamond_tool_materials"
+    "#": {
+      "tag": "c:rods/wooden"
+    },
+    "X": {
+      "tag": "c:gems/diamond"
+    }
   },
   "pattern": [
     "X",

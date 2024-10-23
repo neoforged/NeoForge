@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:gems/amethyst",
-    "X": "minecraft:sculk_sensor"
+    "#": {
+      "tag": "c:gems/amethyst"
+    },
+    "X": {
+      "item": "minecraft:sculk_sensor"
+    }
   },
   "pattern": [
     " # ",

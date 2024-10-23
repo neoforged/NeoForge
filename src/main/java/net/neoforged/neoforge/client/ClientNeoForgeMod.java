@@ -30,6 +30,7 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.model.CompositeModel;
 import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
+import net.neoforged.neoforge.client.model.ElementsModel;
 import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
@@ -65,6 +66,7 @@ public class ClientNeoForgeMod {
     @SubscribeEvent
     static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "empty"), EmptyModel.LOADER);
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "elements"), ElementsModel.Loader.INSTANCE);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "obj"), ObjLoader.INSTANCE);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "fluid_container"), DynamicFluidContainerModel.Loader.INSTANCE);
         event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), CompositeModel.Loader.INSTANCE);

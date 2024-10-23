@@ -6,15 +6,15 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -25,10 +25,58 @@ import org.jetbrains.annotations.ApiStatus;
  * @see RenderPlayerEvent.Post
  * @see PlayerRenderer
  */
-public abstract class RenderPlayerEvent extends RenderLivingEvent<AbstractClientPlayer, PlayerRenderState, PlayerModel> {
+public abstract class RenderPlayerEvent extends PlayerEvent {
+    private final PlayerRenderer renderer;
+    private final float partialTick;
+    private final PoseStack poseStack;
+    private final MultiBufferSource multiBufferSource;
+    private final int packedLight;
+
     @ApiStatus.Internal
-    protected RenderPlayerEvent(PlayerRenderState renderState, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
-        super(renderState, renderer, partialTick, poseStack, multiBufferSource, packedLight);
+    protected RenderPlayerEvent(Player player, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
+        super(player);
+        this.renderer = renderer;
+        this.partialTick = partialTick;
+        this.poseStack = poseStack;
+        this.multiBufferSource = multiBufferSource;
+        this.packedLight = packedLight;
+    }
+
+    /**
+     * {@return the player entity renderer}
+     */
+    public PlayerRenderer getRenderer() {
+        return renderer;
+    }
+
+    /**
+     * {@return the partial tick}
+     */
+    public float getPartialTick() {
+        return partialTick;
+    }
+
+    /**
+     * {@return the pose stack used for rendering}
+     */
+    public PoseStack getPoseStack() {
+        return poseStack;
+    }
+
+    /**
+     * {@return the source of rendering buffers}
+     */
+    public MultiBufferSource getMultiBufferSource() {
+        return multiBufferSource;
+    }
+
+    /**
+     * {@return the amount of packed (sky and block) light for rendering}
+     *
+     * @see LightTexture
+     */
+    public int getPackedLight() {
+        return packedLight;
     }
 
     /**
@@ -44,8 +92,8 @@ public abstract class RenderPlayerEvent extends RenderLivingEvent<AbstractClient
      */
     public static class Pre extends RenderPlayerEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(PlayerRenderState renderState, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
-            super(renderState, renderer, partialTick, poseStack, multiBufferSource, packedLight);
+        public Pre(Player player, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
+            super(player, renderer, partialTick, poseStack, multiBufferSource, packedLight);
         }
     }
 
@@ -59,8 +107,8 @@ public abstract class RenderPlayerEvent extends RenderLivingEvent<AbstractClient
      */
     public static class Post extends RenderPlayerEvent {
         @ApiStatus.Internal
-        public Post(PlayerRenderState renderState, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
-            super(renderState, renderer, partialTick, poseStack, multiBufferSource, packedLight);
+        public Post(Player player, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
+            super(player, renderer, partialTick, poseStack, multiBufferSource, packedLight);
         }
     }
 }

@@ -5,32 +5,40 @@
 
 package net.neoforged.neoforge.common.conditions;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagManager;
+import org.jetbrains.annotations.Nullable;
 
 public class ConditionContext implements ICondition.IContext {
-    private final Map<ResourceKey<? extends Registry<?>>, HolderLookup.RegistryLookup<?>> pendingTags;
+    private final TagManager tagManager;
+    @Nullable
+    // TODO 1.20.5: Clear loaded tags after reloads complete. The context object may leak, but we still want to invalidate it.
+    private Map<ResourceKey<?>, Map<ResourceLocation, Collection<Holder<?>>>> loadedTags = null;
 
-    public ConditionContext(List<Registry.PendingTags<?>> pendingTags) {
-        this.pendingTags = new IdentityHashMap<>();
-        for (var tags : pendingTags) {
-            this.pendingTags.put(tags.key(), tags.lookup());
-        }
+    public ConditionContext(TagManager tagManager) {
+        this.tagManager = tagManager;
     }
 
-    public void clear() {
-        this.pendingTags.clear();
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public <T> boolean isTagLoaded(TagKey<T> key) {
-        var lookup = pendingTags.get(key.registry());
-        return lookup != null && lookup.get((TagKey) key).isPresent();
+    public <T> Map<ResourceLocation, Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> registry) {
+        if (loadedTags == null) {
+            var tags = tagManager.getResult();
+            if (tags.isEmpty()) throw new IllegalStateException("Tags have not been loaded yet.");
+
+            loadedTags = new IdentityHashMap<>();
+            for (var loadResult : tags) {
+                Map<ResourceLocation, Collection<? extends Holder<?>>> map = Collections.unmodifiableMap(loadResult.tags());
+                loadedTags.put(loadResult.key(), (Map) map);
+            }
+        }
+        return (Map) loadedTags.getOrDefault(registry, Collections.emptyMap());
     }
 }

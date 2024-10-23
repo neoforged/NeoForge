@@ -3,7 +3,9 @@
   "category": "misc",
   "group": "iron_ingot",
   "key": {
-    "#": "#c:nuggets/iron"
+    "#": {
+      "tag": "c:nuggets/iron"
+    }
   },
   "pattern": [
     "###",

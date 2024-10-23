@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "minecraft:redstone_torch",
-    "S": "#c:rods/wooden",
-    "X": "#c:ingots/iron"
+    "#": {
+      "item": "minecraft:redstone_torch"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    },
+    "X": {
+      "tag": "c:ingots/iron"
+    }
   },
   "pattern": [
     "XSX",

@@ -125,8 +125,6 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
-        add(Tags.Blocks.STRIPPED_LOGS, "Stripped Logs");
-        add(Tags.Blocks.STRIPPED_WOODS, "Stripped Woods");
         add(Tags.Blocks.VILLAGER_JOB_SITES, "Villager Job Sites");
         add(Tags.Blocks.VILLAGER_FARMLANDS, "Villager Farmlands");
 
@@ -324,8 +322,6 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Items.STRINGS, "Strings");
-        add(Tags.Items.STRIPPED_LOGS, "Stripped Log Blocks");
-        add(Tags.Items.STRIPPED_WOODS, "Stripped Wood Blocks");
         add(Tags.Items.VILLAGER_JOB_SITES, "Villager Job Sites");
         add(Tags.Items.TOOLS_SHEAR, "Shears");
         add(Tags.Items.TOOLS_SHIELD, "Shields");
@@ -349,7 +345,6 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Fluids.MILK, "Milk");
         add(Tags.Fluids.GASEOUS, "Gaseous");
         add(Tags.Fluids.HONEY, "Honey");
-        add(Tags.Fluids.EXPERIENCE, "Experience");
         add(Tags.Fluids.POTION, "Potion");
         add(Tags.Fluids.SUSPICIOUS_STEW, "Suspicious Stew");
         add(Tags.Fluids.MUSHROOM_STEW, "Mushroom Stew");

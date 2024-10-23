@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.MapDecorationTextureManager;
 import net.minecraft.core.registries.Registries;
@@ -20,6 +19,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.api.distmarker.Dist;
@@ -70,22 +70,22 @@ public class MapDecorationRenderTests {
     private static final class TestDecorationRenderer implements IMapDecorationRenderer {
         @Override
         public boolean render(
-                MapRenderState.MapDecorationRenderState decoration,
+                MapDecoration decoration,
                 PoseStack poseStack,
                 MultiBufferSource bufferSource,
-                MapRenderState mapRenderState,
+                MapItemSavedData mapData,
                 MapDecorationTextureManager decorationTextures,
                 boolean inItemFrame,
                 int packedLight,
                 int index) {
             poseStack.pushPose();
-            poseStack.translate(decoration.x / 2.0F + 64.0F, decoration.y / 2.0F + 64.0F, -0.02F);
-            poseStack.mulPose(Axis.ZP.rotationDegrees((float) (decoration.rot * 360) / 16.0F));
+            poseStack.translate(decoration.x() / 2.0F + 64.0F, decoration.y() / 2.0F + 64.0F, -0.02F);
+            poseStack.mulPose(Axis.ZP.rotationDegrees((float) (decoration.rot() * 360) / 16.0F));
             poseStack.scale(4.0F, 4.0F, 3.0F);
             poseStack.translate(-0.125F, 0.125F, 0.0F);
             Matrix4f pose = poseStack.last().pose();
 
-            TextureAtlasSprite sprite = decoration.atlasSprite;
+            TextureAtlasSprite sprite = decorationTextures.get(decoration);
             float u0 = sprite.getU0();
             float v0 = sprite.getV0();
             float u1 = sprite.getU1();

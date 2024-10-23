@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    "minecraft:diorite",
-    "#c:cobblestones/normal"
+    {
+      "item": "minecraft:diorite"
+    },
+    {
+      "tag": "c:cobblestones/normal"
+    }
   ],
   "result": {
     "count": 2,

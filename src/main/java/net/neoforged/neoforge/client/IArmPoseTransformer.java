@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client;
 
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,5 +27,5 @@ public interface IArmPoseTransformer {
      * @param entity The humanoid entity
      * @param arm    Arm to pose
      */
-    void applyTransform(HumanoidModel<?> model, HumanoidRenderState entity, HumanoidArm arm);
+    void applyTransform(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm);
 }
