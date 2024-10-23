@@ -48,9 +48,11 @@ jobs:
         run: ./gradlew assemble checkFormatting
 
       - name: Run JCC
+        if: ${{ ! startsWith(github.event.pull_request.head.ref, 'refs/heads/port/') }}
         run: ./gradlew checkJarCompatibility
 
       - name: Upload JCC
+        if: ${{ ! startsWith(github.event.pull_request.head.ref, 'refs/heads/port/') }}
         uses: neoforged/action-jar-compatibility/upload@v1
 
       - name: Publish artifacts
