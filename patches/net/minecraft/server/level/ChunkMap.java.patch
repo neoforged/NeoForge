@@ -28,7 +28,7 @@
                      this.markPosition(p_140418_, chunkaccess.getPersistedStatus().getChunkType());
                      return chunkaccess;
                  } else {
-@@ -778,6 +_,7 @@
+@@ -780,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkSave");
                  this.activeChunkWrites.incrementAndGet();
                  SerializableChunkData serializablechunkdata = SerializableChunkData.copyOf(this.level, p_140259_);
@@ -36,7 +36,7 @@
                  CompletableFuture<CompoundTag> completablefuture = CompletableFuture.supplyAsync(serializablechunkdata::write, Util.backgroundExecutor());
                  this.write(chunkpos, completablefuture::join).handle((p_381690_, p_381691_) -> {
                      if (p_381691_ != null) {
-@@ -844,9 +_,11 @@
+@@ -846,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
@@ -48,7 +48,7 @@
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
-@@ -1057,6 +_,7 @@
+@@ -1059,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }
  
@@ -56,7 +56,7 @@
              this.updateChunkTracking(p_140185_);
          }
      }
-@@ -1108,7 +_,7 @@
+@@ -1110,7 +_,7 @@
      }
  
      protected void addEntity(Entity p_140200_) {
@@ -65,7 +65,7 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
-@@ -1352,5 +_,20 @@
+@@ -1354,5 +_,20 @@
                  this.updatePlayer(serverplayer);
              }
          }

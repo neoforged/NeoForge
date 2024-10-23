@@ -30,10 +30,10 @@
                      this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
 @@ -384,7 +_,7 @@
      private void collectTickingChunks(List<LevelChunk> p_363421_) {
-         this.chunkMap.forEachSpawnCandidateChunk(p_370483_ -> {
-             LevelChunk levelchunk = p_370483_.getTickingChunk();
--            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_370483_.getPos())) {
-+            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_370483_.getPos()) || this.distanceManager.shouldForceTicks(p_370483_.getPos().toLong())) {
+         this.chunkMap.forEachSpawnCandidateChunk(p_381767_ -> {
+             LevelChunk levelchunk = p_381767_.getTickingChunk();
+-            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos())) {
++            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos()) || this.distanceManager.shouldForceTicks(p_381767_.getPos().toLong())) {
                  p_363421_.add(levelchunk);
              }
          });

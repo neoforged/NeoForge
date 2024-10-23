@@ -9,7 +9,7 @@
                      this.minecart.activateMinecart(blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockstate.getValue(PoweredRailBlock.POWERED));
                  }
              } else {
-@@ -149,7 +_,7 @@
+@@ -148,7 +_,7 @@
          d1 = (double)blockpos.getY();
          boolean flag = false;
          boolean flag1 = false;
@@ -18,7 +18,7 @@
              flag = blockstate.getValue(PoweredRailBlock.POWERED);
              flag1 = !flag;
          }
-@@ -160,7 +_,7 @@
+@@ -159,7 +_,7 @@
          }
  
          Vec3 vec31 = this.getDeltaMovement();
@@ -27,7 +27,7 @@
          switch (railshape) {
              case ASCENDING_EAST:
                  this.setDeltaMovement(vec31.add(-d3, 0.0, 0.0));
-@@ -318,9 +_,10 @@
+@@ -317,9 +_,10 @@
              j--;
          }
  
@@ -40,7 +40,7 @@
              p_363435_ = (double)j;
              if (railshape.isSlope()) {
                  p_363435_ = (double)(j + 1);
-@@ -357,9 +_,10 @@
+@@ -356,9 +_,10 @@
              j--;
          }
  

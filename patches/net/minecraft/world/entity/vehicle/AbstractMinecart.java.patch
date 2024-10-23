@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-@@ -420,8 +_,8 @@
+@@ -430,8 +_,8 @@
  
      public Vec3 getRedstoneDirection(BlockPos p_361470_) {
          BlockState blockstate = this.level().getBlockState(p_361470_);
