@@ -277,7 +277,7 @@ public class ClientHooks {
 
     public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         var mc = Minecraft.getInstance();
-        var profiler = mc.getProfiler();
+        var profiler = Profiler.get();
 
         profiler.push(stage.toString());
         NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum));

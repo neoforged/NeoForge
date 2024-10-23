@@ -6,8 +6,9 @@
 package net.neoforged.neoforge.client.buffer.param.state;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 
 // TODO: make filter types
-public record TextureState(ResourceLocation texture, boolean blur, boolean mipmap) {
+public record TextureState(ResourceLocation texture, TriState blur, boolean mipmap) {
 
 }

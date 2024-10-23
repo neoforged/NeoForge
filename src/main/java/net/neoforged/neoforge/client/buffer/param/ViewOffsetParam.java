@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.client.buffer.param;
 
-import net.neoforged.neoforge.client.buffer.param.general.Vector3fParam;
-import org.joml.Vector3f;
+import net.neoforged.neoforge.client.buffer.param.general.FloatParam;
 
 public class ViewOffsetParam {
     public static final class Vanilla {
-        public static final Vector3fParam VIEW_OFFSET_Z_LAYERING = new Vector3fParam(new Vector3f(0.99975586f, 0.99975586f, 0.99975586f));
+        public static final FloatParam VIEW_OFFSET_Z_LAYERING = new FloatParam(1.0f);
+        public static final FloatParam VIEW_OFFSET_Z_LAYERING_FORWARD = new FloatParam(-1.0f);
     }
 }

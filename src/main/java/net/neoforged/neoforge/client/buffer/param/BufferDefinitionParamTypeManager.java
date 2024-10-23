@@ -14,14 +14,13 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.Supplier;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.buffer.param.general.BooleanParam;
 import net.neoforged.neoforge.client.buffer.param.general.FloatParam;
 import net.neoforged.neoforge.client.buffer.param.general.IntegerParam;
 import net.neoforged.neoforge.client.buffer.param.general.StringParam;
 import net.neoforged.neoforge.client.buffer.param.general.Vector2fParam;
-import net.neoforged.neoforge.client.buffer.param.general.Vector3fParam;
 import net.neoforged.neoforge.client.buffer.param.state.OutputState;
 import net.neoforged.neoforge.client.buffer.param.state.TextureState;
 import net.neoforged.neoforge.client.buffer.param.state.TransparencyState;
@@ -30,7 +29,6 @@ import net.neoforged.neoforge.client.event.RegisterBufferDefinitionParamTypeAlia
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 /**
  * Stores {@link IBufferDefinitionParamType} provided by NeoForge and {@link ResourceLocation alias} registered through {@link RegisterBufferDefinitionParamTypeAliasesEvent}
@@ -39,14 +37,14 @@ public class BufferDefinitionParamTypeManager {
     private static final Map<ResourceLocation, IBufferDefinitionParamType<?, ?>> BUFFER_DEFINITION_PARAM_TYPE_ALIASES = new HashMap<>();
 
     public static final IBufferDefinitionParamType<List<TextureState>, TextureParam> TEXTURE = register("texture", TextureParam.Vanilla.EMPTY);
-    public static final IBufferDefinitionParamType<Optional<Supplier<ShaderInstance>>, ShaderParam> SHADER = register("shader", ShaderParam.Vanilla.NO_SHADER);
+    public static final IBufferDefinitionParamType<Optional<Supplier<ShaderProgram>>, ShaderParam> SHADER = register("shader", ShaderParam.Vanilla.NO_SHADER);
     public static final IBufferDefinitionParamType<Optional<TransparencyState>, TransparencyParam> TRANSPARENCY = register("transparency", TransparencyParam.Vanilla.NO_TRANSPARENCY);
     public static final IBufferDefinitionParamType<Integer, IntegerParam> DEPTH = register("depth", DepthTestParam.Vanilla.LEQUAL_DEPTH_TEST);
     public static final IBufferDefinitionParamType<Boolean, BooleanParam> CULL = register("cull", CullParam.Vanilla.CULL);
     public static final IBufferDefinitionParamType<Boolean, BooleanParam> LIGHTMAP = register("lightmap", LightmapParam.Vanilla.NO_LIGHTMAP);
     public static final IBufferDefinitionParamType<Boolean, BooleanParam> OVERLAY = register("overlay", OverlayParam.Vanilla.NO_OVERLAY);
     public static final IBufferDefinitionParamType<Vector2f, Vector2fParam> POLYGON_OFFSET = register("polygon_offset", PolygonOffsetParam.Vanilla.POLYGON_OFFSET_LAYERING);
-    public static final IBufferDefinitionParamType<Vector3f, Vector3fParam> VIEW_OFFSET = register("view_offset", ViewOffsetParam.Vanilla.VIEW_OFFSET_Z_LAYERING);
+    public static final IBufferDefinitionParamType<Float, FloatParam> VIEW_OFFSET = register("view_offset", ViewOffsetParam.Vanilla.VIEW_OFFSET_Z_LAYERING);
     public static final IBufferDefinitionParamType<Optional<OutputState>, OutputParam> OUTPUT = register("output", OutputParam.Vanilla.MAIN_TARGET);
     public static final IBufferDefinitionParamType<Float, FloatParam> GLINT_SCALE = register("glint_scale", GlintScaleParam.Vanilla.GLINT_TEXTURING);
     public static final IBufferDefinitionParamType<Vector2f, Vector2fParam> TEXTURE_OFFSET = register("texture_offset", new Vector2fParam(new Vector2f(0.0f, 0.0f)));

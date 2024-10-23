@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderProgram;
 import net.neoforged.neoforge.client.buffer.param.BufferDefinitionParamTypeManager;
 import net.neoforged.neoforge.client.buffer.param.state.OutputState;
 import net.neoforged.neoforge.client.buffer.param.state.TextureState;
@@ -37,7 +37,7 @@ public class VanillaBufferDefinitions {
     public static RenderType bakeVanillaRenderType(IBufferDefinition bufferDefinition) {
         return BAKED_VANILLA_RENDER_TYPES.computeIfAbsent(bufferDefinition, bufferDefinition1 -> {
             List<TextureState> textures = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.TEXTURE);
-            Optional<Supplier<ShaderInstance>> shaderSupplier = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.SHADER);
+            Optional<Supplier<ShaderProgram>> shaderSupplier = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.SHADER);
             Optional<TransparencyState> transparencyState = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.TRANSPARENCY);
             int depthFunction = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.DEPTH);
             boolean cull = bufferDefinition1.getParamOrDefault(BufferDefinitionParamTypeManager.CULL);
@@ -52,12 +52,10 @@ public class VanillaBufferDefinitions {
             Optional<RenderStateShard.LayeringStateShard> viewOffsetLayeringRenderStateShard = bufferDefinition1.getParam(BufferDefinitionParamTypeManager.VIEW_OFFSET).map(offset -> new RenderStateShard.LayeringStateShard("view_offset_layering", () -> {
                 Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
                 matrix4fstack.pushMatrix();
-                matrix4fstack.scale(offset.x, offset.y, offset.z);
-                RenderSystem.applyModelViewMatrix();
+                RenderSystem.getProjectionType().applyLayeringTransform(matrix4fstack, offset);
             }, () -> {
                 Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
                 matrix4fstack.popMatrix();
-                RenderSystem.applyModelViewMatrix();
             }));
 
             RenderStateShard.OutputStateShard outputStateShard = outputState.map(outputState1 -> new RenderStateShard.OutputStateShard("render_target", () -> {
@@ -89,7 +87,8 @@ public class VanillaBufferDefinitions {
             RenderStateShard.EmptyTextureStateShard textureStateShard = switch (textures.size()) {
                 case 0 -> new RenderStateShard.EmptyTextureStateShard();
                 case 1 -> new RenderStateShard.TextureStateShard(textures.getFirst().texture(), textures.getFirst().blur(), textures.getFirst().mipmap());
-                default -> textures.stream().reduce(new RenderStateShard.MultiTextureStateShard.Builder(), (builder1, textureState) -> builder1.add(textureState.texture(), textureState.blur(), textureState.mipmap()), (builder1, builder2) -> builder2).build();
+                //Why builder's blur param is still boolean?
+                default -> textures.stream().reduce(new RenderStateShard.MultiTextureStateShard.Builder(), (builder1, textureState) -> builder1.add(textureState.texture(), textureState.blur().toBoolean(false), textureState.mipmap()), (builder1, builder2) -> builder2).build();
             };
 
             RenderStateShard.ColorLogicStateShard colorLogicStateShard = logicOp.map(logicOp1 -> new RenderStateShard.ColorLogicStateShard("or_reverse", () -> {
@@ -97,7 +96,7 @@ public class VanillaBufferDefinitions {
                 RenderSystem.logicOp(logicOp1);
             }, RenderSystem::disableColorLogicOp)).orElse(RenderStateShard.NO_COLOR_LOGIC);
 
-            RenderStateShard.ShaderStateShard shaderStateShard = shaderSupplier.map(RenderStateShard.ShaderStateShard::new).orElse(RenderStateShard.NO_SHADER);
+            RenderStateShard.ShaderStateShard shaderStateShard = shaderSupplier.map(Supplier::get).map(RenderStateShard.ShaderStateShard::new).orElse(RenderStateShard.NO_SHADER);
             RenderStateShard.DepthTestStateShard depthTestStateShard = new RenderStateShard.DepthTestStateShard("depth", depthFunction);
             RenderStateShard.CullStateShard cullStateShard = new RenderStateShard.CullStateShard(cull);
             RenderStateShard.LightmapStateShard lightmapStateShard = new RenderStateShard.LightmapStateShard(lightmap);

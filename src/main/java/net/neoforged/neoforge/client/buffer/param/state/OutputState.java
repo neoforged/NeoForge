@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 
 public record OutputState(Supplier<RenderTarget> renderTargetSupplier, boolean ignoreTransparency) {
     public static final class Vanilla {
-        public static final OutputState OUTLINE_TARGET = new OutputState(() -> Minecraft.getInstance().levelRenderer.entityTarget(), true);
+        public static final OutputState OUTLINE_TARGET = new OutputState(() -> Minecraft.getInstance().levelRenderer.entityOutlineTarget(), true);
         public static final OutputState TRANSLUCENT_TARGET = new OutputState(() -> Minecraft.getInstance().levelRenderer.getTranslucentTarget(), false);
         public static final OutputState PARTICLES_TARGET = new OutputState(() -> Minecraft.getInstance().levelRenderer.getParticlesTarget(), false);
         public static final OutputState WEATHER_TARGET = new OutputState(() -> Minecraft.getInstance().levelRenderer.getWeatherTarget(), false);

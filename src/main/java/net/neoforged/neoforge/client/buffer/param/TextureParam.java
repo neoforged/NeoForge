@@ -7,12 +7,13 @@ package net.neoforged.neoforge.client.buffer.param;
 
 import java.util.List;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.neoforge.client.buffer.param.state.TextureState;
 
 public record TextureParam(List<TextureState> states) implements IBufferDefinitionParam<List<TextureState>> {
 
-    public TextureParam(ResourceLocation texture, boolean blur, boolean mipmap) {
+    public TextureParam(ResourceLocation texture, TriState blur, boolean mipmap) {
         this(new TextureState(texture, blur, mipmap));
     }
 
@@ -35,6 +36,6 @@ public record TextureParam(List<TextureState> states) implements IBufferDefiniti
     }
     public static final class Vanilla {
         public static final TextureParam EMPTY = new TextureParam();
-        public static final TextureParam BLOCK = new TextureParam(InventoryMenu.BLOCK_ATLAS, false, false);
+        public static final TextureParam BLOCK = new TextureParam(InventoryMenu.BLOCK_ATLAS, TriState.DEFAULT, false);
     }
 }
