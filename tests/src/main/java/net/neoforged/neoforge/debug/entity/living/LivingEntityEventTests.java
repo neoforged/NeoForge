@@ -349,14 +349,14 @@ public class LivingEntityEventTests {
                     player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 11000));
                     player.setItemSlot(EquipmentSlot.CHEST, Items.IRON_CHESTPLATE.getDefaultInstance());
                     ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-                    enchants.set(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.PROTECTION), 4);
+                    enchants.set(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.PROTECTION), 4);
                     EnchantmentHelper.setEnchantments(player.getItemBySlot(EquipmentSlot.CHEST), enchants.toImmutable());
                     player.getFoodData().setFoodLevel(1);
                 })
                 /* ServerPlayers have spawn invulnerability.  This waits out that period.*/
                 .thenIdle(2001)
                 /* The player is damaged with a single point of damage which will be modified in the event listeners*/
-                .thenExecute(player -> player.hurt(new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolder(DamageTypes.MOB_ATTACK).get()), 1))
+                .thenExecute(player -> player.hurtServer(helper.getLevel(), new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK)), 1))
                 /* The player's health and all the stored values from the events are checked to ensure they match the
                  * expected values from our reduction functions and changes to the damage value.*/
                 .thenWaitUntil(player -> {

@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/multiplayer/SessionSearchTrees.java
 +++ b/net/minecraft/client/multiplayer/SessionSearchTrees.java
-@@ -60,7 +_,7 @@
-                 List<RecipeCollection> list = p_346233_.getCollections();
-                 Registry<Item> registry = p_345600_.registryOrThrow(Registries.ITEM);
-                 Item.TooltipContext item$tooltipcontext = Item.TooltipContext.of(p_345600_);
+@@ -65,7 +_,7 @@
+                 Registry<Item> registry = registryaccess.lookupOrThrow(Registries.ITEM);
+                 Item.TooltipContext item$tooltipcontext = Item.TooltipContext.of(registryaccess);
+                 ContextMap contextmap = SlotDisplayContext.fromLevel(p_379752_);
 -                TooltipFlag tooltipflag = TooltipFlag.Default.NORMAL;
 +                TooltipFlag tooltipflag = net.neoforged.neoforge.client.ClientTooltipFlag.of(TooltipFlag.Default.NORMAL);
                  CompletableFuture<?> completablefuture = this.recipeSearch;
                  this.recipeSearch = CompletableFuture.supplyAsync(
                      () -> new FullTextSearchTree<>(
-@@ -86,44 +_,60 @@
+@@ -92,44 +_,60 @@
      }
  
      public void updateCreativeTags(List<ItemStack> p_346121_) {

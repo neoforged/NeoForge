@@ -9,6 +9,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -23,8 +25,8 @@ public final class DifferenceFluidIngredient extends FluidIngredient {
     public static final MapCodec<DifferenceFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            FluidIngredient.CODEC_NON_EMPTY.fieldOf("base").forGetter(DifferenceFluidIngredient::base),
-                            FluidIngredient.CODEC_NON_EMPTY.fieldOf("subtracted").forGetter(DifferenceFluidIngredient::subtracted))
+                            FluidIngredient.CODEC.fieldOf("base").forGetter(DifferenceFluidIngredient::base),
+                            FluidIngredient.CODEC.fieldOf("subtracted").forGetter(DifferenceFluidIngredient::subtracted))
                     .apply(builder, DifferenceFluidIngredient::new));
     private final FluidIngredient base;
     private final FluidIngredient subtracted;
@@ -35,8 +37,8 @@ public final class DifferenceFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public Stream<FluidStack> generateStacks() {
-        return base.generateStacks().filter(subtracted.negate());
+    public Stream<Holder<Fluid>> generateFluids() {
+        return base.fluids().stream().filter(e -> !subtracted().fluids().contains(e));
     }
 
     @Override

@@ -1,22 +1,34 @@
 --- a/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -114,11 +_,14 @@
+@@ -114,11 +_,17 @@
          int i = this.font.width(COPYRIGHT_TEXT);
          int j = this.width - i - 2;
          int k = 24;
 -        int l = this.height / 4 + 48;
 +        int l = this.height / 4 + 32;
          if (this.minecraft.isDemo()) {
-             this.createDemoMenuOptions(l, 24);
+             l = this.createDemoMenuOptions(l, 24);
          } else {
-             this.createNormalMenuOptions(l, 24);
+             l = this.createNormalMenuOptions(l, 24);
++            int modsOffset = SharedConstants.IS_RUNNING_IN_IDE ? 2 : -100;
++            int modsWidth = SharedConstants.IS_RUNNING_IN_IDE ? 98 : 200;
 +            this.addRenderableWidget(new net.neoforged.neoforge.client.gui.widget.ModsButton(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
-+                    .pos(this.width / 2 - 100, l + 24 * 3).size(200, 20)));
-+            l += 22; // Move down Options, Quit, Language, and Accessibility buttons to make room for mods button
++                    .pos(this.width / 2 + modsOffset, l + 24).size(modsWidth, 20)));
++            if (!SharedConstants.IS_RUNNING_IN_IDE)
++                l += 24; // Move down Options, Quit, Language, and Accessibility buttons to make room for mods button (in-dev the test world button "handles" this)
          }
  
-         SpriteIconButton spriteiconbutton = this.addRenderableWidget(
-@@ -285,6 +_,7 @@
+         l = this.createTestWorldButton(l, 24);
+@@ -160,7 +_,7 @@
+         if (SharedConstants.IS_RUNNING_IN_IDE) {
+             this.addRenderableWidget(
+                 Button.builder(Component.literal("Create Test World"), p_372504_ -> CreateWorldScreen.testWorld(this.minecraft, this))
+-                    .bounds(this.width / 2 - 100, p_373114_ += p_372852_, 200, 20)
++                    .bounds(this.width / 2 - 100, p_373114_ += p_372852_, 98, 20) // Neo: reduce button width to fit the mods button next to it
+                     .build()
+             );
+         }
+@@ -304,6 +_,7 @@
          if ((i & -67108864) != 0) {
              super.render(p_282860_, p_281753_, p_283539_, p_282628_);
              this.logoRenderer.renderLogo(p_282860_, this.width, f);
@@ -24,7 +36,7 @@
              if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
                  this.splash.render(p_282860_, this.width, this.font, i);
              }
-@@ -300,7 +_,13 @@
+@@ -319,7 +_,13 @@
                  s = s + I18n.get("menu.modded");
              }
  
@@ -37,5 +49,5 @@
 +                    p_282860_.drawString(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), 16777215 | i)
 +            );
              if (this.realmsNotificationsEnabled() && f >= 1.0F) {
-                 RenderSystem.enableDepthTest();
                  this.realmsNotificationsScreen.render(p_282860_, p_281753_, p_283539_, p_282628_);
+             }

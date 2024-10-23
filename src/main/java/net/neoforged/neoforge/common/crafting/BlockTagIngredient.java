@@ -10,15 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link Ingredient} that matches {@link ItemStack}s of {@link Block}s from a {@link TagKey<Block>}, useful in cases
  * like {@code "minecraft:convertable_to_mud"} where there isn't an accompanying item tag
  * <p>
- * Notice: This should not be used as a replacement for the normal {@link Ingredient#of(TagKey)},
+ * Notice: This should not be used as a replacement for the normal item tag ingredient.
  * This should only be used when there is no way an item tag can be used in your use case
  */
 public class BlockTagIngredient implements ICustomIngredient {
@@ -36,36 +37,30 @@ public class BlockTagIngredient implements ICustomIngredient {
     protected final TagKey<Block> tag;
 
     @Nullable
-    protected ItemStack[] itemStacks;
+    protected HolderSet<Item> items;
 
     public BlockTagIngredient(TagKey<Block> tag) {
         this.tag = tag;
     }
 
-    protected void dissolve() {
-        if (itemStacks == null) {
-            List<ItemStack> list = new ArrayList<>();
+    protected HolderSet<Item> dissolve() {
+        if (items == null) {
+            List<Holder<Item>> list = new ArrayList<>();
             for (Holder<Block> block : BuiltInRegistries.BLOCK.getTagOrEmpty(tag)) {
-                ItemStack stack = new ItemStack(block.value());
-                if (!stack.isEmpty()) {
-                    list.add(stack);
+                var item = block.value().asItem();
+                if (item != Items.AIR) {
+                    list.add(item.builtInRegistryHolder());
                 }
             }
 
-            if (list.isEmpty()) {
-                ItemStack itemStack = new ItemStack(Blocks.BARRIER);
-                itemStack.set(DataComponents.CUSTOM_NAME, Component.literal("Empty Tag: " + this.tag.location()));
-                list.add(itemStack);
-            }
-
-            itemStacks = list.toArray(ItemStack[]::new);
+            items = HolderSet.direct(list);
         }
+        return items;
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
-        dissolve();
-        return Stream.of(itemStacks);
+    public Stream<Holder<Item>> items() {
+        return dissolve().stream();
     }
 
     @Override
@@ -73,14 +68,7 @@ public class BlockTagIngredient implements ICustomIngredient {
         if (stack == null)
             return false;
 
-        dissolve();
-        for (ItemStack itemStack : itemStacks) {
-            if (itemStack.is(stack.getItem())) {
-                return true;
-            }
-        }
-
-        return false;
+        return dissolve().contains(stack.getItemHolder());
     }
 
     public TagKey<Block> getTag() {
@@ -95,6 +83,13 @@ public class BlockTagIngredient implements ICustomIngredient {
     @Override
     public IngredientType<?> getType() {
         return NeoForgeMod.BLOCK_TAG_INGREDIENT.get();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return new SlotDisplay.Composite(dissolve().stream()
+                .map(Ingredient::displayForSingleItem)
+                .toList());
     }
 
     @Override

@@ -6,11 +6,7 @@
 package net.neoforged.neoforge.client.entity.animation.json;
 
 import com.google.common.collect.MapMaker;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +21,7 @@ import org.slf4j.Logger;
 /**
  * A loader for entity animations written in JSON. You can also get parsed animations from this class.
  */
-public final class AnimationLoader extends SimpleJsonResourceReloadListener {
+public final class AnimationLoader extends SimpleJsonResourceReloadListener<AnimationDefinition> {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final AnimationLoader INSTANCE = new AnimationLoader();
@@ -35,7 +31,7 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
     private final List<AnimationHolder> strongHolderReferences = new ArrayList<>();
 
     private AnimationLoader() {
-        super(new Gson(), "neoforge/animations/entity");
+        super(AnimationParser.CODEC, "neoforge/animations/entity");
     }
 
     /**
@@ -56,21 +52,15 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener {
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> animationJsons, ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected void apply(Map<ResourceLocation, AnimationDefinition> animationJsons, ResourceManager resourceManager, ProfilerFiller profiler) {
         animations.values().forEach(AnimationHolder::unbind);
         strongHolderReferences.clear();
         int loaded = 0;
         for (final var entry : animationJsons.entrySet()) {
-            try {
-                final var animation = AnimationParser.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
-                        .getOrThrow(JsonParseException::new);
-                final var holder = getAnimationHolder(entry.getKey());
-                holder.bind(animation);
-                strongHolderReferences.add(holder);
-                loaded++;
-            } catch (Exception e) {
-                LOGGER.error("Failed to load animation {}", entry.getKey(), e);
-            }
+            final var holder = getAnimationHolder(entry.getKey());
+            holder.bind(entry.getValue());
+            strongHolderReferences.add(holder);
+            loaded++;
         }
         LOGGER.info("Loaded {} entity animations", loaded);
     }

@@ -64,10 +64,10 @@ public class BulkKnownPackTest {
                 return;
             }
             RegistryAccess access = changer.registryAccess();
-            access.registry(Registries.BIOME).ifPresentOrElse(biomes -> {
+            access.lookup(Registries.BIOME).ifPresentOrElse(biomes -> {
                 for (int i = 0; i < 128; i++) {
                     var id = ResourceLocation.fromNamespaceAndPath(NAMESPACE, "entry_" + i);
-                    if (biomes.getHolder(id).isEmpty()) {
+                    if (biomes.get(id).isEmpty()) {
                         framework.changeStatus(test, Test.Status.failed("Entry " + id + " that should be synced by KnownPack not found"), changer);
                         return;
                     }
@@ -92,7 +92,7 @@ public class BulkKnownPackTest {
         json.add("effects", effects);
         json.add("spawners", new JsonObject());
         json.add("spawn_costs", new JsonObject());
-        json.add("carvers", new JsonObject());
+        json.add("carvers", new JsonArray());
         json.add("features", new JsonArray());
         pack.putData(ResourceLocation.fromNamespaceAndPath(NAMESPACE, "worldgen/biome/entry_" + i + ".json"), json);
     }

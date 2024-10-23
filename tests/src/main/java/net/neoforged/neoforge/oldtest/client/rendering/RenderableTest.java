@@ -18,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
@@ -141,7 +142,7 @@ public class RenderableTest {
             if (!BlockPos.containing(0, y, 0).closerThan(BlockPos.containing(x, y, z), 100))
                 return;
 
-            var profiler = Minecraft.getInstance().getProfiler();
+            var profiler = Profiler.get();
             profiler.push("renderable_test");
             if (bakedRenderable == null) {
                 bakedRenderable = BakedModelRenderable.of(MODEL_LOC).withModelDataContext();

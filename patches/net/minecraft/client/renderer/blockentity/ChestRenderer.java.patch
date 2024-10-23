@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/ChestRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ChestRenderer.java
-@@ -128,7 +_,7 @@
+@@ -66,7 +_,7 @@
              f1 = 1.0F - f1;
              f1 = 1.0F - f1 * f1 * f1;
              int i = neighborcombineresult.apply(new BrightnessCombiner<>()).applyAsInt(p_112367_);
@@ -9,10 +9,10 @@
              VertexConsumer vertexconsumer = material.buffer(p_112366_, RenderType::entityCutout);
              if (flag1) {
                  if (chesttype == ChestType.LEFT) {
-@@ -159,5 +_,15 @@
-         p_112372_.render(p_112370_, p_112371_, p_112376_, p_112377_);
-         p_112373_.render(p_112370_, p_112371_, p_112376_, p_112377_);
-         p_112374_.render(p_112370_, p_112371_, p_112376_, p_112377_);
+@@ -85,5 +_,15 @@
+     private void render(PoseStack p_112370_, VertexConsumer p_112371_, ChestModel p_364178_, float p_112375_, int p_112376_, int p_112377_) {
+         p_364178_.setupAnim(p_112375_);
+         p_364178_.renderToBuffer(p_112370_, p_112371_, p_112376_, p_112377_);
 +    }
 +
 +    protected Material getMaterial(T blockEntity, ChestType chestType) {

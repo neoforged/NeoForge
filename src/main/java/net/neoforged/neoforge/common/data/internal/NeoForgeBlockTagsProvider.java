@@ -144,6 +144,14 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.STORAGE_BLOCKS_REDSTONE).add(Blocks.REDSTONE_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_SLIME).add(Blocks.SLIME_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_WHEAT).add(Blocks.HAY_BLOCK);
+        tag(Tags.Blocks.STRIPPED_LOGS).add(
+                Blocks.STRIPPED_ACACIA_LOG, Blocks.STRIPPED_BAMBOO_BLOCK, Blocks.STRIPPED_BIRCH_LOG,
+                Blocks.STRIPPED_CHERRY_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_JUNGLE_LOG,
+                Blocks.STRIPPED_MANGROVE_LOG, Blocks.STRIPPED_OAK_LOG, Blocks.STRIPPED_SPRUCE_LOG);
+        tag(Tags.Blocks.STRIPPED_WOODS).add(
+                Blocks.STRIPPED_ACACIA_WOOD, Blocks.STRIPPED_BIRCH_WOOD, Blocks.STRIPPED_CHERRY_WOOD,
+                Blocks.STRIPPED_DARK_OAK_WOOD, Blocks.STRIPPED_JUNGLE_WOOD, Blocks.STRIPPED_MANGROVE_WOOD,
+                Blocks.STRIPPED_OAK_WOOD, Blocks.STRIPPED_SPRUCE_WOOD);
         tag(Tags.Blocks.VILLAGER_JOB_SITES).add(
                 Blocks.BARREL, Blocks.BLAST_FURNACE, Blocks.BREWING_STAND, Blocks.CARTOGRAPHY_TABLE,
                 Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON,
@@ -286,7 +294,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         for (DyeColor color : DyeColor.values()) {
             ResourceLocation key = ResourceLocation.fromNamespaceAndPath("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Block> tag = getForgeTag(prefix + color.getName());
-            Block block = BuiltInRegistries.BLOCK.get(key);
+            Block block = BuiltInRegistries.BLOCK.getValue(key);
             if (block == null || block == Blocks.AIR)
                 throw new IllegalStateException("Unknown vanilla block: " + key);
             tag(tag).add(block);

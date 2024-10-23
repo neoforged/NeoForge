@@ -5,17 +5,21 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.logging.LogUtils;
-import java.io.IOException;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderDefines;
+import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
+// TODO: convert to automated test
 @Mod(ShaderResourcesTest.MODID)
 public class ShaderResourcesTest {
     private static Logger LOGGER;
@@ -34,28 +38,30 @@ public class ShaderResourcesTest {
     }
 
     private static class ClientInit {
+        private static final ShaderProgram CUBEMAP_SHADER = new ShaderProgram(
+                ResourceLocation.fromNamespaceAndPath(MODID, "core/vertex_cubemap"),
+                DefaultVertexFormat.POSITION,
+                ShaderDefines.EMPTY);
+        private static boolean checked = false;
+
         public static void init(IEventBus modEventBus) {
             modEventBus.addListener(ClientInit::registerShaders);
+            NeoForge.EVENT_BUS.addListener(ClientInit::onRenderLevelStage);
         }
 
         public static void registerShaders(final RegisterShadersEvent event) {
-            if (!ENABLE)
-                return;
+            event.registerShader(CUBEMAP_SHADER);
+        }
 
-            try {
-                event.registerShader(
-                        new ShaderInstance(
-                                event.getResourceProvider(),
-                                ResourceLocation.fromNamespaceAndPath(MODID, "vertex_cubemap"),
-                                DefaultVertexFormat.POSITION),
-                        shader -> {
-                            LOGGER.info("Completely loaded shader {} with no issues", shader.getName());
-                        });
+        private static void onRenderLevelStage(final RenderLevelStageEvent event) {
+            if (checked) return;
 
-                LOGGER.info("Loaded registered shaders with no exceptions");
-            } catch (IOException e) {
-                LOGGER.error("Failed to load shaders with exception", e);
+            if (RenderSystem.setShader(CUBEMAP_SHADER) != null) {
+                LOGGER.info("Shader loaded and available");
+            } else {
+                LOGGER.info("Shader failed to load or compile");
             }
+            checked = true;
         }
     }
 }

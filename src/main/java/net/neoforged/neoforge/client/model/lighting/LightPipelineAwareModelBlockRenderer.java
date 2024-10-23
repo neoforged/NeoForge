@@ -83,7 +83,7 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
         }
 
         for (Direction side : SIDES) {
-            if (checkSides && !Block.shouldRenderFace(state, level, pos, side, pos.relative(side))) {
+            if (checkSides && !Block.shouldRenderFace(level, pos, state, level.getBlockState(pos.relative(side)), side)) {
                 continue;
             }
             rand.setSeed(seed);

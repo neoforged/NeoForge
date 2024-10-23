@@ -1,19 +1,25 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -56,9 +_,9 @@
+@@ -70,7 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import org.slf4j.Logger;
  
 -public class Item implements FeatureElement, ItemLike {
 +public class Item implements FeatureElement, ItemLike, net.neoforged.neoforge.common.extensions.IItemExtension {
+     public static final Codec<Holder<Item>> CODEC = BuiltInRegistries.ITEM
+         .holderByNameCodec()
+         .validate(
+@@ -79,7 +_,7 @@
+                     : DataResult.success(p_381630_)
+         );
      private static final Logger LOGGER = LogUtils.getLogger();
 -    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
 +    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -89,12 +_,13 @@
-         this.components = p_41383_.buildAndValidateComponents();
+@@ -110,7 +_,7 @@
+         this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
@@ -21,13 +27,7 @@
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Item")) {
                  LOGGER.error("Item classes should end with Item and {} doesn't.", s);
-             }
-         }
-+        this.canRepair = p_41383_.canRepair;
-     }
- 
-     @Deprecated
-@@ -106,6 +_,15 @@
+@@ -127,6 +_,15 @@
          return this.components;
      }
  
@@ -37,13 +37,13 @@
 +        if (!net.neoforged.neoforge.internal.RegistrationEvents.canModifyComponents()) throw new IllegalStateException("Default components cannot be modified now!");
 +        var builder = DataComponentMap.builder().addAll(components);
 +        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
-+        components = Properties.COMPONENT_INTERNER.intern(Properties.validateComponents(builder.build()));
++        components = Properties.validateComponents(builder.build());
 +    }
 +
      public int getDefaultMaxStackSize() {
          return this.components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
      }
-@@ -113,6 +_,8 @@
+@@ -134,6 +_,8 @@
      public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
      }
  
@@ -52,25 +52,7 @@
      public void onDestroyed(ItemEntity p_150887_) {
      }
  
-@@ -139,7 +_,7 @@
- 
-     public InteractionResultHolder<ItemStack> use(Level p_41432_, Player p_41433_, InteractionHand p_41434_) {
-         ItemStack itemstack = p_41433_.getItemInHand(p_41434_);
--        FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
-+        FoodProperties foodproperties = itemstack.getFoodProperties(p_41433_);
-         if (foodproperties != null) {
-             if (p_41433_.canEat(foodproperties.canAlwaysEat())) {
-                 p_41433_.startUsingItem(p_41434_);
-@@ -153,7 +_,7 @@
-     }
- 
-     public ItemStack finishUsingItem(ItemStack p_41409_, Level p_41410_, LivingEntity p_41411_) {
--        FoodProperties foodproperties = p_41409_.get(DataComponents.FOOD);
-+        FoodProperties foodproperties = p_41409_.getFoodProperties(p_41411_);
-         return foodproperties != null ? p_41411_.eat(p_41410_, p_41409_, foodproperties) : p_41409_;
-     }
- 
-@@ -162,12 +_,13 @@
+@@ -181,12 +_,13 @@
      }
  
      public int getBarWidth(ItemStack p_150900_) {
@@ -86,109 +68,49 @@
          return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
      }
  
-@@ -240,10 +_,12 @@
-     }
- 
-     @Nullable
-+    @Deprecated // Use ItemStack sensitive version.
-     public final Item getCraftingRemainingItem() {
-         return this.craftingRemainingItem;
+@@ -243,6 +_,7 @@
+         return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
      }
  
 +    @Deprecated // Use ItemStack sensitive version.
-     public boolean hasCraftingRemainingItem() {
-         return this.craftingRemainingItem != null;
+     public final ItemStack getCraftingRemainder() {
+         return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
      }
-@@ -267,7 +_,7 @@
-     }
- 
-     public int getUseDuration(ItemStack p_41454_, LivingEntity p_344979_) {
--        FoodProperties foodproperties = p_41454_.get(DataComponents.FOOD);
-+        FoodProperties foodproperties = p_41454_.getFoodProperties(null);
-         return foodproperties != null ? foodproperties.eatDurationTicks() : 0;
+@@ -302,7 +_,12 @@
      }
  
-@@ -299,6 +_,8 @@
-         return p_41436_.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, p_41438_, p_41437_));
-     }
- 
-+    /** @deprecated Neo: Use ItemStack sensitive version. */
-+    @Deprecated
-     public int getEnchantmentValue() {
-         return 0;
-     }
-@@ -307,13 +_,23 @@
-         return false;
-     }
- 
-+    /**
-+     * @deprecated Neo: Use {@link Item#getDefaultAttributeModifiers(ItemStack)}
-+     */
-     @Deprecated
-     public ItemAttributeModifiers getDefaultAttributeModifiers() {
-         return ItemAttributeModifiers.EMPTY;
-     }
- 
-+    protected final boolean canRepair;
-+
-+    @Override
-+    public boolean isRepairable(ItemStack stack) {
-+        return canRepair && isDamageable(stack);
-+    }
-+
      public boolean useOnRelease(ItemStack p_41464_) {
 -        return false;
 +        return p_41464_.getItem() == Items.CROSSBOW;
++    }
++
++    @Override
++    public boolean isRepairable(ItemStack stack) {
++        return stack.has(DataComponents.REPAIRABLE) && isDamageable(stack);
      }
  
      public ItemStack getDefaultInstance() {
-@@ -341,13 +_,22 @@
+@@ -322,7 +_,7 @@
          return this.requiredFeatures;
      }
  
 -    public static class Properties {
-+    /**
-+     * Neo: Allowing mods to define client behavior for their Items
-+     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
-+     */
-+    @Deprecated(forRemoval = true, since = "1.21")
-+    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientItemExtensions> consumer) {
-+    }
-+
 +    public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
-         private static final Interner<DataComponentMap> COMPONENT_INTERNER = Interners.newStrongInterner();
-         @Nullable
-         private DataComponentMap.Builder components;
-         @Nullable
-         Item craftingRemainingItem;
-         FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
-+        private boolean canRepair = true;
- 
-         public Item.Properties food(FoodProperties p_41490_) {
-             return this.component(DataComponents.FOOD, p_41490_);
-@@ -381,12 +_,18 @@
-             return this.component(DataComponents.JUKEBOX_PLAYABLE, new JukeboxPlayable(new EitherHolder<>(p_350862_), true));
-         }
- 
-+        public Item.Properties setNoRepair() {
-+            canRepair = false;
-+            return this;
-+        }
-+
-         public Item.Properties requiredFeatures(FeatureFlag... p_250948_) {
-             this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_250948_);
-             return this;
+         private static final DependantName<Item, String> BLOCK_DESCRIPTION_ID = p_371954_ -> Util.makeDescriptionId("block", p_371954_.location());
+         private static final DependantName<Item, String> ITEM_DESCRIPTION_ID = p_371511_ -> Util.makeDescriptionId("item", p_371511_.location());
+         private final DataComponentMap.Builder components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
+@@ -438,6 +_,7 @@
          }
  
          public <T> Item.Properties component(DataComponentType<T> p_330871_, T p_330323_) {
 +            net.neoforged.neoforge.common.CommonHooks.validateComponent(p_330323_);
-             if (this.components == null) {
-                 this.components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
-             }
-@@ -401,6 +_,10 @@
+             this.components.set(p_330871_, p_330323_);
+             return this;
+         }
+@@ -448,6 +_,10 @@
  
-         DataComponentMap buildAndValidateComponents() {
-             DataComponentMap datacomponentmap = this.buildComponents();
+         DataComponentMap buildAndValidateComponents(Component p_371796_, ResourceLocation p_371450_) {
+             DataComponentMap datacomponentmap = this.components.set(DataComponents.ITEM_NAME, p_371796_).set(DataComponents.ITEM_MODEL, p_371450_).build();
 +            return validateComponents(datacomponentmap);
 +        }
 +
@@ -196,7 +118,7 @@
              if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
                  throw new IllegalStateException("Item cannot have both durability and be stackable");
              } else {
-@@ -441,6 +_,14 @@
+@@ -484,6 +_,14 @@
          @Nullable
          MapItemSavedData mapData(MapId p_339670_);
  
@@ -211,7 +133,7 @@
          static Item.TooltipContext of(@Nullable final Level p_339599_) {
              return p_339599_ == null ? EMPTY : new Item.TooltipContext() {
                  @Override
-@@ -456,6 +_,11 @@
+@@ -499,6 +_,11 @@
                  @Override
                  public MapItemSavedData mapData(MapId p_339628_) {
                      return p_339599_.getMapData(p_339628_);

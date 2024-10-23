@@ -9,12 +9,11 @@ import java.util.BitSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.MultiPartBakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -36,13 +35,13 @@ public class MultipartModelData {
         return partData != null ? partData : modelData;
     }
 
-    public static ModelData create(List<Pair<Predicate<BlockState>, BakedModel>> selectors, BitSet bitset, BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData tileModelData) {
+    public static ModelData create(List<MultiPartBakedModel.Selector> selectors, BitSet bitset, BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData tileModelData) {
         // Don't allocate memory if no submodel changes the model data
         Map<BakedModel, ModelData> dataMap = null;
 
         for (int i = 0; i < bitset.length(); ++i) {
             if (bitset.get(i)) {
-                var model = selectors.get(i).getRight();
+                var model = selectors.get(i).model();
                 var data = model.getModelData(level, pos, state, tileModelData);
 
                 if (data != tileModelData) {

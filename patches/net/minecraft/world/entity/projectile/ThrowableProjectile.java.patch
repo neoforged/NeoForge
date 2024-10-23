@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/projectile/ThrowableProjectile.java
 +++ b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
-@@ -42,7 +_,7 @@
-     public void tick() {
-         super.tick();
+@@ -48,7 +_,7 @@
+         this.applyInertia();
          HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+         Vec3 vec3;
 -        if (hitresult.getType() != HitResult.Type.MISS) {
 +        if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
-             this.hitTargetOrDeflectSelf(hitresult);
-         }
- 
+             vec3 = hitresult.getLocation();
+         } else {
+             vec3 = this.position().add(this.getDeltaMovement());

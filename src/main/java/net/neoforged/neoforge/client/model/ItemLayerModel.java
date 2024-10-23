@@ -13,13 +13,16 @@ import com.google.gson.JsonParseException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ItemModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
@@ -51,7 +54,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> overrides) {
         if (textures == null) {
             ImmutableList.Builder<Material> builder = ImmutableList.builder();
             for (int i = 0; context.hasMaterial("layer" + i); i++) {
@@ -67,7 +70,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
             modelState = UnbakedGeometryHelper.composeRootTransformIntoModelState(modelState, rootTransform);
 
         var normalRenderTypes = new RenderTypeGroup(RenderType.translucent(), NeoForgeRenderTypes.ITEM_UNSORTED_TRANSLUCENT.get());
-        CompositeModel.Baked.Builder builder = CompositeModel.Baked.builder(context, particle, overrides, context.getTransforms());
+        CompositeModel.Baked.Builder builder = CompositeModel.Baked.builder(context, particle, context.getTransforms());
         for (int i = 0; i < textures.size(); i++) {
             TextureAtlasSprite sprite = spriteGetter.apply(textures.get(i));
             var unbaked = UnbakedGeometryHelper.createUnbakedItemElements(i, sprite, this.layerData.get(i));
@@ -77,7 +80,11 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
             builder.addQuads(renderTypes != null ? renderTypes : normalRenderTypes, quads);
         }
 
-        return builder.build();
+        BakedModel baked = builder.build();
+        if (!overrides.isEmpty()) {
+            baked = new ItemModel.BakedModelWithOverrides(baked, new BakedOverrides(baker, overrides, spriteGetter));
+        }
+        return baked;
     }
 
     public static final class Loader implements IGeometryLoader<ItemLayerModel> {
@@ -97,7 +104,6 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
             }
 
             var emissiveLayers = new Int2ObjectArrayMap<ExtraFaceData>();
-            if (jsonObject.has("forge_data")) throw new JsonParseException("forge_data should be replaced by neoforge_data"); // TODO 1.22: Remove
             if (jsonObject.has("neoforge_data")) {
                 JsonObject forgeData = jsonObject.get("neoforge_data").getAsJsonObject();
                 readLayerData(forgeData, "layers", renderTypeNames, emissiveLayers, false);

@@ -36,7 +36,7 @@ public class ForgeChunkManagerTest {
     private static final Logger LOGGER = LogManager.getLogger(MODID);
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.register("chunk_loader", () -> new ChunkLoaderBlock(Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.registerBlock("chunk_loader", ChunkLoaderBlock::new, Properties.of().mapColor(MapColor.STONE));
     private static final DeferredItem<BlockItem> CHUNK_LOADER_ITEM = ITEMS.registerSimpleBlockItem(CHUNK_LOADER_BLOCK);
     private static final TicketController CONTROLLER = new TicketController(ResourceLocation.fromNamespaceAndPath(MODID, "default"), (world, ticketHelper) -> {
         for (Map.Entry<BlockPos, TicketSet> entry : ticketHelper.getBlockTickets().entrySet()) {
@@ -89,6 +89,7 @@ public class ForgeChunkManagerTest {
         }
 
         @Deprecated
+        @Override
         public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
             super.onRemove(state, worldIn, pos, newState, isMoving);
             if (worldIn instanceof ServerLevel && !state.is(newState.getBlock())) {

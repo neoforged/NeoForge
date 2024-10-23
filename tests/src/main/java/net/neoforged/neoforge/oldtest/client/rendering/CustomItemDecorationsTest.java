@@ -45,7 +45,7 @@ public class CustomItemDecorationsTest {
             int x = xOffset + 2;
             int y = yOffset + 13;
             graphics.pose().pushPose();
-            graphics.pose().translate(0.0F, 0.0F, ItemRenderer.ITEM_COUNT_BLIT_OFFSET + 1F);
+            graphics.pose().translate(0.0F, 0.0F, ItemRenderer.ITEM_DECORATION_BLIT_OFFSET + 1F);
             graphics.fill(x, y, x + 13, y + 2, 0xFF000000);
             graphics.fill(x, y, x + i, y + 1, j);
             graphics.pose().popPose();
