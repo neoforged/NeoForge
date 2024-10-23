@@ -315,25 +315,19 @@
          this.dimensions = entitydimensions1;
          this.eyeHeight = entitydimensions1.eyeHeight();
          this.reapplyPosition();
-@@ -3265,9 +_,17 @@
+@@ -3265,7 +_,12 @@
          return Mth.lerp(p_352259_, this.yRotO, this.yRot);
      }
  
-+    @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
++    @Deprecated // Neo: Use no parameter version instead
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
-+        this.updateFluidHeightAndDoFluidPushing();
-+        if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+        else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-+        else return false;
++        return this.updateFluidHeightAndDoFluidPushing();
 +    }
 +
-+    public void updateFluidHeightAndDoFluidPushing() {
++    public boolean updateFluidHeightAndDoFluidPushing() {
          if (this.touchingUnloadedChunk()) {
--            return false;
-+            return;
+             return false;
          } else {
-             AABB aabb = this.getBoundingBox().deflate(0.001);
-             int i = Mth.floor(aabb.minX);
 @@ -3282,25 +_,36 @@
              Vec3 vec3 = Vec3.ZERO;
              int k1 = 0;
@@ -355,9 +349,10 @@
 +                        if (!fluidType.isAir()) {
                              double d1 = (double)((float)i2 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                              if (d1 >= aabb.minY) {
-                                 flag1 = true;
+-                                flag1 = true;
 -                                d0 = Math.max(d1 - aabb.minY, d0);
 -                                if (flag) {
++                                flag1 = fluidType.actsLikeWater();
 +                                if (interimCalcs == null) {
 +                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>();
 +                                }
@@ -378,7 +373,7 @@
                                  }
                              }
                          }
-@@ -3308,27 +_,30 @@
+@@ -3308,26 +_,30 @@
                  }
              }
  
@@ -412,13 +407,12 @@
              }
  
 -            this.fluidHeight.put(p_204032_, d0);
--            return flag1;
 +            this.setFluidTypeHeight(fluidType, interim.fluidHeight);
 +            });
 +            }
+             return flag1;
          }
      }
- 
 @@ -3341,7 +_,10 @@
          return !this.level().hasChunksAt(i, k, j, l);
      }
