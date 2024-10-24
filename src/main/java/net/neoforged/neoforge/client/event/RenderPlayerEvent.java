@@ -9,7 +9,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -24,22 +27,10 @@ import org.jetbrains.annotations.ApiStatus;
  * @see RenderPlayerEvent.Post
  * @see PlayerRenderer
  */
-public abstract class RenderPlayerEvent extends RenderLivingEvent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+public abstract class RenderPlayerEvent extends RenderLivingEvent<AbstractClientPlayer, PlayerRenderState, PlayerModel> {
     @ApiStatus.Internal
-    protected RenderPlayerEvent(Player player, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
-        super(player, renderer, partialTick, poseStack, multiBufferSource, packedLight);
-    }
-
-    /**
-     * {@return the player entity renderer}
-     */
-    public PlayerRenderer getRenderer() {
-        return (PlayerRenderer) super.getRenderer();
-    }
-
-    @Override
-    public Player getEntity() {
-        return (Player) super.getEntity();
+    protected RenderPlayerEvent(PlayerRenderState renderState, LivingEntityRenderer<AbstractClientPlayer, PlayerRenderState, PlayerModel> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
+        super(renderState, renderer, partialTick, poseStack, multiBufferSource, packedLight);
     }
 
     /**
