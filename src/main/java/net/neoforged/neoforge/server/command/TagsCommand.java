@@ -51,6 +51,10 @@ import net.minecraft.util.Mth;
  * </ul>
  */
 class TagsCommand {
+    // The limit of how many elements can be in the clipboard text at once
+    // Roughly equal to how many 32-characters-long elements can fit into a 32,767-long string
+    // (which is the default limit for UTF-8 strings in FriendlyByteBuf
+    private static final long CLIPBOARD_TEXT_ELEMENTS_LIMIT = 1000;
     private static final long PAGE_SIZE = 8;
     private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace("root"));
 
@@ -171,16 +175,26 @@ class TagsCommand {
             final long currentPage,
             final ChatFormatting elementColor,
             final Supplier<Stream<String>> names) {
-        final String allElementNames = names.get().sorted().collect(Collectors.joining("\n"));
         final long totalPages = (count - 1) / PAGE_SIZE + 1;
         final long actualPage = (long) Mth.clamp(currentPage, 1, totalPages);
 
         MutableComponent containsComponent = Component.translatable(containsText, count);
         if (count > 0) // Highlight the count text, make it clickable, and append page counters
         {
+            final String clipboardText;
+            final String clipboardElements = names.get().sorted().limit(CLIPBOARD_TEXT_ELEMENTS_LIMIT).collect(Collectors.joining("\n"));
+            if (count > CLIPBOARD_TEXT_ELEMENTS_LIMIT) {
+                // Over the limit; add additional info to clipboard text
+                clipboardText = "(Too many entries to fit in clipboard, showing only first " + CLIPBOARD_TEXT_ELEMENTS_LIMIT + " entries...)" + '\n'
+                        + clipboardElements + '\n'
+                        + "(..." + (count - CLIPBOARD_TEXT_ELEMENTS_LIMIT) + " more entries not shown)";
+            } else {
+                clipboardText = clipboardElements;
+            }
+
             containsComponent = ComponentUtils.wrapInSquareBrackets(containsComponent.withStyle(s -> s
                     .withColor(ChatFormatting.GREEN)
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, allElementNames))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, clipboardText))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             Component.translatable(copyHoverText)))));
             containsComponent = Component.translatable("commands.neoforge.tags.page_info",
