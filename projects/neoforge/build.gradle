@@ -163,13 +163,13 @@ runTypes {
     }
 
     gameTestServer {
-        from project.runTypes.server
+        from project.runTypes['server']
 
         gameTest true
     }
 
     gameTestClient {
-        from project.runTypes.client
+        from project.runTypes['client']
 
         gameTest true
     }
