@@ -126,9 +126,7 @@ public class InvWrapper implements IItemHandlerModifiable {
             if (stackInSlot.getCount() < amount) {
                 return stackInSlot.copy();
             } else {
-                ItemStack copy = stackInSlot.copy();
-                copy.setCount(amount);
-                return copy;
+                return stackInSlot.copyWithCount(amount);
             }
         } else {
             int m = Math.min(stackInSlot.getCount(), amount);
