@@ -20,6 +20,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.capabilities.color.vanilla.CatCollarDyeColorable;
+import net.neoforged.neoforge.capabilities.color.vanilla.SheepWoolDyeColorable;
+import net.neoforged.neoforge.capabilities.color.vanilla.WolfCollarDyeColorable;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -140,6 +143,11 @@ public class CapabilityHooks {
                 Items.RED_SHULKER_BOX,
                 Items.WHITE_SHULKER_BOX,
                 Items.YELLOW_SHULKER_BOX);
+
+        // Colorable
+        event.registerEntity(Capabilities.Colorable.ENTITY_DYE, EntityType.SHEEP, (sheep, ctx) -> new SheepWoolDyeColorable(sheep));
+        event.registerEntity(Capabilities.Colorable.ENTITY_DYE, EntityType.CAT, (cat, ctx) -> new CatCollarDyeColorable(cat));
+        event.registerEntity(Capabilities.Colorable.ENTITY_DYE, EntityType.WOLF, (wolf, ctx) -> new WolfCollarDyeColorable(wolf));
     }
 
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {
