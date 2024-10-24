@@ -342,7 +342,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     public void onClose() {
         translationChecker.finish();
         switch (needsRestart) {
-            case GAME -> {
+            case REGISTRY, GAME -> {
                 minecraft.setScreen(new TooltipConfirmScreen(b -> {
                     if (b) {
                         minecraft.stop();
