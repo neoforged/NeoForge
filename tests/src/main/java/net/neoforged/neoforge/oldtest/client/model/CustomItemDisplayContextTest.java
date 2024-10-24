@@ -173,6 +173,8 @@ public class CustomItemDisplayContextTest {
 
             spawnEggItem(Items.SHEEP_SPAWN_EGG);
 
+            musicDiscItem(Items.MUSIC_DISC_13);
+
             simpleBlockItem(Blocks.ACACIA_PLANKS);
         }
     }
