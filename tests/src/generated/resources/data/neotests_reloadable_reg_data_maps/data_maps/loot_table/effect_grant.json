@@ -1,0 +1,13 @@
+{
+  "values": {
+    "minecraft:blocks/copper_block": {
+      "duration": 100,
+      "id": "minecraft:nausea",
+      "neoforge:cures": [
+        "protected_by_totem",
+        "milk"
+      ],
+      "show_icon": true
+    }
+  }
+}
