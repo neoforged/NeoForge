@@ -19,6 +19,9 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.buffer.IBufferDefinition;
+import net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions;
+import net.neoforged.neoforge.client.buffer.chunk.IChunkBufferCallback;
 import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer;
 import net.neoforged.neoforge.client.model.lighting.QuadLighter;
 import net.neoforged.neoforge.common.NeoForge;
@@ -106,6 +109,7 @@ public class AddSectionGeometryEvent extends Event {
 
     public static final class SectionRenderingContext {
         private final Function<RenderType, VertexConsumer> getOrCreateLayer;
+        private final Function<IBufferDefinition, VertexConsumer> customLayerFunction;
         private final BlockAndTintGetter region;
         private final PoseStack poseStack;
 
@@ -119,6 +123,24 @@ public class AddSectionGeometryEvent extends Event {
         public SectionRenderingContext(
                 Function<RenderType, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
             this.getOrCreateLayer = getOrCreateLayer;
+            this.customLayerFunction = bufferDefinition -> getOrCreateChunkBuffer(VanillaBufferDefinitions.bakeVanillaRenderType(bufferDefinition));
+            this.region = region;
+            this.poseStack = poseStack;
+        }
+
+        /**
+         * @param getOrCreateLayer    a function that, given a "chunk render type", returns the corresponding buffer and
+         *                            adds it to the section if it is not already present.
+         * @param customLayerFunction a function that, given a {@link IBufferDefinition "chunk buffer definition"}, returns the corresponding buffer and
+         *                            adds it to the section if it is not already present.
+         * @param region              a view of the section and some surrounding blocks
+         * @param poseStack           the transformations to use, currently set to the chunk origin at unit scaling and no
+         *                            rotation.
+         */
+        public SectionRenderingContext(
+                Function<RenderType, VertexConsumer> getOrCreateLayer, Function<IBufferDefinition, VertexConsumer> customLayerFunction, BlockAndTintGetter region, PoseStack poseStack) {
+            this.getOrCreateLayer = getOrCreateLayer;
+            this.customLayerFunction = customLayerFunction;
             this.region = region;
             this.poseStack = poseStack;
         }
@@ -138,6 +160,20 @@ public class AddSectionGeometryEvent extends Event {
                     type.getChunkLayerId() != -1,
                     "Cannot create a chunk render buffer for a non-chunk render type");
             return getOrCreateLayer.apply(type);
+        }
+
+        /**
+         * Returns the builder for the given {@link IBufferDefinition} in the chunk section. If the buffer definition is not already
+         * present in the section, marks the type as present in the section.
+         *
+         * @param bufferDefinition the buffer definition to retrieve a builder for. This has to be a chunk buffer definition that registered through
+         *                         {@link RegisterChunkBufferDefinitionsEvent#register(IBufferDefinition, IChunkBufferCallback)}.
+         * @return a vertex consumer adding geometry of the specified layer
+         * @throws IllegalArgumentException if the passed chunk buffer definition is not registered through
+         *                                  {@link RegisterChunkBufferDefinitionsEvent#register(IBufferDefinition, IChunkBufferCallback)}.
+         */
+        public VertexConsumer getOrCreateChunkBuffer(IBufferDefinition bufferDefinition) {
+            return customLayerFunction.apply(bufferDefinition);
         }
 
         /**

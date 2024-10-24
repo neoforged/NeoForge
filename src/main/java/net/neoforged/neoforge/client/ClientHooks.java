@@ -134,6 +134,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
+import net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions;
+import net.neoforged.neoforge.client.buffer.chunk.ChunkBufferDefinitionManager;
+import net.neoforged.neoforge.client.buffer.chunk.IChunkBufferCallback;
+import net.neoforged.neoforge.client.buffer.chunk.ISectionLayerRenderer;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
@@ -274,9 +278,30 @@ public class ClientHooks {
     public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         var mc = Minecraft.getInstance();
         var profiler = Profiler.get();
+
         profiler.push(stage.toString());
         NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum));
+        dispatchCustomChunkBuffers(stage, levelRenderer, modelViewMatrix, projectionMatrix, camera.getPosition().toVector3f());
         profiler.pop();
+    }
+
+    public static void dispatchCustomChunkBuffers(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, Vector3f position) {
+        ChunkBufferDefinitionManager.getChunkBufferDefinitions(stage).forEach(entry -> {
+            RenderType renderType = VanillaBufferDefinitions.bakeVanillaRenderType(entry.bufferDefinition());
+            IChunkBufferCallback callback = entry.callback();
+            ISectionLayerRenderer sectionLayerRenderer = ISectionLayerRenderer.vanilla(renderType, levelRenderer);
+
+            callback.onRenderChunkBuffer(
+                    sectionLayerRenderer,
+                    levelRenderer,
+                    entry.bufferDefinition(),
+                    position.x,
+                    position.y,
+                    position.z,
+                    modelViewMatrix,
+                    projectionMatrix);
+            levelRenderer.renderBuffers.bufferSource().endBatch(renderType);
+        });
     }
 
     public static void dispatchRenderStage(RenderType renderType, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {

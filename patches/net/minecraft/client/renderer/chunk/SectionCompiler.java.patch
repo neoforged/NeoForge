@@ -44,6 +44,16 @@
          for (Entry<RenderType, BufferBuilder> entry : map.entrySet()) {
              RenderType rendertype1 = entry.getKey();
              MeshData meshdata = entry.getValue().build();
+@@ -105,7 +_,8 @@
+         BufferBuilder bufferbuilder = p_350651_.get(p_350494_);
+         if (bufferbuilder == null) {
+             ByteBufferBuilder bytebufferbuilder = p_350965_.buffer(p_350494_);
+-            bufferbuilder = new BufferBuilder(bytebufferbuilder, VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
++            //Neo: build BufferBuilder based on RenderType's format and mode
++            bufferbuilder = new BufferBuilder(bytebufferbuilder, p_350494_.mode, p_350494_.format);
+             p_350651_.put(p_350494_, bufferbuilder);
+         }
+ 
 @@ -115,9 +_,10 @@
      private <E extends BlockEntity> void handleBlockEntity(SectionCompiler.Results p_350754_, E p_350386_) {
          BlockEntityRenderer<E> blockentityrenderer = this.blockEntityRenderer.getRenderer(p_350386_);

@@ -1,5 +1,21 @@
 --- a/net/minecraft/client/renderer/RenderType.java
 +++ b/net/minecraft/client/renderer/RenderType.java
+@@ -873,6 +_,15 @@
+             .createCompositeState(false)
+     );
+     public static final ImmutableList<RenderType> CHUNK_BUFFER_LAYERS = ImmutableList.of(solid(), cutoutMipped(), cutout(), translucent(), tripwire());
++    public static final ImmutableList<RenderType> NEOFORGE_CHUNK_BUFFER_LAYERS;
++    static {
++        net.neoforged.neoforge.client.buffer.chunk.ChunkBufferDefinitionManager.init();
++        ImmutableList.Builder<RenderType> builder = ImmutableList.builder();
++        builder.addAll(CHUNK_BUFFER_LAYERS);
++        builder.addAll(net.neoforged.neoforge.client.buffer.chunk.ChunkBufferDefinitionManager.getChunkBufferDefinitions().stream().map(net.neoforged.neoforge.client.buffer.VanillaBufferDefinitions::bakeVanillaRenderType).toList());
++        NEOFORGE_CHUNK_BUFFER_LAYERS = builder.build();
++    }
++
+     public final VertexFormat format;
+     public final VertexFormat.Mode mode;
+     public final int bufferSize;
 @@ -1098,7 +_,7 @@
      }
  
@@ -42,6 +58,15 @@
      }
  
      public static RenderType lightning() {
+@@ -1321,7 +_,7 @@
+     }
+ 
+     public static List<RenderType> chunkBufferLayers() {
+-        return CHUNK_BUFFER_LAYERS;
++        return NEOFORGE_CHUNK_BUFFER_LAYERS;
+     }
+ 
+     public int bufferSize() {
 @@ -1622,5 +_,17 @@
          public String toString() {
              return this.name;
