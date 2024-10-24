@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 
 /**
  * Extension interface for {@link GuiGraphics}.
@@ -40,12 +41,21 @@ public interface IGuiGraphicsExtension {
      * @return the rendered width of the string, never more than {@code maxX - minX}
      */
     default int drawScrollingString(Font font, Component text, int minX, int maxX, int y, int color) {
+        return drawScrollingString(font, text, minX, maxX, y, color, true);
+    }
+
+    /**
+     * Draws a left-aligned string, with a scrolling effect if the string is too long.
+     *
+     * @return the rendered width of the string, never more than {@code maxX - minX}
+     */
+    default int drawScrollingString(Font font, Component text, int minX, int maxX, int y, int color, boolean dropShadow) {
         int maxWidth = maxX - minX;
         int textWidth = font.width(text.getVisualOrderText());
         if (textWidth <= maxWidth) {
             return self().drawString(font, text, minX, y, color);
         } else {
-            AbstractWidget.renderScrollingString(self(), font, text, minX, y, maxX, y + font.lineHeight, color);
+            AbstractWidget.renderScrollingString(self(), font, text, minX, y, maxX, y + font.lineHeight, color, dropShadow);
             return maxWidth;
         }
     }
@@ -144,6 +154,19 @@ public interface IGuiGraphicsExtension {
         }
 
         self().blit(RenderType::guiTextured, texture, x, y, boundsWidth, boundsHeight, 0, 0, rectWidth, rectHeight, rectWidth, rectHeight);
+    }
+
+    default void drawCenteredString(Font font, String string, int x, int y, int color, boolean dropShadow) {
+        self().drawString(font, string, x - font.width(string) / 2, y, color, dropShadow);
+    }
+
+    default void drawCenteredString(Font font, Component p_282456_, int x, int y, int color, boolean dropShadow) {
+        FormattedCharSequence formattedcharsequence = p_282456_.getVisualOrderText();
+        self().drawString(font, formattedcharsequence, x - font.width(formattedcharsequence) / 2, y, color, dropShadow);
+    }
+
+    default void drawCenteredString(Font font, FormattedCharSequence p_281854_, int x, int y, int color, boolean dropShadow) {
+        self().drawString(font, p_281854_, x - font.width(p_281854_) / 2, y, color, dropShadow);
     }
 
     // TODO: 1.20.2: do we need to fix these or can we just remove them?
