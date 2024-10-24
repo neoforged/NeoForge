@@ -79,6 +79,18 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
         return capability.providers.containsKey(block);
     }
 
+    /**
+     * Makes a block capability non-proxyable.
+     *
+     * <p>This method should only be called by the mod that defines the capability.
+     * Do not call this method if this is not explicitly part of the contract of the capability.
+     *
+     * @see BlockCapability#isProxyable()
+     */
+    public void setNonProxyable(BlockCapability<?, ?> capability) {
+        capability.proxyable = false;
+    }
+
     // ENTITIES
 
     /**
