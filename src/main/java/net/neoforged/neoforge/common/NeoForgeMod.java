@@ -427,6 +427,7 @@ public class NeoForgeMod {
             .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
             .sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH)
             .canHydrate(true)
+            .actsLikeWater(true)
             .addDripstoneDripping(PointedDripstoneBlock.WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_WATER, Blocks.WATER_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON)) {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {

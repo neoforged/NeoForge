@@ -83,6 +83,7 @@ public class FluidType {
     @Nullable
     private final PathType pathType, adjacentPathType;
     private final boolean canHydrate;
+    private final boolean actsLikeWater;
     private final int lightLevel;
     private final int density;
     private final int temperature;
@@ -115,6 +116,7 @@ public class FluidType {
         this.adjacentPathType = properties.adjacentPathType;
         this.sounds = ImmutableMap.copyOf(properties.sounds);
         this.canHydrate = properties.canHydrate;
+        this.actsLikeWater = properties.actsLikeWater;
         this.lightLevel = properties.lightLevel;
         this.density = properties.density;
         this.temperature = properties.temperature;
@@ -370,6 +372,17 @@ public class FluidType {
      */
     public boolean canHydrate(Entity entity) {
         return this.canHydrate;
+    }
+
+    /**
+     * Returns whether a fluid should be treated like an entity is residing in water.
+     *
+     * <p> This sets {@link Entity#isInWater()} to return true, which is used for things like aquatic animal swimming, slowed minecart movement, and conduit functionality.
+     *
+     * @return {@code true} if this fluid acts like water, {@code false} otherwise
+     */
+    public boolean actsLikeWater() {
+        return this.actsLikeWater;
     }
 
     /**
@@ -863,6 +876,7 @@ public class FluidType {
                 adjacentPathType = PathType.WATER_BORDER;
         private final Map<SoundAction, SoundEvent> sounds = new HashMap<>();
         private boolean canHydrate = false;
+        private boolean actsLikeWater = false;
         private int lightLevel = 0,
                 density = 1000,
                 temperature = 300,
@@ -1028,6 +1042,19 @@ public class FluidType {
          */
         public Properties canHydrate(boolean canHydrate) {
             this.canHydrate = canHydrate;
+            return this;
+        }
+
+        /**
+         * Returns whether a fluid should be treated like an entity is residing in water.
+         *
+         * <p> This sets {@link Entity#isInWater()} to return true when an entity is in this fluid, which is used for things like aquatic animal swimming, slowed minecart movement, and conduit functionality.
+         *
+         * @param actsLikeWater if the fluid acts like water
+         * @return the property holder instance
+         */
+        public Properties actsLikeWater(boolean actsLikeWater) {
+            this.actsLikeWater = actsLikeWater;
             return this;
         }
 
