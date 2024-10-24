@@ -47,7 +47,6 @@ import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.StringUtils;
-import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -404,17 +403,18 @@ public class ModListScreen extends Screen {
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.version", MavenVersionTranslator.artifactVersionToString(selectedMod.getVersion())));
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
-        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits)));
-        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors)));
-        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
+        // Normalizing line endings to LF because it is currently not automatically handled for us. Descriptions are already normalized.
+        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL).replace("\r\n", "\n")));
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.nochildmods"));
         else
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
-            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
-        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()).replace("\r\n", "\n"));
+        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", selectedMod.getOwningFile().getLicense()).replace("\r\n", "\n"));
         lines.add(null);
         lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
 

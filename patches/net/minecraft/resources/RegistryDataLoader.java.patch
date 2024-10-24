@@ -46,3 +46,26 @@
  
          for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
+@@ -304,13 +_,20 @@
+         void apply(RegistryDataLoader.Loader<?> p_321864_, RegistryOps.RegistryInfoLookup p_321656_);
+     }
+ 
+-    public static record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
++    public static record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty, java.util.function.Consumer<net.neoforged.neoforge.registries.RegistryBuilder<T>> registryBuilderConsumer) {
++        public RegistryData(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
++            this(key, elementCodec, requiredNonEmpty, registryBuilder -> {});
++        }
++
+         RegistryData(ResourceKey<? extends Registry<T>> p_251360_, Codec<T> p_248976_) {
+             this(p_251360_, p_248976_, false);
+         }
+ 
+         RegistryDataLoader.Loader<T> create(Lifecycle p_251662_, Map<ResourceKey<?>, Exception> p_251565_) {
+-            WritableRegistry<T> writableregistry = new MappedRegistry<>(this.key, p_251662_);
++            net.neoforged.neoforge.registries.RegistryBuilder<T> registryBuilder = new net.neoforged.neoforge.registries.RegistryBuilder<>(key);
++            registryBuilderConsumer.accept(registryBuilder);
++
++            WritableRegistry<T> writableregistry = (WritableRegistry<T>) registryBuilder.disableRegistrationCheck().create();
+             return new RegistryDataLoader.Loader<>(this, writableregistry, p_251565_);
+         }
+ 

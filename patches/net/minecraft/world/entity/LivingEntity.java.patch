@@ -440,7 +440,7 @@
  
      public void swing(InteractionHand p_21012_, boolean p_21013_) {
 +        ItemStack stack = this.getItemInHand(p_21012_);
-+        if (!stack.isEmpty() && stack.onEntitySwing(this)) return;
++        if (!stack.isEmpty() && stack.onEntitySwing(this, p_21012_)) return;
          if (!this.swinging || this.swingTime >= this.getCurrentSwingDuration() / 2 || this.swingTime < 0) {
              this.swingTime = -1;
              this.swinging = true;
