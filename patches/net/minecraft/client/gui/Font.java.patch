@@ -9,12 +9,48 @@
      private static final float EFFECT_DEPTH = 0.01F;
      private static final Vector3f SHADOW_OFFSET = new Vector3f(0.0F, 0.0F, 0.03F);
      public static final int ALPHA_CUTOFF = 8;
-@@ -309,6 +_,8 @@
-     public StringSplitter getSplitter() {
+@@ -42,6 +_,8 @@
+     private final Function<ResourceLocation, FontSet> fonts;
+     final boolean filterFishyGlyphs;
+     private final StringSplitter splitter;
++    /** Neo: enables linear filtering on text */
++    public boolean enableTextTextureLinearFiltering = false;
+ 
+     public Font(Function<ResourceLocation, FontSet> p_243253_, boolean p_243245_) {
+         this.fonts = p_243253_;
+@@ -310,6 +_,8 @@
          return this.splitter;
      }
-+
-+    @Override public Font self() { return this; }
  
++    @Override public Font self() { return this; }
++
      @OnlyIn(Dist.CLIENT)
      public static enum DisplayMode {
+         NORMAL,
+@@ -417,7 +_,7 @@
+                     p_381032_ - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, this.getUnderTextEffectDepth(), this.backgroundColor
+                 );
+                 bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
+-                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
++                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
+                 bakedglyph.renderEffect(bakedglyph$effect, this.pose, vertexconsumer, this.packedLightCoords);
+             }
+ 
+@@ -427,7 +_,7 @@
+                     bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
+                 }
+ 
+-                VertexConsumer vertexconsumer1 = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
++                VertexConsumer vertexconsumer1 = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
+ 
+                 for (BakedGlyph.Effect bakedglyph$effect1 : this.effects) {
+                     bakedglyph.renderEffect(bakedglyph$effect1, this.pose, vertexconsumer1, this.packedLightCoords);
+@@ -440,7 +_,7 @@
+         void renderCharacters() {
+             for (BakedGlyph.GlyphInstance bakedglyph$glyphinstance : this.glyphInstances) {
+                 BakedGlyph bakedglyph = bakedglyph$glyphinstance.glyph();
+-                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
++                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
+                 bakedglyph.renderChar(bakedglyph$glyphinstance, this.pose, vertexconsumer, this.packedLightCoords);
+             }
+         }
