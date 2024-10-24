@@ -273,6 +273,11 @@ public class Tags {
          * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
          */
         public static final TagKey<Item> ENCHANTING_FUELS = neoforgeTag("enchanting_fuels");
+        /**
+         * Controls what bows can be used by {@link net.minecraft.world.entity.monster.AbstractSkeleton}
+         * This tag defaults to {@link net.minecraft.world.item.Items#BOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> SKELETON_USABLE_BOWS = neoforgeTag("skeleton_usable_bows");
 
         // `c` tags for common conventions
         public static final TagKey<Item> BARRELS = tag("barrels");
