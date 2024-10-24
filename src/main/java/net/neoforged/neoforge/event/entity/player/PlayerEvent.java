@@ -408,14 +408,20 @@ public abstract class PlayerEvent extends LivingEvent {
 
     public static class ItemSmeltedEvent extends PlayerEvent {
         private final ItemStack smelting;
+        private final int amountRemoved;
 
-        public ItemSmeltedEvent(Player player, ItemStack crafting) {
+        public ItemSmeltedEvent(Player player, ItemStack crafting, int amountRemoved) {
             super(player);
             this.smelting = crafting;
+            this.amountRemoved = amountRemoved;
         }
 
         public ItemStack getSmelting() {
             return this.smelting;
+        }
+
+        public int getAmountRemoved() {
+            return this.amountRemoved;
         }
     }
 
