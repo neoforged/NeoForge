@@ -5,11 +5,14 @@
 
 package net.neoforged.neoforge.items;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -27,6 +30,22 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
     public ItemStackHandler(NonNullList<ItemStack> stacks) {
         this.stacks = stacks;
+    }
+
+    public Codec<ItemStackHandler> codec() {
+        return INBTSerializable.codec(() -> new ItemStackHandler(stacks.size()));
+    }
+
+    public static Codec<ItemStackHandler> codec(int size) {
+        return INBTSerializable.codec(() -> new ItemStackHandler(size));
+    }
+
+    public StreamCodec<RegistryFriendlyByteBuf, ItemStackHandler> streamCodec() {
+        return INBTSerializable.streamCodec(() -> new ItemStackHandler(stacks.size()));
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, ItemStackHandler> streamCodec(int size) {
+        return INBTSerializable.streamCodec(() -> new ItemStackHandler(size));
     }
 
     public void setSize(int size) {

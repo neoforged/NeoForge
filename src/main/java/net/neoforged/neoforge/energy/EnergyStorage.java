@@ -5,9 +5,12 @@
 
 package net.neoforged.neoforge.energy;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
@@ -40,6 +43,18 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
         this.maxReceive = maxReceive;
         this.maxExtract = maxExtract;
         this.energy = Math.max(0, Math.min(capacity, energy));
+    }
+
+    public Codec<EnergyStorage> codec() {
+        return codec(capacity, maxReceive, maxExtract);
+    }
+
+    public static Codec<EnergyStorage> codec(int capacity, int maxReceive, int maxExtract) {
+        return INBTSerializable.codec(() -> new EnergyStorage(capacity, maxReceive, maxExtract, 0));
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, EnergyStorage> streamCodec(int capacity, int maxReceive, int maxExtract) {
+        return INBTSerializable.streamCodec(() -> new EnergyStorage(capacity, maxReceive, maxExtract, 0));
     }
 
     @Override

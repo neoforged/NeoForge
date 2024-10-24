@@ -12,6 +12,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.ExtraCodecs;
 
 /**
@@ -29,6 +32,18 @@ import net.minecraft.util.ExtraCodecs;
  * @see ExtraCodecs
  */
 public class NeoForgeExtraCodecs {
+    /**
+     * An NBT-only codec for any NBT tag type.
+     */
+    public static final Codec<Tag> TAG_CODEC = Codec.PASSTHROUGH.comapFlatMap(
+            serialized -> {
+                Tag tag = serialized.convert(NbtOps.INSTANCE).getValue();
+                return tag != null
+                        ? DataResult.success(tag == serialized.getValue() ? tag.copy() : tag)
+                        : DataResult.error(() -> "Did not deserialize into the proper type.");
+            },
+            toDeserialize -> new Dynamic<>(NbtOps.INSTANCE, toDeserialize));
+
     public static <T> MapCodec<T> aliasedFieldOf(final Codec<T> codec, final String... names) {
         if (names.length == 0)
             throw new IllegalArgumentException("Must have at least one name!");
