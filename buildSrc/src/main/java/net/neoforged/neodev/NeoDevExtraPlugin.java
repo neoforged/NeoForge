@@ -43,11 +43,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
         var writeNeoDevConfig = neoForgeProject.getTasks().named("writeNeoDevConfig", WriteUserDevConfig.class);
 
         Consumer<Configuration> configureLegacyClasspath = spec -> {
-            spec.getDependencies().addLater(mcAndNeoFormVersion.map(v -> dependencyFactory.create("net.neoforged:neoform:" + v).capabilities(caps -> {
-                caps.requireCapability("net.neoforged:neoform-dependencies");
-            })));
-            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "installer"));
-            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "moduleOnly"));
+            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "modDevRuntimeElements"));
             spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "userdevCompileOnly"));
             // TODO: Convert into a cross-project dependency too
             spec.getDependencies().add(

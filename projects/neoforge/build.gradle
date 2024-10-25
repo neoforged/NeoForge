@@ -13,6 +13,9 @@ plugins {
 
 apply plugin : net.neoforged.neodev.NeoDevPlugin
 
+// Because of the source set reference.
+evaluationDependsOn(":neoforge-coremods")
+
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
@@ -67,6 +70,9 @@ neoDev {
         minecraft {
             sourceSet sourceSets.main
         }
+        "neoforge-coremods" {
+            sourceSet project(":neoforge-coremods").sourceSets.main
+        }
     }
 }
 
@@ -102,6 +108,12 @@ dependencies {
         moduleOnly(asmModule) {
             // Vanilla ships with ASM 9.3 transitively (via their OpenID connect library dependency), we require
             // ASM in a more recent version and have to strictly require this to override the strict Minecraft version.
+            version {
+                strictly project.asm_version
+            }
+        }
+        // Also override ASM in implementation
+        implementation(asmModule) {
             version {
                 strictly project.asm_version
             }
@@ -162,10 +174,6 @@ dependencies {
 
 neoDev {
     runs {
-        configureEach {
-            gameDirectory.set project.file("run/${it.name}") as File
-            modSources.add project(":neoforge-coremods").sourceSets.main
-        }
         client {
             client()
         }
