@@ -1,24 +1,34 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        mavenLocal()
         maven { url = 'https://maven.neoforged.net/releases' }
+        mavenLocal()
     }
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.163'
+    id 'net.neoforged.moddev.repositories' version "${moddevgradle_plugin_version}"
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
+// This makes the version available to buildSrc
+gradle.ext.moddevgradle_plugin_version = moddevgradle_plugin_version
+
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
 }
 
 rootProject.name = rootDir.name
 
-dynamicProjects {
-    include ':base'
-    include ':neoforge'
-
-    project(":base").projectDir = file("projects/base")
-    project(":neoforge").projectDir = file("projects/neoforge")
-}
+include ':base'
+project(':base').projectDir = file('projects/base')
+include ':neoforge'
+project(':neoforge').projectDir = file('projects/neoforge')
 
 include ':tests'
 project(":tests").projectDir = file("tests")

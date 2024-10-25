@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 plugins {
     id 'net.neoforged.gradleutils' version '3.0.0'
     id 'com.diffplug.spotless' version '6.22.0' apply false
-    id 'net.neoforged.licenser' version '0.7.2'
+    id 'net.neoforged.licenser' version '0.7.5'
     id 'neoforge.formatting-conventions'
     id 'neoforge.versioning'
 }
@@ -23,19 +23,22 @@ System.out.println("NeoForge version ${project.version}")
 allprojects {
     version rootProject.version
     group 'net.neoforged'
-    repositories {
-        mavenLocal()
-    }
-}
 
-subprojects {
     apply plugin: 'java'
 
     java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
 }
 
-repositories {
-    mavenCentral()
+// Remove src/ sources from the root project. They are used in the neoforge subproject.
+sourceSets {
+    main {
+        java {
+            srcDirs = []
+        }
+        resources {
+            srcDirs = []
+        }
+    }
 }
 
 // Put licenser here otherwise it tries to license all source sets including decompiled MC sources
