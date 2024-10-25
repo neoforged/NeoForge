@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -260,6 +_,10 @@
+@@ -260,6 +_,11 @@
                  : Optional.empty();
      }
  
++    // Neo: expose recipe map
 +    public RecipeMap recipeMap() {
 +        return this.recipes;
 +    }
