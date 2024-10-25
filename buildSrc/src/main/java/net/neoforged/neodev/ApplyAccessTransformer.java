@@ -1,6 +1,6 @@
 package net.neoforged.neodev;
 
-import net.neoforged.moddevgradle.internal.utils.FileUtils;
+import net.neoforged.neodev.utils.FileUtils;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.Classpath;

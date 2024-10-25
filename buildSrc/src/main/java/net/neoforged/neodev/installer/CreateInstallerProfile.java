@@ -1,7 +1,7 @@
 package net.neoforged.neodev.installer;
 
 import com.google.gson.GsonBuilder;
-import net.neoforged.moddevgradle.internal.utils.FileUtils;
+import net.neoforged.neodev.utils.FileUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
