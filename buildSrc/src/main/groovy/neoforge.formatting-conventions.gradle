@@ -4,7 +4,7 @@ project.plugins.apply('com.diffplug.spotless')
 
 abstract class GeneratePackageInfos extends DefaultTask {
     @InputFiles
-    @PathSensitive(PathSensitivity.NONE)
+    @PathSensitive(PathSensitivity.RELATIVE)
     abstract ConfigurableFileCollection getFiles();
 
     @TaskAction
