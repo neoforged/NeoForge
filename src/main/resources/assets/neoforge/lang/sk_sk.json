@@ -7,7 +7,7 @@
   "fml.menu.mods.z_to_a": "Z-A",
   "fml.menu.mods.config": "Nastavenia",
   "fml.menu.mods.openmodsfolder": "Otvoriť priečinok pre módy",
-  "fml.menu.modoptions": "Nastavenia módu... ",
+  "fml.menu.modoptions": "Nastavenia módu...",
   "fml.menu.mods.info.version": "Verzia: %1$s",
   "fml.menu.mods.info.idstate": "ID Módu: %1$s Status: {1,lower}",
   "fml.menu.mods.info.credits": "Kredity: %1$s",
