@@ -4,6 +4,7 @@ import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
 
 plugins {
+
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.jarcompatibilitychecker' version '0.1.12'
@@ -404,15 +405,14 @@ artifacts {
     universalJar(universalJar) {
         setClassifier("universal")
     }
-//    installerJar(signInstallerJar.output) {
-//        builtBy(signInstallerJar)
-//        setClassifier("installer")
-//    }
-//    changelog(createChangelog.outputFile) {
-//        builtBy(createChangelog)
-//        setClassifier("changelog")
-//        setExtension("txt")
-//    }
+    installerJar(installerJar) {
+        setClassifier("installer")
+    }
+    changelog(createChangelog.outputFile) {
+        builtBy(createChangelog)
+        setClassifier("changelog")
+        setExtension("txt")
+    }
 }
 
 publishing {
