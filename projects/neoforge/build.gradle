@@ -34,26 +34,26 @@ sourceSets {
     }
 }
 
-// TODO re-enable
 final checkVersion = JCCPlugin.providePreviousVersion(
         project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'}),
         project.provider { project.version }.map { ver -> CompatibilityTask.VersionComponentTest.MINOR.predicate(ver) }
 )
-//final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
-//    // Use the same jar that the patches were generated against
-//    cleanJar.set(tasks.generateClientBinaryPatches.clean)
-//    maven.set('https://maven.neoforged.net/releases')
-//    artifact.set('net.neoforged:neoforge')
-//    version.set(checkVersion)
-//    javaLauncher = javaToolchains.launcherFor {
-//        languageVersion = JavaLanguageVersion.of(java_version)
-//    }
-//}
-//checkJarCompatibility {
-//    isAPI = true
-//    baseJar = createCompatJar.flatMap { it.output }
-//}
-//
+final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
+    // Use the same jar that the patches were generated against
+    cleanJar.set(tasks.generateClientBinPatches.cleanJar)
+    maven.set('https://maven.neoforged.net/releases')
+    artifact.set('net.neoforged:neoforge')
+    version.set(checkVersion)
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(java_version)
+    }
+}
+checkJarCompatibility {
+    isAPI = true
+    baseJar = createCompatJar.flatMap { it.output }
+}
+
+// TODO: re-enable AT validation
 //tasks.configureEach { tsk ->
 //    if (tsk.name == 'neoFormApplyUserAccessTransformer' && project.hasProperty('validateAccessTransformers')) {
 //        tsk.inputs.property('validation', 'error')
