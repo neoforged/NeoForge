@@ -311,8 +311,8 @@ public class DataMapTests {
     @TestHolder(description = "Tests if data maps can be successfully attached to reloadable registries")
     static void reloadableRegDataMaps(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<LootTable, MobEffectInstance> effectGrant = reg.registerDataMap(DataMapType.builder(
-                        ResourceLocation.fromNamespaceAndPath(reg.modId(), "effect_grant"),
-                        Registries.LOOT_TABLE, MobEffectInstance.CODEC)
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "effect_grant"),
+                Registries.LOOT_TABLE, MobEffectInstance.CODEC)
                 .build());
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
