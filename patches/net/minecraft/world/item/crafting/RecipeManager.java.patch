@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/item/crafting/RecipeManager.java
++++ b/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -260,6 +_,11 @@
+                 : Optional.empty();
+     }
+ 
++    // Neo: expose recipe map
++    public RecipeMap recipeMap() {
++        return this.recipes;
++    }
++
+     public interface CachedCheck<I extends RecipeInput, T extends Recipe<I>> {
+         Optional<RecipeHolder<T>> getRecipeFor(I p_344938_, ServerLevel p_379487_);
+     }
