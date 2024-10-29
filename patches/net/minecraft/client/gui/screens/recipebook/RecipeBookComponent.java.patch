@@ -1,20 +1,12 @@
 --- a/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
 +++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
-@@ -115,7 +_,7 @@
-         this.initFilterButtonTextures();
-         this.tabButtons.clear();
+@@ -268,7 +_,8 @@
  
--        for (RecipeBookCategories recipebookcategories : RecipeBookCategories.getCategories(this.menu.getRecipeBookType())) {
-+        for(RecipeBookCategories recipebookcategories : this.menu.getRecipeBookCategories()) {
-             this.tabButtons.add(new RecipeBookTabButton(recipebookcategories));
-         }
- 
-@@ -297,7 +_,7 @@
-         }
- 
-         if (itemstack != null && this.minecraft.screen != null) {
--            p_282776_.renderComponentTooltip(this.minecraft.font, Screen.getTooltipFromItem(this.minecraft, itemstack), p_282948_, p_283050_);
-+            p_282776_.renderComponentTooltip(this.minecraft.font, Screen.getTooltipFromItem(this.minecraft, itemstack), p_282948_, p_283050_, itemstack);
-         }
-     }
- 
+         for (RecipeBookTabButton recipebooktabbutton : this.tabButtons) {
+             ExtendedRecipeBookCategory extendedrecipebookcategory = recipebooktabbutton.getCategory();
+-            if (extendedrecipebookcategory instanceof SearchRecipeBookCategory) {
++            // Neo: Add support for modded search categories.
++            if (extendedrecipebookcategory instanceof SearchRecipeBookCategory || net.neoforged.neoforge.client.RecipeBookManager.getSearchCategories().containsKey(extendedrecipebookcategory)) {
+                 recipebooktabbutton.visible = true;
+                 recipebooktabbutton.setPosition(i, j + 27 * l++);
+             } else if (recipebooktabbutton.updateVisibility(this.book)) {

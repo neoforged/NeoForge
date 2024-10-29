@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/entity/animal/Bee.java
 +++ b/net/minecraft/world/entity/animal/Bee.java
-@@ -487,7 +_,7 @@
-             return false;
+@@ -498,7 +_,7 @@
+         if (this.hivePos == null) {
+             return null;
          } else {
-             BlockEntity blockentity = this.level().getBlockEntity(this.hivePos);
--            return blockentity != null && blockentity.getType() == BlockEntityType.BEEHIVE;
-+            return blockentity instanceof BeehiveBlockEntity;
+-            return this.isTooFarAway(this.hivePos) ? null : this.level().getBlockEntity(this.hivePos, BlockEntityType.BEEHIVE).orElse(null);
++            return this.isTooFarAway(this.hivePos) ? null : this.level().getBlockEntity(this.hivePos) instanceof BeehiveBlockEntity hive ? hive : null;
          }
      }
  
-@@ -636,8 +_,18 @@
+@@ -644,8 +_,18 @@
      }
  
      @Override

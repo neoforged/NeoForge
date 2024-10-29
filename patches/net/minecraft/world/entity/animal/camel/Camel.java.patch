@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -286,6 +_,7 @@
+@@ -289,6 +_,7 @@
          this.dashCooldown = 55;
          this.setDashing(true);
          this.hasImpulse = true;

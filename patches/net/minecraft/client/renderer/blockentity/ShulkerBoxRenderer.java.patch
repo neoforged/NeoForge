@@ -1,13 +1,15 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
-@@ -56,4 +_,10 @@
-         this.model.renderToBuffer(p_112480_, vertexconsumer, p_112482_, p_112483_);
+@@ -55,6 +_,12 @@
          p_112480_.popPose();
      }
-+
+ 
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(ShulkerBoxBlockEntity blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
 +        return new net.minecraft.world.phys.AABB(pos.getX() - 0.5, pos.getY() - 0.5, pos.getZ() - 0.5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5);
 +    }
- }
++
+     @OnlyIn(Dist.CLIENT)
+     static class ShulkerBoxModel extends Model {
+         private final ModelPart lid;

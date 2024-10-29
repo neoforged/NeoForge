@@ -1,24 +1,24 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -306,6 +_,8 @@
+@@ -257,6 +_,8 @@
              case BRUSH:
                  this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.rightArm.yRot = 0.0F;
 +            default:
-+                this.rightArmPose.applyTransform(this, p_102876_, net.minecraft.world.entity.HumanoidArm.RIGHT);
++                p_362238_.applyTransform(this, p_364666_, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
-@@ -348,6 +_,8 @@
+@@ -299,6 +_,8 @@
              case BRUSH:
                  this.leftArm.xRot = this.leftArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.leftArm.yRot = 0.0F;
 +            default:
-+                this.leftArmPose.applyTransform(this, p_102879_, net.minecraft.world.entity.HumanoidArm.LEFT);
++                p_361463_.applyTransform(this, p_361741_, net.minecraft.world.entity.HumanoidArm.LEFT);
          }
      }
  
-@@ -446,7 +_,7 @@
+@@ -376,7 +_,7 @@
      }
  
      @OnlyIn(Dist.CLIENT)
@@ -27,7 +27,7 @@
          EMPTY(false),
          ITEM(false),
          BLOCK(false),
-@@ -459,13 +_,31 @@
+@@ -389,13 +_,31 @@
          BRUSH(false);
  
          private final boolean twoHanded;
@@ -50,7 +50,7 @@
              return this.twoHanded;
 +        }
 +
-+        public <T extends LivingEntity> void applyTransform(HumanoidModel<T> model, T entity, net.minecraft.world.entity.HumanoidArm arm) {
++        public <T extends HumanoidRenderState> void applyTransform(HumanoidModel<T> model, T entity, net.minecraft.world.entity.HumanoidArm arm) {
 +            if (this.forgeArmPose != null) this.forgeArmPose.applyTransform(model, entity, arm);
 +        }
 +

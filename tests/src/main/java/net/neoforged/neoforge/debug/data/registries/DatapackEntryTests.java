@@ -52,7 +52,7 @@ public class DatapackEntryTests {
                 Set.of(reg.modId())));
 
         test.onGameTest(helper -> {
-            var damageTypes = helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+            var damageTypes = helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
 
             helper.assertTrue(!damageTypes.containsKey(CONDITIONAL_FALSE_DAMAGE_TYPE),
                     "Damage type was loaded despite a FalseCondition");

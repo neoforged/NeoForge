@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -64,9 +65,9 @@ public interface IShearable {
     @SuppressWarnings("deprecation") // Expected call to deprecated vanilla Shearable#shear
     default List<ItemStack> onSheared(@Nullable Player player, ItemStack item, Level level, BlockPos pos) {
         if (this instanceof LivingEntity entity && this instanceof Shearable shearable) {
-            if (!level.isClientSide) {
+            if (level instanceof ServerLevel serverLevel) {
                 entity.captureDrops(new ArrayList<>());
-                shearable.shear(player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS);
+                shearable.shear(serverLevel, player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS, item);
                 return entity.captureDrops(null).stream().map(ItemEntity::getItem).toList();
             }
         }
@@ -82,23 +83,23 @@ public interface IShearable {
      * @param pos   The block position of this object (if this is an entity, the value of {@link Entity#blockPosition()}.
      * @param drop  The stack to drop, from the list of drops returned by {@link #onSheared}.
      */
-    default void spawnShearedDrop(Level level, BlockPos pos, ItemStack drop) {
+    default void spawnShearedDrop(ServerLevel level, BlockPos pos, ItemStack drop) {
         if (this instanceof SnowGolem golem) {
             // SnowGolem#shear uses spawnAtLocation(..., this.getEyeHeight());
-            golem.spawnAtLocation(drop, golem.getEyeHeight());
+            golem.spawnAtLocation(level, drop, golem.getEyeHeight());
         } else if (this instanceof Bogged bogged) {
             // Bogged#spawnShearedMushrooms uses spawnAtLocation(..., this.getBbHeight());
-            bogged.spawnAtLocation(drop, bogged.getBbHeight());
+            bogged.spawnAtLocation(level, drop, bogged.getBbHeight());
         } else if (this instanceof MushroomCow cow) {
             // We patch Mooshrooms from using addFreshEntity to spawnAtLocation to spawnAtLocation to capture the drops.
             // In case a mod is also capturing drops, we also replicate that logic here.
-            ItemEntity itemEntity = cow.spawnAtLocation(drop, cow.getBbHeight());
+            ItemEntity itemEntity = cow.spawnAtLocation(level, drop, cow.getBbHeight());
             if (itemEntity != null) {
                 itemEntity.setNoPickUpDelay();
             }
         } else if (this instanceof Entity entity) {
             // Everything else uses the "default" rules invented by Sheep#shear, which uses a y-offset of 1 and these random delta movement values.
-            ItemEntity itemEntity = entity.spawnAtLocation(drop, 1);
+            ItemEntity itemEntity = entity.spawnAtLocation(level, drop, 1);
             if (itemEntity != null) {
                 RandomSource rand = entity.getRandom();
                 Vec3 newDelta = itemEntity.getDeltaMovement().add(

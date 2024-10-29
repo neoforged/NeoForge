@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/BlockLootSubProvider.java
 +++ b/net/minecraft/data/loot/BlockLootSubProvider.java
-@@ -655,12 +_,16 @@
+@@ -684,12 +_,16 @@
  
      protected abstract void generate();
  
@@ -14,7 +14,7 @@
          Set<ResourceKey<LootTable>> set = new HashSet<>();
  
 -        for (Block block : BuiltInRegistries.BLOCK) {
-+        for(Block block : getKnownBlocks()) {
++        for (Block block : getKnownBlocks()) {
              if (block.isEnabled(this.enabledFeatures)) {
-                 ResourceKey<LootTable> resourcekey = block.getLootTable();
-                 if (resourcekey != BuiltInLootTables.EMPTY && set.add(resourcekey)) {
+                 block.getLootTable()
+                     .ifPresent(

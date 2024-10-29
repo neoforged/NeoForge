@@ -39,7 +39,7 @@ public class ScaffoldingTest {
     static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     static final TagKey<Block> SCAFFOLDING = BlockTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", "scaffolding"));
 
-    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
+    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.registerBlock("scaffolding_method_test", ScaffoldingMethodTestBlock::new, Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape());
 
     public ScaffoldingTest(IEventBus modBus) {
         BLOCKS.register(modBus);

@@ -22,12 +22,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
@@ -96,7 +96,7 @@ public class CreativeTabOrderTest {
     @Test
     void testIngredientsEnchantmentExistence(MinecraftServer server) {
         final Set<ItemStack> tabEnchantments = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements()
-                .map(enchantment -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, enchantment.value().getMaxLevel())))
+                .map(enchantment -> EnchantmentHelper.createBook(new EnchantmentInstance(enchantment, enchantment.value().getMaxLevel())))
                 .collect(() -> new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG), ObjectOpenCustomHashSet::add, ObjectOpenCustomHashSet::addAll);
         for (ItemStack entry : ingredientsTab) {
             if (entry.is(Items.ENCHANTED_BOOK)) {
@@ -117,7 +117,7 @@ public class CreativeTabOrderTest {
         final var tabEnchantments = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).listElements()
                 .flatMap(
                         enchantment -> IntStream.rangeClosed(enchantment.value().getMinLevel(), enchantment.value().getMaxLevel())
-                                .mapToObj(p_270006_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, p_270006_))))
+                                .mapToObj(p_270006_ -> EnchantmentHelper.createBook(new EnchantmentInstance(enchantment, p_270006_))))
                 .collect(() -> new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG), ObjectOpenCustomHashSet::add, ObjectOpenCustomHashSet::addAll);
 
         Enchantment enchantment = null;

@@ -1,15 +1,22 @@
 --- a/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/SectionStorage.java
-@@ -238,4 +_,12 @@
-     public void close() throws IOException {
+@@ -302,6 +_,19 @@
          this.simpleRegionStorage.close();
      }
-+
+ 
 +    /**
 +     * Neo: Removes the data for the given chunk position.
 +     * See PR #937
 +     */
-+    public void remove(long sectionPosAsLong) {
-+        this.storage.remove(sectionPosAsLong);
++    public void remove(ChunkPos chunkPos) {
++        synchronized (this.loadLock) {
++            for (int y = this.levelHeightAccessor.getMinSectionY(); y <= this.levelHeightAccessor.getMaxSectionY(); y++) {
++                this.storage.remove(getKey(chunkPos, y));
++            }
++            this.loadedChunks.remove(chunkPos.toLong());
++        }
 +    }
- }
++
+     static record PackedChunk<T>(Int2ObjectMap<T> sectionsByY, boolean versionChanged) {
+         public static <T> SectionStorage.PackedChunk<T> parse(
+             Codec<T> p_365233_, DynamicOps<Tag> p_363840_, Tag p_364375_, SimpleRegionStorage p_362076_, LevelHeightAccessor p_362314_

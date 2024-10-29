@@ -1,64 +1,36 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -111,6 +_,17 @@
-         this.dynamicShape = p_60452_.dynamicShape;
-         this.requiredFeatures = p_60452_.requiredFeatures;
-         this.properties = p_60452_;
-+        final ResourceKey<LootTable> lootTableCache = p_60452_.drops;
-+        if (lootTableCache != null) {
-+            this.lootTableSupplier = () -> lootTableCache;
-+        } else if (p_60452_.lootTableSupplier != null) {
-+            this.lootTableSupplier = p_60452_.lootTableSupplier;
-+        } else {
-+            this.lootTableSupplier = () -> {
-+                ResourceLocation resourcelocation = BuiltInRegistries.BLOCK.getKey(this.asBlock());
-+                return ResourceKey.create(Registries.LOOT_TABLE, resourcelocation.withPrefix("blocks/"));
-+            };
-+        }
-     }
- 
-     public BlockBehaviour.Properties properties() {
-@@ -168,7 +_,7 @@
+@@ -182,7 +_,7 @@
          if (!p_311951_.isAir() && p_312925_.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = p_311951_.getBlock();
              boolean flag = p_312925_.getIndirectSourceEntity() instanceof Player;
--            if (block.dropFromExplosion(p_312925_) && p_312820_ instanceof ServerLevel serverlevel) {
-+            if (p_311951_.canDropFromExplosion(p_312820_, p_312489_, p_312925_) && p_312820_ instanceof ServerLevel serverlevel) {
-                 BlockEntity blockentity = p_311951_.hasBlockEntity() ? p_312820_.getBlockEntity(p_312489_) : null;
-                 LootParams.Builder lootparams$builder = new LootParams.Builder(serverlevel)
+-            if (block.dropFromExplosion(p_312925_)) {
++            if (p_311951_.canDropFromExplosion(p_365148_, p_312489_, p_312925_)) {
+                 BlockEntity blockentity = p_311951_.hasBlockEntity() ? p_365148_.getBlockEntity(p_312489_) : null;
+                 LootParams.Builder lootparams$builder = new LootParams.Builder(p_365148_)
                      .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(p_312489_))
-@@ -183,8 +_,7 @@
+@@ -197,8 +_,7 @@
                  p_311951_.getDrops(lootparams$builder).forEach(p_311752_ -> p_312073_.accept(p_311752_, p_312489_));
              }
  
--            p_312820_.setBlock(p_312489_, Blocks.AIR.defaultBlockState(), 3);
--            block.wasExploded(p_312820_, p_312489_, p_312925_);
-+            p_311951_.onBlockExploded(p_312820_, p_312489_, p_312925_);
+-            p_365148_.setBlock(p_312489_, Blocks.AIR.defaultBlockState(), 3);
+-            block.wasExploded(p_365148_, p_312489_, p_312925_);
++            p_311951_.onBlockExploded(p_365148_, p_312489_, p_312925_);
          }
      }
  
-@@ -335,8 +_,8 @@
+@@ -344,8 +_,8 @@
          if (f == -1.0F) {
              return 0.0F;
          } else {
 -            int i = p_60467_.hasCorrectToolForDrops(p_60466_) ? 30 : 100;
 -            return p_60467_.getDestroySpeed(p_60466_) / f / (float)i;
 +            int i = net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(p_60467_, p_60466_, p_60468_, p_60469_) ? 30 : 100;
-+            return p_60467_.getDigSpeed(p_60466_, p_60469_) / f / (float)i;
++            return p_60467_.getDestroySpeed(p_60466_, p_60469_) / f / (float)i;
          }
      }
  
-@@ -359,8 +_,7 @@
- 
-     public final ResourceKey<LootTable> getLootTable() {
-         if (this.drops == null) {
--            ResourceLocation resourcelocation = BuiltInRegistries.BLOCK.getKey(this.asBlock());
--            this.drops = ResourceKey.create(Registries.LOOT_TABLE, resourcelocation.withPrefix("blocks/"));
-+            this.drops = this.lootTableSupplier.get();
-         }
- 
-         return this.drops;
-@@ -377,6 +_,7 @@
+@@ -389,6 +_,7 @@
          return this.isRandomlyTicking;
      }
  
@@ -66,7 +38,7 @@
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
-@@ -393,6 +_,13 @@
+@@ -405,6 +_,10 @@
          return this.properties.destroyTime;
      }
  
@@ -74,13 +46,10 @@
 +        return ((BlockStateBase)state).isAir;
 +    }
 +
-+    // Neo: Holds the loot table for this block's drops. Used for getLootTable method.
-+    private final java.util.function.Supplier<ResourceKey<LootTable>> lootTableSupplier;
-+
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
-         private final int lightEmission;
-         private final boolean useShapeForLightOcclusion;
-@@ -523,12 +_,14 @@
+         private static final Direction[] DIRECTIONS = Direction.values();
+         private static final VoxelShape[] EMPTY_OCCLUSION_SHAPES = Util.make(
+@@ -561,12 +_,14 @@
              return this.useShapeForLightOcclusion;
          }
  
@@ -96,7 +65,7 @@
          }
  
          public boolean ignitedByLava() {
-@@ -541,9 +_,11 @@
+@@ -579,9 +_,11 @@
          }
  
          public MapColor getMapColor(BlockGetter p_285002_, BlockPos p_285293_) {
@@ -109,7 +78,7 @@
          public BlockState rotate(Rotation p_60718_) {
              return this.getBlock().rotate(this.asState(), p_60718_);
          }
-@@ -597,6 +_,8 @@
+@@ -635,6 +_,8 @@
          }
  
          public PushReaction getPistonPushReaction() {
@@ -118,17 +87,17 @@
              return this.pushReaction;
          }
  
-@@ -724,6 +_,9 @@
+@@ -762,6 +_,9 @@
          }
  
-         public ItemInteractionResult useItemOn(ItemStack p_316374_, Level p_316651_, Player p_316623_, InteractionHand p_316469_, BlockHitResult p_316877_) {
+         public InteractionResult useItemOn(ItemStack p_316374_, Level p_316651_, Player p_316623_, InteractionHand p_316469_, BlockHitResult p_316877_) {
 +            var useOnContext = new net.minecraft.world.item.context.UseOnContext(p_316651_, p_316623_, p_316469_, p_316623_.getItemInHand(p_316469_).copy(), p_316877_);
 +            var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(useOnContext, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.BLOCK));
 +            if (e.isCanceled()) return e.getCancellationResult();
              return this.getBlock().useItemOn(p_316374_, this.asState(), p_316651_, p_316877_.getBlockPos(), p_316623_, p_316469_, p_316877_);
          }
  
-@@ -825,6 +_,7 @@
+@@ -871,6 +_,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }
  
@@ -136,34 +105,12 @@
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
-@@ -959,11 +_,12 @@
-         PushReaction pushReaction = PushReaction.NORMAL;
-         boolean spawnTerrainParticles = true;
-         NoteBlockInstrument instrument = NoteBlockInstrument.HARP;
-+        private java.util.function.Supplier<ResourceKey<LootTable>> lootTableSupplier;
-         boolean replaceable;
-         BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (p_284893_, p_284894_, p_284895_, p_284896_) -> p_284893_.isFaceSturdy(
-                     p_284894_, p_284895_, Direction.UP
+@@ -996,7 +_,7 @@
+         BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (p_360193_, p_360194_, p_360195_, p_360196_) -> p_360193_.isFaceSturdy(
+                     p_360194_, p_360195_, Direction.UP
                  )
--                && p_284893_.getLightEmission() < 14;
-+                && p_284893_.getLightEmission(p_284894_, p_284895_) < 14;
-         BlockBehaviour.StatePredicate isRedstoneConductor = (p_284888_, p_284889_, p_284890_) -> p_284888_.isCollisionShapeFullBlock(p_284889_, p_284890_);
-         BlockBehaviour.StatePredicate isSuffocating = (p_284885_, p_284886_, p_284887_) -> p_284885_.blocksMotion()
-                 && p_284885_.isCollisionShapeFullBlock(p_284886_, p_284887_);
-@@ -1105,9 +_,15 @@
-             return this;
-         }
- 
-+        @Deprecated // FORGE: Use the variant that takes a Supplier below
-         public BlockBehaviour.Properties dropsLike(Block p_60917_) {
--            this.drops = p_60917_.getLootTable();
-+            this.lootTableSupplier = () -> p_60917_.getLootTable();
-             return this;
-+        }
-+
-+        public BlockBehaviour.Properties lootFrom(java.util.function.Supplier<? extends Block> blockIn) {
-+             this.lootTableSupplier = () -> blockIn.get().getLootTable();
-+             return this;
-         }
- 
-         public BlockBehaviour.Properties ignitedByLava() {
+-                && p_360193_.getLightEmission() < 14;
++                && p_360193_.getLightEmission(p_360194_, p_360195_) < 14;
+         BlockBehaviour.StatePredicate isRedstoneConductor = (p_360190_, p_360191_, p_360192_) -> p_360190_.isCollisionShapeFullBlock(p_360191_, p_360192_);
+         BlockBehaviour.StatePredicate isSuffocating = (p_360187_, p_360188_, p_360189_) -> p_360187_.blocksMotion()
+                 && p_360187_.isCollisionShapeFullBlock(p_360188_, p_360189_);

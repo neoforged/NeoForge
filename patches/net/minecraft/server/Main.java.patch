@@ -86,14 +86,14 @@
                          LOGGER.error("Failed to load world data from {}", levelstoragesource$leveldirectory.oldDataFile(), ioexception);
                          LOGGER.error(
 @@ -214,6 +_,9 @@
-                                             worlddimensions = dedicatedserverproperties.createDimensions(p_307161_.datapackWorldgen());
+                                             worlddimensions = dedicatedserverproperties.createDimensions(p_359487_.datapackWorldgen());
                                          }
  
 +                                        // Neo: Do a write-read-cycle to inject modded dimensions on first start of a dedicated server into its generated world dimensions list.
-+                                        var registryOps = net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, p_307161_.datapackWorldgen());
++                                        var registryOps = net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, p_359487_.datapackWorldgen());
 +                                        worlddimensions = WorldDimensions.CODEC.encoder().encodeStart(registryOps, worlddimensions).flatMap((writtenPayloadWithModdedDimensions) -> WorldDimensions.CODEC.decoder().parse(registryOps, writtenPayloadWithModdedDimensions)).resultOrPartial(LOGGER::error).orElse(worlddimensions);
                                          WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(registry);
-                                         Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_307161_.datapackWorldgen().allRegistriesLifecycle());
+                                         Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_359487_.datapackWorldgen().allRegistriesLifecycle());
                                          return new WorldLoader.DataLoadOutput<>(
 @@ -246,24 +_,22 @@
  

@@ -159,12 +159,28 @@ public class DeferredRegister<T> {
     /**
      * Factory for a specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
      *
-     * @param modid The namespace for all objects registered to this DeferredRegister
+     * @param registryKey The key for the data component type registry, like {@link Registries#DATA_COMPONENT_TYPE} for item data components
+     * @param modid       The namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
      * @see #create(ResourceLocation, String)
      * @see #createItems(String)
      */
+    public static DataComponents createDataComponents(ResourceKey<Registry<DataComponentType<?>>> registryKey, String modid) {
+        return new DataComponents(registryKey, modid);
+    }
+
+    /**
+     * Factory for a specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
+     *
+     * @param modid The namespace for all objects registered to this DeferredRegister
+     * @see #create(Registry, String)
+     * @see #create(ResourceKey, String)
+     * @see #create(ResourceLocation, String)
+     * @see #createItems(String)
+     * @deprecated Scheduled for removal in 1.21.2; use {@link DeferredRegister#createDataComponents(ResourceKey, String)} with {@link Registries#DATA_COMPONENT_TYPE} instead
+     */
+    @Deprecated(since = "1.21.1", forRemoval = true)
     public static DataComponents createDataComponents(String modid) {
         return new DataComponents(modid);
     }
@@ -411,7 +427,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlock(String, BlockBehaviour.Properties)
          */
         public <B extends Block> DeferredBlock<B> registerBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func, BlockBehaviour.Properties props) {
-            return this.register(name, () -> func.apply(props));
+            return this.register(name, key -> func.apply(props.setId(ResourceKey.create(Registries.BLOCK, key))));
         }
 
         /**
@@ -480,7 +496,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
-            return this.register(name, key -> new BlockItem(block.get(), properties));
+            return this.register(name, key -> new BlockItem(block.get(), properties.setId(ResourceKey.create(Registries.ITEM, key)).useBlockDescriptionPrefix()));
         }
 
         /**
@@ -542,7 +558,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleItem(String)
          */
         public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
-            return this.register(name, () -> func.apply(props));
+            return this.register(name, key -> func.apply(props.setId(ResourceKey.create(Registries.ITEM, key))));
         }
 
         /**
@@ -599,6 +615,12 @@ public class DeferredRegister<T> {
      * Specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
      */
     public static class DataComponents extends DeferredRegister<DataComponentType<?>> {
+        protected DataComponents(ResourceKey<Registry<DataComponentType<?>>> registryKey, String namespace) {
+            super(registryKey, namespace);
+        }
+
+        /** @deprecated Scheduled for removal in 1.21.2; use {@link DataComponents#DataComponents(ResourceKey, String)} */
+        @Deprecated(since = "1.21.1", forRemoval = true)
         protected DataComponents(String namespace) {
             super(Registries.DATA_COMPONENT_TYPE, namespace);
         }
@@ -623,12 +645,13 @@ public class DeferredRegister<T> {
             this.registryKey = registryKey;
         }
 
-        @SuppressWarnings("unchecked")
+        // FIXME porting: there must be a better way than using a rawtype
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public @Nullable Registry<V> get() {
             // Keep looking up the registry until it's not null
             if (this.registry == null)
-                this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.get(this.registryKey.location());
+                this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.getValueOrThrow((ResourceKey) this.registryKey);
 
             return this.registry;
         }

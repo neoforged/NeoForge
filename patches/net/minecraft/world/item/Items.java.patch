@@ -1,32 +1,27 @@
 --- a/net/minecraft/world/item/Items.java
 +++ b/net/minecraft/world/item/Items.java
-@@ -2092,11 +_,25 @@
+@@ -2326,11 +_,19 @@
      }
  
      public static Item registerBlock(Block p_252092_, Block... p_248886_) {
--        BlockItem blockitem = new BlockItem(p_252092_, new Item.Properties());
-+        BlockItem blockitem = new BlockItem(p_252092_, new Item.Properties()) {
-+            @Override
-+            public void registerBlocks(java.util.Map<Block, Item> map, Item self) {
-+                super.registerBlocks(map, self);
-+                for (Block b : p_248886_) {
-+                    map.put(b, self);
-+                }
-+            }
- 
+-        Item item = registerBlock(p_252092_);
+-
 -        for (Block block : p_248886_) {
--            Item.BY_BLOCK.put(block, blockitem);
+-            Item.BY_BLOCK.put(block, item);
 -        }
-+            /** @deprecated Neo: To be removed without replacement since registry replacement is not a feature anymore. */
-+            @Deprecated(forRemoval = true, since = "1.21.1")
-+            @Override
-+            public void removeFromBlockToItemMap(java.util.Map<Block, Item> map, Item self) {
-+                super.removeFromBlockToItemMap(map, self);
-+                for (Block b : p_248886_) {
-+                    map.remove(b);
-+                }
-+            }
-+        };
++        Item item = registerItem(
++                blockIdToItemId(p_252092_.builtInRegistryHolder().key()),
++                p -> new BlockItem(p_252092_, p) {
++                    @Override
++                    public void registerBlocks(java.util.Map<Block, Item> map, Item self) {
++                        super.registerBlocks(map, self);
++                        for (Block block : p_248886_) {
++                            map.put(block, self);
++                        }
++                    }
++                },
++                new Item.Properties().useBlockDescriptionPrefix()
++        );
  
-         return registerBlock(blockitem);
+         return item;
      }
