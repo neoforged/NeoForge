@@ -63,7 +63,7 @@ public abstract class DataMapProvider implements DataProvider {
         return lookupProvider.thenCompose(provider -> {
             gather(provider);
 
-            final DynamicOps<JsonElement> dynamicOps = RegistryOps.create(JsonOps.INSTANCE, provider);
+            final DynamicOps<JsonElement> dynamicOps = provider.createSerializationContext(JsonOps.INSTANCE);
 
             return CompletableFuture.allOf(this.builders.entrySet().stream().map(entry -> {
                 DataMapType<?, ?> type = entry.getKey();
