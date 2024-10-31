@@ -53,6 +53,10 @@ public final class AttachmentInternals {
         copyAttachments(from.registryAccess(), from, to, isDeath ? type -> type.copyOnDeath : type -> true);
     }
 
+    public static <H extends AttachmentHolder> void copyEntityAttachments(Entity from, H to, boolean isDeath) {
+        copyAttachments(from.registryAccess(), from, to, isDeath ? type -> type.copyOnDeath : type -> true);
+    }
+
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
         event.getEntity().copyAttachmentsFrom(event.getOriginal(), event.isWasDeath());

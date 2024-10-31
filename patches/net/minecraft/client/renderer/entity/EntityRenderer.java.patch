@@ -23,11 +23,13 @@
          if (flag) {
              p_361028_.nameTag = this.getNameTag(p_362104_);
              p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
-@@ -302,5 +_,7 @@
+@@ -302,5 +_,9 @@
          }
  
          p_361028_.displayFireAnimation = p_362104_.displayFireAnimation();
 +
 +        p_361028_.partialTick = p_362204_;
++        net.neoforged.neoforge.attachment.AttachmentInternals.copyEntityAttachments(p_362104_, p_362104_, false);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.UpdateRenderStateEvent<>(p_362104_, p_361028_));
      }
  }

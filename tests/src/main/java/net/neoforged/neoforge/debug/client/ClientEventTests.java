@@ -126,4 +126,21 @@ public class ClientEventTests {
             test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Is an iron block rendered above you in third-person?"));
         });
     }
+    
+    @TestHolder(description = { "" }, enabledByDefault = true)
+    static void updateRenderState(final DynamicTest test) {
+        var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
+        test.whenEnabled(listeners -> {
+            listeners.forge().addListener((RenderPlayerEvent.Post event) -> {
+                int numRender = event.getRenderState().getData(testAttachment);
+                var poseStack = event.getPoseStack();
+                poseStack.pushPose();
+                for (int i = 0; i < numRender; i++) {
+                    poseStack.translate(0, 1, 0);
+                    Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.CALCITE.defaultBlockState(), poseStack, event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.solid());
+                }
+                poseStack.popPose();
+            });
+        });
+    }
 }
