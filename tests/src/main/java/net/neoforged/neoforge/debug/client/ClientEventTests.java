@@ -10,6 +10,8 @@ import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -139,7 +141,7 @@ public class ClientEventTests {
         var specialStateKey = new RenderStateKey<Float>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "special_context"));
         test.whenEnabled(listeners -> {
             listeners.mod().addListener((RegisterRenderStateExtensionEvent event) -> {
-                event.registerExtension(Zombie.class, PlayerRenderState.class, (player, playerRenderState) -> {
+                event.registerExtension(PlayerRenderer.class, (player, playerRenderState) -> {
                     playerRenderState.setExtension(specialStateKey, 42f);
                 });
             });

@@ -78,6 +78,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -274,8 +275,8 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
     }
 
-    public static <E extends Entity, S extends EntityRenderState> void onUpdateRenderState(E entity, S renderState) {
-        var extender = (RenderStateExtensions.RenderStateExtender<E, S>) RenderStateExtensions.getMergedExtension(entity.getClass(), renderState.getClass());
+    public static <E extends Entity, S extends EntityRenderState> void onUpdateRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
+        var extender = RenderStateExtensions.getMergedExtension(renderer);
         if (extender != null) {
             extender.accept(entity, renderState);
         }

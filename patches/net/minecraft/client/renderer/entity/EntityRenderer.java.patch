@@ -30,6 +30,6 @@
 +
 +        p_361028_.partialTick = p_362204_;
 +        net.neoforged.neoforge.attachment.AttachmentInternals.copyEntityAttachments(p_362104_, p_362104_, false);
-+        net.neoforged.neoforge.client.ClientHooks.onUpdateRenderState(p_362104_, p_361028_);
++        net.neoforged.neoforge.client.ClientHooks.onUpdateRenderState(this, p_362104_, p_361028_);
      }
  }
