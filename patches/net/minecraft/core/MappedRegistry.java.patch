@@ -139,7 +139,7 @@
                  } else {
                      List<ResourceLocation> list1 = this.frozenTags
                          .entrySet()
-@@ -450,6 +_,54 @@
+@@ -450,6 +_,61 @@
                  }
              };
          }
@@ -162,6 +162,13 @@
 +                unregisteredIntrusiveHolders = null;
 +            }
 +        }
++    }
++
++    @Override
++    public void bindAndFreeze() {
++        // HolderSet.Named may be used for registry objects, vanilla binds these tags so freeze won't throw for unbound tags
++        bindAllTagsToEmpty();
++        freeze();
 +    }
 +
 +    @Override

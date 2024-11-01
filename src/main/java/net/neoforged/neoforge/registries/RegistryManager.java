@@ -208,7 +208,7 @@ public class RegistryManager {
 
         snapshot.getAliases().forEach(registry::addAlias);
 
-        forgeRegistry.freeze();
+        forgeRegistry.bindAndFreeze();
     }
 
     /**

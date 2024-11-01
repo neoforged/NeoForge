@@ -113,6 +113,11 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     }
 
     /**
+     * Binds frozenTags and then freezes the registry. Allows Named holder sets to be used in static registry objects.
+     */
+    public abstract void bindAndFreeze();
+
+    /**
      * Register a key <-> ID mapping.
      * <b>The IDs must be registered in increasing order.</b>
      */
