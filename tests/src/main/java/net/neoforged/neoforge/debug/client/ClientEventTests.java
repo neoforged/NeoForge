@@ -6,9 +6,11 @@
 package net.neoforged.neoforge.debug.client;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.SectionPos;
@@ -16,6 +18,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
@@ -25,6 +30,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.UpdateRenderStateEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
@@ -130,14 +136,22 @@ public class ClientEventTests {
     @TestHolder(description = { "" }, enabledByDefault = true)
     static void updateRenderState(final DynamicTest test) {
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
+        var specialClientContext = new ContextKey<Float>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "special_context"));
         test.whenEnabled(listeners -> {
+            listeners.forge().addListener((UpdateRenderStateEvent<Player, PlayerRenderState> event) -> {
+                event.withRequiredState(specialClientContext, 42f);
+            });
             listeners.forge().addListener((RenderPlayerEvent.Post event) -> {
                 int numRender = event.getRenderState().getData(testAttachment);
+                float xRotation = event.getRenderState().extensions.getOrThrow(specialClientContext);
                 var poseStack = event.getPoseStack();
                 poseStack.pushPose();
                 for (int i = 0; i < numRender; i++) {
                     poseStack.translate(0, 1, 0);
+                    poseStack.pushPose();
+                    poseStack.mulPose(Axis.XP.rotation(xRotation));
                     Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.CALCITE.defaultBlockState(), poseStack, event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.solid());
+                    poseStack.popPose();
                 }
                 poseStack.popPose();
             });

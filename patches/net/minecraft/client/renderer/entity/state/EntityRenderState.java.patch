@@ -9,11 +9,12 @@
      public double x;
      public double y;
      public double z;
-@@ -27,6 +_,7 @@
+@@ -27,6 +_,8 @@
      public Vec3 nameTagAttachment;
      @Nullable
      public EntityRenderState.LeashState leashState;
 +    public float partialTick;
++    @Nullable public net.minecraft.util.context.ContextMap extensions; // NeoForge: allow generic extension of render states
  
      @OnlyIn(Dist.CLIENT)
      public static class LeashState {
