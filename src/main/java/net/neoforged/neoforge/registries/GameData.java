@@ -65,9 +65,7 @@ public class GameData {
 
     public static void freezeData() {
         LOGGER.debug(REGISTRIES, "Freezing registries");
-        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> {
-            ((MappedRegistry<?>) r).bindAndFreeze();
-        });
+        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> ((MappedRegistry<?>) r).bindAndFreeze());
 
         RegistryManager.takeFrozenSnapshot();
 
