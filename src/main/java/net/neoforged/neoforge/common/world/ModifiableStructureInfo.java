@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.world;
 
 import java.util.List;
-import java.util.Locale;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.Structure.StructureSettings;
@@ -55,18 +54,16 @@ public class ModifiableStructureInfo {
     }
 
     /**
-     * Internal neoforge method; the game will crash if mods invoke this.
+     * Internal NeoForge method. Will do nothing if this modifier had already been applied.
      * Creates and caches the modified structure info.
      * 
      * @param structure          named structure with original data.
      * @param structureModifiers structure modifiers to apply.
-     * 
-     * @throws IllegalStateException if invoked more than once.
      */
     @ApiStatus.Internal
     public void applyStructureModifiers(final Holder<Structure> structure, final List<StructureModifier> structureModifiers) {
         if (this.modifiedStructureInfo != null)
-            throw new IllegalStateException(String.format(Locale.ENGLISH, "Structure %s already modified", structure));
+            return;
 
         StructureInfo original = this.getOriginalStructureInfo();
         final StructureInfo.Builder builder = StructureInfo.Builder.copyOf(original);

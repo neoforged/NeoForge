@@ -33,7 +33,7 @@
          return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
  
-@@ -193,7 +_,7 @@
+@@ -198,7 +_,7 @@
  
      @Override
      protected float getDestroyProgress(BlockState p_261691_, Player p_262171_, BlockGetter p_261621_, BlockPos p_261500_) {

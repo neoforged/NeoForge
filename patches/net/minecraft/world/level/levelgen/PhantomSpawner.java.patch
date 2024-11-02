@@ -27,4 +27,4 @@
 +                                            int l = event.getPhantomsToSpawn();
  
                                              for (int i1 = 0; i1 < l; i1++) {
-                                                 Phantom phantom = EntityType.PHANTOM.create(p_64576_);
+                                                 Phantom phantom = EntityType.PHANTOM.create(p_64576_, EntitySpawnReason.NATURAL);

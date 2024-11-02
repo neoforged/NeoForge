@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:nuggets/gold"
-    },
-    "X": {
-      "item": "minecraft:melon_slice"
-    }
+    "#": "#c:nuggets/gold",
+    "X": "minecraft:melon_slice"
   },
   "pattern": [
     "###",

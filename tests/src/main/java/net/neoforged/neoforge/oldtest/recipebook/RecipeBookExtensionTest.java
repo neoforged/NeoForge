@@ -14,6 +14,8 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.ExtendedRecipeBookCategory;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
@@ -23,7 +25,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
+import net.neoforged.neoforge.client.event.RegisterRecipeBookSearchCategoriesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -32,7 +34,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(RecipeBookExtensionTest.MOD_ID)
 public class RecipeBookExtensionTest {
-    public static final boolean ENABLED = false;
+    public static final boolean ENABLED = true;
 
     public static final String MOD_ID = "recipe_book_extension_test";
     public static final RecipeBookType TEST_TYPE = RecipeBookType.valueOf("NEOTESTS_TESTING");
@@ -46,6 +48,11 @@ public class RecipeBookExtensionTest {
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, MOD_ID);
     public static final DeferredHolder<RecipeType<?>, RecipeType<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_TYPE = RECIPE_TYPE.register("test_recipe", () -> RecipeType.simple(getId("test_recipe")));
 
+    public static final DeferredRegister<RecipeBookCategory> RECIPE_BOOK_CATEGORY = DeferredRegister.create(BuiltInRegistries.RECIPE_BOOK_CATEGORY, MOD_ID);
+    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> RECIPE_BOOK_TEST_CAT1 = RECIPE_BOOK_CATEGORY.register("cat1", RecipeBookCategory::new);
+    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> RECIPE_BOOK_TEST_CAT2 = RECIPE_BOOK_CATEGORY.register("cat2", RecipeBookCategory::new);
+    public static final ExtendedRecipeBookCategory SEARCH_CATEGORY = new ExtendedRecipeBookCategory() {};
+
     public RecipeBookExtensionTest(IEventBus modBus) {
         if (!ENABLED)
             return;
@@ -53,6 +60,7 @@ public class RecipeBookExtensionTest {
         RECIPE_SERIALIZER.register(modBus);
         MENU_TYPE.register(modBus);
         RECIPE_TYPE.register(modBus);
+        RECIPE_BOOK_CATEGORY.register(modBus);
 
         NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
@@ -79,10 +87,8 @@ public class RecipeBookExtensionTest {
         }
 
         @SubscribeEvent
-        public static void onRegisterRecipeBookCategories(RegisterRecipeBookCategoriesEvent event) {
-            if (!ENABLED)
-                return;
-            RecipeBookExtensionClientHelper.init(event);
+        public static void registerSearchCategories(RegisterRecipeBookSearchCategoriesEvent event) {
+            event.register(SEARCH_CATEGORY, RECIPE_BOOK_TEST_CAT1.get(), RECIPE_BOOK_TEST_CAT2.get());
         }
     }
 
@@ -93,6 +99,10 @@ public class RecipeBookExtensionTest {
 
         public CraftingInput asCraftingInput() {
             return CraftingInput.of(2, 4, getItems());
+        }
+
+        public CraftingInput.Positioned asPositionedCraftInput() {
+            return CraftingInput.ofPositioned(2, 4, getItems());
         }
     }
 }

@@ -121,12 +121,12 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class AddLayers extends EntityRenderersEvent {
-        private final Map<EntityType<?>, EntityRenderer<?>> renderers;
-        private final Map<PlayerSkin.Model, EntityRenderer<? extends Player>> skinMap;
+        private final Map<EntityType<?>, EntityRenderer<?, ?>> renderers;
+        private final Map<PlayerSkin.Model, EntityRenderer<? extends Player, ?>> skinMap;
         private final EntityRendererProvider.Context context;
 
         @ApiStatus.Internal
-        public AddLayers(Map<EntityType<?>, EntityRenderer<?>> renderers, Map<PlayerSkin.Model, EntityRenderer<? extends Player>> playerRenderers, EntityRendererProvider.Context context) {
+        public AddLayers(Map<EntityType<?>, EntityRenderer<?, ?>> renderers, Map<PlayerSkin.Model, EntityRenderer<? extends Player, ?>> playerRenderers, EntityRendererProvider.Context context) {
             this.renderers = renderers;
             this.skinMap = playerRenderers;
             this.context = context;
@@ -153,7 +153,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <R extends EntityRenderer<? extends Player>> R getSkin(PlayerSkin.Model skinModel) {
+        public <R extends EntityRenderer<? extends Player, ?>> R getSkin(PlayerSkin.Model skinModel) {
             return (R) skinMap.get(skinModel);
         }
 
@@ -175,7 +175,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <T extends Entity, R extends EntityRenderer<T>> R getRenderer(EntityType<? extends T> entityType) {
+        public <T extends Entity, R extends EntityRenderer<T, ?>> R getRenderer(EntityType<? extends T> entityType) {
             return (R) renderers.get(entityType);
         }
 

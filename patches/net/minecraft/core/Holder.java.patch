@@ -9,7 +9,7 @@
      T value();
  
      boolean isBound();
-@@ -220,6 +_,14 @@
+@@ -229,6 +_,14 @@
              }
          }
  
@@ -24,7 +24,7 @@
          void bindTags(Collection<TagKey<T>> p_205770_) {
              this.tags = Set.copyOf(p_205770_);
          }
-@@ -232,6 +_,33 @@
+@@ -241,6 +_,33 @@
          @Override
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";

@@ -22,10 +22,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.Item;
@@ -37,6 +35,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
@@ -56,22 +55,13 @@ public interface IItemStackExtension {
     }
 
     /**
-     * ItemStack sensitive version of {@link Item#getCraftingRemainingItem()}.
+     * ItemStack sensitive version of {@link Item#getCraftingRemainder()}.
      * Returns a full ItemStack instance of the result.
      *
      * @return The resulting ItemStack
      */
-    default ItemStack getCraftingRemainingItem() {
-        return self().getItem().getCraftingRemainingItem(self());
-    }
-
-    /**
-     * ItemStack sensitive version of {@link Item#hasCraftingRemainingItem()}.
-     *
-     * @return True if this item has a crafting remaining item
-     */
-    default boolean hasCraftingRemainingItem() {
-        return self().getItem().hasCraftingRemainingItem(self());
+    default ItemStack getCraftingRemainder() {
+        return self().getItem().getCraftingRemainder(self());
     }
 
     /**
@@ -83,15 +73,15 @@ public interface IItemStackExtension {
      * @apiNote This method by default returns the {@code burn_time} specified in
      *          the {@code furnace_fuels.json} file.
      */
-    default int getBurnTime(@Nullable RecipeType<?> recipeType) {
+    default int getBurnTime(@Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         if (self().isEmpty()) {
             return 0;
         }
-        int burnTime = self().getItem().getBurnTime(self(), recipeType);
+        int burnTime = self().getItem().getBurnTime(self(), recipeType, fuelValues);
         if (burnTime < 0) {
             throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
         }
-        return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
+        return EventHooks.getItemBurnTime(self(), burnTime, recipeType, fuelValues);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
@@ -180,15 +170,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * ItemStack sensitive version of {@link Item#getEnchantmentValue()}.
-     *
-     * @return the enchantment value of this ItemStack
-     */
-    default int getEnchantmentValue() {
-        return self().getItem().getEnchantmentValue(self());
-    }
-
-    /**
      * Override this to set a non-default armor slot for an ItemStack, but <em>do
      * not use this to get the armor slot of said stack; for that, use
      * {@link LivingEntity#getEquipmentSlotForItem(ItemStack)}.</em>
@@ -212,19 +193,6 @@ public interface IItemStackExtension {
      */
     default boolean canDisableShield(ItemStack shield, LivingEntity entity, LivingEntity attacker) {
         return self().getItem().canDisableShield(self(), shield, entity, attacker);
-    }
-
-    /**
-     * Called when a entity tries to play the 'swing' animation.
-     *
-     * @param entity The entity swinging the item.
-     * @return True to cancel any further processing by {@link LivingEntity}
-     * @deprecated To be replaced with hand sensitive version in 21.2
-     * @see #onEntitySwing(LivingEntity, InteractionHand)
-     */
-    @Deprecated(forRemoval = true, since = "21.1")
-    default boolean onEntitySwing(LivingEntity entity) {
-        return self().getItem().onEntitySwing(self(), entity);
     }
 
     /**
@@ -379,40 +347,14 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Whether this Item can be used to hide player head for enderman.
+     * Whether this {@link Item} can be used to hide player's gaze from Endermen and Creakings.
      *
-     * @param player         The player watching the enderman
-     * @param endermanEntity The enderman that the player look
-     * @return true if this Item can be used.
+     * @param player The player watching the entity
+     * @param entity The entity the player is looking at, may be null
+     * @return true if this {@link Item} hides the player's gaze from the given entity
      */
-    default boolean isEnderMask(Player player, EnderMan endermanEntity) {
-        return self().getItem().isEnderMask(self(), player, endermanEntity);
-    }
-
-    /**
-     * Used to determine if the player can use Elytra flight.
-     * This is called Client and Server side.
-     *
-     * @param entity The entity trying to fly.
-     * @return True if the entity can use Elytra flight.
-     */
-    default boolean canElytraFly(LivingEntity entity) {
-        return self().getItem().canElytraFly(self(), entity);
-    }
-
-    /**
-     * Used to determine if the player can continue Elytra flight,
-     * this is called each tick, and can be used to apply ItemStack damage,
-     * consume Energy, or what have you.
-     * For example the Vanilla implementation of this, applies damage to the
-     * ItemStack every 20 ticks.
-     *
-     * @param entity      The entity currently in Elytra flight.
-     * @param flightTicks The number of ticks the entity has been Elytra flying for.
-     * @return True if the entity should continue Elytra flight or False to stop.
-     */
-    default boolean elytraFlightTick(LivingEntity entity, int flightTicks) {
-        return self().getItem().elytraFlightTick(self(), entity, flightTicks);
+    default boolean isGazeDisguise(Player player, @Nullable LivingEntity entity) {
+        return self().getItem().isGazeDisguise(self(), player, entity);
     }
 
     /**
@@ -447,21 +389,6 @@ public interface IItemStackExtension {
      */
     default void onDestroyed(ItemEntity itemEntity, DamageSource damageSource) {
         self().getItem().onDestroyed(itemEntity, damageSource);
-    }
-
-    /**
-     * Get the food properties for this item.
-     * This is a bouncer for easier use of {@link IItemExtension#getFoodProperties(ItemStack, LivingEntity)}
-     *
-     * The @Nullable annotation was only added, due to the default method, also being @Nullable.
-     * Use this with a grain of salt, as if you return null here and true at {@link Item#isEdible()}, NPEs will occur!
-     *
-     * @param entity The entity which wants to eat the food. Be aware that this can be null!
-     * @return The current FoodProperties for the item.
-     */
-    @Nullable // read javadoc to find a potential problem
-    default FoodProperties getFoodProperties(@Nullable LivingEntity entity) {
-        return self().getItem().getFoodProperties(self(), entity);
     }
 
     /**

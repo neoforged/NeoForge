@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ConcretePowderBlock.java
 +++ b/net/minecraft/world/level/block/ConcretePowderBlock.java
-@@ -34,7 +_,7 @@
+@@ -36,7 +_,7 @@
  
      @Override
      public void onLand(Level p_52068_, BlockPos p_52069_, BlockState p_52070_, BlockState p_52071_, FallingBlockEntity p_52072_) {
@@ -9,7 +9,7 @@
              p_52068_.setBlock(p_52069_, this.concrete.defaultBlockState(), 3);
          }
      }
-@@ -47,20 +_,24 @@
+@@ -49,20 +_,24 @@
          return shouldSolidify(blockgetter, blockpos, blockstate) ? this.concrete.defaultBlockState() : super.getStateForPlacement(p_52063_);
      }
  
@@ -38,12 +38,12 @@
                      flag = true;
                      break;
                  }
-@@ -76,7 +_,7 @@
- 
-     @Override
-     protected BlockState updateShape(BlockState p_52074_, Direction p_52075_, BlockState p_52076_, LevelAccessor p_52077_, BlockPos p_52078_, BlockPos p_52079_) {
--        return touchesLiquid(p_52077_, p_52078_)
-+        return touchesLiquid(p_52077_, p_52078_, p_52074_)
+@@ -87,7 +_,7 @@
+         BlockState p_52076_,
+         RandomSource p_374119_
+     ) {
+-        return touchesLiquid(p_374245_, p_52078_)
++        return touchesLiquid(p_374245_, p_52078_, p_52074_)
              ? this.concrete.defaultBlockState()
-             : super.updateShape(p_52074_, p_52075_, p_52076_, p_52077_, p_52078_, p_52079_);
+             : super.updateShape(p_52074_, p_374245_, p_374286_, p_52078_, p_52075_, p_52079_, p_52076_, p_374119_);
      }

@@ -5,13 +5,11 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.LightTexture;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 /**
  * Extension interface for {@link DimensionSpecialEffects}.
@@ -26,7 +24,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla cloud rendering
      */
-    default boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
+    default boolean renderClouds(ClientLevel level, int ticks, float partialTick, double camX, double camY, double camZ, Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
         return false;
     }
 
@@ -35,7 +33,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla sky rendering
      */
-    default boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+    default boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera, Matrix4f projectionMatrix, Runnable setupFog) {
         return false;
     }
 
@@ -56,20 +54,4 @@ public interface IDimensionSpecialEffectsExtension {
     default boolean tickRain(ClientLevel level, int ticks, Camera camera) {
         return false;
     }
-
-    /**
-     * Allows for manipulating the coloring of the lightmap texture.
-     * Will be called for each 16*16 combination of sky/block light values.
-     *
-     * @param level                The current level (client-side).
-     * @param partialTicks         Progress between ticks.
-     * @param skyDarken            Current darkness of the sky (can be used to calculate sky light).
-     * @param blockLightRedFlicker Block light flicker factor (red color) (can be used to calculate block light).
-     * @param skyLight             Sky light brightness (accounting for sky darkness).
-     * @param pixelX               X-coordinate of the lightmap texture (block).
-     * @param pixelY               Y-coordinate of the lightmap texture (sky).
-     * @param colors               The color values that will be used: [r, g, b].
-     * @see LightTexture#updateLightTexture(float)
-     */
-    default void adjustLightmapColors(ClientLevel level, float partialTicks, float skyDarken, float blockLightRedFlicker, float skyLight, int pixelX, int pixelY, Vector3f colors) {}
 }

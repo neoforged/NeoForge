@@ -19,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -75,10 +76,10 @@ public class MegaModelTest {
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
     private static final String REG_NAME = "test_block";
-    public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register(REG_NAME, TestBlock::new);
+    public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock(REG_NAME, TestBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> TEST_BLOCK_ENTITY = BLOCK_ENTITIES.register(REG_NAME, () -> new BlockEntityType<>(
-            TestBlock.Entity::new, Set.of(TEST_BLOCK.get()), null));
+            TestBlock.Entity::new, Set.of(TEST_BLOCK.get())));
 
     public MegaModelTest(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
@@ -102,8 +103,8 @@ public class MegaModelTest {
     }
 
     private static class TestBlock extends Block implements EntityBlock {
-        public TestBlock() {
-            super(Properties.of().mapColor(MapColor.STONE));
+        public TestBlock(Properties props) {
+            super(props);
         }
 
         @Nullable
@@ -113,13 +114,13 @@ public class MegaModelTest {
         }
 
         @Override
-        protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             var entity = level.getBlockEntity(pos);
             if (entity instanceof Entity e) {
                 e.y += Mth.sign(hit.getLocation().y - pos.getY() - 0.5);
                 e.requestModelDataUpdate();
                 level.sendBlockUpdated(pos, state, state, 8);
-                return ItemInteractionResult.sidedSuccess(level.isClientSide());
+                return InteractionResult.SUCCESS;
             }
             return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }

@@ -35,6 +35,7 @@ import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.sounds.SoundEvent;
@@ -47,19 +48,19 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.Attribute.Sentiment;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
-import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -98,6 +99,7 @@ import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
 import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.CustomDisplayIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -140,13 +142,16 @@ import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.CustomDisplayFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.DifferenceFluidIngredient;
-import net.neoforged.neoforge.fluids.crafting.EmptyFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredientCodecs;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import net.neoforged.neoforge.fluids.crafting.IntersectionFluidIngredient;
-import net.neoforged.neoforge.fluids.crafting.SingleFluidIngredient;
-import net.neoforged.neoforge.fluids.crafting.TagFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SimpleFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.display.FluidSlotDisplay;
+import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
+import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.DualStackUtils;
@@ -194,8 +199,8 @@ public class NeoForgeMod {
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
             SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
 
-    public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
-    public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
+    public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new PercentageAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 32.0D, 0.0D, 32.0).setSyncable(true).setSentiment(Sentiment.NEUTRAL));
 
     /**
      * This attribute controls if the player may use creative flight when not in creative mode.
@@ -272,18 +277,14 @@ public class NeoForgeMod {
      */
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<BiomeModifiers.AddCarversBiomeModifier>> ADD_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_carvers", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.AddCarversBiomeModifier::biomes),
-            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.AddCarversBiomeModifier::carvers),
-            GenerationStep.Carving.CODEC.fieldOf("step").forGetter(BiomeModifiers.AddCarversBiomeModifier::step)).apply(builder, BiomeModifiers.AddCarversBiomeModifier::new)));
+            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.AddCarversBiomeModifier::carvers)).apply(builder, BiomeModifiers.AddCarversBiomeModifier::new)));
 
     /**
      * Stock biome modifier for removing carvers from biomes.
      */
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<BiomeModifiers.RemoveCarversBiomeModifier>> REMOVE_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_carvers", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::biomes),
-            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::carvers),
-            Codec.either(GenerationStep.Carving.CODEC.listOf(), GenerationStep.Carving.CODEC).xmap(
-                    either -> either.map(Set::copyOf, Set::of),
-                    set -> set.size() == 1 ? Either.right(set.toArray(GenerationStep.Carving[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("steps", EnumSet.allOf(GenerationStep.Carving.class)).forGetter(BiomeModifiers.RemoveCarversBiomeModifier::steps))
+            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::carvers))
             .apply(builder, BiomeModifiers.RemoveCarversBiomeModifier::new)));
 
     /**
@@ -356,6 +357,12 @@ public class NeoForgeMod {
      */
     public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", NotHolderSet.Type::new);
 
+    private static final DeferredRegister<SlotDisplay.Type<?>> SLOT_DISPLAY_TYPES = DeferredRegister.create(Registries.SLOT_DISPLAY, NeoForgeVersion.MOD_ID);
+
+    public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidSlotDisplay>> FLUID_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid", () -> new SlotDisplay.Type<>(FluidSlotDisplay.MAP_CODEC, FluidSlotDisplay.STREAM_CODEC));
+    public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidStackSlotDisplay>> FLUID_STACK_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_stack", () -> new SlotDisplay.Type<>(FluidStackSlotDisplay.MAP_CODEC, FluidStackSlotDisplay.STREAM_CODEC));
+    public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidTagSlotDisplay>> FLUID_TAG_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_tag", () -> new SlotDisplay.Type<>(FluidTagSlotDisplay.MAP_CODEC, FluidTagSlotDisplay.STREAM_CODEC));
+
     private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC));
@@ -363,15 +370,15 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC));
     public static final DeferredHolder<IngredientType<?>, IngredientType<BlockTagIngredient>> BLOCK_TAG_INGREDIENT = INGREDIENT_TYPES.register("block_tag", () -> new IngredientType<>(BlockTagIngredient.CODEC));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<CustomDisplayIngredient>> CUSTOM_DISPLAY_INGREDIENT = INGREDIENT_TYPES.register("custom_display", () -> new IngredientType<>(CustomDisplayIngredient.CODEC));
 
     private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
-    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SingleFluidIngredient>> SINGLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("single", () -> new FluidIngredientType<>(SingleFluidIngredient.CODEC));
-    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<TagFluidIngredient>> TAG_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("tag", () -> new FluidIngredientType<>(TagFluidIngredient.CODEC));
-    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<EmptyFluidIngredient>> EMPTY_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("empty", () -> new FluidIngredientType<>(EmptyFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SimpleFluidIngredient>> SIMPLE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("simple", FluidIngredientCodecs::simpleType);
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CompoundFluidIngredient>> COMPOUND_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("compound", () -> new FluidIngredientType<>(CompoundFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DataComponentFluidIngredient>> DATA_COMPONENT_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("components", () -> new FluidIngredientType<>(DataComponentFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<DifferenceFluidIngredient>> DIFFERENCE_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("difference", () -> new FluidIngredientType<>(DifferenceFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<IntersectionFluidIngredient>> INTERSECTION_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("intersection", () -> new FluidIngredientType<>(IntersectionFluidIngredient.CODEC));
+    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CustomDisplayFluidIngredient>> CUSTOM_DISPLAY_FLUID_INGREDIENT = FLUID_INGREDIENT_TYPES.register("custom_display", () -> new FluidIngredientType<>(CustomDisplayFluidIngredient.CODEC, CustomDisplayFluidIngredient.STREAM_CODEC));
 
     private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
@@ -423,7 +430,7 @@ public class NeoForgeMod {
             .addDripstoneDripping(PointedDripstoneBlock.WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_WATER, Blocks.WATER_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON)) {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
-            if (reader instanceof Level level) {
+            if (reader instanceof ServerLevel level) {
                 return level.getGameRules().getBoolean(GameRules.RULE_WATER_SOURCE_CONVERSION);
             }
             //Best guess fallback to default (true)
@@ -450,7 +457,7 @@ public class NeoForgeMod {
             .addDripstoneDripping(PointedDripstoneBlock.LAVA_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_LAVA, Blocks.LAVA_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_LAVA_INTO_CAULDRON)) {
         @Override
         public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
-            if (reader instanceof Level level) {
+            if (reader instanceof ServerLevel level) {
                 return level.getGameRules().getBoolean(GameRules.RULE_LAVA_SOURCE_CONVERSION);
             }
             //Best guess fallback to default (false)
@@ -471,6 +478,8 @@ public class NeoForgeMod {
 
     private static boolean enableProperFilenameValidation = false;
     private static boolean enableMilkFluid = false;
+    private static boolean enableMergedAttributeTooltips = false;
+
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.empty_milk"));
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.fill_milk"));
     public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, ResourceLocation.withDefaultNamespace("milk"));
@@ -494,6 +503,13 @@ public class NeoForgeMod {
     }
 
     /**
+     * Run this during mod construction to enable merged attribute tooltip functionality.
+     */
+    public static void enableMergedAttributeTooltips() {
+        enableMergedAttributeTooltips = true;
+    }
+
+    /**
      * Run this method during mod constructor to enable {@link net.minecraft.FileUtil#RESERVED_WINDOWS_FILENAMES_NEOFORGE} regex being used for filepath validation.
      * Fixes MC-268617 at cost of vanilla incompat edge cases with files generated with this activated and them migrated to vanilla instance - See PR #767
      */
@@ -503,6 +519,10 @@ public class NeoForgeMod {
 
     public static boolean getProperFilenameValidation() {
         return enableProperFilenameValidation;
+    }
+
+    public static boolean shouldMergeAttributeTooltips() {
+        return enableMergedAttributeTooltips;
     }
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
@@ -536,6 +556,7 @@ public class NeoForgeMod {
         VANILLA_FLUID_TYPES.register(modEventBus);
         ENTITY_PREDICATE_CODECS.register(modEventBus);
         ITEM_SUB_PREDICATES.register(modEventBus);
+        SLOT_DISPLAY_TYPES.register(modEventBus);
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
@@ -608,7 +629,7 @@ public class NeoForgeMod {
         gen.addProvider(event.includeServer(), new NeoForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeEnchantmentTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider(packOutput, lookupProvider));
+        gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider.Runner(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new NeoForgeLootTableProvider(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new NeoForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeStructureTagsProvider(packOutput, lookupProvider, existingFileHelper));

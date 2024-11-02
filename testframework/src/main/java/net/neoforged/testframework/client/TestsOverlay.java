@@ -23,6 +23,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -194,7 +195,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
         rendering.add(withXY(x, y, (x$, y$) -> stack.drawString(font, bullet, x$, y$ - 1, colour)));
         x += font.width(bullet) + 1;
 
-        rendering.add(withXY(x, y, (x$, y$) -> stack.blit(ICON_BY_RESULT.get(status.result()), x$, y$, 0, 0, 9, 9, 9, 9)));
+        rendering.add(withXY(x, y, (x$, y$) -> stack.blit(RenderType::guiTextured, ICON_BY_RESULT.get(status.result()), x$, y$, 0, 0, 9, 9, 9, 9)));
         x += 11;
 
         final Component title = statusColoured(test.visuals().title(), status);
@@ -255,6 +256,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
         final var rightEdgeStart = leftEdgeEnd + centreWidth;
         final var topEdgeEnd = y + topHeight;
         final var bottomEdgeStart = topEdgeEnd + centerHeight;
+        pose.flush();
         RenderSystem.setShaderTexture(0, texture);
         ClientUtils.setupAlpha(alpha);
 
@@ -300,7 +302,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
             for (var tileY = 0; tileY < yTiles; tileY++) {
                 final var renderWidth = Math.min(drawWidth, textureDrawWidth);
                 final var renderHeight = Math.min(drawHeight, textureDrawHeight);
-                pose.blit(texture, x + textureDrawWidth * tileX, y + textureDrawHeight * tileY, u, v, renderWidth, renderHeight, textureWidth, textureHeight);
+                pose.blit(RenderType::guiTextured, texture, x + textureDrawWidth * tileX, y + textureDrawHeight * tileY, u, v, renderWidth, renderHeight, textureWidth, textureHeight);
                 // We rendered a tile
                 drawHeight -= textureDrawHeight;
             }

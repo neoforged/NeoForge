@@ -69,6 +69,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
         add(Tags.Blocks.NEEDS_NETHERITE_TOOL, "Needs Netherite Tools");
         add(Tags.Blocks.OBSIDIANS, "Obsidians");
+        add(Tags.Blocks.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Blocks.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
@@ -123,6 +125,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
+        add(Tags.Blocks.STRIPPED_LOGS, "Stripped Logs");
+        add(Tags.Blocks.STRIPPED_WOODS, "Stripped Woods");
         add(Tags.Blocks.VILLAGER_JOB_SITES, "Villager Job Sites");
         add(Tags.Blocks.VILLAGER_FARMLANDS, "Villager Farmlands");
 
@@ -204,6 +208,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");
         add(Tags.Items.FOODS_CANDY, "Candies");
+        add(Tags.Items.FOODS_PIE, "Pies");
         add(Tags.Items.FOODS_COOKED_FISH, "Cooked Fishes");
         add(Tags.Items.FOODS_COOKED_MEAT, "Cooked Meats");
         add(Tags.Items.FOODS_COOKIE, "Cookies");
@@ -247,6 +252,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.NUGGETS_IRON, "Iron Nuggets");
         add(Tags.Items.NUGGETS_GOLD, "Gold Nuggets");
         add(Tags.Items.OBSIDIANS, "Obsidians");
+        add(Tags.Items.OBSIDIANS_NORMAL, "Normal Obsidians");
+        add(Tags.Items.OBSIDIANS_CRYING, "Crying Obsidians");
         add(Tags.Items.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
@@ -317,6 +324,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Items.STRINGS, "Strings");
+        add(Tags.Items.STRIPPED_LOGS, "Stripped Log Blocks");
+        add(Tags.Items.STRIPPED_WOODS, "Stripped Wood Blocks");
         add(Tags.Items.VILLAGER_JOB_SITES, "Villager Job Sites");
         add(Tags.Items.TOOLS_SHEAR, "Shears");
         add(Tags.Items.TOOLS_SHIELD, "Shields");
@@ -340,6 +349,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Fluids.MILK, "Milk");
         add(Tags.Fluids.GASEOUS, "Gaseous");
         add(Tags.Fluids.HONEY, "Honey");
+        add(Tags.Fluids.EXPERIENCE, "Experience");
         add(Tags.Fluids.POTION, "Potion");
         add(Tags.Fluids.SUSPICIOUS_STEW, "Suspicious Stew");
         add(Tags.Fluids.MUSHROOM_STEW, "Mushroom Stew");

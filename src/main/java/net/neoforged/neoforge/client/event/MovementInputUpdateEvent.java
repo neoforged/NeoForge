@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
-import net.minecraft.client.player.Input;
+import net.minecraft.client.player.ClientInput;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
@@ -22,10 +22,10 @@ import org.jetbrains.annotations.ApiStatus;
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class MovementInputUpdateEvent extends PlayerEvent {
-    private final Input input;
+    private final ClientInput input;
 
     @ApiStatus.Internal
-    public MovementInputUpdateEvent(Player player, Input input) {
+    public MovementInputUpdateEvent(Player player, ClientInput input) {
         super(player);
         this.input = input;
     }
@@ -33,7 +33,7 @@ public class MovementInputUpdateEvent extends PlayerEvent {
     /**
      * {@return the player's movement inputs}
      */
-    public Input getInput() {
+    public ClientInput getInput() {
         return input;
     }
 }

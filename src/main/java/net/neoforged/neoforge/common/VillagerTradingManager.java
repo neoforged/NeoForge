@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -35,20 +36,20 @@ public class VillagerTradingManager {
 
     static void loadTrades(TagsUpdatedEvent e) {
         if (e.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
-            postWandererEvent();
-            postVillagerEvents();
+            postWandererEvent(e.getLookupProvider());
+            postVillagerEvents(e.getLookupProvider());
         }
     }
 
     /**
      * Posts the WandererTradesEvent.
      */
-    private static void postWandererEvent() {
+    private static void postWandererEvent(HolderLookup.Provider registries) {
         List<ItemListing> generic = NonNullList.create();
         List<ItemListing> rare = NonNullList.create();
         Arrays.stream(WANDERER_TRADES.get(1)).forEach(generic::add);
         Arrays.stream(WANDERER_TRADES.get(2)).forEach(rare::add);
-        NeoForge.EVENT_BUS.post(new WandererTradesEvent(generic, rare));
+        NeoForge.EVENT_BUS.post(new WandererTradesEvent(generic, rare, registries));
         VillagerTrades.WANDERING_TRADER_TRADES.put(1, generic.toArray(new ItemListing[0]));
         VillagerTrades.WANDERING_TRADER_TRADES.put(2, rare.toArray(new ItemListing[0]));
     }
@@ -56,7 +57,7 @@ public class VillagerTradingManager {
     /**
      * Posts a VillagerTradesEvent for each registered profession.
      */
-    private static void postVillagerEvents() {
+    private static void postVillagerEvents(HolderLookup.Provider registries) {
         for (VillagerProfession prof : BuiltInRegistries.VILLAGER_PROFESSION) {
             Int2ObjectMap<ItemListing[]> trades = VANILLA_TRADES.getOrDefault(prof, new Int2ObjectOpenHashMap<>());
             Int2ObjectMap<List<ItemListing>> mutableTrades = new Int2ObjectOpenHashMap<>();
@@ -66,7 +67,7 @@ public class VillagerTradingManager {
             trades.int2ObjectEntrySet().forEach(e -> {
                 Arrays.stream(e.getValue()).forEach(mutableTrades.get(e.getIntKey())::add);
             });
-            NeoForge.EVENT_BUS.post(new VillagerTradesEvent(mutableTrades, prof));
+            NeoForge.EVENT_BUS.post(new VillagerTradesEvent(mutableTrades, prof, registries));
             Int2ObjectMap<ItemListing[]> newTrades = new Int2ObjectOpenHashMap<>();
             mutableTrades.int2ObjectEntrySet().forEach(e -> newTrades.put(e.getIntKey(), e.getValue().toArray(new ItemListing[0])));
             VillagerTrades.TRADES.put(prof, newTrades);

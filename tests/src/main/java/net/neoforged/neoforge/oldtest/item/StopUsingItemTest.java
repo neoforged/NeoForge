@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.oldtest.item;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.api.distmarker.Dist;
@@ -57,7 +57,7 @@ public class StopUsingItemTest {
     }
 
     /** Attempt at a "reverse scope" that also makes you fly without using the Forge method. Will not remove the speed if you scroll away or swap items */
-    public static DeferredItem<Item> BAD = ITEMS.register("bad_scope", () -> new InvertedTelescope(new Item.Properties()) {
+    public static DeferredItem<Item> BAD = ITEMS.registerItem("bad_scope", props -> new InvertedTelescope(props) {
         @Override
         public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity living) {
             removeFov(living);
@@ -65,13 +65,14 @@ public class StopUsingItemTest {
         }
 
         @Override
-        public void releaseUsing(ItemStack stack, Level level, LivingEntity living, int count) {
+        public boolean releaseUsing(ItemStack stack, Level level, LivingEntity living, int count) {
             removeFov(living);
+            return true;
         }
     });
 
     /** Successful "scope item" using the Forge method, all cases of stopping using the item will stop the FOV change */
-    public static DeferredItem<Item> GOOD = ITEMS.register("good_scope", () -> new InvertedTelescope(new Item.Properties()) {
+    public static DeferredItem<Item> GOOD = ITEMS.registerItem("good_scope", props -> new InvertedTelescope(props) {
         @Override
         public void onStopUsing(ItemStack stack, LivingEntity living, int count) {
             removeFov(living);
@@ -101,17 +102,17 @@ public class StopUsingItemTest {
         }
 
         @Override
-        public UseAnim getUseAnimation(ItemStack stack) {
-            return UseAnim.EAT;
+        public ItemUseAnimation getUseAnimation(ItemStack stack) {
+            return ItemUseAnimation.EAT;
         }
 
         @Override
-        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
             player.startUsingItem(hand);
             player.getAbilities().mayfly = true;
             if (player.level().isClientSide)
                 fovChange = 10f;
-            return InteractionResultHolder.consume(player.getItemInHand(hand));
+            return InteractionResult.CONSUME;
         }
 
         public static void removeFov(LivingEntity living) {

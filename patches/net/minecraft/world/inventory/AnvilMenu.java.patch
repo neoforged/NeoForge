@@ -6,11 +6,11 @@
  
 +        float breakChance = net.neoforged.neoforge.common.CommonHooks.onAnvilRepair(p_150474_, p_150475_, AnvilMenu.this.inputSlots.getItem(0), AnvilMenu.this.inputSlots.getItem(1));
 +
-         this.inputSlots.setItem(0, ItemStack.EMPTY);
          if (this.repairItemCountCost > 0) {
              ItemStack itemstack = this.inputSlots.getItem(1);
+             if (!itemstack.isEmpty() && itemstack.getCount() > this.repairItemCountCost) {
 @@ -95,7 +_,7 @@
-         this.cost.set(0);
+         this.inputSlots.setItem(0, ItemStack.EMPTY);
          this.access.execute((p_150479_, p_150480_) -> {
              BlockState blockstate = p_150479_.getBlockState(p_150480_);
 -            if (!p_150474_.hasInfiniteMaterials() && blockstate.is(BlockTags.ANVIL) && p_150474_.getRandom().nextFloat() < 0.12F) {
@@ -18,7 +18,7 @@
                  BlockState blockstate1 = AnvilBlock.damage(blockstate);
                  if (blockstate1 == null) {
                      p_150479_.removeBlock(p_150480_, false);
-@@ -124,8 +_,10 @@
+@@ -125,8 +_,10 @@
              j += (long)itemstack.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0)).intValue()
                  + (long)itemstack2.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0)).intValue();
              this.repairItemCountCost = 0;
@@ -27,10 +27,10 @@
              if (!itemstack2.isEmpty()) {
 -                boolean flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);
 +                flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);
-                 if (itemstack1.isDamageableItem() && itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
+                 if (itemstack1.isDamageableItem() && itemstack.isValidRepairItem(itemstack2)) {
                      int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
                      if (l2 <= 0) {
-@@ -176,8 +_,10 @@
+@@ -177,8 +_,10 @@
                          int j2 = entry.getIntValue();
                          j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
                          Enchantment enchantment = holder.value();
@@ -43,15 +43,15 @@
                              flag1 = true;
                          }
  
-@@ -228,6 +_,7 @@
+@@ -229,6 +_,7 @@
                  i += k;
                  itemstack1.remove(DataComponents.CUSTOM_NAME);
              }
 +            if (flag && !itemstack1.isBookEnchantable(itemstack2)) itemstack1 = ItemStack.EMPTY;
  
-             int k2 = (int)Mth.clamp(j + (long)i, 0L, 2147483647L);
+             int k2 = i <= 0 ? 0 : (int)Mth.clamp(j + (long)i, 0L, 2147483647L);
              this.cost.set(k2);
-@@ -297,5 +_,12 @@
+@@ -302,5 +_,12 @@
  
      public int getCost() {
          return this.cost.get();

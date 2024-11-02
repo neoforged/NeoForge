@@ -95,13 +95,13 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
 
     @Override
     public int getId(ResourceKey<T> key) {
-        T value = this.get(key);
+        T value = this.getValue(key);
         return value == null ? -1 : this.getId(value);
     }
 
     @Override
     public int getId(ResourceLocation name) {
-        T value = this.get(name);
+        T value = this.getValue(name);
         return value == null ? -1 : this.getId(value);
     }
 
@@ -118,7 +118,7 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
      */
     protected abstract void registerIdMapping(ResourceKey<T> key, int id);
 
-    protected abstract void unfreeze();
+    protected abstract void unfreeze(boolean clearTags);
 
     @Override
     public <A> @Nullable A getData(DataMapType<T, A> type, ResourceKey<T> key) {

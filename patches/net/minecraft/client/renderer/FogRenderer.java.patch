@@ -1,23 +1,23 @@
 --- a/net/minecraft/client/renderer/FogRenderer.java
 +++ b/net/minecraft/client/renderer/FogRenderer.java
-@@ -197,6 +_,12 @@
-             fogBlue = fogBlue * (1.0F - f7) + fogBlue * f9 * f7;
+@@ -196,7 +_,7 @@
+             f2 = f2 * (1.0F - f10) + f2 * f12 * f10;
          }
  
-+        Vector3f fogColor = net.neoforged.neoforge.client.ClientHooks.getFogColor(p_109019_, p_109020_, p_109021_, p_109022_, p_109023_, fogRed, fogGreen, fogBlue);
-+
-+        fogRed = fogColor.x();
-+        fogGreen = fogColor.y();
-+        fogBlue = fogColor.z();
-+
-         RenderSystem.clearColor(fogRed, fogGreen, fogBlue, 0.0F);
+-        return new Vector4f(f, f1, f2, 1.0F);
++        return net.neoforged.neoforge.client.ClientHooks.getFogColor(p_363451_, p_364931_, p_363033_, p_363851_, p_363957_, f, f1, f2);
      }
  
-@@ -273,6 +_,7 @@
-         RenderSystem.setShaderFogStart(fogrenderer$fogdata.start);
-         RenderSystem.setShaderFogEnd(fogrenderer$fogdata.end);
-         RenderSystem.setShaderFogShape(fogrenderer$fogdata.shape);
-+        net.neoforged.neoforge.client.ClientHooks.onFogRender(p_234174_, fogtype, p_234173_, p_234177_, p_234175_, fogrenderer$fogdata.start, fogrenderer$fogdata.end, fogrenderer$fogdata.shape);
+     public static boolean toggleFog() {
+@@ -274,9 +_,9 @@
+                 fogrenderer$fogdata.shape = FogShape.CYLINDER;
+             }
+ 
+-            return new FogParameters(
++            return net.neoforged.neoforge.client.ClientHooks.onFogRender(p_234174_, fogtype, p_234173_, p_234177_, p_234175_, new FogParameters(
+                 fogrenderer$fogdata.start, fogrenderer$fogdata.end, fogrenderer$fogdata.shape, p_365467_.x, p_365467_.y, p_365467_.z, p_365467_.w
+-            );
++            ));
+         }
      }
  
-     public static void levelFogColor() {

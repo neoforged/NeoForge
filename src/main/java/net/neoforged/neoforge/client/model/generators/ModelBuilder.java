@@ -395,6 +395,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         private final Map<Direction, FaceBuilder> faces = new LinkedHashMap<>();
         private RotationBuilder rotation;
         private boolean shade = true;
+        private int lightEmission = 0;
         private int color = 0xFFFFFFFF;
         private int blockLight = 0, skyLight = 0;
         private boolean hasAmbientOcclusion = true;
@@ -559,6 +560,19 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         }
 
         /**
+         * Set the light emission of the element (0-15)
+         * <p>
+         * If block and sky light values should be different, use {@link #emissivity(int, int)} instead
+         *
+         * @param lightEmission the light value
+         * @return this builder
+         */
+        public ElementBuilder lightEmission(int lightEmission) {
+            this.lightEmission = lightEmission;
+            return this;
+        }
+
+        /**
          * Sets the color of the element.
          *
          * @param color the color in ARGB format.
@@ -589,7 +603,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
                         throw new IllegalArgumentException();
                     }, LinkedHashMap::new));
-            return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
+            return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
         }
 
         public T end() {

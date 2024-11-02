@@ -8,6 +8,7 @@ plugins {
 
 def neoforgeProject = project(':neoforge')
 def testframeworkProject = project(':testframework')
+def coremodsProject = project(':neoforge-coremods')
 
 repositories {
     mavenLocal()
@@ -99,6 +100,7 @@ runs.configureEach {
     dependsOn.add(neoforgeProject.runtime.assets)
     dependsOn.add(neoforgeProject.runtime.natives)
     modSource neoforgeProject.sourceSets.main
+    modSource coremodsProject.sourceSets.main
     modSource testframeworkProject.sourceSets.main
 }
 

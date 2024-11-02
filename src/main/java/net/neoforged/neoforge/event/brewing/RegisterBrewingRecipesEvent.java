@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.brewing;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,13 +17,19 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class RegisterBrewingRecipesEvent extends Event {
     private final PotionBrewing.Builder builder;
+    private final RegistryAccess registryAccess;
 
     @ApiStatus.Internal
-    public RegisterBrewingRecipesEvent(PotionBrewing.Builder builder) {
+    public RegisterBrewingRecipesEvent(PotionBrewing.Builder builder, RegistryAccess registryAccess) {
         this.builder = builder;
+        this.registryAccess = registryAccess;
     }
 
     public PotionBrewing.Builder getBuilder() {
         return builder;
+    }
+
+    public RegistryAccess getRegistryAccess() {
+        return registryAccess;
     }
 }

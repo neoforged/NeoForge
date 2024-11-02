@@ -1,14 +1,25 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -268,6 +_,7 @@
-     );
-     public static final BlockEntityType<VaultBlockEntity> VAULT = register("vault", BlockEntityType.Builder.of(VaultBlockEntity::new, Blocks.VAULT));
+@@ -229,6 +_,7 @@
+     public static final BlockEntityType<TrialSpawnerBlockEntity> TRIAL_SPAWNER = register("trial_spawner", TrialSpawnerBlockEntity::new, Blocks.TRIAL_SPAWNER);
+     public static final BlockEntityType<VaultBlockEntity> VAULT = register("vault", VaultBlockEntity::new, Blocks.VAULT);
      private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
 +    // Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
      private final Set<Block> validBlocks;
-     private final Type<?> dataType;
      private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
-@@ -295,6 +_,13 @@
+ 
+@@ -253,9 +_,24 @@
+         this.validBlocks = p_155260_;
+     }
+ 
++    // Neo: Additional constructor for convenience.
++    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Block... p_155260_) {
++        this(p_155259_, Set.of(p_155260_));
++        if (p_155260_.length == 0) {
++            throw new IllegalArgumentException("Block entity type instantiated without valid blocks. If this is intentional, pass Set.of() instead of an empty varag.");
++        }
++    }
++
      @Nullable
      public T create(BlockPos p_155265_, BlockState p_155266_) {
          return (T)this.factory.create(p_155265_, p_155266_);

@@ -21,19 +21,20 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ItemModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -65,7 +66,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> overrides) {
         Material particleLocation = context.getMaterial("particle");
         TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
 
@@ -79,7 +80,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             if (!context.isComponentVisible(name, true))
                 continue;
             var model = entry.getValue();
-            bakedPartsBuilder.put(name, model.bake(baker, model, spriteGetter, modelState, true));
+            bakedPartsBuilder.put(name, model.bake(baker, spriteGetter, modelState));
         }
         var bakedParts = bakedPartsBuilder.build();
 
@@ -91,12 +92,16 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             itemPassesBuilder.add(model);
         }
 
-        return new Baked(context.isGui3d(), context.useBlockLight(), context.useAmbientOcclusion(), particle, context.getTransforms(), overrides, bakedParts, itemPassesBuilder.build());
+        BakedModel baked = new Baked(context.isGui3d(), context.useBlockLight(), context.useAmbientOcclusion(), particle, context.getTransforms(), bakedParts, itemPassesBuilder.build());
+        if (!overrides.isEmpty()) {
+            baked = new ItemModel.BakedModelWithOverrides(baked, new BakedOverrides(baker, overrides, spriteGetter));
+        }
+        return baked;
     }
 
     @Override
-    public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
-        children.values().forEach(child -> child.resolveParents(modelGetter));
+    public void resolveDependencies(UnbakedModel.Resolver modelGetter, IGeometryBakingContext context) {
+        children.values().forEach(child -> child.resolveDependencies(modelGetter));
     }
 
     @Override
@@ -109,18 +114,16 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
         private final boolean isGui3d;
         private final boolean isSideLit;
         private final TextureAtlasSprite particle;
-        private final ItemOverrides overrides;
         private final ItemTransforms transforms;
         private final ImmutableMap<String, BakedModel> children;
         private final ImmutableList<BakedModel> itemPasses;
 
-        public Baked(boolean isGui3d, boolean isSideLit, boolean isAmbientOcclusion, TextureAtlasSprite particle, ItemTransforms transforms, ItemOverrides overrides, ImmutableMap<String, BakedModel> children, ImmutableList<BakedModel> itemPasses) {
+        public Baked(boolean isGui3d, boolean isSideLit, boolean isAmbientOcclusion, TextureAtlasSprite particle, ItemTransforms transforms, ImmutableMap<String, BakedModel> children, ImmutableList<BakedModel> itemPasses) {
             this.children = children;
             this.isAmbientOcclusion = isAmbientOcclusion;
             this.isGui3d = isGui3d;
             this.isSideLit = isSideLit;
             this.particle = particle;
-            this.overrides = overrides;
             this.transforms = transforms;
             this.itemPasses = itemPasses;
         }
@@ -170,11 +173,6 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
         }
 
         @Override
-        public ItemOverrides getOverrides() {
-            return overrides;
-        }
-
-        @Override
         public ItemTransforms getTransforms() {
             return transforms;
         }
@@ -188,7 +186,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
         }
 
         @Override
-        public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
+        public List<BakedModel> getRenderPasses(ItemStack itemStack) {
             return itemPasses;
         }
 
@@ -197,12 +195,12 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             return children.get(name);
         }
 
-        public static Builder builder(IGeometryBakingContext owner, TextureAtlasSprite particle, ItemOverrides overrides, ItemTransforms cameraTransforms) {
-            return builder(owner.useAmbientOcclusion(), owner.isGui3d(), owner.useBlockLight(), particle, overrides, cameraTransforms);
+        public static Builder builder(IGeometryBakingContext owner, TextureAtlasSprite particle, ItemTransforms cameraTransforms) {
+            return builder(owner.useAmbientOcclusion(), owner.isGui3d(), owner.useBlockLight(), particle, cameraTransforms);
         }
 
-        public static Builder builder(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, ItemOverrides overrides, ItemTransforms cameraTransforms) {
-            return new Builder(isAmbientOcclusion, isGui3d, isSideLit, particle, overrides, cameraTransforms);
+        public static Builder builder(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, ItemTransforms cameraTransforms) {
+            return new Builder(isAmbientOcclusion, isGui3d, isSideLit, particle, cameraTransforms);
         }
 
         public static class Builder {
@@ -211,17 +209,15 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             private final boolean isSideLit;
             private final List<BakedModel> children = new ArrayList<>();
             private final List<BakedQuad> quads = new ArrayList<>();
-            private final ItemOverrides overrides;
             private final ItemTransforms transforms;
             private TextureAtlasSprite particle;
             private RenderTypeGroup lastRenderTypes = RenderTypeGroup.EMPTY;
 
-            private Builder(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, ItemOverrides overrides, ItemTransforms transforms) {
+            private Builder(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, ItemTransforms transforms) {
                 this.isAmbientOcclusion = isAmbientOcclusion;
                 this.isGui3d = isGui3d;
                 this.isSideLit = isSideLit;
                 this.particle = particle;
-                this.overrides = overrides;
                 this.transforms = transforms;
             }
 
@@ -231,14 +227,14 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             }
 
             private void addLayer(RenderTypeGroup renderTypes, List<BakedQuad> quads) {
-                var modelBuilder = IModelBuilder.of(isAmbientOcclusion, isSideLit, isGui3d, transforms, overrides, particle, renderTypes);
+                var modelBuilder = IModelBuilder.of(isAmbientOcclusion, isSideLit, isGui3d, transforms, particle, renderTypes);
                 quads.forEach(modelBuilder::addUnculledFace);
                 children.add(modelBuilder.build());
             }
 
-            private void flushQuads(RenderTypeGroup renderTypes) {
+            private void flushQuads(@Nullable RenderTypeGroup renderTypes) {
                 if (!Objects.equals(renderTypes, lastRenderTypes)) {
-                    if (quads.size() > 0) {
+                    if (!quads.isEmpty()) {
                         addLayer(lastRenderTypes, quads);
                         quads.clear();
                     }
@@ -264,7 +260,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             }
 
             public BakedModel build() {
-                if (quads.size() > 0) {
+                if (!quads.isEmpty()) {
                     addLayer(lastRenderTypes, quads);
                 }
                 var childrenBuilder = ImmutableMap.<String, BakedModel>builder();
@@ -274,7 +270,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
                     childrenBuilder.put("model_" + (i++), model);
                     itemPassesBuilder.add(model);
                 }
-                return new Baked(isGui3d, isSideLit, isAmbientOcclusion, particle, transforms, overrides, childrenBuilder.build(), itemPassesBuilder.build());
+                return new Baked(isGui3d, isSideLit, isAmbientOcclusion, particle, transforms, childrenBuilder.build(), itemPassesBuilder.build());
             }
         }
     }
