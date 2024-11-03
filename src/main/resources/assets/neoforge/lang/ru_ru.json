@@ -36,7 +36,7 @@
   "fml.menu.multiplayer.modsincompatible": "Список модов сервера несовместим",
   "fml.menu.multiplayer.networkincompatible": "Список сетевых сообщений сервера несовместим",
   "fml.menu.multiplayer.missingdatapackregistries": "Отсутствуют необходимые регистры наборов данных: %1$s",
-  "fml.menu.loadingmods": "{0,choice,0#No mods|1#1 mod|1<%s mods} loaded",
+  "fml.menu.loadingmods": "{0,choice,0#Ни один мод не загружен|1#Загружен 1 мод|Загружено 1<%s<5 мода|Загружено 4<%s модов}",
   "fml.menu.notification.title": "Уведомление при запуске игры",
   "fml.menu.accessdenied.title": "Отказано в доступе к серверу",
   "fml.menu.accessdenied.message": "Fancy Mod Loader could not connect to this server\nThe server %1$s has forbidden modded access",
