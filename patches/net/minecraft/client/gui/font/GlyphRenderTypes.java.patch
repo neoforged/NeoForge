@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/font/GlyphRenderTypes.java
 +++ b/net/minecraft/client/gui/font/GlyphRenderTypes.java
-@@ -7,22 +_,39 @@
+@@ -7,22 +_,42 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -34,6 +34,9 @@
 +        return this.select(p_285259_, false);
 +    }
 +
++    /**
++     * Neo: returns the {@link RenderType} to use for the given {@link Font.DisplayMode} and blur setting
++     */
 +    public RenderType select(Font.DisplayMode p_285259_, boolean blur) {
          return switch (p_285259_) {
 -            case NORMAL -> this.normal;
