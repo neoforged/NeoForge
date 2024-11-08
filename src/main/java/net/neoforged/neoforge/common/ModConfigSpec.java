@@ -363,7 +363,8 @@ public class ModConfigSpec implements IConfigSpec {
         public <V extends Comparable<? super V>> ConfigValue<V> defineInRange(List<String> path, Supplier<V> defaultSupplier, V min, V max, Class<V> clazz) {
             Range<V> range = new Range<>(clazz, min, max);
             context.setRange(range);
-            comment("Range: " + range.toString());
+            comment(" Default: " + defaultSupplier.get());
+            comment(" Range: " + range);
             return define(path, defaultSupplier, range);
         }
 

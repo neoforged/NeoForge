@@ -9,6 +9,23 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
+@@ -65,6 +_,16 @@
+         this.particleFactory = p_333515_ -> p_333716_;
+     }
+ 
++    /**
++     * Neo: Constructor that can take in the particle factory as a function of the {@link MobEffectInstance}.
++     * This should be used if the desired {@link ParticleOptions} depends on the presence of other registry entries.
++     */
++    protected MobEffect(MobEffectCategory category, int color, Function<MobEffectInstance, ParticleOptions> particleFactory) {
++        this.category = category;
++        this.color = color;
++        this.particleFactory = particleFactory;
++    }
++
+     public int getBlendDurationTicks() {
+         return this.blendDurationTicks;
+     }
 @@ -133,6 +_,18 @@
          return this;
      }

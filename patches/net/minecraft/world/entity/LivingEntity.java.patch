@@ -512,15 +512,6 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2184,7 +_,7 @@
-     public void travel(Vec3 p_21280_) {
-         if (this.isControlledByLocalInstance()) {
-             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
--            if ((this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-+            if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-                 this.travelInFluid(p_21280_);
-             } else if (this.isFallFlying()) {
-                 this.travelFallFlying();
 @@ -2196,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {
