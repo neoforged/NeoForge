@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.event.level;
 
+import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerExplosion;
@@ -21,19 +23,20 @@ import net.neoforged.neoforge.common.NeoForge;
  */
 public class ExplosionKnockbackEvent extends ExplosionEvent {
     private final Entity entity;
+    private final List<BlockPos> blockList;
     private Vec3 knockbackVelocity;
 
-    public ExplosionKnockbackEvent(Level level, ServerExplosion explosion, Entity entity, Vec3 knockbackVelocity) {
+    public ExplosionKnockbackEvent(Level level, ServerExplosion explosion, Entity entity, Vec3 knockbackVelocity, List<BlockPos> blockList) {
         super(level, explosion);
         this.entity = entity;
+        this.blockList = blockList;
         this.knockbackVelocity = knockbackVelocity;
     }
 
     /** return the list of blocks affected by the explosion. */
-    // FIXME porting: explosions changed a bit
-    /*public List<BlockPos> getAffectedBlocks() {
-        return getExplosion().getToBlow();
-    }*/
+    public List<BlockPos> getAffectedBlocks() {
+        return this.blockList;
+    }
 
     /** return the entity affected by the explosion knockback. */
     public Entity getAffectedEntity() {

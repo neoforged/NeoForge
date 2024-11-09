@@ -1,12 +1,25 @@
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
+@@ -165,7 +_,12 @@
+         return new ObjectArrayList<>(set);
+     }
+ 
++    @Deprecated
+     private void hurtEntities() {
++        this.hurtEntities(List.of());
++    }
++
++    private void hurtEntities(List<BlockPos> blocks) {
+         float f = this.radius * 2.0F;
+         int i = Mth.floor(this.center.x - (double)f - 1.0);
+         int j = Mth.floor(this.center.x + (double)f + 1.0);
 @@ -174,7 +_,9 @@
          int i1 = Mth.floor(this.center.z - (double)f - 1.0);
          int j1 = Mth.floor(this.center.z + (double)f + 1.0);
  
 -        for (Entity entity : this.level.getEntities(this.source, new AABB((double)i, (double)k, (double)i1, (double)j, (double)l, (double)j1))) {
 +        List<Entity> list = this.level.getEntities(this.source, new AABB((double)i, (double)k, (double)i1, (double)j, (double)l, (double)j1));
-+        net.neoforged.neoforge.event.EventHooks.onExplosionDetonate(this.level, this, list, f);
++        net.neoforged.neoforge.event.EventHooks.onExplosionDetonate(this.level, this, list, blocks);
 +        for (Entity entity : list) {
              if (!entity.ignoreExplosion(this)) {
                  double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / (double)f;
@@ -15,7 +28,16 @@
                          d2 *= d6;
                          d3 *= d6;
                          Vec3 vec3 = new Vec3(d1, d2, d3);
-+                        vec3 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec3);
++                        vec3 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec3, blocks);
                          entity.setDeltaMovement(entity.getDeltaMovement().add(vec3));
                          if (entity instanceof Player) {
                              Player player = (Player)entity;
+@@ -246,7 +_,7 @@
+     public void explode() {
+         this.level.gameEvent(this.source, GameEvent.EXPLODE, this.center);
+         List<BlockPos> list = this.calculateExplodedPositions();
+-        this.hurtEntities();
++        this.hurtEntities(list);
+         if (this.interactsWithBlocks()) {
+             ProfilerFiller profilerfiller = Profiler.get();
+             profilerfiller.push("explosion_blocks");
