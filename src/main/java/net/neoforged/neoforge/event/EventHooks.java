@@ -588,7 +588,7 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new ExplosionEvent.Start(level, explosion)).isCanceled();
     }
 
-    public static void onExplosionDetonate(Level level, ServerExplosion explosion, List<Entity> list, double diameter) {
+    public static void onExplosionDetonate(Level level, ServerExplosion explosion, List<Entity> entities, List<BlockPos> blocks) {
         //Filter entities to only those who are effected, to prevent modders from seeing more then will be hurt.
         /* Enable this if we get issues with modders looping to much.
         Iterator<Entity> itr = list.iterator();
@@ -600,7 +600,7 @@ public class EventHooks {
             if (e.isImmuneToExplosions() || dist > 1.0F) itr.remove();
         }
         */
-        NeoForge.EVENT_BUS.post(new ExplosionEvent.Detonate(level, explosion, list));
+        NeoForge.EVENT_BUS.post(new ExplosionEvent.Detonate(level, explosion, entities, blocks));
     }
 
     /**
@@ -613,8 +613,8 @@ public class EventHooks {
      * @param initialVelocity The explosion calculated velocity for the entity
      * @return The new explosion velocity to add to the entity's existing velocity
      */
-    public static Vec3 getExplosionKnockback(Level level, ServerExplosion explosion, Entity entity, Vec3 initialVelocity) {
-        ExplosionKnockbackEvent event = new ExplosionKnockbackEvent(level, explosion, entity, initialVelocity);
+    public static Vec3 getExplosionKnockback(Level level, ServerExplosion explosion, Entity entity, Vec3 initialVelocity, List<BlockPos> blocks) {
+        ExplosionKnockbackEvent event = new ExplosionKnockbackEvent(level, explosion, entity, initialVelocity, blocks);
         NeoForge.EVENT_BUS.post(event);
         return event.getKnockbackVelocity();
     }
