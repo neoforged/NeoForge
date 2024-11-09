@@ -17,6 +17,8 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -33,7 +35,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
@@ -193,5 +197,11 @@ public class ItemTests {
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth()))
                 .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 1, 1))
                 .thenSucceed());
+    }
+
+    @TestHolder(description = "Adds a stone-pickaxe-like item that cannot mine bamboo blocks and is repaired with beds. Tests that registries can correctly handle named holder set references.")
+    static void toolItem(final DynamicTest test, final RegistrationHelper reg) {
+        var material = new ToolMaterial(BlockTags.BAMBOO_BLOCKS, 160, 5.0F, 0.5F, 10, ItemTags.BEDS);
+        reg.items().registerItem("neo_pickaxe", properties -> new PickaxeItem(material, 1.0F, -2.8F, properties));
     }
 }
