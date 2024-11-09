@@ -1,8 +1,8 @@
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
-@@ -270,6 +_,14 @@
+@@ -278,6 +_,14 @@
          float p_139023_,
-         @Nullable TeleportCommand.LookAt p_139024_
+         @Nullable LookAt p_380216_
      ) throws CommandSyntaxException {
 +        net.neoforged.neoforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportCommand(p_139016_, p_139018_, p_139019_, p_139020_);
 +        if (event.isCanceled()) {

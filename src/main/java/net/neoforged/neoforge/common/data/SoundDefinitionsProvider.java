@@ -145,7 +145,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * @param definition The {@link SoundDefinition} that defines the given event.
      */
     protected void add(final SoundEvent soundEvent, final SoundDefinition definition) {
-        this.add(soundEvent.getLocation(), definition);
+        this.add(soundEvent.location(), definition);
     }
 
     /**

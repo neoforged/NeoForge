@@ -17,9 +17,10 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,15 +29,18 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -61,11 +65,11 @@ public class ItemTests {
             "Tests if custom mob buckets work"
     })
     static void customMobBucket(final DynamicTest test, final RegistrationHelper reg) {
-        final var cowBucket = reg.items().register("cow_bucket", () -> new MobBucketItem(
+        final var cowBucket = reg.items().registerItem("cow_bucket", props -> new MobBucketItem(
                 EntityType.COW,
                 Fluids.WATER,
                 SoundEvents.BUCKET_EMPTY_FISH,
-                (new Item.Properties()).stacksTo(1)))
+                props.stacksTo(1)))
                 .withLang("Cow bucket");
         test.framework().modEventBus().addListener((final FMLCommonSetupEvent event) -> {
             DispenserBlock.registerBehavior(cowBucket, new DefaultDispenseItemBehavior() {
@@ -113,7 +117,7 @@ public class ItemTests {
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().register("test_spawn_egg", () -> new DeferredSpawnEggItem(testEntity, 0x0000FF, 0xFF0000, new Item.Properties()) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new DeferredSpawnEggItem(testEntity, 0x0000FF, 0xFF0000, props) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);
@@ -124,9 +128,9 @@ public class ItemTests {
             }
 
             @Override
-            public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+            public InteractionResult use(Level level, Player player, InteractionHand hand) {
                 final var sup = super.use(level, player, hand);
-                if (sup.getResult().consumesAction()) {
+                if (sup.consumesAction()) {
                     test.pass();
                 }
                 return sup;
@@ -176,22 +180,28 @@ public class ItemTests {
                 .fill(0, 0, 0, 2, 0, 2, Blocks.IRON_BLOCK)
                 .fill(0, 1, 0, 2, 1, 2, Blocks.POWDER_SNOW));
 
-        final var snowBoots = reg.items().register("snow_boots", () -> new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, (new Item.Properties())) {
+        final var snowBoots = reg.items().registerItem("snow_boots", props -> new ArmorItem(ArmorMaterials.DIAMOND, ArmorType.BOOTS, props) {
             @Override
             public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
                 return wearer.getHealth() < wearer.getMaxHealth() / 2;
             }
         }).withLang("Snow Boots").tab(CreativeModeTabs.TOOLS_AND_UTILITIES);
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 1, 3, 1))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 1, 2, 1))
                 .thenExecute(pig -> pig.setItemSlot(EquipmentSlot.FEET, snowBoots.get().getDefaultInstance()))
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth() / 2 - 1))
                 // Pig shouldn't have fallen
-                .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityType.PIG, 1, 3, 1))
+                .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityType.PIG, 1, 2, 1))
 
                 // Back to max health so falling time
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth()))
-                .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 2, 1))
+                .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 1, 1))
                 .thenSucceed());
+    }
+
+    @TestHolder(description = "Adds a stone-pickaxe-like item that cannot mine bamboo blocks and is repaired with beds. Tests that registries can correctly handle named holder set references.")
+    static void toolItem(final DynamicTest test, final RegistrationHelper reg) {
+        var material = new ToolMaterial(BlockTags.BAMBOO_BLOCKS, 160, 5.0F, 0.5F, 10, ItemTags.BEDS);
+        reg.items().registerItem("neo_pickaxe", properties -> new PickaxeItem(material, 1.0F, -2.8F, properties));
     }
 }

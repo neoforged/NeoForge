@@ -41,6 +41,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     private Direction direction = Direction.DOWN;
     private TextureAtlasSprite sprite = UnitTextureAtlasSprite.INSTANCE;
     private boolean shade;
+    private int lightEmission;
     private boolean hasAmbientOcclusion;
 
     @Override
@@ -128,6 +129,10 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.shade = shade;
     }
 
+    public void setLightEmission(int lightEmission) {
+        this.lightEmission = lightEmission;
+    }
+
     public void setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
         this.hasAmbientOcclusion = hasAmbientOcclusion;
     }
@@ -137,7 +142,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
             throw new IllegalStateException("Not enough vertices available. Vertices in buffer: " + vertexIndex);
         }
 
-        BakedQuad quad = new BakedQuad(quadData.clone(), tintIndex, direction, sprite, shade, hasAmbientOcclusion);
+        BakedQuad quad = new BakedQuad(quadData.clone(), tintIndex, direction, sprite, shade, lightEmission, hasAmbientOcclusion);
         vertexIndex = 0;
         building = false;
         Arrays.fill(quadData, 0);

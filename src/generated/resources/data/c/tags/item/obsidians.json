@@ -1,6 +1,7 @@
 {
   "values": [
-    "minecraft:obsidian",
+    "#c:obsidians/normal",
+    "#c:obsidians/crying",
     {
       "id": "#forge:obsidian",
       "required": false

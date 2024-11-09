@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -35,7 +_,7 @@
+@@ -36,7 +_,7 @@
  import net.minecraft.world.flag.FeatureFlagSet;
  import net.minecraft.world.flag.FeatureFlags;
  
@@ -9,18 +9,57 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
-@@ -179,6 +_,14 @@
-     @Override
-     public FeatureFlagSet requiredFeatures() {
-         return this.requiredFeatures;
-+    }
-+
-+    /**
-+     * Neo: Allowing mods to define client behavior for their MobEffects
-+     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
-+     */
-+    @Deprecated(forRemoval = true, since = "1.21")
-+    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
+@@ -65,6 +_,16 @@
+         this.particleFactory = p_333515_ -> p_333716_;
      }
  
-     static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++    /**
++     * Neo: Constructor that can take in the particle factory as a function of the {@link MobEffectInstance}.
++     * This should be used if the desired {@link ParticleOptions} depends on the presence of other registry entries.
++     */
++    protected MobEffect(MobEffectCategory category, int color, Function<MobEffectInstance, ParticleOptions> particleFactory) {
++        this.category = category;
++        this.color = color;
++        this.particleFactory = particleFactory;
++    }
++
+     public int getBlendDurationTicks() {
+         return this.blendDurationTicks;
+     }
+@@ -133,6 +_,18 @@
+         return this;
+     }
+ 
++    /**
++     * Neo: attribute template with custom level curve, for mob effects providing non-linear attribute modifiers.
++     * @param attribute The attribute of the modifier
++     * @param id ID of the modifier
++     * @param operation Operation of the modifier
++     * @param curve A function mapping effect instance amplifier to modifier amount
++     */
++    public MobEffect addAttributeModifier(Holder<Attribute> attribute, ResourceLocation id, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
++        this.attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, curve.apply(0), operation, curve));
++        return this;
++    }
++
+     public MobEffect setBlendDuration(int p_316265_) {
+         this.blendDurationTicks = p_316265_;
+         return this;
+@@ -184,8 +_,16 @@
+         return this.requiredFeatures;
+     }
+ 
+-    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
++
++        public AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++            this(id, amount, operation, null);
++        }
++
+         public AttributeModifier create(int p_316614_) {
++            if (curve != null) { // Neo: Use the custom attribute value curve if one is present
++                return new AttributeModifier(this.id, this.curve.apply(p_316614_), this.operation);
++            }
+             return new AttributeModifier(this.id, this.amount * (double)(p_316614_ + 1), this.operation);
+         }
+     }

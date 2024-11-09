@@ -41,7 +41,7 @@ public class DeferredRegistryTest {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(MODID);
+    private static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final ResourceKey<Registry<Custom>> CUSTOM_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MODID, "test_registry"));
     private static final DeferredRegister<Custom> CUSTOMS = DeferredRegister.create(CUSTOM_REGISTRY_KEY, MODID);
@@ -50,7 +50,7 @@ public class DeferredRegistryTest {
     // Vanilla Registry - filled directly after all RegistryEvent.Register events are fired
     private static final DeferredRegister<PosRuleTestType<?>> POS_RULE_TEST_TYPES = DeferredRegister.create(Registries.POS_RULE_TEST, MODID);
 
-    private static final DeferredBlock<Block> BLOCK = BLOCKS.register("test", () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredBlock<Block> BLOCK = BLOCKS.registerSimpleBlock("test", Block.Properties.of().mapColor(MapColor.STONE));
     private static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> COMPONENT_TYPE = COMPONENTS.registerComponentType("test", builder -> builder.persistent(Codec.INT));
     private static final DeferredItem<BlockItem> ITEM = ITEMS.registerSimpleBlockItem(BLOCK);
     private static final DeferredItem<Item> ITEM_WITH_COMPONENT = ITEMS.registerItem("test_with_component", properties -> new Item(properties.component(COMPONENT_TYPE.get(), 3)));

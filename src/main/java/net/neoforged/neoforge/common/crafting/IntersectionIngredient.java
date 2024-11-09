@@ -10,6 +10,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -19,13 +21,13 @@ public record IntersectionIngredient(List<Ingredient> children) implements ICust
 
     public IntersectionIngredient {
         if (children.isEmpty()) {
-            throw new IllegalArgumentException("Cannot create an IntersectionIngredient with no children, use Ingredient.of() to create an empty ingredient");
+            throw new IllegalArgumentException("Intersection ingredient must have at least one child.");
         }
     }
     public static final MapCodec<IntersectionIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            Ingredient.LIST_CODEC_NONEMPTY.fieldOf("children").forGetter(IntersectionIngredient::children))
+                            Ingredient.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("children").forGetter(IntersectionIngredient::children))
                     .apply(builder, IntersectionIngredient::new));
 
     /**
@@ -35,8 +37,6 @@ public record IntersectionIngredient(List<Ingredient> children) implements ICust
      * @return Ingredient that only matches if all the passed ingredients match
      */
     public static Ingredient of(Ingredient... ingredients) {
-        if (ingredients.length == 0)
-            throw new IllegalArgumentException("Cannot create an IntersectionIngredient with no children, use Ingredient.of() to create an empty ingredient");
         if (ingredients.length == 1)
             return ingredients[0];
 
@@ -54,10 +54,10 @@ public record IntersectionIngredient(List<Ingredient> children) implements ICust
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
+    public Stream<Holder<Item>> items() {
         return children.stream()
-                .flatMap(child -> Arrays.stream(child.getItems()))
-                .filter(this::test);
+                .flatMap(child -> child.items().stream())
+                .filter(i -> test(i.value().getDefaultInstance()));
     }
 
     @Override

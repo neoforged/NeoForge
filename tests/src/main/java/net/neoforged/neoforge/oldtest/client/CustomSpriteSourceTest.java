@@ -47,16 +47,15 @@ public class CustomSpriteSourceTest {
         ITEMS.register(modEventBus);
     }
 
-    private static SpriteSourceType tasLoader;
-
     private void registerTextureAtlasSpriteLoaders(RegisterSpriteSourceTypesEvent event) {
-        tasLoader = event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_sprite_source"), CustomSpriteSource.CODEC);
+        event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_sprite_source"), CustomSpriteSource.TYPE);
     }
 
     private record CustomSpriteSource(ResourceLocation id) implements SpriteSource {
         private static final Logger LOGGER = LogUtils.getLogger();
         private static final MapCodec<CustomSpriteSource> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 ResourceLocation.CODEC.fieldOf("id").forGetter(CustomSpriteSource::id)).apply(inst, CustomSpriteSource::new));
+        private static final SpriteSourceType TYPE = new SpriteSourceType(CustomSpriteSource.CODEC);
 
         @Override
         public void run(ResourceManager manager, Output output) {
@@ -72,7 +71,7 @@ public class CustomSpriteSourceTest {
 
         @Override
         public SpriteSourceType type() {
-            return tasLoader;
+            return TYPE;
         }
 
         static final class CustomSpriteContents extends SpriteContents {

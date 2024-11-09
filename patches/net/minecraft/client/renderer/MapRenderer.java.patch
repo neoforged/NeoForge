@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/renderer/MapRenderer.java
++++ b/net/minecraft/client/renderer/MapRenderer.java
+@@ -42,6 +_,10 @@
+ 
+         for (MapRenderState.MapDecorationRenderState maprenderstate$mapdecorationrenderstate : p_360365_.decorations) {
+             if (!p_362262_ || maprenderstate$mapdecorationrenderstate.renderOnFrame) {
++                if (net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager.render(maprenderstate$mapdecorationrenderstate, p_362483_, p_363581_, p_360365_, MapRenderer.this.decorationTextures, p_362262_, p_364872_, i)) {
++                    i++;
++                    continue;
++                }
+                 p_362483_.pushPose();
+                 p_362483_.translate(
+                     (float)maprenderstate$mapdecorationrenderstate.x / 2.0F + 64.0F, (float)maprenderstate$mapdecorationrenderstate.y / 2.0F + 64.0F, -0.02F
+@@ -116,6 +_,7 @@
+ 
+     private MapRenderState.MapDecorationRenderState extractDecorationRenderState(MapDecoration p_364175_) {
+         MapRenderState.MapDecorationRenderState maprenderstate$mapdecorationrenderstate = new MapRenderState.MapDecorationRenderState();
++        maprenderstate$mapdecorationrenderstate.type = p_364175_.type();
+         maprenderstate$mapdecorationrenderstate.atlasSprite = this.decorationTextures.get(p_364175_);
+         maprenderstate$mapdecorationrenderstate.x = p_364175_.x();
+         maprenderstate$mapdecorationrenderstate.y = p_364175_.y();

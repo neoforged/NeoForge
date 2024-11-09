@@ -10,11 +10,9 @@
     "#minecraft:enchantable/trident",
     "#minecraft:enchantable/bow",
     "#minecraft:enchantable/crossbow",
+    "#minecraft:enchantable/mace",
     "#minecraft:enchantable/fire_aspect",
     "#minecraft:enchantable/durability",
-    {
-      "id": "#minecraft:enchantable/mace",
-      "required": false
-    }
+    "#minecraft:enchantable/vanishing"
   ]
 }

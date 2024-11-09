@@ -73,7 +73,7 @@ public class LevelEventTests {
         });
 
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
-                .thenWaitUntil(player -> helper.boneMealUntilGrown(7, 2, 7, player))
+                .thenWaitUntil(player -> helper.boneMealUntilGrown(7, 1, 7, player))
                 .thenExecute(player -> helper.assertTrue(
                         helper.blocksBetween(0, 0, 0, 16, 1, 16).anyMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK)),
                         "No redstone blocks have been placed!"))

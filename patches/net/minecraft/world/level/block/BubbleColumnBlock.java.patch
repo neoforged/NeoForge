@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BubbleColumnBlock.java
 +++ b/net/minecraft/world/level/block/BubbleColumnBlock.java
-@@ -121,10 +_,12 @@
+@@ -122,10 +_,12 @@
      private static BlockState getColumnState(BlockState p_152718_) {
          if (p_152718_.is(Blocks.BUBBLE_COLUMN)) {
              return p_152718_;
@@ -15,7 +15,7 @@
                  ? Blocks.BUBBLE_COLUMN.defaultBlockState().setValue(DRAG_DOWN, Boolean.valueOf(true))
                  : Blocks.WATER.defaultBlockState();
          }
-@@ -190,7 +_,7 @@
+@@ -200,7 +_,7 @@
      @Override
      protected boolean canSurvive(BlockState p_50986_, LevelReader p_50987_, BlockPos p_50988_) {
          BlockState blockstate = p_50987_.getBlockState(p_50988_.below());

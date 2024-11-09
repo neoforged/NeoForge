@@ -116,6 +116,12 @@ public class Tags {
         public static final TagKey<Block> NETHERRACKS = tag("netherracks");
         public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
+         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         */
+        public static final TagKey<Block> OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final TagKey<Block> OBSIDIANS_CRYING = tag("obsidians/crying");
+        /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */
         public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
@@ -218,6 +224,8 @@ public class Tags {
         public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
+        public static final TagKey<Block> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         /**
@@ -315,11 +323,20 @@ public class Tags {
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
         public static final TagKey<Item> CLUSTERS = tag("clusters");
+        /**
+         * For raw materials harvested from growable plants. Crop items can be edible like carrots or
+         * non-edible like wheat and cocoa beans.
+         */
         public static final TagKey<Item> CROPS = tag("crops");
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
+        public static final TagKey<Item> CROPS_CACTUS = tag("crops/cactus");
         public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
+        public static final TagKey<Item> CROPS_COCOA_BEAN = tag("crops/cocoa_bean");
+        public static final TagKey<Item> CROPS_MELON = tag("crops/melon");
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
+        public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
+        public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
@@ -415,6 +432,10 @@ public class Tags {
          */
         public static final TagKey<Item> FOODS_CANDY = tag("foods/candy");
         /**
+         * Pies and other pie-like foods belong in this tag.
+         */
+        public static final TagKey<Item> FOODS_PIE = tag("foods/pie");
+        /**
          * Any gold-based foods would go in this tag. Such as Golden Apples or Glistering Melon Slice.
          */
         public static final TagKey<Item> FOODS_GOLDEN = tag("foods/golden");
@@ -427,6 +448,11 @@ public class Tags {
          * Examples are Rotten Flesh's Hunger or Pufferfish's Nausea, or Poisonous Potato's Poison.
          */
         public static final TagKey<Item> FOODS_FOOD_POISONING = tag("foods/food_poisoning");
+        /**
+         * All foods edible by animals excluding poisonous foods.
+         * (Does not include {@link ItemTags#PARROT_POISONOUS_FOOD})
+         */
+        public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
@@ -471,6 +497,12 @@ public class Tags {
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");
         public static final TagKey<Item> OBSIDIANS = tag("obsidians");
+        /**
+         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         */
+        public static final TagKey<Item> OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final TagKey<Item> OBSIDIANS_CRYING = tag("obsidians/crying");
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */
@@ -560,6 +592,13 @@ public class Tags {
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
          */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
+        public static final TagKey<Item> SLIME_BALLS = tag("slime_balls");
+        /**
+         * Please use properly named {@link Tags.Items#SLIME_BALLS} tag and field instead
+         * <p></p>
+         * TODO: Remove in 1.21.1
+         */
+        @Deprecated(since = "1.21")
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
@@ -590,6 +629,8 @@ public class Tags {
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
+        public static final TagKey<Item> STRIPPED_LOGS = tag("stripped_logs");
+        public static final TagKey<Item> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         // Tools and Armors
@@ -679,7 +720,8 @@ public class Tags {
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
         /**
          * A tag containing melee-based weapons for recipes and loot tables.
-         * Tools are considered melee if they contain an {@link net.minecraft.world.entity.ai.attributes.Attributes#ATTACK_DAMAGE} attribute.
+         * Tools are considered melee if they are intentionally intended to be used for melee attack as a primary purpose.
+         * (In other words, Pickaxes are not melee weapons as they are not intended to be a weapon as a primary purpose)
          * Do not use this tag for determining a tool's behavior in-code.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
@@ -730,12 +772,12 @@ public class Tags {
      */
     public static class Fluids {
         /**
-         * Holds all fluids related to water.
+         * Holds all fluids related to water.<p>
          * This tag is done to help out multi-loader mods/datapacks where the vanilla water tag has attached behaviors outside Neo.
          */
         public static final TagKey<Fluid> WATER = tag("water");
         /**
-         * Holds all fluids related to lava.
+         * Holds all fluids related to lava.<p>
          * This tag is done to help out multi-loader mods/datapacks where the vanilla lava tag has attached behaviors outside Neo.
          */
         public static final TagKey<Fluid> LAVA = tag("lava");
@@ -748,36 +790,48 @@ public class Tags {
          */
         public static final TagKey<Fluid> GASEOUS = tag("gaseous");
         /**
-         * Holds all fluids related to honey.<br></br>
+         * Holds all fluids related to honey.
+         * <p>
          * (Standard unit for honey bottle is 250mb per bottle)
          */
         public static final TagKey<Fluid> HONEY = tag("honey");
         /**
-         * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
+         * Holds all fluids related to experience.
+         * <p>
+         * (Standard unit for experience is 20mb per 1 experience. However, extraction from Bottle o' Enchanting should yield 250mb while smashing yields less)
+         */
+        public static final TagKey<Fluid> EXPERIENCE = tag("experience");
+        /**
+         * Holds all fluids related to potions. The effects of the potion fluid should be read from DataComponents.
          * The effects and color of the potion fluid should be read from {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}
-         * component that people should be attaching to the fluidstack of this fluid.<br></br>
+         * component that people should be attaching to the fluidstack of this fluid.
+         * <p>
          * (Standard unit for potions is 250mb per bottle)
          */
         public static final TagKey<Fluid> POTION = tag("potion");
         /**
          * Holds all fluids related to Suspicious Stew.
          * The effects of the suspicious stew fluid should be read from {@link net.minecraft.core.component.DataComponents#SUSPICIOUS_STEW_EFFECTS}
-         * component that people should be attaching to the fluidstack of this fluid.<br></br>
+         * component that people should be attaching to the fluidstack of this fluid.
+         * <p>
          * (Standard unit for suspicious stew is 250mb per bowl)
          */
         public static final TagKey<Fluid> SUSPICIOUS_STEW = tag("suspicious_stew");
         /**
-         * Holds all fluids related to Mushroom Stew.<br></br>
+         * Holds all fluids related to Mushroom Stew.
+         * <p>
          * (Standard unit for mushroom stew is 250mb per bowl)
          */
         public static final TagKey<Fluid> MUSHROOM_STEW = tag("mushroom_stew");
         /**
-         * Holds all fluids related to Rabbit Stew.<br></br>
+         * Holds all fluids related to Rabbit Stew.
+         * <p>
          * (Standard unit for rabbit stew is 250mb per bowl)
          */
         public static final TagKey<Fluid> RABBIT_STEW = tag("rabbit_stew");
         /**
-         * Holds all fluids related to Beetroot Soup.<br></br>
+         * Holds all fluids related to Beetroot Soup.
+         * <p>
          * (Standard unit for beetroot soup is 250mb per bowl)
          */
         public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
@@ -1120,16 +1174,11 @@ public class Tags {
         ResourceLocation registryIdentifier = tagKey.registry().location();
         ResourceLocation tagIdentifier = tagKey.location();
 
-        if (!registryIdentifier.getNamespace().equals("minecraft")) {
-            stringBuilder.append(registryIdentifier.getNamespace())
-                    .append(".");
-        }
-
-        stringBuilder.append(registryIdentifier.getPath().replace("/", "."))
+        stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))
                 .append(".")
                 .append(tagIdentifier.getNamespace())
                 .append(".")
-                .append(tagIdentifier.getPath().replace("/", ".").replace(":", "."));
+                .append(tagIdentifier.getPath().replace("/", "."));
 
         return stringBuilder.toString();
     }

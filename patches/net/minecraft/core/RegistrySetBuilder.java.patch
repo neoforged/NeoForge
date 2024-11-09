@@ -22,7 +22,7 @@
 -                    RegistrySetBuilder.LazyHolder<T> lazyholder = new RegistrySetBuilder.LazyHolder<>(p_312323_, resourcekey);
 -                    lazyholder.supplier = () -> cloner.clone((T)p_311506_.value(), p_312725_, p_311797_.getValue());
 -                    return lazyholder;
-+            Optional<HolderLookup.RegistryLookup<T>> lookup = p_312725_.lookup(p_311836_);
++            Optional<? extends HolderLookup.RegistryLookup<T>> lookup = p_312725_.lookup(p_311836_);
 +            Lifecycle lifecycle;
 +            if (lookup.isPresent()) {
 +                HolderLookup.RegistryLookup<T> registrylookup1 = lookup.get();
@@ -43,16 +43,16 @@
              return lookupFromMap(p_311836_, lifecycle, p_312323_, map);
          }
      }
-@@ -236,7 +_,7 @@
+@@ -235,7 +_,7 @@
+             List<RuntimeException> list = new ArrayList<>();
              RegistrySetBuilder.UniversalLookup registrysetbuilder$universallookup = new RegistrySetBuilder.UniversalLookup(registrysetbuilder$universalowner);
              Builder<ResourceLocation, HolderGetter<?>> builder = ImmutableMap.builder();
-             p_255995_.registries()
--                .forEach(p_258197_ -> builder.put(p_258197_.key().location(), RegistrySetBuilder.wrapContextLookup(p_258197_.value().asLookup())));
-+                .forEach(p_258197_ -> builder.put(p_258197_.key().location(), net.neoforged.neoforge.common.CommonHooks.wrapRegistryLookup(p_258197_.value().asLookup())));
+-            p_255995_.registries().forEach(p_367807_ -> builder.put(p_367807_.key().location(), RegistrySetBuilder.wrapContextLookup(p_367807_.value())));
++            p_255995_.registries().forEach(p_367807_ -> builder.put(p_367807_.key().location(), net.neoforged.neoforge.common.CommonHooks.wrapRegistryLookup(p_367807_.value())));
              p_256495_.forEach(p_256603_ -> builder.put(p_256603_.location(), registrysetbuilder$universallookup));
              return new RegistrySetBuilder.BuildState(
                  registrysetbuilder$universalowner, registrysetbuilder$universallookup, builder.build(), new HashMap<>(), list
-@@ -260,6 +_,11 @@
+@@ -259,6 +_,11 @@
                  @Override
                  public <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> p_255961_) {
                      return (HolderGetter<S>)BuildState.this.registries.getOrDefault(p_255961_.location(), BuildState.this.lookup);

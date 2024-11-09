@@ -15,5 +15,5 @@
 +        }
 +
          if (this.currentMusic != null) {
-             if (!music.getEvent().value().getLocation().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
+             if (!music.getEvent().value().location().equals(this.currentMusic.getLocation()) && music.replaceCurrentMusic()) {
                  this.minecraft.getSoundManager().stop(this.currentMusic);

@@ -1,16 +1,16 @@
 --- a/net/minecraft/client/renderer/entity/ItemEntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemEntityRenderer.java
-@@ -45,7 +_,8 @@
-         BakedModel bakedmodel = this.itemRenderer.getModel(itemstack, p_115036_.level(), null, p_115036_.getId());
-         boolean flag = bakedmodel.isGui3d();
-         float f = 0.25F;
--        float f1 = Mth.sin(((float)p_115036_.getAge() + p_115038_) / 10.0F + p_115036_.bobOffs) * 0.1F + 0.1F;
-+        boolean shouldBob = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).shouldBobAsEntity(itemstack);
-+        float f1 = shouldBob ? Mth.sin(((float)p_115036_.getAge() + p_115038_) / 10.0F + p_115036_.bobOffs) * 0.1F + 0.1F : 0;
-         float f2 = bakedmodel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y();
-         p_115039_.translate(0.0F, f1 + 0.25F * f2, 0.0F);
-         float f3 = p_115036_.getSpin(p_115038_);
-@@ -100,9 +_,10 @@
+@@ -54,7 +_,8 @@
+             this.random.setSeed((long)getSeedForItemStack(itemstack));
+             boolean flag = bakedmodel.isGui3d();
+             float f = 0.25F;
+-            float f1 = Mth.sin(p_362172_.ageInTicks / 10.0F + p_362172_.bobOffset) * 0.1F + 0.1F;
++            boolean shouldBob = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).shouldBobAsEntity(itemstack);
++            float f1 = shouldBob ? Mth.sin(p_362172_.ageInTicks / 10.0F + p_362172_.bobOffset) * 0.1F + 0.1F : 0;
+             float f2 = bakedmodel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y();
+             p_115030_.translate(0.0F, f1 + 0.25F * f2, 0.0F);
+             float f3 = ItemEntity.getSpin(p_362172_.ageInTicks, p_362172_.bobOffset);
+@@ -110,9 +_,10 @@
              p_323733_.translate(f3, f4, f5);
          }
  

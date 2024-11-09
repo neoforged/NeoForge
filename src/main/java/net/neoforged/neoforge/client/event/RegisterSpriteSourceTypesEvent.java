@@ -22,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * This event is fired once during the construction of the {@link Minecraft} instance or
  * before datagen when client datagen is enabled.
  *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+ * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
@@ -39,13 +39,29 @@ public class RegisterSpriteSourceTypesEvent extends Event implements IModBusEven
      *
      * @param id    The id to register the {@link SpriteSourceType} under
      * @param codec The codec for the {@link SpriteSourceType} to register
+     *
+     * @deprecated Use {@link #register(ResourceLocation, SpriteSourceType)} instead
      */
+    @Deprecated(forRemoval = true, since = "1.21.1")
     public SpriteSourceType register(ResourceLocation id, MapCodec<? extends SpriteSource> codec) {
         if (this.types.containsKey(id)) {
             throw new IllegalStateException("Duplicate sprite source type registration " + id);
         }
         SpriteSourceType sourceType = new SpriteSourceType(codec);
-        this.types.put(id, sourceType);
+        register(id, sourceType);
         return sourceType;
+    }
+
+    /**
+     * Registers the given {@link SpriteSourceType} under the given id.
+     *
+     * @param id         The id to register the {@link SpriteSourceType} under
+     * @param sourceType The {@link SpriteSourceType} to register
+     */
+    public void register(ResourceLocation id, SpriteSourceType sourceType) {
+        if (this.types.containsKey(id)) {
+            throw new IllegalStateException("Duplicate sprite source type registration " + id);
+        }
+        this.types.put(id, sourceType);
     }
 }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -297,6 +_,7 @@
+@@ -302,6 +_,7 @@
          ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
              : ServerboundPlayerActionPacket.Action.DROP_ITEM;
@@ -8,7 +8,7 @@
          ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
          this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
          return !itemstack.isEmpty();
-@@ -489,7 +_,14 @@
+@@ -482,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -24,7 +24,7 @@
      }
  
      @Override
-@@ -682,6 +_,7 @@
+@@ -676,6 +_,7 @@
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
          float f = (float)this.getAttributeValue(Attributes.SNEAKING_SPEED);
          this.input.tick(this.isMovingSlowly(), f);
@@ -32,7 +32,7 @@
          this.minecraft.getTutorial().onInput(this.input);
          if (this.isUsingItem() && !this.isPassenger()) {
              this.input.leftImpulse *= 0.2F;
-@@ -710,7 +_,7 @@
+@@ -704,7 +_,7 @@
          boolean flag4 = this.canStartSprinting();
          boolean flag5 = this.isPassenger() ? this.getVehicle().onGround() : this.onGround();
          boolean flag6 = !flag1 && !flag2;
@@ -41,7 +41,7 @@
              if (this.sprintTriggerTime <= 0 && !this.minecraft.options.keySprint.isDown()) {
                  this.sprintTriggerTime = 7;
              } else {
-@@ -718,15 +_,15 @@
+@@ -712,15 +_,15 @@
              }
          }
  
@@ -55,12 +55,12 @@
 -            boolean flag8 = flag7 || this.horizontalCollision && !this.minorHorizontalCollision || this.isInWater() && !this.isUnderWater();
 +            boolean flag8 = flag7 || this.horizontalCollision && !this.minorHorizontalCollision || this.isInWater() && !this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
              if (this.isSwimming()) {
--                if (!this.onGround() && !this.input.shiftKeyDown && flag7 || !this.isInWater()) {
-+                if (!this.onGround() && !this.input.shiftKeyDown && flag7 || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)))) {
+-                if (!this.onGround() && !this.input.keyPresses.shift() && flag7 || !this.isInWater()) {
++                if (!this.onGround() && !this.input.keyPresses.shift() && flag7 || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)))) {
                      this.setSprinting(false);
                  }
              } else if (flag8) {
-@@ -735,7 +_,7 @@
+@@ -729,7 +_,7 @@
          }
  
          boolean flag9 = false;
@@ -69,34 +69,18 @@
              if (this.minecraft.gameMode.isAlwaysFlying()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -760,14 +_,15 @@
- 
-         if (this.input.jumping && !flag9 && !flag && !abilities.flying && !this.isPassenger() && !this.onClimbable()) {
-             ItemStack itemstack = this.getItemBySlot(EquipmentSlot.CHEST);
--            if (itemstack.is(Items.ELYTRA) && ElytraItem.isFlyEnabled(itemstack) && this.tryToStartFallFlying()) {
-+            if (itemstack.canElytraFly(this) && this.tryToStartFallFlying()) {
-                 this.connection.send(new ServerboundPlayerCommandPacket(this, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
-             }
-         }
- 
-         this.wasFallFlying = this.isFallFlying();
--        if (this.isInWater() && this.input.shiftKeyDown && this.isAffectedByFluids()) {
--            this.goDownInWater();
-+        net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
-+        if ((this.isInWater() || (!fluidType.isAir() && this.canSwimInFluidType(fluidType))) && this.input.shiftKeyDown && this.isAffectedByFluids()) {
-+            this.sinkInFluid(this.isInWater() ? net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value() : fluidType);
-         }
- 
-         if (this.isEyeInFluid(FluidTags.WATER)) {
-@@ -875,6 +_,7 @@
+@@ -866,6 +_,10 @@
      @Override
      public void rideTick() {
          super.rideTick();
-+        if (this.wantsToStopRiding() && this.isPassenger()) this.input.shiftKeyDown = false;
++        if (this.wantsToStopRiding() && this.isPassenger()) {
++            Input input = this.input.keyPresses;
++            this.input.keyPresses = new Input(input.forward(), input.backward(), input.left(), input.right(), input.jump(), false, input.sprint());
++        }
          this.handsBusy = false;
-         if (this.getControlledVehicle() instanceof Boat boat) {
-             boat.setInput(this.input.left, this.input.right, this.input.up, this.input.down);
-@@ -1061,7 +_,7 @@
+         if (this.getControlledVehicle() instanceof AbstractBoat abstractboat) {
+             abstractboat.setInput(
+@@ -1063,7 +_,7 @@
      }
  
      private boolean hasEnoughFoodToStartSprinting() {

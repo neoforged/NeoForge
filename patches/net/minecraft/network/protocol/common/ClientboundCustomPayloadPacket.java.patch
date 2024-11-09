@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
-@@ -60,12 +_,16 @@
+@@ -62,12 +_,16 @@
                  ),
                  p_333492_ -> {
                  }

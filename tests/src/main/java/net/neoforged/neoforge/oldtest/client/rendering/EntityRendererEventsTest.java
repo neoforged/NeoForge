@@ -21,10 +21,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -53,7 +55,7 @@ public class EntityRendererEventsTest {
     @SubscribeEvent
     public static void entityRegistry(RegisterEvent event) {
         if (event.getRegistryKey().equals(Registries.ENTITY_TYPE)) {
-            event.register(Registries.ENTITY_TYPE, MY_ENTITY, () -> EntityType.Builder.of(MyEntity::new, MobCategory.MONSTER).build("test_entity"));
+            event.register(Registries.ENTITY_TYPE, MY_ENTITY, () -> EntityType.Builder.of(MyEntity::new, MobCategory.MONSTER).build(ResourceKey.create(Registries.ENTITY_TYPE, MY_ENTITY)));
         }
     }
 
@@ -86,7 +88,7 @@ public class EntityRendererEventsTest {
             renderer.addLayer(new MyEntityLayer(renderer, new MyEntityModel(event.getEntityModels().bakeLayer(ADDED_LAYER)), 0.5f));
         }
 
-        private static class MyEntityModel extends EntityModel<MyEntity> {
+        private static class MyEntityModel extends EntityModel<LivingEntityRenderState> {
             public static final String BODY = "body";
             public static final String HEAD = "head";
 
@@ -102,25 +104,12 @@ public class EntityRendererEventsTest {
                 return LayerDefinition.create(definition, 64, 32);
             }
 
-            private final ModelPart headRenderer;
-            private final ModelPart bodyRenderer;
-
             public MyEntityModel(ModelPart modelPart) {
-                this.headRenderer = modelPart.getChild(HEAD);
-                this.bodyRenderer = modelPart.getChild(BODY);
-            }
-
-            @Override
-            public void setupAnim(MyEntity p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_, float p_102623_) {}
-
-            @Override
-            public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-                headRenderer.render(poseStack, vertexConsumer, light, overlay, color);
-                bodyRenderer.render(poseStack, vertexConsumer, light, overlay, color);
+                super(modelPart);
             }
         }
 
-        private static class MyEntityRenderer extends LivingEntityRenderer<MyEntity, MyEntityModel> {
+        private static class MyEntityRenderer extends LivingEntityRenderer<MyEntity, LivingEntityRenderState, MyEntityModel> {
             private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("entity_renderer_events_test", "textures/entity/test_entity.png");
 
             public MyEntityRenderer(EntityRendererProvider.Context context) {
@@ -129,24 +118,29 @@ public class EntityRendererEventsTest {
             }
 
             @Override
-            public ResourceLocation getTextureLocation(MyEntity p_114482_) {
+            public ResourceLocation getTextureLocation(LivingEntityRenderState p_114482_) {
                 return TEXTURE;
+            }
+
+            @Override
+            public LivingEntityRenderState createRenderState() {
+                return new LivingEntityRenderState();
             }
         }
 
-        private static class MyEntityLayer extends RenderLayer<MyEntity, MyEntityModel> {
+        private static class MyEntityLayer extends RenderLayer<LivingEntityRenderState, MyEntityModel> {
             private final MyEntityModel model;
             private final int color;
 
             public MyEntityLayer(MyEntityRenderer renderer, MyEntityModel model, float r) {
                 super(renderer);
                 this.model = model;
-                this.color = FastColor.ARGB32.colorFromFloat(1F, r, 1F, 1F);
+                this.color = ARGB.colorFromFloat(1F, r, 1F, 1F);
             }
 
             @Override
-            public void render(PoseStack poseStack, MultiBufferSource bufferSource, int lightness, MyEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-                VertexConsumer vertexConsumer = bufferSource.getBuffer(this.getParentModel().renderType(this.getTextureLocation(entity)));
+            public void render(PoseStack poseStack, MultiBufferSource bufferSource, int lightness, LivingEntityRenderState renderState, float netHeadYaw, float headPitch) {
+                VertexConsumer vertexConsumer = bufferSource.getBuffer(this.getParentModel().renderType(MyEntityRenderer.TEXTURE));
                 model.renderToBuffer(poseStack, vertexConsumer, lightness, OverlayTexture.NO_OVERLAY, color);
             }
         }

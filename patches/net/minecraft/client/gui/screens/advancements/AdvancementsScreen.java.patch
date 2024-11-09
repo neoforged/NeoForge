@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/advancements/AdvancementsScreen.java
 +++ b/net/minecraft/client/gui/screens/advancements/AdvancementsScreen.java
-@@ -49,6 +_,7 @@
+@@ -51,6 +_,7 @@
      @Nullable
      private AdvancementTab selectedTab;
      private boolean isScrolling;
@@ -8,7 +8,7 @@
  
      public AdvancementsScreen(ClientAdvancements p_97340_) {
          this(p_97340_, null);
-@@ -73,6 +_,16 @@
+@@ -75,6 +_,16 @@
              this.advancements.setSelectedTab(this.selectedTab == null ? null : this.selectedTab.getRootNode().holder(), true);
          }
  
@@ -25,7 +25,7 @@
          this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, p_331557_ -> this.onClose()).width(200).build());
          this.layout.visitWidgets(p_332019_ -> {
              AbstractWidget abstractwidget = this.addRenderableWidget(p_332019_);
-@@ -106,7 +_,7 @@
+@@ -108,7 +_,7 @@
              int j = (this.height - 140) / 2;
  
              for (AdvancementTab advancementtab : this.tabs.values()) {
@@ -34,7 +34,7 @@
                      this.advancements.setSelectedTab(advancementtab.getRootNode().holder(), true);
                      break;
                  }
-@@ -132,6 +_,11 @@
+@@ -134,6 +_,11 @@
          super.render(p_282589_, p_282255_, p_283354_, p_283123_);
          int i = (this.width - 252) / 2;
          int j = (this.height - 140) / 2;
@@ -46,8 +46,8 @@
          this.renderInside(p_282589_, p_282255_, p_283354_, i, j);
          this.renderWindow(p_282589_, i, j);
          this.renderTooltips(p_282589_, p_282255_, p_283354_, i, j);
-@@ -180,10 +_,12 @@
-         p_283395_.blit(WINDOW_LOCATION, p_281890_, p_282532_, 0, 0, 252, 140);
+@@ -181,10 +_,12 @@
+         p_283395_.blit(RenderType::guiTextured, WINDOW_LOCATION, p_281890_, p_282532_, 0.0F, 0.0F, 252, 140, 256, 256);
          if (this.tabs.size() > 1) {
              for (AdvancementTab advancementtab : this.tabs.values()) {
 +                if (advancementtab.getPage() == tabPage)
@@ -59,7 +59,7 @@
                  advancementtab1.drawIcon(p_283395_, p_281890_, p_282532_);
              }
          }
-@@ -203,7 +_,7 @@
+@@ -202,7 +_,7 @@
  
          if (this.tabs.size() > 1) {
              for (AdvancementTab advancementtab : this.tabs.values()) {

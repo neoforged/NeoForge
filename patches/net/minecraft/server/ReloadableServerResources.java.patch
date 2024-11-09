@@ -1,19 +1,21 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
-@@ -49,6 +_,8 @@
-         this.commands = new Commands(p_206858_, CommandBuildContext.simple(this.registryLookup, p_250695_));
-         this.advancements = new ServerAdvancementManager(this.registryLookup);
+@@ -41,6 +_,9 @@
+         this.commands = new Commands(p_206858_, CommandBuildContext.simple(p_361583_, p_250695_));
+         this.advancements = new ServerAdvancementManager(p_361583_);
          this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
-+        // Neo: Create context object
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager);
++        // Neo: Store registries and create context object
++        this.registryLookup = p_361583_;
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -75,6 +_,24 @@
-         return List.of(this.tagManager, this.recipes, this.functionLibrary, this.advancements);
+@@ -67,6 +_,25 @@
+         return List.of(this.recipes, this.functionLibrary, this.advancements);
      }
  
-+    private final net.neoforged.neoforge.common.conditions.ICondition.IContext context;
++    private final HolderLookup.Provider registryLookup;
++    private final net.neoforged.neoforge.common.conditions.ConditionContext context;
 +
 +    /**
 +     * Exposes the current condition context for usage in other reload listeners.<br>
@@ -34,12 +36,12 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -90,14 +_,27 @@
+@@ -83,10 +_,24 @@
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
-                         p_335211_.compositeAccess(), p_250212_, p_249301_, p_251126_
+                         p_359514_.layers(), p_359514_.lookupWithUpdatedTags(), p_250212_, p_249301_, p_363739_, p_251126_
                      );
 +                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-+                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_335211_.compositeAccess()));
++                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_359514_.layers().compositeAccess()));
 +                    listeners.forEach(rl -> {
 +                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryLookup);
 +                    });
@@ -48,26 +50,22 @@
 +                            p_248588_, listeners, p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
                          )
                          .done()
-                         .whenComplete(
-                             (p_323178_, p_323179_) -> reloadableserverresources.registryLookup
-                                     .missingTagAccessPolicy(ReloadableServerResources.MissingTagAccessPolicy.FAIL)
-                         )
 +                        .thenRun(() -> {
 +                            // Clear context after reload completes
++                            reloadableserverresources.context.clear();
 +                            listeners.forEach(rl -> {
 +                                if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) {
-+                                    srl.injectContext(net.neoforged.neoforge.common.conditions.ICondition.IContext.EMPTY, RegistryAccess.EMPTY);
++                                    srl.injectContext(net.neoforged.neoforge.common.conditions.ICondition.IContext.EMPTY, net.minecraft.core.RegistryAccess.EMPTY);
 +                                }
 +                            });
 +                        })
                          .thenApply(p_214306_ -> reloadableserverresources);
                  }
              );
-@@ -107,6 +_,7 @@
-         this.tagManager.getResult().forEach(p_335204_ -> updateRegistryTags(this.fullRegistryHolder.get(), (TagManager.LoadResult<?>)p_335204_));
-         AbstractFurnaceBlockEntity.invalidateCache();
-         Blocks.rebuildCache();
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.fullRegistryHolder.get(), false, false));
-     }
+@@ -94,5 +_,6 @@
  
-     private static <T> void updateRegistryTags(RegistryAccess p_206871_, TagManager.LoadResult<T> p_206872_) {
+     public void updateStaticRegistryTags() {
+         this.postponedTags.forEach(Registry.PendingTags::apply);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(registryLookup, false, false));
+     }
+ }

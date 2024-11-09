@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
 +++ b/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
-@@ -177,6 +_,13 @@
+@@ -182,6 +_,13 @@
          }
      }
  
@@ -11,6 +11,6 @@
 +        }
 +    }
 +
-     private void explode() {
-         this.level().broadcastEntityEvent(this, (byte)17);
+     private void explode(ServerLevel p_376529_) {
+         p_376529_.broadcastEntityEvent(this, (byte)17);
          this.gameEvent(GameEvent.EXPLODE, this.getOwner());

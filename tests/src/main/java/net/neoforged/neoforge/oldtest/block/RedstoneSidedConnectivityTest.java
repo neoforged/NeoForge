@@ -13,7 +13,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -31,7 +33,7 @@ public class RedstoneSidedConnectivityTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final DeferredBlock<Block> TEST_REDSTONE_BLOCK = BLOCKS.register(BLOCK_ID, EastRedstoneBlock::new);
+    private static final DeferredBlock<Block> TEST_REDSTONE_BLOCK = BLOCKS.registerBlock(BLOCK_ID, EastRedstoneBlock::new, BlockBehaviour.Properties.of());
     private static final DeferredItem<BlockItem> TEST_REDSTONE_BLOCKITEM = ITEMS.registerSimpleBlockItem(TEST_REDSTONE_BLOCK);
 
     public RedstoneSidedConnectivityTest(IEventBus modBus) {
@@ -51,8 +53,8 @@ public class RedstoneSidedConnectivityTest {
     private static class EastRedstoneBlock extends Block {
         //This block visually connect to redstone dust only on the east side
         //if a furnace block is placed on top of it
-        public EastRedstoneBlock() {
-            super(Properties.of());
+        public EastRedstoneBlock(Properties props) {
+            super(props);
         }
 
         @Override
@@ -65,13 +67,11 @@ public class RedstoneSidedConnectivityTest {
 
         @SuppressWarnings("deprecation")
         @Override
-        public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-            if (pos.relative(Direction.UP).equals(fromPos)) {
-                //Notify neighbors if the redstone connection may change
-                state.updateNeighbourShapes(world, pos, UPDATE_ALL);
-            }
+        public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable Orientation orientation, boolean isMoving) {
+            //Notify neighbors if the redstone connection may change
+            state.updateNeighbourShapes(world, pos, UPDATE_ALL);
 
-            super.neighborChanged(state, world, pos, block, fromPos, isMoving);
+            super.neighborChanged(state, world, pos, block, orientation, isMoving);
         }
     }
 }
