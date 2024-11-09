@@ -243,5 +243,16 @@
   "neoforge.network.data_maps.missing_their": "无法连接至服务器，因为客户端上不存在必要的注册表数据映射：%s",
   "neoforge.network.extensible_enums.no_vanilla_server": "该客户端不支持原版服务器，因为它在服务器端网络中使用了不同连接方式。",
   "neoforge.network.extensible_enums.enum_set_mismatch": "客户端和服务器上的模组不匹配。请确保您使用的 NeoForge 版本与服务器上的版本相同。",
-  "neoforge.network.extensible_enums.enum_entry_mismatch": "客户端和服务器上所需要的模组不匹配。请确保您使用的模组和 NeoForge 版本与服务器上的版本相同。请查看日志以获取更多详细信息。"
+  "neoforge.network.extensible_enums.enum_entry_mismatch": "客户端和服务器上所需要的模组不匹配。请确保您使用的模组和 NeoForge 版本与服务器上的版本相同。请查看日志以获取更多详细信息。",
+  "neoforge.attribute.debug.base": "[实体：%s | 物品：%s]",
+  "neoforge.value.flat": "%s",
+  "neoforge.value.percent": "%s%%",
+  "neoforge.value.boolean.enabled": "已启用",
+  "neoforge.value.boolean.disabled": "已禁用",
+  "neoforge.value.boolean.enable": "启用",
+  "neoforge.value.boolean.disable": "禁用",
+  "neoforge.value.boolean.invalid": "无效",
+  "neoforge.modifier.plus": "+%s %s",
+  "neoforge.modifier.take": "%s %s",
+  "neoforge.modifier.bool": "%s %s"
 }

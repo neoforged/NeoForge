@@ -51,7 +51,7 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
     }
 
     public <B extends Block, E extends BlockEntity> DeferredBlockBuilder<B> registerBlockWithBEType(String name, BiFunction<BlockBehaviour.Properties, Supplier<BlockEntityType<E>>, ? extends B> func, TriFunction<BlockEntityType<?>, BlockPos, BlockState, E> beType, BlockBehaviour.Properties props) {
-        final var be = registrationHelper.registrar(Registries.BLOCK_ENTITY_TYPE).register(name, () -> new BlockEntityType<>(
+        final Supplier<BlockEntityType<E>> be = registrationHelper.registrar(Registries.BLOCK_ENTITY_TYPE).register(name, () -> new BlockEntityType<>(
                 (pos, state) -> beType.apply(BuiltInRegistries.BLOCK_ENTITY_TYPE.getValue(ResourceLocation.fromNamespaceAndPath(getNamespace(), name)), pos, state),
                 BuiltInRegistries.BLOCK.getValue(ResourceLocation.fromNamespaceAndPath(getNamespace(), name))));
         return registerBlock(name, properties -> func.apply(properties, be), props);
