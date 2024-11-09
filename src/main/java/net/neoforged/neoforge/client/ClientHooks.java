@@ -1094,4 +1094,8 @@ public class ClientHooks {
         ChunkRenderTypeSet renderTypes = model.getRenderTypes(state, OUTLINE_PASS_RANDOM, level.getModelData(pos));
         return renderTypes.contains(RenderType.TRANSLUCENT) || renderTypes.contains(RenderType.TRIPWIRE);
     }
+
+    public static void reloadRenderer() {
+        Minecraft.getInstance().levelRenderer.allChanged();
+    }
 }
