@@ -38,7 +38,7 @@ public class Tags {
 
         /**
          * For denoting blocks that need tools that are Wood or higher to mine.
-         * By default, this is not added to any Minecraft tag since by default, Wood is in the lowest "tier".
+         * By default, this is not added to any Minecraft tag since Wood is in the lowest "tier".
          */
         public static final TagKey<Block> NEEDS_WOOD_TOOL = neoforgeTag("needs_wood_tool");
 
