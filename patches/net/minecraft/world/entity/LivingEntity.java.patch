@@ -512,6 +512,17 @@
      }
  
      protected float getWaterSlowDown() {
+@@ -2184,8 +_,8 @@
+     public void travel(Vec3 p_21280_) {
+         if (this.isControlledByLocalInstance()) {
+             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
+-            if ((this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
+-                this.travelInFluid(p_21280_);
++            if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
++                this.travelInFluid(p_21280_, fluidstate);
+             } else if (this.isFallFlying()) {
+                 this.travelFallFlying();
+             } else {
 @@ -2196,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {
@@ -550,6 +561,15 @@
              this.moveRelative(f1, p_365480_);
              this.move(MoverType.SELF, this.getDeltaMovement());
              Vec3 vec3 = this.getDeltaMovement();
+@@ -2249,7 +_,7 @@
+ 
+             vec3 = vec3.multiply((double)f, 0.8F, (double)f);
+             this.setDeltaMovement(this.getFluidFallingAdjustedMovement(d1, flag, vec3));
+-        } else {
++        } else if (this.isInLava() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState)) {
+             this.moveRelative(0.02F, p_365480_);
+             this.move(MoverType.SELF, this.getDeltaMovement());
+             if (this.getFluidHeight(FluidTags.LAVA) <= this.getFluidJumpThreshold()) {
 @@ -2389,7 +_,7 @@
              double d0 = Mth.clamp(p_21298_.x, -0.15F, 0.15F);
              double d1 = Mth.clamp(p_21298_.z, -0.15F, 0.15F);

@@ -100,7 +100,7 @@
          this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
      }
  
-@@ -1294,20 +_,23 @@
+@@ -1294,20 +_,25 @@
  
      public void updateSwimming() {
          if (this.isSwimming()) {
@@ -118,8 +118,8 @@
          this.fluidHeight.clear();
 +        this.forgeFluidTypeHeight.clear();
          this.updateInWaterStateAndDoWaterCurrentPushing();
--        double d0 = this.level().dimensionType().ultraWarm() ? 0.007 : 0.0023333333333333335;
--        boolean flag = this.updateFluidHeightAndDoFluidPushing(FluidTags.LAVA, d0);
+         double d0 = this.level().dimensionType().ultraWarm() ? 0.007 : 0.0023333333333333335;
+         boolean flag = this.updateFluidHeightAndDoFluidPushing(FluidTags.LAVA, d0);
 -        return this.isInWater() || flag;
 +        if (this.isInFluidType() && !(this.getVehicle() instanceof AbstractBoat)) {
 +            this.fallDistance *= this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().filter(e -> !e.getKey().isAir() && !e.getKey().isVanilla()).map(e -> this.getFluidFallDistanceModifier(e.getKey())).min(Float::compare).orElse(1F);
@@ -129,6 +129,15 @@
      }
  
      void updateInWaterStateAndDoWaterCurrentPushing() {
+@@ -1316,7 +_,7 @@
+             return;
+         }
+ 
+-        if (this.updateFluidHeightAndDoFluidPushing(FluidTags.WATER, 0.014)) {
++        if (this.updateFluidHeightAndDoFluidPushing(FluidTags.WATER, 0.014) || this.isInFluidType((type, d) -> type.actsLikeWater())) {
+             if (!this.wasTouchingWater && !this.firstTick) {
+                 this.doWaterSplashEffect();
+             }
 @@ -1332,6 +_,7 @@
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
@@ -315,16 +324,18 @@
          this.dimensions = entitydimensions1;
          this.eyeHeight = entitydimensions1.eyeHeight();
          this.reapplyPosition();
-@@ -3265,7 +_,12 @@
+@@ -3265,7 +_,14 @@
          return Mth.lerp(p_352259_, this.yRotO, this.yRot);
      }
  
-+    @Deprecated // Neo: Use no parameter version instead
++    @Deprecated // Neo: Use type version instead
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
-+        return this.updateFluidHeightAndDoFluidPushing();
++        if(p_204032_ == FluidTags.WATER) return this.updateFluidHeightAndDoFluidPushing(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (p_204032_ == FluidTags.LAVA) return this.updateFluidHeightAndDoFluidPushing(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
++        else return false;
 +    }
 +
-+    public boolean updateFluidHeightAndDoFluidPushing() {
++    public boolean updateFluidHeightAndDoFluidPushing(net.neoforged.neoforge.fluids.FluidType type) {
          if (this.touchingUnloadedChunk()) {
              return false;
          } else {
@@ -346,13 +357,12 @@
                          FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
 -                        if (fluidstate.is(p_204032_)) {
 +                        net.neoforged.neoforge.fluids.FluidType fluidType = fluidstate.getFluidType();
-+                        if (!fluidType.isAir()) {
++                        if (fluidType == type) {
                              double d1 = (double)((float)i2 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                              if (d1 >= aabb.minY) {
--                                flag1 = true;
+                                 flag1 = true;
 -                                d0 = Math.max(d1 - aabb.minY, d0);
 -                                if (flag) {
-+                                flag1 = fluidType.actsLikeWater();
 +                                if (interimCalcs == null) {
 +                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>();
 +                                }
