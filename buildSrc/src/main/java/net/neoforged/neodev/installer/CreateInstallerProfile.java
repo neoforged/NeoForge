@@ -3,17 +3,15 @@ package net.neoforged.neodev.installer;
 import com.google.gson.GsonBuilder;
 import net.neoforged.neodev.utils.FileUtils;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,9 +43,12 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getIcon();
 
-    @InputFiles
-    @PathSensitive(PathSensitivity.NONE)
-    public abstract ConfigurableFileCollection getLibraries();
+    @Nested
+    protected abstract ListProperty<IdentifiedFile> getLibraryFiles();
+
+    public void setLibraries(Configuration libraries) {
+        getLibraryFiles().set(IdentifiedFile.listFromConfiguration(getProject(), libraries));
+    }
 
     @Input
     public abstract ListProperty<URI> getRepositoryURLs();
@@ -133,9 +134,8 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         );
 
         getLogger().info("Collecting libraries for Installer Profile");
-        var profileFiller = new LibraryCollector(getRepositoryURLs().get());
-        profileFiller.visitFiles(getLibraries());
-        var libraries = new ArrayList<>(profileFiller.getLibraries());
+        var libraries = new ArrayList<>(
+                LibraryCollector.resolveLibraries(getRepositoryURLs().get(), getLibraryFiles().get()));
 
         var universalJar = getUniversalJar().getAsFile().get().toPath();
         libraries.add(new Library(

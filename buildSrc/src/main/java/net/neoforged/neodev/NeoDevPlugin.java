@@ -14,7 +14,6 @@ import net.neoforged.nfrtgradle.NeoFormRuntimePlugin;
 import net.neoforged.nfrtgradle.NeoFormRuntimeTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
@@ -131,9 +130,9 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
-                task.getLibraries().addAll(configurationToGavList(devLibrariesConfiguration));
-                task.getModules().addAll(configurationToGavList(modulesConfiguration));
-                task.getTestLibraries().addAll(configurationToGavList(userDevTestImplementationConfiguration));
+                task.getLibraries().addAll(DependencyUtils.configurationToGavList(devLibrariesConfiguration));
+                task.getModules().addAll(DependencyUtils.configurationToGavList(modulesConfiguration));
+                task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(userDevTestImplementationConfiguration));
                 task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
                 task.getIgnoreList().addAll(modulesConfiguration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
                     return results.stream().map(r -> r.getFile().getName()).toList();
@@ -232,12 +231,18 @@ public class NeoDevPlugin implements Plugin<Project> {
                 patchesFolder
         );
 
+        var launcherProfileLibraries = configurations.create("launcherProfileLibraries", spec -> {
+            spec.setCanBeResolved(true);
+            spec.setCanBeConsumed(false);
+        });
+        launcherProfileLibraries.extendsFrom(installerConfiguration, modulesConfiguration);
+        launcherProfileLibraries.shouldResolveConsistentlyWith(runtimeClasspath);
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
             task.getFmlVersion().set(fmlVersion);
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
-            task.getLibraries().from(installerConfiguration, modulesConfiguration);
+            task.setLibraries(launcherProfileLibraries);
             task.getRepositoryURLs().set(project.provider(() -> {
                 List<URI> repos = new ArrayList<>();
                 for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
@@ -253,7 +258,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 return results.stream().map(r -> r.getFile().getName()).toList();
             }));
             task.getIgnoreList().addAll("client-extra", "neoforge-");
-            task.getModulePath().from(modulesConfiguration);
+            task.setModules(modulesConfiguration);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
         });
 
@@ -268,7 +273,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getMcAndNeoFormVersion().set(mcAndNeoFormVersion);
             task.getIcon().set(project.getRootProject().file("docs/assets/neoforged.ico"));
-            task.getLibraries().from(installerProfileLibraries);
+            task.setLibraries(installerProfileLibraries);
             task.getRepositoryURLs().set(project.provider(() -> {
                 List<URI> repos = new ArrayList<>();
                 for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
@@ -294,20 +299,17 @@ public class NeoDevPlugin implements Plugin<Project> {
             // Each tool should resolve consistently with the full set of installed libraries.
             configuration.shouldResolveConsistentlyWith(installerProfileLibraries);
             createInstallerProfile.configure(task -> {
-                task.getProcessorClasspaths().put(installerProcessor, configuration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-                    // Using .toList() fails with the configuration cache - looks like Gradle can't deserialize the resulting list?
-                    return results.stream().map(DependencyUtils::guessMavenGav).collect(Collectors.toCollection(ArrayList::new));
-                }));
+                task.getProcessorClasspaths().put(installerProcessor, DependencyUtils.configurationToGavList(configuration));
                 task.getProcessorGavs().put(installerProcessor, installerProcessor.tool.asGav(project));
             });
         }
 
         var createWindowsServerArgsFile = tasks.register("createWindowsServerArgsFile", CreateArgsFile.class, task -> {
-            task.getPathSeparator().set(";");
+            task.setLibraries(";", installerConfiguration, modulesConfiguration);
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("windows-server-args.txt")));
         });
         var createUnixServerArgsFile = tasks.register("createUnixServerArgsFile", CreateArgsFile.class, task -> {
-            task.getPathSeparator().set(":");
+            task.setLibraries(":", installerConfiguration, modulesConfiguration);
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("unix-server-args.txt")));
         });
 
@@ -318,11 +320,9 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
-                task.getModules().from(modulesConfiguration);
                 task.getIgnoreList().addAll(modulesConfiguration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
                     return results.stream().map(r -> r.getFile().getName()).toList();
                 }));
-                task.getClasspath().from(installerConfiguration);
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });
         }
@@ -537,12 +537,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getSourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("base-sources.jar")));
             task.getResourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("minecraft-local-resources-aka-client-extra.jar")));
             task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(version -> "net.neoforged:neoform:" + version + "@zip"));
-        });
-    }
-
-    private Provider<List<String>> configurationToGavList(Configuration configuration) {
-        return configuration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-            return results.stream().map(DependencyUtils::guessMavenGav).toList();
         });
     }
 }

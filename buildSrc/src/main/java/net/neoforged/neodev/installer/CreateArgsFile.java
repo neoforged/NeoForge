@@ -1,17 +1,15 @@
 package net.neoforged.neodev.installer;
 
+import net.neoforged.neodev.utils.DependencyUtils;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ArchiveOperations;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
@@ -43,18 +41,22 @@ public abstract class CreateArgsFile extends DefaultTask {
     public abstract Property<String> getRawNeoFormVersion();
 
     @Input
-    public abstract Property<String> getPathSeparator();
+    protected abstract Property<String> getPathSeparator();
 
-    @InputFiles
-    @PathSensitive(PathSensitivity.NONE)
-    public abstract ConfigurableFileCollection getModules();
+    @Input
+    protected abstract Property<String> getModules();
 
     @Input
     public abstract ListProperty<String> getIgnoreList();
 
-    @InputFiles
-    @PathSensitive(PathSensitivity.NONE)
-    public abstract ConfigurableFileCollection getClasspath();
+    @Input
+    protected abstract Property<String> getClasspath();
+
+    public void setLibraries(String separator, Configuration classpath, Configuration modulePath) {
+        getPathSeparator().set(separator);
+        getClasspath().set(DependencyUtils.configurationToClasspath(classpath, "libraries/", separator));
+        getModules().set(DependencyUtils.configurationToClasspath(modulePath, "libraries/", separator));
+    }
 
     @InputFile
     public abstract RegularFileProperty getRawServerJar();
@@ -66,10 +68,7 @@ public abstract class CreateArgsFile extends DefaultTask {
     protected abstract ArchiveOperations getArchiveOperations();
 
     private String resolveClasspath() throws IOException {
-        ArtifactPathsCollector classpathCollector = new ArtifactPathsCollector(getPathSeparator().get(), "libraries/");
-        classpathCollector.visitFiles(getClasspath());
-
-        var ourClasspath = classpathCollector + getPathSeparator().get()
+        var ourClasspath = getClasspath().get() + getPathSeparator().get()
                 + "libraries/net/minecraft/server/%s/server-%s-extra.jar".formatted(
                         getRawNeoFormVersion().get(), getRawNeoFormVersion().get());
 
@@ -102,12 +101,8 @@ public abstract class CreateArgsFile extends DefaultTask {
 
     @TaskAction
     public void createArgsFile() throws IOException {
-        ArtifactPathsCollector modulePathCollector = new ArtifactPathsCollector(getPathSeparator().get(), "libraries/");
-
-        modulePathCollector.visitFiles(getModules());
-
         var replacements = new HashMap<String, String>();
-        replacements.put("@MODULE_PATH@", modulePathCollector.toString());
+        replacements.put("@MODULE_PATH@", getModules().get());
         replacements.put("@MODULES@", "ALL-MODULE-PATH");
         replacements.put("@IGNORE_LIST@", String.join(",", getIgnoreList().get()));
         replacements.put("@PLUGIN_LAYER_LIBRARIES@", "");

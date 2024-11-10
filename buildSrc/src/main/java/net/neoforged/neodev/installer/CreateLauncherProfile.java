@@ -1,17 +1,16 @@
 package net.neoforged.neodev.installer;
 
 import com.google.gson.GsonBuilder;
+import net.neoforged.neodev.utils.DependencyUtils;
 import net.neoforged.neodev.utils.FileUtils;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
@@ -41,9 +40,12 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     @Input
     public abstract Property<String> getRawNeoFormVersion();
 
-    @InputFiles
-    @PathSensitive(PathSensitivity.NONE)
-    public abstract ConfigurableFileCollection getLibraries();
+    @Nested
+    protected abstract ListProperty<IdentifiedFile> getLibraryFiles();
+
+    public void setLibraries(Configuration libraries) {
+        getLibraryFiles().set(IdentifiedFile.listFromConfiguration(getProject(), libraries));
+    }
 
     @Input
     public abstract ListProperty<URI> getRepositoryURLs();
@@ -51,9 +53,12 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     @Input
     public abstract ListProperty<String> getIgnoreList();
 
-    @InputFiles
-    @PathSensitive(PathSensitivity.NAME_ONLY)
-    public abstract ConfigurableFileCollection getModulePath();
+    @Input
+    protected abstract Property<String> getModulePath();
+
+    public void setModules(Configuration modules) {
+        getModulePath().set(DependencyUtils.configurationToClasspath(modules, "${library_directory}/", "${classpath_separator}"));
+    }
 
     @OutputFile
     public abstract RegularFileProperty getLauncherProfile();
@@ -63,9 +68,7 @@ public abstract class CreateLauncherProfile extends DefaultTask {
         var time = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
         getLogger().info("Collecting libraries for Launcher Profile");
-        var profileFiller = new LibraryCollector(getRepositoryURLs().get());
-        profileFiller.visitFiles(getLibraries());
-        var libraries = profileFiller.getLibraries();
+        var libraries = LibraryCollector.resolveLibraries(getRepositoryURLs().get(), getLibraryFiles().get());
 
         var gameArguments = new ArrayList<>(List.of(
                 "--fml.neoForgeVersion", getNeoForgeVersion().get(),
@@ -81,10 +84,8 @@ public abstract class CreateLauncherProfile extends DefaultTask {
                 "-DmergeModules=jna-5.10.0.jar,jna-platform-5.10.0.jar",
                 "-DlibraryDirectory=${library_directory}"));
 
-        var modulePathCollector = new ArtifactPathsCollector("${classpath_separator}", "${library_directory}/");
-        modulePathCollector.visitFiles(getModulePath());
         jvmArguments.add("-p");
-        jvmArguments.add(modulePathCollector.toString());
+        jvmArguments.add(getModulePath().get());
 
         jvmArguments.addAll(List.of(
                 "--add-modules", "ALL-MODULE-PATH",

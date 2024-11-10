@@ -1,5 +1,6 @@
 package net.neoforged.neodev.installer;
 
+import net.neoforged.neodev.utils.MavenIdentifier;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
@@ -15,6 +16,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +27,24 @@ import java.util.function.Function;
 /**
  * For each file in a collection, finds the repository that the file came from.
  */
-class LibraryCollector extends ModuleIdentificationVisitor {
+class LibraryCollector {
+    public static List<Library> resolveLibraries(List<URI> repositoryUrls, Collection<IdentifiedFile> libraries) throws IOException {
+        var collector = new LibraryCollector(repositoryUrls);
+        for (var library : libraries) {
+            collector.addLibrary(library.getFile().getAsFile().get(), library.getIdentifier().get());
+        }
+
+        var result = collector.libraries.stream().map(future -> {
+            try {
+                return future.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+        LOGGER.info("Collected %d libraries".formatted(result.size()));
+        return result;
+    }
+
     private static final Logger LOGGER = Logging.getLogger(LibraryCollector.class);
     /**
      * Hosts from which we allow the installer to download.
@@ -46,7 +65,7 @@ class LibraryCollector extends ModuleIdentificationVisitor {
 
     private final HttpClient httpClient = HttpClient.newBuilder().build();
 
-    LibraryCollector(List<URI> repoUrl) {
+    private LibraryCollector(List<URI> repoUrl) {
         this.repositoryUrls = new ArrayList<>(repoUrl);
 
         // Only remote repositories make sense (no maven local)
@@ -71,10 +90,9 @@ class LibraryCollector extends ModuleIdentificationVisitor {
         }
     }
 
-    @Override
-    protected void visitModule(File file, String group, String module, String version, String classifier, final String extension) throws IOException {
-        final String name = group + ":" + module + ":" + version + (classifier.isEmpty() ? "" : ":" + classifier) + "@" + extension;
-        final String path = group.replace(".", "/") + "/" + module + "/" + version + "/" + module + "-" + version + (classifier.isEmpty() ? "" : "-" + classifier) + "." + extension;
+    private void addLibrary(File file, MavenIdentifier identifier) throws IOException {
+        final String name = identifier.artifactNotation();
+        final String path = identifier.repositoryPath();
 
         var sha1 = sha1Hash(file.toPath());
         var fileSize = Files.size(file.toPath());
@@ -99,7 +117,7 @@ class LibraryCollector extends ModuleIdentificationVisitor {
                                 }
                                 throw new RuntimeException(message);
                             }
-                            LOGGER.info("  Found $name -> $artifactUri");
+                            LOGGER.info("  Found %s -> %s".formatted(name, artifactUri));
                             return new Library(
                                     name,
                                     new LibraryDownload(new LibraryArtifact(
@@ -152,17 +170,5 @@ class LibraryCollector extends ModuleIdentificationVisitor {
         } else {
             return URI.create(baseUrl + path);
         }
-    }
-
-    List<Library> getLibraries() {
-        var result = libraries.stream().map(future -> {
-            try {
-                return future.get();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).toList();
-        LOGGER.info("Collected %d libraries".formatted(result.size()));
-        return result;
     }
 }
