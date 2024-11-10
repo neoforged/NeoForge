@@ -27,8 +27,13 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public abstract class RenderPlayerEvent extends RenderLivingEvent<AbstractClientPlayer, PlayerRenderState, PlayerModel> {
     @ApiStatus.Internal
-    protected RenderPlayerEvent(PlayerRenderState renderState, LivingEntityRenderer<AbstractClientPlayer, PlayerRenderState, PlayerModel> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
+    protected RenderPlayerEvent(PlayerRenderState renderState, PlayerRenderer renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
         super(renderState, renderer, partialTick, poseStack, multiBufferSource, packedLight);
+    }
+
+    @Override
+    public PlayerRenderer getRenderer() {
+        return (PlayerRenderer) super.getRenderer();
     }
 
     /**
