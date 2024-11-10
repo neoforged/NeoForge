@@ -262,7 +262,6 @@
   "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s",
 
   "neoforge.network.extensible_enums.no_vanilla_server": "This client does not support vanilla servers as it has extended enums used in serverbound networking",
-  "neoforge.network.extensible_enums.enum_set_mismatch": "The set of extensible enums on the client and server do not match. Make sure you are using the same NeoForge version as the server",
   "neoforge.network.extensible_enums.enum_entry_mismatch": "The set of values added to extensible enums on the client and server do not match. Make sure you are using the same mod and NeoForge versions as the server. See the log for more details",
 
   "neoforge.attribute.debug.base": "[Entity: %s | Item: %s]",
