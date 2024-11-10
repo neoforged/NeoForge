@@ -79,7 +79,7 @@
   "commands.neoforge.tps.overall": "Celkovo: %s TPS (%s ms/tick)",
   "commands.neoforge.tps.tooltip": "Mean TPS; higher is better. Target TPS: %s",
   "commands.neoforge.tps.dimension": "%s: %s TPS (%s ms/tick)",
-  "commands.neoforge.tps.dimension.tooltip": "%s (Dimension Type: %s)",
+  "commands.neoforge.tps.dimension.tooltip": "%s (Typ rozmeru: %s)",
   "commands.neoforge.mods.list": "List módov: %1$s",
   "commands.neoforge.tracking.entity.enabled": "Sledovanie entít povolené na %d sekúnd.",
   "commands.neoforge.tracking.entity.reset": "Údaje o časovaní entít boli vymazané!",
