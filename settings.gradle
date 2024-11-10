@@ -13,6 +13,8 @@ plugins {
 
 // This makes the version available to buildSrc
 gradle.ext.moddevgradle_plugin_version = moddevgradle_plugin_version
+gradle.ext.gson_version = gson_version
+gradle.ext.diffpatch_version = diffpatch_version
 
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS

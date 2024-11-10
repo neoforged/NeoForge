@@ -18,9 +18,9 @@ repositories {
 
 dependencies {
     // buildSrc is an includedbuild of the parent directory (gradle.parent)
-    // ../settings.gradle sets the moddevgradle_plugin_version accordingly
+    // ../settings.gradle sets these version properties accordingly
     implementation "net.neoforged:moddev-gradle:${gradle.parent.ext.moddevgradle_plugin_version}"
 
-    implementation "com.google.code.gson:gson:${project.gson_version}"
-    implementation "io.codechicken:DiffPatch:${project.diffpatch_version}"
+    implementation "com.google.code.gson:gson:${gradle.parent.ext.gson_version}"
+    implementation "io.codechicken:DiffPatch:${gradle.parent.ext.diffpatch_version}"
 }
