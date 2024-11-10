@@ -44,7 +44,7 @@ public class Tags {
 
         /**
          * For denoting blocks that need tools that are Gold or higher to mine.
-         * By default, this is not added to any Minecraft tag since by default, Gold is in the lowest "tier".
+         * By default, this is not added to any Minecraft tag since Gold is in the lowest "tier".
          */
         public static final TagKey<Block> NEEDS_GOLD_TOOL = neoforgeTag("needs_gold_tool");
 
