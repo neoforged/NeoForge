@@ -76,7 +76,7 @@
   "commands.neoforge.setdim.invalid.dim": "Dimenzia s vybraným ID (%1$s) nie je validná.",
   "commands.neoforge.setdim.invalid.nochange": "Vybraná entita (%1$s) už existuje v špecifikovanej dimenzii (%2$s).",
   "commands.neoforge.setdim.deprecated": "Tento príkaz je zastaralý a bude vymazaný v 1.17, použite %s namiesto neho.",
-  "commands.neoforge.tps.overall": "Overall: %s TPS (%s ms/tick)",
+  "commands.neoforge.tps.overall": "Celkovo: %s TPS (%s ms/tick)",
   "commands.neoforge.tps.tooltip": "Mean TPS; higher is better. Target TPS: %s",
   "commands.neoforge.tps.dimension": "%s: %s TPS (%s ms/tick)",
   "commands.neoforge.tps.dimension.tooltip": "%s (Dimension Type: %s)",
