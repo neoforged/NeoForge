@@ -9,10 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -22,6 +26,7 @@ import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -44,6 +49,10 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
+    static {
+        TranslatableContents.lang = () -> com.ibm.icu.util.ULocale.forLocale(net.minecraft.client.Minecraft.getInstance().getLocale());
+    }
+
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
@@ -156,5 +165,14 @@ public class ClientNeoForgeMod {
                 return MILK_FLOW;
             }
         }, milkType));
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event) {
+        SpawnEggItem.eggs().forEach(egg -> {
+            if (event.getItemColors().get(egg) == null) {
+                event.register((stack, layer) -> ARGB.opaque(egg.getColor(layer)), egg);
+            }
+        });
     }
 }

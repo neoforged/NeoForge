@@ -52,6 +52,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute.Sentiment;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
@@ -587,6 +588,8 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(DataMapHooks::onDataMapsUpdated);
 
         modEventBus.register(NeoForgeDataMaps.class);
+
+        modEventBus.register(SpawnEggItem.class); // Registers dispenser behaviour for eggs
 
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;

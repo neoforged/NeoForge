@@ -80,7 +80,7 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
             if (!context.isComponentVisible(name, true))
                 continue;
             var model = entry.getValue();
-            bakedPartsBuilder.put(name, model.bake(baker, spriteGetter, modelState));
+            bakedPartsBuilder.put(name, baker.bakeUncached(model, modelState, spriteGetter));
         }
         var bakedParts = bakedPartsBuilder.build();
 
