@@ -159,7 +159,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMaterialAtlasesEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.event.RegisterRenderStateExtensionEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
@@ -1003,7 +1003,7 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
-        ModLoader.postEvent(new RegisterRenderStateExtensionEvent());
+        ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         ClientHooks.onRegisterKeyMappings(mc.options);

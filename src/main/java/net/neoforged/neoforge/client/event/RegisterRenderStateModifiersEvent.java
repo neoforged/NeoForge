@@ -14,9 +14,9 @@ import net.neoforged.neoforge.client.RenderStateExtensions;
 import net.neoforged.neoforge.client.entity.state.EntityRenderStateModifier;
 import org.jetbrains.annotations.ApiStatus;
 
-public class RegisterRenderStateExtensionEvent extends Event implements IModBusEvent {
+public class RegisterRenderStateModifiersEvent extends Event implements IModBusEvent {
     @ApiStatus.Internal
-    public RegisterRenderStateExtensionEvent() {}
+    public RegisterRenderStateModifiersEvent() {}
 
     public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(Class<? extends EntityRenderer<E, S>> baseRenderer, EntityRenderStateModifier<E, S> modifier) {
         RenderStateExtensions.registerExtender(baseRenderer, modifier);

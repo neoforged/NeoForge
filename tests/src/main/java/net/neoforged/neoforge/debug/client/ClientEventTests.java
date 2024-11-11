@@ -27,7 +27,7 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
-import net.neoforged.neoforge.client.event.RegisterRenderStateExtensionEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -137,7 +137,7 @@ public class ClientEventTests {
         var key = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
         test.whenEnabled(listeners -> {
-            listeners.mod().addListener((RegisterRenderStateExtensionEvent event) -> {
+            listeners.mod().addListener((RegisterRenderStateModifiersEvent event) -> {
                 event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
                     renderState.setRenderData(key, 5);
                 });
