@@ -10,7 +10,10 @@ plugins {
     id 'net.neoforged.gradle.platform' version '7.0.163'
 }
 
-rootProject.name = rootDir.name
+if (rootProject.name.toLowerCase() == "neoforge") {
+    // Solve name clashes between projects/neoforge and the rootProject for Eclipse.
+    rootProject.name = "NeoForge-Root"
+}
 
 dynamicProjects {
     include ':base'
