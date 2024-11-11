@@ -290,6 +290,15 @@
                      itemstack = itemstack1.copy();
                      itemstack1.shrink(1);
                      break;
+@@ -1309,7 +_,7 @@
+         }
+ 
+         ItemStack itemstack = this.getItemBlockingWith();
+-        if (!p_21276_.is(DamageTypeTags.BYPASSES_SHIELD) && itemstack != null && itemstack.getItem() instanceof ShieldItem && !flag) {
++        if (!p_21276_.is(DamageTypeTags.BYPASSES_SHIELD) && itemstack != null && !flag) {
+             Vec3 vec3 = p_21276_.getSourcePosition();
+             if (vec3 != null) {
+                 Vec3 vec31 = this.calculateViewVector(0.0F, this.getYHeadRot());
 @@ -1343,6 +_,7 @@
      }
  
