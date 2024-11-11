@@ -30,7 +30,7 @@ public final class RenderStateExtensions {
         return (Collection<EntityRenderStateModifier<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
             var list = new ObjectArrayList<EntityRenderStateModifier<?, ?>>();
             for (var entry : ENTITY_EXTENSIONS.entrySet()) {
-                if (aClass.isInstance(entry.getClass())) {
+                if (aClass.isInstance(entry.getKey())) {
                     list.addAll(entry.getValue());
                 }
             }
