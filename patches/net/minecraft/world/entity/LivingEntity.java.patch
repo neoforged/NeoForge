@@ -290,6 +290,15 @@
                      itemstack = itemstack1.copy();
                      itemstack1.shrink(1);
                      break;
+@@ -1309,7 +_,7 @@
+         }
+ 
+         ItemStack itemstack = this.getItemBlockingWith();
+-        if (!p_21276_.is(DamageTypeTags.BYPASSES_SHIELD) && itemstack != null && itemstack.getItem() instanceof ShieldItem && !flag) {
++        if (!p_21276_.is(DamageTypeTags.BYPASSES_SHIELD) && itemstack != null && !flag) {
+             Vec3 vec3 = p_21276_.getSourcePosition();
+             if (vec3 != null) {
+                 Vec3 vec31 = this.calculateViewVector(0.0F, this.getYHeadRot());
 @@ -1343,6 +_,7 @@
      }
  
@@ -512,15 +521,6 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2184,7 +_,7 @@
-     public void travel(Vec3 p_21280_) {
-         if (this.isControlledByLocalInstance()) {
-             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
--            if ((this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-+            if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-                 this.travelInFluid(p_21280_);
-             } else if (this.isFallFlying()) {
-                 this.travelFallFlying();
 @@ -2196,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {

@@ -65,7 +65,11 @@ public class GameData {
 
     public static void freezeData() {
         LOGGER.debug(REGISTRIES, "Freezing registries");
-        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> ((MappedRegistry<?>) r).freeze());
+        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> {
+            // HolderSet.Named may be used for registry objects, vanilla binds these tags so freeze won't throw for unbound tags
+            ((MappedRegistry<?>) r).bindAllTagsToEmpty();
+            ((MappedRegistry<?>) r).freeze();
+        });
 
         RegistryManager.takeFrozenSnapshot();
 
