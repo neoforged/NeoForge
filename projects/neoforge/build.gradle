@@ -170,7 +170,9 @@ dependencies {
 
     // TODO: duplicated with the text fixtures
     userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
-    compileOnly(jarJar(project(":neoforge-coremods")))
+    // Must be implementation instead of compileOnly so that running dependent projects such as tests will trigger (re)compilation of coremods.
+    // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
+    implementation(jarJar(project(":neoforge-coremods")))
 }
 
 neoDev {
