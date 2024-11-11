@@ -277,6 +277,7 @@ public class ClientHooks {
     }
 
     public static <E extends Entity, S extends EntityRenderState> void onUpdateRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
+        renderState.resetRenderData();
         var modifiers = RenderStateExtensions.getCachedEntityModifiers(renderer);
         if (!modifiers.isEmpty()) {
             for (EntityRenderStateModifier<E, S> modifier : modifiers) {
