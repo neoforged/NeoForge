@@ -137,6 +137,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
+import net.neoforged.neoforge.client.entity.state.EntityRenderStateModifier;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -276,9 +277,11 @@ public class ClientHooks {
     }
 
     public static <E extends Entity, S extends EntityRenderState> void onUpdateRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
-        var extender = RenderStateExtensions.getMergedExtension(renderer);
-        if (extender != null) {
-            extender.accept(entity, renderState);
+        var modifiers = RenderStateExtensions.getCachedEntityModifiers(renderer);
+        if (!modifiers.isEmpty()) {
+            for (EntityRenderStateModifier<E, S> modifier : modifiers) {
+                modifier.accept(entity, renderState);
+            }
         }
     }
 

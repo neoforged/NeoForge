@@ -5,26 +5,34 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class EntityRenderState {
-+public class EntityRenderState extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.client.entity.state.IRenderStateExtension {
++public class EntityRenderState extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.client.extensions.IRenderStateExtension {
      public double x;
      public double y;
      public double z;
-@@ -27,6 +_,19 @@
+@@ -27,6 +_,27 @@
      public Vec3 nameTagAttachment;
      @Nullable
      public EntityRenderState.LeashState leashState;
 +    public float partialTick;
-+    private java.util.Map<net.neoforged.neoforge.client.entity.state.RenderStateKey<?>, Object> extensions = new it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<>(); // NeoForge: allow generic extension of render states
++    private java.util.Map<net.minecraft.util.context.ContextKey<?>, Object> extensions = java.util.Map.of(); // NeoForge: allow generic extension of render states
 +
++    @SuppressWarnings("unchecked")
 +    @Nullable
 +    @Override
-+    public <T> T getExtension(net.neoforged.neoforge.client.entity.state.RenderStateKey<T> key) {
-+        return (T) extensions.get(key);
++    public <T> T getRenderData(net.minecraft.util.context.ContextKey<T> key) {
++        return (T) extensions.getOrDefault(key, null);
 +    }
 +
 +    @Override
-+    public <T> void setExtension(net.neoforged.neoforge.client.entity.state.RenderStateKey<T> key, T obj) {
-+        extensions.put(key, obj);
++    public <T> void setRenderData(net.minecraft.util.context.ContextKey<T> key, @Nullable T data) {
++        if (extensions == java.util.Map.<net.minecraft.util.context.ContextKey<?>, Object>of()) {
++            extensions = new it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<>();
++        }
++        if (data == null) {
++            extensions.remove(key);
++        } else {
++            extensions.put(key, data);
++        }
 +    }
  
      @OnlyIn(Dist.CLIENT)

@@ -10,9 +10,7 @@ import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.SectionPos;
@@ -21,11 +19,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.entity.state.RenderStateKey;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
@@ -137,17 +134,17 @@ public class ClientEventTests {
     
     @TestHolder(description = { "" }, enabledByDefault = true)
     static void updateRenderState(final DynamicTest test) {
+        var key = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
-        var specialStateKey = new RenderStateKey<Float>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "special_context"));
         test.whenEnabled(listeners -> {
             listeners.mod().addListener((RegisterRenderStateExtensionEvent event) -> {
-                event.registerExtension(PlayerRenderer.class, (player, playerRenderState) -> {
-                    playerRenderState.setExtension(specialStateKey, 42f);
+                event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
+                    renderState.setRenderData(key, 5);
                 });
             });
             listeners.forge().addListener((RenderPlayerEvent.Post event) -> {
                 int numRender = event.getRenderState().getData(testAttachment);
-                float xRotation = event.getRenderState().getExtensionOrThrow(specialStateKey);
+                int xRotation = event.getRenderState().getRenderDataOrDefault(key, -1);
                 var poseStack = event.getPoseStack();
                 poseStack.pushPose();
                 for (int i = 0; i < numRender; i++) {
