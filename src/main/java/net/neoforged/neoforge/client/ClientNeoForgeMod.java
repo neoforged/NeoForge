@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.SpawnEggItem;
@@ -49,10 +48,6 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
-    static {
-        TranslatableContents.lang = () -> com.ibm.icu.util.ULocale.forLocale(net.minecraft.client.Minecraft.getInstance().getLocale());
-    }
-
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
