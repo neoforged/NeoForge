@@ -16,10 +16,10 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
@@ -131,7 +131,7 @@ public class ClientEventTests {
             test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Is an iron block rendered above you in third-person?"));
         });
     }
-    
+
     @TestHolder(description = { "" }, enabledByDefault = true)
     static void updateRenderState(final DynamicTest test) {
         var key = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test"));
