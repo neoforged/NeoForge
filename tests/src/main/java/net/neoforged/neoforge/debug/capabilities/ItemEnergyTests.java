@@ -41,7 +41,7 @@ public class ItemEnergyTests {
             .build());
 
     private static final DeferredItems ITEMS = HELPER.items();
-    private static final DeferredItem<Item> BATTERY = ITEMS.register("test_battery", () -> new Item(new Item.Properties().component(ENERGY_COMPONENT, MAX_CAPACITY)));
+    private static final DeferredItem<Item> BATTERY = ITEMS.registerItem("test_battery", props -> new Item(props.component(ENERGY_COMPONENT, MAX_CAPACITY)));
 
     @OnInit
     static void init(final TestFramework framework) {

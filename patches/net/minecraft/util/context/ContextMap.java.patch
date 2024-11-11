@@ -1,0 +1,11 @@
+--- a/net/minecraft/util/context/ContextMap.java
++++ b/net/minecraft/util/context/ContextMap.java
+@@ -73,7 +_,7 @@
+ 
+         public ContextMap create(ContextKeySet p_381168_) {
+             Set<ContextKey<?>> set = Sets.difference(this.params.keySet(), p_381168_.allowed());
+-            if (!set.isEmpty()) {
++            if (false && !set.isEmpty()) {
+                 throw new IllegalArgumentException("Parameters not allowed in this parameter set: " + set);
+             } else {
+                 Set<ContextKey<?>> set1 = Sets.difference(p_381168_.required(), this.params.keySet());

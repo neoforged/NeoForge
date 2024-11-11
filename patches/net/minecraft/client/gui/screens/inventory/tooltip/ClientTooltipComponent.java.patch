@@ -1,11 +1,15 @@
 --- a/net/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipComponent.java
 +++ b/net/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipComponent.java
-@@ -22,6 +_,8 @@
-         } else if (p_169951_ instanceof ClientActivePlayersTooltip.ActivePlayersTooltip clientactiveplayerstooltip$activeplayerstooltip) {
-             return new ClientActivePlayersTooltip(clientactiveplayerstooltip$activeplayerstooltip);
-         } else {
-+            ClientTooltipComponent result = net.neoforged.neoforge.client.gui.ClientTooltipComponentManager.createClientTooltipComponent(p_169951_);
-+            if (result != null) return result;
-             throw new IllegalArgumentException("Unknown TooltipComponent");
-         }
+@@ -25,7 +_,11 @@
+             case ClientActivePlayersTooltip.ActivePlayersTooltip clientactiveplayerstooltip$activeplayerstooltip -> new ClientActivePlayersTooltip(
+             clientactiveplayerstooltip$activeplayerstooltip
+         );
+-            default -> throw new IllegalArgumentException("Unknown TooltipComponent");
++            default -> {
++                ClientTooltipComponent result = net.neoforged.neoforge.client.gui.ClientTooltipComponentManager.createClientTooltipComponent(p_169951_);
++                if (result != null) yield result;
++                throw new IllegalArgumentException("Unknown TooltipComponent");
++            }
+         });
      }
+ 

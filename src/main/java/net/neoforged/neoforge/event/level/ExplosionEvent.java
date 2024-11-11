@@ -8,8 +8,8 @@ package net.neoforged.neoforge.event.level;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerExplosion;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -27,9 +27,9 @@ import net.neoforged.neoforge.common.NeoForge;
  */
 public abstract class ExplosionEvent extends Event {
     private final Level level;
-    private final Explosion explosion;
+    private final ServerExplosion explosion;
 
-    public ExplosionEvent(Level level, Explosion explosion) {
+    public ExplosionEvent(Level level, ServerExplosion explosion) {
         this.level = level;
         this.explosion = explosion;
     }
@@ -38,7 +38,7 @@ public abstract class ExplosionEvent extends Event {
         return level;
     }
 
-    public Explosion getExplosion() {
+    public ServerExplosion getExplosion() {
         return explosion;
     }
 
@@ -50,7 +50,7 @@ public abstract class ExplosionEvent extends Event {
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      */
     public static class Start extends ExplosionEvent implements ICancellableEvent {
-        public Start(Level level, Explosion explosion) {
+        public Start(Level level, ServerExplosion explosion) {
             super(level, explosion);
         }
     }
@@ -64,15 +64,17 @@ public abstract class ExplosionEvent extends Event {
      */
     public static class Detonate extends ExplosionEvent {
         private final List<Entity> entityList;
+        private final List<BlockPos> blockList;
 
-        public Detonate(Level level, Explosion explosion, List<Entity> entityList) {
+        public Detonate(Level level, ServerExplosion explosion, List<Entity> entityList, List<BlockPos> blockList) {
             super(level, explosion);
             this.entityList = entityList;
+            this.blockList = blockList;
         }
 
         /** return the list of blocks affected by the explosion. */
         public List<BlockPos> getAffectedBlocks() {
-            return getExplosion().getToBlow();
+            return this.blockList;
         }
 
         /** return the list of entities affected by the explosion. */

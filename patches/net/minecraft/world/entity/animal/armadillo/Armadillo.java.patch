@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -300,7 +_,7 @@
+@@ -305,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player p_316559_, InteractionHand p_316119_) {
          ItemStack itemstack = p_316559_.getItemInHand(p_316119_);
 -        if (itemstack.is(Items.BRUSH) && this.brushOffScute()) {
 +        if (itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.BRUSH_BRUSH) && this.brushOffScute()) {
              itemstack.hurtAndBreak(16, p_316559_, getSlotForHand(p_316119_));
-             return InteractionResult.sidedSuccess(this.level().isClientSide);
+             return InteractionResult.SUCCESS;
          } else {

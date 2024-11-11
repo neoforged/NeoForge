@@ -98,7 +98,7 @@ public class LoginPacketSplitTest {
             if (FMLLoader.getDist().isClient()) {
                 NeoForge.EVENT_BUS.addListener((final RegisterClientCommandsEvent event) -> event.getDispatcher().register(Commands.literal("big_data")
                         .executes(context -> {
-                            context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().registryOrThrow(BIG_DATA).holders().count() + " entries."), true);
+                            context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().lookupOrThrow(BIG_DATA).size() + " entries."), true);
                             return Command.SINGLE_SUCCESS;
                         })));
             }
@@ -123,7 +123,7 @@ public class LoginPacketSplitTest {
         LOG.warn("Setting up big data registry took " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " miliseconds.");
 
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        dummyRegistry.holders().forEach(ref -> {
+        dummyRegistry.listElements().forEach(ref -> {
             buf.writeUtf(ref.getRegisteredName());
             buf.writeJsonWithCodec(BigData.CODEC, ref.value());
         });

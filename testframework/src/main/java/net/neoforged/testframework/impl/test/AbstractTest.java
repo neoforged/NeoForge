@@ -27,6 +27,7 @@ import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -201,8 +202,8 @@ public abstract class AbstractTest implements Test {
     }
 
     public final void requestConfirmation(Player player, Component message) {
-        if (framework instanceof MutableTestFramework internal) {
-            player.sendSystemMessage(message.copy().append(" ").append(
+        if (framework instanceof MutableTestFramework internal && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.sendSystemMessage(message.copy().append(" ").append(
                     Component.literal("Yes").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)
                             .withClickEvent(internal.setStatusCommand(
                                     id(), Result.PASSED, "")))

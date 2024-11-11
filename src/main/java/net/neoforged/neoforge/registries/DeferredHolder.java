@@ -134,7 +134,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     @Nullable
     @SuppressWarnings("unchecked")
     protected Registry<R> getRegistry() {
-        return (Registry<R>) BuiltInRegistries.REGISTRY.get(this.key.registry());
+        return (Registry<R>) BuiltInRegistries.REGISTRY.getValue(this.key.registry());
     }
 
     /**
@@ -150,7 +150,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
 
         Registry<R> registry = getRegistry();
         if (registry != null) {
-            this.holder = registry.getHolder(this.key).orElse(null);
+            this.holder = registry.get(this.key).orElse(null);
         } else if (throwOnMissingRegistry) {
             throw new IllegalStateException("Registry not present for " + this + ": " + this.key.registry());
         }

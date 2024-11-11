@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -188,7 +_,7 @@
+@@ -189,7 +_,7 @@
              this.shakeTime--;
          }
  
@@ -9,14 +9,20 @@
              this.clearFire();
          }
  
-@@ -224,7 +_,9 @@
-                     }
-                 }
+@@ -269,11 +_,15 @@
  
--                if (hitresult != null && !flag) {
-+                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
-+                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult))
+             if (entityhitresult == null) {
+                 if (this.isAlive() && p_371761_.getType() != HitResult.Type.MISS) {
++                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, p_371761_))
 +                        break;
-                     ProjectileDeflection projectiledeflection = this.hitTargetOrDeflectSelf(hitresult);
+                     this.hitTargetOrDeflectSelf(p_371761_);
                      this.hasImpulse = true;
-                     if (projectiledeflection != ProjectileDeflection.NONE) {
+                 }
+                 break;
+-            } else if (this.isAlive() && !this.noPhysics) {
++            } else if (this.isAlive() && !this.noPhysics && entityhitresult.getType() != HitResult.Type.MISS) {
++                if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, entityhitresult))
++                    break;
+                 ProjectileDeflection projectiledeflection = this.hitTargetOrDeflectSelf(entityhitresult);
+                 this.hasImpulse = true;
+                 if (this.getPierceLevel() > 0 && projectiledeflection == ProjectileDeflection.NONE) {

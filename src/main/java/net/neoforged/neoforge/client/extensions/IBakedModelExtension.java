@@ -89,25 +89,25 @@ public interface IBakedModelExtension {
      * Gets an ordered list of {@link RenderType render types} to use when drawing this item.
      * All render types using the {@link com.mojang.blaze3d.vertex.DefaultVertexFormat#NEW_ENTITY} format are supported.
      * <p>
-     * This method will only be called on the models returned by {@link #getRenderPasses(ItemStack, boolean)}.
+     * This method will only be called on the models returned by {@link #getRenderPasses(ItemStack)}.
      * <p>
      * By default, defers query to {@link ItemBlockRenderTypes}.
      *
-     * @see #getRenderPasses(ItemStack, boolean)
+     * @see #getRenderPasses(ItemStack)
      */
-    default List<RenderType> getRenderTypes(ItemStack itemStack, boolean fabulous) {
-        return List.of(RenderTypeHelper.getFallbackItemRenderType(itemStack, self(), fabulous));
+    default List<RenderType> getRenderTypes(ItemStack itemStack) {
+        return List.of(RenderTypeHelper.getFallbackItemRenderType(itemStack, self()));
     }
 
     /**
      * Gets an ordered list of baked models used to render this model as an item.
-     * Each of those models' render types will be queried via {@link #getRenderTypes(ItemStack, boolean)}.
+     * Each of those models' render types will be queried via {@link #getRenderTypes(ItemStack)}.
      * <p>
      * By default, returns the model itself.
      *
-     * @see #getRenderTypes(ItemStack, boolean)
+     * @see #getRenderTypes(ItemStack)
      */
-    default List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
+    default List<BakedModel> getRenderPasses(ItemStack itemStack) {
         return List.of(self());
     }
 }

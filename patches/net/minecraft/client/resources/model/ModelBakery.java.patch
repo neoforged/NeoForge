@@ -1,25 +1,12 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -117,6 +_,12 @@
-         p_252014_.popPush("special");
-         this.loadSpecialItemModelAndDependencies(ItemRenderer.TRIDENT_IN_HAND_MODEL);
-         this.loadSpecialItemModelAndDependencies(ItemRenderer.SPYGLASS_IN_HAND_MODEL);
-+        Set<ModelResourceLocation> additionalModels = new HashSet<>();
-+        net.neoforged.neoforge.client.ClientHooks.onRegisterAdditionalModels(additionalModels);
-+        for (ModelResourceLocation rl : additionalModels) {
-+            UnbakedModel unbakedmodel = this.getModel(rl.id());
-+            this.registerModelAndLoadDependencies(rl, unbakedmodel);
-+        }
-         this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
-         p_252014_.pop();
-     }
-@@ -246,14 +_,30 @@
+@@ -94,25 +_,46 @@
          }
  
          @Override
-+        @Nullable
++        @org.jetbrains.annotations.Nullable
 +        public UnbakedModel getTopLevelModel(ModelResourceLocation location) {
-+            return topLevelModels.get(location);
++            return topModels.get(location);
 +        }
 +
 +        @Override
@@ -45,22 +32,17 @@
                  ModelBakery.this.bakedCache.put(modelbakery$bakedcachekey, bakedmodel1);
                  return bakedmodel1;
              }
-@@ -261,13 +_,19 @@
+         }
  
-         @Nullable
          BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_) {
 +            return bakeUncached(p_352386_, p_352194_, this.modelTextureGetter);
 +        }
 +
 +        @Override
-+        @Nullable
 +        public BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_, Function<Material, TextureAtlasSprite> sprites) {
-             if (p_352386_ instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {
-                 return ModelBakery.ITEM_MODEL_GENERATOR
--                    .generateBlockModel(this.modelTextureGetter, blockmodel)
--                    .bake(this, blockmodel, this.modelTextureGetter, p_352194_, false);
-+                    .generateBlockModel(sprites, blockmodel)
-+                    .bake(this, blockmodel, sprites, p_352194_, false);
+             if (p_352386_ instanceof BlockModel blockmodel && blockmodel.getRootModel() == SpecialModels.GENERATED_MARKER) {
+-                return ModelBakery.ITEM_MODEL_GENERATOR.generateBlockModel(this.modelTextureGetter, blockmodel).bake(this.modelTextureGetter, p_352194_, false);
++                return ModelBakery.ITEM_MODEL_GENERATOR.generateBlockModel(sprites, blockmodel).bake(sprites, p_352194_, false);
              }
  
 -            return p_352386_.bake(this, this.modelTextureGetter, p_352194_);

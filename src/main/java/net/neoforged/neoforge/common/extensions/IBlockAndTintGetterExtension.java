@@ -21,6 +21,6 @@ public interface IBlockAndTintGetterExtension {
      * Alternate version of the vanilla method taking in a {@link Direction}.
      */
     default float getShade(float normalX, float normalY, float normalZ, boolean shade) {
-        return self().getShade(Direction.getNearest(normalX, normalY, normalZ), shade);
+        return self().getShade(Direction.getApproximateNearest(normalX, normalY, normalZ), shade);
     }
 }

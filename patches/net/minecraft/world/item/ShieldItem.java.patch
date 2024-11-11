@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/item/ShieldItem.java
 +++ b/net/minecraft/world/item/ShieldItem.java
-@@ -58,4 +_,9 @@
-     public EquipmentSlot getEquipmentSlot() {
-         return EquipmentSlot.OFFHAND;
+@@ -43,4 +_,9 @@
+         p_43100_.startUsingItem(p_43101_);
+         return InteractionResult.CONSUME;
      }
 +
 +    @Override

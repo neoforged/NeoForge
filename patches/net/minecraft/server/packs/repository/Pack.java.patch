@@ -52,11 +52,18 @@
          this.location = p_326123_;
          this.resources = p_249377_;
          this.metadata = p_326375_;
-@@ -55,7 +_,7 @@
+@@ -55,7 +_,14 @@
                  PackCompatibility packcompatibility = PackCompatibility.forVersion(inclusiverange, p_326341_);
                  OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.TYPE);
                  List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(p_326341_) : List.of();
 -                pack$metadata = new Pack.Metadata(packmetadatasection.description(), packcompatibility, featureflagset, list);
++                // Neo: add `neoforge:overlays` overlays as well
++                var neoOverlays = packresources.getMetadataSection(OverlayMetadataSection.NEOFORGE_TYPE);
++                if (neoOverlays != null) {
++                    list = new java.util.ArrayList<>(list);
++                    list.addAll(neoOverlays.overlaysForVersion(p_326341_));
++                    list = List.copyOf(list);
++                }
 +                pack$metadata = new Pack.Metadata(packmetadatasection.description(), packcompatibility, featureflagset, list, packresources.isHidden());
              }
  

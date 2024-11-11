@@ -25,6 +25,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.LogoRenderer;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -47,7 +48,6 @@ import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.StringUtils;
-import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -375,46 +375,53 @@ public class ModListScreen extends Screen {
         VersionChecker.CheckResult vercheck = VersionChecker.getResult(selectedMod);
 
         @SuppressWarnings("resource")
-        Pair<ResourceLocation, Size2i> logoData = selectedMod.getLogoFile().map(logoFile -> {
-            TextureManager tm = this.minecraft.getTextureManager();
-            final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
-                    .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
-            try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod/" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
-                NativeImage logo = null;
-                IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
-                if (logoResource != null)
-                    logo = NativeImage.read(logoResource.get());
-                if (logo != null) {
+        Pair<ResourceLocation, Size2i> logoData;
 
-                    return Pair.of(tm.register("modlogo", new DynamicTexture(logo) {
-                        @Override
-                        public void upload() {
-                            this.bind();
-                            NativeImage td = this.getPixels();
-                            // Use custom "blur" value which controls texture filtering (nearest-neighbor vs linear)
-                            this.getPixels().upload(0, 0, 0, 0, 0, td.getWidth(), td.getHeight(), selectedMod.getLogoBlur(), false, false, false);
-                        }
-                    }), new Size2i(logo.getWidth(), logo.getHeight()));
-                }
-            } catch (IOException | IllegalArgumentException e) {}
-            return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
-        }).orElse(Pair.of(null, new Size2i(0, 0)));
+        if (selectedMod.getModId().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
+            logoData = Pair.of(LogoRenderer.MINECRAFT_LOGO, new Size2i(LogoRenderer.LOGO_TEXTURE_WIDTH, LogoRenderer.LOGO_TEXTURE_HEIGHT));
+        } else {
+            logoData = selectedMod.getLogoFile().map(logoFile -> {
+                TextureManager tm = this.minecraft.getTextureManager();
+                final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
+                        .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
+                try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod/" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
+                    NativeImage logo = null;
+                    IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
+                    if (logoResource != null)
+                        logo = NativeImage.read(logoResource.get());
+                    if (logo != null) {
+
+                        return Pair.of(tm.register("modlogo", new DynamicTexture(logo) {
+                            @Override
+                            public void upload() {
+                                this.bind();
+                                NativeImage td = this.getPixels();
+                                // Use custom "blur" value which controls texture filtering (nearest-neighbor vs linear)
+                                this.getPixels().upload(0, 0, 0, 0, 0, td.getWidth(), td.getHeight(), selectedMod.getLogoBlur(), false, false, false);
+                            }
+                        }), new Size2i(logo.getWidth(), logo.getHeight()));
+                    }
+                } catch (IOException | IllegalArgumentException e) {}
+                return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
+            }).orElse(Pair.of(null, new Size2i(0, 0)));
+        }
 
         lines.add(selectedMod.getDisplayName());
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.version", MavenVersionTranslator.artifactVersionToString(selectedMod.getVersion())));
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
-        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits)));
-        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors)));
-        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
+        // Normalizing line endings to LF because it is currently not automatically handled for us. Descriptions are already normalized.
+        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL).replace("\r\n", "\n")));
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.nochildmods"));
         else
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
-            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
-        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()).replace("\r\n", "\n"));
+        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", selectedMod.getOwningFile().getLicense()).replace("\r\n", "\n"));
         lines.add(null);
         lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
 

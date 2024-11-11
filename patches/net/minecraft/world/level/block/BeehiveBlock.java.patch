@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BeehiveBlock.java
 +++ b/net/minecraft/world/level/block/BeehiveBlock.java
-@@ -126,7 +_,7 @@
+@@ -142,7 +_,7 @@
          boolean flag = false;
          if (i >= 5) {
              Item item = p_316844_.getItem();

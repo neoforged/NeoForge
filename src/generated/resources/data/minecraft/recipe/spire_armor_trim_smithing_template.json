@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:gems/diamond"
-    },
-    "C": {
-      "item": "minecraft:purpur_block"
-    },
-    "S": {
-      "item": "minecraft:spire_armor_trim_smithing_template"
-    }
+    "#": "#c:gems/diamond",
+    "C": "minecraft:purpur_block",
+    "S": "minecraft:spire_armor_trim_smithing_template"
   },
   "pattern": [
     "#S#",

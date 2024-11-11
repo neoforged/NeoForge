@@ -56,11 +56,22 @@
              Optional<Holder<Potion>> optional = p_43531_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
              if (optional.isEmpty()) {
                  return p_43531_;
-@@ -127,6 +_,7 @@
+@@ -124,9 +_,18 @@
+         }
+     }
+ 
++    /**
++     * @deprecated Use {@link #bootstrap(FeatureFlagSet, net.minecraft.core.RegistryAccess)} instead
++     */
++    @Deprecated
      public static PotionBrewing bootstrap(FeatureFlagSet p_341301_) {
++        return bootstrap(p_341301_, net.minecraft.core.RegistryAccess.EMPTY);
++    }
++
++    public static PotionBrewing bootstrap(FeatureFlagSet p_341301_, net.minecraft.core.RegistryAccess registryAccess) {
          PotionBrewing.Builder potionbrewing$builder = new PotionBrewing.Builder(p_341301_);
          addVanillaMixes(potionbrewing$builder);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent(potionbrewing$builder));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent(potionbrewing$builder, registryAccess));
          return potionbrewing$builder.build();
      }
  

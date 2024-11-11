@@ -49,7 +49,7 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
         }
         if (Objects.requireNonNullElse(oldValue, (byte) 0) != value) {
             owner.getLevel().getChunkSource().getLightEngine().checkBlock(pos);
-            owner.setUnsaved(true);
+            owner.markUnsaved();
         }
     }
 

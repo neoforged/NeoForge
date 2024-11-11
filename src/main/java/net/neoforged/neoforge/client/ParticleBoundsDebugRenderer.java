@@ -10,8 +10,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.commands.Commands;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -44,7 +44,7 @@ public final class ParticleBoundsDebugRenderer {
                 var offset = particle.getPos().subtract(camPos);
                 poseStack.translate(offset.x, offset.y, offset.z);
                 bb = bb.move(-particle.getPos().x, -particle.getPos().y, -particle.getPos().z);
-                LevelRenderer.renderLineBox(poseStack, consumer, bb, 1F, 0F, 0F, 1F);
+                ShapeRenderer.renderLineBox(poseStack, consumer, bb, 1F, 0F, 0F, 1F);
                 poseStack.popPose();
             }
         });

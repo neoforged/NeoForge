@@ -9,27 +9,28 @@
      public static final String SPAWN_DATA_TAG = "SpawnData";
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int EVENT_SPAWN = 1;
-@@ -151,15 +_,14 @@
+@@ -151,16 +_,14 @@
  
                          entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), randomsource.nextFloat() * 360.0F, 0.0F);
                          if (entity instanceof Mob mob) {
--                            if (spawndata.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(p_151312_, MobSpawnType.SPAWNER)
+-                            if (spawndata.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(p_151312_, EntitySpawnReason.SPAWNER)
 -                                || !mob.checkSpawnObstruction(p_151312_)) {
-+                            if (!net.neoforged.neoforge.event.EventHooks.checkSpawnPositionSpawner(mob, p_151312_, MobSpawnType.SPAWNER, spawndata, this)) {
++                            if (!net.neoforged.neoforge.event.EventHooks.checkSpawnPositionSpawner(mob, p_151312_, EntitySpawnReason.SPAWNER, spawndata, this)) {
                                  continue;
                              }
  
                              boolean flag1 = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().contains("id", 8);
 -                            if (flag1) {
--                                ((Mob)entity).finalizeSpawn(p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null);
+-                                ((Mob)entity)
+-                                    .finalizeSpawn(p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null);
 -                            }
 +                            // Neo: Patch in FinalizeSpawn for spawners so it may be fired unconditionally, instead of only when vanilla would normally call it.
 +                            // The local flag1 is the conditions under which the spawner will normally call Mob#finalizeSpawn.
-+                            net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, this, flag1);
++                            net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_151312_, p_151312_.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null, this, flag1);
  
                              spawndata.getEquipment().ifPresent(mob::equip);
                          }
-@@ -308,5 +_,12 @@
+@@ -309,5 +_,12 @@
  
      public double getoSpin() {
          return this.oSpin;

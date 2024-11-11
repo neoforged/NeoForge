@@ -9,7 +9,7 @@
      public static final int DEFAULT_NBT_QUOTA = 2097152;
      private final ByteBuf source;
      public static final short MAX_STRING_LENGTH = 32767;
-@@ -1588,5 +_,10 @@
+@@ -1623,5 +_,10 @@
      @Override
      public boolean release(int p_130347_) {
          return this.source.release(p_130347_);

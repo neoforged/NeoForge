@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.model.lighting;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.Objects;
@@ -91,7 +92,19 @@ public abstract class QuadLighter {
      * @param quad the quad to compute lightmap values for
      */
     public final void computeLightingForQuad(BakedQuad quad) {
-        var vertices = quad.getVertices();
+        computeLightingForQuad(quad.getVertices(), quad.isShade());
+    }
+
+    /**
+     * Compute the brightness and lightmap values for each vertex of this quad. After a call to this method, the
+     * values may be accessed using {@link QuadLighter#getComputedBrightness()} and {@link QuadLighter#getComputedLightmap()}.
+     * <p>
+     * This overload allows cleanly reusing the same vertex data array many times.
+     *
+     * @param vertices the vertex data for the quad (must be in {@link DefaultVertexFormat#BLOCK} format)
+     * @param isShade  whether the quad should be shaded (same semantics as {@link BakedQuad#isShade()})
+     */
+    public final void computeLightingForQuad(int[] vertices, boolean isShade) {
         for (int i = 0; i < 4; i++) {
             int offset = i * IQuadTransformer.STRIDE;
             positions[i][0] = Float.intBitsToFloat(vertices[offset + IQuadTransformer.POSITION]);
@@ -127,7 +140,7 @@ public abstract class QuadLighter {
             adjustedPosition[1] = position[1] - 0.5f + ((normal[1] / 127f) * 0.5f);
             adjustedPosition[2] = position[2] - 0.5f + ((normal[2] / 127f) * 0.5f);
 
-            var shade = level.getShade(normals[i][0] / 127f, normals[i][1] / 127f, normals[i][2] / 127f, quad.isShade());
+            var shade = level.getShade(normal[0] / 127f, normal[1] / 127f, normal[2] / 127f, isShade);
             brightness[i] = calculateBrightness(adjustedPosition) * shade;
             int newLightmap = calculateLightmap(adjustedPosition, normal);
             lightmap[i] = Math.max(packedLightmap & 0xFFFF, newLightmap & 0xFFFF) |

@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -81,11 +_,11 @@
-         ParticleRenderType.CUSTOM
+@@ -77,11 +_,11 @@
+         ParticleRenderType.TERRAIN_SHEET, ParticleRenderType.PARTICLE_SHEET_OPAQUE, ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT, ParticleRenderType.CUSTOM
      );
      protected ClientLevel level;
 -    private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newIdentityHashMap();
@@ -14,8 +14,8 @@
      private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
      private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
      private final TextureAtlas textureAtlas;
-@@ -216,10 +_,14 @@
-         this.register(ParticleTypes.OMINOUS_SPAWNING, FlyStraightTowardsParticle.OminousSpawnProvider::new);
+@@ -214,10 +_,14 @@
+         this.register(ParticleTypes.BLOCK_CRUMBLE, new TerrainParticle.CrumblingProvider());
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
@@ -30,7 +30,7 @@
      public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
          this.register(
              p_273423_,
-@@ -236,10 +_,12 @@
+@@ -234,10 +_,12 @@
          );
      }
  
@@ -44,7 +44,7 @@
      }
  
      @Override
-@@ -365,7 +_,7 @@
+@@ -357,7 +_,7 @@
      private <T extends ParticleOptions> Particle makeParticle(
          T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
      ) {
@@ -53,7 +53,7 @@
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
-@@ -441,11 +_,20 @@
+@@ -433,17 +_,27 @@
          }
      }
  
@@ -74,8 +74,7 @@
 +            if (particlerendertype == ParticleRenderType.NO_RENDER || !renderTypePredicate.test(particlerendertype)) continue;
              Queue<Particle> queue = this.particles.get(particlerendertype);
              if (queue != null && !queue.isEmpty()) {
-                 RenderSystem.setShader(GameRenderer::getParticleShader);
-@@ -453,6 +_,7 @@
+                 Tesselator tesselator = Tesselator.getInstance();
                  BufferBuilder bufferbuilder = particlerendertype.begin(tesselator, this.textureManager);
                  if (bufferbuilder != null) {
                      for (Particle particle : queue) {
@@ -83,7 +82,7 @@
                          try {
                              particle.render(bufferbuilder, p_107340_, p_107341_);
                          } catch (Throwable throwable) {
-@@ -484,7 +_,7 @@
+@@ -475,7 +_,7 @@
      }
  
      public void destroy(BlockPos p_107356_, BlockState p_107357_) {
@@ -92,7 +91,7 @@
              VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
              double d0 = 0.25;
              voxelshape.forAllBoxes(
-@@ -516,7 +_,7 @@
+@@ -507,7 +_,7 @@
                                          d6 - 0.5,
                                          p_107357_,
                                          p_107356_
@@ -101,7 +100,7 @@
                                  );
                              }
                          }
-@@ -561,12 +_,28 @@
+@@ -552,12 +_,28 @@
                  d0 = (double)i + aabb.maxX + 0.1F;
              }
  

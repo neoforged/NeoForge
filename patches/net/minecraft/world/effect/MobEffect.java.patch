@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -35,7 +_,7 @@
+@@ -36,7 +_,7 @@
  import net.minecraft.world.flag.FeatureFlagSet;
  import net.minecraft.world.flag.FeatureFlags;
  
@@ -9,7 +9,24 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
-@@ -130,6 +_,18 @@
+@@ -65,6 +_,16 @@
+         this.particleFactory = p_333515_ -> p_333716_;
+     }
+ 
++    /**
++     * Neo: Constructor that can take in the particle factory as a function of the {@link MobEffectInstance}.
++     * This should be used if the desired {@link ParticleOptions} depends on the presence of other registry entries.
++     */
++    protected MobEffect(MobEffectCategory category, int color, Function<MobEffectInstance, ParticleOptions> particleFactory) {
++        this.category = category;
++        this.color = color;
++        this.particleFactory = particleFactory;
++    }
++
+     public int getBlendDurationTicks() {
+         return this.blendDurationTicks;
+     }
+@@ -133,6 +_,18 @@
          return this;
      }
  
@@ -28,19 +45,11 @@
      public MobEffect setBlendDuration(int p_316265_) {
          this.blendDurationTicks = p_316265_;
          return this;
-@@ -181,8 +_,24 @@
+@@ -184,8 +_,16 @@
          return this.requiredFeatures;
      }
  
 -    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
-+    /**
-+     * Neo: Allowing mods to define client behavior for their MobEffects
-+     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
-+     */
-+    @Deprecated(forRemoval = true, since = "1.21")
-+    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
-+    }
-+
 +    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
 +
 +        public AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {

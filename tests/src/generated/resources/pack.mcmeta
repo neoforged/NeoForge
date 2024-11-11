@@ -1,4 +1,15 @@
 {
+  "neoforge:overlays": {
+    "entries": [
+      {
+        "directory": "neoforge_overlays_test",
+        "formats": [
+          0,
+          2147483647
+        ]
+      }
+    ]
+  },
   "overlays": {
     "entries": [
       {
@@ -38,7 +49,7 @@
   },
   "pack": {
     "description": "NeoForge tests resource pack",
-    "pack_format": 34,
+    "pack_format": 42,
     "supported_formats": [
       0,
       2147483647

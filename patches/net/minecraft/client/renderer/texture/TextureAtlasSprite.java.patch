@@ -12,6 +12,6 @@
 +              y += this.contents.animatedTexture.getFrameY(frameIndex) * this.contents.height;
 +         }
 +
-+         return this.contents.getOriginalImage().getPixelRGBA(x, y);
++         return this.contents.getOriginalImage().getPixel(x, y);
 +    }
  }

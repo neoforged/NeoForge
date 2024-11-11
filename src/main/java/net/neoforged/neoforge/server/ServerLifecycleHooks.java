@@ -161,20 +161,20 @@ public class ServerLifecycleHooks {
         final RegistryAccess registries = server.registryAccess();
 
         // The order of holders() is the order modifiers were loaded in.
-        final List<BiomeModifier> biomeModifiers = registries.registryOrThrow(NeoForgeRegistries.Keys.BIOME_MODIFIERS)
-                .holders()
+        final List<BiomeModifier> biomeModifiers = registries.lookupOrThrow(NeoForgeRegistries.Keys.BIOME_MODIFIERS)
+                .listElements()
                 .map(Holder::value)
                 .toList();
-        final List<StructureModifier> structureModifiers = registries.registryOrThrow(Keys.STRUCTURE_MODIFIERS)
-                .holders()
+        final List<StructureModifier> structureModifiers = registries.lookupOrThrow(Keys.STRUCTURE_MODIFIERS)
+                .listElements()
                 .map(Holder::value)
                 .toList();
 
         final Set<EntityType<?>> entitiesWithoutPlacements = new HashSet<>();
 
         // Apply sorted biome modifiers to each biome.
-        final var biomeRegistry = registries.registryOrThrow(Registries.BIOME);
-        biomeRegistry.holders().forEach(biomeHolder -> {
+        final var biomeRegistry = registries.lookupOrThrow(Registries.BIOME);
+        biomeRegistry.listElements().forEach(biomeHolder -> {
             final Biome biome = biomeHolder.value();
             ensureProperSync(
                     biome.modifiableBiomeInfo()
@@ -208,12 +208,12 @@ public class ServerLifecycleHooks {
             }
         });
         // Rebuild the indexed feature list
-        registries.registryOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
+        registries.lookupOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
             levelStem.generator().refreshFeaturesPerStep();
         });
 
         // Apply sorted structure modifiers to each structure.
-        registries.registryOrThrow(Registries.STRUCTURE).holders().forEach(structureHolder -> {
+        registries.lookupOrThrow(Registries.STRUCTURE).listElements().forEach(structureHolder -> {
             structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers);
         });
 

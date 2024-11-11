@@ -1,19 +1,20 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -36,8 +_,10 @@
-     private static Language loadDefault() {
-         Builder<String, String> builder = ImmutableMap.builder();
-         BiConsumer<String, String> biconsumer = builder::put;
+@@ -36,9 +_,11 @@
+         DeprecatedTranslationsInfo deprecatedtranslationsinfo = DeprecatedTranslationsInfo.loadFromDefaultResource();
+         Map<String, String> map = new HashMap<>();
+         BiConsumer<String, String> biconsumer = map::put;
 -        parseTranslations(biconsumer, "/assets/minecraft/lang/en_us.json");
--        final Map<String, String> map = builder.build();
 +        Map<String, net.minecraft.network.chat.Component> componentMap = new java.util.HashMap<>();
 +        parseTranslations(biconsumer, componentMap::put, "/assets/minecraft/lang/en_us.json");
-+        final Map<String, String> map = new java.util.HashMap<>(builder.build());
+         deprecatedtranslationsinfo.applyToMap(map);
+-        final Map<String, String> map1 = Map.copyOf(map);
++        final Map<String, String> map1 = map; // Neo keep the map mutable to make LanguageHook work
 +        net.neoforged.neoforge.server.LanguageHook.captureLanguageMap(map, componentMap);
          return new Language() {
              @Override
              public String getOrDefault(String p_128127_, String p_265421_) {
-@@ -64,21 +_,51 @@
+@@ -65,21 +_,51 @@
                          )
                          .isPresent();
              }
@@ -66,14 +67,14 @@
              String s = UNSUPPORTED_FORMAT_PATTERN.matcher(GsonHelper.convertToString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
              p_128110_.accept(entry.getKey(), s);
          }
-@@ -90,6 +_,13 @@
+@@ -91,6 +_,13 @@
  
      public static void inject(Language p_128115_) {
          instance = p_128115_;
 +    }
 +
 +    // Neo: All helpers methods below are injected by Neo to ease modder's usage of Language
-+    public Map<String, String> getLanguageData() { return ImmutableMap.of(); }
++    public Map<String, String> getLanguageData() { return com.google.common.collect.ImmutableMap.of(); }
 +
 +    public @org.jetbrains.annotations.Nullable net.minecraft.network.chat.Component getComponent(String key) {
 +        return null;

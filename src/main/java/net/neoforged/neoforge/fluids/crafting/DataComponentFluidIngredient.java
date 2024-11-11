@@ -20,11 +20,13 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 
 /**
  * Fluid ingredient that matches the given set of fluids, additionally performing either a
@@ -39,7 +41,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     public static final MapCodec<DataComponentFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            HolderSetCodec.create(Registries.FLUID, BuiltInRegistries.FLUID.holderByNameCodec(), false).fieldOf("fluids").forGetter(DataComponentFluidIngredient::fluids),
+                            HolderSetCodec.create(Registries.FLUID, BuiltInRegistries.FLUID.holderByNameCodec(), false).fieldOf("fluids").forGetter(DataComponentFluidIngredient::fluidSet),
                             DataComponentPredicate.CODEC.fieldOf("components").forGetter(DataComponentFluidIngredient::components),
                             Codec.BOOL.optionalFieldOf("strict", false).forGetter(DataComponentFluidIngredient::isStrict))
                     .apply(builder, DataComponentFluidIngredient::new));
@@ -70,8 +72,15 @@ public class DataComponentFluidIngredient extends FluidIngredient {
         }
     }
 
-    public Stream<FluidStack> generateStacks() {
-        return Stream.of(stacks);
+    public Stream<Holder<Fluid>> generateFluids() {
+        return fluids.stream();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return new SlotDisplay.Composite(Stream.of(stacks)
+                .map(stack -> (SlotDisplay) new FluidStackSlotDisplay(stack))
+                .toList());
     }
 
     @Override
@@ -98,7 +107,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
                 && other.strict == this.strict;
     }
 
-    public HolderSet<Fluid> fluids() {
+    public HolderSet<Fluid> fluidSet() {
         return fluids;
     }
 

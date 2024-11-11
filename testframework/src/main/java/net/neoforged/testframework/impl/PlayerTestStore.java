@@ -5,7 +5,6 @@
 
 package net.neoforged.testframework.impl;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,13 +52,5 @@ public class PlayerTestStore extends SavedData {
         });
         tag.put("tests", testsTag);
         return tag;
-    }
-
-    @Override
-    public void save(File file, HolderLookup.Provider prov) {
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-        }
-        super.save(file, prov);
     }
 }

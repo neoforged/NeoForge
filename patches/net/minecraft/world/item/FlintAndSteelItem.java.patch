@@ -21,7 +21,7 @@
                  p_41297_.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41297_.getHand()));
 @@ -56,5 +_,10 @@
  
-             return InteractionResult.sidedSuccess(level.isClientSide());
+             return InteractionResult.SUCCESS;
          }
 +    }
 +

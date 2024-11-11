@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "c:rods/wooden"
-    },
-    "X": {
-      "item": "minecraft:leather"
-    }
+    "#": "#c:rods/wooden",
+    "X": "minecraft:leather"
   },
   "pattern": [
     "###",
